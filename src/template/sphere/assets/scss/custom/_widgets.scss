@@ -1,0 +1,75 @@
+.upcoming-events-list {
+    li {
+        margin-block-end: 1.5rem;
+        padding-inline-start: 1.5rem;
+        position: relative;
+        &::before {
+            position: absolute;
+            content: "";
+            height: 100%;
+            width: 0.25rem;
+            inset-inline-start: 0;
+            border-radius: $default-radius;
+        }
+        &:nth-child(1)::before {
+            background-color: $primary;
+            opacity: 0.3;
+        }
+        &:nth-child(2)::before {
+            background-color: $secondary;
+            opacity: 0.3;
+        }
+        &:nth-child(3)::before {
+            background-color: $success;
+            opacity: 0.3;
+        }
+        &:nth-child(4)::before {
+            background-color: $danger;
+            opacity: 0.3;
+        }
+        &:nth-child(5)::before {
+            background-color: $info;
+            opacity: 0.3;
+        }
+        &:nth-child(5)::before {
+            background-color: $warning;
+            opacity: 0.3;
+        }
+        &:last-child {
+            margin-block-end: 0;
+        }
+    }
+}
+.border-top-card {
+    border-top-width: 0.188rem !important;
+    border-top-style: solid !important;
+    &.border-top-primary {
+        border-top-color: $primary;
+    }
+    &.border-top-secondary {
+        border-top-color: $secondary;
+    }
+    &.border-top-warning {
+        border-top-color: $warning;
+    }
+    &.border-top-info {
+        border-top-color: $info;
+    }
+    &.border-top-success {
+        border-top-color: $success;
+    }
+    &.border-top-danger {
+        border-top-color: $danger;
+    }
+}
+#users-map {
+    height: 14rem;
+    #jvm-markers-labels-group {
+        display: none;
+    }
+}
+[dir="ltr"] {
+    #views .apexcharts-yaxis {
+        transform: translate(0, 0);
+    }
+}

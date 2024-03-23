@@ -1,0 +1,1009 @@
+.color-container {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 3rem;
+}
+.text-container {
+  padding: 0.25rem 0.5rem;
+  border-radius: $default-radius;
+  box-shadow: $box-shadow;
+}
+/* Start::background color */
+.bg-body {
+    background-color: $default-body-color !important;
+}
+/* End::background color */
+
+/* Start::background color */
+.bg-primary {
+    background-color: $primary !important;
+    &.bg-opacity-10 {
+        background-color: $primary-01 !important;
+    }
+    &.bg-opacity-25 {
+        background-color: $primary-03 !important;
+    }
+    &.bg-opacity-50 {
+        background-color: $primary-05 !important;
+    }
+    &.bg-opacity-75 {
+        background-color: $primary-08 !important;
+    }
+    &.bg-opacity-100 {
+        background-color: $primary !important;
+    }
+}
+.bg-secondary {
+    background-color: $secondary !important;
+    &.bg-opacity-10 {
+        background-color: rgba(var(--secondary-rgb),0.1) !important;
+    }
+    &.bg-opacity-25 {
+        background-color: rgba(var(--secondary-rgb),0.25) !important;
+    }
+    &.bg-opacity-50 {
+        background-color: rgba(var(--secondary-rgb),0.50) !important;
+    }
+    &.bg-opacity-75 {
+        background-color: rgba(var(--secondary-rgb),0.75) !important;
+    }
+    &.bg-opacity-100 {
+        background-color: rgba(var(--secondary-rgb),1) !important;
+    }
+}
+.bg-info {
+    background-color: $info !important;
+    &.bg-opacity-10 {
+        background-color: rgba(var(--info-rgb),0.1) !important;
+    }
+    &.bg-opacity-25 {
+        background-color: rgba(var(--info-rgb),0.25) !important;
+    }
+    &.bg-opacity-50 {
+        background-color: rgba(var(--info-rgb),0.50) !important;
+    }
+    &.bg-opacity-75 {
+        background-color: rgba(var(--info-rgb),0.75) !important;
+    }
+    &.bg-opacity-100 {
+        background-color: rgba(var(--info-rgb),1) !important;
+    }
+}
+.bg-success {
+    background-color: $success !important;
+    &.bg-opacity-10 {
+        background-color: rgba(var(--success-rgb),0.1) !important;
+    }
+    &.bg-opacity-25 {
+        background-color: rgba(var(--success-rgb),0.25) !important;
+    }
+    &.bg-opacity-50 {
+        background-color: rgba(var(--success-rgb),0.50) !important;
+    }
+    &.bg-opacity-75 {
+        background-color: rgba(var(--success-rgb),0.75) !important;
+    }
+    &.bg-opacity-100 {
+        background-color: rgba(var(--success-rgb),1) !important;
+    }
+}
+.bg-warning {
+    background-color: $warning !important;
+    &.bg-opacity-10 {
+        background-color: rgba(var(--warning-rgb),0.1) !important;
+    }
+    &.bg-opacity-25 {
+        background-color: rgba(var(--warning-rgb),0.25) !important;
+    }
+    &.bg-opacity-50 {
+        background-color: rgba(var(--warning-rgb),0.50) !important;
+    }
+    &.bg-opacity-75 {
+        background-color: rgba(var(--warning-rgb),0.75) !important;
+    }
+    &.bg-opacity-100 {
+        background-color: rgba(var(--warning-rgb),1) !important;
+    }
+}
+.bg-danger {
+    background-color: $danger !important;
+    &.bg-opacity-10 {
+        background-color: rgba(var(--danger-rgb),0.1) !important;
+    }
+    &.bg-opacity-25 {
+        background-color: rgba(var(--danger-rgb),0.25) !important;
+    }
+    &.bg-opacity-50 {
+        background-color: rgba(var(--danger-rgb),0.50) !important;
+    }
+    &.bg-opacity-75 {
+        background-color: rgba(var(--danger-rgb),0.75) !important;
+    }
+    &.bg-opacity-100 {
+        background-color: rgba(var(--danger-rgb),1) !important;
+    }
+}
+.bg-dark {
+    background-color: $dark !important;
+    &.bg-opacity-10 {
+        background-color: rgba(var(--dark-rgb),0.1) !important;
+    }
+    &.bg-opacity-25 {
+        background-color: rgba(var(--dark-rgb),0.25) !important;
+    }
+    &.bg-opacity-50 {
+        background-color: rgba(var(--dark-rgb),0.50) !important;
+    }
+    &.bg-opacity-75 {
+        background-color: rgba(var(--dark-rgb),0.75) !important;
+    }
+    &.bg-opacity-100 {
+        background-color: rgba(var(--dark-rgb),1) !important;
+    }
+}
+.bg-light {
+    background-color: $light !important;
+    &.bg-opacity-10 {
+        background-color: rgba(var(--light-rgb),0.1) !important;
+    }
+    &.bg-opacity-25 {
+        background-color: rgba(var(--light-rgb),0.25) !important;
+    }
+    &.bg-opacity-50 {
+        background-color: rgba(var(--light-rgb),0.50) !important;
+    }
+    &.bg-opacity-75 {
+        background-color: rgba(var(--light-rgb),0.75) !important;
+    }
+    &.bg-opacity-100 {
+        background-color: rgba(var(--light-rgb),1) !important;
+    }
+}
+.bg-white {
+    background-color: $custom-white !important;
+}
+.bg-pink {
+    background-color: $pink !important;
+}
+.bg-orange {
+    background-color: $orange !important;
+}
+.bg-purple {
+    background-color: $purple !important;
+}
+.bg-green {
+    background-color: $green !important;
+}
+.bg-teal {
+    background-color: $teal !important;
+}
+.bg-blue {
+    background-color: $blue !important;
+}
+.bg-indigo {
+    background-color: $indigo !important;
+}
+.bg-yellow {
+    background-color: $yellow !important;
+}
+/* End::background color */
+
+/* Start::gradient colors */
+.bg-primary-gradient {
+  background: $primary-gradient !important;
+  color: $white;
+}
+.bg-secondary-gradient {
+  background: $secondary-gradient !important;
+  color: $white;
+}
+.bg-warning-gradient {
+  background: $warning-gradient !important;
+  color: $white;
+}
+.bg-info-gradient {
+  background: $info-gradient !important;
+  color: $white;
+}
+.bg-success-gradient {
+  background: $success-gradient !important;
+  color: $white;
+}
+.bg-danger-gradient {
+  background: $danger-gradient !important;
+  color: $white;
+}
+.bg-orange-gradient {
+  background: $orange-gradient !important;
+  color: $white;
+}
+.bg-purple-gradient {
+  background: $purple-gradient !important;
+  color: $white;
+}
+.bg-teal-gradient {
+  background: $teal-gradient !important;
+  color: $white;
+}
+.bg-light-gradient {
+  background: $light-gradient !important;
+  color: $black;
+}
+.bg-dark-gradient {
+  background: $dark-gradient !important;
+  color: $white;
+}
+/* End::gradient colors */
+
+/* Start:: outline colors */
+.bg-outline-primary {
+  background-color: $custom-white;
+  border: 1px solid $primary;
+  color: $primary;
+}
+.bg-outline-secondary {
+  background-color: $custom-white;
+  border: 1px solid $secondary;
+  color: $secondary;
+}
+.bg-outline-warning {
+  background-color: $custom-white;
+  border: 1px solid $warning;
+  color: $warning;
+}
+.bg-outline-info {
+  background-color: $custom-white;
+  border: 1px solid $info;
+  color: $info;
+}
+.bg-outline-success {
+  background-color: $custom-white;
+  border: 1px solid $success;
+  color: $success;
+}
+.bg-outline-danger {
+  background-color: $custom-white;
+  border: 1px solid $danger;
+  color: $danger;
+}
+.bg-outline-dark {
+  background-color: $custom-white;
+  border: 1px solid $dark;
+  color: $dark;
+}
+.bg-outline-light {
+  background-color: $custom-white;
+  border: 1px solid $light;
+  color: $custom-black;
+}
+/* End:: outline colors */
+
+/* Start::gray set */
+.bg-gray-100 {
+    background-color: $gray-1; 
+}
+.bg-gray-200 {
+    background-color: $gray-2;
+}
+.bg-gray-300 {
+    background-color: $gray-3;
+}
+.bg-gray-400 {
+    background-color: $gray-4;
+}
+.bg-gray-500 {
+    background-color: $gray-5;
+}
+.bg-gray-600 {
+    background-color: $gray-6;
+}
+.bg-gray-700 {
+    background-color: $gray-7;
+}
+.bg-gray-800 {
+    background-color: $gray-8;
+}
+.bg-gray-900 {
+    background-color: $gray-9;
+}
+/* End::gray set */
+
+
+/* Start::background transparent */
+.bg-primary-transparent {
+    background-color: $primary-01 !important;
+    color: $primary !important;
+    &:hover {
+        background-color: $primary-01 !important;
+        color: $primary !important;
+    }
+}
+.bg-secondary-transparent {
+    background-color: rgba(var(--secondary-rgb), 0.1) !important;
+    color: $secondary !important;
+    &:hover {
+        background-color: rgba(var(--secondary-rgb), 0.1) !important;
+        color: $secondary !important;
+    }
+}
+.bg-info-transparent {
+    background-color: rgba(var(--info-rgb), 0.1) !important;
+    color: $info !important;
+    &:hover {
+        background-color: rgba(var(--info-rgb), 0.1) !important;
+        color: $info !important;
+    }
+}
+.bg-success-transparent {
+    background-color: rgba(var(--success-rgb), 0.1) !important;
+    color: $success !important;
+    &:hover {
+        background-color: rgba(var(--success-rgb), 0.1) !important;
+        color: $success !important;
+    }
+}
+.bg-warning-transparent {
+    background-color: rgba(var(--warning-rgb), 0.1) !important;
+    color: $warning !important;
+    &:hover {
+        background-color: rgba(var(--warning-rgb), 0.1) !important;
+        color: $warning !important;
+    }
+}
+.bg-danger-transparent {
+    background-color: rgba(var(--danger-rgb), 0.1) !important;
+    color: $danger !important;
+    &:hover {
+        background-color: rgba(var(--danger-rgb), 0.1) !important;
+        color: $danger !important;
+    }
+}
+.bg-light-transparent {
+    background-color: rgba(var(--light-rgb), 0.5) !important;
+    color: $light !important;
+    &:hover {
+        background-color: rgba(var(--light-rgb), 0.5) !important;
+        color: $default-text-color !important;
+    }
+}
+.bg-dark-transparent {
+    background-color: rgba(var(--dark-rgb), 0.1) !important;
+    color: $dark !important;
+    &:hover {
+        background-color: rgba(var(--dark-rgb), 0.1) !important;
+        color: $dark !important;
+    }
+}
+.bg-pink-transparent {
+    background-color: rgba(var(--pink-rgb), 0.1) !important;
+    color: $pink !important;
+    &:hover {
+        background-color: rgba(var(--pink-rgb), 0.1) !important;
+        color: $pink !important;
+    }
+}
+.bg-orange-transparent {
+    background-color: rgba(var(--orange-rgb), 0.1) !important;
+    color: $orange !important;
+    &:hover {
+        background-color: rgba(var(--orange-rgb), 0.1) !important;
+        color: $orange !important;
+    }
+}
+.bg-purple-transparent {
+    background-color: rgba(var(--purple-rgb), 0.1) !important;
+    color: $purple !important;
+    &:hover {
+        background-color: rgba(var(--purple-rgb), 0.1) !important;
+        color: $purple !important;
+    }
+}
+.bg-teal-transparent {
+    background-color: rgba(var(--teal-rgb), 0.1) !important;
+    color: $teal !important;
+    &:hover {
+        background-color: rgba(var(--teal-rgb), 0.1) !important;
+        color: $teal !important;
+    }
+}
+.bg-green-transparent {
+    background-color: rgba($green, 0.1) !important;
+    color:$green !important;
+    &:hover {
+        background-color: rgba($green, 0.1) !important;
+        color:$green !important;
+    }
+}
+.bg-indigo-transparent {
+    background-color: rgba($indigo, 0.1) !important;
+    color: $indigo !important;
+    &:hover {
+        background-color: rgba($indigo, 0.1) !important;
+        color: $indigo !important;
+    }
+}
+.bg-yellow-transparent {
+    background-color: rgba($yellow, 0.1) !important;
+    color: $yellow !important;
+    &:hover {
+        background-color: rgba($yellow, 0.1) !important;
+        color: $yellow !important;
+    }
+}
+.bg-blue-transparent {
+    background-color: rgba($blue, 0.1) !important;
+    color: $blue !important;
+    &:hover {
+        background-color: rgba($blue, 0.1) !important;
+        color: $blue !important;
+    }
+}
+/* End::background transparent */
+
+/* Start::backgrounds with colors */
+.text-bg-primary {
+    background-color:$primary !important;
+    color:$white !important;
+}
+.text-bg-secondary {        
+    background-color:$secondary !important;
+    color:$white !important;
+}
+.text-bg-warning {
+    background-color:$warning !important;
+    color:$white !important;
+}
+.text-bg-info {
+    background-color:$info !important;
+    color:$white !important;
+}
+.text-bg-success {
+    background-color:$success !important;
+    color:$white !important;
+}
+.text-bg-danger {
+    background-color:$danger !important;
+    color:$white !important;
+}
+.text-bg-light {
+    background-color:$light !important;
+    color:$black !important;
+}
+.text-bg-dark {
+    background-color:$dark !important;
+    color:$white !important;
+}
+/* End::backgrounds with colors */
+
+/* Start::svg colors */
+.svg-primary {
+    fill: $primary;
+}
+.svg-secondary {
+    fill: $secondary;
+}
+.svg-success {
+    fill: $success;
+}
+.svg-danger {
+    fill: $danger;
+}
+.svg-warning {
+    fill: $warning;
+}
+.svg-white {
+    fill: $white;
+}
+.svg-black {
+    fill: $black;
+}
+.svg-pink {
+    fill: $pink;
+}
+.svg-orange {
+    fill: $orange;
+}
+.svg-purple {
+    fill: $purple;
+}
+.svg-indigo {
+    fill: $indigo;
+}
+.svg-info {
+    fill: $info;
+}
+.svg-yellow {
+    fill: $yellow;
+}
+.svg-light {
+  fill: $light;
+}
+.svg-dark {
+  fill: $dark;
+}
+.svg-teal {
+  fill: $teal;
+}
+.svg-default {
+  fill: $default-text-color;
+}
+/* End::svg colors */
+
+/* Start::Colors */
+/* Start::blue set */
+.bd-blue-100 {
+    background-color: rgba($blue, 0.1);
+    color: $default-text-color;
+  }
+  .bd-blue-200 {
+    background-color: rgba($blue, 0.2);
+    color: $default-text-color;
+  }
+  .bd-blue-300 {
+    background-color: rgba($blue, 0.3);
+    color: $default-text-color;
+  }
+  .bd-blue-400 {
+    background-color: rgba($blue, 0.4);
+    color: $default-text-color;
+  }
+  .bd-blue-500 {
+    background-color: rgba($blue, 0.5);
+    color: $default-text-color;
+  }
+  .bd-blue-600 {
+    background-color: rgba($blue, 0.6);
+    color: $white;
+  }
+  .bd-blue-700 {
+    background-color: rgba($blue, 0.7);
+    color: $white;
+  }
+  .bd-blue-800 {
+    background-color: rgba($blue, 0.8);
+    color: $white;
+  }
+  .bd-blue-900 {
+    background-color: rgba($blue, 0.9);
+    color: $white;
+  }
+  .bd-blue {
+    background-color: $blue;
+    color: $white;
+  }
+  /* Start::blue set */
+  
+  /* Start::indigo set */
+  .bd-indigo-100 {
+    background-color: rgba($indigo, 0.1);
+    color: $default-text-color;
+  }
+  .bd-indigo-200 {
+    background-color: rgba($indigo, 0.2);
+    color: $default-text-color;
+  }
+  .bd-indigo-300 {
+    background-color: rgba($indigo, 0.3);
+    color: $default-text-color;
+  }
+  .bd-indigo-400 {
+    background-color: rgba($indigo, 0.4);
+    color: $default-text-color;
+  }
+  .bd-indigo-500 {
+    background-color: rgba($indigo, 0.5);
+    color: $default-text-color;
+  }
+  .bd-indigo-600 {
+    background-color: rgba($indigo, 0.6);
+    color: $white;
+  }
+  .bd-indigo-700 {
+    background-color: rgba($indigo, 0.7);
+    color: $white;
+  }
+  .bd-indigo-800 {
+    background-color: rgba($indigo, 0.8);
+    color: $white;
+  }
+  .bd-indigo-900 {
+    background-color: rgba($indigo, 0.9);
+    color: $white;
+  }
+  .bd-indigo {
+    background-color: $indigo;
+    color: $white;
+  }
+  /* Start::indigo set */
+  
+  /* Start::purple set */
+  .bd-purple-100 {
+    background-color: rgba(var(--purple-rgb), 0.1);
+    color: $default-text-color;
+  }
+  .bd-purple-200 {
+    background-color: rgba(var(--purple-rgb), 0.2);
+    color: $default-text-color;
+  }
+  .bd-purple-300 {
+    background-color: rgba(var(--purple-rgb), 0.3);
+    color: $default-text-color;
+  }
+  .bd-purple-400 {
+    background-color: rgba(var(--purple-rgb), 0.4);
+    color: $default-text-color;
+  }
+  .bd-purple-500 {
+    background-color: rgba(var(--purple-rgb), 0.5);
+    color: $default-text-color;
+  }
+  .bd-purple-600 {
+    background-color: rgba(var(--purple-rgb), 0.6);
+    color: $white;
+  }
+  .bd-purple-700 {
+    background-color: rgba(var(--purple-rgb), 0.7);
+    color: $white;
+  }
+  .bd-purple-800 {
+    background-color: rgba(var(--purple-rgb), 0.8);
+    color: $white;
+  }
+  .bd-purple-900 {
+    background-color: rgba(var(--purple-rgb), 0.9);
+    color: $white;
+  }
+  .bd-purple {
+    background-color: $purple;
+    color: $white;
+  }
+  /* Start::purple set */
+  
+  /* Start::pink set */
+  .bd-pink-100 {
+    background-color: rgba(var(--pink-rgb), 0.1);
+    color: $default-text-color;
+  }
+  .bd-pink-200 {
+    background-color: rgba(var(--pink-rgb), 0.2);
+    color: $default-text-color;
+  }
+  .bd-pink-300 {
+    background-color: rgba(var(--pink-rgb), 0.3);
+    color: $default-text-color;
+  }
+  .bd-pink-400 {
+    background-color: rgba(var(--pink-rgb), 0.4);
+    color: $default-text-color;
+  }
+  .bd-pink-500 {
+    background-color: rgba(var(--pink-rgb), 0.5);
+    color: $default-text-color;
+  }
+  .bd-pink-600 {
+    background-color: rgba(var(--pink-rgb), 0.6);
+    color: $white;
+  }
+  .bd-pink-700 {
+    background-color: rgba(var(--pink-rgb), 0.7);
+    color: $white;
+  }
+  .bd-pink-800 {
+    background-color: rgba(var(--pink-rgb), 0.8);
+    color: $white;
+  }
+  .bd-pink-900 {
+    background-color: rgba(var(--pink-rgb), 0.9);
+    color: $white;
+  }
+  .bd-pink {
+    background-color: $pink;
+    color: $white;
+  }
+  /* Start::pink set */
+  
+  /* Start::red set */
+  .bd-red-100 {
+    background-color: rgba($red, 0.1);
+    color: $default-text-color;
+  }
+  .bd-red-200 {
+    background-color: rgba($red, 0.2);
+    color: $default-text-color;
+  }
+  .bd-red-300 {
+    background-color: rgba($red, 0.3);
+    color: $default-text-color;
+  }
+  .bd-red-400 {
+    background-color: rgba($red, 0.4);
+    color: $default-text-color;
+  }
+  .bd-red-500 {
+    background-color: rgba($red, 0.5);
+    color: $default-text-color;
+  }
+  .bd-red-600 {
+    background-color: rgba($red, 0.6);
+    color: $white;
+  }
+  .bd-red-700 {
+    background-color: rgba($red, 0.7);
+    color: $white;
+  }
+  .bd-red-800 {
+    background-color: rgba($red, 0.8);
+    color: $white;
+  }
+  .bd-red-900 {
+    background-color: rgba($red, 0.9);
+    color: $white;
+  }
+  .bd-red {
+    background-color: $red;
+    color: $white;
+  }
+  /* Start::red set */
+  
+  /* Start::orange set */
+  .bd-orange-100 {
+    background-color: rgba(var(--orange-rgb), 0.1);
+    color: $default-text-color;
+  }
+  .bd-orange-200 {
+    background-color: rgba(var(--orange-rgb), 0.2);
+    color: $default-text-color;
+  }
+  .bd-orange-300 {
+    background-color: rgba(var(--orange-rgb), 0.3);
+    color: $default-text-color;
+  }
+  .bd-orange-400 {
+    background-color: rgba(var(--orange-rgb), 0.4);
+    color: $default-text-color;
+  }
+  .bd-orange-500 {
+    background-color: rgba(var(--orange-rgb), 0.5);
+    color: $default-text-color;
+  }
+  .bd-orange-600 {
+    background-color: rgba(var(--orange-rgb), 0.6);
+    color: $white;
+  }
+  .bd-orange-700 {
+    background-color: rgba(var(--orange-rgb), 0.7);
+    color: $white;
+  }
+  .bd-orange-800 {
+    background-color: rgba(var(--orange-rgb), 0.8);
+    color: $white;
+  }
+  .bd-orange-900 {
+    background-color: rgba(var(--orange-rgb), 0.9);
+    color: $white;
+  }
+  .bd-orange {
+    background-color: $orange;
+    color: $white;
+  }
+  /* Start::orange set */
+  
+  /* Start::yellow set */
+  .bd-yellow-100 {
+    background-color: rgba($yellow, 0.1);
+    color: $default-text-color;
+  }
+  .bd-yellow-200 {
+    background-color: rgba($yellow, 0.2);
+    color: $default-text-color;
+  }
+  .bd-yellow-300 {
+    background-color: rgba($yellow, 0.3);
+    color: $default-text-color;
+  }
+  .bd-yellow-400 {
+    background-color: rgba($yellow, 0.4);
+    color: $default-text-color;
+  }
+  .bd-yellow-500 {
+    background-color: rgba($yellow, 0.5);
+    color: $default-text-color;
+  }
+  .bd-yellow-600 {
+    background-color: rgba($yellow, 0.6);
+    color: $white;
+  }
+  .bd-yellow-700 {
+    background-color: rgba($yellow, 0.7);
+    color: $white;
+  }
+  .bd-yellow-800 {
+    background-color: rgba($yellow, 0.8);
+    color: $white;
+  }
+  .bd-yellow-900 {
+    background-color: rgba($yellow, 0.9);
+    color: $white;
+  }
+  .bd-yellow {
+    background-color: $yellow;
+    color: $white;
+  }
+  /* Start::yellow set */
+  
+  /* Start::green set */
+  .bd-green-100 {
+    background-color: rgba($green, 0.1);
+    color: $default-text-color;
+  }
+  .bd-green-200 {
+    background-color: rgba($green, 0.2);
+    color: $default-text-color;
+  }
+  .bd-green-300 {
+    background-color: rgba($green, 0.3);
+    color: $default-text-color;
+  }
+  .bd-green-400 {
+    background-color: rgba($green, 0.4);
+    color: $default-text-color;
+  }
+  .bd-green-500 {
+    background-color: rgba($green, 0.5);
+    color: $default-text-color;
+  }
+  .bd-green-600 {
+    background-color: rgba($green, 0.6);
+    color: $white;
+  }
+  .bd-green-700 {
+    background-color: rgba($green, 0.7);
+    color: $white;
+  }
+  .bd-green-800 {
+    background-color: rgba($green, 0.8);
+    color: $white;
+  }
+  .bd-green-900 {
+    background-color: rgba($green, 0.9);
+    color: $white;
+  }
+  .bd-green {
+    background-color: $green;
+    color: $white;
+  }
+  /* Start::green set */
+  
+  /* Start::teal set */
+  .bd-teal-100 {
+    background-color: rgba(var(--teal-rgb), 0.1);
+    color: $default-text-color;
+  }
+  .bd-teal-200 {
+    background-color: rgba(var(--teal-rgb), 0.2);
+    color: $default-text-color;
+  }
+  .bd-teal-300 {
+    background-color: rgba(var(--teal-rgb), 0.3);
+    color: $default-text-color;
+  }
+  .bd-teal-400 {
+    background-color: rgba(var(--teal-rgb), 0.4);
+    color: $default-text-color;
+  }
+  .bd-teal-500 {
+    background-color: rgba(var(--teal-rgb), 0.5);
+    color: $default-text-color;
+  }
+  .bd-teal-600 {
+    background-color: rgba(var(--teal-rgb), 0.6);
+    color: $white;
+  }
+  .bd-teal-700 {
+    background-color: rgba(var(--teal-rgb), 0.7);
+    color: $white;
+  }
+  .bd-teal-800 {
+    background-color: rgba(var(--teal-rgb), 0.8);
+    color: $white;
+  }
+  .bd-teal-900 {
+    background-color: rgba(var(--teal-rgb), 0.9);
+    color: $white;
+  }
+  .bd-teal {
+    background-color: $teal;
+    color: $white;
+  }
+  /* Start::teal set */
+  
+  /* Start::cyan set */
+  .bd-cyan-100 {
+    background-color: rgba($cyan, 0.1);
+    color: $default-text-color;
+  }
+  .bd-cyan-200 {
+    background-color: rgba($cyan, 0.2);
+    color: $default-text-color;
+  }
+  .bd-cyan-300 {
+    background-color: rgba($cyan, 0.3);
+    color: $default-text-color;
+  }
+  .bd-cyan-400 {
+    background-color: rgba($cyan, 0.4);
+    color: $default-text-color;
+  }
+  .bd-cyan-500 {
+    background-color: rgba($cyan, 0.5);
+    color: $default-text-color;
+  }
+  .bd-cyan-600 {
+    background-color: rgba($cyan, 0.6);
+    color: $white;
+  }
+  .bd-cyan-700 {
+    background-color: rgba($cyan, 0.7);
+    color: $white;
+  }
+  .bd-cyan-800 {
+    background-color: rgba($cyan, 0.8);
+    color: $white;
+  }
+  .bd-cyan-900 {
+    background-color: rgba($cyan, 0.9);
+    color: $white;
+  }
+  .bd-cyan {
+    background-color: $cyan;
+    color: $white;
+  }
+  /* Start::cyan set */
+  
+  /* Start::gray set */
+  .bd-gray-100 {
+    background-color: rgba($gray, 0.1);
+    color: $default-text-color;
+  }
+  .bd-gray-200 {
+    background-color: rgba($gray, 0.2);
+    color: $default-text-color;
+  }
+  .bd-gray-300 {
+    background-color: rgba($gray, 0.3);
+    color: $default-text-color;
+  }
+  .bd-gray-400 {
+    background-color: rgba($gray, 0.4);
+    color: $default-text-color;
+  }
+  .bd-gray-500 {
+    background-color: rgba($gray, 0.5);
+    color: $default-text-color;
+  }
+  .bd-gray-600 {
+    background-color: rgba($gray, 0.6);
+    color: $white;
+  }
+  .bd-gray-700 {
+    background-color: rgba($gray, 0.7);
+    color: $white;
+  }
+  .bd-gray-800 {
+    background-color: rgba($gray, 0.8);
+    color: $white;
+  }
+  .bd-gray-900 {
+    background-color: rgba($gray, 0.9);
+    color: $white;
+  }
+  .bd-gray {
+    background-color: $gray;
+    color: $white;
+  }
+  /* Start::gray set */
+  /* Start::Colors */

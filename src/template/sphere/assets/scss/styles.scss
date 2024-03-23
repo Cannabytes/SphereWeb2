@@ -1,0 +1,134 @@
+/*------------------------------------------------------------------
+[Master Stylesheet]
+
+Project                            :   sash - HTML5 Bootstrap Admin Template
+Create Date                        :   
+Author & Copyright Ownership       :   Spruko Technologies Private Limited 
+Author URL                         :   https://themeforest.net/user/spruko
+Support	                           :   https://support.spruko.com/
+License Details                    :   https://spruko.com/licenses-details
+------------------------------------------------------------------*/
+
+/* Table Of Content 
+variables
+switcher
+accordion
+alerts
+badge
+buttons
+cards
+dropdown
+forms
+input_group
+list_group
+modals
+navbar
+navs_tabs
+pagination
+popovers
+progress
+tables
+toast
+tooltips
+authentication
+custom
+dashboard_styles
+error
+header
+image
+plugins
+widgets
+sign-up
+closed_menu
+detached_menu
+double_menu
+horizontal
+icon_click
+icon_hover
+icon_overlay
+icontext
+menu_click
+menu_hover
+vertical
+chat
+ecommerce
+file-manager
+landing
+mail
+task
+avatars
+background
+border
+opacity
+typography
+*/
+
+
+/* FONT */
+/* inter */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap");
+
+
+@import "variables";
+@import "switcher";
+
+/* BOOTSTRAP */
+@import "bootstrap/accordion";
+@import "bootstrap/alerts";
+@import "bootstrap/badge";
+@import "bootstrap/breadcrumb";
+@import "bootstrap/buttons";
+@import "bootstrap/cards";
+@import "bootstrap/dropdown";
+@import "bootstrap/forms";
+@import "bootstrap/input_group";
+@import "bootstrap/list_group";
+@import "bootstrap/modals";
+@import "bootstrap/navbar";
+@import "bootstrap/navs_tabs";
+@import "bootstrap/pagination";
+@import "bootstrap/popovers";
+@import "bootstrap/progress";
+@import "bootstrap/tables";
+@import "bootstrap/toast";
+@import "bootstrap/tooltips";
+
+/* CUSTOM */
+@import "custom/authentication";
+@import "custom/custom";
+@import "custom/dashboard_styles";
+@import "custom/error";
+@import "custom/header";
+@import "custom/image";
+@import "custom/plugins";
+@import "custom/widgets";
+@import "custom/ribbon";
+
+/* MENU-STYLES */
+@import "menu-styles/closed_menu";
+@import "menu-styles/detached_menu";
+@import "menu-styles/double_menu";
+@import "menu-styles/horizontal";
+@import "menu-styles/icon_click";
+@import "menu-styles/icon_hover";
+@import "menu-styles/icon_overlay";
+@import "menu-styles/icontext";
+@import "menu-styles/menu_click";
+@import "menu-styles/menu_hover";
+@import "menu-styles/vertical";
+
+/* PAGES */
+@import "pages/chat";
+@import "pages/ecommerce";
+@import "pages/file-manager";
+@import "pages/landing";
+@import "pages/mail";
+
+
+/* UTILITIES */
+@import "util/avatars";
+@import "util/background";
+@import "util/border";
+@import "util/opacity";
+@import "util/typography";
+

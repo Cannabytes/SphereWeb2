@@ -1,0 +1,311 @@
+.main-sidebar {
+  margin-block-start: 4.2rem;
+  padding-block-start: 0.5rem;
+  padding-block-end: 5rem;
+  height: 100vh;
+  position: relative;
+  overflow: auto;
+}
+[dir="rtl"] {
+  .app-sidebar {
+    .fe-chevron-right {
+      transform: rotate(180deg);
+    }
+  }
+  .sidemenu-toggle .header-link {
+    .header-link-icon {
+      transform: rotate(180deg);
+    }
+  }
+}
+.app-sidebar {
+  width: 17rem;
+  height: 100%;
+  background: $menu-bg;
+  border-inline-end: 1px solid $menu-border-color;
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: 103;
+  transition: left 50ms ease, width 50ms ease;
+  box-shadow: 0 8px 24px $box-shadow2;
+  .main-menu {
+    padding: 0 10px 0 10px;
+  }
+  .main-sidebar-header {
+    width: 17rem;
+    position: fixed;
+    display: flex;
+    background: $menu-bg;
+    z-index: 9;
+    align-items: center;
+    justify-content: center;
+    padding: 19px 17px;
+    border-inline-end: 1px solid $menu-border-color;
+    border-block-end: 1px solid $menu-border-color;
+    transition: left 50ms ease, width 50ms ease;
+    .header-logo {
+      img {
+        line-height: 2rem;
+      }
+      .desktop-logo {
+        display: block;
+      }
+      .desktop-dark,
+      .toggle-logo,
+      .toggle-dark,
+      .desktop-white,
+      .toggle-white {
+        display: none;
+      }
+    }
+  }
+  .slide__category {
+    color: $menu-prime-color;
+    padding-block-start: 12px;
+    padding-inline-end: 30px;
+    padding-block-end: 2px;
+    font-size: 11px;
+    font-weight: 600;
+    padding-inline-start: 20px;
+    margin-block-end: 0;
+    white-space: nowrap;
+    position: relative;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.6;
+    &:not(:first-child) {
+      margin-block-start: 0.75rem;
+    }
+  }
+  .slide {
+    margin: 0;
+  }
+  .side-menu__item {
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 400;
+    position: relative;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: $menu-prime-color;
+    white-space: nowrap;
+    &.active,
+    &:hover {
+      color: $primary;
+      background-color: transparent;
+      .side-menu__label,
+      .side-menu__angle {
+        color: $primary;
+      }
+      .side-menu__icon {
+        fill: $primary !important;
+        color: $primary !important;
+      }
+    }
+  }
+  .slide-menu {
+    &.child1,
+    &.child2,
+    &.child3 {
+      .side-menu__item {
+        &.active,
+        &:hover {
+          background-color: transparent;
+          opacity: 1;
+        }
+      }
+    }
+  }
+  .slide-menu {
+    padding: 0rem;
+  }
+  .slide-menu {
+    &.child1,
+    &.child2 {
+      .side-menu__item {
+        padding: 0.45rem 1.6rem;
+        display: flex;
+        align-items: center;
+        font-size: 13.3px;
+        white-space: nowrap;
+        opacity: 0.8;
+      }
+    }
+  }
+  .slide-menu {
+    &.child1,
+    &.child2,
+    &.child3 {
+      .side-menu__item {
+        &:before {
+          position: absolute;
+          content: "\e933";
+          font-family: feather !important;
+          font-size: 10px;
+          inset-inline-start: 0.5rem;
+          opacity: 0.8;
+        }
+        &:hover {
+          color: $primary;
+          &:before {
+            color: $primary;
+            opacity: 1;
+          }
+        }
+        &.active {
+          &:before {
+            color: $primary;
+            opacity: 1;
+          }
+        }
+      }
+      li {
+        padding: 0;
+        padding-inline-start: 1.5rem;
+        position: relative;
+      }
+    }
+  }
+  .side-menu__label {
+    white-space: nowrap;
+    flex: 1 1 auto;
+    margin-block-start: 3px;
+  }
+  .side-menu__icon {
+    margin-inline-end: 8px;
+    font-size: 1.15rem;
+    text-align: center;
+    color: $primary;
+    fill: $primary;
+    border-radius: $default-radius;
+    line-height: 30px;
+  }
+  .side-menu__angle {
+    transform-origin: center;
+    position: absolute;
+    inset-inline-end: 1.5rem;
+    font-size: 11px;
+    color: $menu-prime-color;
+    transition: left 50ms ease, width 50ms ease;
+  }
+  .slide.side-menu__label1 {
+    display: none;
+  }
+}
+.horizontal-logo {
+  padding: 0.85rem 0rem;
+}
+.slide.has-sub .slide-menu {
+  transform: translate(0, 0) !important;
+  visibility: visible !important;
+}
+.nav ul li {
+  list-style-type: none;
+}
+.nav > ul {
+  padding-inline-start: 0px;
+}
+.slide-menu {
+  display: none;
+}
+.slide.has-sub {
+  display: grid;
+  &.open {
+    > .side-menu__item .side-menu__angle {
+      transform: rotate(90deg);
+    }
+  }
+}
+@media (min-width: 992px) {
+  [data-toggled="open"] {
+    .page {
+      position: absolute;
+    }
+  }
+  [data-toggled="menu-click-closed"],
+  [data-toggled="menu-hover-closed"],
+  [data-toggled="icon-click-closed"],
+  [data-toggled="icon-hover-closed"],
+  [data-toggled="icon-text-close"] {
+    &:not([data-nav-layout="horizontal"]) {
+      .app-content {
+        min-height: calc(100vh - -50rem);
+      }
+    }
+  }
+}
+
+/* Responsive Styles Start */
+
+@media (max-width: 991.98px) {
+  .horizontal-logo {
+    .header-logo {
+      .desktop-logo,
+      .desktop-dark,
+      .toggle-dark,
+      .desktop-white,
+      .toggle-white {
+        display: none;
+      }
+      .toggle-logo {
+        display: block;
+      }
+    }
+  }
+  .main-content {
+    padding-block-start: 3.75rem;
+  }
+  .main-sidebar-header {
+    display: none !important;
+  }
+  .main-sidebar {
+    margin-block-start: 0;
+  }
+  .app-sidebar {
+    inset-block-start: 0;
+  }
+  .main-menu {
+    margin: 0 !important;
+  }
+}
+
+.slide-left,
+.slide-right {
+  display: none;
+}
+[data-nav-layout="vertical"] {
+  .slide.has-sub {
+    &.active {
+      > .side-menu__item {
+        margin-block: 0.25rem;
+      }
+    }
+  }
+}
+@media (min-width: 992px) {
+  .horizontal-logo {
+    display: none;
+  }
+}
+/* Responsive Styles End */
+
+/* Responsive Overlay Start */
+#responsive-overlay {
+  visibility: hidden;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  z-index: 101;
+  background-color: rgba(15, 23, 42, 0.5);
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 100ms;
+  &.active {
+    visibility: visible;
+  }
+}
+/* Responsive Overlay End */

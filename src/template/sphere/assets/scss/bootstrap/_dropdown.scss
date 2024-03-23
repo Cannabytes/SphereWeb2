@@ -1,0 +1,254 @@
+.app-header {
+  .dropdown-toggle {
+    position: relative;
+  }
+}
+.dropdown-menu {
+  border-color: $default-border;
+  box-shadow: 0 1rem 1.125rem rgba(169, 169, 169, 0.15);
+  font-size: 0.875rem;
+  color: $default-text-color;
+  background-color: $custom-white;
+  padding: 0;
+  z-index: 10;
+}
+.dropdown-divider {
+  border-color: $default-border;
+}
+
+.dropdown-item-text {
+  color: $default-text-color;
+}
+.dropdown-header {
+  color: $default-text-color;
+}
+.dropdown-item {
+  color: $default-text-color;
+  white-space: unset;
+  padding: 0.5rem 0.9375rem;
+  font-size: 0.8125rem;
+
+  &.disabled,
+  &:disabled {
+    color: $default-text-color;
+    opacity: 0.5;
+  }
+  &:not(.active) {
+    &:hover,
+    &:focus,
+    &:active {
+      color: $primary;
+      background-color: $primary-005;
+    }
+  }
+  &.active {
+    background-color: $primary !important;
+  }
+}
+.dropdown-toggle::after {
+  display: inline-block;
+  margin-inline-start: 0.25rem;
+  vertical-align: 0;
+  content: "\f282";
+  font-family: bootstrap-icons !important;
+  border: 0;
+  font-size: 0.6rem;
+  font-weight: 600;
+}
+.dropup .dropdown-toggle::after {
+  display: inline-block;
+  margin-inline-start: 0.25rem;
+  vertical-align: 0;
+  content: "\F286";
+  font-family: bootstrap-icons !important;
+  border: 0;
+  font-size: 0.6rem;
+  font-weight: 600;
+}
+.dropend .dropdown-toggle::after {
+  display: inline-block;
+  margin-inline-start: 0.25rem;
+  vertical-align: 0;
+  content: "\F285";
+  font-family: bootstrap-icons !important;
+  border: 0;
+  font-size: 0.6rem;
+  font-weight: 600;
+}
+.dropstart .dropdown-toggle::before {
+  display: inline-block;
+  margin-inline-start: 0.25rem;
+  vertical-align: 0;
+  content: "\F284";
+  font-family: bootstrap-icons !important;
+  border: 0;
+  font-size: 0.6rem;
+  font-weight: 600;
+}
+.btn.dropdown-toggle-split {
+  opacity: 0.85;
+}
+.dropdown-menu-dark {
+  background-color: $dark;
+  border-color: rgba(255, 255, 255, 0.1);
+  li a {
+    color: $custom-white;
+  }
+}
+.btn-list a.dropdown-item {
+  margin-block-end: 0;
+}
+/* Start:: Custom Dropdown Menu */
+.dropdown-menu {
+  @mixin dropdown-menu-color($color) {
+    background-color: $color;
+    li a {
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .dropdown-item {
+      &:hover,
+      &:focus,
+      &:active,
+      &.active {
+        color: $white;
+      }
+    }
+  }
+  &.dropdown-menu-primary {
+    @include dropdown-menu-color($primary);
+  }
+  &.dropdown-menu-secondary {
+    @include dropdown-menu-color($secondary);
+  }
+  &.dropdown-menu-warning {
+    @include dropdown-menu-color($warning);
+  }
+  &.dropdown-menu-info {
+    @include dropdown-menu-color($info);
+  }
+  &.dropdown-menu-success {
+    @include dropdown-menu-color($success);
+  }
+  &.dropdown-menu-danger {
+    @include dropdown-menu-color($danger);
+  }
+}
+.dropdown-menu {
+  &.dropmenu-item-primary {
+    .dropdown-item {
+      &:hover,
+      &:focus,
+      &:active,
+      &.active {
+        background-color: $primary-01 !important;
+        color: $primary;
+      }
+    }
+  }
+  &.dropmenu-item-secondary {
+    .dropdown-item {
+      &:hover,
+      &:focus,
+      &:active,
+      &.active {
+        background-color: rgba(var(--secondary-rgb), 0.1) !important;
+        color: $secondary;
+      }
+    }
+  }
+  &.dropmenu-item-warning {
+    .dropdown-item {
+      &:hover,
+      &:focus,
+      &:active,
+      &.active {
+        background-color: rgba(var(--warning-rgb), 0.1) !important;
+        color: $warning;
+      }
+    }
+  }
+  &.dropmenu-item-info {
+    .dropdown-item {
+      &:hover,
+      &:focus,
+      &:active,
+      &.active {
+        background-color: rgba(var(--info-rgb), 0.1) !important;
+        color: $info;
+      }
+    }
+  }
+  &.dropmenu-item-success {
+    .dropdown-item {
+      &:hover,
+      &:focus,
+      &:active,
+      &.active {
+        background-color: rgba(var(--success-rgb), 0.1) !important;
+        color: $success;
+      }
+    }
+  }
+  &.dropmenu-item-danger {
+    .dropdown-item {
+      &:hover,
+      &:focus,
+      &:active,
+      &.active {
+        background-color: rgba(var(--danger-rgb), 0.1) !important;
+        color: $danger;
+      }
+    }
+  }
+}
+.dropdown-menu {
+  @mixin dropmenu-light-color($color) {
+    backdrop-filter: blur(2rem);
+    .dropdown-item {
+      &:hover,
+      &:focus,
+      &:active,
+      &.active {
+        color: $white;
+        background-color: $color !important;
+      }
+    }
+  }
+  &.dropmenu-light-primary {
+    background-color: $primary-01;
+    @include dropmenu-light-color($primary);
+  }
+  &.dropmenu-light-secondary {
+    background-color: rgba(var(--secondary-rgb), 0.1);
+    @include dropmenu-light-color($secondary);
+  }
+  &.dropmenu-light-info {
+    background-color: rgba(var(--info-rgb), 0.1);
+    @include dropmenu-light-color($info);
+  }
+  &.dropmenu-light-warning {
+    background-color: rgba(var(--warning-rgb), 0.1);
+    @include dropmenu-light-color($warning);
+  }
+  &.dropmenu-light-success {
+    background-color: rgba(var(--success-rgb), 0.1);
+    @include dropmenu-light-color($success);
+  }
+  &.dropmenu-light-danger {
+    background-color: rgba(var(--danger-rgb), 0.1);
+    @include dropmenu-light-color($danger);
+  }
+}
+/* End:: Custom Dropdown Menu */
+
+/* Start:: Dropdown divider */
+.dropdown-divider {
+  margin: 0;
+}
+/* End:: Dropdown divider */
+
+@media (max-width: 575.98px) {
+  .main-header-container .header-element .header-link {
+    padding: 1rem 0.5rem;
+  }
+}

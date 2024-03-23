@@ -1,0 +1,28 @@
+[data-vertical-style="closed"] {
+    &[data-toggled="close-menu-close"] {
+        .app-sidebar {
+            display: none;
+        }
+        @media (min-width: 992px) {
+            .app-content {
+                margin-inline-start: 0;
+            }
+            .app-header {
+                padding-inline-start: 0;
+            }
+        }    
+    }    
+    &[data-toggled="close-menu-open"] {
+        .app-sidebar {
+            display: block;
+        }
+        @media (min-width: 992px) {
+            .app-content {
+                margin-inline-start: 17rem;
+            }
+            .app-header {
+                padding-inline-start: 17rem;
+            }
+        }    
+    }    
+}

@@ -1,0 +1,53 @@
+.tooltip {
+  @mixin tooltip-color($color) {
+    .tooltip-inner {
+      background-color: $color;
+    }
+    &.bs-tooltip-auto[data-popper-placement^="top"] .tooltip-arrow::before,
+    &.bs-tooltip-top .tooltip-arrow::before {
+      border-top-color: $color;
+    }
+    &.bs-tooltip-auto[data-popper-placement^="right"] .tooltip-arrow::before,
+    &.bs-tooltip-end .tooltip-arrow::before {
+      border-right-color: $color;
+    }
+    &.bs-tooltip-auto[data-popper-placement^="left"] .tooltip-arrow::before,
+    &.bs-tooltip-start .tooltip-arrow::before {
+      border-left-color: $color;
+    }
+    &.bs-tooltip-auto[data-popper-placement^="bottom"] .tooltip-arrow::before,
+    &.bs-tooltip-end .tooltip-arrow::before {
+      border-bottom-color: $color;
+    }
+  }
+  &.tooltip-primary {
+    @include tooltip-color($primary);
+  }
+  &.tooltip-secondary {
+    @include tooltip-color($secondary);
+  }
+  &.tooltip-warning {
+    @include tooltip-color($warning);
+  }
+  &.tooltip-info {
+    @include tooltip-color($info);
+  }
+  &.tooltip-success {
+    @include tooltip-color($success);
+  }
+  &.tooltip-danger {
+    @include tooltip-color($danger);
+  }
+  &.tooltip-dark {
+    @include tooltip-color($dark);
+    .tooltip-inner {
+      color: $custom-white;
+    }
+  }
+  &.tooltip-light {
+    @include tooltip-color($light);
+    .tooltip-inner {
+      color: $default-text-color;
+    }
+  }
+}

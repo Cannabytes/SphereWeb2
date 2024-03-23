@@ -1,0 +1,39 @@
+.toast {
+  background-color: $custom-white;
+  border: 1px solid $default-border;
+  box-shadow: $box-shadow;
+  border-radius: $default-radius;
+  .toast-header {
+    background-color: $light;
+    padding: 0.375rem 0.75rem;
+    img {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+  .toast-header {
+    border-bottom: 1px solid $default-border;
+    .btn-close {
+      margin-inline-end: 0.125rem;
+    }
+  }
+  .toast-body {
+    font-size: 0.8rem;
+  }
+  .btn-close {
+    font-size: 0.563rem;
+  }
+  &.colored-toast {
+    border: 0 !important;
+    .btn-close {
+      filter: invert(1);
+    }
+    backdrop-filter: blur(20px);
+    .toast-header {
+      border-block-end: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+.bd-example-toasts {
+  min-height: 15rem;
+}

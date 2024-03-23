@@ -1,0 +1,182 @@
+[data-vertical-style="detached"] {
+    @media (min-width: 992px) {
+        .page {
+            width: 95%;
+            margin: 0 auto;
+            padding-inline-start: 1.25rem;
+        }
+        .app-sidebar {
+            inset-block-start: calc(64px + 1.5rem);
+            inset-block-end: 1.5rem;
+            inset-inline-start: inherit;
+            border-radius: $default-radius;
+            border: 1px solid $menu-border-color;
+            height: auto;
+            .main-sidebar-header {
+                display: none;
+            }
+        }
+        .main-sidebar {
+            height: 100%;
+            margin-block-start: 0;
+        }
+        .app-content {
+            margin-inline-start: 17rem;
+            position: relative;
+        }
+        &[data-page-style="classic"] {
+            .app-sidebar {
+                border: 1px solid $default-border;
+            }
+        }
+        &[data-theme-mode="light"] {
+            &[data-header-styles="dark"] {
+                .horizontal-logo {
+                    .header-logo {
+                        .desktop-logo,.toggle-logo,.toggle-dark,.desktop-white,.toggle-white {
+                            display: none;
+                        }
+                        .desktop-dark {
+                            display: block;
+                        }
+                    }
+                }
+            }
+            &[data-header-styles="color"],&[data-header-styles="gradient"] {
+                .horizontal-logo {
+                    .header-logo {
+                        .desktop-logo,.toggle-logo,.toggle-dark,.desktop-dark,.toggle-white {
+                            display: none;
+                        }
+                        .desktop-white {
+                            display: block;
+                        }
+                    }
+                }
+            }
+        }
+        &[data-theme-mode="dark"] {
+            .horizontal-logo {
+                .header-logo {
+                    .desktop-logo,.toggle-logo,.toggle-dark,.desktop-white,.toggle-white {
+                        display: none;
+                    }
+                    .desktop-dark {
+                        display: block;
+                    }
+                }
+            }
+            &[data-header-styles="light"] {
+                .horizontal-logo {
+                    .header-logo {
+                        .desktop-dark,.toggle-logo,.toggle-dark,.desktop-white,.toggle-white {
+                            display: none;
+                        }
+                        .desktop-logo {
+                            display: block;
+                        }
+                    }
+                }
+            }
+        }
+        &[data-toggled="detached-close"] {
+            &:not([data-icon-overlay="open"]) {
+                .app-sidebar {
+                    width: 5rem;
+                    .main-menu {
+                        padding: 0;
+                    }
+                    .side-menu__label,
+                    .side-menu__angle,
+                    .category-name,
+                    .slide-menu,.side-menu__item .badge {
+                        display: none !important;
+                    }
+                    .side-menu__item {
+                        justify-content: center;
+                        .side-menu__icon {
+                            margin-inline-end: 0;    
+                            color: $menu-prime-color;
+                            fill: $menu-prime-color;
+                        }
+                    }
+                    .slide__category {
+                        padding: 1.2rem 1.65rem;
+                        position: relative;
+                        &:before {content: "";
+                            position: absolute;
+                            inset-inline-start: 2.25rem;
+                            inset-inline-end: 0;
+                            inset-block-start: 1.25rem;
+                            inset-block-end: 0;
+                            width: 0.35rem;
+                            border-radius: 3.125rem;
+                            height: 0.35rem;
+                            border: 1px solid $menu-prime-color;
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+            .app-content {
+                margin-inline-start: 5rem;
+                position: relative;
+            }
+            &[data-icon-overlay="open"] {
+                .app-sidebar {
+                    width: 17rem;
+                    .main-sidebar-header {
+                        width: 17rem;
+                        .header-logo {
+                            .desktop-logo {
+                                display: block !important;
+                            }
+                            .desktop-dark,
+                            .toggle-logo,
+                            .toggle-dark {
+                                display: none !important;
+                            }
+                        }
+                    }
+                    .side-menu__item {
+                        justify-content: flex-start;
+                    }
+                    .side-menu__icon {
+                        margin-inline-end: 0.625rem;
+                    }
+                    .slide__category {
+                        padding: 0.75rem 1.65rem;
+                        &:before {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        }
+        .app-header {
+            padding-inline-start: 0;
+            .main-header-container {
+                width: 94%;
+            }
+            .horizontal-logo {
+                padding: 0.85rem 0;
+                display: block;
+                margin: auto;
+                img {
+                    height: 2rem;
+                    line-height: 2rem;
+                }
+                .desktop-logo {
+                    display: block;
+                }
+                .desktop-dark,.toggle-logo,.toggle-dark,.desktop-white,.toggle-white {
+                    display: none;
+                }
+            }
+        }
+        .footer {
+            box-shadow: none;
+            background-color: transparent !important;
+        }
+    }
+}

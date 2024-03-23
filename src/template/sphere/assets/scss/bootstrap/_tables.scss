@@ -1,0 +1,257 @@
+@mixin tablecolor($color-bg) {
+  background-color: $white;
+  color: $black;
+  --bs-table-color-state: $black;
+  border-color: var(--bs-table-border-color);
+  --bs-table-bg: rgba(#{$color-bg}, 0.1);
+  --bs-table-border-color: rgba(#{$color-bg}, 0.05);
+  --bs-table-striped-bg: rgba(#{$color-bg}, 0.2);
+  --bs-table-active-bg: rgba(#{$color-bg}, 0.2);
+  --bs-table-hover-bg: rgba(#{$color-bg}, 0.2);
+  &.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: var(--bs-table-accent-bg);
+    --bs-table-accent-bg: rgba(#{$color-bg}, 0.2);
+    color: $black;
+  }
+  &.table.table-hover > tbody > tr:hover > * {
+    background-color: var(--bs-table-accent-bg);
+    --bs-table-accent-bg: rgba(#{$color-bg}, 0.4);
+    color: $white;
+  }
+  .table-active {
+    background-color: var(--bs-table-accent-bg);
+    --bs-table-accent-bg: rgb(#{$color-bg});
+    color: $white;
+  }
+}
+caption {
+  color: $text-muted;
+}
+.table-active{
+  --bs-table-color-state: var(--default-text-color);
+}
+@mixin tablehead($color-bg) {
+  background-color: $white;
+  color: var(--bs-table-color);
+  --bs-table-color-state: #000;
+  --bs-table-color: #{$black};
+  --bs-table-bg: rgba(#{$color-bg}, 0.1);
+  --bs-table-border-color: rgba(#{$color-bg}, 0.1);
+  --bs-table-striped-bg: rgba(#{$color-bg}, 0.5);
+  --bs-table-striped-color: #{$black};
+  --bs-table-active-bg: rgba(#{$color-bg}, 0.5);
+  --bs-table-hover-bg: rgba(#{$color-bg}, 0.5);
+  color: var(--bs-table-color);
+  border-color: var(--bs-table-border-color);
+}
+@mixin table-color($color-bg) {
+  --bs-table-color: #{$black};
+  --bs-table-color-state: $black;
+  --bs-table-bg: rgba(#{$color-bg}, 0.1);
+  --bs-table-border-color: rgba(#{$color-bg}, 0.1);
+  --bs-table-striped-bg: rgba(#{$color-bg}, 0.3);
+  --bs-table-striped-color: #{$black};
+  --bs-table-active-bg: rgba(#{$color-bg}, 0.3);
+  --bs-table-active-color: #{$black};
+  --bs-table-hover-bg: rgba(#{$color-bg}, 0.3);
+  --bs-table-hover-color: #{$black};
+  color: #{$black};
+  border-color: rgba(#{$color-bg}, 0.1);
+  background-color: #{$white};
+}
+.table {
+  color: $default-text-color;
+  border-color: $default-border;
+  margin-block-end: 0;
+  tbody {
+    tr {
+      th {
+        font-weight: 500;
+      }
+    }
+  }
+  th,
+  td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    line-height: 1.462;
+    font-size: 0.813rem;
+    // font-weight: 500;
+  }
+  thead tr th {
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  &.table-sm > :not(caption) > * > * {
+    padding: 0.3rem;
+  }
+  &.table-dark {
+    color: $white-7;
+    border-color: rgba($white, 0.1);
+  }
+  &.table-primary {
+    @include tablecolor(var(--primary-rgb));
+  }
+  &.table-secondary {
+    @include tablecolor(var(--secondary-rgb));
+  }
+  &.table-warning {
+    @include tablecolor(var(--warning-rgb));
+  }
+  &.table-success {
+    @include tablecolor(var(--success-rgb));
+  }
+  &.table-danger {
+    @include tablecolor(var(--danger-rgb));
+  }
+  &.table-info {
+    @include tablecolor(var(--info-rgb));
+  }
+  &.table-light {
+    @include tablecolor(var(--light-rgb));
+  }
+  &.table-dark {
+    @include tablecolor(var(--dark-rgb));
+  }
+  &.table-bordered {
+    &.border-primary {
+      tbody,
+      td,
+      tfoot,
+      th,
+      thead,
+      tr {
+        border-color: rgba(var(--primary-rgb), 0.1);
+      }
+    }
+    &.border-info {
+      tbody,
+      td,
+      tfoot,
+      th,
+      thead,
+      tr {
+        border-color: rgba(var(--info-rgb), 0.1);
+      }
+    }
+    &.border-secondary {
+      tbody,
+      td,
+      tfoot,
+      th,
+      thead,
+      tr {
+        border-color: rgba(var(--secondary-rgb), 0.1);
+      }
+    }
+    &.border-warning {
+      tbody,
+      td,
+      tfoot,
+      th,
+      thead,
+      tr {
+        border-color: rgba(var(--warning-rgb), 0.1);
+      }
+    }
+    &.border-success {
+      tbody,
+      td,
+      tfoot,
+      th,
+      thead,
+      tr {
+        border-color: rgba(var(--success-rgb), 0.1);
+      }
+    }
+    &.border-danger {
+      tbody,
+      td,
+      tfoot,
+      th,
+      thead,
+      tr {
+        border-color: rgba(var(--danger-rgb), 0.1);
+      }
+    }
+  }
+  &.table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: rgba(var(--dark-rgb),0.0125);
+    color: $default-text-color;
+  }
+  &.table-striped-columns > :not(caption) > tr > :nth-child(2n) {
+    --bs-table-accent-bg: rgba(var(--dark-rgb),0.025);
+    color: $default-text-color;
+  }
+  tbody.table-group-divider {
+    border-top: 1px solid $default-border;
+  }
+  &.table-hover > tbody > tr:hover > * {
+    --bs-table-accent-bg: #{$default-background};
+    color: $default-text-color;
+  }
+  .table-active {
+    --bs-table-accent-bg: #{$light};
+    color: $default-text-color;
+  }
+  thead {
+    &.table-primary {
+      @include tablehead(var(--primary-rgb));
+    }
+    &.table-secondary {
+      @include tablehead(var(--secondary-rgb));
+    }
+    &.table-warning {
+      @include tablehead(var(--warning-rgb));
+    }
+    &.table-success {
+      @include tablehead(var(--success-rgb));
+    }
+    &.table-danger {
+      @include tablehead(var(--danger-rgb));
+    }
+    &.table-info {
+      @include tablehead(var(--info-rgb));
+    }
+    &.table-light {
+      @include tablehead(var(--light-rgb));
+    }
+    &.table-dark {
+      @include tablehead(var(--dark-rgb));
+    }
+  }
+}
+.table-primary {
+  @include table-color(var(--primary-rgb));
+}
+.table-secondary {
+  @include table-color(var(--secondary-rgb));
+}
+.table-warning {
+  @include table-color(var(--warning-rgb));
+}
+.table-success {
+  @include table-color(var(--success-rgb));
+}
+.table-info {
+  @include table-color(var(--info-rgb));
+}
+.table-danger {
+  @include table-color(var(--danger-rgb));
+}
+.table-dark {
+  @include table-color(var(--dark-rgb));
+}
+.table-light {
+  @include table-color(var(--light-rgb));
+}
+[data-theme-mode="dark"] {
+  .table-dark {
+    border-color: rgba(0,0,0,0.025);
+  }
+}
+[dir="rtl"] {
+  .table {
+    margin-inline-end: 1px;
+  }
+}
