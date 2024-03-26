@@ -18,7 +18,8 @@ class auth {
 
     public static function index() {
         validation::user_protection("guest");
-        tpl::display("user/auth/auth.html");
+//        tpl::display("user/auth/auth.html");
+        tpl::display("sign-in.html");
     }
 
     public static function auth_request() {

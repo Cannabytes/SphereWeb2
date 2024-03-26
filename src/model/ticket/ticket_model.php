@@ -57,7 +57,13 @@ class ticket_model {
             ORDER BY `date` DESC");
     }
 
+    private const COOLDOWN_SECONDS = 10; // Время задержки в секундах
     public static function add() {
+        $lastUsage = $_SESSION['last_create_ticket'] ?? 0;
+        $currentTime = time();
+        if ($currentTime - $lastUsage < self::COOLDOWN_SECONDS) {
+            return;
+        }
         if ($count = self::countCreateLastTime(auth::get_id(), 1)) {
             if ($count >= MAX_COUNT_CREATE_THREAD_IN_HOUR) {
                 board::notice(false, lang::get_phrase(457));
@@ -91,6 +97,7 @@ class ticket_model {
         }
         userlog::add("create_new_ticket", 543, ["/ticket/{$ticket_ID}"]);
         notification::toAdmin("New Ticket", "/ticket/{$ticket_ID}");
+        $_SESSION['last_create_ticket'] = $currentTime;
         $ticket = ticket_model::get_info($ticket_ID);
         tpl::addVar([
             "ticket" => $ticket,

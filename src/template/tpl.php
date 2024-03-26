@@ -172,10 +172,9 @@ class tpl {
         if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             self::$ajaxLoad = true;
         }
-
         $relativePath = str_replace($_SERVER['DOCUMENT_ROOT'], '', dirname($_SERVER["SCRIPT_FILENAME"]));
 
-        self::$templatePath =  "/src/template/logan22";
+        self::$templatePath =  "/src/template/sphere/";
         if (self::$categoryCabinet) {
             self::$templatePath = "/template/" . config::get_template();
             self::lang_template_load(fileSys::get_dir(self::$templatePath . "/lang.php"));

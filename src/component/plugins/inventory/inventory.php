@@ -35,6 +35,15 @@ class inventory {
             board::error("Администрация уведомлена о попытках найти уязвимости");
         }
 
+        $player_info = player_account::is_player(server::server_info(auth::get_default_server()), [$player_name]);
+        $player_info = $player_info->fetch();
+        $user = player_account::get_show_characters_info($player_info['login']);
+        if ($user == null or $user["email"] != auth::get_email()) {
+            board::notice(false, lang::get_phrase(490));
+        }
+        if (!$player_info) board::notice(false, lang::get_phrase(151, $char_name));
+
+
         $placeholders = rtrim(str_repeat('?, ', count($objects)), ', ');
 
         $sql = "SELECT * FROM `bonus` WHERE id IN ($placeholders) ";

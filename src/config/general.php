@@ -67,4 +67,4 @@ const PAUSE_TIME = 10;
 const ONLINE_MUL = 1.72;
 
 //Требовать обязательную авторизацию для просмотра ЛК ?
-const REQUIRE_AUTHORIZATION = true;
+const REQUIRE_AUTHORIZATION = false;

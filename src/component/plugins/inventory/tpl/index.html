@@ -18,18 +18,18 @@
 
 
                     <div class="input-group">
-                    <select name="player_name" class="form-control single-select form-select-sm ">
-                        {% if get_account_players() is not null %}
-                        {% for account_name, players in get_account_players() %}
-                        <optgroup label="{{phrase(480)}}: {{account_name}}">
-                            {% for player in players %}
-                            <option value="{{player}}">{{player}}</option>
+                        <select id="player_name" name="player_name" class="form-control single-select form-select-sm ">
+                            {% if get_account_players() is not null %}
+                            {% for account_name, players in get_account_players() %}
+                            <optgroup label="{{phrase(480)}}: {{account_name}}">
+                                {% for player in players %}
+                                <option value="{{player}}">{{player}}</option>
+                                {% endfor %}
+                            </optgroup>
                             {% endfor %}
-                        </optgroup>
-                        {% endfor %}
-                        {% endif %}
-                    </select>
-                    <button id="inventory_send_item_to_game" class="btn btn-sm btn-secondary " > Отправить </button>
+                            {% endif %}
+                        </select>
+                        <button id="inventory_send_item_to_game" class="btn btn-sm btn-secondary " > Отправить </button>
                     </div>
                 </div>
 
@@ -78,7 +78,7 @@
                 </table>
             </div>
         </div>
-        </div>
+    </div>
 
 </main>
 
@@ -94,7 +94,7 @@
     });
 
     function submitForm() {
-        let playerName = $('select[name="player_name"]').val();
+        let playerName = $('#player_name').val();
         let formData = new FormData();
         formData.append('player_name', playerName);
 

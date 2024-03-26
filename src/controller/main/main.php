@@ -11,6 +11,6 @@ use Ofey\Logan22\template\tpl;
 class main {
 
     public static function index() {
-        tpl::display("/main/main.html");
+        tpl::display("index.html");
     }
 }
