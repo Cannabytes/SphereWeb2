@@ -25,11 +25,12 @@
 
                         <div class="tab-content pt-0 my-1">
                             <div class="border-0 p-0">
+                                У Вас должен быть актуален токен.
                                 {% if getUpdateSphereCount() == 0 %}
-                                <p class="text-muted mb-0">Список актуальных изменений пуст</p>
+                                <p class="text-muted mb-0">Список актуальных изменений пуст.</p>
                                 {% else %}
                                 <ul class="list-unstyled mb-0 upcoming-events-list">
-                                    {% for git in getUpdateSphere(null) %}
+                                    {% for git in getUpdateSphere() %}
                                     <li>
                                         <div class="d-flex align-items-top justify-conent-between">
                                             <div class="flex-fill">

@@ -25,21 +25,22 @@ class github
      *
      * @return gitdata[]|null The latest gitdata object if there are new commits, null otherwise.
      */
-    public static function getUpdateSphere($commit_sha = null): ?array
+    public static function getUpdateSphere(): ?array
     {
-        if($commit_sha==null){
-            return null;
-        }
         if(self::$gitdata != null) {
             return self::$gitdata;
         }
-        $repo_owner = 'Cannabytes'; // замените на имя владельца репозитория
-        $repo_name = 'SphereWeb'; // замените на имя репозитория
-        $commit_sha = '29d6a39b24364e8f1b170f42d1a5acba2f2c4f6e';
-
-        $api_url = "https://api.github.com/repos/$repo_owner/$repo_name/compare/$commit_sha...HEAD";
 
         $token = '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';
+
+        $repo_owner = 'Cannabytes'; // замените на имя владельца репозитория
+        $repo_name = 'sphereweb-2'; // замените на имя репозитория
+
+        $commit_sha = '29d6a39b24364e8f1b170f42d1a5acba2f2c4f6e';
+//        $api_url = "https://api.github.com/repos/$repo_owner/$repo_name/compare/$commit_sha...HEAD";
+        $api_url = "https://api.github.com/repos/$repo_owner/$repo_name/compare/master...HEAD";
+
+//        var_dump($api_url);exit();
 
         // Используем cURL для выполнения запроса к GitHub API
         $ch = curl_init();
