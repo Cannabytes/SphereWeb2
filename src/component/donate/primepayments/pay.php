@@ -25,7 +25,7 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract {
     //Включена/отключена платежная система
     protected static bool $enable = false;
 
-    //Включить только для администратора
+    //Включить только для true
     protected static bool $forAdmin = false;
 
     /*

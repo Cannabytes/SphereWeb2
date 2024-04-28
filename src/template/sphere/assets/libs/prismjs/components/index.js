@@ -24,7 +24,7 @@ function loadLanguages(languages) {
 		languages = [languages];
 	}
 
-	// the user might have loaded languages via some other way or used `prism.js` which already includes some
+	// the userModel might have loaded languages via some other way or used `prism.js` which already includes some
 	// we don't need to validate the ids because `getLoader` will ignore invalid ones
 	const loaded = [...loadedLanguages, ...Object.keys(Prism.languages)];
 

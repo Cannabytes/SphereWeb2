@@ -1088,7 +1088,7 @@ return [
     'type' => 'etcitem',
     'name' => 'Blessed Scroll of Escape',
     'add_name' => 'Event',
-    'description' => '7th Anniversary. A magical scroll that relocates user to the nearest village.',
+    'description' => '7th Anniversary. A magical scroll that relocates userModel to the nearest village.',
     'icon' => 'etc_scroll_of_return_i01',
     'etcitem_type' => 'scroll',
     'weight' => 120,

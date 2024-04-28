@@ -1225,7 +1225,7 @@ return [
     'type' => 'etcitem',
     'name' => 'Blessed Scroll of Escape',
     'add_name' => 'Event',
-    'description' => 'A magical scroll that relocates user to the nearest village. An event reward.',
+    'description' => 'A magical scroll that relocates userModel to the nearest village. An event reward.',
     'icon' => 'etc_scroll_of_return_i01',
     'etcitem_type' => 'scroll',
     'weight' => 120,

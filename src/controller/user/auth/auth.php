@@ -12,13 +12,13 @@ use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\user\auth\forget;
+use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
 class auth {
 
     public static function index() {
         validation::user_protection("guest");
-//        tpl::display("user/auth/auth.html");
         tpl::display("sign-in.html");
     }
 
@@ -33,7 +33,7 @@ class auth {
     }
 
     public static function logout() {
-        if(\Ofey\Logan22\model\user\auth\auth::get_is_auth()) {
+        if(user::getUserId()->isAuth()) {
             \Ofey\Logan22\model\user\auth\auth::logout();
         }
         header('Location: /main');
@@ -46,7 +46,7 @@ class auth {
     public static function forget() {
         validation::user_protection("guest");
         tpl::addVar("title", lang::get_phrase(285));
-        tpl::display("user/forget/email.html");
+        tpl::display("userModel/forget/email.html");
     }
 
     public static function send_email_forget() {
@@ -63,7 +63,7 @@ class auth {
             'code' => $code,
             'email' => $data['email'],
         ]);
-        tpl::display("user/forget/forget_link.html");
+        tpl::display("userModel/forget/forget_link.html");
      }
 
     /**

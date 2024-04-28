@@ -84,7 +84,7 @@ class registration {
         if ($insert) {
             //Сгенерируем ник пользователя
             sql::run("UPDATE `users` SET `name` = ? WHERE `id` = ?", [
-                "user-" . substr(md5($userID), mt_rand(2,3), mt_rand(4,5)),
+                "userModel-" . substr(md5($userID), mt_rand(2,3), mt_rand(4,5)),
                 $userID,
             ]);
 

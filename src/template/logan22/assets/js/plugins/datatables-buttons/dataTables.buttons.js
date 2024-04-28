@@ -1421,7 +1421,7 @@ $.extend(Buttons.prototype, {
 				containerPosition.top + top + popoverSizes.height >
 				$(window).height() + $(window).scrollTop()
 			) {
-				// Pop up if otherwise we'd need the user to scroll down
+				// Pop up if otherwise we'd need the userModel to scroll down
 				top =
 					buttonPosition.top -
 					popoverSizes.height -

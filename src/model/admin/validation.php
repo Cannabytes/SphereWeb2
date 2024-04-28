@@ -10,16 +10,17 @@ namespace Ofey\Logan22\model\admin;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 
 class validation {
 
     /**
      * Список категорий, которым разрешен доступ
-     * user, admin
+     * userModel, admin
      * default: all
      */
-    public static function user_protection($var = ["user", "moderator", "admin"], $need_redirect = true): bool {
-        $user_privilege = auth::get_access_level();
+    public static function user_protection($var = ["userModel", "moderator", "admin"], $need_redirect = true): bool {
+        $user_privilege = user::getUserId()->getAccessLevel();
         if(in_array($user_privilege, (array)$var)) {
             return true;
         }

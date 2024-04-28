@@ -18,7 +18,7 @@ class board {
     /**
      * Использовать для аякс уведомлений, когда нужно вернуть результат и сообщение
      */
-    public static function notice(bool $ok, string $message = null, int $flags = 0) {
+    public static function notice(bool $ok, string $message = null, int $flags = 0, bool $next = false) {
         //Проверка на аякс запрос
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
             self::alert([
@@ -27,28 +27,35 @@ class board {
                 'message' => $message,
             ], $flags);
         }
-        exit;
+        if(!$next){
+            exit;
+        }
+        return $ok;
     }
 
-    public static function success(string $message = null, int $flags = 0): void {
-        self::notice(true, $message, $flags);
+    public static function success(string $message = null, int $flags = 0, bool $next = false): ?bool
+    {
+        return self::notice(true, $message, $flags, $next);
     }
 
-    public static function error(string $message = null, int $flags = 0): void {
-        self::notice(false, $message, $flags);
+    public static function error(string $message = null, int $flags = 0, bool $next = false): ?bool
+    {
+        return self::notice(false, $message, $flags, $next);
     }
 
     /**
      * В функцию передаем массив данных, которые мы будем возвращать JSON хэдэром
      * используется для аякс ответов.
      */
-    public static function alert(array $arr = [], int $flags = 0) {
+    public static function alert(array $arr = [], int $flags = 0, bool $next = false) {
         header('Content-Type: application/json; charset=utf-8');
         if (!$arr) {
             exit(json_encode(lang::get_phrase(255)));
         }
         echo json_encode($arr, $flags);
-        exit();
+        if(!$next){
+            exit;
+        }
     }
 
     public static function html(string $html, string $title = "") {
@@ -62,10 +69,12 @@ class board {
         exit();
     }
 
-    public static function response($type, $arr = []): void {
+    public static function response($type, $arr = [], bool $next = false): void {
         $arr['type'] = $type;
         echo json_encode($arr, JSON_UNESCAPED_UNICODE);
-        exit();
+        if(!$next){
+            exit;
+        }
     }
 
 

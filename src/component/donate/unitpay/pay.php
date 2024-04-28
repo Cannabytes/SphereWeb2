@@ -9,7 +9,7 @@ use Ofey\Logan22\model\bonus\bonus;
 class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 
     //Включена/отключена платежная система
-    protected static bool $enable = false;
+    protected static bool $enable = true;
 
     //Включить только для администратора
     protected static bool $forAdmin = false;
@@ -20,6 +20,14 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
     ];
 
     private string $currency_default = 'RUB';
+
+    public static function inputs(): array
+    {
+        return [
+            'publicKey' => 'Публичный ключ',
+            'secretKey' => 'Секретный ключ',
+        ];
+    }
 
 	private string $publicKey = '';
 	

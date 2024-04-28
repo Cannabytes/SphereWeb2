@@ -316,7 +316,7 @@ if (typeof Promise !== "undefined") {
 }
 
 /**
- * Let the user use/change some implementations.
+ * Let the userModel use/change some implementations.
  */
 module.exports = {
     Promise: ES6Promise
@@ -1428,7 +1428,7 @@ var fileAdd = function(name, data, originalOptions) {
     TODO: we can't throw an exception because we have async promises
     (we can have a promise of a Date() for example) but returning a
     promise is useless because file(name, data) returns the JSZip
-    object for chaining. Should we break that to allow the user
+    object for chaining. Should we break that to allow the userModel
     to catch the error ?
 
     return external.Promise.resolve(zipObjectContent)
@@ -2522,7 +2522,7 @@ if (support.nodestream) {
 }
 
 /**
- * Apply the final transformation of the data. If the user wants a Blob for
+ * Apply the final transformation of the data. If the userModel wants a Blob for
  * example, it's easier to work with an U8intArray and finally do the
  * ArrayBuffer/Blob conversion.
  * @param {String} type the name of the final type
@@ -3686,7 +3686,7 @@ ZipEntries.prototype = {
                 throw new Error("Corrupted zip or bug: expected " + this.centralDirRecords + " records in central dir, got " + this.files.length);
             } else {
                 // We found some records but not all.
-                // Something is wrong but we got something for the user: no error here.
+                // Something is wrong but we got something for the userModel: no error here.
                 // console.warn("expected", this.centralDirRecords, "records in central dir, got", this.files.length);
             }
         }
@@ -7010,7 +7010,7 @@ function DeflateState() {
    */
 
   this.window_size = 0;
-  /* Actual size of window: 2*wSize, except when the user input buffer
+  /* Actual size of window: 2*wSize, except when the userModel input buffer
    * is directly used as sliding window.
    */
 

@@ -29,18 +29,17 @@ class online {
         $actualCache = cache::read(dir::server_online_status->show(), second: timeout::server_online_status->time());
         if($actualCache)
             return $actualCache;
-        foreach (server::get_server_info() as $info) {
-
+        foreach (server::getServerAll() as $info) {
             $connect_login = false;
             $connect_game = false;
             $player_count_online = 0;
 
-            if ($info['check_server_online']) {
-                if (@fsockopen($info['check_loginserver_online_host'], $info['check_loginserver_online_port'], $errno, $errstr, 1)) {
+            if ($info->getCheckServerOnline()) {
+                if (@fsockopen($info->getCheckLoginserverOnlineHost(), $info->getCheckLoginserverOnlinePort(), $errno, $errstr, 1)) {
                     $connect_login = true;
                 }
 
-                if(@fsockopen($info['check_gameserver_online_host'], $info['check_gameserver_online_port'], $errno, $errstr, 1)) {
+                if(@fsockopen($info->getCheckGameserverOnlineHost(), $info->getCheckGameserverOnlinePort(), $errno, $errstr, 1)) {
                     $connect_game = true;
                     if ($info['rest_api_enable']) {
                         $data = restapi::Send(  $info, "count_online_player");
@@ -64,20 +63,21 @@ class online {
             }
 
             //Сохранение в статистику онлайна
-            if (SAVE_ONLINE_STATISTIC) {
-                $latestTime = sql::getRow("SELECT time AS latest_time FROM statistic_online ORDER BY id DESC LIMIT 1;");
-                if ($latestTime && isset($latestTime['latest_time'])) {
-                    $datetime1 = new DateTime($latestTime['latest_time']);
-                    $datetime2 = new DateTime();
-                    $interval = $datetime1->diff($datetime2);
-                    $minutes = $interval->days * 24 * 60 + $interval->h * 60 + $interval->i;
-                    if ($minutes > PAUSE_TIME) {
-                        self::saveOnlineStatus($info['id'], $connect_login, $connect_game, $player_count_online);
-                    }
-                } else {
-                    self::saveOnlineStatus($info['id'], $connect_login, $connect_game, $player_count_online);
-                }
-            }
+            //TODO:: Сделать конфиг статистики сохранения
+//            if (SAVE_ONLINE_STATISTIC) {
+//                $latestTime = sql::getRow("SELECT time AS latest_time FROM statistic_online ORDER BY id DESC LIMIT 1;");
+//                if ($latestTime && isset($latestTime['latest_time'])) {
+//                    $datetime1 = new DateTime($latestTime['latest_time']);
+//                    $datetime2 = new DateTime();
+//                    $interval = $datetime1->diff($datetime2);
+//                    $minutes = $interval->days * 24 * 60 + $interval->h * 60 + $interval->i;
+//                    if ($minutes > PAUSE_TIME) {
+//                        self::saveOnlineStatus($info->getId(), $connect_login, $connect_game, $player_count_online);
+//                    }
+//                } else {
+//                    self::saveOnlineStatus($info->getId(), $connect_login, $connect_game, $player_count_online);
+//                }
+//            }
 
 
             //Проверка на накрутку онлайна
@@ -92,18 +92,19 @@ class online {
             }
 
             self::$server_status[] = [
-                'id' => $info['id'],
-                'name' => $info['name'],
-                'rate_exp' => $info['rate_exp'],
-                'chronicle' => $info['chronicle'],
-                'launcher_enabled' => $info['launcher_enabled'],
-                'date_start_server' => $info['date_start_server'],
+                'id' => $info->getId(),
+                'name' => $info->getName(),
+                'rateExp' => $info->getRateExp(),
+                'chronicle' => $info->getChronicle(),
+                'launcher_enabled' => $info->getLauncherEnabled(),
+                'date_start_server' => $info->getDateStartServer(),
                 'connect_login' => $connect_login,
                 'connect_game' => $connect_game,
                 'player_count_online' => $player_count_online,
-                'get_default_page_id' => server::get_default_desc_page_id($info['id']),
+                'get_default_page_id' => server::get_default_desc_page_id($info->getId()),
             ];
         }
+
         cache::save(dir::server_online_status->show(), self::$server_status);
         return self::$server_status;
     }

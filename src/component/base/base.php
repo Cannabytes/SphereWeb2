@@ -28,7 +28,7 @@ class base {
         if (method_exists($class, $name)) {
             return $class::$name();
         } else {
-            return "Error: Method not found in class.";
+            exit("Error: Method not found in class: $class, $name");
         }
     }
 

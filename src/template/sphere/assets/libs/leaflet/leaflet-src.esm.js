@@ -411,7 +411,7 @@ function checkDeprecatedMixinEvents(includes) {
  * @aka L.Evented
  * @inherits Class
  *
- * A set of methods shared between event-powered classes (like `Map` and `Marker`). Generally, events allow you to execute some function when something happens with an object (e.g. the user clicks on the map, causing the map to fire `'click'` event).
+ * A set of methods shared between event-powered classes (like `Map` and `Marker`). Generally, events allow you to execute some function when something happens with an object (e.g. the userModel clicks on the map, causing the map to fire `'click'` event).
  *
  * @example
  *
@@ -2558,8 +2558,8 @@ function getPosition(el) {
 }
 
 // @function disableTextSelection()
-// Prevents the user from generating `selectstart` DOM events, usually generated
-// when the user drags the mouse through a page with text. Used internally
+// Prevents the userModel from generating `selectstart` DOM events, usually generated
+// when the userModel drags the mouse through a page with text. Used internally
 // by Leaflet to override the behaviour of any click-and-drag interaction on
 // the map. Affects drag interactions on the whole document.
 
@@ -2596,7 +2596,7 @@ if ('onselectstart' in document) {
 
 // @function disableImageDrag()
 // As [`L.DomUtil.disableTextSelection`](#domutil-disabletextselection), but
-// for `dragstart` DOM events, usually generated when the user drags an image.
+// for `dragstart` DOM events, usually generated when the userModel drags an image.
 function disableImageDrag() {
 	on(window, 'dragstart', preventDefault);
 }
@@ -2611,7 +2611,7 @@ var _outlineElement, _outlineStyle;
 // @function preventOutline(el: HTMLElement)
 // Makes the [outline](https://developer.mozilla.org/docs/Web/CSS/outline)
 // of the element `el` invisible. Used internally by Leaflet to prevent
-// focusable elements from displaying an outline when the user performs a
+// focusable elements from displaying an outline when the userModel performs a
 // drag interaction on them.
 function preventOutline(element) {
 	while (element.tabIndex === -1) {
@@ -3171,7 +3171,7 @@ var Map = Evented.extend({
 
 		// @option maxBounds: LatLngBounds = null
 		// When this option is set, the map restricts the view to the given
-		// geographical bounds, bouncing the user back if the user tries to pan
+		// geographical bounds, bouncing the userModel back if the userModel tries to pan
 		// outside the view. To set the restriction dynamically, use
 		// [`setMaxBounds`](#map-setmaxbounds) method.
 		maxBounds: undefined,
@@ -3720,9 +3720,9 @@ var Map = Evented.extend({
 
 	// @section Geolocation methods
 	// @method locate(options?: Locate options): this
-	// Tries to locate the user using the Geolocation API, firing a [`locationfound`](#map-locationfound)
+	// Tries to locate the userModel using the Geolocation API, firing a [`locationfound`](#map-locationfound)
 	// event with location data on success or a [`locationerror`](#map-locationerror) event on failure,
-	// and optionally sets the map view to the user's location with respect to
+	// and optionally sets the map view to the userModel's location with respect to
 	// detection accuracy (or to the world view if geolocation failed).
 	// Note that, if your page doesn't use HTTPS, this method will fail in
 	// modern browsers ([Chrome 50 and newer](https://sites.google.com/a/chromium.org/dev/Home/chromium-security/deprecating-powerful-features-on-insecure-origins))
@@ -4310,7 +4310,7 @@ var Map = Evented.extend({
 		// @event zoomstart: Event
 		// Fired when the map zoom is about to change (e.g. before zoom animation).
 		// @event movestart: Event
-		// Fired when the view of the map starts changing (e.g. user starts dragging the map).
+		// Fired when the view of the map starts changing (e.g. userModel starts dragging the map).
 		if (zoomChanged) {
 			this.fire('zoomstart');
 		}
@@ -4357,7 +4357,7 @@ var Map = Evented.extend({
 
 		// @event moveend: Event
 		// Fired when the center of the map stops changing
-		// (e.g. user stopped dragging the map or after non-centered zoom).
+		// (e.g. userModel stopped dragging the map or after non-centered zoom).
 		return this.fire('moveend');
 	},
 
@@ -4399,13 +4399,13 @@ var Map = Evented.extend({
 		var onOff = remove ? off : on;
 
 		// @event click: MouseEvent
-		// Fired when the user clicks (or taps) the map.
+		// Fired when the userModel clicks (or taps) the map.
 		// @event dblclick: MouseEvent
-		// Fired when the user double-clicks (or double-taps) the map.
+		// Fired when the userModel double-clicks (or double-taps) the map.
 		// @event mousedown: MouseEvent
-		// Fired when the user pushes the mouse button on the map.
+		// Fired when the userModel pushes the mouse button on the map.
 		// @event mouseup: MouseEvent
-		// Fired when the user releases the mouse button on the map.
+		// Fired when the userModel releases the mouse button on the map.
 		// @event mouseover: MouseEvent
 		// Fired when the mouse enters the map.
 		// @event mouseout: MouseEvent
@@ -4413,18 +4413,18 @@ var Map = Evented.extend({
 		// @event mousemove: MouseEvent
 		// Fired while the mouse moves over the map.
 		// @event contextmenu: MouseEvent
-		// Fired when the user pushes the right mouse button on the map, prevents
+		// Fired when the userModel pushes the right mouse button on the map, prevents
 		// default browser context menu from showing if there are listeners on
-		// this event. Also fired on mobile when the user holds a single touch
+		// this event. Also fired on mobile when the userModel holds a single touch
 		// for a second (also called long press).
 		// @event keypress: KeyboardEvent
-		// Fired when the user presses a key from the keyboard that produces a character value while the map is focused.
+		// Fired when the userModel presses a key from the keyboard that produces a character value while the map is focused.
 		// @event keydown: KeyboardEvent
-		// Fired when the user presses a key from the keyboard while the map is focused. Unlike the `keypress` event,
+		// Fired when the userModel presses a key from the keyboard while the map is focused. Unlike the `keypress` event,
 		// the `keydown` event is fired for keys that produce a character value and for keys
 		// that do not produce a character value.
 		// @event keyup: KeyboardEvent
-		// Fired when the user releases a key from the keyboard while the map is focused.
+		// Fired when the userModel releases a key from the keyboard while the map is focused.
 		onOff(this._container, 'click dblclick mousedown mouseup ' +
 			'mouseover mouseout mousemove contextmenu keypress keydown keyup', this._handleDOMEvent, this);
 
@@ -5967,7 +5967,7 @@ var Draggable = Evented.extend({
 		// @section
 		// @aka Draggable options
 		// @option clickTolerance: Number = 3
-		// The max number of pixels a user can shift the mouse pointer during a click
+		// The max number of pixels a userModel can shift the mouse pointer during a click
 		// for it to be considered a valid click (as opposed to a mouse drag).
 		clickTolerance: 3
 	},
@@ -7620,7 +7620,7 @@ var MarkerDrag = Handler.extend({
 	_onDragStart: function () {
 		// @section Dragging events
 		// @event dragstart: Event
-		// Fired when the user starts dragging the marker.
+		// Fired when the userModel starts dragging the marker.
 
 		// @event movestart: Event
 		// Fired when the marker starts moving (because of dragging).
@@ -7658,7 +7658,7 @@ var MarkerDrag = Handler.extend({
 		e.oldLatLng = this._oldLatLng;
 
 		// @event drag: Event
-		// Fired repeatedly while the user drags the marker.
+		// Fired repeatedly while the userModel drags the marker.
 		marker
 		    .fire('move', e)
 		    .fire('drag', e);
@@ -7666,7 +7666,7 @@ var MarkerDrag = Handler.extend({
 
 	_onDragEnd: function (e) {
 		// @event dragend: DragEndEvent
-		// Fired when the user stops dragging the marker.
+		// Fired when the userModel stops dragging the marker.
 
 		 cancelAnimFrame(this._panRequest);
 
@@ -10196,7 +10196,7 @@ var Popup = DivOverlay.extend({
 		closeOnEscapeKey: true,
 
 		// @option closeOnClick: Boolean = *
-		// Set it if you want to override the default behavior of the popup closing when user clicks
+		// Set it if you want to override the default behavior of the popup closing when userModel clicks
 		// on the map. Defaults to the map's [`closePopupOnClick`](#map-closepopuponclick) option.
 
 		// @option className: String = ''
@@ -10420,7 +10420,7 @@ var popup = function (options, source) {
 /* @namespace Map
  * @section Interaction Options
  * @option closePopupOnClick: Boolean = true
- * Set it to `false` if you don't want popups to close when user clicks the map.
+ * Set it to `false` if you don't want popups to close when userModel clicks the map.
  */
 Map.mergeOptions({
 	closePopupOnClick: true
@@ -12083,7 +12083,7 @@ var TileLayer = GridLayer.extend({
 		zoomReverse: false,
 
 		// @option detectRetina: Boolean = false
-		// If `true` and user is on a retina display, it will request four tiles of half the specified size and a bigger zoom level in place of one to utilize the high resolution.
+		// If `true` and userModel is on a retina display, it will request four tiles of half the specified size and a bigger zoom level in place of one to utilize the high resolution.
 		detectRetina: false,
 
 		// @option crossOrigin: Boolean|String = false
@@ -13734,9 +13734,9 @@ Map.mergeOptions({
 	// @option maxBoundsViscosity: Number = 0.0
 	// If `maxBounds` is set, this option will control how solid the bounds
 	// are when dragging the map around. The default value of `0.0` allows the
-	// user to drag outside the bounds at normal speed, higher values will
+	// userModel to drag outside the bounds at normal speed, higher values will
 	// slow down map dragging outside bounds, and `1.0` makes the bounds fully
-	// solid, preventing the user from dragging outside the bounds.
+	// solid, preventing the userModel from dragging outside the bounds.
 	maxBoundsViscosity: 0.0
 });
 
@@ -14115,7 +14115,7 @@ Map.mergeOptions({
 
 	// @option wheelDebounceTime: Number = 40
 	// Limits the rate at which a wheel can fire (in milliseconds). By default
-	// user can't zoom via wheel more often than once per 40 ms.
+	// userModel can't zoom via wheel more often than once per 40 ms.
 	wheelDebounceTime: 40,
 
 	// @option wheelPxPerZoomLevel: Number = 60
@@ -14203,7 +14203,7 @@ Map.mergeOptions({
 	tapHold: Browser.touchNative && Browser.safari && Browser.mobile,
 
 	// @option tapTolerance: Number = 15
-	// The max number of pixels a user can shift his finger during touch
+	// The max number of pixels a userModel can shift his finger during touch
 	// for it to be considered a valid tap.
 	tapTolerance: 15
 });

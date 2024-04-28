@@ -6,7 +6,7 @@
  *
  * @typedef ComponentEntry
  * @property {string} [title] The title of the component.
- * @property {string} [owner] The GitHub user name of the owner.
+ * @property {string} [owner] The GitHub userModel name of the owner.
  * @property {boolean} [noCSS=false] Whether the component doesn't have style sheets which should also be loaded.
  * @property {string | string[]} [alias] An optional list of aliases for the id of the component.
  * @property {Object<string, string>} [aliasTitles] An optional map from an alias to its title.

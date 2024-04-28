@@ -20,7 +20,7 @@ class sdb {
     /**
      * @var PDO
      */
-    private static $db = [];
+    private static ?PDO $db = null;
     private static bool $showErrorPage = false;
     private static int $server_id = 0;
     private static string $type;
@@ -32,10 +32,7 @@ class sdb {
     }
 
     public static function is_error(): ?string {
-        if(self::$error){
-            return self::$errorMessage;
-        }
-        return false;
+        return self::$error ? self::$errorMessage : false;
     }
 
     public static function get_server_id(): int {
@@ -69,23 +66,24 @@ class sdb {
      * @throws Exception
      */
     public static function connect() {
-        if (self::$instance === null) {
+        if (self::$db === null) {
             try {
                 $dsn = 'mysql:host=' . self::$host . ';dbname=' . self::$name . ';port=' . self::$port;
-                self::$db[self::get_server_id()][self::get_type()] = new PDO($dsn, self::$user, self::$pass, $options = [
+                self::$db = new PDO($dsn, self::$user, self::$pass, [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
                     PDO::ATTR_TIMEOUT => 1,
                 ]);
-                return self::$db[self::get_server_id()][self::get_type()];
             } catch (PDOException $e) {
-//                echo "Ошибка соединения с БД - " . $e->getMessage();
+                self::$error = true;
+                self::$errorMessage = $e->getMessage();
                 return false;
             }
         }
-
+        return self::$db;
     }
+
 
     public static function lastInsertId() {
         return self::$db[self::get_server_id()][self::get_type()]->lastInsertId();
@@ -126,11 +124,12 @@ class sdb {
             return null;
         }
         try {
-            if (!$args) {
-                return self::query($query);
-            }
             $stmt = self::prepare($query);
-            $stmt->execute($args);
+            if ($args) {
+                $stmt->execute($args);
+            } else {
+                $stmt->execute();
+            }
             return $stmt;
         } catch (PDOException $e) {
             if(!$notice){
@@ -143,27 +142,16 @@ class sdb {
                 error::show($e);
             }
             board::notice(false, "Error: " . $e->getMessage());
-            //            echo "Ошибка @:". $e->getMessage();
-            //            echo "<br>";
-            //            echo "Файл: ".  $e->getFile();
-            //            var_dump($e->getTrace());
-            //            echo "Линия: ".  $e->getTrace();
         }
     }
 
-    private static function query($stmt) {
-        try {
-            return self::$db[self::get_server_id()][self::get_type()]->query($stmt);
-        } catch (PDOException $e) {
-            self::$error = true;
-            self::$errorMessage = $e->getMessage();
-            return false;
-        }
+
+    public static function prepare($query) {
+        self::connect();
+        $query = preg_replace('/\s+/', ' ', trim($query));
+        return self::$db->prepare($query);
     }
 
-    public static function prepare($stmt) {
-        return self::$db[self::get_server_id()][self::get_type()]->prepare($stmt);
-    }
 
     /**
      * @param       $query

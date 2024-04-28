@@ -70,9 +70,8 @@ class fileSys {
             'sort'            => false,
             'fetchAll'        => false,
         ];
-
+        $dir = trim($dir, "/\\");
         $files = glob("$dir/{,.}[!.,!..]*", GLOB_BRACE);
-
         if($options['recursive']) {
             $files = array_reduce($files, function($acc, $file) use ($options) {
                 return is_dir($file) && $options['include_folders'] ? array_merge($acc, static::get_dir_files($file, $options)) : array_merge($acc, [$file]);

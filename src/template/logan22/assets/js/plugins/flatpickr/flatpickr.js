@@ -736,7 +736,7 @@
             }
         }
         /**
-         * Syncs the selected date object time with user's time input
+         * Syncs the selected date object time with userModel's time input
          */
         function setHoursFromInputs() {
             if (self.hourElement === undefined || self.minuteElement === undefined)

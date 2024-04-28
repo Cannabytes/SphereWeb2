@@ -151,7 +151,7 @@ class request {
         if(self::request()->isURL())
             return;
         if(self::request()->getMin() > mb_strlen($value)) {
-            board::notice(false, lang::get_phrase(290, $name, self::request()->getMin(), self::request()->getMax()));
+            board::response("notice", ["message" => lang::get_phrase(290, $name, self::request()->getMin()), "ok"=>false, "reloadCaptcha" => true]);
         }
     }
 

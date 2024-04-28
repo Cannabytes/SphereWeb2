@@ -468,7 +468,7 @@ return [
     'type' => 'etcitem',
     'name' => 'Blessed Scroll of Escape',
     'add_name' => '',
-    'description' => 'A magical scroll that relocates user to the nearest village',
+    'description' => 'A magical scroll that relocates userModel to the nearest village',
     'icon' => 'etc_ertheia2',
     'etcitem_type' => 'scroll',
     'weight' => 120,

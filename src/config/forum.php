@@ -1,8 +1,8 @@
 <?php
 const FORUM_HOST = 'localhost';
-const FORUM_USER = '';
+const FORUM_USER = 'root';
 const FORUM_PASSWORD = '';
-const FORUM_NAME = '';
+const FORUM_NAME = 'e';
 const FORUM_CHARSET = 'utf8';
 //xenforo / ipb / sphere
 const FORUM_ENGINE = 'xenforo';

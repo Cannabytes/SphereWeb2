@@ -15,57 +15,91 @@ use Ofey\Logan22\component\cache\cache;
 use Ofey\Logan22\component\cache\dir;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\restapi\restapi;
+use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\model\db\sdb;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 use ReflectionMethod;
 
 class server {
 
+    /**
+     * @var serverModel[]|null
+     */
     private static ?array $server_info = null;
 
     /**
      * @param $id
      *
-     * @return array|false
+     * @return serverModel[]|null
      * @throws Exception
      *
      * Функция возвращаем всю инфу о сервере
      */
-    public static function get_server_info($id = null): bool|array {
-        if ($id != null and self::$server_info != null) {
-            foreach (self::$server_info as $server) {
-                if ($id == $server['id']) {
-                    return $server;
-                }
+    public static function getServer($id = null): ?serverModel
+    {
+        if(isset(self::$server_info[$id])){
+            return self::$server_info[$id];
+        }
+        if($id==null){
+            if(isset(self::$server_info[$id])){
+                return self::$server_info[$id];
             }
         }
-        self::$server_info = sql::run("SELECT * FROM server_list")->fetchAll();
-        foreach (self::$server_info as $k => $server) {
-            self::$server_info[$k]['data'] = sql::getRows("SELECT * FROM `server_data` WHERE server_id = ?", [$server['id']]);
-
-            self::$server_info[$k]['desc_page_id'] = self::get_default_desc_page_id($server['id']);
+        $servers = sql::getRows("SELECT * FROM `servers`");
+        if(!$servers){
+            return null;
         }
-
-        if ($id != null) {
-            foreach (self::$server_info as $server) {
-                if ($id == $server['id']) {
-                    return $server;
-                }
+        foreach ($servers AS $server){
+            $server = json_decode($server['data'], true);
+            $serverId = $server['id'];
+            $server_data = sql::getRows("SELECT * FROM `server_data` WHERE `server_id` = ?", [$serverId]);
+            $page = self::get_default_desc_page_id($serverId);
+            self::$server_info[$serverId] = new serverModel($server, $server_data, $page);
+            if($id == $serverId){
+                return self::$server_info[$serverId];
             }
-            return false;
         }
+        return null;
+    }
 
-        return self::$server_info;
+    /**
+     * @return serverModel[]|null
+     * @throws Exception
+     */
+    public static function getServerAll(): ?array
+    {
+        if(self::$server_info != null){
+            return self::$server_info;
+        }
+        self::getServer();
+        if(self::$server_info != null){
+            return self::$server_info;
+        }
+        return null;
+    }
+
+    /**
+     * @return serverModel|null
+     * @throws Exception
+     */
+    public static function getLastServer(): ?serverModel
+    {
+        if(self::$server_info != null){
+            return end(self::$server_info);
+        }
+        self::getServer();
+        return end(self::$server_info);
     }
 
     public static function server_info($id = null): bool|array{
-        return self::get_server_info($id);
+        return server::getServer($id);
     }
 
     //Кол-во серверов
     public static function get_count_servers(): int {
-        return count(self::get_server_info());
+        return count(server::getServer());
     }
 
     //Страница по умолчанию
@@ -74,13 +108,7 @@ class server {
     //Возращаем ID страницы описания
     public static function get_default_desc_page_id($server_id) {
         if (self::$get_default_desc_page_id == []) {
-            self::$get_default_desc_page_id = sql::getRows("SELECT
-                                server_id, 
-                                lang, 
-                                page_id, 
-                                `default`
-                            FROM
-                                server_description");
+            self::$get_default_desc_page_id = sql::getRows("SELECT server_id, lang, page_id, `default` FROM server_description");
         }
         //Возращаем ID страницы описания согласно языка пользователя
         foreach (self::$get_default_desc_page_id as $row) {
@@ -105,27 +133,24 @@ class server {
     /*
      * Проверка на существования сервера во внутреннем реестре
      */
-    public static function exist_server_registry(int $server_id = 0): bool|array {
+    public static function exist_server_registry(int $server_id = 0): bool|serverModel {
         if ($server_id == null) {
-            $server_id = auth::get_default_server();
+            $server_id = user::self()->getServerId();
             if (!$server_id) {
                 return false;
             }
         }
-        return self::get_server_info($server_id);
+        return self::getServer($server_id);
     }
 
-    public static function preAcross(dir $dir, int $server_id = 0, string $name = null, $second = 60): array {
+    public static function preAcross(dir $dir, int $server_id = 0, string $name = null, $second = 60): mixed {
         $server_info = server::exist_server_registry($server_id);
-        if (!$server_info)
-            return [
-                null,
-                false,
-            ];
-        $server_id = $server_info['id'];
+        if (!$server_info) {
+            return [ $server_info ,false];
+        }
         return [
             $server_info,
-            cache::read($dir->show_dynamic($server_id, $name), second: $second),
+            cache::read($dir->show_dynamic($server_info->getId(), $name), second: $second),
         ];
     }
 
@@ -134,11 +159,9 @@ class server {
     /**
      * @throws Exception
      */
-    private static function acrossBase($collection_name, $server_info, $prepare = []) {
-
-
-        $sqlQuery = base::get_sql_source($server_info['collection_sql_base_name'], $collection_name);
-        $reflection = new ReflectionMethod($server_info['collection_sql_base_name'], $collection_name);
+    private static function acrossBase($collection_name, serverModel $server_info, $prepare = []) {
+        $sqlQuery = base::get_sql_source($server_info->getCollectionSqlBaseName(), $collection_name);
+        $reflection = new ReflectionMethod($server_info->getCollectionSqlBaseName(), $collection_name);
         $attributes = $reflection->getAttributes();
 
         $inGameDBQuery = "game";
@@ -147,16 +170,15 @@ class server {
                 $inGameDBQuery = $attr->getArguments()[0];
             }
         }
-
         if (gettype($prepare) == "string") {
             $prepare = [$prepare];
         }
         if ($inGameDBQuery == "login") {
             sdb::set_type('login');
-            $ok = sdb::set_connect($server_info['login_host'], $server_info['login_user'], $server_info['login_password'], $server_info['login_name'], $server_info['login_port']);
+            $ok = sdb::set_connect($server_info->getLoginHost(), $server_info->getLoginUser(), $server_info->getLoginPassword(), $server_info->getLoginName(), $server_info->getLoginPort());
         } else {
             sdb::set_type('game');
-            $ok = sdb::set_connect($server_info['game_host'], $server_info['game_user'], $server_info['game_password'], $server_info['game_name'], $server_info['game_port']);
+            $ok = sdb::set_connect($server_info->getGameHost(), $server_info->getGameUser(), $server_info->getGamePassword(), $server_info->getGameName(), $server_info->getGamePort());
         }
         if (!$ok)
             return $ok;
@@ -187,8 +209,8 @@ class server {
      *
      * @throws Exception
      */
-    public static function acrossAll($collection_name, $server_info, $prepare = []) {
-        if ($server_info['rest_api_enable']) {
+    public static function acrossAll($collection_name, serverModel $server_info, $prepare = []) {
+        if ($server_info->getRestApiEnable()) {
             $data = restapi::Send(
                 $server_info,
                 $collection_name,
@@ -220,7 +242,8 @@ class server {
     }
 
     public static function get_data($key) {
-        $server_info = self::get_server_info(auth::get_default_server());
+
+        $server_info = self::getServer(user::getUserId()->getServerId());
         if (!$server_info || !isset($server_info['data'])) {
             return false;
         }

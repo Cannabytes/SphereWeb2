@@ -1,0 +1,67 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="row">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="card-title">
+                        {{phrase(272)}}
+                    </div>
+                    <div class="">
+                        <button class="btn btn-sm btn-primary-light">Загрузить свой аватар</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% for avatar in avatars %}
+                    <span class="avatar avatar-xxl me-2"><img class="setAvatar" data-avatar="{{avatar}}" src="{{get_avatar( avatar)}}" alt="img"></span>
+                    {% endfor %}
+                </div>
+
+    </div>
+    </div>
+
+
+
+</div>
+
+{% endblock %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block js %}
+<script>
+
+    $(document).on("click" ,".setAvatar", function (){
+        AjaxSend("/user/change/avatar", "POST", {avatar: $(this).data("avatar") }, true).then(function (response){
+            console.log(response.src);
+            if (response.ok) {
+                noticeSuccess(response.message);
+                $(".user_self_avatar").attr("src", response.src);
+            } else {
+                noticeError(response.message);
+            }
+        })
+    });
+
+    function ResponseNoticeSetAvatar(response){
+        if(response.type!=="notice_set_avatar"){
+            return false;
+        }
+        $(".user_self_avatar").attr("src", response.src);
+        $(".count_sphere_coin").text(response.count_sphere_coin);
+        if (response.ok){
+            noticeSuccess(response.message);
+        }
+        if (response.ok === false){
+            noticeError(response.message);
+        }
+    }
+</script>
+{% endblock %}

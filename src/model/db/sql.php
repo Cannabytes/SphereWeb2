@@ -6,62 +6,83 @@ use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\alert\logs;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\template\tpl;
 use PDO;
 use PDOException;
+use PDOStatement;
 
 class sql {
 
     /**
      * @var PDO
      */
-    static private $db;
-    /**
-     * @var null
-     */
-    protected static $instance = null;
+    private static ?PDO $db = null;
     static public bool $error = false;
     private static int $rowCount = 0;
-
     /**
      * DB constructor.
      *
      * @throws Exception
      */
     public static function connect() {
-        if(self::$instance === null) {
+        if(self::$db === null) {
             try {
-                if(!file_exists('src/config/db.php')) {
+                if(!file_exists('data/db.php')) {
                     return null;
                 }
+                include_once 'data/db.php';
                 self::$db = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASSWORD, [
                     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_EMULATE_PREPARES   => false,
-                    // turn off emulation mode for "real" prepared statements
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
                 ]);
-                return self::$db;
             } catch(PDOException $e) {
-                echo "Ошибка соединения с БД - " . $e->getMessage();
+                tpl::addVar("error_message", $e->getMessage());
+                tpl::display("error/connect.html");
                 exit;
             }
         }
-        return self::$instance;
+        return self::$db;
     }
 
-    public static function query($stmt) {
+    public static function instance(): ?PDO
+    {
+        return self::connect();
+    }
+
+    public static function beginTransaction(): bool
+    {
+        return self::$db->beginTransaction();
+    }
+
+    public static function commit(): bool
+    {
+        return self::$db->commit();
+    }
+
+    public static function rollBack(): bool
+    {
+        return self::$db->rollBack();
+    }
+
+    public static function query($stmt): false|PDOStatement
+    {
         return self::$db->query($stmt);
     }
 
-    public static function prepare($stmt) {
+    public static function prepare($stmt): false|PDOStatement
+    {
         return self::$db->prepare($stmt);
     }
 
-    static public function exec($query) {
+    static public function exec($query): false|int
+    {
         return self::$db->exec($query);
     }
 
-    static public function lastInsertId() {
+    static public function lastInsertId(): false|string
+    {
         return self::$db->lastInsertId();
     }
 
@@ -85,7 +106,6 @@ class sql {
       */
     public static function run($query, $args = [], $showJson = false, $isBad = true) {
         if(self::connect()===null) {
-            var_dump(debug_backtrace());
             exit('Необходимо установить движок.<br><a href="/install">Нажми чтоб перейти на страницу установки.</a>');
         }
         if(self::connect()===false) {
@@ -102,27 +122,12 @@ class sql {
             self::$rowCount = $stmt->rowCount();
             return $stmt;
         } catch(PDOException $e) {
-            self::$exception = $e;
-            logs::loggerSQL($query, $args, $e->getMessage());
-            if($isBad) {
-                return false;
-            }
-            if($showJson){
-                board::notice(false, $e->getMessage());
-            }
-            echo "Ошибка выполнения запроса!<br>";
-            echo "Запрос: {$query}<br>";
-            if(is_array($args)){
-                echo "Параметры: " . implode(", ", $args) . "<br>";
-            }else{
-                echo "Параметры: " .  $args  . "<br>";
-            }
-            echo "Ошибка: {$e->getMessage()}<br>";
-            die();
+            return $e;
         }
     }
 
-    public static function rowCount(){
+    public static function rowCount(): int
+    {
         $count = self::$rowCount;
         self::$rowCount = 0;
         return $count;
@@ -134,7 +139,8 @@ class sql {
      *
      * @return mixed
      */
-    public static function getRow($query, array $args = []) {
+    public static function getRow($query, array $args = []): mixed
+    {
         return self::run($query, $args)->fetch();
     }
 
@@ -144,9 +150,11 @@ class sql {
      *
      * @return array
      */
-    public static function getRows($query, array $args = []) {
+    public static function getRows($query, array $args = []): array
+    {
         return self::run($query, $args)->fetchAll();
     }
+
 
     /**
      * @param       $query
@@ -154,7 +162,8 @@ class sql {
      *
      * @return mixed
      */
-    public static function getValue($query, $args = []) {
+    public static function getValue($query, $args = []): mixed
+    {
         $result = self::getRow($query, $args);
         if(!empty($result)) {
             $result = array_shift($result);
@@ -167,11 +176,22 @@ class sql {
      *
      * @return array
      */
-    public static function getColumn($query, $args = []) {
+    public static function getColumn($query, $args = []): array
+    {
         return self::run($query, $args)->fetchAll(PDO::FETCH_COLUMN);
     }
 
-    public static function sql($query, array $args = []) {
+    public static function sql($query, array $args = []): false|PDOStatement|null
+    {
        return self::run($query, $args);
     }
+
+    public static function errorInfo() {
+        if (self::$db !== null) {
+            return self::$db->errorInfo();
+        } else {
+            return ['No active database connection'];
+        }
+    }
+
 }

@@ -15,7 +15,10 @@ use Ofey\Logan22\controller\page\error;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
+use Ofey\Logan22\model\donate\donateConfig;
+use Ofey\Logan22\model\donate\shop;
 use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
 class pay {
@@ -36,47 +39,50 @@ class pay {
                 }
             }
             if(method_exists($system, 'getDescription')){
-                $donateSysNames[] = ['name' => basename($system), 'desc'=>$system::getDescription()[lang::lang_user_default()]];
+                $donateSysNames[] = ['name' => basename($system), 'desc'=>$system::getDescription()[\Ofey\Logan22\controller\config\config::load()->lang()->lang_user_default()]];
             }else{
                 $donateSysNames[] = ['name' => basename($system), 'desc'=>basename($system)];
             }
         }
-        if(!config::getEnableDonate()) error::error404("Отключено");
-        $donateInfo = __config__donate;
-        $point = 0;
-        if(auth::get_is_auth()){
-            if($donateInfo['DONATE_DISCOUNT_TYPE_STORAGE']){
-                $point = donate::getBonusDiscount(auth::get_id(), $donateInfo['discount']['table']);
-            }
-        }
+        if(!\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableShop()) error::error404("Отключено");
+//        $donateInfo = donateConfig::get()->getPaySystemDefault();
+//        $donateInfo = __config__donate;
+//        $point = 0;
+//        if(auth::get_is_auth()){
+//            if(donateConfig::get()->getEnab()){
+//            if($donateInfo['DONATE_DISCOUNT_TYPE_STORAGE']){
+//                $point = donate::getBonusDiscount(auth::get_id(), $donateInfo['discount']['table']);
+//            }
+//        }
         tpl::addVar("donate_history_pay_self", donate::donate_history_pay_self());
         tpl::addVar("title", lang::get_phrase(233));
-        tpl::addVar("discount", $donateInfo["discount"]);
-        tpl::addVar("pay_system_default", $donateInfo["pay_system_default"]);
-        tpl::addVar("count_all_donate_bonus", sql::run("SELECT SUM(point) AS `count` FROM donate_history_pay WHERE user_id = ?", [auth::get_id()])->fetch()['count'] ?? 0);
-        tpl::addVar("procentDiscount", $point);
+//        tpl::addVar("discount", $donateInfo["discount"]);
+        tpl::addVar("pay_system_default", \Ofey\Logan22\controller\config\config::load()->donate()->getPaySystemDefault());
+        tpl::addVar("count_all_donate_bonus", sql::run("SELECT SUM(point) AS `count` FROM `donate_history_pay` WHERE user_id = ?", [auth::get_id()])->fetch()['count'] ?? 0);
+//        tpl::addVar("procentDiscount", $point);
         tpl::addVar("donateSysNames", $donateSysNames);
-        tpl::display("/donate/pay.html");
+        tpl::display("/pay.html");
     }
 
     public static function shop(): void {
-        if(!config::getEnableDonate()) error::error404("Отключено");
 
-        $donateInfo = __config__donate;
-        $point = 0;
-        if(auth::get_is_auth()){
-            if($donateInfo['DONATE_DISCOUNT_TYPE_PRODUCT_ENABLE']){
-                $point = donate::getBonusDiscount(auth::get_id(), $donateInfo['discount_product']['table']);
-            }
-        }
-        tpl::addVar("DONATE_DISCOUNT_TYPE_PRODUCT_ENABLE", $donateInfo['DONATE_DISCOUNT_TYPE_PRODUCT_ENABLE']);
-        tpl::addVar("DONATE_DISCOUNT_COUNT_ENABLE", $donateInfo['DONATE_DISCOUNT_COUNT_ENABLE']);
-        tpl::addVar("discount_count_product_table", $donateInfo["discount_count_product"]['table']);
-        tpl::addVar("discount_count_product_items", $donateInfo["discount_count_product"]['items']);
-        tpl::addVar("procentProductDiscount", $point);
-        tpl::addVar("products", donate::products());
+        if(!\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableShop()) error::error404("Отключено");
+
+//        $donateInfo = __config__donate;
+//        $point = 0;
+//        if(auth::get_is_auth()){
+//            if($donateInfo['DONATE_DISCOUNT_TYPE_PRODUCT_ENABLE']){
+//                $point = donate::getBonusDiscount(auth::get_id(), $donateInfo['discount_product']['table']);
+//            }
+//        }
+//        tpl::addVar("DONATE_DISCOUNT_TYPE_PRODUCT_ENABLE", $donateInfo['DONATE_DISCOUNT_TYPE_PRODUCT_ENABLE']);
+//        tpl::addVar("DONATE_DISCOUNT_COUNT_ENABLE", $donateInfo['DONATE_DISCOUNT_COUNT_ENABLE']);
+//        tpl::addVar("discount_count_product_table", $donateInfo["discount_count_product"]['table']);
+//        tpl::addVar("discount_count_product_items", $donateInfo["discount_count_product"]['items']);
+//        tpl::addVar("procentProductDiscount", $point);
+//        tpl::addVar("products", donate::products());
         tpl::addVar("title", lang::get_phrase(233));
-        tpl::display("/donate/shop.html");
+        tpl::display("/shop.html");
     }
 
     public static function get_donate_type($type = null) {
@@ -155,11 +161,11 @@ class pay {
         tpl::display("/donate/shop.html");
     }
 
-    public static function transaction(): void {
+    public static function buyShopItem(): void {
         validation::user_protection();
         if (!config::getEnableDonate()) error::error404("Отключено");
-        if (!auth::get_is_auth()) board::notice(false, lang::get_phrase(234));
-        donate::transaction();
+        if (!user::self()->isAuth()) board::notice(false, lang::get_phrase(234));
+        donate::buyShopItem();
     }
 
     public static function currency_exchange_info() {

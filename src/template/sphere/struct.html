@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light"
+      data-menu-styles="light" data-toggled="close">
+<head>
+
+  <!-- Meta Data -->
+  <meta charset="UTF-8">
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Hello World - {{ config().other().getAllTitlePage() }}</title>
+  <meta name="Description" content="{{ config().other().getAllTitlePage() }}">
+  <meta name="Author" content="SphereWeb CMS">
+  <meta name="keywords" content="{{ config().other().getKeywords() }}">
+
+  <!-- Favicon -->
+  <link rel="icon" href="{{template}}/assets/images/brand-logos/favicon.ico" type="image/x-icon">
+
+  <!-- Choices JS -->
+  <script src="{{template}}/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+  <!-- Main Theme Js -->
+  <script src="{{template}}/assets/js/main.js"></script>
+
+  <!-- Bootstrap Css -->
+  <link id="style" href="{{template}}/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Style Css -->
+  <link href="{{template}}/assets/css/styles.min.css" rel="stylesheet">
+
+  <!-- Icons Css -->
+  <link href="{{template}}/assets/css/icons.css" rel="stylesheet">
+
+  <!-- Node Waves Css -->
+  <link href="{{template}}/assets/libs/node-waves/waves.min.css" rel="stylesheet">
+
+  <!-- Simplebar Css -->
+  <link href="{{template}}/assets/libs/simplebar/simplebar.min.css" rel="stylesheet">
+  <!-- Choices Css -->
+  <link rel="stylesheet" href="{{template}}/assets/libs/choices.js/public/assets/styles/choices.min.css">
+
+  <!-- Swiper Css -->
+  <link rel="stylesheet" href="{{template}}/assets/libs/swiper/swiper-bundle.min.css">
+
+
+  {% block css %}{% endblock %}
+
+
+</head>
+
+<body>
+
+
+<!-- Loader -->
+<div id="loader">
+  <img src="{{template}}/assets/images/media/loader.svg" alt="">
+</div>
+<!-- Loader -->
+
+<div class="page">
+  <!-- app-header -->
+  {% include 'header.html' %}
+
+  <!-- Start::app-sidebar -->
+  {% include 'sidebar.html' %}
+
+  <!-- Start::app-content -->
+  <div class="main-content app-content">
+    <br>
+    {% block content %}{% endblock %}
+  </div>
+  <!-- End::app-content -->
+
+  <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="input-group">
+            <a href="javascript:void(0);" class="input-group-text" id="Search-Grid"><i
+              class="fe fe-search header-link-icon fs-18"></i></a>
+            <input type="search" class="form-control border-0 px-2" placeholder="Search" aria-label="Username">
+            <a href="javascript:void(0);" class="input-group-text" id="voice-search"><i
+              class="fe fe-mic header-link-icon"></i></a>
+            <a href="javascript:void(0);" class="btn btn-light btn-icon" data-bs-toggle="dropdown"
+               aria-expanded="false">
+              <i class="fe fe-more-vertical"></i>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="#">Separated link</a></li>
+            </ul>
+          </div>
+          <div class="mt-4">
+            <p class="font-weight-semibold text-muted mb-2">Are You Looking For...</p>
+            <span class="search-tags"><i class="fe fe-user me-2"></i>People<a href="javascript:void(0)"
+                                                                              class="tag-addon"><i class="fe fe-x"></i></a></span>
+            <span class="search-tags"><i class="fe fe-file-text me-2"></i>Pages<a href="javascript:void(0)"
+                                                                                  class="tag-addon"><i
+              class="fe fe-x"></i></a></span>
+            <span class="search-tags"><i class="fe fe-align-left me-2"></i>Articles<a href="javascript:void(0)"
+                                                                                      class="tag-addon"><i
+              class="fe fe-x"></i></a></span>
+            <span class="search-tags"><i class="fe fe-server me-2"></i>Tags<a href="javascript:void(0)"
+                                                                              class="tag-addon"><i class="fe fe-x"></i></a></span>
+          </div>
+          <div class="my-4">
+            <p class="font-weight-semibold text-muted mb-2">Recent Search :</p>
+            <div class="p-2 border br-5 d-flex align-items-center text-muted mb-2 alert">
+              <a href="notifications.html"><span>Notifications</span></a>
+              <a class="ms-auto lh-1" href="javascript:void(0);" data-bs-dismiss="alert" aria-label="Close"><i
+                class="fe fe-x text-muted"></i></a>
+            </div>
+            <div class="p-2 border br-5 d-flex align-items-center text-muted mb-2 alert">
+              <a href="alerts.html"><span>Alerts</span></a>
+              <a class="ms-auto lh-1" href="javascript:void(0);" data-bs-dismiss="alert" aria-label="Close"><i
+                class="fe fe-x text-muted"></i></a>
+            </div>
+            <div class="p-2 border br-5 d-flex align-items-center text-muted mb-0 alert">
+              <a href="mail.html"><span>Mail</span></a>
+              <a class="ms-auto lh-1" href="javascript:void(0);" data-bs-dismiss="alert" aria-label="Close"><i
+                class="fe fe-x text-muted"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="btn-group ms-auto">
+            <button class="btn btn-sm btn-primary-light">Search</button>
+            <button class="btn btn-sm btn-primary">Clear Recents</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
+
+
+<!-- Scroll To Top -->
+<div class="scrollToTop">
+  <span class="arrow"><i class="ri-arrow-up-s-fill fs-20"></i></span>
+</div>
+<div id="responsive-overlay"></div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div id="successToast" class="toast colored-toast bg-success-transparent" role="alert" aria-live="assertive"
+       aria-atomic="true">
+    <div class="toast-header bg-success text-fixed-white">
+      <img class="bd-placeholder-img rounded me-2" src="{{template}}/assets/images/brand-logos/toggle-white.png"
+           alt="...">
+      <strong class="me-auto" id="successTitleMessageNotice"></strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"
+              aria-label="Close"></button>
+    </div>
+    <div class="toast-body" id="successContentMessageNotice"></div>
+  </div>
+
+  <div id="dangerToast" class="toast colored-toast bg-danger-transparent" role="alert" aria-live="assertive"
+       aria-atomic="true">
+    <div class="toast-header bg-danger text-fixed-white">
+      <img class="bd-placeholder-img rounded me-2" src="{{template}}/assets/images/brand-logos/toggle-white.png"
+           alt="...">
+      <strong class="me-auto" id="dangerTitleMessageNotice"></strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"
+              aria-label="Close"></button>
+    </div>
+    <div class="toast-body" id="dangerContentMessageNotice"></div>
+  </div>
+</div>
+
+
+{% include 'struct_js.html' %}
+
+<script>
+  var currentPath = window.location.pathname;
+  // Перебираем все ссылки в меню
+  $('.side-menu__item').each(function() {
+    var $this = $(this); // Текущий элемент в цикле
+    var href = $this.attr('href');
+
+    // Определяем, нужно ли подсветить текущую ссылку
+    var isActive = (href === currentPath) ||
+      (href === '/' && currentPath === '/') ||
+      (href !== '/' && href !== 'javascript:void(0);' && currentPath.startsWith(href));
+
+    // Если ссылка активна, применяем стили
+    if (isActive) {
+      // Добавляем класс text-success для выделения
+      $this.addClass('text-success');
+
+      // Проходим через все родительские элементы и открываем их
+      $this.parentsUntil('.side-menu', '.slide-menu').show();
+      $this.parentsUntil('.side-menu', '.has-sub').each(function() {
+        $(this).children('.side-menu__item').find('.fe-chevron-right')
+          .removeClass('fe-chevron-right')
+          .addClass('fe-chevron-down');
+      });
+    }
+  });
+
+
+</script>
+{% block js %}{% endblock %}
+
+</body>
+</html>

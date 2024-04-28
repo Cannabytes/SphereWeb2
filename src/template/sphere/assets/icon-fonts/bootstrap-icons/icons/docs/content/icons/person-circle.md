@@ -6,6 +6,6 @@ tags:
   - humans
   - organization
   - avatar
-  - user
+  - userModel
   - account
 ---

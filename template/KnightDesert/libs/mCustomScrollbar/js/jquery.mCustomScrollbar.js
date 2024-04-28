@@ -322,7 +322,7 @@ and dependencies (minified).
 			*/
 			theme:"light",
 			/*
-			user defined callback functions
+			userModel defined callback functions
 			*/
 			callbacks:{
 				/*
@@ -2169,7 +2169,7 @@ and dependencies (minified).
 				return [o.callbacks.alwaysTriggerOffsets || contentPos>=limit[0]+tso,o.callbacks.alwaysTriggerOffsets || contentPos<=-tsbo];
 			}
 			/* 
-			populates object with useful values for the user 
+			populates object with useful values for the userModel
 			values: 
 				content: this.mcs.content
 				content top position: this.mcs.top 

@@ -7,6 +7,7 @@
 
 namespace Ofey\Logan22\controller\referral;
 
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\page\error;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\template\tpl;
@@ -19,10 +20,10 @@ class referral {
            error::error404("Реферальная система отключена");
         }
         tpl::addVar([
-            "GAME_TIME" => GAME_TIME,
-            "LEVEL"     => LEVEL,
-            "PVP"       => PVP,
-            "PK"        => PK,
+            "GAME_TIME" => config::load()->referral()->getTimeGame(),
+            "LEVEL"     => config::load()->referral()->getLevel(),
+            "PVP"       => config::load()->referral()->getPvp(),
+            "PK"        => config::load()->referral()->getPk(),
             "referrals" => \Ofey\Logan22\model\referral\referral::player_list(),
         ]);
         tpl::display('/referral/referral.html');

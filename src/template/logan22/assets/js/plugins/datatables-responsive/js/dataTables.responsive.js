@@ -86,7 +86,7 @@ var DataTable = $.fn.dataTable;
  * from the table that has been hidden. There are also two modes of operation
  * for this child row display:
  *
- * * Inline - when the control element that the user can use to show / hide
+ * * Inline - when the control element that the userModel can use to show / hide
  *   child rows is displayed inside the first column of the table.
  * * Column - where a whole column is dedicated to be the show / hide control.
  *
@@ -129,7 +129,7 @@ var Responsive = function (settings, opts) {
 		return;
 	}
 
-	// details is an object, but for simplicity the user can give it as a string
+	// details is an object, but for simplicity the userModel can give it as a string
 	// or a boolean
 	if (opts && typeof opts.details === 'string') {
 		opts.details = { type: opts.details };
@@ -1129,7 +1129,7 @@ $.extend(Responsive.prototype, {
 	 * Update the cell tab indexes for keyboard accessibility. This is called on
 	 * every table draw - that is potentially inefficient, but also the least
 	 * complex option given that column visibility can change on the fly. Its a
-	 * shame user-focus was removed from CSS 3 UI, as it would have solved this
+	 * shame userModel-focus was removed from CSS 3 UI, as it would have solved this
 	 * issue with a single CSS statement.
 	 *
 	 * @private

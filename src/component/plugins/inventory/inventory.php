@@ -17,6 +17,7 @@ use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\template\async;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\player\player_account;
+use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
 class inventory {
@@ -28,21 +29,20 @@ class inventory {
 
     public function send() {
         validation::user_protection();
-        $player_name = $_POST['player_name'] ?? board::error("No Player Name");
-        $objects = $_POST['object_items'] ?? board::error("No Select Items");
+        $player_name = $_POST['player'] ?? board::error("No Player Name");
+        $objects = $_POST['items'] ?? board::error("No Select Items");
         $isSend = false;
         if(!is_array($objects)){
             board::error("Администрация уведомлена о попытках найти уязвимости");
         }
 
-        $player_info = player_account::is_player(server::server_info(auth::get_default_server()), [$player_name]);
+        $player_info = player_account::is_player(server::getServer(user::getUserId()->getServerId()), [$player_name]);
         $player_info = $player_info->fetch();
         $user = player_account::get_show_characters_info($player_info['login']);
-        if ($user == null or $user["email"] != auth::get_email()) {
+        if ($user == null or $user["email"] != user::getUserId()->getEmail()) {
             board::notice(false, lang::get_phrase(490));
         }
-        if (!$player_info) board::notice(false, lang::get_phrase(151, $char_name));
-
+        if (!$player_info) board::notice(false, lang::get_phrase(151, $player_name));
 
         $placeholders = rtrim(str_repeat('?, ', count($objects)), ', ');
 
@@ -52,7 +52,7 @@ class inventory {
             board::error("No items");
         }
         foreach($bonus_items AS $item){
-            if($item['user_id'] == auth::get_id()){
+            if($item['user_id'] == user::getUserId()->getId()){
                 userlog::add("inventory_to_game",542, [$item['enchant'], $item['item_id'], $item['count'], $player_name] );
                 player_account::addItem($item['server_id'], $item['item_id'], $item['count'], $item['enchant'], $player_name);
                 sql::run("DELETE FROM `bonus` WHERE `id` = ?", [$item['id']]);
@@ -60,8 +60,8 @@ class inventory {
             }
         }
         if($isSend){
-            auth::setBonus();
-            $async = new async("inventory/tpl/index.html");
+            user::getUserId()->getWarehouse(true);
+            $async = new async("index.html");
             $async->block("main-container", "content", "update", true);
             $async->block("title", "title");
             $async->send();

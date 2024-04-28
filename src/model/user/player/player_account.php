@@ -7,13 +7,16 @@
 
 namespace Ofey\Logan22\model\user\player;
 
+use Exception;
 use Exception as ExceptionAlias;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\base\base;
+use Ofey\Logan22\component\captcha\captcha;
 use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\restapi\restapi;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\userlog;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sdb;
@@ -21,8 +24,10 @@ use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\encrypt\encrypt;
 use Ofey\Logan22\model\server\server;
+use Ofey\Logan22\model\server\serverModel;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\auth\registration;
+use Ofey\Logan22\model\user\user;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -59,10 +64,11 @@ class player_account {
 
     /**
      * Когда включен REST API то в $info приходит ID сервер
-     * @throws ExceptionAlias
+     * @param $info serverModel
+     * @info serverModel
      */
-    public static function extracted($collectionName, $info, $prepare = [], $notice = false) {
-        if ($info['rest_api_enable'] ?? false) {
+    public static function extracted($collectionName, serverModel $info, $prepare = [], $notice = false) {
+        if ($info->getRestApiEnable() ?? false) {
             $data = restapi::Send(
                 $info,
                 $collectionName,
@@ -73,20 +79,19 @@ class player_account {
             }
             return json_decode($data, true);
         }
-        $sqlQuery = base::get_sql_source($info['collection_sql_base_name'], $collectionName);
-        $gameServer = self::getMethodAttribute($info['collection_sql_base_name'], $collectionName);
+        $sqlQuery = base::get_sql_source($info->getCollectionSqlBaseName(), $collectionName);
+        $gameServer = self::getMethodAttribute($info->getCollectionSqlBaseName(), $collectionName);
         if (gettype($prepare) == "string") {
             $prepare = [$prepare];
         }
         $prepare = self::placeholderPrepareFormat($sqlQuery, $prepare);
-        $server_id = $info['id'];
-        sdb::set_server_id($server_id);
+        sdb::set_server_id($info->getId());
         if ($gameServer == "login") {
             sdb::set_type('login');
-            sdb::set_connect($info['login_host'], $info['login_user'], $info['login_password'], $info['login_name'], $info['login_port']);
+            sdb::set_connect($info->getLoginHost(), $info->getLoginUser() , $info->getLoginPassword(), $info->getLoginName(), $info->getLoginPort());
         } else {
             sdb::set_type('game');
-            sdb::set_connect($info['game_host'], $info['game_user'], $info['game_password'], $info['game_name'], $info['game_port']);
+            sdb::set_connect($info->getGameHost(), $info->getGameUser(), $info->getGamePassword(), $info->getGameName(), $info->getGamePort());
         }
         return sdb::run($sqlQuery, $prepare, $notice);
     }
@@ -162,17 +167,18 @@ class player_account {
      * @throws ExceptionAlias
      */
     public static function add_account_not_user($login, $password, $password_hide, $email) {
-        $server_id = auth::get_default_server();
+        $server_id = user::getUserId()->getServerId();
         self::valid_login($login);
         self::valid_password($password);
         self::valid_email($email);
 
         if (auth::is_user($email)) {
-            board::notice(false, lang::get_phrase(201, $email));
+            captcha::generation();
+            board::response("notice", ["message" => lang::get_phrase(201), "ok"=>false, "reloadCaptcha" => true]);
         }
         registration::add($email, $password, false, false);
-        $get_server_info = \Ofey\Logan22\model\server\server::get_server_info($server_id);
-        if ($get_server_info['rest_api_enable']) {
+        $server = server::getServer($server_id);
+        if ($server->getRestApiEnable()) {
             $err = self::account_registration($server_id, [
                 $login,
                 $password,
@@ -189,7 +195,7 @@ class player_account {
         //TODO: логирование ошибок
         if (is_array($err)) {
             if (!$err['ok']) {
-                board::notice(false, $err['message']);
+                board::response("notice", ["message" => $err['message'], "ok"=>false, "reloadCaptcha" => true]);
             }
         }
         self::add_inside_account($login, $password, $email, $_SERVER['REMOTE_ADDR'], $server_id, $password_hide);
@@ -198,13 +204,16 @@ class player_account {
 
     public static function valid_login($login) {
         if (3 > mb_strlen($login)) {
-            board::notice(false, lang::get_phrase(208));
+            captcha::generation();
+            board::response("notice", ["message" => lang::get_phrase(208), "ok"=>false, "reloadCaptcha" => true]);
         }
         if (16 < mb_strlen($login)) {
-            board::notice(false, lang::get_phrase(209));
+            captcha::generation();
+            board::response("notice", ["message" => lang::get_phrase(209), "ok"=>false, "reloadCaptcha" => true]);
         }
         if (!preg_match("/^[a-zA-Z0-9_]+$/", $login) == 1) {
-            board::notice(false, lang::get_phrase(210));
+            captcha::generation();
+            board::response("notice", ["message" => lang::get_phrase(210), "ok"=>false, "reloadCaptcha" => true]);
         }
     }
 
@@ -234,7 +243,7 @@ class player_account {
      * @throws ExceptionAlias
      */
     public static function add($login, $password, $password_hide) {
-        if(MASS_REGISTRATION){
+        if(config::load()->registration()->isMassRegistration()){
             self::add_mass_players($login, $password, $password_hide);
         }else{
             self::add_one_player($login, $password, $password_hide);
@@ -246,73 +255,83 @@ class player_account {
         self::valid_login($login);
         self::valid_password($password);
         if (self::count_account() >= 20) {
-            board::notice(false, lang::get_phrase(206));
+            captcha::generation();
+            board::response("notice", ["message" => lang::get_phrase(206), "ok"=>false, "reloadCaptcha" => true]);
         }
         $get_server_info = \Ofey\Logan22\model\server\server::get_server_info($server_id);
         $reQuest = self::getQuest($get_server_info['rest_api_enable'], $server_id, $login, $password, $password_hide);
         self::add_inside_account($login, $password, auth::get_email(), auth::get_ip(), $server_id, $password_hide);
 
-        $content = REGISTRATION_FILE_CONTENT;
-        if (ENABLE_REGISTRATION_FILE) {
+        $content = config::load()->lang()->getPhrase(config::load()->registration()->getPhraseRegistrationDownloadFile());;
+        if (config::load()->registration()->isMassRegistration()) {
             $content = str_replace(["%site_server%", "%server_name%", "%rate_exp%", "%chronicle%", "%email%", "%login%", "%password%"],
-                [$_SERVER['SERVER_NAME'], $reQuest['name'], "x" . $reQuest['rate_exp'], $reQuest['chronicle'], auth::get_email(), $login, $password], $content);
+                [$_SERVER['SERVER_NAME'], $reQuest['name'], "x" . $reQuest['rateExp'], $reQuest['chronicle'], auth::get_email(), $login, $password], $content);
         }
         userlog::add("registration", 532, [$login]);
         board::response("notice_registration",
             [
                 "ok" => true,
                 "message" => lang::get_phrase(207),
-                "isDownload" => ENABLE_REGISTRATION_FILE,
+                "isDownload" => config::load()->registration()->isMassRegistration(),
                 "title" => $_SERVER['SERVER_NAME'] . " - " . $login . ".txt",
                 "content" => trim($content),
             ]);
     }
 
-    static private function removeDuplicates($array, $keys)
-    {
-        $uniqueKeys = [];
-        $result = array_filter($array, function ($item) use ($keys, &$uniqueKeys) {
-            $key = '';
-            foreach ($keys as $k) {
-                $key .= $item[$k];
-            }
-            if (!in_array($key, $uniqueKeys)) {
-                $uniqueKeys[] = $key;
-                return true;
-            }
-            return false;
-        });
+    /**
+     * @param array $servers
+     * @param array $methods
+     * @return serverModel[]
+     */
+    static function removeDuplicates(array $servers, array $methods): array {
+        $tempKeys = [];
+        $uniqueServers = [];
+        /** @var serverModel $server */
+        foreach ($servers as $server) {
+            $getLoginHost = $server->getLoginHost();
+            $getLoginUser = $server->getLoginUser();
+            $getLoginPassword = $server->getLoginPassword();
+            $getLoginName = $server->getLoginName();
+            $hash = "{$getLoginHost}|{$getLoginUser}|{$getLoginPassword}|$getLoginName";
 
-        return array_values($result);
+            // Проверяем, встречался ли уже такой хеш.
+            if (!isset($tempKeys[$hash])) {
+                $tempKeys[$hash] = true; // Отмечаем хеш как встреченный.
+                $uniqueServers[] = $server; // Добавляем сервер в результат.
+            }
+        }
+        return $uniqueServers;
     }
 
+
+    /**
+     * @throws ExceptionAlias
+     */
     public static function add_mass_players($login, $password, $password_hide) {
         self::valid_login($login);
         self::valid_password($password);
         if (self::count_account() >= 20) {
-            board::notice(false, lang::get_phrase(206));
+            captcha::generation();
+            board::response("notice", ["message" => lang::get_phrase(206), "ok"=>false, "reloadCaptcha" => true]);
         }
-        $get_server_info = \Ofey\Logan22\model\server\server::get_server_info();
-        $unique_server_info = self::removeDuplicates($get_server_info, ['login_host', 'login_port', 'login_user', 'login_password']);
+        $get_server_info = server::getServerAll();
+        $unique_server_info = self::removeDuplicates($get_server_info, ['getLoginHost', 'getLoginPort', 'getLoginUser', 'getLoginPassword']);
         foreach($unique_server_info AS $info){
-            $server_id = $info['id'];
-            $reQuest = self::getQuest($info['rest_api_enable'], $server_id, $login, $password, $password_hide);
+            self::getQuest($info->getRestApiEnable(), $info->getId(), $login, $password, $password_hide);
         }
-        foreach($get_server_info AS $info){
-            $server_id = $info['id'];
-            self::add_inside_account($login, $password, auth::get_email(), auth::get_ip(), $server_id, $password_hide);
-        }
-        $content = REGISTRATION_FILE_CONTENT;
-        if (ENABLE_REGISTRATION_FILE) {
+
+        self::add_inside_account($login, $password, user::getUserId()->getEmail(), user::getUserId()->getIp(), user::getUserId()->getServerId(), $password_hide);
+        $content = trim(config::load()->lang()->getPhrase(config::load()->registration()->getPhraseRegistrationDownloadFile())) ?? "";
+        if (config::load()->registration()->isMassRegistration()) {
             $content = str_replace(["%site_server%", "%server_name%", "%rate_exp%", "%chronicle%", "%email%", "%login%", "%password%"],
-                [$_SERVER['SERVER_NAME'], $reQuest['name'], "x" . $reQuest['rate_exp'], $reQuest['chronicle'], auth::get_email(), $login, $password], $content);
+                [$_SERVER['SERVER_NAME'], server::getServer()->getName(), "x" . server::getServer()->getRateExp(), server::getServer()->getChronicle(), user::getUserId()->getEmail(), $login, $password], $content);
         }
-        userlog::add("registration", 532, [$login]);
+        user::self()->addLog("registration", 532, [$login]);
         board::response("notice_registration",
             [
                 "ok" => true,
                 "message" => lang::get_phrase(207),
-                "isDownload" => ENABLE_REGISTRATION_FILE,
+                "isDownload" => config::load()->registration()->isMassRegistration(),
                 "title" => $_SERVER['SERVER_NAME'] . " - " . $login . ".txt",
                 "content" => trim($content),
             ]);
@@ -339,9 +358,10 @@ class player_account {
      * @param $login
      *
      * @return mixed|void
+     * @throws ExceptionAlias
      */
-    public static function getReQuest($server_id, $login): mixed {
-        $server_info = server::server_info($server_id);
+    public static function getReQuest($server_id, $login): serverModel {
+        $server_info = server::getServer($server_id);
         if (!$server_info) {
             board::notice(false, lang::get_phrase(150));
         }
@@ -462,7 +482,7 @@ class player_account {
             $err = self::account_registration($server_id, [
                 $login,
                 $password,
-                auth::get_email(),
+                user::getUserId()->getEmail(),
             ]);
         } else {
             sdb::setShowErrorPage(false);
@@ -470,7 +490,7 @@ class player_account {
             $err = self::account_registration($reQuest, [
                 $login,
                 encrypt::server_password($password, $reQuest),
-                auth::get_email(),
+                user::getUserId()->getEmail(),
             ]);
         }
         if (is_array($err)) {
@@ -493,7 +513,7 @@ class player_account {
             board::error(lang::get_phrase('character not found'));
         }
         $user = player_account::get_show_characters_info($player_info['login']);
-        if ($user == null or $user["email"] != auth::get_email()) {
+        if ($user == null or $user["email"] != user::getUserId()->getEmail()) {
             board::notice(lang::get_phrase(490));
         }
         self::$characters[$char_name] = $player_info;
@@ -504,7 +524,7 @@ class player_account {
         if ($char_name == null) {
             board::error(lang::get_phrase('no nickname'));
         }
-        $server_info = server::server_info($server_id);
+        $server_info = server::getServer($server_id);
         if (!$server_info) {
             board::error(lang::get_phrase(150));
         }
@@ -513,7 +533,7 @@ class player_account {
         if (!$player_info) board::error(lang::get_phrase(151, $char_name));
         $player_id = $player_info["player_id"];
         $is_stack = client_icon::is_stack($item_id);
-        if ($server_info['collection_sql_base_name']::need_logout_player_for_item_add()) {
+        if ($server_info->getCollectionSqlBaseName()::need_logout_player_for_item_add()) {
             if ($player_info["online"]) {
                 board::error(lang::get_phrase(153, $char_name));
             }

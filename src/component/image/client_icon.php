@@ -11,7 +11,10 @@ use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\model\admin\validation;
+use Ofey\Logan22\model\item\item;
+use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 
 class client_icon {
     private static array $arrItems;
@@ -23,10 +26,8 @@ class client_icon {
      */
     public static function is_stack($item_id): bool {
         $type = self::get_item_info($item_id);
-        if (isset($type['is_stack'])) {
-            if($type['is_stack']){
-                return true;
-            }
+        if ($type->getIsStackable()) {
+            return true;
         }
         return false;
     }
@@ -61,63 +62,34 @@ class client_icon {
         }
     }
 
-    public static function get_item_info($item_id = null, $json = false, $protected = true) {
+    public static function get_item_info($item_id = null, $json = false, $protected = true): string|item|array {
         if ($protected) {
             validation::user_protection();
         }
         if ($item_id === null) {
             $item_id = $_POST['itemID'] ?? null;
-            $file = self::includeFileByRange($item_id);
             if ($item_id === null) {
                 board::notice(false, "Не передано значение ID предмета");
             }
         }
-        if (isset($itemArr[$item_id])) {
-            $item = $itemArr[$item_id];
+        $icon = item::getItem($item_id);
+        if(!$icon){
             if ($json) {
-                echo json_encode($item, JSON_UNESCAPED_UNICODE);
-            }
-            return $item;
-        }
-        $file = self::includeFileByRange($item_id);
-        if (!$file) {
-            if ($json) {
-                echo json_encode([
-                    "item_id" => $item_id,
+                board::alert([
+                    "ok" => false,
+                    "itemId" => $item_id,
                     "name" => "The item does not exist!",
                     "icon" => fileSys::localdir("/uploads/images/icon/NOIMAGE.webp"),
                 ]);
-                exit;
             } else {
                 return false;
             }
         }
-        $itemArr = require $file;
-        if (isset($itemArr[$item_id])) {
-            $item = $itemArr[$item_id];
-            unset($item['id']);
-            $item['icon'] = self::icon($item['icon']);
-            self::$arrItems = $itemArr;
-            if ($json) {
-                echo json_encode($item, JSON_UNESCAPED_UNICODE);
-            }
-            return $item;
-        } else {
-            if ($json) {
-                echo json_encode([
-                    "item_id" => $item_id,
-                    "name" => "The item does not exist",
-                    "icon" => fileSys::localdir("/uploads/images/icon/NOIMAGE.webp"),
-                ]);
-                exit;
-            } else {
-                return [
-                    "item_id" => $item_id,
-                    "name" => "NoItemName",
-                    "icon" => fileSys::localdir("/uploads/images/icon/NOIMAGE.webp"),
-                ];
-            }
+        if ($json) {
+            board::alert(["ok" => true, "item" => $icon->toArray()], JSON_UNESCAPED_UNICODE);
+            exit;
         }
+        return $icon;
     }
 
     public static function icon($fileIcon = null, $object = "icon") {
@@ -127,13 +99,15 @@ class client_icon {
         return file_exists(fileSys::get_dir("/uploads/images/{$object}/" . $fileIcon . ".webp")) && $fileIcon != null ? fileSys::localdir("/uploads/images/{$object}/" . $fileIcon . ".webp") : fileSys::localdir("/uploads/images/icon/NOIMAGE.webp");
     }
 
-    private static function includeFileByRange($number, $object = "items"): string|false {
+    public static function includeFileByRange($number, $object = "items"): string|false {
         if($object == "items"){
-            $set = \Ofey\Logan22\model\server\server::get_data("knowledge_base");
-            if(!$set){
-                $set = "classic";
+            $object = "items/highFive";
+            if(server::getServer()){
+                $set = server::getServer()->getServerData("knowledge_base");
+                if($set){
+                    $object = "items/" . $set->getVal()  ;
+                }
             }
-            $object = "items/{$set}";
         }
         $range = floor(($number ) / 100) * 100;
         if ($range < 0) {
@@ -146,7 +120,6 @@ class client_icon {
         if(file_exists($custom_file)){
             return $custom_file;
         }
-
         $file = fileSys::get_dir("/src/component/image/icon/{$object}/{$file}");
         if (file_exists($file)) {
             return $file;

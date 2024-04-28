@@ -24,7 +24,7 @@ class page {
     public static function addComment() {
         if(!config::getEnableNews()) error::error404("Отключено");
         if(!auth::get_is_auth()) {
-            board::notice(false, "Only auth user");
+            board::notice(false, "Only auth userModel");
         }
         if(auth::get_ban_page()){
             board::notice(false, "You are not allowed to do this");

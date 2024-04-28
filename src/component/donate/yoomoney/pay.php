@@ -15,6 +15,15 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
      */
     private $receiver = '';
     private $secret_key = '';
+
+    public static function inputs(): array
+    {
+        return [
+            'shopId' => 'Номер кошелька (на который зачисляются деньги)',
+            'secretKey' => 'Секретный ключ',
+        ];
+    }
+
     private $currency_default = 'RUB';
     private array $allowIP = [];
 
@@ -25,7 +34,7 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
     ];
 
     //Включена/отключена платежная система
-    protected static bool $enable = false;
+    protected static bool $enable = true;
     protected static bool $forAdmin = false;
 
     /**

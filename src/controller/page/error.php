@@ -31,6 +31,6 @@ class error {
         }
         tpl::addVar("title", "Проблема...");
         tpl::addVar('message', $message);
-        tpl::display("/page/error.html");
+        tpl::display("error.html");
     }
 }

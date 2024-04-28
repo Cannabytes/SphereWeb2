@@ -916,7 +916,7 @@ DataTable.ext.buttons.copyHtml5 = {
 			} catch (t) {}
 		}
 
-		// Otherwise we show the text box and instruct the user to use it
+		// Otherwise we show the text box and instruct the userModel to use it
 		var message = $(
 			'<span>' +
 				dt.i18n(
@@ -929,12 +929,12 @@ DataTable.ext.buttons.copyHtml5 = {
 
 		dt.buttons.info(dt.i18n('buttons.copyTitle', 'Copy to clipboard'), message, 0);
 
-		// Select the text so when the user activates their system clipboard
+		// Select the text so when the userModel activates their system clipboard
 		// it will copy that text
 		textarea[0].focus();
 		textarea[0].select();
 
-		// Event to hide the message when the user is done
+		// Event to hide the message when the userModel is done
 		var container = $(message).closest('.dt-button-info');
 		var close = function () {
 			container.off('click.buttons-copy');

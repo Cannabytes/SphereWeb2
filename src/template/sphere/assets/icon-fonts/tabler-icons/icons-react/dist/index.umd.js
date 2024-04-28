@@ -75191,7 +75191,7 @@
 
     return /*#__PURE__*/React__namespace.createElement("svg", _extends({
       xmlns: "http://www.w3.org/2000/svg",
-      className: "icon icon-tabler icon-tabler-user-check",
+      className: "icon icon-tabler icon-tabler-userModel-check",
       width: size,
       height: size,
       viewBox: "0 0 24 24",
@@ -75228,7 +75228,7 @@
 
     return /*#__PURE__*/React__namespace.createElement("svg", _extends({
       xmlns: "http://www.w3.org/2000/svg",
-      className: "icon icon-tabler icon-tabler-user-circle",
+      className: "icon icon-tabler icon-tabler-userModel-circle",
       width: size,
       height: size,
       viewBox: "0 0 24 24",
@@ -75267,7 +75267,7 @@
 
     return /*#__PURE__*/React__namespace.createElement("svg", _extends({
       xmlns: "http://www.w3.org/2000/svg",
-      className: "icon icon-tabler icon-tabler-user-exclamation",
+      className: "icon icon-tabler icon-tabler-userModel-exclamation",
       width: size,
       height: size,
       viewBox: "0 0 24 24",
@@ -75312,7 +75312,7 @@
 
     return /*#__PURE__*/React__namespace.createElement("svg", _extends({
       xmlns: "http://www.w3.org/2000/svg",
-      className: "icon icon-tabler icon-tabler-user-minus",
+      className: "icon icon-tabler icon-tabler-userModel-minus",
       width: size,
       height: size,
       viewBox: "0 0 24 24",
@@ -75352,7 +75352,7 @@
 
     return /*#__PURE__*/React__namespace.createElement("svg", _extends({
       xmlns: "http://www.w3.org/2000/svg",
-      className: "icon icon-tabler icon-tabler-user-off",
+      className: "icon icon-tabler icon-tabler-userModel-off",
       width: size,
       height: size,
       viewBox: "0 0 24 24",
@@ -75390,7 +75390,7 @@
 
     return /*#__PURE__*/React__namespace.createElement("svg", _extends({
       xmlns: "http://www.w3.org/2000/svg",
-      className: "icon icon-tabler icon-tabler-user-plus",
+      className: "icon icon-tabler icon-tabler-userModel-plus",
       width: size,
       height: size,
       viewBox: "0 0 24 24",
@@ -75427,7 +75427,7 @@
 
     return /*#__PURE__*/React__namespace.createElement("svg", _extends({
       xmlns: "http://www.w3.org/2000/svg",
-      className: "icon icon-tabler icon-tabler-user-search",
+      className: "icon icon-tabler icon-tabler-userModel-search",
       width: size,
       height: size,
       viewBox: "0 0 24 24",
@@ -75468,7 +75468,7 @@
 
     return /*#__PURE__*/React__namespace.createElement("svg", _extends({
       xmlns: "http://www.w3.org/2000/svg",
-      className: "icon icon-tabler icon-tabler-user-x",
+      className: "icon icon-tabler icon-tabler-userModel-x",
       width: size,
       height: size,
       viewBox: "0 0 24 24",
@@ -75505,7 +75505,7 @@
 
     return /*#__PURE__*/React__namespace.createElement("svg", _extends({
       xmlns: "http://www.w3.org/2000/svg",
-      className: "icon icon-tabler icon-tabler-user",
+      className: "icon icon-tabler icon-tabler-userModel",
       width: size,
       height: size,
       viewBox: "0 0 24 24",

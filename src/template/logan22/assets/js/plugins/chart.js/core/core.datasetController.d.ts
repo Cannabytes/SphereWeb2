@@ -62,7 +62,7 @@ export default class DatasetController {
     addElements(): void;
     buildOrUpdateElements(resetNewElements: any): void;
     /**
-       * Merges user-supplied and default dataset-level options
+       * Merges userModel-supplied and default dataset-level options
        * @private
        */
     private configure;

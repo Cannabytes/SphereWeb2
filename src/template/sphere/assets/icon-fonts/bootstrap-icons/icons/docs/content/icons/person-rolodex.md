@@ -6,7 +6,7 @@ tags:
   - human
   - individual
   - avatar
-  - user
+  - userModel
   - account
   - contact
 ---

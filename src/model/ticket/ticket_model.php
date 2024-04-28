@@ -7,10 +7,10 @@
 
 namespace Ofey\Logan22\model\ticket;
 
+use DateTime;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\lang\lang;
-use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\admin\userlog;
 use Ofey\Logan22\model\db\sql;
@@ -21,6 +21,65 @@ use Ofey\Logan22\template\tpl;
 use Verot\Upload\Upload;
 
 class ticket_model {
+
+    public static function get_ticket_data(): array
+    {
+        $ticket_data = sql::getRows('SELECT
+                                                ticket_data.id, 
+                                                ticket_data.type, 
+                                                ticket_data.user_id, 
+                                                ticket_data.last_message_id, 
+                                                ticket_messages.user_id AS message_last_user_id, 
+                                                ticket_messages.date, 
+                                                LEFT(ticket_messages.message, 60) AS message
+                                            FROM
+                                                ticket_data
+                                                INNER JOIN
+                                                ticket_messages
+                                                ON 
+                                                    ticket_data.last_message_id = ticket_messages.id');
+        $ticket_objects = [];
+        foreach ($ticket_data as $data) {
+            $ticket = new ticket_data();
+            $ticket->setId($data['id'])
+                ->setType($data['type'])
+                ->setUserId($data['user_id'])
+                ->setDate(new DateTime($data['date']))
+                ->setMessageLastUserId($data['message_last_user_id'])
+                ->setLastMessageId($data['last_message_id'])
+                ->setMessage($data['message']);
+            $ticket_objects[] = $ticket;
+        }
+        return $ticket_objects;
+    }
+
+    public static function get_ticket_author($id)
+    {
+       return sql::getRow('SELECT * FROM ticket_data WHERE ticket_data.user_id = ?', [$id]);
+    }
+
+    public static function get_ticket_messages($ticket_id): array
+    {
+        $ticket_messages = sql::getRows('SELECT `id`, `ticket_id`, `user_id`, `message`, `date` FROM `ticket_messages` WHERE ticket_id = ?', [$ticket_id]);
+        $ticket_messages_objects = [];
+        $user_last_message = -1;
+        foreach ($ticket_messages as $data) {
+            if($data['user_id'] == $user_last_message){
+                $message = end($ticket_messages_objects);
+                $message->setMessage($data['message']);
+                continue;
+            }
+            $message = new ticket_messages();
+            $message->setId($data['id'])
+                ->setTicketId($data['ticket_id'])
+                ->setUserId($data['user_id'])
+                ->setMessage($data['message'])
+                ->setDate(new DateTime($data['date']));
+            $user_last_message = $data['user_id'];
+            $ticket_messages_objects[] = $message;
+        }
+        return $ticket_messages_objects;
+    }
 
     //Список последних тикетов
     public static function all($type = "all"): array {

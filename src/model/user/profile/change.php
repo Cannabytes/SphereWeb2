@@ -41,9 +41,9 @@ class change {
 
         if (auth::get_name() != $_POST['name']) {
             if (self::valid_name($_POST['name'])) {
-                //Если имя начинается с user- то не даем его менять
-                if (mb_substr($_POST['name'], 0, 4) == "user") {
-                    self::$error[] = "Имя не может начинаться с user";
+                //Если имя начинается с userModel- то не даем его менять
+                if (mb_substr($_POST['name'], 0, 4) == "userModel") {
+                    self::$error[] = "Имя не может начинаться с userModel";
                 }else{
                     $isChangeName = true;
                     $table[] = "`name` = ?";

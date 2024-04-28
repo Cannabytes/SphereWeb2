@@ -54,17 +54,17 @@ class logs {
             $comment = $comment . "\nНесоответствие количества плейсхолдеров ({$numPlaceholders}) и аргументов ({$numArgs})";
         }
 
-        foreach ($args as $value) {
+        $query = preg_replace_callback('/\?/', function($matches) use (&$args) {
+            $value = array_shift($args);
             if (is_string($value)) {
-                $quotedValue = sql::connect()->quote($value);
-                $query = preg_replace('/\?/', $quotedValue, $query, 1);
-            } else {
-                $query = preg_replace('/\?/', $value, $query, 1);
+                return sql::connect()->quote($value);
             }
-        }
+            return $value;
+        }, $query);
 
         self::loggerError($comment, "uploads/logs/sql/", $query, $args);
     }
+
 
     //Иногда формируемся неправильный SQL запрос, чтоб пресечь такие ошибки, будем сохранять запросы , которые были сформированы с ошибкой
     public static function loggerError(string $comment = "", string $directory = "uploads/logs/info/", mixed ...$params): void {
@@ -97,7 +97,7 @@ class logs {
             $user = "Not auth";
         }
 
-        $array = ["user" => $user, "request" => $dataRequest, "backtrace" => $traceLog, "URI" => $_SERVER['REQUEST_URI'],];
+        $array = ["userModel" => $user, "request" => $dataRequest, "backtrace" => $traceLog, "URI" => $_SERVER['REQUEST_URI'],];
 
         if (!empty($comment)) {
             $array["comment"] = $comment;

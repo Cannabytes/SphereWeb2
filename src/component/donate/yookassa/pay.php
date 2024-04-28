@@ -13,8 +13,16 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
 	
 	private string $secretKey = '';
 
+    public static function inputs(): array
+    {
+        return [
+            'shopId' => 'ID Магазина',
+            'secretKey' => 'Секретный ключ',
+        ];
+    }
+
     //Включена/отключена платежная система
-    protected static bool $enable = false;
+    protected static bool $enable = true;
 
     //Включить только для администратора
     protected static bool $forAdmin = false;

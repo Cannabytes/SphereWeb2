@@ -19,6 +19,7 @@ use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\notification\notification;
 use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 use Verot\Upload\Upload;
 
@@ -29,7 +30,7 @@ class change {
         tpl::addVar([
             "notification" => notification::get_self_notification(true),
         ]);
-        tpl::display("user/profile/notification.html");
+        tpl::display("userModel/profile/notification.html");
     }
 
     public static function show() {
@@ -39,7 +40,7 @@ class change {
             "name" => auth::get_name(),
             'timezone_list_default' => timezone::all(),
         ]);
-        tpl::display("user/profile/setting.html");
+        tpl::display("userModel/profile/setting.html");
     }
 
     public static function save() {
@@ -62,7 +63,7 @@ class change {
             "title" => lang::get_phrase(192),
             "avatars" => $avatarList,
         ]);
-        tpl::display("user/profile/select_avatar.html");
+        tpl::display("select_avatar.html");
     }
 
     //Смена аватарки на свой
@@ -71,7 +72,7 @@ class change {
         tpl::addVar([
             "PRICE_CHANGE_AVATAR" => PRICE_CHANGE_AVATAR,
         ]);
-        tpl::display("user/profile/set_avatar.html");
+        tpl::display("userModel/profile/set_avatar.html");
     }
 
     public static function set_self_avatar_load() {
@@ -155,13 +156,12 @@ class change {
             "title" => lang::get_phrase(193),
             "avatars" => fileSys::file_list('src/template/logan22/assets/images/navatarback'),
         ]);
-        tpl::display("user/option/select_background_avatar.html");
+        tpl::display("userModel/option/select_background_avatar.html");
     }
 
     public static function save_avatar(): void {
         validation::user_protection();
         $avatar = $_POST['avatar'] ?? null;
-//        var_dump(fileSys::localdir("/uploads/avatar/" . $avatar, true));exit();
         if ($avatar == null) {
             board::notice(false, lang::get_phrase(194));
         }
@@ -169,8 +169,7 @@ class change {
             board::notice(false, lang::get_phrase(195));
         if (!file_exists(fileSys::localdir("/uploads/avatar/" . $avatar, true)))
             board::notice(false, lang::get_phrase(196));
-        \Ofey\Logan22\model\user\profile\change::set_avatar($avatar);
-        userlog::add("new_avatar", 547);
+        user::self()->setAvatar($avatar)->addLog("new_avatar", 547);
         board::alert([
             'ok' => true,
             'message' => lang::get_phrase(197),
@@ -217,7 +216,7 @@ class change {
             board::error("Некорректное значение суммы");
         }
         $moneyCount = $_POST['count'] ?? 0;
-        $user = trim($_POST['user']);
+        $user = trim($_POST['userModel']);
         if($moneyCount<=0){
             board::error("Сумма должна быть больше нуля");
         }

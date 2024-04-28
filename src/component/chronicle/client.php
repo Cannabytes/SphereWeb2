@@ -9,6 +9,9 @@ namespace Ofey\Logan22\component\chronicle;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\base\base;
+use Ofey\Logan22\component\base\source\L2jOpen;
+use Ofey\Logan22\component\fileSys\fileSys;
+use Ofey\Logan22\component\plugins\requestManager\structL2j;
 use Ofey\Logan22\model\admin\validation;
 
 class client {
@@ -19,13 +22,20 @@ class client {
         $protocols = self::get_protocol($chronicle_name);
         if(!$protocols)
             board::notice(false, "Not find client");
-        $all_class_base_data = base::all_class_base_data();
+        $all_class_base_data = fileSys::get_dir_files("src/component/base/source/", [
+            'basename'        => true,
+            'suffix'          => '.php',
+            'fetchAll'        => true,
+        ]);
         $collection = [];
         foreach($all_class_base_data as $class) {
-            $chronicle_protocols = ($class)::chronicle();
-            $diff = array_intersect($protocols, $chronicle_protocols);
-            if($diff) {
-                $collection[] = $class;
+            $class = "Ofey\Logan22\component\base\source\\" . $class;
+            if (method_exists($class, 'chronicle')) {
+                $chronicle_protocols = $class::chronicle();
+                $diff = array_intersect($protocols, $chronicle_protocols);
+                if($diff) {
+                    $collection[] = $class;
+                }
             }
         }
         board::alert([

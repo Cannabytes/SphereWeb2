@@ -1369,7 +1369,7 @@ return [
     'type' => 'etcitem',
     'name' => 'PC Blessing',
     'add_name' => '',
-    'description' => 'When used, for 20 minute(s], energy is replenished for party members, including the user, when Exp. is acquired through hunting. Re-use time is 60 minutes. Cannot be exchanged, dropped, or destroyed. Can be stored in a private warehouse.',
+    'description' => 'When used, for 20 minute(s], energy is replenished for party members, including the userModel, when Exp. is acquired through hunting. Re-use time is 60 minutes. Cannot be exchanged, dropped, or destroyed. Can be stored in a private warehouse.',
     'icon' => 'br_flag_of_bookmark_i00',
     'is_tradable' => false,
     'is_dropable' => false,

@@ -5,13 +5,15 @@ namespace Ofey\Logan22\model\admin;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 
 class userlog {
 
 
+    //TODO: Устарело. Использовать user->addLog
     public static function add($type, $phrase, $variable = [], mixed $request = ""){
         $user_id = auth::get_id() ?? 0;
-        $server_id = auth::get_default_server();
+        $server_id = user::getUserId()->getServerId();
         $time = time::mysql();
         $variable = json_encode($variable);
         $request = json_encode($_POST);

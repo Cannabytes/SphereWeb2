@@ -317,7 +317,7 @@ defaultOptions.common.maxChar = 20;
 defaultOptions.common.usernameField = '#username';
 defaultOptions.common.invalidCharsRegExp = new RegExp(/[\s,'"]/);
 defaultOptions.common.userInputs = [
-    // Selectors for input fields with user input
+    // Selectors for input fields with userModel input
 ];
 defaultOptions.common.onLoad = undefined;
 defaultOptions.common.onKeyUp = undefined;

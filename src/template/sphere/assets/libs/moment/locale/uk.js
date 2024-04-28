@@ -121,7 +121,7 @@
             yy : relativeTimeWithPlural
         },
 
-        // M. E.: those two are virtually unused but a user might want to implement them for his/her website for some reason
+        // M. E.: those two are virtually unused but a userModel might want to implement them for his/her website for some reason
 
         meridiemParse: /ночі|ранку|дня|вечора/,
         isPM: function (input) {

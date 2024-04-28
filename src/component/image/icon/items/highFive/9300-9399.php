@@ -659,7 +659,7 @@ return [
     'type' => 'weapon',
     'name' => 'Dismantler',
     'add_name' => 'Critical Drain',
-    'description' => 'Kamael Exclusive Weapon: Guardian Sword Conversion. <Soul Crystal Enhancement>. The user absorbs 8 HP from target on a critical attack.',
+    'description' => 'Kamael Exclusive Weapon: Guardian Sword Conversion. <Soul Crystal Enhancement>. The userModel absorbs 8 HP from target on a critical attack.',
     'icon' => 'weapon_dismantler_i01',
     'weapon_type' => 'ancientsword',
     'bodypart' => 'lrhand',

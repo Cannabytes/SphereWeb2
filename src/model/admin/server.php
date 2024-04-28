@@ -12,122 +12,84 @@ use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\install\install;
+use Ofey\Logan22\model\server\serverModel;
 
 class server {
 
     public static function save_server() {
-        $name_server = !empty($_POST['name']) ? trim($_POST['name']) : board::notice(false, "Не заполнено название сервера");
-        $version_client = !empty($_POST['version_client']) ? trim($_POST['version_client']) : board::notice(false, "Не заполнена версия клиента");
+//        var_dump($_POST);exit;
+        $data['name'] = !empty($_POST['name']) ? trim($_POST['name']) : board::notice(false, "Не заполнено название сервера");
+        $data['chronicle'] = !empty($_POST['version_client']) ? trim($_POST['version_client']) : board::notice(false, "Не заполнена версия клиента");
 
-        $rate_exp = !empty($_POST['rate_exp']) ? trim($_POST['rate_exp']) : board::notice(false, "Не заполнено поле Rate EXP");
-        $rate_sp = !empty($_POST['rate_sp']) ? trim($_POST['rate_sp']) : board::notice(false, "Не заполнено поле Rate SP");
-        $rate_adena = !empty($_POST['rate_adena']) ? trim($_POST['rate_adena']) : board::notice(false, "Не заполнено поле Rate Adena");
-        $rate_drop = !empty($_POST['rate_drop']) ? trim($_POST['rate_drop']) : board::notice(false, "Не заполнено поле Rate Drop");
-        $rate_spoil = !empty($_POST['rate_spoil']) ? trim($_POST['rate_spoil']) : board::notice(false, "Не заполнено поле Rate Spoil");
+        $data['rateExp'] = !empty($_POST['rateExp']) ? trim($_POST['rateExp']) : board::notice(false, "Не заполнено поле Rate EXP");
+        $data['rateSp'] = !empty($_POST['rateSp']) ? trim($_POST['rateSp']) : board::notice(false, "Не заполнено поле Rate SP");
+        $data['rateAdena'] = !empty($_POST['rateAdena']) ? trim($_POST['rateAdena']) : board::notice(false, "Не заполнено поле Rate Adena");
+        $data['rateDrop'] = !empty($_POST['rateDrop']) ? trim($_POST['rateDrop']) : board::notice(false, "Не заполнено поле Rate Drop");
+        $data['rateSpoil'] = !empty($_POST['rateSpoil']) ? trim($_POST['rateSpoil']) : board::notice(false, "Не заполнено поле Rate Spoil");
 
-//        $date_start = !empty($_POST['date_start']) ? trim($_POST['date_start']) : board::notice(false, "Не заполнено поле даты старта сервера");
-//        $time_start = !empty($_POST['time_start']) ? trim($_POST['time_start']) : board::notice(false, "Не заполнено поле время старта сервера");
-        $date_start = date("Y-m-d");
-        $time_start = date("H:i");
-
-        $rest_api_enable = isset($_POST['rest_api_enable']) ?: 0;
+        $data['restApiEnable'] = isset($_POST['rest_api_enable']) ?: 0;
 
         //Данные БД для логина
-        $db_login_host = !empty($_POST['db_login_host']) ? trim($_POST['db_login_host']) : "";
-        $db_login_user = !empty($_POST['db_login_user']) ? trim($_POST['db_login_user']) : "";
-        $db_login_password = $_POST['db_login_password'];
-        $db_login_port = $_POST['db_login_port'] ?? 3306;
+        $data['login_host'] = !empty($_POST['login_host']) ? trim($_POST['login_host']) : "";
+        $data['login_user'] = !empty($_POST['login_user']) ? trim($_POST['login_user']) : "";
+        $data['login_password'] = $_POST['login_password'];
+        $data['login_port'] = $_POST['login_port'] ?? 3306;
 
-        $db_login_name = "";
-        if (isset($_POST['db_login_name'])) {
-            $db_login_name = trim($_POST['db_login_name']);
+        $login_name = "";
+        if (isset($_POST['login_name'])) {
+            $login_name = trim($_POST['login_name']);
         } else {
-            if(!$rest_api_enable){
+            if(!$data['restApiEnable']){
                 board::notice(false, "Не выбрана БД логина");
             }
         }
+        $data['login_name'] = $login_name;
 
         //Данные БД для гейма
-        $db_game_host = !empty($_POST['db_game_host']) ? trim($_POST['db_game_host']) : "";
-        $db_game_user = !empty($_POST['db_game_user']) ? trim($_POST['db_game_user']) : "";
-        $db_game_password = $_POST['db_game_password'];
-        $db_game_port = $_POST['db_game_port'] ?? 3306;
+        $data['game_host'] = !empty($_POST['game_host']) ? trim($_POST['game_host']) : "";
+        $data['game_user'] = !empty($_POST['game_user']) ? trim($_POST['game_user']) : "";
+        $data['game_password'] = $_POST['game_password'];
+        $data['game_port'] = $_POST['game_port'] ?? 3306;
 
-        $db_game_name = "";
-        if (isset($_POST['db_game_name'])) {
-            $db_game_name = trim($_POST['db_game_name']);
+        $game_name = "";
+        if (isset($_POST['game_name'])) {
+            $game_name = trim($_POST['game_name']);
         } else {
-            if(!$rest_api_enable) {
+            if(!$data['restApiEnable']) {
                 board::notice(false, "Не выбрана БД сервера");
             }
         }
+        $data['game_name'] = $game_name;
 
+        $data['collection_sql_base_name'] = !empty($_POST['sql_base_source']) ? trim($_POST['sql_base_source']) : board::notice(false, "Need select sql database server collection");
 
-        $sql_base_source = !empty($_POST['sql_base_source']) ? trim($_POST['sql_base_source']) : board::notice(false, "Need select sql database server collection");
-        $check_server_online = isset($_POST['check_server_online']) ?: 0;
+        $data['check_server_online'] = isset($_POST['check_server_online']) ?: 0;
 
-        $check_loginserver_online_host = $_POST['check_loginserver_online_host'];
-        $check_loginserver_online_port = $_POST['check_loginserver_online_port'] ?: null;
-        $check_gameserver_online_host = $_POST['check_gameserver_online_host'];
-        $check_gameserver_online_port = $_POST['check_gameserver_online_port'] ?: null;
+        $data['check_loginserver_online_host'] = $_POST['check_loginserver_online_host'] ?? null;
+        $data['check_loginserver_online_port'] = $_POST['check_loginserver_online_port'] ?? null;
+        $data['check_gameserver_online_host'] = $_POST['check_gameserver_online_host'] ?? null;
+        $data['check_gameserver_online_port'] = $_POST['check_gameserver_online_port'] ?? null;
 
-        $rest_api_enable = isset($_POST['rest_api_enable']) ?: 0;
-        $rest_api_ip = $_POST['rest_api_ip'] ?? "127.0.0.1";
-        $rest_api_port = $_POST['rest_api_port'] ?? 3333;
-        $rest_api_key = $_POST['rest_api_key'] ?? "";
+        $data['rest_api_enable'] = isset($_POST['rest_api_enable']) ?: 0;
+        $data['rest_api_ip'] = $_POST['rest_api_ip'] ?? "127.0.0.1";
+        $data['rest_api_port'] = $_POST['rest_api_port'] ?? 3333;
+        $data['rest_api_key'] = $_POST['rest_api_key'] ?? "";
 
-        $chat_game_enabled = isset($_POST['chat_game_enabled']) ?: 0;
-        $launcher_enabled = 0;
+        $data['chat_game_enabled'] = isset($_POST['chat_game_enabled']) ?: 0;
+        $data['launcher_enabled'] = 0;
 
-        if(!$rest_api_enable) {
+        if(!$data['rest_api_enable']) {
             //Проверяем соединение с БД перед тем как добавить
-            if(!install::test_connect_mysql($db_login_host, $db_login_port, $db_login_user, $db_login_password, $db_login_name)) {
+            if(!install::test_connect_mysql($data['login_host'], $data['login_port'], $data['login_user'], $data['login_password'], $data['login_name'])) {
                 board::notice(false, lang::get_phrase(223));
             }
-            if(!install::test_connect_mysql($db_game_host, $db_game_port, $db_game_user, $db_game_password, $db_game_name)) {
+            if(!install::test_connect_mysql($data['game_host'], $data['game_port'], $data['game_user'], $data['game_password'], $data['game_name'])) {
                 board::notice(false, lang::get_phrase(223));
             }
         }
-
-        $sql = "INSERT INTO `server_list` (`name`, `rate_exp`, `rate_sp`, `rate_adena`, `rate_drop_item`, `rate_spoil`, `date_start_server`, `chronicle`, `login_host`, `login_port`, `login_user`, `login_password`, `login_name`, `game_host`, `game_port`, `game_user`, `game_password`, `game_name`, `collection_sql_base_name`, `check_server_online`,  `check_loginserver_online_host`, `check_loginserver_online_port`, `check_gameserver_online_host`, `check_gameserver_online_port`, `chat_game_enabled` , `launcher_enabled`, `rest_api_enable`, `rest_api_hostname`, `rest_api_port`, `rest_api_key` ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $ok = sql::run($sql, [
-            $name_server,
-            $rate_exp,
-            $rate_sp,
-            $rate_adena,
-            $rate_drop,
-            $rate_spoil,
-            "{$date_start} {$time_start}:00",
-            $version_client,
-            $db_login_host,
-            $db_login_port,
-            $db_login_user,
-            $db_login_password,
-            $db_login_name,
-            $db_game_host,
-            $db_game_port,
-            $db_game_user,
-            $db_game_password,
-            $db_game_name,
-            $sql_base_source,
-
-            $check_server_online,
-            $check_loginserver_online_host,
-            $check_loginserver_online_port,
-            $check_gameserver_online_host,
-            $check_gameserver_online_port,
-
-            $chat_game_enabled,
-            $launcher_enabled,
-
-            $rest_api_enable,
-            $rest_api_ip,
-            $rest_api_port,
-            $rest_api_key,
-
-        ], false);
-        $server_id = sql::lastInsertId();
-        board::response("notice", ["message" => lang::get_phrase(243), "ok"=>true, "redirect" => fileSys::localdir("/admin/options/server/additionally/" . $server_id)]);
+        $serverModel = new serverModel($data, []);
+        $serverModel->save();
+//        board::response("notice", ["message" => lang::get_phrase(243), "ok"=>true, "redirect" => fileSys::localdir("/admin/options/server/additionally/" . $serverModel->getId())]);
     }
 
     public static function update_server() {
@@ -149,18 +111,18 @@ class server {
 
 
         //Данные БД для логина
-        $db_login_host = !empty($_POST['db_login_host']) ? trim($_POST['db_login_host']) : "";
-        $db_login_port = $_POST['db_login_port'] ?? 3306;
+        $login_host = !empty($_POST['login_host']) ? trim($_POST['login_host']) : "";
+        $login_port = $_POST['login_port'] ?? 3306;
 
-        $db_login_user = !empty($_POST['db_login_user']) ? trim($_POST['db_login_user']) : "";
-        $db_login_password = $_POST['db_login_password'];
-        $db_login_name = !empty($_POST['db_login_name']) ? trim($_POST['db_login_name']) : "";
+        $login_user = !empty($_POST['login_user']) ? trim($_POST['login_user']) : "";
+        $login_password = $_POST['login_password'];
+        $login_name = !empty($_POST['login_name']) ? trim($_POST['login_name']) : "";
         //Данные БД для гейма
-        $db_game_host = !empty($_POST['db_game_host']) ? trim($_POST['db_game_host']) : "";
-        $db_game_port = $_POST['db_game_port'] ?? 3306;
-        $db_game_user = !empty($_POST['db_game_user']) ? trim($_POST['db_game_user']) : "";
-        $db_game_password = $_POST['db_game_password'];
-        $db_game_name = !empty($_POST['db_game_name']) ? trim($_POST['db_game_name']) : "";
+        $game_host = !empty($_POST['game_host']) ? trim($_POST['game_host']) : "";
+        $game_port = $_POST['game_port'] ?? 3306;
+        $game_user = !empty($_POST['game_user']) ? trim($_POST['game_user']) : "";
+        $game_password = $_POST['game_password'];
+        $game_name = !empty($_POST['game_name']) ? trim($_POST['game_name']) : "";
 
         $sql_base_source = !empty($_POST['sql_base_source']) ? trim($_POST['sql_base_source']) : board::notice(false, "Need select sql database server collection");
         $check_server_online = isset($_POST['check_server_online']) ?: 0;
@@ -221,16 +183,16 @@ class server {
             $rate_spoil,
             "{$date_start} {$time_start}:00",
             $version_client,
-            $db_login_host,
-            $db_login_port,
-            $db_login_user,
-            $db_login_password,
-            $db_login_name,
-            $db_game_host,
-            $db_game_port,
-            $db_game_user,
-            $db_game_password,
-            $db_game_name,
+            $login_host,
+            $login_port,
+            $login_user,
+            $login_password,
+            $login_name,
+            $game_host,
+            $game_port,
+            $game_user,
+            $game_password,
+            $game_name,
             $sql_base_source,
 
             $check_server_online,

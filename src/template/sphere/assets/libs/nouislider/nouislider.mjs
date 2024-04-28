@@ -1370,7 +1370,7 @@ function scope(target, options, originalOptions) {
         if (e.type.indexOf("MSPointer") === 0) {
             pointer = true;
         }
-        // Erroneous events seem to be passed in occasionally on iOS/iPadOS after user finishes interacting with
+        // Erroneous events seem to be passed in occasionally on iOS/iPadOS after userModel finishes interacting with
         // the slider. They appear to be of type MouseEvent, yet they don't have usual properties set. Ignore
         // events that have no touches or buttons associated with them. (#1057, #1079, #1095)
         if (e.type === "mousedown" && !e.buttons && !e.touches) {
@@ -2198,7 +2198,7 @@ function scope(target, options, originalOptions) {
         // Add handles and connect elements.
         scope_Base = addSlider(scope_Target);
         addElements(options.connect, scope_Base);
-        // Attach user events.
+        // Attach userModel events.
         bindSliderEvents(options.events);
         // Use the public value method to set the start values.
         valueSet(options.start);

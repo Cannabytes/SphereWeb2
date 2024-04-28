@@ -1615,7 +1615,7 @@ export interface CoreChartOptions<TType extends ChartType> extends ParsingOption
 
   /**
    * Locale used for number formatting (using `Intl.NumberFormat`).
-   * @default user's browser setting
+   * @default userModel's browser setting
    */
   locale: string;
 
@@ -3368,7 +3368,7 @@ export type TimeScaleOptions = Omit<CartesianScaleOptions, 'min' | 'max'> & {
      * Ticks generation input values:
      * - 'auto': generates "optimal" ticks based on scale size and time options.
      * - 'data': generates ticks from data (including labels from data `{t|x|y}` objects).
-     * - 'labels': generates ticks from user given `data.labels` values ONLY.
+     * - 'labels': generates ticks from userModel given `data.labels` values ONLY.
      * @see https://github.com/chartjs/Chart.js/pull/4507
      * @since 2.7.0
      * @default 'auto'
@@ -3692,7 +3692,7 @@ export type ScaleOptionsByType<TScale extends ScaleType = ScaleType> =
   { [key in ScaleType]: { type: key } & ScaleTypeRegistry[key]['options'] }[TScale]
 ;
 
-// Convenience alias for creating and manipulating scale options in user code
+// Convenience alias for creating and manipulating scale options in userModel code
 export type ScaleOptions<TScale extends ScaleType = ScaleType> = DeepPartial<ScaleOptionsByType<TScale>>;
 
 export type DatasetChartOptions<TType extends ChartType = ChartType> = {

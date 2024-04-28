@@ -22,7 +22,7 @@ class users {
         $name = $_POST["name"] ?? "";
         $donate = $_POST["donate"] ?? "";
         $password = $_POST["password"] ?? "";
-        $group = $_POST["group"] ?? "user";
+        $group = $_POST["group"] ?? "userModel";
         if(user::edit($id, $email, $name, $donate, $password, $group)){
             tpl::addVar("users", user::All());
             $async = new async("admin/users/users.html");
@@ -30,7 +30,7 @@ class users {
             $async->block("title", "title");
             $async->send();
         }else{
-            board::notice(false, "Failed to edit user");
+            board::notice(false, "Failed to edit userModel");
         }
 
     }

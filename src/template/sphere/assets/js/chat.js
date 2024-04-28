@@ -12,8 +12,12 @@
 
     var myElement4 = document.getElementById('main-chat-content');
     new SimpleBar(myElement4, { autoHide: true });
+    var lastMessage = document.querySelector('#main-chat-content li:last-child');
+    if(lastMessage) {
+        lastMessage.scrollIntoView({ behavior: 'smooth' });
+    }
 
-    var myElement5 = document.getElementById('chat-user-details');
+    var myElement5 = document.getElementById('chat-userModel-details');
     new SimpleBar(myElement5, { autoHide: true });
 
     document.querySelector(".responsive-chat-close").addEventListener("click", () => {
@@ -22,15 +26,15 @@
 
     document.querySelectorAll(".responsive-userinfo-open").forEach((ele) => {
         ele.addEventListener("click", () => {
-            document.querySelector("#chat-user-details").classList.add("open")
+            document.querySelector("#chat-userModel-details").classList.add("open")
         })
     })
 
     document.querySelector(".chat-info").addEventListener("click", () => {
-        document.querySelector("#chat-user-details").classList.remove("open")
+        document.querySelector("#chat-userModel-details").classList.remove("open")
     })
     document.querySelector(".chat-content").addEventListener("click", () => {
-        document.querySelector("#chat-user-details").classList.remove("open")
+        document.querySelector("#chat-userModel-details").classList.remove("open")
     })
 
 

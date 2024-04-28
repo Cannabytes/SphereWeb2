@@ -165,7 +165,7 @@ class install {
         }
         $host = $_POST['host'];
         $port = $_POST['port'] ?? 3306;
-        $user = $_POST['user'];
+        $user = $_POST['userModel'];
         $password = $_POST['password'];
         $name = $_POST['name'];
         $pdo = \Ofey\Logan22\model\install\install::test_connect_mysql($host, $port, $user, $password, $name);

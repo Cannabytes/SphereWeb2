@@ -10,6 +10,7 @@ namespace Ofey\Logan22\component\mail;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\controller\config\config;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -19,8 +20,8 @@ class mail {
 
         $mail = new PHPMailer(true);
         try {
-            if (empty(EMAIL_HOST) or empty(EMAIL_USERNAME) or empty(EMAIL_PASSWORD) or empty(EMAIL_PORT) or empty(EMAIL_SMTP_AUTH) or empty(EMAIL_ENCRYPT)) {
-                board::error("Не заполнены данные для отправки почты. Проверьте файл src/config/email.php");
+            if (empty(config::load()->email()->getHost()) or empty(config::load()->email()->getUsername()) or empty(config::load()->email()->getPassword()) or empty(config::load()->email()->getPort()) or empty(config::load()->email()->isSmtpAuth()) or empty(config::load()->email()->getProtocol())) {
+                board::error("Не заполнены данные для отправки почты.");
             }
             $mail->isSMTP();
 
@@ -30,14 +31,14 @@ class mail {
                 $GLOBALS['status'][] = $str;
             };
 
-            $mail->SMTPAuth = EMAIL_SMTP_AUTH ?? true;
-            $mail->Host = EMAIL_HOST; // SMTP сервера вашей почты
-            $mail->Username = EMAIL_USERNAME;
-            $mail->Password = EMAIL_PASSWORD;
-            $mail->SMTPSecure = EMAIL_ENCRYPT;
-            $mail->Port = EMAIL_PORT;
+            $mail->SMTPAuth = config::load()->email()->isSmtpAuth() ?? true;
+            $mail->Host = config::load()->email()->getHost(); // SMTP сервера вашей почты
+            $mail->Username = config::load()->email()->getUsername();
+            $mail->Password = config::load()->email()->getPassword();
+            $mail->SMTPSecure = config::load()->email()->getProtocol();
+            $mail->Port = config::load()->email()->getPort();
 
-            $mail->setFrom(EMAIL_USERNAME, lang::get_phrase(67));
+            $mail->setFrom(config::load()->email()->getUsername(), lang::get_phrase(67));
             $mail->addAddress($email);
 
             $mail->isHTML(true);

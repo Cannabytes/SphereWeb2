@@ -1,0 +1,395 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- ROW-1 OPEN -->
+    <div class="row">
+        <!-- COL-END -->
+
+        <div class="col-xl-4">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">Пополнение баланса на мастер аккаунт</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <div class="mb-1 text-muted">Сколько SphereCoin купить?</div>
+                        <div class="input-group border rounded flex-nowrap">
+                            <button class="btn btn-icon btn-primary input-group-text flex-fill "
+                                    id="product-quantity-minus"><i class="ri-subtract-line"></i></button>
+                            <input type="text" class="form-control form-control-sm border-0 text-center w-100"
+                                   aria-label="quantity" id="numberOfCoinsPurchased" value="1">
+                            <button class="btn btn-icon btn-primary input-group-text flex-fill "
+                                    id="product-quantity-plus"><i class="ri-add-line"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-header">
+                    <div class="card-title">Выберите платежную систему</div>
+                </div>
+                <div class="">
+                    {% for donSys in donateSysNames %}
+                    <div class="form-check d-flex overflow-visible border-bottom border-block-end-dashed selectDonSys"
+                         data-name="{{donSys.name}}">
+                        <input hidden="" value="{{donSys.name}}" class="form-check-input" type="radio" name="paysystem"
+                               id="{{donSys.name}}">
+                        <span class="avatar card-aside-column br-5 cover-image"
+                              data-bs-image-src="{{template}}/assets/images/donate/{{donSys.name}}.png"
+                              style="background: url({{template}}/assets/images/donate/{{donSys.name}}.png) center center;"></span>
+                        <div class="ps-3 flex-column">
+                            <span class="badge bg-danger">{{donSys.name}}</span>
+                            <div class="text-muted">{{donSys.desc}}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="card-footer text-center">
+                    <div class="btn-list">
+                        <button id="paynext" type="button" class="btn btn-success btn-wave waves-effect waves-light">
+                            Оплатить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-8">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        Бонусы
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-xl-3">
+                            <ul class="nav nav-tabs flex-column nav-style-4" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" role="tab"
+                                       aria-current="page" href="#home-vertical"
+                                       aria-selected="true">Предметные бонусы</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" role="tab"
+                                       aria-current="page" href="#about-vertical"
+                                       aria-selected="true">Единоразовый бонус</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" role="tab"
+                                       aria-current="page" href="#services-vertical"
+                                       aria-selected="true">Накопительные бонусы</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" role="tab"
+                                       aria-current="page" href="#contacts-vertical"
+                                       aria-selected="true">Contacts</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-xl-9">
+                            <div class="tab-content">
+                                <div class="tab-pane show active text-muted" id="home-vertical"
+                                     role="tabpanel">
+
+                                    Вы можете получить бонус предметы при пополнении, в зависимости от суммы пополнения
+                                    своего баланса.<br>
+
+
+                                    {% for cost, bonus in config().donate().getTableItemsBonus() %}
+                                    <div class="table-responsive mt-4 bonus_items" data-cost="{{cost}}">
+                                        <table class="table table-sm text-nowrap table-bordered border-primary">
+                                            <thead>
+                                            <tr>
+                                                <th colspan="4" scope="col">От {{cost}}</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for item in bonus %}
+                                            <tr>
+                                                <th scope="row" style="width: 1px">
+                                                    <img class="avatar avatar-sm me-2" src="{{item.item.getIcon()}}">
+                                                </th>
+                                                <td>
+                                                    <span class="">{{item.item.getAddName()}} {{item.item.itemName()}}</span>
+                                                </td>
+                                                <td><span class="">{{item.count}}</span></td>
+                                            </tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% endfor %}
+
+                                </div>
+
+
+                                <div class="tab-pane text-muted" id="about-vertical"
+                                     role="tabpanel">
+                                    Единоразовые бонусы - это при пополнении Вам дадут дополнительный процент
+                                    вознаграждения от суммы пополнения.
+                                    <br>
+                                    <div class="table-responsive mt-4">
+                                        <table class="table table-sm text-nowrap table-bordered border-primary">
+                                            <thead>
+                                            <tr>
+                                                <th>Процент вознаграждения</th>
+                                                <th>Минимальное пополнение</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="row">+3%</th>
+                                                <td>500</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+5%</th>
+                                                <td>1000</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+8%</th>
+                                                <td>1500</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+10%</th>
+                                                <td>2500</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+15%</th>
+                                                <td>3500</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+20%</th>
+                                                <td>5000</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+25%</th>
+                                                <td>10000</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+30%</th>
+                                                <td>15000</td>
+                                            </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                                <div class="tab-pane text-muted" id="services-vertical"
+                                     role="tabpanel">
+
+                                    Накопительная система - чем больше Вы пополняете, тем больше получаете
+                                    дополнительный бонус.
+                                    <br>
+                                    <div class="table-responsive mt-4">
+                                        <table class="table table-sm text-nowrap table-bordered border-primary">
+                                            <thead>
+                                            <tr>
+                                                <th>Процент вознаграждения</th>
+                                                <th>Минимальное пополнение</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <th scope="row">+3%</th>
+                                                <td>500</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+5%</th>
+                                                <td>1000</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+8%</th>
+                                                <td>1500</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+10%</th>
+                                                <td>2500</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+15%</th>
+                                                <td>3500</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+20%</th>
+                                                <td>5000</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+25%</th>
+                                                <td>10000</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">+30%</th>
+                                                <td>15000</td>
+                                            </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                                <div class="tab-pane text-muted" id="contacts-vertical"
+                                     role="tabpanel">
+                                    Why delicious magazines are killing you. Why our world would end if
+                                    restaurants disappeared. Why restaurants are on crack about
+                                    restaurants. How restaurants are making the world a better place. 8
+                                    great articles about minute meals. Why our world would end if
+                                    healthy snacks disappeared. Why the world would end without mexican
+                                    food. The evolution of chef uniforms.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+{% block css %}
+{% endblock %}
+
+
+{% block js %}
+
+<script>
+
+
+    $(document).ready(function () {
+
+
+        $('#numberOfCoinsPurchased').on('input', function () {
+
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (parseInt(this.value) < 1 || isNaN(parseInt(this.value))) {
+                this.value = '1';
+            }
+            selectBonusPanel()
+    });
+
+        function selectBonusPanel(){
+            let enteredValue = parseInt($('#numberOfCoinsPurchased').val(), 10);
+            let maxCost = 0;
+            let $maxCostElement = null;
+
+            // Сначала находим элемент с максимальным data-cost, который меньше или равен введенному значению
+            $('.bonus_items').each(function() {
+                let cost = parseInt($(this).data('cost'), 10);
+                if (cost > maxCost && enteredValue >= cost) {
+                    maxCost = cost;
+                    $maxCostElement = $(this);
+                }
+            });
+
+            // Удаляем класс alert alert-success у всех элементов
+            $('.bonus_items').removeClass('alert alert-success');
+
+            // Добавляем класс alert alert-success только выбранному элементу
+            if ($maxCostElement) {
+                $maxCostElement.addClass('alert alert-success');
+            }
+        }
+
+
+        var incrementTimer;
+        var deincrementTimer;
+
+        $("#product-quantity-minus").on("mousedown", function () {
+            deincrementTimer = setInterval(function () {
+                var currentValue = parseInt($('#numberOfCoinsPurchased').val());
+                if (!isNaN(currentValue) && currentValue > 1) {
+                    $('#numberOfCoinsPurchased').val(currentValue - 1);
+                } else {
+                    $('#numberOfCoinsPurchased').val('1');
+                }
+                selectBonusPanel()
+
+            }, 4);
+        }).on("mouseup mouseleave", function () {
+            clearInterval(deincrementTimer);
+        });
+
+
+        $("#product-quantity-plus").on("mousedown", function () {
+            incrementTimer = setInterval(function () {
+                var currentValue = parseInt($('#numberOfCoinsPurchased').val());
+                if (!isNaN(currentValue)) {
+                    $('#numberOfCoinsPurchased').val(currentValue + 1);
+                } else {
+                    $('#numberOfCoinsPurchased').val('1');
+                }
+                selectBonusPanel()
+            }, 4);
+        }).on("mouseup mouseleave", function () {
+            clearInterval(incrementTimer);
+        });
+
+
+    });
+
+    function getSelectedPaySystemValue() {
+        var selectedValue = $('input[name="paysystem"]:checked').val();
+        if (selectedValue !== undefined && selectedValue !== null) {
+            return selectedValue;
+        } else {
+            noticeError("Выберите платежную систему")
+        }
+    }
+
+
+    $(document).on("click", "#paynext", function () {
+        paysystem = getSelectedPaySystemValue();
+        if (typeof paysystem === 'undefined') {
+            return;
+        }
+        $.ajax(
+            {
+                type: "POST",
+                url: "/donate/transfer/" + paysystem + "/createlink",
+                data: {
+                    count: $("#numberOfCoinsPurchased").val()
+                },
+                success: function (redirectLink) {
+                    console.log(redirectLink)
+                    if (redirectLink['ok'] === false) {
+                        noticeError(redirectLink['message'])
+                        return;
+                    }
+                    window.open(redirectLink, '_blank');
+                }
+            });
+    });
+
+        activateRadio("{{config().donate().getPaySystemDefault()}}");
+
+        $(document).on("click", ".selectDonSys", function (e) {
+            var name = $(this).data("name");
+            activateRadio(name);
+        });
+
+        function activateRadio(name) {
+            $('input[name="paysystem"]').prop('checked', false);
+            $('.form-check').removeClass('bg-success-transparent border-success notify-border-start-success');
+            $('#' + name).prop('checked', true);
+            $('.selectDonSys[data-name="' + name + '"]').addClass('bg-success-transparent border-success notify-border-start-success');
+        }
+
+
+
+</script>
+
+
+{% endblock %}

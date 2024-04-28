@@ -1,28 +1,63 @@
 <?php
 
-use Ofey\Logan22\component\lang\lang;
-use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\session\session;
+use Ofey\Logan22\controller\config\config;
+use Ofey\Logan22\controller\route\route;
 use Ofey\Logan22\model\admin\validation;
-use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\auth\auth;
-use Ofey\Logan22\model\user\player\character;
+use Ofey\Logan22\model\user\user;
+use Ofey\Logan22\template\tpl;
 
 session::init();
-lang::load_package();
-date_default_timezone_set(DEFAULT_TIMEZONE);
+config::load();
+date_default_timezone_set(config::load()->other()->getTimezone());
+
 $route = new Ofey\Logan22\route\Route();
-$route->get("user/change/lang/{lang}", 'Ofey\Logan22\component\lang\lang::set_lang');
+
+$userAccessLevel = user::self()->getAccessLevel();
+
+$routes = route::getRoutes();
+foreach ($routes as $dbRoute) {
+    if ( ! $dbRoute['enable']) {
+        continue;
+    }
+    $access = json_decode($dbRoute['access'], true);
+    if ($access[0] != 'any' && ! in_array($userAccessLevel, $access)) {
+        continue;
+    }
+    $method  = $dbRoute['method'];
+    $pattern = $dbRoute['pattern'];
+    $func    = $dbRoute['func'];
+
+    if ( ! $func) {
+        $func = function () use ($dbRoute) {
+            tpl::display($dbRoute['page']);
+        };
+    } elseif ($func == 'debug') {
+        $func = function () {
+            var_dump($_REQUEST);
+            exit;
+        };
+    } else {
+        $func = 'Ofey\\Logan22\\' . $func;
+        //        if (!is_callable($func)) {
+        //            continue; // Пропускаем маршрут, если функция не вызываема
+        //        }
+    }
+    $route->$method($pattern, $func);
+}
 
 /**
- * @param \Ofey\Logan22\route\Route $route
+ * @param   \Ofey\Logan22\route\Route  $route
+ *
  * @return void
  */
-function IndependentRequests(\Ofey\Logan22\route\Route $route): void {
+function IndependentRequests(\Ofey\Logan22\route\Route $route): void
+{
     $route->get("/", 'Ofey\Logan22\controller\promo\promo::index');
     $route->get("login", 'Ofey\Logan22\controller\user\auth\auth::index')->alias("login");
     $route->get("auth", 'Ofey\Logan22\controller\user\auth\auth::index')->alias("auth");
-    $route->post("auth", 'Ofey\Logan22\controller\user\auth\auth::auth_request');
+    $route->post("/auth", 'Ofey\Logan22\controller\user\auth\auth::auth_request');
     $route->get("auth/logout", 'Ofey\Logan22\controller\user\auth\auth::logout');
     $route->get("auth/forget", 'Ofey\Logan22\controller\user\auth\auth::forget')->alias("forget");
     $route->post("auth/forget/send/code", 'Ofey\Logan22\controller\user\auth\auth::send_email_forget');
@@ -32,8 +67,8 @@ function IndependentRequests(\Ofey\Logan22\route\Route $route): void {
     $route->get("/registration/account", 'Ofey\Logan22\controller\registration\account::newAccount')->alias("registration_account");
     $route->get("/registration/account/server/(\d+)", 'Ofey\Logan22\controller\registration\account::newAccount');
     $route->post("/registration/account", 'Ofey\Logan22\controller\registration\account::requestNewAccount');
-    $route->get("registration/user", 'Ofey\Logan22\controller\registration\user::show')->alias("registration_user");
-    $route->post("registration/user", 'Ofey\Logan22\controller\registration\user::add');
+    $route->get("registration/userModel", 'Ofey\Logan22\controller\registration\user::show')->alias("registration_user");
+    $route->post("registration/userModel", 'Ofey\Logan22\controller\registration\user::add');
     $route->get("registration/user/ref/{username}", 'Ofey\Logan22\controller\registration\user::show');
     $route->post("generation/account", function () {
         echo \Ofey\Logan22\component\account\generation::word();
@@ -42,10 +77,9 @@ function IndependentRequests(\Ofey\Logan22\route\Route $route): void {
         echo \Ofey\Logan22\component\account\generation::password(mt_rand(4, 6), special: false);
     });
     $route->post("/captcha", 'Ofey\Logan22\component\captcha\captcha::defence');
-
 }
 
-if (!\Ofey\Logan22\model\install\install::exist_admin() or !file_exists(\Ofey\Logan22\component\fileSys\fileSys::get_dir('/src/config/db.php'))) {
+if ( ! file_exists(\Ofey\Logan22\component\fileSys\fileSys::get_dir('/data/db.php'))) {
     $route->get("/", "Ofey\Logan22\controller\install\install::rules");
     $route->get("/install", "Ofey\Logan22\controller\install\install::rules");
     $route->get("/install/db", "Ofey\Logan22\controller\install\install::db");
@@ -56,29 +90,32 @@ if (!\Ofey\Logan22\model\install\install::exist_admin() or !file_exists(\Ofey\Lo
         \Ofey\Logan22\component\redirect::location("/install");
     });
 } else {
-    if(REQUIRE_AUTHORIZATION){
-        if(!auth::get_is_auth()){
+//    config::load()->
+    if (false) {
+        //TODO: переделать
+//    if (REQUIRE_AUTHORIZATION) {
+        if ( ! auth::get_is_auth()) {
             IndependentRequests($route);
             $route->get("/(.*)", 'Ofey\Logan22\controller\user\auth\auth::index')->alias("auth");
             $route->run();
+
             return;
         }
     }
     //Если включен режим выполнения технических работ
-    if(auth::get_access_level()!="admin"){
-        if(TECHNICAL_WORK){
+
+    if (user::self()->getAccessLevel() != "admin") {
+        if (config::load()->other()->getEnableTechnicalWork()) {
             $route->get("/auth", 'Ofey\Logan22\controller\user\auth\auth::index')->alias("auth");
             $route->all('/(.*)', function () {
-                \Ofey\Logan22\template\tpl::addVar("TECHNICAL_WORK_TIME_UP", TECHNICAL_WORK_TIME_UP);
-                \Ofey\Logan22\template\tpl::display("/page/technicalwork.html");
+                echo 'Пока отключено';exit();
+//                tpl::display("/technicalwork.html");
             });
             $route->run();
             return;
         }
     }
 
-
-    //Новости и страницы
     $route->get("page", '\Ofey\Logan22\controller\page\page::lastNews');
     $route->get("page/(\d+)", "Ofey\Logan22\controller\page\page::show");
     $route->post("page/comment/add", '\Ofey\Logan22\controller\page\page::addComment');
@@ -86,7 +123,7 @@ if (!\Ofey\Logan22\model\install\install::exist_admin() or !file_exists(\Ofey\Lo
     $route->post("page/comment/edit", '\Ofey\Logan22\controller\admin\page::editComment');
 
     $route->post("ajax/get/news", '\Ofey\Logan22\controller\page\page::get_news_ajax');
-    $route->get("main", 'Ofey\Logan22\controller\main\main::index')->alias("home")->alias("main");
+    //    $route->get("main", 'Ofey\Logan22\controller\main\main::index')->alias("home")->alias("main");
     IndependentRequests($route);
 
     $route->get("/forum/topic/add/(\d+)", 'Ofey\Logan22\controller\forum\forum::addTopic');
@@ -105,15 +142,14 @@ if (!\Ofey\Logan22\model\install\install::exist_admin() or !file_exists(\Ofey\Lo
 
     $route->get("/accounts", 'Ofey\Logan22\controller\account\info\info::account');
     $route->get("account/password/change/{login}/server/(\d+)", 'Ofey\Logan22\controller\account\password\change::show');
-//TODO:Реквесты
-//TODO:Пересмотреть логику смены пароля игровому аккаунту
+    //TODO:Реквесты
+    //TODO:Пересмотреть логику смены пароля игровому аккаунту
     $route->post("account/password/change", 'Ofey\Logan22\controller\account\password\change::password');
     $route->get("account/comparison/server/(\d+)", 'Ofey\Logan22\controller\account\comparison\comparison::call');
     $route->get("account/info/{account}", 'Ofey\Logan22\controller\account\info\info::player_list');
     $route->post("account/info/change/characters/info/forbidden", 'Ofey\Logan22\model\user\player\player_account::forbiddenViewPlayerData');
     $route->get("/account/sync", 'Ofey\Logan22\controller\registration\account::sync');
     $route->post("/account/sync", 'Ofey\Logan22\controller\registration\account::sync_add');
-
 
     /**
      * Реферальная система
@@ -126,8 +162,8 @@ if (!\Ofey\Logan22\model\install\install::exist_admin() or !file_exists(\Ofey\Lo
      */
     $route->get("user/change", '\Ofey\Logan22\controller\user\profile\change::show');
     $route->post("user/change", '\Ofey\Logan22\controller\user\profile\change::save');
-    $route->post("user/change/default/server", '\Ofey\Logan22\controller\user\default_server::change');
-    $route->get("user/change/avatar", 'Ofey\Logan22\controller\user\profile\change::show_avatar_page');
+    $route->post("/user/change/default/server", '\Ofey\Logan22\controller\user\default_server::change');
+    //    $route->get("user/change/avatar", 'Ofey\Logan22\controller\user\profile\change::show_avatar_page');
     $route->post("user/change/avatar", 'Ofey\Logan22\controller\user\profile\change::save_avatar');
     $route->get("/user/change/avatar/self", 'Ofey\Logan22\controller\user\profile\change::set_self_avatar');
     $route->post("/user/change/avatar/self", 'Ofey\Logan22\controller\user\profile\change::set_self_avatar_load');
@@ -140,10 +176,10 @@ if (!\Ofey\Logan22\model\install\install::exist_admin() or !file_exists(\Ofey\Lo
     /**
      * Бонус коды
      */
-    $route->get("/bonus", '\Ofey\Logan22\controller\account\bonus\bonus::code');
-    $route->post("/bonus/receiving", '\Ofey\Logan22\controller\account\bonus\bonus::receiving');
-    $route->post("/bonus/inventory/update", "\Ofey\Logan22\controller\account\bonus\bonus::update_inventory");
-    $route->post("/bonus/inventory/addplayer", "\Ofey\Logan22\controller\account\bonus\bonus::addBonusPlayer");
+    //    $route->get("/bonus", '\Ofey\Logan22\controller\account\bonus\bonus::code');
+    //    $route->post("/bonus/receiving", '\Ofey\Logan22\controller\account\bonus\bonus::receiving');
+    //    $route->post("/bonus/inventory/update", "\Ofey\Logan22\controller\account\bonus\bonus::update_inventory");
+    //    $route->post("/bonus/inventory/addplayer", "\Ofey\Logan22\controller\account\bonus\bonus::addBonusPlayer");
 
     /**
      * Статистика
@@ -175,10 +211,10 @@ if (!\Ofey\Logan22\model\install\install::exist_admin() or !file_exists(\Ofey\Lo
     $route->post("donate/currency_exchange_info", '\Ofey\Logan22\controller\donate\pay::currency_exchange_info');
     $route->get("donate/pay", '\Ofey\Logan22\controller\donate\pay::pay')->alias('donate_pay');
     $route->get("donate", '\Ofey\Logan22\controller\donate\pay::shop')->alias('donate');
-    $route->get("donate/(.*)", '\Ofey\Logan22\controller\donate\pay::get_donate_type');
+    //    $route->get("shop", '\Ofey\Logan22\controller\donate\pay::shop')->alias('donate');
+    //    $route->get("donate/(.*)", '\Ofey\Logan22\controller\donate\pay::get_donate_type');
 
-    $route->post("donate/transaction", 'Ofey\Logan22\controller\donate\pay::transaction');
-
+    //    $route->post("donate/transaction", 'Ofey\Logan22\controller\donate\pay::transaction');
 
     /**
      * Галерея
@@ -195,8 +231,10 @@ if (!\Ofey\Logan22\model\install\install::exist_admin() or !file_exists(\Ofey\Lo
     /**
      * Тикеты
      */
-    $route->get("ticket", 'Ofey\Logan22\controller\ticket\ticket::all');
-    $route->get("ticket/(\d+)", 'Ofey\Logan22\controller\ticket\ticket::get');
+    //    $route->get("ticket", 'Ofey\Logan22\controller\ticket\ticket::all');
+    //    $route->post("ticket/message", 'Ofey\Logan22\controller\ticket\ticket::message');
+    //    $route->get("ticket/(\d+)", 'Ofey\Logan22\controller\ticket\ticket::get');
+
     $route->get("ticket/open", 'Ofey\Logan22\controller\ticket\ticket::getOpenTickets');
     $route->get("ticket/close", 'Ofey\Logan22\controller\ticket\ticket::getCloseTickets');
     $route->get("ticket/create", 'Ofey\Logan22\controller\ticket\ticket::create');
@@ -231,13 +269,16 @@ if (!\Ofey\Logan22\model\install\install::exist_admin() or !file_exists(\Ofey\Lo
     $route->get("/admin/pages/edit/(\d+)", 'Ofey\Logan22\controller\admin\page::edit_news');
     $route->post("/admin/pages/edit", 'Ofey\Logan22\controller\admin\page::update_news');
     $route->get("/admin/pages/trash/(\d+)", 'Ofey\Logan22\controller\admin\page::trash_send');
-    $route->get("/admin/options", 'Ofey\Logan22\controller\admin\options::server_show');
+    $route->get("/admin/setting", 'Ofey\Logan22\controller\admin\options::server_show');
+    $route->POST("/admin/setting/donate/save", 'Ofey\Logan22\controller\admin\options::saveConfigDonate');
+    $route->POST("/admin/setting/referral/save", 'Ofey\Logan22\controller\admin\options::saveConfigReferral');
+
     $route->post("/admin/option/server/save", 'Ofey\Logan22\controller\admin\options::new_server_save');
     $route->post("/admin/option/server/update", 'Ofey\Logan22\controller\admin\options::update_server_save');
     $route->post("/admin/option/server/remove", 'Ofey\Logan22\controller\admin\options::remove_server');
     $route->post("/admin/option/server/db/connect", 'Ofey\Logan22\controller\admin\options::test_connect_db');
     $route->post("/admin/option/server/db/connect/select/name", 'Ofey\Logan22\controller\admin\options::test_connect_db_selected_name');
-    $route->post("/admin/options/server/client/protocol", '\Ofey\Logan22\component\chronicle\client::get_base_collection_class');
+    //!    $route->post("/admin/options/server/client/protocol", '\Ofey\Logan22\component\chronicle\client::get_base_collection_class');
 
     $route->get("/admin/options/server/cache", 'Ofey\Logan22\controller\admin\options::cache_page');
     $route->post("/admin/options/server/cache", 'Ofey\Logan22\controller\admin\options::cache_save');
@@ -264,32 +305,19 @@ if (!\Ofey\Logan22\model\install\install::exist_admin() or !file_exists(\Ofey\Lo
     $route->post("/admin/template/readme", '\Ofey\Logan22\controller\admin\template::get_readme');
     $route->get("/admin/template/email/forget", '\Ofey\Logan22\controller\admin\template::email_forget');
     $route->get("/admin/template/email/password", '\Ofey\Logan22\controller\admin\template::new_password');
-    $route->get("/admin/options/email", 'Ofey\Logan22\controller\admin\mail::setting');
-    $route->post("/admin/options/email", 'Ofey\Logan22\controller\admin\mail::setting_save');
-    $route->get("/admin/donate/config", 'Ofey\Logan22\controller\admin\donate::config');
-    $route->get("/admin/donate", 'Ofey\Logan22\controller\admin\donate::show');
-    $route->get("/admin/donate/add", 'Ofey\Logan22\controller\admin\donate::add');
-    $route->post("/admin/donate/add", 'Ofey\Logan22\controller\admin\donate::add_item');
-    $route->post("/admin/donate/add/pack", 'Ofey\Logan22\controller\admin\donate::add_item_pack');
-    $route->post("/admin/donate/edit", 'Ofey\Logan22\controller\admin\donate::edit_item');
-    $route->post("/admin/donate/edit/pack", 'Ofey\Logan22\controller\admin\donate::edit_item_pack');
-    $route->post("/admin/donate/remove", 'Ofey\Logan22\controller\admin\donate::remove_item');
-    $route->post("/admin/donate/get/history/pay", 'Ofey\Logan22\controller\admin\donate::get_history_pay');
 
-
-    $route->get("/admin/forum", 'Ofey\Logan22\controller\admin\forum::index');
-    $route->post("/admin/forum", 'Ofey\Logan22\controller\admin\forum::save');
-    $route->post("/admin/forum/add/category", 'Ofey\Logan22\controller\admin\forum::addCategory');
-    $route->post("/admin/forum/edit/category", 'Ofey\Logan22\controller\admin\forum::editCategory');
-    $route->post("/admin/forum/remove/category", 'Ofey\Logan22\controller\admin\forum::removeCategory');
-    $route->post("/admin/forum/add/section", 'Ofey\Logan22\controller\admin\forum::addSection');
-    $route->post("/admin/forum/edit/section", 'Ofey\Logan22\controller\admin\forum::editSection');
-    $route->post("/admin/forum/remove/section", 'Ofey\Logan22\controller\admin\forum::removeSection');
-    $route->post("/admin/forum/section/close", 'Ofey\Logan22\controller\admin\forum::closeSection');
-    $route->post("/admin/forum/topic/close", 'Ofey\Logan22\controller\admin\forum::closeTopic');
-    $route->post("/admin/forum/topic/pin", 'Ofey\Logan22\controller\admin\forum::pinTopic');
-    $route->post("/admin/forum/topic/move", 'Ofey\Logan22\controller\admin\forum::topicMove');
-
+    //    $route->get("/admin/forum", 'Ofey\Logan22\controller\admin\forum::index');
+    //    $route->post("/admin/forum", 'Ofey\Logan22\controller\admin\forum::save');
+    //    $route->post("/admin/forum/add/category", 'Ofey\Logan22\controller\admin\forum::addCategory');
+    //    $route->post("/admin/forum/edit/category", 'Ofey\Logan22\controller\admin\forum::editCategory');
+    //    $route->post("/admin/forum/remove/category", 'Ofey\Logan22\controller\admin\forum::removeCategory');
+    //    $route->post("/admin/forum/add/section", 'Ofey\Logan22\controller\admin\forum::addSection');
+    //    $route->post("/admin/forum/edit/section", 'Ofey\Logan22\controller\admin\forum::editSection');
+    //    $route->post("/admin/forum/remove/section", 'Ofey\Logan22\controller\admin\forum::removeSection');
+    //    $route->post("/admin/forum/section/close", 'Ofey\Logan22\controller\admin\forum::closeSection');
+    //    $route->post("/admin/forum/topic/close", 'Ofey\Logan22\controller\admin\forum::closeTopic');
+    //    $route->post("/admin/forum/topic/pin", 'Ofey\Logan22\controller\admin\forum::pinTopic');
+    //    $route->post("/admin/forum/topic/move", 'Ofey\Logan22\controller\admin\forum::topicMove');
 
     $route->get("/admin/chat", '\Ofey\Logan22\controller\admin\chat::show');
     $route->post("/admin/chat/find/message", '\Ofey\Logan22\controller\admin\chat::find_message');
@@ -302,19 +330,21 @@ if (!\Ofey\Logan22\model\install\install::exist_admin() or !file_exists(\Ofey\Lo
     $route->post("/admin/bonuscode/remove", '\Ofey\Logan22\controller\admin\bonuscode::remove');
     $route->get("/admin/bonuscode/create/pack", "\Ofey\Logan22\controller\admin\bonuscode::create_pack");
 
-    $route->get("/admin/logs/user", '\Ofey\Logan22\controller\admin\userlog::all');
+    $route->get("/admin/logs/userModel", '\Ofey\Logan22\controller\admin\userlog::all');
     $route->get("/admin/logs/user/sort/(.*)", '\Ofey\Logan22\controller\admin\userlog::all');
     $route->post("/admin/logs/user/update/message", '\Ofey\Logan22\controller\admin\userlog::get_new_message');
 
     $route->post("/chat", 'Ofey\Logan22\controller\chat\chat::show');
 
-    $route->post('/admin/client/info', function (){
+    $route->post('/admin/client/info', function () {
         validation::user_protection("admin");
         Ofey\Logan22\component\image\client_icon::get_item_info(json: true);
     });
     $route->get("/admin/support", 'Ofey\Logan22\controller\admin\index::support');
     $route->get("/admin/plugin", 'Ofey\Logan22\controller\admin\plugin::show');
     $route->post("/admin/users/add/donate", 'Ofey\Logan22\controller\admin\donate::add_bonus_money');
+
+    $route->get("/admin/route", '\Ofey\Logan22\controller\route\route::all');
 
     $route->set404(function () {
         \Ofey\Logan22\controller\page\error::error404();

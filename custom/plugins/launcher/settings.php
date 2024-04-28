@@ -14,6 +14,6 @@ return [
     "PLUGIN_USER_PAGE" => "/launcher",
     "PLUGIN_USER_PAGE_NAME" => "Sphere-Launcher",
     "PLUGIN_USER_PAGE_ICON" => "fa fa-download text-danger",
-    "PLUGIN_USER_PAGE_ACCESS" => ["guest", "user", "moderator", "admin"],
+    "PLUGIN_USER_PAGE_ACCESS" => ["guest", "userModel", "moderator", "admin"],
     "PLUGIN_USER_PANEL_SHOW" => ["MAIN_MENU"],
 ];

@@ -867,7 +867,7 @@
         // Bind the ie specific iframe event handlers
         if (ie || iege11) {
 
-            // Save the current user selection. This code is needed since IE will
+            // Save the current userModel selection. This code is needed since IE will
             // reset the selection just after the beforedeactivate event and just
             // before the beforeactivate event.
             $doc.bind("beforedeactivate beforeactivate selectionchange keypress keyup", function (e) {
@@ -916,7 +916,7 @@
                 .blur(function () { $(editor).triggerHandler(BLURRED); });
         }
 
-        // Enable the toolbar buttons and update the textarea as the user types or clicks
+        // Enable the toolbar buttons and update the textarea as the userModel types or clicks
         $doc.click(hidePopups)
             .keydown(function (e) {
                 // Prevent Internet Explorer from going to prior page when an image 

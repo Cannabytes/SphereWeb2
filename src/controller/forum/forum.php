@@ -181,7 +181,7 @@ class forum {
 
         $topicIDs = internal::addTopic($section_id, $topicName, $message, $link);
         $section = internal::getSectionInfo($section_id);
-        if (auth::get_access_level() == "user") {
+        if (auth::get_access_level() == "userModel") {
             if ($section['is_close']) {
                 board::notice(false, lang::get_phrase(503));
             }
@@ -346,7 +346,7 @@ class forum {
         }
         $section_id = $topic['section_id'];
         $section = internal::getSectionInfo($section_id);
-        if (auth::get_access_level() == "user") {
+        if (auth::get_access_level() == "userModel") {
             if ($section['is_close']) {
                 board::notice(false, lang::get_phrase(503));
             }

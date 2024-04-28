@@ -19,7 +19,7 @@ class session {
             'use_strict_mode' => true,
         ]);
         if (file_exists(fileSys::get_dir('/src/config/db.php'))) {
-            auth::user_auth();
+//            auth::user_auth();
         }
     }
 

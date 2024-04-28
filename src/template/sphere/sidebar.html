@@ -1,0 +1,215 @@
+<aside class="app-sidebar sticky" id="sidebar">
+
+    <!-- Start::main-sidebar-header -->
+    <div class="main-sidebar-header">
+        <a href="index.html" class="header-logo">
+            <img src="{{template}}/assets/images/brand-logos/desktop-logo.png" alt="logo" class="desktop-logo">
+            <img src="{{template}}/assets/images/brand-logos/toggle-logo.png" alt="logo" class="toggle-logo">
+            <img src="{{template}}/assets/images/brand-logos/desktop-dark.png" alt="logo" class="desktop-dark">
+            <img src="{{template}}/assets/images/brand-logos/toggle-dark.png" alt="logo" class="toggle-dark">
+            <img src="{{template}}/assets/images/brand-logos/desktop-white.png" alt="logo" class="desktop-white">
+            <img src="{{template}}/assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-white">
+        </a>
+    </div>
+    <!-- End::main-sidebar-header -->
+
+    <!-- Start::main-sidebar -->
+    <div class="main-sidebar" id="sidebar-scroll">
+
+        <!-- Start::nav -->
+        <nav class="main-menu-container nav nav-pills flex-column sub-open">
+            <div class="slide-left" id="slide-left">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24"> <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path> </svg>
+            </div>
+            <ul class="main-menu">
+
+
+                <li class="slide__category"><span class="category-name">Меню</span></li>
+
+                <li class="slide">
+                    <a href="/main" class="side-menu__item">
+                        <i class="fe fe-home side-menu__icon"></i>
+                        <span class="side-menu__label">Главная</span>
+                    </a>
+                </li>
+                <li class="slide">
+                    <a href="#" class="side-menu__item">
+                        <i class="fe fe-layers side-menu__icon"></i>
+                        <span class="side-menu__label">Новости</span>
+                    </a>
+                </li>
+
+                <li class="slide">
+                    <a href="/shop" class="side-menu__item">
+                        <i class="fe fe-shopping-cart side-menu__icon"></i>
+                        <span class="side-menu__label">Магазин</span>
+                    </a>
+                </li>
+
+                <li class="slide">
+                    <a href="/donate/pay" class="side-menu__item">
+                        <i class="fe fe-dollar-sign side-menu__icon"></i>
+                        <span class="side-menu__label">Баланс</span>
+                        <span class="badge bg-success-transparent ms-2">{{ getUser().getDonate() }}</span>
+                    </a>
+                </li>
+
+
+
+                <li class="slide">
+                    <a href="/statistic" class="side-menu__item">
+                        <i class="fe fe-pie-chart side-menu__icon"></i>
+                        <span class="side-menu__label">Статистика</span>
+                    </a>
+                </li>
+
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="fe fe-users side-menu__icon"></i>
+                        <span class="side-menu__label">Реферальная</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1 mega-menu">
+                        <li class="slide">
+                            <a href="alerts.html" class="side-menu__item">Описание</a>
+                        </li>
+                        <li class="slide">
+                            <a href="alerts.html" class="side-menu__item">Привлеченные</a>
+                        </li>
+                        <li class="slide">
+                            <a href="badge.html" class="side-menu__item">Бонусы</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="slide__category"><span class="category-name">Подключение</span></li>
+                <li class="slide">
+                    <a href="/" class="side-menu__item">
+                        <i class="fe fe-download-cloud side-menu__icon"></i>
+                        <span class="side-menu__label">Sphere-Launcher</span>
+                    </a>
+                </li>
+
+
+                <li class="slide__category"><span class="category-name">Остальное</span></li>
+
+                <li class="slide">
+                    <a href="/" class="side-menu__item">
+                        <i class="fe fe-corner-down-left side-menu__icon"></i>
+                        <span class="side-menu__label">Вернуться на сайт</span>
+                    </a>
+                </li>
+
+
+
+                {% if getUser().isAdmin() %}
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="fe fe-grid side-menu__icon"></i>
+                        <span class="side-menu__label">Админ-панель</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+
+                        <li class="slide">
+                            <a href="javascript:void(0);" class="side-menu__item">Главная</a>
+                        </li>
+                        <li class="slide">
+                            <a href="/admin/setting" class="side-menu__item">Настройки Sphere</a>
+                        </li>
+
+                        <li class="slide">
+                            <a href="/admin/phrases" class="side-menu__item">Фразы и перевод</a>
+                        </li>
+
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">Сервер
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2" style="box-sizing: border-box; display: none;">
+                                <li class="slide">
+                                    <a href="/admin/server/add/new" class="side-menu__item">Добавить сервер</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="javascript:void(0);" class="side-menu__item">Список серверов</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">Донат
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2" style="box-sizing: border-box; display: none;">
+                                <li class="slide">
+                                    <a href="javascript:void(0);" class="side-menu__item">Платежные системы</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="javascript:void(0);" class="side-menu__item">Магазин</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="javascript:void(0);" class="side-menu__item">Прямой перевод</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">Бонус-код
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2" style="box-sizing: border-box; display: none;">
+                                <li class="slide">
+                                    <a href="javascript:void(0);" class="side-menu__item">Создать</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="javascript:void(0);" class="side-menu__item">Список</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="slide">
+                            <a href="/admin/forum" class="side-menu__item">Форум</a>
+                        </li>
+
+                        <li class="slide">
+                            <a href="javascript:void(0);" class="side-menu__item">Пользователи</a>
+                        </li>
+
+                        <li class="slide">
+                            <a href="/admin/route" class="side-menu__item">Маршрутизаторы</a>
+                        </li>
+
+                        <li class="slide">
+                            <a href="javascript:void(0);" class="side-menu__item">Логи</a>
+                        </li>
+
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">Платные расширения
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2" style="box-sizing: border-box; display: none;">
+                                <li class="slide">
+                                    <a href="javascript:void(0);" class="side-menu__item">Описание</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="javascript:void(0);" class="side-menu__item">Лаунчер</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="javascript:void(0);" class="side-menu__item">Рулетка</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="javascript:void(0);" class="side-menu__item">Кейсы</a>
+                                </li>
+                            </ul>
+                        </li>
+
+
+                    </ul>
+                </li>
+                {% endif %}
+
+            </ul>
+            <div class="slide-right" id="slide-right"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24"> <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path> </svg></div>
+        </nav>
+        <!-- End::nav -->
+
+    </div>
+    <!-- End::main-sidebar -->
+
+</aside>

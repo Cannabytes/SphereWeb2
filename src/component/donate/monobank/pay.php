@@ -58,7 +58,7 @@ class monobank extends \Ofey\Logan22\model\donate\pay_abstract {
             "paymentType" => "debit",
         ];
         $json = json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        $url = "https://web.monobank.ua/api/merchant/invoice/create";
+        $url = "https://api.monobank.ua/api/merchant/invoice/create";
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -93,7 +93,7 @@ class monobank extends \Ofey\Logan22\model\donate\pay_abstract {
         }
         $invoiceId = $logData['invoiceId'];
 
-        $url = "https://web.monobank.ua/api/merchant/invoice/status?invoiceId={$invoiceId}";
+        $url = "https://api.monobank.ua/api/merchant/invoice/status?invoiceId={$invoiceId}";
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HTTPGET, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

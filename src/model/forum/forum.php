@@ -8,14 +8,48 @@
 namespace Ofey\Logan22\model\forum;
 
 use Exception;
+use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\cache\cache;
 use Ofey\Logan22\component\cache\dir;
 use Ofey\Logan22\component\cache\timeout;
 use Ofey\Logan22\component\config\config;
+use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\fdb;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\user\user;
 
 class forum {
+
+    private static ?forumStruct $instance = null;
+
+    public static function get()
+    {
+        if (self::$instance === null) {
+            $configData = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_forum__'");
+            if(!$configData){
+                return self::$instance;
+            }
+            self::$instance = new forumStruct($configData['setting']);
+        }
+        return self::$instance;
+    }
+
+    //Сохранение конфигурации
+    public static function saveConfig()
+    {
+        $post = json_encode($_POST);
+        if(!$post){
+            board::error("Ошибка парсинга JSON");
+        }
+        sql::sql("DELETE FROM `settings` WHERE `key` = '__config_forum__' AND serverId = ? ", [
+            0,
+        ]);
+        sql::run("INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES ('__config_forum__', ?, ?, ?)",[
+            $post,
+            0,
+            time::mysql(),
+        ]);
+    }
 
     private static string $engine = '';
     private static string $url    = '';
@@ -31,7 +65,7 @@ class forum {
      */
     public static function get_engine(): string {
         if(self::$engine == '') {
-            self::$engine = FORUM_ENGINE;
+//            self::$engine = FORUM_ENGINE;
         }
         return self::$engine;
     }
@@ -119,8 +153,8 @@ class forum {
                     ORDER BY
                         last_post DESC
                     LIMIT ?", [$n]);
-        if(fdb::$error) {
-            return fdb::$messageError;
+        if(fdb::isError()) {
+            return fdb::getMessageError();
         }
         return $query->fetchAll();
     }
@@ -132,8 +166,8 @@ class forum {
         $actualCache = cache::read(dir::forum->show(), second: timeout::forum->time());
         if($actualCache)
             return $actualCache;
-        if(fdb::$error != null) {
-            return fdb::$error;
+        if(fdb::isError()) {
+            return fdb::getMessageError();
         }
 
         $last_message = match (self::get_engine()) {
@@ -142,10 +176,10 @@ class forum {
             "sphere" => self::get_sphere_last_thread($n),
         };
 
-        if(fdb::$error) {
-            echo fdb::$messageError;
-            return fdb::$error;
+        if(fdb::isError()) {
+            return fdb::getMessageError();
         }
+
         cache::save(dir::forum->show(), $last_message);
         return $last_message;
     }
@@ -174,8 +208,8 @@ class forum {
                                         xf_thread.last_post_id = xf_post.post_id
                                 ORDER BY
                                     xf_post.post_date DESC LIMIT ?', [$n]);
-        if(fdb::$error) {
-            return fdb::$messageError;
+        if(fdb::isError()) {
+            return fdb::getMessageError();
         }
         return $query->fetchAll();
     }

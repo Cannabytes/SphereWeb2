@@ -1,0 +1,71 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="">
+                            Список последних изменений в SphereWeb, рекомендуется обновиться, чтоб иметь самый последний код
+                        </div>
+                        <div class="text-sm-end">
+                            <button class="btn btn-success btn-sm label-btn label-end">
+                                Обновить
+                                <i class="ri-refresh-line label-btn-icon ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="tab-content pt-0 my-1">
+                            <div class="border-0 p-0">
+                                {% if getUpdateSphereCount() == 0 %}
+                                <p class="text-muted mb-0">Список актуальных изменений пуст</p>
+                                {% else %}
+                                <ul class="list-unstyled mb-0 upcoming-events-list">
+                                    {% for git in getUpdateSphere(null) %}
+                                    <li>
+                                        <div class="d-flex align-items-top justify-conent-between">
+                                            <div class="flex-fill">
+                                                <p class="mb-0 fs-14">Автор: {{git.getAuthor()}}</p>
+                                                <p class="mb-0 text-muted">Сообщение: {{git.getMessage()}}</p>
+                                            </div>
+                                            <div>
+                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>{{git.getDate()}}</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+{% endblock %}
+
+
+
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block js %}
+
+{% endblock %}

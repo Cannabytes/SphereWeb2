@@ -1299,7 +1299,7 @@ return [
     'type' => 'etcitem',
     'name' => 'Potion of Critical Escape',
     'add_name' => '',
-    'description' => 'Misdirects enemy attack, inhibits speed of user.',
+    'description' => 'Misdirects enemy attack, inhibits speed of userModel.',
     'icon' => 'etc_potion_red_i00',
     'etcitem_type' => 'potion',
     'weight' => 120,

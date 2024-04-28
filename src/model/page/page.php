@@ -3,6 +3,7 @@
 namespace Ofey\Logan22\model\page;
 
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\auth\auth;
 
@@ -92,7 +93,7 @@ class page {
     }
 
     public static function show_news_short($max_desc_len = 300, $limit = 10, $trash = false) {
-        $lang = lang::lang_user_default();
+        $lang = config::load()->lang()->lang_user_default();
         if($trash) {
             return sql::run("SELECT `id`, `name`, LEFT(description, $max_desc_len) AS `description`, `trash`, `date_create`, `poster`, `link` FROM `pages` WHERE trash = 1 AND is_news = 1 ORDER BY `id` DESC LIMIT ?;", [$limit])->fetchAll();
         }

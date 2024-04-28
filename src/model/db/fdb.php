@@ -11,41 +11,39 @@ class fdb {
     /**
      * @var PDO
      */
-    static private PDO $db;
-    /**
-     * @var null
-     */
-    protected static     $instance     = null;
-    static public bool   $error        = false;
-    static public string $messageError = '';
+    private static ?PDO $db = null;
+
+    private static bool   $error        = false;
+    private static string $messageError = '';
 
     /**
      * DB constructor.
      *
      * @throws Exception
      */
-    public static function connect() {
-        if(self::$instance === null) {
-            try {
-                if(!file_exists('src/config/forum.php')) {
-                    echo 'Need create connect to forum db';
-                    die();
-                }
-                self::$db = new PDO('mysql:host=' . FORUM_HOST . ';dbname=' . FORUM_NAME, FORUM_USER, FORUM_PASSWORD, $options = [
-                    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_EMULATE_PREPARES   => false,
-                    // turn off emulation mode for "real" prepared statements
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
-                ]);
-                return self::$db;
-            } catch(PDOException $e) {
-                self::$error = true;
-                self::$messageError = "Ошибка соединения с БД - " . $e->getMessage();
-            }
+    public static function connect(string $host = '127.0.0.1', string $port = '3306', string $user = 'root', string $pass = '', string $name = 'forum'): ?PDO {
+        if (self::$error) {
+            return null;
         }
-        return self::$instance;
+        if (self::$db !== null) {
+            return self::$db;
+        }
+        try {
+            $dsn = "mysql:host={$host};port={$port};dbname={$name}";
+            self::$db = new PDO($dsn, $user, $pass, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+            ]);
+        } catch (PDOException $e) {
+            self::setError(true);
+            self::setMessageError("Ошибка соединения с БД #3 - " . $e->getMessage());
+            return null;
+        }
+        return self::$db;
     }
+
 
     public static function query($stmt) {
         return self::$db->query($stmt);
@@ -67,9 +65,7 @@ class fdb {
      * @throws Exception
      */
     public static function run($query, $args = []) {
-        if(!self::connect()) {
-            self::$error = true;
-            self::$messageError = "Ошибка соединения с БД";
+        if(self::isError()){
             return false;
         }
         try {
@@ -130,8 +126,14 @@ class fdb {
      *
      * @return array
      */
-    public static function getRows($query, $args = []) {
-        return self::run($query, $args)->fetchAll();
+    public static function getRows($query, array $args = []): array
+    {
+        $result = self::run($query, $args);
+        if ($result !== false) {
+            return $result->fetchAll();
+        } else {
+            return [];
+        }
     }
 
     /**
@@ -160,5 +162,25 @@ class fdb {
 
     public static function sql($query, array $args = []) {
         self::run($query, $args);
+    }
+
+    public static function isError(): bool
+    {
+        return self::$error;
+    }
+
+    public static function setError(bool $error): void
+    {
+        self::$error = $error;
+    }
+
+    public static function getMessageError(): string
+    {
+        return self::$messageError;
+    }
+
+    public static function setMessageError(string $messageError): void
+    {
+        self::$messageError = $messageError;
     }
 }

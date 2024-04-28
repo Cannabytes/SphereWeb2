@@ -18,6 +18,7 @@ use Ofey\Logan22\model\db\sdb;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 
 class character {
 
@@ -32,51 +33,71 @@ class character {
 
 
     //возвращает всех персонажей пользователя
-    public static function get_account_players($full_info = false): ?array {
-        $get_server_info = server::get_server_info();
-        if (!$get_server_info) {
-            return null;
-        }
-        $player_accounts = player_account::show_all_account_player();
+
+    /**
+     * @param string $email
+     * @param int $serverId
+     * @return player[]|null
+     */
+    public static function get_account_players(string $email, int $serverId): ?array {
+        $player_accounts = sql::getRows("SELECT id, login, `password`, email, ip, server_id, password_hide, date_create, date_update FROM player_accounts WHERE email = ? ORDER BY date_create", [
+            $email,
+        ]);
         if (!$player_accounts) {
             return null;
         }
-        $accounts = [];
+        $players = [];
         foreach ($player_accounts as &$account) {
+            $player = new player();
+            $player->setId($account['id']);
+            $player->setEmail($account['email']);
+            $player->setAccount($account['login']);
+            $player->setPassword($account['password']);
+            $player->setPasswordHide($account['password_hide']);
+            $player->setServerId($serverId);
             $login = $account['login'];
-            $password = $account['password'];
-            $players = character::all_characters($login);
-            if (!$players) {
-                continue;
+            $characters = character::all_characters($login, $serverId);
+
+            foreach($characters AS $character){
+                $char = new characters();
+                $char->setPlayerId($character['player_id']);
+                $char->setAccountName($character['account_name']);
+                $char->setPlayerName($character['player_name']);
+                $char->setLevel($character['level']);
+                $char->setClassId($character['class_id']);
+                $char->setOnline($character['online']);
+                $char->setPvp($character['pvp']);
+                $char->setPk($character['pk']);
+                $char->setSex($character['sex']);
+                $char->setClanId($character['clanid'] ?? null);
+                $char->setClanName($character['clan_name']);
+                $char->setTitle($character['title']);
+                $char->setTimeInGame($character['time_in_game']);
+                $char->setClanCrest($character['clan_crest']);
+                $char->setAllianceCrest($character['alliance_crest']);
+                $char->setIsBase($character['isBase']);
+                $char->setCreateTime($character['createtime']);
+
+                $player->setCharacters($char);
             }
+            $players[] = $player;
             if (sdb::is_error()){
                 return null;
             }
-            foreach ($players as $player) {
-                if($full_info){
-					$player['password'] = $password;
-                    $accounts[$login][$player["player_name"]] = $player;
-                }else{
-                    $accounts[$login][] = $player["player_name"];
-                }
-            }
         }
-        if (empty($accounts)) {
-            return null;
-        }
-        return $accounts;
+        return $players;
     }
 
     public static function all_characters($login, $server_id = 0) {
         if ($server_id == 0) {
-            $server_id = auth::get_default_server();
+            $server_id = user::self()->getServerId();
         }
         $cache = cache::read(dir::characters->show_dynamic($server_id, $login), second: 60);
         if ($cache)
             return $cache;
-        if (server::get_server_info($server_id)['rest_api_enable']) {
+        if (server::getServer($server_id)->getRestApiEnable()) {
             $data = restapi::Send(
-                server::get_server_info($server_id),
+                server::getServer($server_id),
                 "account_players",
                 $login,
             );
@@ -85,7 +106,7 @@ class character {
             }
             $players = json_decode($data, true);
         } else {
-            $players = player_account::extracted("account_players", server::get_server_info($server_id), [$login], false);
+            $players = player_account::extracted("account_players", server::getServer($server_id), [$login], false);
             if (sdb::is_error()){
                 return [];
             }
@@ -96,7 +117,7 @@ class character {
             }
         }
         if ($players != null) {
-            crest::conversion($players, rest_api_enable: server::get_server_info($server_id)['rest_api_enable'] ?? false);
+            crest::conversion($players, rest_api_enable: server::getServer($server_id)->getRestApiEnable());
         } else {
             $players = [];
         }

@@ -1399,7 +1399,7 @@ return [
     'type' => 'armor',
     'name' => 'Shadow Item - Shield of Yehan Miakesh',
     'add_name' => '',
-    'description' => 'Shield type shadow item that bears the crest of last hero of Ancient Gracian Kingdom. The user of this item will have the powerful skill against some monsters inside Tumor of Death and Seed of Infinity. Cannot be exchanged, dropped, or crystallized. Cannot be granted additional functions. Can be used only in the instant dungeons of the Seed of Infinity. Exclusively for Phoenix Knight, Hell Knight, Eva\'s Templar and Shillien Templar.',
+    'description' => 'Shield type shadow item that bears the crest of last hero of Ancient Gracian Kingdom. The userModel of this item will have the powerful skill against some monsters inside Tumor of Death and Seed of Infinity. Cannot be exchanged, dropped, or crystallized. Cannot be granted additional functions. Can be used only in the instant dungeons of the Seed of Infinity. Exclusively for Phoenix Knight, Hell Knight, Eva\'s Templar and Shillien Templar.',
     'icon' => 'immo_branded_shield_i00',
     'bodypart' => 'lhand',
     'weight' => 1300,

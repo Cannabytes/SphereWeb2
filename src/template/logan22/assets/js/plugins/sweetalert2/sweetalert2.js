@@ -1953,7 +1953,7 @@
 
   // From https://developer.paciellogroup.com/blog/2018/06/the-current-state-of-modal-dialog-accessibility/
   // Adding aria-hidden="true" to elements outside of the active modal dialog ensures that
-  // elements not within the active modal dialog will not be surfaced if a user opens a screen
+  // elements not within the active modal dialog will not be surfaced if a userModel opens a screen
   // reader’s list of elements (headings, form controls, landmarks, etc.) in the document.
 
   const setAriaHidden = () => {
@@ -2234,7 +2234,7 @@
    * @returns {SweetAlertResult}
    */
   const prepareResolveValue = resolveValue => {
-    // When user calls Swal.close()
+    // When userModel calls Swal.close()
     if (typeof resolveValue === 'undefined') {
       return {
         isConfirmed: false,
@@ -3182,7 +3182,7 @@
       handleToastClick(instance, domCache, dismissWith);
     } else {
       // Ignore click events that had mousedown on the popup but mouseup on the container
-      // This can happen when the user drags a slider
+      // This can happen when the userModel drags a slider
       handleModalMousedown(domCache);
 
       // Ignore click events that had mousedown on the container but mouseup on the popup

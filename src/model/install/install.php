@@ -13,7 +13,7 @@ use PDOException;
 
 class install {
 
-    //Мы должны получить host, user, pass, name
+    //Мы должны получить host, userModel, pass, name
     //Так же проверка на существования файла подключения к БД, если файл существует, тогда запрет
     public static function test_connect_mysql($host, $port, $user, $password, $name = ""): bool|PDO {
         if($name === "") {

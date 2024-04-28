@@ -24,7 +24,7 @@ class comparison {
          */
         board::notice(false, 'Отключено, требует теперь переработки');
 //
-//        \Ofey\Logan22\model\user\player\comparison::start($server_id);
+//        \Ofey\Logan22\model\userModel\player\comparison::start($server_id);
 //        header('Location: /main');
         die();
     }

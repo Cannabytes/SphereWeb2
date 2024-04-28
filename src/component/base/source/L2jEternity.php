@@ -344,9 +344,7 @@ ORDER BY
                     characters.pkkills AS pk,
                     characters.onlinetime AS time_in_game,
                     characters.`level`,
-                    clan_data.clan_name,
-                    ( SELECT `data` FROM crests WHERE crest_id = clan_data.crest_id LIMIT 1 ) AS clan_crest,
-                    ( SELECT `data` FROM crests WHERE crest_id = clan_data.ally_crest_id LIMIT 1 ) AS alliance_crest 
+                    clan_data.clan_name 
                 FROM
                 characters
                     LEFT JOIN clan_data ON characters.clanid = clan_data.clan_id 

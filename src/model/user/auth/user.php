@@ -38,7 +38,7 @@ class user {
         return sql::getRows("SELECT * FROM users");
     }
 
-    public static function edit($id, $email = null, $name = "", $donate = 0, $password = "", $group = "user"): bool {
+    public static function edit($id, $email = null, $name = "", $donate = 0, $password = "", $group = "userModel"): bool {
         if (auth::get_access_level() != $group and auth::get_id() == $id) {
             board::notice(false, "Запрещено менять свою группу администратору");
         }

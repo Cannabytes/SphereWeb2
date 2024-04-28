@@ -3,7 +3,7 @@
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\model\donate\donate;
-use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 
 class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
 
@@ -19,15 +19,28 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
     //Включить только для администратора
     protected static bool $forAdmin = false;
 
-    /**
-     * Конфигурация
-     * project_id - ID проекта
-     * secret1 - секретный ключ №1
-     * secret2 - секретный ключ №2
-     */
-    private $merchant_id      = 12345;
-    private $secret_key_1     = '';
-    private $secret_key_2     = '';
+    public static function inputs(): array
+    {
+        return [
+            'merchant_id' => 'ID проекта',
+            'secret_key_1' => 'секретный ключ №1',
+            'secret_key_2' => 'секретный ключ №2',
+        ];
+    }
+
+    private static function merchant_id(): string
+    {
+        return \Ofey\Logan22\model\donate\donateConfig::get()->getDonateSystems(__CLASS__)->getInputs(__METHOD__);
+    }
+    private static function secret_key_1(): string
+    {
+        return \Ofey\Logan22\model\donate\donateConfig::get()->getDonateSystems(__CLASS__)->getInputs(__METHOD__);
+    }
+    private static function secret_key_2(): string
+    {
+        return \Ofey\Logan22\model\donate\donateConfig::get()->getDonateSystems(__CLASS__)->getInputs(__METHOD__);
+    }
+
     private $currency_default = 'RUB';
 
     /*
@@ -51,13 +64,12 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
      * Генерируем ссылку для перехода на сайт оплаты
      */
     function create_link(): void {
-        auth::get_is_auth() ?: board::notice(false, lang::get_phrase(234));
+        user::self()->isAuth() ?: board::notice(false, lang::get_phrase(234));
         donate::isOnlyAdmin(self::class);
-        if(empty($this->secret_key_1) OR empty($this->secret_key_2)){
+        if(empty($this->secret_key_1()) OR empty($this->secret_key_2())){
             board::error("Freekassa token is empty");
         }
         filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT) ?: board::notice(false, "Введите сумму цифрой");
-
         $donate = __config__donate;
 
         if ($_POST['count'] < $donate['min_donate_bonus_coin']) {
@@ -68,9 +80,9 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
         }
 
         $order_amount = $_POST['count'] * ($donate['coefficient']['RUB'] / $donate['quantity']);
-        $merchant_id = $this->merchant_id;
-        $order_id = auth::get_email();
-        $secret_word = $this->secret_key_1;
+        $merchant_id = $this->merchant_id();
+        $order_id = user::self()->getEmail();
+        $secret_word = $this->secret_key_1();
         $currency = $this->currency_default;
         $sign = md5($merchant_id . ':' . $order_amount . ':' . $secret_word . ':' . $currency . ':' . $order_id);
         $params = [
@@ -79,7 +91,7 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
             "currency"  => $currency,
             's'         => $sign,
             'o'         => $order_id,
-            'us_userid' => auth::get_id(),
+            'us_userid' => user::self()->getId(),
         ];
         echo "https://pay.freekassa.ru/?" . http_build_query($params);
     }
@@ -89,7 +101,7 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
         file_put_contents( __DIR__ . '/debug.log', '_REQUEST: ' . print_r( $_REQUEST, true ) . PHP_EOL, FILE_APPEND );
 
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
-        if(empty($this->secret_key_1) OR empty($this->secret_key_2)){
+        if(empty($this->secret_key_1()) OR empty($this->secret_key_2())){
             board::error("Freekassa token is empty");
         }
         $user_id = $_REQUEST['us_userid'];
@@ -97,7 +109,7 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
         $MERCHANT_ID = $_REQUEST['MERCHANT_ID'];
         $MERCHANT_ORDER_ID = $_REQUEST['MERCHANT_ORDER_ID'];
 
-        $sign = md5($MERCHANT_ID . ':' . $_REQUEST['AMOUNT'] . ':' . $this->secret_key_2 . ':' . $MERCHANT_ORDER_ID);
+        $sign = md5($MERCHANT_ID . ':' . $_REQUEST['AMOUNT'] . ':' . $this->secret_key_2() . ':' . $MERCHANT_ORDER_ID);
 
         if($sign != $_REQUEST['SIGN']){
             die('wrong sign');
@@ -106,7 +118,7 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
 
         \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $this->currency_default, get_called_class()]);
         $amount = donate::currency($amount, $this->currency_default);
-        auth::change_donate_point($user_id, $amount, get_called_class());
+//        auth::change_donate_point($user_id, $amount, get_called_class());
         donate::AddDonateItemBonus($user_id, $amount);
         echo 'YES';
     }

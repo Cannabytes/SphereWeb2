@@ -21,6 +21,7 @@ use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\server\server;
+use Ofey\Logan22\model\server\serverModel;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\player\character;
 
@@ -55,15 +56,14 @@ class statistic {
      * @throws Exception
      */
     private static function get_data_statistic(dir $dir, string $collection_sql_name, int $server_id = 0, bool $acrossAll = true, bool $crest_convert = true, $prepare = [], $second = 60, $playerForbidden = true): null|array|bool {
-        [
-            $server_info,
-            $json,
-        ] = server::preAcross($dir, $server_id, second: $second);
+        /** @var serverModel $server_info */
+        [$server_info, $json] = server::preAcross($dir, $server_id, second: $second);
         if($server_info == null) {
             return null;
         }
-        if($json)
+        if($json) {
             return $json;
+        }
         if($acrossAll) {
             $data = server::acrossAll($collection_sql_name, $server_info, $prepare);
         } else {
@@ -72,14 +72,14 @@ class statistic {
         if(isset($data['code']) AND $data['code'] != 0){
             return $data['message'];
         }
-        if($playerForbidden){
-            self::charInfoPerm($data);
-        }
+//        if($playerForbidden){
+//            self::charInfoPerm($data);
+//        }
         if($data) {
             if($crest_convert) {
-                crest::conversion($data, rest_api_enable: $server_info['rest_api_enable']);
+                crest::conversion($data, rest_api_enable: $server_info->getRestApiEnable());
             }
-            cache::save($dir->show_dynamic($server_info['id']), $data);
+            cache::save($dir->show_dynamic($server_info->getId()), $data);
         } else {
             return false;
         }
@@ -320,7 +320,7 @@ class statistic {
 
         $result = '';
         if ($days > 0) {
-            $result .= $days . ($reduce ? 'д. ' : 'дней, ');
+            $result .= $days . ($reduce ? ' д. ' : ' дней, ');
         }
         if ($hours > 0) {
             $result .= $hours . ($reduce ? ' ч. ' : ' часов, ');

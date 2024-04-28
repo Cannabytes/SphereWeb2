@@ -47,7 +47,7 @@ function basename(str) {
 
 $(document).on('change', '#getSort', function (e) {
     sortName  = $('#getSort').val();
-    document.location.href = baseHref + "/admin/logs/user/sort/" + sortName;
+    document.location.href = baseHref + "/admin/logs/userModel/sort/" + sortName;
 });
 
 $(document).on('click', '#getDBNameLogin', function (event) {
@@ -341,12 +341,12 @@ function readme() {
 }
 
 $(document).on('click', '.add_donate_point', function (event) {
-    let id = $(this).data("user-id");
+    let id = $(this).data("userModel-id");
     $("#donate_user_id").val(id);
 });
 
 $(document).on('click', '.user_edit_button', function (event) {
-    let id = $(this).data("user-id");
+    let id = $(this).data("userModel-id");
     let email = $(this).data("email");
     let name = $(this).data("name");
     let donate = $(this).data("donate");
@@ -409,7 +409,7 @@ function is_add_donate(param){
 
 $(document).on("click", ".get_donate_history", function () {
     AjaxSend(baseHref + "/admin/donate/get/history/pay", "POST", {
-        user_id: $(this).data("user-id"),
+        user_id: $(this).data("userModel-id"),
     }, true)
         .then(function(info) {
             // Код, который обрабатывает результат AJAX-запроса

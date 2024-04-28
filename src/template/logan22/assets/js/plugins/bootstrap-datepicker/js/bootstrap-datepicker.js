@@ -1831,7 +1831,7 @@
 				if (threshold === true)
 					threshold = 10;
 
-				// if year is 2 digits or less, than the user most likely is trying to get a recent century
+				// if year is 2 digits or less, than the userModel most likely is trying to get a recent century
 				if (year < 100){
 					year += 2000;
 					// if the new year is more than threshold years in advance, use last century

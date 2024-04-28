@@ -58,6 +58,9 @@ class referral {
         }
         $f = false;
         foreach ($players_list as $players) {
+            if (!isset($players["characters"]) || !is_array($players["characters"])) {
+                continue;
+            }
             foreach ($players["characters"] as $character) {
                 if ($character['level'] >= LEVEL and $character['pvp'] >= PVP and $character['pk'] >= PK and $character['time_in_game'] >= GAME_TIME) {
                     sql::run("UPDATE `referrals` SET `done` = 1 WHERE `id` = ?", [
@@ -121,6 +124,9 @@ class referral {
                 $login = $char['login'];
                 $server_id = $char['server_id'];
                 $c = character::get_characters($login, $server_id);
+                if(!$c){
+                    continue;
+                }
                 if ($c) {
                     $characters[$user['email']]['characters'] = $c;
                 }

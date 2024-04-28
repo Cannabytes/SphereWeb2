@@ -18,6 +18,7 @@ use Ofey\Logan22\component\estate\castle;
 use Ofey\Logan22\component\estate\clanhall;
 use Ofey\Logan22\component\estate\fort;
 use Ofey\Logan22\component\fileSys\fileSys;
+use Ofey\Logan22\component\github\github;
 use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\links\action;
@@ -26,6 +27,10 @@ use Ofey\Logan22\component\time\microtime;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\model\admin\launcher;
+use Ofey\Logan22\model\config\referralConfig;
+use Ofey\Logan22\model\donate\donate;
+use Ofey\Logan22\model\donate\donateConfig;
+use Ofey\Logan22\model\enabled\enabled;
 use Ofey\Logan22\model\forum\forum;
 use Ofey\Logan22\model\forum\internal;
 use Ofey\Logan22\model\gallery\screenshot;
@@ -35,11 +40,15 @@ use Ofey\Logan22\model\server\online;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\statistic\statistic as statistic_model;
 use Ofey\Logan22\model\template\async;
+use Ofey\Logan22\model\ticket\ticket_model;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\player\character;
 use Ofey\Logan22\model\user\player\player_account;
 use Ofey\Logan22\model\user\profile\other;
+use Ofey\Logan22\model\user\user;
+use Ofey\Logan22\model\user\userModel;
 use Ofey\Logan22\route\Route;
+use ReflectionClass;
 use ReflectionMethod;
 use RuntimeException;
 use Throwable;
@@ -141,7 +150,7 @@ class tpl {
     }
 
     public static function template_design_route(): ?array {
-        $fileRoute = $_SERVER['DOCUMENT_ROOT'] . "/template/" . config::get_template() . "/route.php";
+        $fileRoute = $_SERVER['DOCUMENT_ROOT'] . "/template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/route.php";
         if (file_exists($fileRoute)) {
             require_once $fileRoute;
             if (isset($pages)) {
@@ -176,7 +185,7 @@ class tpl {
 
         self::$templatePath =  "/src/template/sphere/";
         if (self::$categoryCabinet) {
-            self::$templatePath = "/template/" . config::get_template();
+            self::$templatePath = "/template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName();
             self::lang_template_load(fileSys::get_dir(self::$templatePath . "/lang.php"));
         }
         $loader = new FilesystemLoader([
@@ -191,14 +200,14 @@ class tpl {
         }
 
         $arrTwigConfig = [];
-        if (ENABLE_CACHE_TEMPLATE) {
+        //TODO: ENABLE_CACHE_TEMPLATE
+        if (false) {
             $arrTwigConfig['cache'] = fileSys::get_dir("/uploads/cache/template");
         }
-        $arrTwigConfig['auto_reload'] = AUTO_RELOAD;
-        $arrTwigConfig['debug'] = DEBUG_TEMPLATE;
-
-        /** Дополнительные переменные */
-        $arrTwigConfig['IS_DEFAULT_PUBLIC_TICKET'] = IS_DEFAULT_PUBLIC_TICKET;
+        //TODO: AUTO_RELOAD
+        $arrTwigConfig['auto_reload'] = true;
+        //TODO: DEBUG_TEMPLATE
+        $arrTwigConfig['debug'] = true;
 
         $twig = new Environment($loader, $arrTwigConfig);
 
@@ -266,7 +275,6 @@ class tpl {
         self::$allTplVars['path'] = $relativePath;
         self::$allTplVars['template'] = $self;
         self::$allTplVars['pointTime'] = microtime::pointTime();
-        self::$allTplVars['LOGO_PROJECT'] = LOGO_PROJECT;
         return $twig;
     }
 
@@ -280,7 +288,7 @@ class tpl {
         if (!file_exists($tpl)) {
             return;
         }
-        lang::load_template_lang_packet($tpl);
+        \Ofey\Logan22\controller\config\config::load()->lang()->load_template_lang_packet($tpl);
     }
 
     private static function generalfunc(Environment $twig = null): Environment {
@@ -299,6 +307,16 @@ class tpl {
             ], "/", fileSys::localdir(self::$templatePath . $var));
         }));
 
+        $twig->addFunction(new TwigFunction('getUser', function ($id = null): ?userModel {
+            if($id==null){
+                $id = $_SESSION['id'] ?? null;
+                if($id==null){
+                    return new userModel($id);
+                }
+            }
+            return user::getUserId($id);
+        }));
+
         $twig->registerUndefinedFunctionCallback(function ($name) {
             if (function_exists($name)) {
                 return new TwigFunction($name, function () use ($name) {
@@ -308,7 +326,7 @@ class tpl {
             throw new RuntimeException(sprintf('Function %s not found', $name));
         });
 
-        $twig->addFunction(new TwigFunction('class_group_color', function ($access_level = "user") {
+        $twig->addFunction(new TwigFunction('class_group_color', function ($access_level = "userModel") {
             switch ($access_level) {
                 case "admin":
                     return "danger";
@@ -361,9 +379,9 @@ class tpl {
 
         $twig->addFunction(new TwigFunction('get_captcha_version', function ($name = null) {
             if ($name == null) {
-                return config::get_captcha_version();
+                return \Ofey\Logan22\controller\config\config::load()->captcha()->getCaptcha();
             }
-            return strcasecmp(config::get_captcha_version(), $name) == 0;
+            return strcasecmp(\Ofey\Logan22\controller\config\config::load()->captcha()->getCaptcha(), $name) == 0;
         }));
 
         $twig->addFunction(new TwigFunction('prefix_info', function () {
@@ -378,6 +396,22 @@ class tpl {
             return character::get_account_players($isPlayersData);
         }));
 
+        $twig->addFunction(new TwigFunction('get_shop_items', function () {
+            return donate::get_shop_items();
+        }));
+
+        $twig->addFunction(new TwigFunction('donate_bonus_list', function () {
+//            return donateConfig::get()->getTableItemsBonus();
+//           return __config__donate['donate_bonus_list'];
+        }));
+
+        $twig->addFunction(new TwigFunction('getShopItems', function (){
+            return donate::getShopItems();
+        }));
+
+        $twig->addFunction(new TwigFunction('sumGetValue', function ($array, $methodName){
+           return donate::sumGetValue($array, $methodName);
+        }));
 
         $twig->addFunction(new TwigFunction('get_statistic_online_week', function ($server_id = 0) {
             return statistic_model::get_online_last_week($server_id = 0);
@@ -401,23 +435,39 @@ class tpl {
         }));
 
         //Список языков
-        $twig->addFunction(new TwigFunction('lang_list', function ($remove_lang = null) {
-            return lang::lang_list($remove_lang);
+        $twig->addFunction(new TwigFunction('getLangList', function () {
+            return \Ofey\Logan22\controller\config\config::load()->lang()->getLangList();
+        }));
+
+        $twig->addFunction(new TwigFunction('getAllowAll', function () {
+            return \Ofey\Logan22\controller\config\config::load()->lang()->getAllowAll();
+        }));
+
+        $twig->addFunction(new TwigFunction('isAllowLang', function ($lang) {
+            return \Ofey\Logan22\controller\config\config::load()->lang()->isAllowLang($lang);
+        }));
+
+        $twig->addFunction(new TwigFunction('isAllowAllLang', function ($lang) {
+            return \Ofey\Logan22\controller\config\config::load()->lang()->isAllowAllLang($lang);
+        }));
+
+        $twig->addFunction(new TwigFunction('getCountLang', function () {
+            return \Ofey\Logan22\controller\config\config::load()->lang()->getCount();
         }));
 
         //Вывести язык который сейчас включен
         $twig->addFunction(new TwigFunction('lang_active', function ($isActive = true) {
-            $langs = lang::lang_list();
+            $langs = \Ofey\Logan22\controller\config\config::load()->lang()->getLangList();
             if($isActive){
                 foreach ($langs AS $lang){
-                    if ($lang['isActive']){
+                    if ($lang->getIsActive()){
                         return $lang;
                     }
                 }
                 return false;
             }else{
                 foreach ($langs as $key => $lang) {
-                    if ($lang['isActive']) {
+                    if ($lang->getIsActive()) {
                         unset($langs[$key]);
                     }
                 }
@@ -428,23 +478,22 @@ class tpl {
 
         //Возвращает полный список содержимого языкового пакета
         $twig->addFunction(new TwigFunction('title_start_page', function () {
-            $lang = lang::lang_user_default();
-            return TITLE[$lang] ?? "[Not Set Title]";
+            return \Ofey\Logan22\controller\config\config::load()->other()->getAllTitlePage();
         }));
 
+        //TODO: description_start_page
         $twig->addFunction(new TwigFunction('description_start_page', function () {
-            $lang = lang::lang_user_default();
-            return DESCRIPTION[$lang] ?? "[Not Set Description]";
+            return 'TODO: description_start_page';
         }));
 
         $twig->addFunction(new TwigFunction('keywords_start_page', function () {
-            return KEYWORDS;
+            return \Ofey\Logan22\controller\config\config::load()->other()->getKeywords();
         }));
 
 
         //Возвращает полный список содержимого языкового пакета
         $twig->addFunction(new TwigFunction('show_all_lang_package', function () {
-            return lang::show_all_lang_package();
+//            return lang::show_all_lang_package();
         }));
 
         //Обрезаем слово до N значения, если оно больше, то добавляем в конец троеточие
@@ -479,7 +528,7 @@ class tpl {
 
         //Аналог get_phrase
         $twig->addFunction(new TwigFunction('phrase', function ($phraseKey, ...$values) {
-            return lang::get_phrase($phraseKey, ...$values);
+            return \Ofey\Logan22\controller\config\config::load()->lang()->getPhrase($phraseKey, ...$values);
         }));
 
         //{{ is_enable("getEnableTicket") }}
@@ -488,16 +537,87 @@ class tpl {
         }));
 
         //Возвращает установленный конфиг config('ENABLE_SPHERECOIN_TRANSFER')
-        $twig->addFunction(new TwigFunction('config', function ($name) {
-            if (defined($name)) {
-                return constant($name);
+//        $twig->addFunction(new TwigFunction('config', function ($name) {
+//            if (defined($name)) {
+//                return constant($name);
+//            } else {
+//                return $name;
+//            }
+//        }));
+
+        /**
+         * Дебаг функция шаблона, которая отобразит содержимое объекта
+         */
+        $twig->addFunction(new TwigFunction("ss", function ($data) {
+            // Определение базового типа данных
+            $typeDescription = gettype($data);
+            $output = "<div class='modal fade' id='myModal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>";
+            $output .= "<div class='modal-dialog modal-xl' role='document'>";
+            $output .= "<div class='modal-content'>";
+            $output .= "<div class='modal-header'>";
+            $output .= "<h5 class='modal-title' id='myModalLabel'>Тип данных: $typeDescription</h5>";
+            $output .= "<button type='button' class='close' data-dismiss='modal' aria-label='Close'>";
+            $output .= "<span aria-hidden='true'>&times;</span>";
+            $output .= "</button>";
+            $output .= "</div>"; // Закрытие modal-header
+            $output .= "<div class='modal-body'>";
+
+            if (is_object($data)) {
+                // Это объект
+                $typeDescription = 'Объект класса: ' . get_class($data);
+                $reflection = new ReflectionClass($data);
+                $methods = $reflection->getMethods();
+                $output .= "<table class='table'>";
+                $output .= "<thead><tr><th>Метод</th><th>Видимость</th><th>Статичный</th><th>Возвращаемый тип</th><th>Комментарий</th></tr></thead>";
+                $output .= "<tbody>";
+                foreach ($methods as $method) {
+                    $returnType = $method->getReturnType();
+                    $returnTypeText = $returnType ? $returnType->getName() : 'void';
+                    $docComment = $method->getDocComment();
+                    $docComment = htmlspecialchars($docComment); // Экранирование специальных символов
+                    $output .= "<tr>";
+                    $output .= "<td>" . $method->name . "</td>";
+                    $output .= "<td>" . ($method->isPublic() ? "public" : ($method->isProtected() ? "protected" : "private")) . "</td>";
+                    $output .= "<td>" . ($method->isStatic() ? "да" : "нет") . "</td>";
+                    $output .= "<td>" . $returnTypeText . "</td>";
+                    $output .= "<td>" . ($docComment ?: "Нет комментария") . "</td>";
+                    $output .= "</tr>";
+                }
+                $output .= "</tbody></table>";
             } else {
-                return $name;
+                // Не объект (примитивные типы данных, такие как string, int и т.д.)
+                $output .= "<pre>" . htmlspecialchars(json_encode($data, JSON_PRETTY_PRINT)) . "</pre>";
             }
+
+            $output .= "</div>"; // Закрытие modal-body
+            $output .= "<div class='modal-footer'>";
+            $output .= "<button type='button' class='btn btn-secondary' data-dismiss='modal'>Закрыть</button>";
+            $output .= "</div>"; // Закрытие modal-footer
+            $output .= "</div>"; // Закрытие modal-content
+            $output .= "</div>"; // Закрытие modal-dialog
+            $output .= "</div>"; // Закрытие modal
+
+            // JavaScript для автоматического открытия модального окна
+            $output .= "<script type='text/javascript'>";
+            $output .= "$(document).ready(function() {";
+            $output .= "$('#myModal').modal('show');";
+            $output .= "});";
+            $output .= "</script>";
+
+            return new \Twig\Markup($output, 'UTF-8');
+        }));
+
+
+
+
+
+
+        $twig->addFunction(new TwigFunction("config", function (){
+            return \Ofey\Logan22\controller\config\config::load();
         }));
 
         $twig->addFunction(new TwigFunction('get_template', function () {
-            return config::get_template();
+            return \Ofey\Logan22\controller\config\config::load()->template()->getName();
         }));
 
         $twig->addFunction(new TwigFunction('format_number_fr', function ($num, $separator = ".") {
@@ -518,7 +638,7 @@ class tpl {
                 return 'Некорректное значение';
             }
 
-            $lang = lang::lang_user_default() == "ru" ? 0 : 1;
+            $lang = \Ofey\Logan22\controller\config\config::load()->lang()->lang_user_default() == "ru" ? 0 : 1;
             $times_values = [
                 ['сек.', 'sec.'],
                 ['мин.', 'min.'],
@@ -592,6 +712,18 @@ class tpl {
             return server::get_server_info(auth::get_default_server());
         }));
 
+        $twig->addFunction(new TwigFunction('getServer', function ($id = null){
+            return server::getServer($id);
+        }));
+
+        $twig->addFunction(new TwigFunction('getServerAll', function (){
+            return server::getServerAll();
+        }));
+
+        $twig->addFunction(new TwigFunction('getServerCount', function (){
+            return count(server::getServerAll());
+        }));
+
         //Кол-во серверов
         $twig->addFunction(new TwigFunction("get_count_servers", function () {
             return server::get_count_servers();
@@ -611,7 +743,7 @@ class tpl {
         }));
 
         $twig->addFunction(new TwigFunction('lang_user_default', function () {
-            return lang::lang_user_default();
+            return \Ofey\Logan22\controller\config\config::load()->lang()->getDefault();
         }));
 
         $twig->addFunction(new TwigFunction('strip_html_tags', function ($text) {
@@ -667,6 +799,21 @@ class tpl {
             return client_icon::get_item_info($item_id, false, false);
         }));
 
+        $twig->addFunction(new TwigFunction('getUpdateSphere', function () {
+            return github::getUpdateSphere();
+        }));
+        $twig->addFunction(new TwigFunction('getUpdateSphereCount', function () {
+            return github::getCount();
+        }));
+
+//        $twig->addFunction(new TwigFunction('donateConfig', function (): donateConfig {
+//            return donateConfig::get();
+//        }));
+
+//        $twig->addFunction(new TwigFunction('referralConfig', function (): referralConfig {
+//            return referralConfig::get();
+//        }));
+
         $twig->addFunction(new TwigFunction('get_forum_img', function ($img = "none.jpeg", $thumb = false) {
             if ($thumb) {
                 if (mb_substr($img, 0, 5) == "user_") {
@@ -699,6 +846,9 @@ class tpl {
             return null;
         }));
 
+        $twig->addFunction(new TwigFunction('forum', function () {
+            return forum::get();
+        }));
 
         $twig->addFunction(new TwigFunction('forum_user_avatar', function ($user_id = 0) {
             return forum::user_avatar($user_id);
@@ -794,8 +944,10 @@ class tpl {
             return $pkStats ? ($limit <= 0 ? $pkStats : array_slice($pkStats, 0, $limit)) : null;
         }));
 
-        $twig->addFunction(new TwigFunction('statistic_players_online_time', function ($server_id = 0) {
-            return statistic_model::get_players_online_time($server_id);
+        $twig->addFunction(new TwigFunction('statistic_players_online_time', function ($server_id = 0, $limit = 0) {
+            if ($server_id < 0 || $limit < 0) throw new InvalidArgumentException('Server ID and limit must be non-negative integers');
+            $onlinePlayers = statistic_model::get_players_online_time($server_id);
+            return $onlinePlayers ? ($limit <= 0 ? $onlinePlayers : array_slice($onlinePlayers, 0, $limit)) : null;
         }));
 
         $twig->addFunction(new TwigFunction('statistic_get_clans', function ($server_id = 0, $limit = 0) {
@@ -856,8 +1008,39 @@ class tpl {
         }));
 
 
+        $twig->addFunction(new TwigFunction('all_phrase', function () {
+            $languages = fileSys::get_dir_files("/data/languages", [
+                'basename'        => true,
+                'suffix'          => '.php',
+                'sort'            => false,
+                'fetchAll'        => true,
+            ]);
+            $combinedArray = [];
+            foreach($languages as $language) {
+                $language_phrases = include fileSys::get_dir("/data/languages/" . $language . ".php");
+                foreach($language_phrases as $key => $phrase) {
+                    $combinedArray[$key][$language] = $phrase;
+                }
+            }
+
+            // Добавляем пустые строки для отсутствующих языковых значений
+            foreach ($combinedArray as $key => $phrases) {
+                foreach ($languages as $language) {
+                    if (!array_key_exists($language, $phrases)) {
+                        $combinedArray[$key][$language] = ""; // Добавляем пустую строку
+                    }
+                }
+            }
+            // Сортировка фраз в каждом языке
+            foreach ($combinedArray as $key => &$phrases) {
+                ksort($phrases);
+            }
+            return ['lang_list' => $languages, 'phrases' => $combinedArray];
+        }));
+
+
         $twig->addFunction(new TwigFunction('phrase_array', function ($arr) {
-            $userLang = lang::lang_user_default();
+            $userLang = \Ofey\Logan22\controller\config\config::load()->lang()->lang_user_default();
             foreach($arr AS $lang => $phrase){
                 if($userLang == $lang){
                     return $phrase;
@@ -878,6 +1061,12 @@ class tpl {
         $twig->addFunction(new TwigFunction('http_referer', function () {
             return $_SERVER['HTTP_REFERER'] ?? null;
         }));
+
+        $twig->addFunction(new TwigFunction(
+            'json_decode',
+            fn (string $value, ?bool $assoc = null) => json_decode($value, $assoc, 512, \JSON_THROW_ON_ERROR),
+        ));
+
 
         //Возвращает сумму чисел в массиве по конкретному полю
         $twig->addFunction(new TwigFunction('array_field_sum', function (array $array, string $field) {
@@ -964,6 +1153,10 @@ class tpl {
             return character::is_forbidden($charnames);
         }));
 
+        $twig->addFunction(new TwigFunction("templates", function () {
+            return fileSys::dir_list("template");
+        }));
+
         $twig->addFunction(new TwigFunction("timezone_list", function () {
             return timezone::all();
         }));
@@ -982,7 +1175,7 @@ class tpl {
         $twig->addFunction(new TwigFunction('referral_link', function () {
             $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https://' : 'http://';
             $name = auth::get_name() ?: auth::get_id();
-            return $scheme . $_SERVER['HTTP_HOST'] . fileSys::localdir() . "/registration/user/ref/" . mb_strtolower($name);
+            return $scheme . $_SERVER['HTTP_HOST'] . fileSys::localdir() . "/registration/userModel/ref/" . mb_strtolower($name);
         }));
 
         $twig->addFunction(new TwigFunction('currency_exchange_info', function () {
@@ -1039,6 +1232,10 @@ class tpl {
             return self::pluginsAll();
         }));
 
+        $twig->addFunction(new TwigFunction("get_ticket_data", function () {
+            return ticket_model::get_ticket_data();
+        }));
+
 
         $twig->addFunction(new TwigFunction("get_plugin_config", function ($plugin_name, $config = "config.php") {
             $plugin_type = Route::get_plugin_type($plugin_name);
@@ -1071,8 +1268,8 @@ class tpl {
 
     public static function displayDemo(string $template) {
         self::$categoryCabinet = true;
-        if (file_exists(fileSys::localdir("template/" . config::get_template() . "/object.php"))) {
-            $additionalVars = require fileSys::localdir("template/" . config::get_template() . "/object.php");
+        if (file_exists(fileSys::localdir("template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/object.php"))) {
+            $additionalVars = require fileSys::localdir("template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/object.php");
             if (is_array($additionalVars)) {
                 self::$allTplVars = array_merge(self::$allTplVars, $additionalVars);
             }

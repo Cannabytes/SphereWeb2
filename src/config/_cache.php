@@ -6,8 +6,6 @@ $cache_timeout = array (
   'statistic_pvp' => 60,
   'statistic_pk' => 60,
   'statistic_online' => 60,
-  'statistic_clan' => 60,
-  'statistic_clan_data' => 60,
   'statistic_clan_skills' => 60,
   'statistic_clan_players' => 60,
   'statistic_heroes' => 60,
@@ -17,5 +15,7 @@ $cache_timeout = array (
   'statistic_castle' => 60,
   'statistic_block' => 60,
   'statistic_counter' => 60,
+  'statistic_clan' => 60,
+  'statistic_clan_data' => 60,
   'referral' => 60,
 );

@@ -24,8 +24,10 @@ use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\model\admin\userlog;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
+use Ofey\Logan22\model\item\item;
 use Ofey\Logan22\model\referral\referral;
 use Ofey\Logan22\model\server\server;
+use Ofey\Logan22\model\user\player\character;
 use Ofey\Logan22\route\Route;
 use Ofey\Logan22\template\tpl;
 use SimpleCaptcha\Builder;
@@ -77,7 +79,7 @@ class auth {
      */
     public static function get_default_server() {
         $server_id = session::get('default_server');
-        $get_server_info = server::get_server_info();
+        $get_server_info = server::getServer();
         /*
          * Если нет никакого сервера, ставим последний сервер
          * Однако...если сервера больше больше чем 2, тогда последний сервер проверяем на дату запуска, если она
@@ -105,6 +107,10 @@ class auth {
         return $server_id;
     }
 
+    public static function get_account_players(): ?array {
+        return character::get_account_players(true);
+    }
+
     public static function get_email(): string {
         return self::$email;
     }
@@ -129,16 +135,9 @@ class auth {
         self::$signature = $signature ?? "";
     }
 
-    public static function get_ip_registration(): string {
-        return self::$ip_registration;
-    }
 
     public static function set_ip_registration($ip_registration) {
         self::$ip_registration = $ip_registration ?? "0.0.0.0";
-    }
-
-    public static function get_ip(): string {
-        return self::$ip;
     }
 
     public static function set_ip($ip) {
@@ -186,7 +185,7 @@ class auth {
             self::$avatar = 'none.jpeg';
             return;
         }
-        self::$avatar = $avatar;
+        self::$avatar = fileSys::localdir("/uploads/avatar/" . $avatar);
     }
 
     public static function get_avatar_background(): string {
@@ -287,10 +286,11 @@ class auth {
     }
 
     public static function log_add_user_auth(){
-        $geo = timezone::get_timezone_ip(self::get_ip());
+        $user = \Ofey\Logan22\model\user\user::getUserId();
+        $geo = timezone::get_timezone_ip($user->getIp());
         $data = [
-            self::$userInfo['id'],
-            self::get_ip(),
+            $user->getId(),
+            $user->getIp(),
             $geo['country'] ?? 'No Set',
             $geo['city'] ?? 'No Set',
             $_SERVER['HTTP_USER_AGENT'],
@@ -417,30 +417,16 @@ class auth {
 
     public
     static function user_enter() {
-        if (auth::get_is_auth()) {
+        if(\Ofey\Logan22\model\user\user::getUserId()->isAuth()){
             board::notice(false, lang::get_phrase(160));
         }
-
         if (!isset($_POST['email']) or !isset($_POST['password'])) {
             board::notice(false, lang::get_phrase(161));
         }
         $email = request::setting('email', new request_config(isEmail: true));
         $password = request::setting('password', new request_config(max: 32));
 
-        if (config::get_captcha_version("google")) {
-            $g_captcha = google::check($_POST['captcha'] ?? null);
-            if (isset($g_captcha['success']) and !$g_captcha['success']) {
-                board::notice(false, $g_captcha['error-codes'][0]);
-            }
-        } elseif (config::get_captcha_version("default")) {
-            $builder = new Builder();
-            $captcha = $_POST['captcha'] ?? false;
-            $userSessionCaptcha = $_SESSION['captcha'];
-            captcha::generation();
-            if (!$builder->compare(trim($captcha), $userSessionCaptcha)) {
-                board::response("notice", ["message" => lang::get_phrase(295), "ok"=>false, "reloadCaptcha" => true]);
-            }
-        }
+        \Ofey\Logan22\controller\config\config::load()->captcha()->validator();
 
         $user_info = self::exist_user($email);
         if (!$user_info) {
@@ -625,13 +611,15 @@ class auth {
         ]);
         foreach($bonusActive AS &$item){
             $itemInfo = client_icon::get_item_info($item['item_id'], false, false);
-            if(!$itemInfo){
-                $itemInfo['item_id'] = $item['id'];
-                $itemInfo['name'] = "No Item Name";
-                $itemInfo['icon'] = fileSys::localdir("/uploads/images/icon/NOIMAGE.webp");
-            }
-            $item['icon'] = $itemInfo['icon'];
-            $item['name'] = $itemInfo['name'];
+            $item['item'] = item::getItem($item['item_id']);
+//            var_dump($itemInfo);exit;
+//            if(!$itemInfo){
+//                $itemInfo['item_id'] = $item['id'];
+//                $itemInfo['name'] = "No Item Name";
+//                $itemInfo['icon'] = fileSys::localdir("/uploads/images/icon/NOIMAGE.webp");
+//            }
+//            $item['icon'] = $itemInfo['icon'];
+//            $item['name'] = $itemInfo['name'];
         }
         self::$bonus = $bonusActive;
     }

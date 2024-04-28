@@ -11,37 +11,70 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\config\config;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\page\error;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\template\async;
 use Ofey\Logan22\model\ticket\ticket_model;
 use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
 class ticket {
 
     public static function all(): void {
-        if(!config::getEnableTicket()) error::error404("Disabled");
-        tpl::addVar("tickets", ticket_model::all());
-        tpl::addVar("category", "all");
-        tpl::display("ticket/all.html");
+        if(user::self()->isAdmin()){
+        }else{
+            $ticket = ticket_model::get_ticket_author(user::self()->getId());
+            if(!$ticket){
+                error::error404();
+            }
+            $messages = ticket_model::get_ticket_messages($ticket['id']);
+            tpl::addVar("messages", $messages);
+        }
+
+        tpl::display("ticket.html");
     }
 
-    public static function getOpenTickets(): void {
-        if(!config::getEnableTicket()) error::error404("Disabled");
-        tpl::addVar("tickets", ticket_model::all("open"));
-        tpl::addVar("category", "open");
-        tpl::display("ticket/all.html");
-    }
+    public static function message()
+    {
 
-    public static function getCloseTickets(): void {
-        if(!config::getEnableTicket()) error::error404("Disabled");
-        tpl::addVar("tickets", ticket_model::all("close"));
-        tpl::addVar("category", "close");
-        tpl::display("ticket/all.html");
+        $ticketId = $_POST['ticketId'];
+        $userId = $_POST['userId'];
+        $message = $_POST['message'];
+
+        $ticket_id = 0;
+        //Если это первое сообщение от пользователя, тогда регистрируем его
+        $ticket_data = sql::sql('SELECT * FROM `ticket_data` WHERE id = ?', [$ticketId])->fetch();
+        if(!$ticket_data){
+            sql::run("INSERT INTO `ticket_data` ( `user_id`, `date`, `last_message_id`) VALUES (?, ?, 0)", [
+                $userId
+            ]);
+            $ticket_id = sql::lastInsertId();
+        }else{
+            $ticket_id = $ticket_data['id'];
+        }
+        sql::run("INSERT INTO `ticket_messages` (`ticket_id`, `user_id`, `message`, `date`) VALUES (?, ?, ?, ?)", [
+            $ticket_id,
+           $userId,
+           $message,
+           time::mysql(),
+        ]);
+        $async = new async("ticket.html");
+        $async->block("main-content", "ticket_chat_content", "update", true);
+        $async->block("title", "title");
+        $async->send();
     }
 
     public static function get($id) {
+        $messages = ticket_model::get_ticket_messages($id);
+        tpl::addVar("ticketId", $id);
+        tpl::addVar("messages", $messages);
+        tpl::display("ticket.html");
+        exit;
+
+        //
         if(!config::getEnableTicket()) error::error404("Disabled");
         $ticket = ticket_model::get_info($id);
         if(!$ticket){

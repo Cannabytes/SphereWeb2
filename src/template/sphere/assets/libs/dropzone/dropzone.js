@@ -282,7 +282,7 @@ var $b657c03155fc27e2$var$defaultOptions = {
     /**
    * If false, files will be added to the queue but the queue will not be
    * processed automatically.
-   * This can be useful if you need some additional user input before sending
+   * This can be useful if you need some additional userModel input before sending
    * files (or if you want want all files sent at once).
    * If you're ready to send the file simply call `myDropzone.processQueue()`.
    *
@@ -371,7 +371,7 @@ var $b657c03155fc27e2$var$defaultOptions = {
    * If `addRemoveLinks` is true, the text to be used to remove a file.
    */ dictRemoveFile: "Remove file",
     /**
-   * If this is not null, then the user will be prompted before removing a file.
+   * If this is not null, then the userModel will be prompted before removing a file.
    */ dictRemoveFileConfirmation: null,
     /**
    * Displayed if `maxFiles` is st and exceeded.
@@ -558,7 +558,7 @@ var $b657c03155fc27e2$var$defaultOptions = {
    */ previewTemplate: (/*@__PURE__*/$parcel$interopDefault($69c61888cc1f4c57$exports)),
     /*
    Those functions register themselves to the events on init and handle all
-   the user interface specific stuff. Overwriting them won't break the upload
+   the userModel interface specific stuff. Overwriting them won't break the upload
    but can break the way it's displayed.
    You can overwrite them if you don't like the default behavior. If you just
    want to add an additional event handler, register it on the dropzone object
@@ -1623,7 +1623,7 @@ var $a601ff30f483e917$export$2e2bcd8739ae039 = /*#__PURE__*/ function(Emitter) {
             }
         },
         {
-            // Can be called by the user to remove a file
+            // Can be called by the userModel to remove a file
             key: "removeFile",
             value: function removeFile(file) {
                 if (file.status === $a601ff30f483e917$export$2e2bcd8739ae039.UPLOADING) this.cancelUpload(file);
@@ -2154,7 +2154,7 @@ var $a601ff30f483e917$export$2e2bcd8739ae039 = /*#__PURE__*/ function(Emitter) {
                     }
                     var _iteratorNormalCompletion = true, _didIteratorError = false, _iteratorError = undefined;
                     try {
-                        // Let the user add additional data if necessary
+                        // Let the userModel add additional data if necessary
                         for(var _iterator = files[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true){
                             var file = _step.value;
                             this.emit("sending", file, xhr, formData);
@@ -2754,7 +2754,7 @@ $a601ff30f483e917$export$2e2bcd8739ae039.getElements = function(els, name) {
     if (elements == null || !elements.length) throw new Error("Invalid `".concat(name, "` option provided. Please provide a CSS selector, a plain HTML element or a list of those."));
     return elements;
 };
-// Asks the user the question and calls accepted or rejected accordingly
+// Asks the userModel the question and calls accepted or rejected accordingly
 //
 // The default implementation just uses `window.confirm` and then calls the
 // appropriate callback.

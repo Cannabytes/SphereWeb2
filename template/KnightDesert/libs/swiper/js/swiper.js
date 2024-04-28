@@ -3163,7 +3163,7 @@
           if (Math.abs(swiper.velocity) < params.freeModeMinimumVelocity) {
             swiper.velocity = 0;
           }
-          // this implies that the user stopped moving a finger then released.
+          // this implies that the userModel stopped moving a finger then released.
           // There would be no events with distance zero, so the last event is stale.
           if (time > 150 || (Utils.now() - lastMoveEvent.time) > 300) {
             swiper.velocity = 0;
@@ -3237,11 +3237,11 @@
             momentumDuration = Math.abs((newPosition - swiper.translate) / swiper.velocity);
           }
           if (params.freeModeSticky) {
-            // If freeModeSticky is active and the user ends a swipe with a slow-velocity
+            // If freeModeSticky is active and the userModel ends a swipe with a slow-velocity
             // event, then durations can be 20+ seconds to slide one (or zero!) slides.
             // It's easy to see this when simulating touch with mouse events. To fix this,
             // limit single-slide swipes to the default slide duration. This also has the
-            // nice side effect of matching slide speed if the user stopped moving before
+            // nice side effect of matching slide speed if the userModel stopped moving before
             // lifting finger or mouse vs. moving slowly before lifting the finger/mouse.
             // For faster swipes, also apply limits (albeit higher ones).
             var moveDistance = Math.abs((rtl ? -newPosition : newPosition) - swiper.translate);
@@ -5011,7 +5011,7 @@
         pX = e.deltaX;
       }
 
-      if (e.shiftKey && !pX) { // if user scrolls with shift he wants horizontal scroll
+      if (e.shiftKey && !pX) { // if userModel scrolls with shift he wants horizontal scroll
         pX = pY;
         pY = 0;
       }
@@ -5179,7 +5179,7 @@
             var firstEvent = recentWheelEvents$1[0];
             recentWheelEvents$1.push(newEvent$1);
             if (prevEvent$1 && (newEvent$1.delta > prevEvent$1.delta || newEvent$1.direction !== prevEvent$1.direction)) {
-              // Increasing or reverse-sign delta means the user started scrolling again. Clear the wheel event log.
+              // Increasing or reverse-sign delta means the userModel started scrolling again. Clear the wheel event log.
               recentWheelEvents$1.splice(0);
             } else if (recentWheelEvents$1.length >= 15
                 && newEvent$1.time - firstEvent.time < 500
@@ -5229,19 +5229,19 @@
     animateSlider: function animateSlider(newEvent) {
       var swiper = this;
       // If the movement is NOT big enough and
-      // if the last time the user scrolled was too close to the current one (avoid continuously triggering the slider):
+      // if the last time the userModel scrolled was too close to the current one (avoid continuously triggering the slider):
       //   Don't go any further (avoid insignificant scroll movement).
       if (newEvent.delta >= 6 && Utils.now() - swiper.mousewheel.lastScrollTime < 60) {
         // Return false as a default
         return true;
       }
-      // If user is scrolling towards the end:
+      // If userModel is scrolling towards the end:
       //   If the slider hasn't hit the latest slide or
       //   if the slider is a loop and
       //   if the slider isn't moving right now:
       //     Go to next slide and
       //     emit a scroll event.
-      // Else (the user is scrolling towards the beginning) and
+      // Else (the userModel is scrolling towards the beginning) and
       // if the slider hasn't hit the first slide or
       // if the slider is a loop and
       // if the slider isn't moving right now:
