@@ -28,7 +28,7 @@
                                 <p class="card-text">Экспериментальная функция для обновления программного обеспечения SphereWeb.</p>
                                 <p> Рекомендую иметь актуальный код программного обеспечения.</p>
 
-                                <button class="btn btn-success">Обновить программное обновление</button>
+                                <button id="startUpdate" class="btn btn-success">Обновить программное обновление</button>
 
                             </div>
                             <div class="tab-pane text-muted" id="about1" role="tabpanel">
@@ -129,6 +129,11 @@
         if (stop) return false;
         AjaxSend('/admin/config/save', 'POST', formData, false);
     });
+
+    $('#startUpdate').on('click', function (e) {
+        e.preventDefault();
+        AjaxSend('/admin/sphere/update/start', 'POST', {}, false)
+    })
 </script>
 
 {% endblock %}

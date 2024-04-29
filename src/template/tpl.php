@@ -18,8 +18,6 @@ use Ofey\Logan22\component\estate\castle;
 use Ofey\Logan22\component\estate\clanhall;
 use Ofey\Logan22\component\estate\fort;
 use Ofey\Logan22\component\fileSys\fileSys;
-use Ofey\Logan22\component\github\github;
-use Ofey\Logan22\component\github\githubUpdates;
 use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\links\action;

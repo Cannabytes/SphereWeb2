@@ -2,7 +2,10 @@
 
 namespace Ofey\Logan22\model\config;
 
+use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\github\gitdata;
+use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
 
 class github
@@ -28,6 +31,98 @@ class github
         $this->tokenDays   = $setting['tokenDays'];
     }
 
+    public function getToken(): string
+    {
+        return $this->githubToken;
+    }
+
+    public function getTokenDays(): int
+    {
+        return $this->tokenDays;
+    }
+
+    public function update()
+    {
+        $repo_owner = $this->repo_owner;
+        $repo_name  = $this->repo_name;
+        $commits    = $this->getUpdateSphere();
+
+        //Оставляем только актуальные коммиты, до последнего обновления
+        $lastSHA        = $this->getLastUpdateSphereCommitSHA();
+        $findLastCommit = false;
+        foreach ($commits as $key => $commit) {
+            if ($findLastCommit) {
+                unset($commits[$key]);
+            }
+            if ($commit->getSHA() == $lastSHA) {
+                $findLastCommit = true;
+                unset($commits[$key]);
+            }
+        }
+        if (count($commits) == 0) {
+            board::success("Новых коммитов нет");
+        }
+        $commits = array_reverse($commits);
+        foreach ($commits as $commit) {
+            $commit_sha      = $commit->getSHA();
+            $commit_response = self::getContents("https://api.github.com/repos/$repo_owner/$repo_name/commits/$commit_sha");
+            if ($commit_response === null) {
+                continue; // Пропускаем этот коммит, если произошла ошибка
+            }
+            $commit_data     = json_decode($commit_response, true);
+            $gitdata = new gitdata();
+            $gitdata->getDataCommit($commit_data['sha'], $commit_data['html_url'], $commit_data['commit']['author']['name'], $commit_data['commit']['message'], $commit_data['commit']['author']['date']);
+            $this->saveDBCommit($gitdata);
+            // Получаем список измененных файлов
+            $files = $commit_data['files'];
+            foreach ($files as $file) {
+                $file_path = $file['filename'];
+                $file_url  = "https://raw.githubusercontent.com/$repo_owner/$repo_name/$commit_sha/$file_path";
+
+                $directory = dirname($file_path);
+
+                // Создаем каталоги, если они не существуют
+                if ( ! file_exists(fileSys::get_dir( "test/" . $directory))) {
+                    mkdir(fileSys::get_dir( "test/" . $directory), 0755, true);
+                }
+                // Скачиваем файл
+                $file_content = file_get_contents($file_url);
+                file_put_contents(fileSys::get_dir( "test/" . $file_path), $file_content);
+
+                echo "Скачан файл: $file_path\n";
+            }
+            echo "\n";
+        }
+
+
+        //        }
+        //var_dump(self::$gitdata);exit();
+        //        return self::$gitdata;
+
+    }
+
+    public function saveDBCommit(gitdata $gitdata = null): void
+    {
+        if($gitdata === null) {
+            return;
+        }
+        sql::run("INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)", [
+            $gitdata->getSHA(),
+            $gitdata->getAuthor(),
+            $gitdata->getUrl(),
+            $gitdata->getMessage(),
+            $gitdata->getDate(),
+            time::mysql(),
+        ]);
+        if(sql::isError()){
+            $err = sql::getException();
+            board::error($err->getMessage());
+        }
+    }
+
+    /**
+     * @return gitdata[]|null
+     */
     public function getUpdateSphere(): ?array
     {
         if ($this->gitdata != null) {
@@ -51,14 +146,15 @@ class github
         $response = curl_exec($ch);
         curl_close($ch);
         $commits = json_decode($response, true);
-        if(isset($commits['message'])){
-            if($commits['message'] == 'Bad credentials'){
-                //Когда токен ошибочный либо отсутствует
+        if (isset($commits['message'])) {
+            if ($commits['message'] == 'Bad credentials') {
+                echo 'Токен GitHub неверный или отсутствует';
+
                 return null;
             }
         }
         foreach ($commits as $commit) {
-            $this->gitdata[] = new gitdata($commit);
+            $this->gitdata[] = new gitdata( $commit);
         }
         return $this->gitdata;
     }
@@ -81,14 +177,27 @@ class github
         return $this->lastSHA;
     }
 
-    public function getToken(): string
+    private function getContents($url)
     {
-        return $this->githubToken;
-    }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+          'Accept: application/vnd.github.v3+json',
+          'User-Agent: SphereWeb-Agent',
+          'Authorization: token ' . $this->githubToken,
+        ]);
 
-    public function getTokenDays(): int
-    {
-        return $this->tokenDays;
+        $response  = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($http_code >= 200 && $http_code < 300) {
+            return $response;
+        } else {
+            echo "Ошибка HTTP $http_code при запросе $url\n";
+            return null;
+        }
     }
 
 }

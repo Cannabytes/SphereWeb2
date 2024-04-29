@@ -122,8 +122,34 @@ class sql {
             self::$rowCount = $stmt->rowCount();
             return $stmt;
         } catch(PDOException $e) {
+            self::$error = true;
+            self::$exception = $e;
             return $e;
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isError(): bool
+    {
+        return self::$error;
+    }
+
+    /**
+     * @return int
+     */
+    public static function getRowCount(): int
+    {
+        return self::$rowCount;
+    }
+
+    /**
+     * @return \PDOException|null
+     */
+    public static function getException(): ?PDOException
+    {
+        return self::$exception;
     }
 
     public static function rowCount(): int

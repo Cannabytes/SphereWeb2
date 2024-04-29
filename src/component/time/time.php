@@ -7,13 +7,26 @@
 
 namespace Ofey\Logan22\component\time;
 
+use DateTime;
 use Ofey\Logan22\component\fileSys\fileSys;
 
 class time {
 
     //Время формата datetime
-    static public function mysql(): string {
+    public static function mysql(): string {
         return date('Y-m-d H:i:s');
+    }
+
+    /**
+     * Форматирование даты из 2024-04-28T15:23:24Z в 2024-04-28 15:23:24
+     * @param   string  $date
+     *
+     * @return string
+     */
+    public static function iso8601ToMysql(string $date): string
+    {
+        $dateTime = DateTime::createFromFormat('Y-m-d\TH:i:s\Z', $date);
+        return $dateTime->format('Y-m-d H:i:s');
     }
 
     private static ?array $timeoutCache = null;
