@@ -1,6 +1,6 @@
 <?php
 
-namespace Ofey\Logan22\controller\github;
+namespace Ofey\Logan22\model\github;
 
 use Ofey\Logan22\model\config\github;
 
