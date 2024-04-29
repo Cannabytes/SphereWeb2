@@ -123,6 +123,12 @@ function ResponseNotice(response) {
         get_captcha()
     }
 
+    if (response.reload === true){
+        setTimeout(function() {
+            window.location.reload();
+        }, 1000);
+    }
+
     if (response.redirect !== undefined){
         setTimeout(function() {
             window.location.href = response.redirect;

@@ -46,7 +46,6 @@ class github
         $repo_owner = $this->repo_owner;
         $repo_name  = $this->repo_name;
         $commits    = $this->getUpdateSphere();
-
         //Оставляем только актуальные коммиты, до последнего обновления
         $lastSHA        = $this->getLastUpdateSphereCommitSHA();
         $findLastCommit = false;
@@ -69,55 +68,54 @@ class github
             if ($commit_response === null) {
                 continue; // Пропускаем этот коммит, если произошла ошибка
             }
-            $commit_data     = json_decode($commit_response, true);
-            $gitdata = new gitdata();
-            $gitdata->getDataCommit($commit_data['sha'], $commit_data['html_url'], $commit_data['commit']['author']['name'], $commit_data['commit']['message'], $commit_data['commit']['author']['date']);
-            $this->saveDBCommit($gitdata);
+            $commit_data = json_decode($commit_response, true);
+            $gitdata     = new gitdata();
+            $gitdata->getDataCommit(
+              $commit_data['sha'],
+              $commit_data['html_url'],
+              $commit_data['commit']['author']['name'],
+              $commit_data['commit']['message'],
+              $commit_data['commit']['author']['date']
+            );
             // Получаем список измененных файлов
             $files = $commit_data['files'];
             foreach ($files as $file) {
                 $file_path = $file['filename'];
-                $file_url  = "https://raw.githubusercontent.com/$repo_owner/$repo_name/$commit_sha/$file_path";
+                $status = $file['status'];
 
+                if($status != "added" && $status != "modified" && $status != "removed"){continue;}
+
+                if($status == "removed"){
+                    if (file_exists(fileSys::get_dir("test/" . $file_path))) {
+                      unlink(fileSys::get_dir("test/" . $file_path));
+                    }
+                    $this->saveDBCommit($gitdata);
+                    continue;
+                }
+
+                $file_url  = "https://raw.githubusercontent.com/$repo_owner/$repo_name/$commit_sha/$file_path";
                 $directory = dirname($file_path);
 
                 // Создаем каталоги, если они не существуют
-                if ( ! file_exists(fileSys::get_dir( "test/" . $directory))) {
-                    mkdir(fileSys::get_dir( "test/" . $directory), 0755, true);
+                if ( ! file_exists(fileSys::get_dir("test/" . $directory))) {
+                    mkdir(fileSys::get_dir("test/" . $directory), 0755, true);
                 }
+
                 // Скачиваем файл
                 $file_content = file_get_contents($file_url);
-                file_put_contents(fileSys::get_dir( "test/" . $file_path), $file_content);
+                file_put_contents(fileSys::get_dir("test/" . $file_path), $file_content);
 
-                echo "Скачан файл: $file_path\n";
+                $this->saveDBCommit($gitdata);
             }
-            echo "\n";
         }
 
-
-        //        }
-        //var_dump(self::$gitdata);exit();
-        //        return self::$gitdata;
-
-    }
-
-    public function saveDBCommit(gitdata $gitdata = null): void
-    {
-        if($gitdata === null) {
-            return;
-        }
-        sql::run("INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)", [
-            $gitdata->getSHA(),
-            $gitdata->getAuthor(),
-            $gitdata->getUrl(),
-            $gitdata->getMessage(),
-            $gitdata->getDate(),
-            time::mysql(),
+        board::alert([
+          'type'    => 'notice',
+          'ok'      => 'success',
+          'message' => "Успешно обновлено",
+          'reload'  => true,
         ]);
-        if(sql::isError()){
-            $err = sql::getException();
-            board::error($err->getMessage());
-        }
+
     }
 
     /**
@@ -154,8 +152,9 @@ class github
             }
         }
         foreach ($commits as $commit) {
-            $this->gitdata[] = new gitdata( $commit);
+            $this->gitdata[] = new gitdata($commit);
         }
+
         return $this->gitdata;
     }
 
@@ -196,7 +195,27 @@ class github
             return $response;
         } else {
             echo "Ошибка HTTP $http_code при запросе $url\n";
+
             return null;
+        }
+    }
+
+    public function saveDBCommit(gitdata $gitdata = null): void
+    {
+        if ($gitdata === null) {
+            return;
+        }
+        sql::run("INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)", [
+          $gitdata->getSHA(),
+          $gitdata->getAuthor(),
+          $gitdata->getUrl(),
+          $gitdata->getMessage(),
+          $gitdata->getDate(),
+          time::mysql(),
+        ]);
+        if (sql::isError()) {
+            $err = sql::getException();
+            board::error($err->getMessage());
         }
     }
 

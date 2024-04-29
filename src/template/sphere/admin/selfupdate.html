@@ -132,13 +132,9 @@
 
     $('#startUpdate').on('click', function (e) {
         e.preventDefault();
-        AjaxSend('/admin/sphere/update/start', 'POST', {}, true).then(function (response) {
-            responseAnalysis(response);
-            if (response.success) {
-                window.location.reload()
-            }
-        })
-    })
+        AjaxSend('/admin/sphere/update/start', 'POST', {}, false)
+    });
+
 </script>
 
 {% endblock %}
