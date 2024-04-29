@@ -34,6 +34,8 @@ class config
 
     private ?donate $donate = null;
 
+    private ?github $github = null;
+
     /**
      * Сохранения конфигурации
      */
@@ -199,8 +201,15 @@ class config
         if ($this->donate == null) {
             $this->donate = new donate();
         }
-//        var_dump($this->donate->donateSystems["cryptocloud"].isEnable());exit;
         return $this->donate;
+    }
+
+    public function github(): ?github
+    {
+        if ($this->github == null) {
+            $this->github = new github();
+        }
+        return $this->github;
     }
 
 }

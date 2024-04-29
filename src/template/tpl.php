@@ -19,6 +19,7 @@ use Ofey\Logan22\component\estate\clanhall;
 use Ofey\Logan22\component\estate\fort;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\github\github;
+use Ofey\Logan22\component\github\githubUpdates;
 use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\links\action;
@@ -29,7 +30,6 @@ use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\model\admin\launcher;
 use Ofey\Logan22\model\config\referralConfig;
 use Ofey\Logan22\model\donate\donate;
-use Ofey\Logan22\model\donate\donateConfig;
 use Ofey\Logan22\model\enabled\enabled;
 use Ofey\Logan22\model\forum\forum;
 use Ofey\Logan22\model\forum\internal;
@@ -797,13 +797,6 @@ class tpl {
 
         $twig->addFunction(new TwigFunction('get_item_info', function ($item_id) {
             return client_icon::get_item_info($item_id, false, false);
-        }));
-
-        $twig->addFunction(new TwigFunction('getUpdateSphere', function () {
-            return github::getUpdateSphere();
-        }));
-        $twig->addFunction(new TwigFunction('getUpdateSphereCount', function () {
-            return github::getCount();
         }));
 
 //        $twig->addFunction(new TwigFunction('donateConfig', function (): donateConfig {

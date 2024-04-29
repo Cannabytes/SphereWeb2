@@ -2,8 +2,6 @@
 
 namespace Ofey\Logan22\component\github;
 
-use DateTime;
-
 class gitdata
 {
 
