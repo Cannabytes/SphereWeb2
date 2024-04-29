@@ -28,8 +28,11 @@
                                 <p class="card-text">Экспериментальная функция для обновления программного обеспечения SphereWeb.</p>
                                 <p> Рекомендую иметь актуальный код программного обеспечения.</p>
 
+                                {% if config().github().getCountCommits() == 0 %}
+                                 <p> Для Вас нет обновлений </p>
+                                {% else %}
                                 <button id="startUpdate" class="btn btn-success">Обновить программное обновление</button>
-
+                                {% endif %}
                             </div>
                             <div class="tab-pane text-muted" id="about1" role="tabpanel">
                                 <p class="card-text"> Для обновления Вам необходимо создать GitHub Token.</p> 
@@ -51,6 +54,21 @@
         </div>
 
         <div class="row justify-content-center">
+            {% if config().github().isError() == true %}
+
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <blockquote class="blockquote custom-blockquote danger mb-0 text-center">
+                            <p class="text-danger"> {{ config().github().getError() }} </p>
+                          </blockquote>
+                    </div>
+
+                </div>
+            </div>
+
+
+            {% else %}
             <div class="col-xxl-9 col-xl-10 col-sm-12">
                 <ul class="timeline list-unstyled">
 
@@ -91,6 +109,8 @@
 
                 </ul>
             </div>
+            {% endif %}
+
             </div>
 
     </div>
@@ -128,6 +148,9 @@
         });
         if (stop) return false;
         AjaxSend('/admin/config/save', 'POST', formData, false);
+        setTimeout(function() {
+            window.location.reload();
+        }, 2000);
     });
 
     $('#startUpdate').on('click', function (e) {

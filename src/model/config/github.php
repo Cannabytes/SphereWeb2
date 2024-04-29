@@ -23,6 +23,8 @@ class github
 
     private ?string $lastSHA = null;
 
+    private ?int $countCommits = null;
+
     public function __construct()
     {
         $configData        = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_github__'");
@@ -36,16 +38,32 @@ class github
         return $this->githubToken;
     }
 
-    public function getTokenDays(): int
+    /**
+     * Количество актуальных коммитов
+     *
+     * @return int
+     *
+     */
+    public function getCountCommits(): int
     {
-        return $this->tokenDays;
+        if ($this->countCommits !== null) {
+            return $this->countCommits;
+        }
+        $commits            = $this->getActualCommits();
+        $this->countCommits = count($commits);
+
+        return $this->countCommits;
     }
 
-    public function update()
+    /**
+     * @return array
+     */
+    private function getActualCommits(): array
     {
-        $repo_owner = $this->repo_owner;
-        $repo_name  = $this->repo_name;
-        $commits    = $this->getUpdateSphere();
+        $commits = $this->getUpdateSphere();
+        if($commits===null){
+            return [];
+        }
         //Оставляем только актуальные коммиты, до последнего обновления
         $lastSHA        = $this->getLastUpdateSphereCommitSHA();
         $findLastCommit = false;
@@ -58,67 +76,23 @@ class github
                 unset($commits[$key]);
             }
         }
-        if (count($commits) == 0) {
-            board::success("Новых коммитов нет");
-        }
-        $commits = array_reverse($commits);
-        foreach ($commits as $commit) {
-            $commit_sha      = $commit->getSHA();
-            $commit_response = self::getContents("https://api.github.com/repos/$repo_owner/$repo_name/commits/$commit_sha");
-            if ($commit_response === null) {
-                continue; // Пропускаем этот коммит, если произошла ошибка
-            }
-            $commit_data = json_decode($commit_response, true);
-            $gitdata     = new gitdata();
-            $gitdata->getDataCommit(
-              $commit_data['sha'],
-              $commit_data['html_url'],
-              $commit_data['commit']['author']['name'],
-              $commit_data['commit']['message'],
-              $commit_data['commit']['author']['date']
-            );
-            // Получаем список измененных файлов
-            $files = $commit_data['files'];
-            foreach ($files as $file) {
-                $file_path = $file['filename'];
-                $status = $file['status'];
 
-                if($status != "added" && $status != "modified" && $status != "removed"){continue;}
+        return $commits ?? [];
+    }
 
-                if($status == "removed"){
-                    if (file_exists(fileSys::get_dir("test/" . $file_path))) {
-                      unlink(fileSys::get_dir("test/" . $file_path));
-                    }
-                    $this->saveDBCommit($gitdata);
-                    continue;
-                }
+    private bool $error = false;
+    public function isError(): bool {
+        return $this->error;
+    }
 
-                $file_url  = "https://raw.githubusercontent.com/$repo_owner/$repo_name/$commit_sha/$file_path";
-                $directory = dirname($file_path);
-
-                // Создаем каталоги, если они не существуют
-                if ( ! file_exists(fileSys::get_dir("test/" . $directory))) {
-                    mkdir(fileSys::get_dir("test/" . $directory), 0755, true);
-                }
-
-                // Скачиваем файл
-                $file_content = file_get_contents($file_url);
-                file_put_contents(fileSys::get_dir("test/" . $file_path), $file_content);
-
-                $this->saveDBCommit($gitdata);
-            }
-        }
-
-        board::alert([
-          'type'    => 'notice',
-          'ok'      => 'success',
-          'message' => "Успешно обновлено",
-          'reload'  => true,
-        ]);
-
+    private string $errorMessage = '';
+    public function getError(): string {
+        return $this->errorMessage;
     }
 
     /**
+     * Получение списка коммитов
+     *
      * @return gitdata[]|null
      */
     public function getUpdateSphere(): ?array
@@ -146,8 +120,8 @@ class github
         $commits = json_decode($response, true);
         if (isset($commits['message'])) {
             if ($commits['message'] == 'Bad credentials') {
-                echo 'Токен GitHub неверный или отсутствует';
-
+                $this->error = true;
+                $this->errorMessage = 'Токен GitHub неверный, сгенерируйте себе новый.';
                 return null;
             }
         }
@@ -174,6 +148,77 @@ class github
         }
 
         return $this->lastSHA;
+    }
+
+    public function getTokenDays(): int
+    {
+        return $this->tokenDays;
+    }
+
+    public function update()
+    {
+        $repo_owner = $this->repo_owner;
+        $repo_name  = $this->repo_name;
+        $commits    = $this->getActualCommits();
+        if (count($commits) == 0) {
+            board::success("Новых коммитов нет");
+        }
+        $commits = array_reverse($commits);
+        foreach ($commits as $commit) {
+            $commit_sha      = $commit->getSHA();
+            $commit_response = self::getContents("https://api.github.com/repos/$repo_owner/$repo_name/commits/$commit_sha");
+            if ($commit_response === null) {
+                continue; // Пропускаем этот коммит, если произошла ошибка
+            }
+            $commit_data = json_decode($commit_response, true);
+            $gitdata     = new gitdata();
+            $gitdata->getDataCommit(
+              $commit_data['sha'],
+              $commit_data['html_url'],
+              $commit_data['commit']['author']['name'],
+              $commit_data['commit']['message'],
+              $commit_data['commit']['author']['date']
+            );
+            // Получаем список измененных файлов
+            $files = $commit_data['files'];
+            foreach ($files as $file) {
+                $file_path = $file['filename'];
+                $status    = $file['status'];
+
+                if ($status != "added" && $status != "modified" && $status != "removed") {
+                    continue;
+                }
+
+                if ($status == "removed") {
+                    if (file_exists(fileSys::get_dir("test/" . $file_path))) {
+                        unlink(fileSys::get_dir("test/" . $file_path));
+                    }
+                    $this->saveDBCommit($gitdata);
+                    continue;
+                }
+
+                $file_url  = "https://raw.githubusercontent.com/$repo_owner/$repo_name/$commit_sha/$file_path";
+                $directory = dirname($file_path);
+
+                // Создаем каталоги, если они не существуют
+                if ( ! file_exists(fileSys::get_dir("test/" . $directory))) {
+                    mkdir(fileSys::get_dir("test/" . $directory), 0755, true);
+                }
+
+                // Скачиваем файл
+                $file_content = file_get_contents($file_url);
+                file_put_contents(fileSys::get_dir("test/" . $file_path), $file_content);
+
+                $this->saveDBCommit($gitdata);
+            }
+        }
+
+        board::alert([
+          'type'    => 'notice',
+          'ok'      => 'success',
+          'message' => "Успешно обновлено",
+          'reload'  => true,
+        ]);
     }
 
     private function getContents($url)
