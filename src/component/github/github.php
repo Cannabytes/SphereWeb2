@@ -9,7 +9,7 @@ class github
 
     public static ?array $gitdata = null;
 
-    private static $token = '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'; // замените на имя владельца репозитория
+    private static $token = ''; // замените на имя владельца репозитория
 
     private static $repo_owner = 'Cannabytes'; // замените на имя репозитория
 
