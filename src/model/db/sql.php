@@ -5,6 +5,7 @@ namespace Ofey\Logan22\model\db;
 use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\alert\logs;
+use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\template\tpl;
 use PDO;
@@ -17,7 +18,7 @@ class sql {
      * @var PDO
      */
     private static ?PDO $db = null;
-    static public bool $error = false;
+    public static bool $error = false;
     private static int $rowCount = 0;
     /**
      * DB constructor.

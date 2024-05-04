@@ -186,10 +186,11 @@ class tpl {
             self::$templatePath = "/template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName();
             self::lang_template_load(fileSys::get_dir(self::$templatePath . "/lang.php"));
         }
+
+
         $loader = new FilesystemLoader([
             fileSys::get_dir(self::$templatePath),
         ]);
-
         if (is_dir(fileSys::get_dir("/custom/plugins"))) {
             $loader->addPath(fileSys::get_dir("/custom/plugins"));
         }
@@ -313,6 +314,11 @@ class tpl {
                 }
             }
             return user::getUserId($id);
+        }));
+
+
+        $twig->addFunction(new TwigFunction('getUsers', function () {
+            return user::getUsers();
         }));
 
         $twig->registerUndefinedFunctionCallback(function ($name) {
@@ -981,8 +987,12 @@ class tpl {
             return page::show_news_short(300, $last_thread, false);
         }));
 
+        $twig->addFunction(new TwigFunction('show_all_pages_short', function () {
+            return page::show_all_pages_short();
+        }));
+
         $twig->addFunction(new TwigFunction('get_page', function ($id) {
-            return page::get_news($id);
+            return page::getPage($id);
         }));
 
         $twig->addFunction(new TwigFunction('news_poster', function ($image, $full = false) {
@@ -995,7 +1005,7 @@ class tpl {
             if (!file_exists(fileSys::getSubDir() . $fullImagePath)) {
                 return fileSys::localdir("/src/template/logan22/assets/images/logo_news_d.jpg");
             }
-            return "/" . $fullImagePath;
+            return $fullImagePath;
         }));
 
 

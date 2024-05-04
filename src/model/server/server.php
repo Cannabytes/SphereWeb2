@@ -16,6 +16,7 @@ use Ofey\Logan22\component\cache\dir;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\restapi\restapi;
 use Ofey\Logan22\component\session\session;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sdb;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\auth\auth;
@@ -113,7 +114,7 @@ class server {
         //Возращаем ID страницы описания согласно языка пользователя
         foreach (self::$get_default_desc_page_id as $row) {
             if ($server_id == $row['server_id']) {
-                if ($row['lang'] == lang::lang_user_default()) {
+                if ($row['lang'] == config::load()->lang()->lang_user_default()) {
                     return $row['page_id'];
                 }
             }
@@ -149,8 +150,8 @@ class server {
             return [ $server_info ,false];
         }
         return [
-            $server_info,
-            cache::read($dir->show_dynamic($server_info->getId(), $name), second: $second),
+          $server_info,
+          cache::read($dir->show_dynamic($server_info->getId(), $name), second: $second),
         ];
     }
 
@@ -189,9 +190,9 @@ class server {
     public static function across($collection_name, $server_info, $prepare = []) {
         if ($server_info['rest_api_enable']) {
             $data = restapi::Send(
-                $server_info,
-                $collection_name,
-                $prepare,
+              $server_info,
+              $collection_name,
+              $prepare,
             );
             if ($data == "false") {
                 return false;
@@ -212,9 +213,9 @@ class server {
     public static function acrossAll($collection_name, serverModel $server_info, $prepare = []) {
         if ($server_info->getRestApiEnable()) {
             $data = restapi::Send(
-                $server_info,
-                $collection_name,
-                $prepare,
+              $server_info,
+              $collection_name,
+              $prepare,
             );
             if ($data == "false") {
                 return false;

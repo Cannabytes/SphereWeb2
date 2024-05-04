@@ -1,0 +1,71 @@
+{% extends 'struct.html' %}
+
+{% block title %}Forum{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-body d-flex align-items-center  flex-xxl-nowrap flex-wrap">
+          <div class="flex-fill">
+            <span class="mb-0 fs-14 text-muted">У Вас новостей и страниц : <span class="fw-semibold text-success">{{show_all_pages_short()|length}}</span></span>
+          </div>
+          <div class="d-flex" >
+            <a href="/admin/pages/create" class="btn btn-sm btn-primary btn-wave waves-light"><i class="ri-add-line fw-semibold align-middle me-1"></i> Создать новость или страницу
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% set page = show_all_pages_short() %}
+
+    {% if page %}
+
+    {% for short in page %}
+    {% set pathImg = path("/uploads/images/news/" ~ short.poster) %}
+    {% if short.poster == null %}
+    {% set pathImg = template ~ "/assets/images/logo_news_d.jpg" %}
+    {% endif %}
+
+    <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+      <div class="card custom-card">
+        <img src="{{pathImg}}" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h6 class="card-title fw-semibold">{{short.name}}</h6>
+          <p class="card-text text-muted">{{short.description|raw|replace({'<p>': '', '</p>': '', '<b>': '', '</b>': '', '<br>': ''})|raw}}</p>
+          {% if short.link %}
+          <a target="_blank" class="btn btn-primary" href="{{short.link}}">Перейти по ссылке</a>
+          {% else %}
+          <a class="btn btn-primary" href="{{action('get_page', [short.id])}}">Открыть страницу</a>
+          {% endif %}
+          <a href="/admin/pages/edit/{{short.id}}" class="btn btn-primary">Изменить</a>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+          <span class="card-text">Для языка: {{short.lang}}</span>
+          <span class="card-text">Тип: {% if short.is_news == 1 %}Новость{% else %}Страница{% endif %}</span>
+          <span class="card-text">{{short.date_create|date("F d, Y")}}</span>
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    Нет новостей или страниц
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block js %}
+
+{% endblock %}
+

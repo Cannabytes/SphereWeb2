@@ -24,7 +24,7 @@ use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\encrypt\encrypt;
 use Ofey\Logan22\model\server\server;
-use Ofey\Logan22\model\server\serverModel;
+use Ofey\Logan22\model\server\serverModel ;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\auth\registration;
 use Ofey\Logan22\model\user\user;
@@ -64,10 +64,12 @@ class player_account {
 
     /**
      * Когда включен REST API то в $info приходит ID сервер
-     * @param $info serverModel
+     *
+     * @param $info serverModel 
+     *
      * @info serverModel
      */
-    public static function extracted($collectionName, serverModel $info, $prepare = [], $notice = false) {
+    public static function extracted($collectionName, serverModel  $info, $prepare = [], $notice = false) {
         if ($info->getRestApiEnable() ?? false) {
             $data = restapi::Send(
                 $info,
@@ -281,12 +283,13 @@ class player_account {
     /**
      * @param array $servers
      * @param array $methods
-     * @return serverModel[]
+     *
+     * @return serverModel []
      */
     static function removeDuplicates(array $servers, array $methods): array {
         $tempKeys = [];
         $uniqueServers = [];
-        /** @var serverModel $server */
+        /** @var serverModel  $server */
         foreach ($servers as $server) {
             $getLoginHost = $server->getLoginHost();
             $getLoginUser = $server->getLoginUser();
@@ -319,7 +322,6 @@ class player_account {
         foreach($unique_server_info AS $info){
             self::getQuest($info->getRestApiEnable(), $info->getId(), $login, $password, $password_hide);
         }
-
         self::add_inside_account($login, $password, user::getUserId()->getEmail(), user::getUserId()->getIp(), user::getUserId()->getServerId(), $password_hide);
         $content = trim(config::load()->lang()->getPhrase(config::load()->registration()->getPhraseRegistrationDownloadFile())) ?? "";
         if (config::load()->registration()->isMassRegistration()) {
@@ -360,7 +362,7 @@ class player_account {
      * @return mixed|void
      * @throws ExceptionAlias
      */
-    public static function getReQuest($server_id, $login): serverModel {
+    public static function getReQuest($server_id, $login): serverModel  {
         $server_info = server::getServer($server_id);
         if (!$server_info) {
             board::notice(false, lang::get_phrase(150));

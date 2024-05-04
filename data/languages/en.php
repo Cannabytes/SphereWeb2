@@ -294,7 +294,7 @@ return [
 	'283' => 'Forbidden to change administrator password',
 	'284' => 'Reset code',
 	'285' => 'Reset password',
-	'286' => 'Maximum allowed value for field %s is %s characters',
+	'286' => 'Maximum allowed value for field %s is %d characters',
 	'287' => '%s up to %s characters.',
 	'288' => 'Field %s is required',
 	'289' => '%s must be of the format %s',

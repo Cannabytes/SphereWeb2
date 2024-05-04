@@ -1,3 +1,5 @@
+$('input[autocomplete="off"]').val('');
+
 function AjaxSend(url, method, data, isReturn = false) {
     return new Promise(function(resolve, reject) {
         $.ajax({

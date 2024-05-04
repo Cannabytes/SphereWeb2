@@ -131,7 +131,7 @@ class sdb {
                 $stmt->execute();
             }
             return $stmt;
-        } catch (PDOException $e) {
+        } catch (PDOException $e){
             if(!$notice){
                 self::$error = true;
                 self::$errorMessage = $e->getMessage();

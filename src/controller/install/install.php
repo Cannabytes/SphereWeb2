@@ -6,12 +6,14 @@
 namespace Ofey\Logan22\controller\install;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\config\config;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\version\version;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\template\tpl;
+use PDO;
 
 class install {
 
@@ -21,7 +23,7 @@ class install {
      * Установка, вывод правил, соглашения
      */
     public static function rules(): void {
-        if (\Ofey\Logan22\model\install\install::exist_admin() and file_exists(fileSys::get_dir('/src/config/db.php'))) {
+        if (file_exists(fileSys::get_dir('/data/db.php'))) {
             redirect::location("/");
             die();
         }
@@ -30,10 +32,11 @@ class install {
             self::$allow_install = false;
         }
         tpl::addVar(["need_min_version_php" => version::MIN_PHP_VERSION(),
+                     "need_mysql_version" => version::MIN_MYSQL_VERSION(),
                      "dir_permissions" => self::checkFolderPermissions(["/src/config", "/uploads",]),
                      "htaccess" => $isHtaccess,
                      "isLinux" => "Linux" == php_uname('s'),
-                     "php_informations" => [["name" => lang::get_phrase("PHP_VERSION"),
+                     "php_informations" => [["name" => "PHP_VERSION",
                                              "get" => PHP_VERSION,
                                              "min" => version::MIN_PHP_VERSION(),
                                              "allow" => PHP_VERSION>=version::MIN_PHP_VERSION(),
@@ -58,14 +61,14 @@ class install {
                                        "allow" => self::isExtension(extension_loaded('mbstring')),
                                       ],
 
-
 //                                      ["name" => "fileinfo",
 //                                       "allow" => self::isExtension(extension_loaded('fileinfo')),
 //                                      ],
                      ],
                      "allow_install" => self::$allow_install,
         ]);
-        tpl::display("install/install_rules.html");
+
+        tpl::display("install.html");
     }
 
     private static function checkFolderPermissions($dir = []): array {
@@ -140,7 +143,7 @@ class install {
 
     public static function db() {
         version::check_version_php();
-        if (file_exists(fileSys::get_dir('/src/config/db.php'))) {
+        if (file_exists(fileSys::get_dir('/data/db.php'))) {
             redirect::location("/install/admin");
             die();
         }
@@ -150,7 +153,7 @@ class install {
     //Проверка соединения с базой данных
     public static function db_connect() {
         version::check_version_php();
-        if (file_exists(fileSys::get_dir('/src/config/db.php'))) {
+        if (file_exists(fileSys::get_dir('/data/db.php'))) {
             redirect::location("/");
             die();
         }
@@ -165,21 +168,28 @@ class install {
         }
         $host = $_POST['host'];
         $port = $_POST['port'] ?? 3306;
-        $user = $_POST['userModel'];
+        $user = $_POST['user'];
         $password = $_POST['password'];
         $name = $_POST['name'];
         $pdo = \Ofey\Logan22\model\install\install::test_connect_mysql($host, $port, $user, $password, $name);
         if ($pdo) {
-            self::install_sql_struct($pdo, fileSys::get_dir("/uploads/sql/struct/*.sql"));
-//            self::install_sql_struct($pdo, fileSys::get_dir("/uploads/sql/data/*.sql"));
-            \Ofey\Logan22\model\install\install::saveConfig($host, $port, $user, $password, $name);
+            //Вернуть версию MySQL
+            $ver = $pdo->query("SELECT VERSION()")->fetchColumn();
+            $ver = preg_replace('/^(\d+\.\d+).*$/','$1',$ver);
+            board::alert([
+                "type" => "notice",
+                "ok" => true,
+                "mysqlVersion" => $ver,
+            ]);
+//            self::install_sql_struct($pdo, fileSys::get_dir("/uploads/sql/struct/*.sql"));
             board::notice(true, 'Next install');
         } else {
             board::notice(false, 'Database connection error');
         }
     }
 
-    private static function install_sql_struct($pdo, $dir) {
+    private static function install_sql_struct($pdo, $dir): void
+    {
         $files = glob($dir);
         foreach ($files as $file) {
             $sql = file_get_contents($file);
@@ -197,6 +207,49 @@ class install {
 
     public static function add_admin() {
         \Ofey\Logan22\model\install\install::add_user_admin();
+    }
+
+    public static function startInstall(): void
+    {
+
+        $host = $_POST['host'];
+        $port = $_POST['port'] ?? 3306;
+        $user = $_POST['user'];
+        $password = $_POST['password'];
+        $name = $_POST['name'];
+
+        $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
+        $pdo = new PDO($dsn, $user, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        \Ofey\Logan22\model\install\install::saveConfig($host, $port, $user, $password, $name);
+
+        self::install_sql_struct($pdo, fileSys::get_dir("/uploads/sql/struct/*.sql"));
+
+        $email = $_POST['email'];
+        $nickname = $_POST['nickname'];
+        $adminPassword = $_POST['adminPassword'];
+
+        //Получить IP пользователя
+        $ip = $_SERVER['REMOTE_ADDR'];
+
+        $smt = $pdo->prepare("INSERT INTO `users` (`name`, `password`, `email`, `ip`, `access_level`) VALUES (?, ?, ?, ?, ?)",);
+        if($smt->execute([
+          $nickname,
+          password_hash($adminPassword, PASSWORD_BCRYPT),
+          $email,
+          $ip,
+          'admin',
+        ])) {
+//            \Ofey\Logan22\model\install\install::add_first_news();
+            board::alert([
+                "type" => "notice",
+                "ok" => true,
+                "message" => "Gooooood job!",
+                "redirect" => "/main",
+            ]);
+        }
+        board::notice(false, "Не удалось создать администратора");
+
     }
 
 }

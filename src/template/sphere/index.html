@@ -13,21 +13,21 @@
                 <div class="card-body">
                     <ul class="nav nav-pills justify-content-center nav-style-2 mb-3" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page" href="#home-center" aria-selected="true">Аккаунты</a>
+                            <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page" href="#account_list" aria-selected="true">Аккаунты</a>
                         </li>
                         {% if getUser().getCountPlayers() > 0 %}
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page" href="#services-center" aria-selected="false" tabindex="-1">Персонажи</a>
+                            <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page" href="#players_list" aria-selected="false" tabindex="-1">Персонажи</a>
                         </li>
                         {% endif %}
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link {% if getUser().countWarehouseItems() >=1 %}pulse pulse-danger{% endif %}" data-bs-toggle="tab" role="tab" aria-current="page" href="#contacts-center" aria-selected="false" tabindex="-1">Склад
+                            <a class="nav-link {% if getUser().countWarehouseItems() >=1 %}pulse pulse-danger{% endif %}" data-bs-toggle="tab" role="tab" aria-current="page" href="#warehouse_panel" aria-selected="false" tabindex="-1">Склад
                                 {% if getUser().countWarehouseItems() >=1 %}<span class=" top-0 start-50 translate-middle badge rounded-pill bg-danger">{{getUser().countWarehouseItems()}}</span>{% endif %}
                             </a>
                         </li>
                     </ul>
                     <div class="tab-content">
-                        <div class="tab-pane text-muted active show" id="home-center" role="tabpanel">
+                        <div class="tab-pane text-muted active show" id="account_list" role="tabpanel">
 
 
 
@@ -51,7 +51,7 @@
                                                 <div class="row mb-3">
                                                     <label for="accountRegistration" class="col-sm-2 col-form-label">Аккаунт</label>
                                                     <div class="col-sm-10">
-                                                        <input type="text" class="form-control" name="login" id="accountRegistration" autocomplete="off">
+                                                        <input type="text" class="form-control" name="login" id="accountRegistration" autocomplete="off" >
                                                     </div>
                                                 </div>
 
@@ -73,24 +73,26 @@
                                                     </div>
                                                 </fieldset>
 
-                                                {% if user_info("get_is_auth") == false %}
-                                                {% if get_captcha_version("Google") %}
-                                                <input class="captchaToken" type="hidden" name="captcha">
-                                                {% elseif get_captcha_version("default") %}
-                                                <div class="row mb-4">
-                                                    <div class="col-6">
-                                                        <div class="form-floating" style="">
-                                                            <img src="" class="lightbox-thumb img-thumb captcha_img" />
+                                                {% if getUser().isAuth() == false %}
+
+                                                    {% if config().isGoogleCaptcha() %}
+                                                    <input class="captchaToken" type="hidden" name="captcha">
+                                                    {% else %}
+                                                    <div class="row mb-4">
+                                                        <div class="col-6">
+                                                            <div class="form-floating" style="">
+                                                                <img src="" class="lightbox-thumb img-thumb captcha_img" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="form-floating">
+                                                                <input type="text" class="form-control" id="auth_captcha" name="captcha" placeholder="Captcha">
+                                                                <label class="form-label" for="auth_captcha">Captcha</label>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-6">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control" id="auth_captcha" name="captcha" placeholder="Captcha">
-                                                            <label class="form-label" for="auth_captcha">Captcha</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {% endif %}
+                                                    {% endif %}
+
                                                 {% endif %}
 
                                                 <div class="container px-0 mb-0">
@@ -186,7 +188,7 @@
                         </div>
 
                         {% if getUser().isAuth() %}
-                        <div class="tab-pane text-muted" id="services-center" role="tabpanel">
+                        <div class="tab-pane text-muted" id="players_list" role="tabpanel">
                             <div class="card-body d-flex align-items-start">
                                 <div class="col-xl-12">
                                     <div class="card custom-card">
@@ -285,7 +287,7 @@
                         </div>
                         {% endif %}
 
-                        <div class="tab-pane text-muted" id="contacts-center" role="tabpanel">
+                        <div class="tab-pane text-muted" id="warehouse_panel" role="tabpanel">
 
                             <div class="row ">
 

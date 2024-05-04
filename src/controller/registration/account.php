@@ -37,9 +37,11 @@ class account
           'login',
           new request_config(min: 4, max: 16, rules: "/^[a-zA-Z0-9_]+$/")
         );
-        if (__config__prefix['enable'] && isset($_POST['prefix']) && $_POST['prefix'] != "off_prefix" && $_POST['prefix'] != "null") {
+        $prefixEnable = config::load()->registration()->getEnablePrefix();
+        $prefixType = config::load()->registration()->getPrefixType();
+        if ($prefixEnable && isset($_POST['prefix']) && $_POST['prefix'] != "off_prefix" && $_POST['prefix'] != "null") {
             $prefix = $_POST['prefix'];
-            $login  = __config__prefix['type'] == "prefix" ? $prefix . $login : $login . $prefix;
+            $login  = $prefixType == "prefix" ? $prefix . $login : $login . $prefix;
         }
         $password      = request::setting(
           'password',

@@ -15,7 +15,7 @@
                     <div id="forumForm" class="card-body row gx-3 gy-2 align-items-center mt-0 ">
                         <div class="col-auto">
                             <div class="form-check">
-                                <input name="enabled" class="form-check-input" type="checkbox" id="autoSizingCheck2">
+                                <input {% if forum().isEnabled() %}checked{% endif %} name="enabled" class="form-check-input" type="checkbox" id="autoSizingCheck2">
                                 <label class="form-check-label" for="autoSizingCheck2">
                                     Включить форум
                                 </label>
@@ -27,8 +27,8 @@
                             Движок форума
                             <label class="visually-hidden" for="specificSizeSelect">Preference</label>
                             <select name="engine" class="form-select" id="specificSizeSelect">
-                                <option value="xenforo">XenForo</option>
-                                <option value="ips4">IPS 4</option>
+                                <option {% if forum().getEngine() == 'xenforo' %}selected{% endif %} value="xenforo">XenForo</option>
+                                <option {% if forum().getEngine() == 'ips4' %}selected{% endif %} value="ips4">IPS 4</option>
                             </select>
                             </div>
 

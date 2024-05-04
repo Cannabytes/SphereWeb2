@@ -73,7 +73,7 @@ class config
     /**
      * Загрузка конфигов
      */
-    #[NoReturn] public function __construct()
+    public function __construct()
     {
         $this->lang = new lang();
     }

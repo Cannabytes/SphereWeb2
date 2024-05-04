@@ -60,8 +60,25 @@ class page {
         return sql::run("SELECT * FROM `pages` WHERE id=?", [$id])->fetch();
     }
 
-    public static function show_all_pages_short($max_desc_len = 300, $limit = 300) {
-        return sql::run("SELECT `id`, `name`, LEFT(description, $max_desc_len) AS `description`, `comment`, `trash`, `date_create` FROM `pages` ORDER BY `id` DESC LIMIT $limit;")->fetchAll();
+    public static function getPage($id) {
+        return sql::run("SELECT * FROM `pages` WHERE id=?", [$id])->fetch();
+    }
+
+    public static function getMinInfo($id) {
+        return sql::run("SELECT `id`, `is_news`, `name`, `lang`, `link`, `poster`, `trash`, `date_create`, `date_update` FROM `pages` WHERE id=?", [$id])->fetch();
+    }
+
+    /**
+     * Вывод всех страниц и новостей
+     * @param $max_desc_len
+     * @param $limit
+     *
+     * @return false|array
+     * @throws \Exception
+     */
+    public static function show_all_pages_short($max_desc_len = 300, $limit = 300): false|array
+    {
+        return sql::run("SELECT `id`, `name`, LEFT(description, $max_desc_len) AS `description`, `is_news`, `comment`, `lang`, `link`, `poster`, `trash`, `date_create` FROM `pages` ORDER BY `id` DESC LIMIT $limit;")->fetchAll();
     }
 
     /**

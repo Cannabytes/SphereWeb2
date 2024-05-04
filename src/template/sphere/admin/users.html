@@ -1,0 +1,86 @@
+{% extends 'struct.html' %}
+
+{% block title %}Forum{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <div class="card custom-card">
+                                    <div class="card-header d-flex justify-content-between">
+                                        <div class="card-title">
+                                            Пользователи
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table text-nowrap">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col">User</th>
+                                                    <th scope="col">Sphere Coin</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+
+
+                                                {% for i, user in getUsers() %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="me-3 lh-1">
+                                                                            <span class="avatar avatar-xxl bd-gray-200">
+                                                                                <img src="{{user.getAvatar()}}" alt="">
+                                                                            </span>
+                                                            </div>
+                                                            <div>
+                                                                <div class="mb-1 fs-14 fw-semibold">
+                                                                    <a href="javascript:void(0);">{{user.getEmail()}}</a>
+                                                                </div>
+                                                                <div class="mb-1">
+                                                                    <span class="me-1">{{user.getName()}}</span>
+                                                                </div>
+                                                                <div class="mb-1">
+                                                                    <span class="me-1">Дата регистрации:</span><span class="text-muted">{{user.getDateCreate()|date("d F, Y")}}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="fs-15 fw-semibold">{{user.getDonate()}}</span>
+                                                    </td>
+
+                                                </tr>
+                                                {% endfor %}
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+{% endblock %}
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block js %}
+
+{% endblock %}
+

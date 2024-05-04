@@ -14,6 +14,6 @@ use Ofey\Logan22\component\session\session;
 
 class lang {
     public static function get_phrase($key, ...$values): string {
-       return \Ofey\Logan22\controller\config\config::load()->lang()->getPhrase($key, $values);
+       return \Ofey\Logan22\controller\config\config::load()->lang()->getPhrase($key, ...$values);
     }
 }

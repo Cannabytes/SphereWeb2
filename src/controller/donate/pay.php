@@ -163,7 +163,7 @@ class pay {
 
     public static function buyShopItem(): void {
         validation::user_protection();
-        if (!config::getEnableDonate()) error::error404("Отключено");
+//        if (!config::getEnableDonate()) error::error404("Отключено");
         if (!user::self()->isAuth()) board::notice(false, lang::get_phrase(234));
         donate::buyShopItem();
     }

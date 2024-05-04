@@ -19,6 +19,7 @@ use Ofey\Logan22\component\image\crest;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\model\db\sdb;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\server\serverModel;
@@ -69,6 +70,7 @@ class statistic {
         } else {
             $data = server::across($collection_sql_name, $server_info, $prepare);
         }
+
         if(isset($data['code']) AND $data['code'] != 0){
             return $data['message'];
         }

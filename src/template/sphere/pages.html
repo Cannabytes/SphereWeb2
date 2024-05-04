@@ -1,0 +1,57 @@
+{% extends 'struct.html' %}
+
+{% block title %}Forum{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  {% set last_news = last_news(3) %}
+  {% if last_news %}
+
+  {% for i, short in last_news %}
+  {% set pathImg = path("/uploads/images/news/" ~ short.poster) %}
+  {% if short.poster == null %}
+  {% set pathImg = template ~ "/assets/images/logo_news_d.jpg" %}
+  {% endif %}
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body p-3">
+
+        <a href="{{action('get_page', [short.id])}}">
+        <div class="row">
+          <div class="col-xl-6 mt-xl-0 mt-5">
+            <h2 class="fw-bold">{{short.name}}</h2>
+            <p class="lh-base fw-normal">{{short.description|raw|replace({'
+            <p>': '', '</p>': '', '<b>': '', '</b>': '', '<br>': ''})|raw}}</p>
+          </div>
+          <div class="col-xl-6 mt-xl-0 mt-5">
+            <div class="text-center">
+              <img src="{{pathImg}}" alt="" class="about-img img-fluid rounded shadow">
+            </div>
+          </div>
+        </div>
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+  {% endfor %}
+  {% else %}
+  Нет новостей или страниц
+  {% endif %}
+</div>
+
+
+{% endblock %}
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block js %}
+
+{% endblock %}
+

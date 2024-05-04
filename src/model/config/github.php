@@ -28,9 +28,16 @@ class github
     public function __construct()
     {
         $configData        = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_github__'");
-        $setting           = json_decode($configData['setting'], true);
-        $this->githubToken = $setting['githubToken'];
-        $this->tokenDays   = $setting['tokenDays'];
+        if($configData){
+            $setting           = json_decode($configData['setting'], true);
+            $this->githubToken = $setting['githubToken'] ?? '';
+            $this->tokenDays   = $setting['tokenDays'] ?? 90;
+        }else{
+            $this->error       = true;
+            $this->errorMessage = 'Настройки github не найдены';
+            $this->githubToken = '';
+            $this->tokenDays   = 90;
+        }
     }
 
     public function getToken(): string
@@ -41,11 +48,13 @@ class github
     /**
      * Количество актуальных коммитов
      *
-     * @return int
-     *
+     * @return int|null
      */
-    public function getCountCommits(): int
+    public function getCountCommits(): ?int
     {
+        if ($this->isError() !== null) {
+            return null;
+        }
         if ($this->countCommits !== null) {
             return $this->countCommits;
         }
@@ -190,8 +199,8 @@ class github
                 }
 
                 if ($status == "removed") {
-                    if (file_exists(fileSys::get_dir("test/" . $file_path))) {
-                        unlink(fileSys::get_dir("test/" . $file_path));
+                    if (file_exists(fileSys::get_dir($file_path))) {
+                        unlink(fileSys::get_dir($file_path));
                     }
                     $this->saveDBCommit($gitdata);
                     continue;
@@ -201,8 +210,8 @@ class github
                 $directory = dirname($file_path);
 
                 // Создаем каталоги, если они не существуют
-                if ( ! file_exists(fileSys::get_dir("test/" . $directory))) {
-                    mkdir(fileSys::get_dir("test/" . $directory), 0755, true);
+                if (!file_exists(fileSys::get_dir( $directory))) {
+                    mkdir(fileSys::get_dir($directory), 0755, true);
                 }
 
                 // Скачиваем файл
@@ -221,7 +230,7 @@ class github
         ]);
     }
 
-    private function getContents($url)
+    private function getContents($url): bool|string|null
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);

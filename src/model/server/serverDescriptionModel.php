@@ -3,42 +3,41 @@
 namespace Ofey\Logan22\model\server;
 
 use DateTime;
+use Ofey\Logan22\model\page\page;
 
 class serverDescriptionModel
 {
-    private int $server_id = 0;
+
     private string $lang = 'en';
+
     private int $pageId = 0;
-    private int $default = 0;
+
     private DateTime $dateCreate;
+
     private DateTime $dateUpdate;
 
-    function __construct($desc)
+    private string $poster;
+
+    private string $link;
+
+    public function __construct(int $pageId)
     {
-        $this->server_id = $desc['server_id'];
-        $this->lang = $desc['lang'];
-        $this->pageId = $desc['page_id'];
-        $this->default = $desc['default'];
-        $this->dateCreate = $desc['date_create'];
-        $this->dateUpdate = $desc['date_update'];
+        $page             = page::getMinInfo($pageId);
+        $this->lang       = $page['lang'];
+        $this->pageId     = $page['id'];
+        $this->poster     = $page['poster'];
+        $this->link       = $page['link'];
+        $this->dateCreate = new DateTime($page['date_create']);
+        $this->dateUpdate = new DateTime($page['date_update']);
+        return true;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getServerId(): int
+    public function getPoster(): string
     {
-        return $this->server_id;
-    }
-
-    /**
-     * @param int $server_id
-     * @return serverDescriptionModel
-     */
-    public function setServerId(int $server_id): serverDescriptionModel
-    {
-        $this->server_id = $server_id;
-        return $this;
+        return $this->poster;
     }
 
     /**
@@ -50,12 +49,14 @@ class serverDescriptionModel
     }
 
     /**
-     * @param string $lang
+     * @param   string  $lang
+     *
      * @return serverDescriptionModel
      */
     public function setLang(string $lang): serverDescriptionModel
     {
         $this->lang = $lang;
+
         return $this;
     }
 
@@ -68,12 +69,14 @@ class serverDescriptionModel
     }
 
     /**
-     * @param int $pageId
+     * @param   int  $pageId
+     *
      * @return serverDescriptionModel
      */
     public function setPageId(int $pageId): serverDescriptionModel
     {
         $this->pageId = $pageId;
+
         return $this;
     }
 
@@ -86,12 +89,14 @@ class serverDescriptionModel
     }
 
     /**
-     * @param int $default
+     * @param   int  $default
+     *
      * @return serverDescriptionModel
      */
     public function setDefault(int $default): serverDescriptionModel
     {
         $this->default = $default;
+
         return $this;
     }
 
@@ -104,12 +109,14 @@ class serverDescriptionModel
     }
 
     /**
-     * @param DateTime $dateCreate
+     * @param   DateTime  $dateCreate
+     *
      * @return serverDescriptionModel
      */
     public function setDateCreate(DateTime $dateCreate): serverDescriptionModel
     {
         $this->dateCreate = $dateCreate;
+
         return $this;
     }
 
@@ -122,14 +129,15 @@ class serverDescriptionModel
     }
 
     /**
-     * @param DateTime $dateUpdate
+     * @param   DateTime  $dateUpdate
+     *
      * @return serverDescriptionModel
      */
     public function setDateUpdate(DateTime $dateUpdate): serverDescriptionModel
     {
         $this->dateUpdate = $dateUpdate;
+
         return $this;
     }
-
 
 }

@@ -26,6 +26,9 @@
         <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle" data-bs-toggle="sidebar" href="javascript:void(0);"><span></span></a>
         <!-- End::header-link -->
       </div>
+
+      {% if getServerAll()|length > 1 %}
+
       <!-- End::header-element -->
       <div class="main-header-center  d-none d-lg-block header-link">
           <select id="select_default_server" class="form-select" aria-label="Default select example">
@@ -34,6 +37,7 @@
             {% endfor %}
           </select>
       </div>
+      {% endif %}
 
     </div>
     <!-- End::header-content-left -->

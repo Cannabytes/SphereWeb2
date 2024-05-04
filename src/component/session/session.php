@@ -18,9 +18,6 @@ class session {
             'gc_maxlifetime' => 86400*365,
             'use_strict_mode' => true,
         ]);
-        if (file_exists(fileSys::get_dir('/src/config/db.php'))) {
-//            auth::user_auth();
-        }
     }
 
     public static function add($key, $value) {

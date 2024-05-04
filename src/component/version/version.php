@@ -23,5 +23,10 @@ class version {
         return self::MIN_PHP_VERSION;
     }
 
+    public static function MIN_MYSQL_VERSION(): float
+    {
+        return 5.6;
+    }
+
 }
 

@@ -252,6 +252,9 @@ class donate {
      */
     public static function buyShopItem(): void
     {
+        if(user::self()->getCountPlayers() == 0){
+            board::error("У Вас нет персонажей");
+        }
         $db = sql::instance();
         if (!$db) {
             board::error("Ошибка подключения к базе данных.");
@@ -372,7 +375,6 @@ class donate {
             if (!$player_info){
                 board::notice(false, lang::get_phrase(151, $playerName));
             }
-
             foreach ($shopItems as $item) {
                 if (!self::sending_implementation($server_info, $player_info, $playerName, $player_info["player_id"], $item->getItemInfo()->getIsStackable(), $item->getItemId(), $item->getCount())) {
                     $db->rollBack();

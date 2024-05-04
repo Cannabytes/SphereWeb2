@@ -139,7 +139,7 @@ class request {
         if(self::request()->isURL())
             return;
         if(self::request()->getMax() < mb_strlen($value)) {
-            board::notice(false, lang::get_phrase(286, $name, self::request()->getMax()));
+            board::notice(false, lang::get_phrase(286, $name, self::request()->getMax() ));
         }
     }
 

@@ -31,8 +31,8 @@ class install {
     }
 
 
-    public static function saveConfig($host, $port, $user, $password, $name) {
-        lang::load_package();
+    public static function saveConfig($host, $port, $user, $password, $name): void
+    {
         $phpText = "<?php
 const DB_HOST = '{$host}';
 const DB_USER = '{$user}';
@@ -40,12 +40,12 @@ const DB_PASSWORD = '{$password}';
 const DB_NAME = '{$name}';
 const CHARSET = 'utf8';
 ";
-        file_put_contents(fileSys::get_dir("/src/config/db.php"), $phpText);
+        file_put_contents(fileSys::get_dir("/data/db.php"), $phpText);
     }
 
     public static function add_user_admin() {
         lang::load_package();
-        if(!file_exists(fileSys::get_dir("/src/config/db.php"))) {
+        if(!file_exists(fileSys::get_dir("/data/db.php"))) {
             board::notice(false, lang::get_phrase(154));
         }
         if(self::exist_admin()) {
@@ -76,7 +76,7 @@ const CHARSET = 'utf8';
     }
 
     public static function exist_admin() {
-        if(!file_exists(fileSys::get_dir('/src/config/db.php'))) {
+        if(!file_exists(fileSys::get_dir('/data/db.php'))) {
             return false;
         }
         $sql = 'SELECT * FROM users WHERE access_level = "admin"';
@@ -84,7 +84,7 @@ const CHARSET = 'utf8';
         return $conn->query($sql)->fetch();
     }
 
-    private static function add_first_news(): void {
+    public static function add_first_news(): void {
         $txt = lang::get_phrase(158);
         $conn = self::test_connect_mysql(DB_HOST, 3306, DB_USER, DB_PASSWORD, DB_NAME);
         $smt = $conn->prepare('INSERT INTO `pages` (`is_news`, `name`, `description`) VALUES (1, ?, ?);');

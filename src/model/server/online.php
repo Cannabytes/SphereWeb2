@@ -34,12 +34,12 @@ class online {
             $connect_game = false;
             $player_count_online = 0;
 
-            if ($info->getCheckServerOnline()) {
-                if (@fsockopen($info->getCheckLoginserverOnlineHost(), $info->getCheckLoginserverOnlinePort(), $errno, $errstr, 1)) {
+            if ($info->getCheckserverModel()) {
+                if (@fsockopen($info->getCheckLoginserverModelHost(), $info->getCheckLoginserverModelPort(), $errno, $errstr, 1)) {
                     $connect_login = true;
                 }
 
-                if(@fsockopen($info->getCheckGameserverOnlineHost(), $info->getCheckGameserverOnlinePort(), $errno, $errstr, 1)) {
+                if(@fsockopen($info->getCheckGameserverModelHost(), $info->getCheckGameserverModelPort(), $errno, $errstr, 1)) {
                     $connect_game = true;
                     if ($info['rest_api_enable']) {
                         $data = restapi::Send(  $info, "count_online_player");
