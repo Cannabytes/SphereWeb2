@@ -44,6 +44,8 @@ enum type
     // Сброс HWID
     case RESET_HWID;
 
+    case GET_COMMIT_LAST;
+
 
     static function url(type $type): string
     {
@@ -78,6 +80,8 @@ enum type
               self::GAME_WHEEL_REMOVE => '/api/game/wheel/remove',
 
               self::RESET_HWID => '/api/user/player/reset/hwid',
+
+              self::GET_COMMIT_LAST => '/api/github/last/commit',
               default => null,
           };
     }

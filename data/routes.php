@@ -1397,4 +1397,18 @@ return [
       'page'    => '',
       'comment' => '',
     ],
+  92 =>
+    [
+      'enable'  => true,
+      'method'  => 'POST',
+      'pattern' => '/github/update',
+      'func'    => 'model\\github\\update::checkNewCommit',
+      'access'  =>
+        [
+          0 => 'admin',
+        ],
+      'weight'  => 0,
+      'page'    => '',
+      'comment' => '',
+    ],
 ];
