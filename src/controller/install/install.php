@@ -10,6 +10,7 @@ use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
+use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\version\version;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\template\tpl;
@@ -262,6 +263,19 @@ const __TOKEN__ = \"$token\";\n");
 
         self::install_sql_struct($pdo, fileSys::get_dir("/uploads/sql/struct/*.sql"));
 
+        $lastCommitData = self::getLastCommitData();
+        if ($lastCommitData) {
+            $query = $pdo->prepare("INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)");
+            $query->execute([
+              $lastCommitData['sha'],
+              $lastCommitData['author'],
+              $lastCommitData['url'],
+              $lastCommitData['message'],
+              $lastCommitData['date'],
+              time::mysql(),
+            ]);
+        }
+
         //Получить IP пользователя
         $ip = $_SERVER['REMOTE_ADDR'];
 
@@ -290,6 +304,42 @@ const __TOKEN__ = \"$token\";\n");
         foreach ($files as $file) {
             $sql = file_get_contents($file);
             $pdo->query($sql);
+        }
+    }
+
+
+   private static function getLastCommitData() {
+        $url = "https://api.github.com/repos/Cannabytes/SphereWeb2/commits";
+
+        // Инициализируем cURL
+        $ch = curl_init();
+
+        // Устанавливаем опции
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'PHP script'); // GitHub требует User-Agent
+
+        // Выполняем запрос и получаем ответ
+        $output = curl_exec($ch);
+
+        // Закрываем cURL
+        curl_close($ch);
+
+        // Декодируем JSON ответ
+        $commits = json_decode($output, true);
+
+        // Получаем хэш последнего коммита
+        if (isset($commits[0]['sha'])) {
+            $commit = $commits[0];
+            return [
+              'sha' => $commit['sha'],
+              'author' => $commit['commit']['author']['name'],
+              'url' => $commit['html_url'],
+              'message' => $commit['commit']['message'],
+              'date' => $commit['commit']['author']['date']
+            ];
+        } else {
+            return null;
         }
     }
 
