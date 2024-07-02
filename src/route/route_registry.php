@@ -48,7 +48,7 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
     }
 } else {
     $route = new Router();
-    $route->get("/install", "Ofey\Logan22\controller\install\install::rules");
+    $route->get("/(.*)", "Ofey\Logan22\controller\install\install::rules");
     $route->post("/install/db/connect/test", "Ofey\Logan22\controller\install\install::db_connect");
     $route->post("/install", "Ofey\Logan22\controller\install\install::startInstall");
 }
