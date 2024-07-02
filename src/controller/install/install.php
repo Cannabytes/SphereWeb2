@@ -36,7 +36,7 @@ class install
         tpl::addVar([
           "need_min_version_php" => version::MIN_PHP_VERSION(),
           "need_mysql_version"   => version::MIN_MYSQL_VERSION(),
-          "dir_permissions"      => self::checkFolderPermissions(["/src/config", "/uploads",]),
+          "dir_permissions"      => self::checkFolderPermissions(["/data", "/uploads",]),
           "htaccess"             => $isHtaccess,
           "isLinux"              => "Linux" == php_uname('s'),
           "php_informations"     => [
