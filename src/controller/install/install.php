@@ -5,6 +5,7 @@
 
 namespace Ofey\Logan22\controller\install;
 
+use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\redirect;
@@ -271,12 +272,11 @@ const __TOKEN__ = \"$token\";\n");
               $lastCommitData['author'],
               $lastCommitData['url'],
               $lastCommitData['message'],
-              $lastCommitData['date'],
+              time::mysql(),
               time::mysql(),
             ]);
         }
 
-        //Получить IP пользователя
         $ip = $_SERVER['REMOTE_ADDR'];
 
         $smt = $pdo->prepare("INSERT INTO `users` (`name`, `password`, `email`, `ip`, `access_level`) VALUES (?, ?, ?, ?, ?)",);
@@ -309,6 +309,89 @@ const __TOKEN__ = \"$token\";\n");
 
 
    private static function getLastCommitData() {
+       function getLastCommitDetails($gitDir = '.git') {
+           // Получаем последний хеш коммита
+           $commitHash = getLastCommitHash($gitDir);
+
+           // Определяем путь к объекту коммита в .git/objects
+           $objectPath = sprintf('%s/objects/%s/%s', $gitDir, substr($commitHash, 0, 2), substr($commitHash, 2));
+
+           if (!file_exists($objectPath)) {
+               throw new Exception("Object file not found: $objectPath");
+           }
+
+           // Читаем и распаковываем содержимое файла объекта коммита
+           $objectContent = file_get_contents($objectPath);
+           $objectContent = gzuncompress($objectContent);
+
+           if (!$objectContent) {
+               throw new Exception("Unable to decompress object content");
+           }
+
+           // Извлекаем данные коммита
+           $commitDetails = parseCommitObject($commitHash, $objectContent);
+
+           return $commitDetails;
+       }
+
+       function getLastCommitHash($gitDir) {
+           $headFile = $gitDir . '/HEAD';
+           if (!file_exists($headFile)) {
+               throw new Exception('HEAD file not found in .git directory');
+           }
+
+           $headContent = file_get_contents($headFile);
+           if (strpos($headContent, 'ref: ') === 0) {
+               $refPath = trim(str_replace('ref: ', '', $headContent));
+               $commitHashFile = $gitDir . '/' . $refPath;
+           } else {
+               return trim($headContent);
+           }
+
+           if (!file_exists($commitHashFile)) {
+               throw new Exception("Commit hash file not found: $commitHashFile");
+           }
+
+           return trim(file_get_contents($commitHashFile));
+       }
+
+       function parseCommitObject($commitHash, $objectContent) {
+           // Разбиваем данные по строкам
+           $lines = explode("\n", $objectContent);
+
+           $commitInfo = [
+             'hash' => $commitHash,
+             'author' => '',
+             'date' => '',
+             'message' => ''
+           ];
+
+           foreach ($lines as $line) {
+               if (str_starts_with($line, 'author ')) {
+                   // Извлекаем автора и дату
+                   preg_match('/author (.*) <.*> (\d+) ([+-]\d{4})/', $line, $matches);
+                   $commitInfo['author'] = $matches[1];
+                   $commitInfo['date'] = time::mysql();
+               }
+               if (empty($line)) {
+                   // Следующая строка будет сообщением коммита
+                   $commitInfo['message'] = trim(implode("\n", array_slice($lines, array_search($line, $lines) + 1)));
+                   break;
+               }
+           }
+
+           return $commitInfo;
+       }
+
+       try {
+           return getLastCommitDetails();
+       } catch (Exception $e) {
+           return self::requestGetLastCommitData();
+       }
+
+   }
+
+    private static function requestGetLastCommitData(){
         $url = "https://api.github.com/repos/Cannabytes/SphereWeb2/commits";
 
         // Инициализируем cURL
@@ -331,12 +414,13 @@ const __TOKEN__ = \"$token\";\n");
         // Получаем хэш последнего коммита
         if (isset($commits[0]['sha'])) {
             $commit = $commits[0];
+
             return [
-              'sha' => $commit['sha'],
-              'author' => $commit['commit']['author']['name'],
-              'url' => $commit['html_url'],
+              'sha'     => $commit['sha'],
+              'author'  => $commit['commit']['author']['name'],
+              'url'     => $commit['html_url'],
               'message' => $commit['commit']['message'],
-              'date' => $commit['commit']['author']['date']
+              'date'    => $commit['commit']['author']['date'],
             ];
         } else {
             return null;
