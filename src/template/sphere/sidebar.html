@@ -1,0 +1,274 @@
+<aside class="app-sidebar sticky" id="sidebar">
+
+  <!-- Start::main-sidebar-header -->
+  <div class="main-sidebar-header">
+    <a href="/" class="header-logo">
+      <img src="{{config().logo().getLogo()}}" alt="logo" class="desktop-logo">
+      <img src="{{config().logo().getLogo()}}" alt="logo" class="toggle-logo">
+      <img src="{{config().logo().getLogo()}}" alt="logo" class="desktop-dark">
+      <img src="{{config().logo().getLogo()}}" alt="logo" class="toggle-dark">
+      <img src="{{config().logo().getLogo()}}" alt="logo" class="desktop-white">
+      <img src="{{config().logo().getLogo()}}" alt="logo" class="toggle-white">
+    </a>
+  </div>
+  <!-- End::main-sidebar-header -->
+
+  <!-- Start::main-sidebar -->
+  <div class="main-sidebar" id="sidebar-scroll">
+
+    <!-- Start::nav -->
+    <nav class="main-menu-container nav nav-pills flex-column sub-open">
+      <div class="slide-left" id="slide-left">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24">
+          <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>
+        </svg>
+      </div>
+      <ul class="main-menu">
+
+
+        <li class="slide__category"><span class="category-name">Меню</span></li>
+
+        <li class="slide">
+          <a href="/main" class="side-menu__item">
+            <i class="fe fe-home side-menu__icon"></i>
+            <span class="side-menu__label">Главная</span>
+          </a>
+        </li>
+        <li class="slide enable_news" {% if config().enabled().isEnableNews()== false %}style="display: none;" {% endif
+            %}>
+          <a href="/news" class="side-menu__item">
+            <i class="fe fe-layers side-menu__icon"></i>
+            <span class="side-menu__label">Новости</span>
+          </a>
+        </li>
+
+        <li class="slide enable_shop" {% if config().enabled().isEnableShop()== false %}style="display: none;" {% endif
+            %}>
+          <a href="/shop" class="side-menu__item">
+            <i class="fe fe-shopping-cart side-menu__icon"></i>
+            <span class="side-menu__label">Магазин</span>
+          </a>
+        </li>
+
+        {% if getUser().isAuth() %}
+        <li class="slide enable_balance" {% if config().enabled().isEnableBalance()== false %}style="display: none;" {%
+            endif %}>
+          <a href="/balance" class="side-menu__item">
+            <i class="fe fe-dollar-sign side-menu__icon"></i>
+            <span class="side-menu__label">Баланс</span>
+            <span class="badge bg-success-transparent ms-2 count_sphere_coin">{{ getUser().getDonate() }}</span>
+          </a>
+        </li>
+        {% endif %}
+
+        <li class="slide">
+          <a href="#" data-bs-toggle="modal" data-bs-target="#sendToPlayer" class="side-menu__item">
+            <i class="fe fe-corner-down-right side-menu__icon"></i>
+            <span class="side-menu__label">Перевести <i
+              class="fe fe-dollar-sign fs-16 me-1 text-danger"></i>в игру</span>
+          </a>
+        </li>
+
+
+        <li class="slide enable_statistic" {% if config().enabled().isEnableStatistic()== false %}style="display: none;"
+            {% endif %}>
+          <a href="/statistic" class="side-menu__item">
+            <i class="fe fe-pie-chart side-menu__icon"></i>
+            <span class="side-menu__label">Статистика</span>
+          </a>
+        </li>
+
+        {% if getUser().isAuth() %}
+        <li class="slide enable_referral" {% if config().enabled().isEnableReferral()== false
+            %}style="display: none;" {% endif %}>
+          <a href="/referral" class="side-menu__item">
+            <i class="fe fe-users side-menu__icon"></i>
+            <span class="side-menu__label">Реферальная</span>
+          </a>
+        </li>
+        {% endif %}
+
+
+        <!--                <li class="slide__category"><span class="category-name">Подключение</span></li>-->
+        <!--                <li class="slide">-->
+        <!--                    <a href="/" class="side-menu__item">-->
+        <!--                        <i class="fe fe-download-cloud side-menu__icon"></i>-->
+        <!--                        <span class="side-menu__label">Sphere-Launcher</span>-->
+        <!--                    </a>-->
+        <!--                </li>-->
+
+
+
+        <li class="slide__category"><span class="category-name">Остальное</span></li>
+
+        <li class="slide">
+          <a href="{{ config().other().getLinkMainPage() }}" class="side-menu__item">
+            <i class="fe fe-corner-down-left side-menu__icon"></i>
+            <span class="side-menu__label">Вернуться на сайт</span>
+          </a>
+        </li>
+
+
+
+        {% for include_file in get_plugins_include("PLACE_IN_SPACE_HEADER_1") %}
+        {% include include_file %}
+        {% endfor %}
+
+
+
+
+        {% if getUser().isAdmin() %}
+        <li class="slide has-sub">
+          <a href="javascript:void(0);" class="side-menu__item">
+            <i class="fe fe-grid side-menu__icon"></i>
+            <span class="side-menu__label">Админ-панель</span>
+            <i class="fe fe-chevron-right side-menu__angle"></i>
+          </a>
+          <ul class="slide-menu child1">
+
+            <li class="slide">
+              <a href="/admin/setting" class="side-menu__item">Общие настройки</a>
+            </li>
+
+            <li class="slide">
+              <a href="/admin/pages" class="side-menu__item">Новости и страницы</a>
+            </li>
+
+            <li class="slide">
+              <a href="/admin/phrases" class="side-menu__item">Фразы и перевод</a>
+            </li>
+
+            <li class="slide has-sub">
+              <a href="javascript:void(0);" class="side-menu__item">Сервер
+                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+              <ul class="slide-menu child2" style="box-sizing: border-box; display: none;">
+                <li class="slide">
+                  <a href="/admin/server/add/new" class="side-menu__item">Добавить сервер</a>
+                </li>
+                <li class="slide">
+                  <a href="/admin/server/list" class="side-menu__item">Список серверов</a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="slide">
+              <a href="/admin/shop" class="side-menu__item">Магазин</a>
+            </li>
+
+            <li class="slide">
+              <a href="/admin/shop/startpack" class="side-menu__item">Стартовые наборы</a>
+            </li>
+
+            <li class="slide has-sub">
+              <a href="javascript:void(0);" class="side-menu__item">Бонус-код
+                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+              <ul class="slide-menu child2" style="box-sizing: border-box; display: none;">
+                <li class="slide">
+                  <a href="/admin/bonuscode/create" class="side-menu__item">Создать</a>
+                </li>
+                <li class="slide">
+                  <a href="/admin/bonuscode/list" class="side-menu__item">Список</a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="slide">
+              <a href="/admin/forum" class="side-menu__item">Форум</a>
+            </li>
+
+            <li class="slide">
+              <a href="/admin/users" class="side-menu__item">Пользователи</a>
+            </li>
+
+            <li class="slide">
+              <a href="/admin/route" class="side-menu__item">Маршрутизаторы</a>
+            </li>
+
+            <li class="slide">
+              <a href="/admin/mailing" class="side-menu__item">Рассылка</a>
+            </li>
+
+            <li class="slide">
+              <a href="/admin/sphere/update" class="side-menu__item">Обновление ПО</a>
+            </li>
+
+            <li class="slide">
+              <a href="/admin/logs" class="side-menu__item">Логи</a>
+            </li>
+
+            <li class="slide has-sub">
+              <a href="javascript:void(0);" class="side-menu__item">Платные расширения
+                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+              <ul class="slide-menu child2" style="box-sizing: border-box; display: none;">
+                <li class="slide">
+                  <a href="javascript:void(0);" class="side-menu__item">Описание</a>
+                </li>
+                <li class="slide">
+                  <a href="javascript:void(0);" class="side-menu__item">Лаунчер</a>
+                </li>
+                <li class="slide">
+                  <a href="/fun/wheel/admin" class="side-menu__item">Рулетка</a>
+                </li>
+                <li class="slide">
+                  <a href="javascript:void(0);" class="side-menu__item">Кейсы</a>
+                </li>
+              </ul>
+            </li>
+
+
+          </ul>
+        </li>
+        {% endif %}
+
+      </ul>
+      <div class="slide-right" id="slide-right">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24">
+          <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path>
+        </svg>
+      </div>
+    </nav>
+
+    {% for server in getServerAll() %}
+    {% if server.getStatus().isEnable() %}
+    <div class="col-xl-12">
+      <div class="card custom-card border-top-card border-top-danger rounded-0">
+        <div class="card-body">
+          <div class="text-center">
+            <p class="fs-14 fw-semibold mb-2">{{server.getChronicle()}} x<span class="mb-0 fw-semibold">{{server.getRateExp()}}</span>
+            </p>
+
+            <div class="d-flex align-items-center justify-content-center flex-wrap">
+              <div class="row pt-2 pb-1 ">
+
+                <div class="col-6 border-end">
+                  {% if server.getStatus().getGameServer() %}
+                  <div class="fs-3 fw-semibold text-success">ON</div>
+                  {% else %}
+                  <div class="fs-3 fw-semibold text-danger">OFF</div>
+                  {% endif %}
+                  <div class="fs-sm fw-semibold text-uppercase text-muted">Server</div>
+                </div>
+
+                <div class="col-6">
+                  <div class="fs-3 fw-semibold">{{ server.getStatus().getOnline() }}</div>
+                  <div class="fs-sm fw-semibold text-uppercase text-muted">Online</div>
+                </div>
+
+                <div class="fw-semibold text-start text-center">
+                  {{server.getName()}}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+
+  </div>
+
+</aside>
+

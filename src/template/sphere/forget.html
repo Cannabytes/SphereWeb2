@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="light" data-toggled="close">
+
+<head>
+
+    <!-- Meta Data -->
+    <meta charset="UTF-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title> Восстановление пароля </title>
+    <meta name="Description" content="Bootstrap Responsive Admin Web Dashboard HTML5 Template">
+    <meta name="Author" content="Spruko Technologies Private Limited">
+    <meta name="keywords" content="admin dashboard,dashboard design htmlbootstrap admin template,html admin panel,admin dashboard html,admin panel html template,bootstrap dashboard,html admin template,html dashboard,html admin dashboard template,bootstrap dashboard template,dashboard html template,bootstrap admin panel,dashboard admin bootstrap,bootstrap admin dashboard">
+
+    <!-- Favicon -->
+    {{ config().logo().favicon() }}
+
+    <!-- Main Theme Js -->
+    <script src="{{template}}assets/js/authentication-main.js"></script>
+
+    <!-- Bootstrap Css -->
+    <link id="style" href="{{template}}assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" >
+
+    <!-- Style Css -->
+    <link href="{{template}}assets/css/styles.min.css" rel="stylesheet" >
+
+    <!-- Icons Css -->
+    <link href="{{template}}assets/css/icons.min.css" rel="stylesheet" >
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+
+</head>
+
+<body>
+
+{% include 'notice_toast.html' %}
+
+<div class="autentication-bg">
+
+    <div class="container-lg">
+        <div class="row justify-content-center authentication authentication-basic align-items-center h-100">
+            <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12">
+                <div class="my-4 d-flex justify-content-center">
+                    <a href="/main">
+                        <img src="{{config().logo().getLogo()}}" alt="logo">
+                    </a>
+                </div>
+                <div class="card custom-card">
+                    <form id="authForm" action="/forget/create" method="POST" class="card-body p-5">
+                        <p class="h5 fw-semibold mb-2 text-center">Восстановление пароля</p>
+                        <p class="mb-4 text-muted op-7 fw-normal text-center">Введите Email и мы отправим вам ссылку для восстановления пароля</p>
+                        <div class="row gy-3">
+                            <div class="col-xl-12">
+                                <label for="email" class="form-label text-default">Email</label>
+                                <input required name="email" type="text" class="form-control form-control-lg" id="email" placeholder="example@example.com">
+                            </div>
+
+
+                            {% if config().captcha().isGoogleCaptcha() %}
+                            <div id="g-recaptcha"></div>
+                            {% else %}
+                            <div class="col-xl-12 ">
+                                <div class="row">
+                                    <div class="col-xl-7">
+                                        <img src="" class="lightbox-thumb img-thumb captchaToken captcha_img" style="width: 100%; height: 100%;"/>
+                                    </div>
+                                    <div class="col-xl-5">
+                                        <label for="register_captcha" class="form-label captchaToken">Проверочный код</label>
+                                        <input type="text" class="form-control" id="register_captcha" name="captcha" placeholder="Captcha">
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="col-xl-12 d-grid mt-2">
+                                <button id="forget" class="btn btn-lg btn-primary">Отправить</button>
+                            </div>
+                            <div class="text-center">
+                                <p class="fs-12 text-danger mt-3 mb-0">Мы отправим письмо на Ваш Email.</p>
+                            </div>
+                        </div>
+                        <div class="text-center my-1 authentication-barrier">
+                            <span><i class="ti ti-lock"></i></span>
+                        </div>
+
+                        <div class="btn-list text-center">
+                            <a href="/signup" aria-label="button" class="btn  btn-primary-transparent">
+                                Регистрация
+                            </a>
+
+                            <a href="/signup" aria-label="button" class="btn  btn-primary-transparent">
+                                Регистрация
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="{{template}}assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script src="{{template}}/assets/libs/@popperjs/core/umd/popper.min.js"></script>
+<script src="{{template}}/assets/js/Toasts.js"></script>
+<script src="{{template}}/assets/js/general.js"></script>
+
+{% if config().captcha().isGoogleCaptcha() %}
+<script src="https://www.google.com/recaptcha/api.js"></script>
+<script>
+    window.onload = function() {
+        if (typeof grecaptcha !== 'undefined') {
+            grecaptcha.render('g-recaptcha', {
+                'sitekey': '{{ google_secret_key() }}'
+            });
+        } else {
+            console.error('grecaptcha is not defined');
+        }
+    };
+</script>
+{% else %}
+<script>
+    function get_captcha() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/captcha', true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var data = xhr.responseText;
+                var captchaImages = document.querySelectorAll('.captcha_img');
+                captchaImages.forEach(function(img) {
+                    img.src = data;
+                });
+            }
+        };
+        xhr.send();
+    }
+
+    get_captcha();
+
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('captcha_img')) {
+            get_captcha();
+        }
+    });
+</script>
+{% endif %}
+
+
+</body>
+
+</html>

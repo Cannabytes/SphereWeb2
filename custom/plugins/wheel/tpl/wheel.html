@@ -1,0 +1,342 @@
+{% extends 'struct.html' %}
+{% block title %}Колесо Удачи{% endblock %}
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class=" custom-card">
+      <div class="card-header justify-content-between">
+        <button data-wheel-start class="btn btn-lg d-grid gap-2 col-4 mx-auto btn-danger label-btn label-end">
+          Крутить рулетку «{{name}}» за {{cost}} Donate Coin
+          <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
+        </button>
+      </div>
+      <br>
+      <div class="card-body">
+        <div class="custom-card overflow-hidden">
+          <div data-section="wheel">
+            <div class="wheel" data-wheel>
+              <div class="sound" data-wheel-sound="true"></div>
+              <div class="wheel__container">
+                <div class="wheel__main">
+                  <div class="wheel__wrap" data-wheel-wrap>
+                    <div class="wheel__circle" data-wheel-circle>
+                      <div class="wheel__box" data-wheel-box></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="wheel__pointer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card custom-card">
+      <div class="card-header justify-content-between">
+        <div class="card-title">
+          История моих побед
+        </div>
+      </div>
+      <div class="card-body">
+        <ul data-wheel-history-list class="list-unstyled timeline-widget mb-0 my-0">
+
+          {% for item in stories %}
+          <li class="timeline-widget-list mb-3">
+            <div class="d-flex align-items-top">
+              <div class="me-4 text-center">
+                <img class="avatar avatar-md me-0"
+                     src="{{item.getIcon()}}">
+              </div>
+              <div class="d-flex flex-wrap flex-fill align-items-center justify-content-between">
+                <div>
+                  <p class="mb-1 text-truncate timeline-widget-content text-wrap">Вы выиграли
+                    {% if item.getEnchant() > 0 %}
+                      <span class="text-danger fs-15 badge bg-success-transparent ">+{{item.getEnchant()}}</span>
+                    {% endif %}
+                    {% if item.getCrystalType() %}
+                      <span class="text-danger fs-15 badge bg-success-transparent ">[{{item.getCrystalType()|upper}}]</span>
+                    {% endif %}
+                    <span class="text-danger fs-15 badge bg-success-transparent ">{{item.getItemName()}}</span> x{{item.getCount()}}</p>
+                  <p class="mb-0 fs-12 lh-1 text-muted">{{item.getDate()|date('H:i')}} ({{item.getDate()|date('d.m.Y')}})</p>
+                </div>
+                <div class="dropdown">
+                  <a href="javascript:void(0);" class="p-2 fs-16 text-muted" data-bs-toggle="dropdown">
+                    <i class="fe fe-more-vertical"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block css %}
+
+<style>
+
+  .win__box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+    animation: win__box 1s ease forwards;
+  }
+
+  @keyframes win__box {
+    0% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .win__heading {
+    color: #fff;
+    font-family: var(--font-family-2);
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .win__ttl {
+    color: #bfa573;
+  }
+
+  .win__img {
+    display: block;
+    margin: 0 auto;
+    max-width: 90px;
+  }
+
+  .win__title {
+    font-size: 22px;
+    color: #fff;
+    font-family: var(--font-family-2);
+  }
+
+  /* history */
+
+  [data-history-wrap] {
+    position: relative;
+    z-index: 0;
+    background: #181624;
+    padding: 40px 20px;
+  }
+
+  .history {
+  }
+
+  .history_p_t {
+    padding-top: 40px;
+  }
+  .history_p_b {
+    padding-bottom: 40px;
+  }
+
+  .history_b_t {
+    border-top: 1px solid #50463f;
+  }
+  .history_b_b {
+    border-bottom: 1px solid #50463f;
+  }
+
+  .history__title {
+    color: #fff;
+    font-family: var(--font-family-2);
+    font-size: 26px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .history__list {
+    display: grid;
+    gap: 20px;
+  }
+
+  /* h-item */
+
+  .h-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .h-item__pic {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 5px;
+    flex-shrink: 0;
+  }
+
+  .h-item__img {
+    display: block;
+    width: 40px;
+    height: auto;
+  }
+
+  .h-item__name {
+    font-size: 18px;
+    font-family: var(--font-family-2);
+    color: #fff;
+  }
+
+  .winners {
+    background: #181624;
+    padding: 40px 20px;
+    color: #fff;
+    font-size: 12px;
+  }
+
+  .winners__list {
+    display: grid;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.07);
+    padding: 10px 15px;
+    max-height: 170px;
+    -webkit-mask: linear-gradient(
+      to bottom,
+      rgb(0, 0, 0) 0%,
+      rgb(0, 0, 0) calc(100% - 50px),
+      rgba(0, 0, 0, 0) 100%
+    );
+    overflow-y: auto;
+  }
+
+  .winners__winner {
+    padding: 10px 0;
+    text-align: left;
+    animation: winners__winner 0.5s ease forwards;
+  }
+
+  @keyframes winners__winner {
+    0% {
+      opacity: 0;
+      transform: scale(0.5) translateX(100px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateX(0);
+    }
+  }
+
+  @media (min-width: 576px) {
+    .winners {
+      padding: 20px 10px;
+      font-size: 16px;
+    }
+    .winners__list {
+      padding: 20px 40px;
+    }
+  }
+</style>
+
+<link
+  rel="stylesheet"
+  href="/custom/plugins/wheel/tpl/css/wheel.css?v{{ 'now'|date('U') }}"
+/>
+<link rel="stylesheet" href="{{template}}/assets/libs/sweetalert2/sweetalert2.min.css">
+
+{% endblock %}
+
+{% block js %}
+<script src="/custom/plugins/wheel/tpl/js/custom.js?v{{ 'now'|date('U') }}"></script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script src="{{template}}/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+<script>
+
+  const __config = {
+    sliders: {
+      shop: {
+        init: true,
+        loop: false,
+        autoplay: false,
+        autoplayDelay: 7000,
+      },
+    },
+    bonuses: [],
+  };
+
+  __config.wheel = {
+    name : '{{name}}',
+    /* 20 итемов, которые будут вставлены в колесо */
+    items: [],
+
+    win: {
+      /* сюда будет записан номер выиграшного итема от 1 до 20 включительно */
+      num: -1,
+      /* Заголовки для модалки с выиграшем */
+      heading: {
+        ttl: 'Поздравляем!',
+        txt: 'Вы выиграли:',
+      },
+      item: {},
+    },
+    /* url куда отправляем запрос при нажатии на кнопку "открыть" */
+    url: '/fun/wheel/callback',
+    /* Папка со звуками */
+    urlSounds: '/custom/plugins/wheel/tpl/sounds/',
+  };
+
+  // const data = JSON.parse(`[{"num":1,"name":"Coin of Luck","icon":"/uploads/images/icon/etc_coins_gold_i00.webp","add_name":"","description":""},{"num":2,"name":"Orfen Doll","icon":"/uploads/images/icon/Orfendolls.webp","add_name":null,"description":"M.attack +3%, M.crit.Power +3%, Max.MP+3%"},{"num":3,"name":"Baium Dolls","icon":"/uploads/images/icon/Baiumdolls.webp","add_name":"PvP/PvE","description":"Reuse skills +3%, P.def +3%, M.def +3%, Mental resist +10"},{"num":4,"name":"Ant Queen Dolls","icon":"/uploads/images/icon/AQdolls.webp","add_name":null,"description":"P.attack +3%, P.attack Power +3%, Max.HP +3%"},{"num":5,"name":"Zaken Dolls","icon":"/uploads/images/icon/Zakendolls.webp","add_name":"PvP/PvE","description":"PVP defence +6%, PVE defence +3%, heal power +3%, regen.MP +3%"},{"num":6,"name":"Core Dolls","icon":"/uploads/images/icon/Coradolls.webp","add_name":null,"description":"P.attack PVP +3%, vampiric +3%, max.CP +3%, regen.CP +3%"},{"num":7,"name":"Frintezza Dolls","icon":"/uploads/images/icon/FrintaDolls.webp","add_name":"PvP/PvE","description":"CON +1, MEN +1, STR +1, INT +1, Skills PVP Power +3%, Speed +3%"},{"num":8,"name":"Necklace of Valakas","icon":"/uploads/images/icon/Valakas.webp","add_name":"","description":"MP +50, Resistance to Sleep +40%, Sleep attack rate +40%, HP +445, decreases skill reuse delay, and increases P. Atk., M. Atk., Wild Magic effect, Damage Shield effect, and Resistance to Fire."},{"num":9,"name":"Earring of Antharas","icon":"/uploads/images/icon/Antaras.webp","add_name":"","description":"MP +37, Resistance to Bleed +40%, Bleed attack rate +40%, vampiric rage effect, Resistance to Stun/Mental attacks +30%, Stun/Mental attack rate +30%, decreases MP consumption, and increases heal amount and Resistance to Earth. Only one effect is applied when two of the same earrings are equipped."},{"num":10,"name":"Ring of Baium","icon":"/uploads/images/icon/Baium.webp","add_name":"","description":"MP +21, Resistance to Poison +40%, Poison attack rate +40%, Resistance to Hold +30%, Hold attack rate +30%, increase Accuracy, Critical Damage, Atk. Spd. and Casting Spd. When equipped with two identical rings, the effect of only one ring will be applied."},{"num":11,"name":"Olf's T-shirt","icon":"/uploads/images/icon/Olf.webp","add_name":"","description":"Dimensional  Olf's T-shirt Enchant Scroll. Can enhance up to +10 using a Blessed Olf's T-shirt Enchant Scroll. Cannot be exchanged or dropped. Can be stored in a private warehouse."},{"num":12,"name":"Earring of Zaken","icon":"/uploads/images/icon/accessory_earring_of_zaken_i00.webp","add_name":"","description":"MP+31; Resistance to Bleed +30%; Bleed attack rate +30%; increases heal amount; vampiric rage effect; Resistance to Shock/Mental attacks +20%; Shock/Mental attack rate +20%. When equipped with two identical earrings, only one effect is applied. When equipped together with Blessed Earring of Zaken, only the effect of Earring of Zaken will be applied."},{"num":13,"name":"Blessed Scroll: Enchant Armor (S-Grade]","icon":"/uploads/images/icon/etc_blessed_scrl_of_ench_am_s_i05.webp","add_name":"","description":"When enchanted, P. Def. increases by 1 for S-grade armor and accessories. Starting at +4, P. Def. increases by 3 and a HP bonus is granted. Enchanting is safe up to +3, but one-piece body armor can be safely enchanted up to +4. If enchanting fails, the item will not be crystallized but the enchant value will be reset to 0."},{"num":14,"name":"Blessed Scroll: Enchant Weapon (S-Grade]","icon":"/uploads/images/icon/etc_blessed_scrl_of_ench_wp_s_i05.webp","add_name":"","description":"When enchanted, P. Atk. increases by 5 for S-grade one-handed swords, one-handed blunts, daggers, spears, and other weapons. P. Atk. increases by 6 for two-handed swords, two-handed blunts, dualswords, and two-handed combat weapons. P. Atk. increases by 10 for bows. M. Atk. increases by 4 for all weapons. Starting at +4, P. Atk. / M. Atk. bonus double. Enchanting is safe up to +3. If enchanting fails, the item will not be crystallized but the enchant value will be reset to 0."},{"num":15,"name":"Scroll: Enchant Armor of Destruction (S-Grade] - Event","icon":"/uploads/images/icon/DestrArmorS.webp","add_name":"Event","description":"When enchanted, increases P. Def. by 1 for S-Grade armor and accessories. Increases by 3 starting from +4. It can safely be enchanted up to +3. For one-piece armor, it can safely be enchanted up to +4. When enchant fails, the item is not crystallized by the power of the goddess of destruction, and the existing enchant value is maintained. When armor is enchanted up to +4, HP increases according to the enchant value. Cannot be used on armor that are +6 or above."},{"num":16,"name":"Scroll: Enchant Weapon of Destruction (S-Grade] - Event","icon":"/uploads/images/icon/DestrWeaponS.webp","add_name":"Event","description":"When enchanted, increases P. Atk. by 5 for S-Grade one-handed swords, one-handed blunts, daggers, spears, and other weapons. Increases P. Atk. by 6 for two-handed swords, two-handed blunts, dualswords, and hand-to-hand combat weapons. Increases P. Atk. by 10 for bows. Increases P. Atk. by 4 for all weapons. From +4, P. Atk. and M. Atk. increase by 2 times. When enchant fails, the item is not crystallized by the power of the goddess of destruction, and the existing enchant value is maintained. Cannot be used on weapons that are +15 or above."},{"num":17,"name":"Necklace of Freya","icon":"/uploads/images/icon/Freya.webp","add_name":"","description":"Resistance to Water +10, Resistance to Bleed +20%, Resistance to Paralysis/Shock/Sleep +15%, magic skill reuse delay -5%. .  Reflect 4% short-range attack damage, Max MP +50, MP Regeneration +0.23, Resistance to mental attacks +10%."},{"num":18,"name":"Necklace of Frintezza","icon":"/uploads/images/icon/Frintezza.webp","add_name":"","description":"MP +42, increase Resistance to sleep/paralysis/stun by 15%, increase sleep/paralysis/stun attack chance by 15%, increase Resistance to poison/bleed by 25%, increase poison/bleed attack chance by 25%, decrease in skill re-use delay, increase Damage Shield effect, and increase Resistance to Dark attacks."},{"num":19,"name":"Ring of Queen Ant","icon":"/uploads/images/icon/AQ.webp","add_name":"","description":"MP +21, Resistance to Poison +30%, Poison attack rate +30%, increase Accuracy, increase Critical Damage, Resistance to Hold +20%, and Hold attack rate +20%. When equipped with two identical rings, the effect of only one ring will be applied."},{"num":20,"name":"Antharas Dolls","icon":"/uploads/images/icon/Antarasdolls.webp","add_name":null,"description":"P.def +4%, PVP defence +4%, P.Attack +4%, M.attack +4%, Max.HP +4%, Max.MP +4%, CON +2, MEN +2"}]`);
+  const data = JSON.parse(`{{items|raw}}`);
+
+  data.forEach((item) => {
+    __config.wheel.items.push({
+      name: item.name,
+      icon: item.icon,
+      add_name: item.add_name,
+      description: item.description,
+      enchant: item.enchant,
+      item_type: item.item_type,
+      crystal_type: item.crystal_type,
+      count_type: item.count_type,
+      count: item.count,
+      count_min: item.count_min,
+      count_max: item.count_max,
+    });
+  });
+
+  if (document.readyState == 'complete') {
+    wheelInit();
+  } else {
+    __config.wheelInit = true;
+  }
+</script>
+<script src="/custom/plugins/wheel/tpl/js/wheel.js"></script>
+
+
+{% endblock %}

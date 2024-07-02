@@ -1,0 +1,278 @@
+{% extends 'struct.html' %}
+
+{% block title %}Forum{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+  {% set page = get_page(get_0) %}
+
+  {% if page %}
+
+  {% set pathImg = path("/uploads/images/news/" ~ page.poster) %}
+  {% if page.poster == null %}
+  {% set pathImg = template ~ "/assets/images/logo_news_d.jpg" %}
+  {% endif %}
+
+  <div class="row" id="updatepage">
+    <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Изменение страницы</div>
+        </div>
+        <div class="card-body">
+          <div class="gy-3">
+
+            <input type="hidden" id="id" name="id" value="{{page.id}}">
+
+            <div class="col-xl-12">
+              <label for="type" class="form-label">Тип страницы</label>
+              <select class="form-control" data-trigger name="type" id="type">
+                <option {% if page.type == 1 %}selected{% endif %} value="news">Новость</option>
+                <option {% if page.type == 0 %}selected{% endif %} value="page">Страница</option>
+              </select>
+            </div>
+
+            <div class="col-xl-12">
+              <label for="title" class="form-label">Название</label>
+              <input value="{{page.name}}" type="text" class="form-control" id="title" placeholder="title">
+            </div>
+
+            <div class="col-xl-12">
+              <label for="link" class="form-label">Ссылка</label>
+              <input value="{{page.link}}" type="text" class="form-control" id="link" placeholder="link">
+            </div>
+
+            <div class="col-xl-6">
+              <label for="lang" class="form-label">Язык новости (новость будет выводится для пользователей выбранного
+                языка)</label>
+              <select class="form-control" data-trigger name="lang" id="lang">
+                {% for lang in config().lang().getLangList() %}
+                <option {% if page.lang == lang.getLang() %}selected{% endif %} value="{{lang.getLang()}}">{{lang.getName()}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-xl-12 ">
+              <label class="form-label">Изображение новости</label>
+
+              <div class="mb-4 d-sm-flex align-items-center">
+                <div class="mb-0 me-5">
+                                                    <span class="avatar avatar-xxl about-img img-fluid rounded shadow">
+                                                        <img src="{{pathImg}}"
+                                                             alt="" id="profile-img" data-image="{{pathImg}}">
+                                                        <a aria-label="anchor" href="javascript:void(0);"
+                                                           class="badge rounded-pill bg-primary avatar-badge">
+                                                            <input type="file" name="file"
+                                                                   class="position-absolute w-100 h-100 op-0"
+                                                                   id="file">
+                                                            <i class="fe fe-camera"></i>
+                                                        </a>
+                                                    </span>
+                </div>
+                <div class="btn-group">
+                  <button id="addImg" type="button" class="btn btn-primary">Change</button>
+                  <button id="removeImgSrc" type="button" class="btn btn-light">Remove</button>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="col-xl-12">
+              <label class="form-label">Содержимое новости</label>
+              <div id="content">{{page.description|raw}} </div>
+            </div>
+
+
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="btn-list text-end">
+            <button id="saveEdit" type="button" class="btn btn-success">Сохранить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+   Страницы не существует
+  {% endif %}
+
+
+
+
+  <!--End::row-1 -->
+
+
+</div>
+{% endblock %}
+
+
+{% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.snow.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.bubble.css">
+
+<!-- Filepond CSS -->
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond/filepond.min.css">
+<link rel="stylesheet"
+      href="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond-plugin-image-edit/filepond-plugin-image-edit.min.css">
+
+<!-- Date & Time Picker CSS -->
+<link rel="stylesheet" href="{{template}}/assets/libs/flatpickr/flatpickr.min.css">
+
+{% endblock %}
+
+
+{% block js %}
+
+<!-- Custom-Switcher JS -->
+<script src="{{template}}/assets/js/custom-switcher.min.js"></script>
+
+<!-- Date & Time Picker JS -->
+<script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>
+
+<!-- Quill Editor JS -->
+<script src="{{template}}/assets/libs/quill/quill.min.js"></script>
+
+<!-- Filepond JS -->
+<script src="{{template}}/assets/libs/filepond/filepond.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
+<script
+  src="{{template}}/assets/libs/filepond-plugin-image-exif-orientation/filepond-plugin-image-exif-orientation.min.js"></script>
+<script
+  src="{{template}}/assets/libs/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-encode/filepond-plugin-file-encode.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-edit/filepond-plugin-image-edit.min.js"></script>
+<script
+  src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script
+  src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-crop/filepond-plugin-image-crop.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-resize/filepond-plugin-image-resize.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-transform/filepond-plugin-image-transform.min.js"></script>
+
+
+<script>
+  (function () {
+    'use strict';
+
+    // for blog content
+    var toolbarOptions = [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      [{ 'font': [] }],
+      ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+      ['blockquote', 'code-block'],
+
+      [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+
+      [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+      [{ 'align': [] }],
+
+      ['image', 'video'],
+      ['clean'],                                         // remove formatting button
+    ];
+    var quill = new Quill('#content', {
+      modules: {
+        toolbar: toolbarOptions,
+      },
+      theme: 'snow',
+    });
+
+    // for blog images
+    const MultipleElement = document.querySelector('.blog-images');
+    FilePond.create(MultipleElement);
+
+  })();
+
+  $('#saveEdit').on('click', function (e) {
+    e.preventDefault();
+    let formData = new FormData();
+    $('#updatepage input').each(function () {
+      let id = $(this).attr('id');
+      let value;
+      if ($(this).attr('type') === 'checkbox') {
+        value = $(this).is(':checked');
+      } else {
+        value = $(this).val();
+      }
+      formData.append(id, value);
+    });
+    $('#updatepage select').each(function () {
+      let id = $(this).attr('id');
+      let value = $(this).val();
+      formData.append(id, value);
+    });
+
+    // Добавляем содержимое Quill в FormData
+    let content = $('.ql-editor').html();
+    formData.append('content', content);
+
+    // Получаем файл из input[type=file]
+    var input = $('#file')[0]; // Обращаемся к элементу по индексу, чтобы получить DOM элемент
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $('#profile-img').attr('src', e.target.result);
+      };
+      reader.readAsDataURL(input.files[0]);
+
+      // Добавляем изображение в объект FormData
+      formData.append('file', input.files[0]);
+
+      // Выводим содержимое FormData в консоль
+      for (var pair of formData.entries()) {
+        console.log(pair[0] + ', ' + pair[1]);
+      }
+    }
+
+    sendData(formData);
+  });
+
+  function sendData(formData) {
+    $.ajax({
+      url: '/admin/pages/edit',
+      type: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function(response) {
+        ResponseNotice(response);
+      },
+      error: function(xhr, status, error) {
+        console.error('Ошибка при отправке данных:', error);
+      }
+    });
+  }
+
+
+  $(document).ready(function () {
+    // При нажатии на кнопку Change открывается диалоговое окно для выбора файла
+    $('#addImg').click(function () {
+      $('#file').click();
+    });
+
+    // При изменении файла обновляется изображение
+    $('#file').change(function () {
+      var input = this;
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          $('#profile-img').attr('src', e.target.result);
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    });
+
+    // При нажатии на кнопку Remove удаляется содержимое
+    $('#removeImgSrc').click(function () {
+      $('#profile-img').attr('src', $("#profile-img").data('image'));
+    });
+  });
+
+</script>
+
+{% endblock %}
+

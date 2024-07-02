@@ -1,0 +1,163 @@
+{% extends 'struct.html' %}
+
+{% block title %}Forum{% endblock %}
+
+{% block content %}
+
+
+<div class="container-fluid">
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card custom-card">
+      <div class="card-header">
+        <div class="card-title">
+          Пользователи ( {{getUsers()|length}} )
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="datatable-users" class="table table-bordered text-nowrap w-100">
+            <thead>
+            <tr>
+              <th>User</th>
+              <th>Coin</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i, user in getUsers() %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center  mt-auto">
+                  <div class="avatar  avatar-md me-1 cover-image" data-bs-image-src="{{user.getAvatar()}}"
+                       style="background: url('{{user.getAvatar()}}') center center;"></div>
+                  <div>
+                    <a href="#" class="text-default">{{user.getEmail()}} <br> {{user.getName()}}</a>
+                    <small class="d-block text-muted">{{user.getDateCreate()|date("d F, Y")}}</small>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center">
+                <span data-user-id="{{user.getId()}}" data-user-balance="{{user.getDonate()}}"
+                      class="reply-btn btn btn-sm btn-success sendToBalance">
+                <i class="ri-add-circle-line"></i>
+                </span><br>
+                {{user.getDonate()}}
+              </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="balance" tabindex="-1" aria-labelledby="balance" data-bs-keyboard="false"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <input type="hidden" name="userid" value="">
+      <div class="modal-header">
+        <h6 class="modal-title" id="staticBackdropLabel">Пополнение баланса</h6>
+        </h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        У пользователя : <span class="fs-15 fw-semibold" id="user-balance-show"></span> SphereCoin
+        <br>
+        <label for="countBalanceSend" class="form-label">Сколько SphereCoin добавить на баланс?</label>
+        <input value="" type="text" class="form-control" name="count" id="countBalanceSend" placeholder="100">
+
+        <div class="form-check form-switch">
+          <input id="isAddBonus" name="addBonus" type="checkbox" class="form-check-input">
+          <label class="form-check-label" for="isAddBonus">Зачислять бонусы пополнения к балансу</label>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button id="balanceSend" type="submit" class="btn btn-sm btn-success">Отправить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block css %}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
+
+{% endblock %}
+
+
+{% block js %}
+
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.6/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+
+  $('#datatable-users').DataTable({
+    language: {
+      searchPlaceholder: 'Search...',
+      sSearch: '',
+    },
+    lengthMenu: [
+      [10, 100, 1000, -1],
+      [10, 100, 1000,  "All"]
+    ],
+    buttons: [
+      'copy', 'csv', 'excel', 'pdf', 'print'
+    ],
+    sort : true,
+    autoWidth: true,
+
+    "pageLength": 10,
+    // scrollX: true
+  });
+
+  $(document).ready(function () {
+    var userid = 0;
+    $('.sendToBalance').on('click', function () {
+      $('#balance').modal('show');
+      userid = $(this).data('user-id');
+      var userbalance = $(this).data('user-balance');
+      $('input[name=\'userid\']').val(userid);
+      $('#user-balance-show').text(userbalance);
+    });
+    $('#balanceSend').on('click', function () {
+      count = $('#countBalanceSend').val();
+      addBonus = $('#isAddBonus').is(':checked');
+
+      AjaxSend('/admin/users/sendToBalance', 'POST', {
+        'userid': userid,
+        'count': count,
+        'addBonus': addBonus,
+      }, true).then(function (data) {
+        if (data.sphereCoin) {
+          $('#user_id_count_' + userid).text(data.sphereCoin);
+          noticeSuccess('Пополнение баланса успешно');
+        }
+        $('#balance').modal('hide');
+      });
+    });
+  });
+</script>
+
+
+{% endblock %}
+

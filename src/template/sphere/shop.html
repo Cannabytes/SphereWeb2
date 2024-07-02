@@ -1,0 +1,327 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xxl-12">
+      <div class="card custom-card" id="cart-container-delete">
+        <div class="card-header">
+          <div class="card-title">
+            Магазин
+          </div>
+        </div>
+        {% for objectId, products in getShopItems() %}
+        <div class="card-body" data-base-count="{{product.getCount()}}">
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered text-nowrap">
+              <thead>
+              <tr>
+                <th scope="col">Товар</th>
+                <th scope="col">Цена</th>
+              </tr>
+              </thead>
+
+              {% for i, product in products %}
+              <tbody>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="me-2">
+                                            <span class="avatar avatar-lg">
+                                                <img src="{{product.getItemInfo().getIcon()}}" alt="">
+                                            </span>
+                    </div>
+                    <div>
+                      <div class="mb-1">
+                        {% if product.enchant >= 1 %}
+                        <span class="fw-semibold text-muted"><span
+                          class="badge bg-success fs-11 rounded-1">+{{product.enchant}}</span></span>
+                        {% endif %}
+                        <span
+                          class="me-1 d-inline-flex align-items-center">{{product.getItemInfo().getAddName()}}</span>
+                        <span class="fw-semibold text-muted">{{product.getItemInfo().getItemName()}}</span>
+                        x<span data-cost="{{product.getCount()}}" class="product-count">{{product.getCount()}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td data-base-price="{{product.getCost()}}">
+                  <div class="fw-semibold fs-14">
+                    {{product.getCost()}}
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+              {% endfor %}
+            </table>
+            <div class="bd-example mb-0">
+              <div class="d-flex mb-0">
+                <div class="p-2">
+                  {% set isStackable = true %}
+                  {% for i, product in products %}
+                  {% if product.getItemInfo().getIsStackable() == false %}
+                  {% set isStackable = false %}
+                  {% endif %}
+                  {% endfor %}
+
+                  {% if isStackable == true %}
+                  <div class="input-group border rounded flex-nowrap ">
+                    <input min="1" type="number"
+                           class="form-control form-control-sm border-0 text-center w-100 quantity"
+                           aria-label="quantity" value="1">
+                  </div>
+                  {% endif %}
+
+                </div>
+                <div class="ms-auto p-2 d-grid  col-2 ">
+                  <button data-isStackable="{{isStackable}}" data-count-buy="1"
+                          data-cost="{{ sumGetValue(products, 'getCost') }}"
+                          data-object-id="{{objectId}}" data-bs-target="#openShop"
+                          data-bs-toggle="modal"
+                          class="btn w-100 btn-sm btn-success shadow-success btn-wave waves-effect waves-light showSelectBuy">
+                    Купить за {{ sumGetValue(products, 'getCost') }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      
+      <div class="modal fade" id="openShop" tabindex="-1"
+           aria-labelledby="openShopLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <div class="card-title">
+                Покупка
+              </div>
+
+              <div>
+                <ul class="nav nav-tabs justify-content-end nav-tabs-header mb-0" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
+                       href="#shopSendItemsToPlayer" aria-selected="true">Отправка на персонажа</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                       href="#shopSendItemsToWarhouse" aria-selected="true">Отправка на склад</a>
+                  </li>
+                </ul>
+              </div>
+
+
+            </div>
+            <div class="modal-body">
+
+              <div class="card-body">
+
+                <div class="row">
+
+                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                    <div class="card custom-card overflow-hidden" id="itemListSell">
+                    </div>
+                    <div class="input-group border rounded flex-nowrap quantityClass">
+                      <input id="quantity" min="1" type="number"
+                             class="form-control form-control-sm border-0 text-center w-100 quantity"
+                             aria-label="quantity" value="1">
+                    </div>
+                  </div>
+
+                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+
+                    <div class="tab-content">
+                      <div class="tab-pane show active text-muted" id="shopSendItemsToPlayer"
+                           role="tabpanel">
+                        <div class="card-body">
+                          <div class="mx-auto">
+                            Выберите персонажа
+
+                            <select {% if getUser().getCountPlayers()== 0 %}disabled{% endif
+                                    %} class="form-control" data-trigger id="playerName">
+                              {% if getUser().getCountPlayers() == 0 %}
+                              <option>У Вас нет персонажей</option>
+                              {% else %}
+                              {% for i, account in getUser().getAccounts() %}
+                              <optgroup label="Аккаунт: {{account.getAccount}}">
+                                {% if account.getCharactersCount() == 0 %}
+                                <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; Нет
+                                  персонажей
+                                </option>
+                                {% else %}
+                                {% for i, character in account.getCharacters() %}
+                                <option data-account="{{account.getAccount()}}" value="{{character.getPlayerName()}}">
+                                  &nbsp;&nbsp;&nbsp;&nbsp; {{character.getPlayerName()}}
+                                </option>
+                                {% endfor %}
+                                {% endif %}
+                              </optgroup>
+                              {% endfor %}
+                              {% endif %}
+                            </select>
+
+                            <div class="d-flex flex-wrap align-items-center">
+                              <div class="me-2 fw-semibold">
+                                Стоимость :
+                              </div>
+                              <span class="fs-12 text-muted shopCostBuy">0</span>
+                            </div>
+
+                            <button data-object-id="0" id="purchase" type="button"
+                                    class="btn btn-success btn-wave waves-effect waves-light">
+                              Купить и отправить на персонажа
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="tab-pane text-muted" id="shopSendItemsToWarhouse"
+                           role="tabpanel">
+                        <div class="card-body">
+
+                          <div class="d-flex flex-wrap align-items-center">
+                            <div class="me-2 fw-semibold">
+                              Стоимость :
+                            </div>
+                            <span class="fs-12 text-muted shopCostBuy">0</span>
+                          </div>
+
+                          <button data-object-id="0" id="toWarehouse" type="button"
+                                  class="btn btn-success btn-wave waves-effect waves-light">
+                            Купить и отправить на склад
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+
+  $(document).ready(function () {
+    $('#purchase').on('click', function () {
+      let objectId = $(this).attr('data-object-id');
+      let playerName = $('#playerName').val();
+
+      let account = $('#playerName').find('option:selected').data('account');
+      console.log(account);
+
+      let quantity = parseInt($('#quantity').val()) || 1;
+      AjaxSend('/shop/purchase', 'POST', {
+        shopId: objectId,
+        playerName: playerName,
+        account: account,
+        quantity: quantity,
+      }, true).then(function (response) {
+        responseAnalysis(response);
+        console.log(response);
+      });
+    });
+
+    $('#toWarehouse').on('click', function () {
+      let objectId = $(this).attr('data-object-id');
+      console.log(objectId);
+      let quantity = parseInt($('#quantity').val()) || 1;
+      AjaxSend('/shop/towarehouse', 'POST', {
+        shopId: objectId,
+        quantity: quantity,
+      }, true).then(function (response) {
+        responseAnalysis(response);
+        console.log(response);
+      });
+    });
+
+    $('.showSelectBuy').on('click', function () {
+      let objectId = $(this).attr('data-object-id');
+      let isStack = $(this).attr('data-isstackable');
+      if (isStack) {
+        $('#quantity').show();
+        $('.quantityClass').show();
+      } else {
+        let cost = $(this).attr('data-cost');
+        $('.shopCostBuy').text(cost);
+        $('#quantity').hide();
+        $('.quantityClass').hide();
+      }
+      let quantity = $(this).closest('.d-flex').find('.quantity').val();
+      if (!isStack) {
+        quantity = 1;
+      }
+      AjaxSend('/admin/shop/get', 'POST', { objectId: objectId }, true).then(function (response) {
+        let html = '<ul class="list-group followers-list">';
+        response.forEach(function (item) {
+          html += '<li class="list-group-item" data-base-count="' + item.count + '" data-base-price="' + item.cost + '" >' +
+            '<div class="d-sm-flex align-items-top">' +
+            '<span class="avatar avatar-sm">' +
+            '<img src="' + item.item.icon + '" alt="">' +
+            '</span>' +
+            '<div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">' +
+            '<p class="mb-0 lh-1">' + item.item.itemName + ' x<span class="dynamic-count">' + quantity * item.count + '</span></p>' +
+            '<span class="fs-11 text-muted op-7">Цена: ' + quantity * item.cost + '</span>' +
+            '</div>' +
+            '</div>' +
+            '</li>';
+        });
+        html += '</ul>';
+        $('#itemListSell').html(html);
+      });
+
+      $(this).attr('data-count-buy', quantity);
+      $('#purchase').attr('data-object-id', objectId);
+      $('#toWarehouse').attr('data-object-id', objectId);
+
+      $('#openShop').modal('show');
+    });
+
+    function updatePriceAndCountForCard($quantityInput) {
+      let totalCost = 0;
+      let $cardBody = $quantityInput.closest('.card-body');  // Находим карточку, которая содержит изменённое поле quantity
+      let quantity = parseInt($quantityInput.val()) || 1;  // Получаем текущее значение количества
+      $('#quantity').val(quantity);
+      $cardBody.find('table tbody tr').each(function () {
+        let $row = $(this);
+        let baseCount = parseInt($row.find('.product-count').data('cost'));  // Получаем базовое количество товара
+        let basePrice = parseFloat($row.find('td[data-base-price]').data('base-price'));  // И базовую цену
+        let totalProductCount = baseCount * quantity;  // Рассчитываем новое количество товара
+        let totalPrice = basePrice * quantity;  // И новую цену
+
+        $row.find('.product-count').text(totalProductCount);  // Обновляем количество товара в строке
+        $row.find('.fw-semibold.fs-14').text(totalPrice.toFixed(0));  // Обновляем цену в строке
+        totalCost += totalPrice;  // Добавляем к общей стоимости
+      });
+      $('.shopCostBuy').text(totalCost);
+      $cardBody.find('.showSelectBuy').text('Купить за ' + totalCost.toFixed(0));  // Обновляем текст кнопки покупки в текущей карточке
+    }
+
+    $('body').on('input change', '.quantity', function () {
+      updatePriceAndCountForCard($(this));  // Вызываем функцию для элемента, от которого произошло изменение
+    });
+
+    $('.quantity').each(function () {
+      updatePriceAndCountForCard($(this));  // Обновляем цены и количество для каждой карточки
+    });
+
+  });
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,283 @@
+{% extends 'struct.html' %}
+
+
+{% block title %}{{phrase(238)}}{% endblock %}
+
+{% block content %}
+
+{% if config().enabled().isEnableReferral() == false  %}
+  {{ redirect("/main") }}
+{% endif %}
+
+<div class="row">
+
+
+  <div class="col-xl-6">
+    <div class="card custom-card">
+      <div class="card-body d-flex align-items-center justify-content-between">
+        <div class="fs-15 mb-0">Привлекайте друзей, знакомых играть вместе с Вами, и получите бонус!
+          <br>
+          Распространите ссылку на Ваш профиль регистрации, среди жильцов нашего ЖЭКа, среди друзей и пронизанных сплошь
+          и
+          рядом, опиумным дурманом молодых лиц.
+        </div>
+
+      </div>
+      <div class="card-body d-flex align-items-center justify-content-between">
+        Ваша ссылка: <span class="text-success" id="referralLink">{{referral_link()}}</span>
+
+        <button id="copyLink" class="btn btn-info custom-button rounded-pill">
+          <span class="custom-btn-icons"><i class="ri-file-copy-2-line text-info"></i></span>
+          Скопировать ссылку
+        </button>
+      </div>
+
+      <div class="card-body d-flex align-items-center justify-content-between">
+        Вам удалось привлечь {{allCount}} игроков<br>
+        Завершили реферальный квест {{doneCountOk}} игроков<br>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="col-xl-6">
+    <div class="card custom-card">
+      <div class="card-body  align-items-center justify-content-between">
+        Если привлеченные Вами игроки, выполнят одним из персонажей необходимые требования, Вы получите бонус.
+        <br>
+        <br>
+        Требования
+        <ul>
+          {% if config().referral().getLevel() > 0 %}
+          <li>Уровень: {{ config().referral().getLevel() }}</li>
+          {% endif %}
+          {% if config().referral().getPvP() > 0 %}
+          <li>PvP: {{ config().referral().getPvP() }}</li>
+          {% endif %}
+          {% if config().referral().getPK() > 0 %}
+          <li>PK: {{ config().referral().getPK() }}</li>
+          {% endif %}
+          {% if config().referral().getTimeGame() > 0 %}
+          <li>Время в игре: {{ timeHasPassed ( config().referral().getTimeGame() , true ) }}</li>
+          {% endif %}
+
+          {% if config().referral().getLevel() is empty and config().referral().getPvP() is empty and config().referral().getPK() is empty and config().referral().getTimeGame() is empty %}
+          <li class="text-danger">Не установлены требования.</li>
+          {% endif %}
+
+        </ul>
+        <br>
+
+        <div class="table-responsive">
+          <table class="table text-nowrap table-bordered border-success">
+            <thead>
+            <tr>
+              <th scope="col">Бонус для лидера</th>
+              <th scope="col">Бонус для привлеченных игроков</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr>
+              <th scope="row">
+                {% if config().referral().getProcentDonateBonus() > 0 %}
+                <ul>
+                  <li>{{ config().referral().getProcentDonateBonus() }}% Donate Coin за каждый донат привлеченного игрока</li>
+                </ul>
+                {% endif %}
+
+
+                {% if config().referral().getLeaderBonusItems() is not empty %}
+                <ul class="list-unstyled">
+                  {% for item in config().referral().getLeaderBonusItems() %}
+                  {% set itemName = item.getItemName() %}
+
+                  {% if item.getAddName() %}
+                  {% set addName = '<span class="badge bg-danger">' ~ item.getAddName() ~ '</span>' %}
+                  {% set itemName = addName ~ ' ' ~ itemName %}
+                  {% endif %}
+
+                  {% if item.getEnchant() > 0 %}
+                  {% set itemName = '+' ~ item.getEnchant() ~ ' ' ~ itemName %}
+                  {% endif %}
+                  <li class="mt-1"><img class="avatar avatar-md online me-2 mail-msg-avatar" src="{{ item.getIcon() }}"> {{ itemName|raw }} x{{ item.getCount() }}</li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+              </th>
+
+              <td>
+                {% if config().referral().getSlaveBonusItems() is not empty %}
+
+                <ul class="list-unstyled">
+                  {% for item in config().referral().getSlaveBonusItems() %}
+                  {% set itemName = item.getItemName() %}
+
+                  {% if item.getAddName() %}
+                  {% set addName = '<span class="badge bg-danger">' ~ item.getAddName() ~ '</span>' %}
+                  {% set itemName = addName ~ ' ' ~ itemName %}
+                  {% endif %}
+
+                  {% if item.getEnchant() > 0 %}
+                  {% set itemName = '+' ~ item.getEnchant() ~ ' ' ~ itemName %}
+                  {% endif %}
+                  <li class="mt-1"><img class="avatar avatar-md online me-2 mail-msg-avatar" src="{{ item.getIcon() }}"> {{ itemName|raw }} x{{ item.getCount() }}</li>
+                  {% endfor %}
+                </ul>
+
+                {% endif %}
+
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      {% if hasRequirements %}
+      <div class="alert alert-success d-flex align-items-center rounded-0 shadow-none" role="alert">
+        <svg class="flex-shrink-0 me-2 svg-success" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0V0zm0 0h24v24H0V0z" fill="none"></path><path d="M16.59 7.58L10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg>
+        <div>
+          <strong>Мы заметили что игрок(и) выполнили требования.</strong> <button id="get_ref_bonus" data-bs-effect="effect-rotate-bottom" data-bs-toggle="modal" href="#modal_bonus_list" class="modal-effect btn btn-danger-gradient btn-wave btn-sm ms-auto waves-effect waves-light">Получить бонус!</button>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+  <div class="modal fade"  id="modal_bonus_list">
+    <div class="modal-dialog modal-dialog-centered text-center" role="document">
+      <div class="modal-content modal-content-demo">
+        <div class="modal-header">
+          <h6 class="modal-title">Успешно</h6><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-start">
+          <h6>Мы благодарим Вас за привлечение игроков!</h6>
+          <p class="text-muted mb-0 referral_message">
+          </p>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+
+  {% for referral in referrals %}
+  <div class="col-xl-4">
+    <div class="card custom-card">
+      <div class="card-header">
+        <div class="card-title">
+
+          <div class="d-sm-flex align-items-top">
+                                                <span class="avatar avatar-sm">
+                                                    <img src="{{referral.avatar}}" alt="img">
+                                                </span>
+            <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
+              <p class="mb-0 lh-1">{{referral.name}}</p>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+
+
+      {% for accounts in referral.accounts %}
+       <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover text-nowrap">
+            <thead>
+            <tr>
+              <th style="width: 1%">Персонаж</th>
+              <th style="width: 1%">Ур.</th>
+              <th style="width: 1%">PvP</th>
+              <th style="width: 1%">PK</th>
+              <th style="width: 1%">Время</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for character in accounts.charactersArray %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+           <span class="avatar avatar-sm me-2 {% if player.online %}online{% else %}offline{% endif %} avatar-rounded">
+                                        <img src="{{ template('/assets/images/race/' ~ sex(character.sex) ~ '/' ~ get_class_race(character.class_id)) ~ '.jpg' }}" alt="img">
+                                       </span>
+                  <div class="fw-semibold">{{character.player_name}}</div>
+                </div>
+              </td>
+              <td>
+                <span class="{% if config().referral().getLevel() <= character.level %}text-success{% else %}text-danger{% endif %}">{{character.level}}</span>
+              </td>
+              <td>
+                <span class="{% if config().referral().getPvP() <= character.pvp %}text-success{% else %}text-danger{% endif %}">{{character.pvp}}</span>
+              </td>
+              <td>
+                <span class="{% if config().referral().getPK() <= character.pk %}text-success{% else %}text-danger{% endif %}">{{character.pk}}</span>
+              </td>
+              <td>
+                <span class="{% if config().referral().getTime() <= character.time_in_game %}text-success{% else %}text-danger{% endif %}">{{timeHasPassed(character.time_in_game, true)}}</span>
+              </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+  {% endfor %}
+
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+
+  $('#copyLink').on('click', function() {
+    var referralLink = $('#referralLink').text();
+      navigator.clipboard.writeText(referralLink).then(function() {
+    }, function(err) {
+      console.error('Ошибка копирования: ', err);
+    });
+  });
+
+
+  /* hide modal effects */
+  document.getElementById("modal_bonus_list").addEventListener('hidden.bs.modal', function (e) {
+    let removeClass = this.classList.value.match(/(^|\s)effect-\S+/g);
+    removeClass = removeClass[0].trim();
+    this.classList.remove(removeClass);
+  });
+
+  $("#get_ref_bonus").on("click", function () {
+    AjaxSend("/referral/bonus", "POST", {}, true).then(function (data) {
+      responseAnalysis(data);
+      if (data.success) {
+        $(".referral_message").html(data.message);
+        document.querySelectorAll(".modal-effect").forEach(e => {
+          e.addEventListener('click', function (e) {
+            e.preventDefault();
+            let effect = this.getAttribute('data-bs-effect');
+            document.querySelector("#modal_bonus_list").classList.add(effect);
+          });
+        })
+
+      }
+    });
+  });
+
+</script>
+{% endblock %}

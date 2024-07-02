@@ -1,0 +1,597 @@
+﻿{% extends 'struct.html' %}
+
+{% block title %}Sphere Launcher{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{template_plugin}}/tpl/css/dir.css?v={{PLUGIN['PLUGIN_VERSION']}}">
+<style>
+  .outlined-text {
+    color: white; /* Цвет текста */
+    text-shadow: -1px -1px 0 rgba(0,0,0,0.3),
+    1px -1px 0 rgba(0,0,0,0.3),
+    -1px 1px 0 rgba(0,0,0,0.3),
+    1px 1px 0 rgba(0,0,0,0.3); /* Тень, менее заметная, идущая по контуру текста */
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+  <div id="errorLauncherToast" class="toast colored-toast bg-primary-transparent text-primary" role="alert"
+       aria-live="assertive"
+       aria-atomic="true">
+    <div class="toast-header bg-primary text-fixed-white">
+      <img class="bd-placeholder-img rounded me-2" src="{{template}}/assets/images/brand-logos/toggle-white.png"
+           alt="...">
+      <strong class="me-auto" id="dangerLauncherTitleMessageNotice"></strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"
+              aria-label="Close"></button>
+    </div>
+    <div class="toast-body" id="dangerLauncherContentMessageNotice">
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="settingsLauncher" tabindex="-1"
+     aria-labelledby="settingsLauncher" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" data-phrase="setting_launcher" >Настройки лаунчера</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+        <ul class="nav nav-tabs nav-tabs-block flex-md-column col-md-3 rounded-0" role="tablist">
+          <li class="nav-item d-md-flex flex-md-column">
+            <button class="nav-link fs-sm text-md-start rounded-0 active " id="btabs-vertical-home-tab"
+                    data-bs-toggle="tab" data-bs-target="#btabs-vertical-home" role="tab"
+                    aria-controls="btabs-vertical-home" aria-selected="true">
+              {{phrase("files")}}
+            </button>
+          </li>
+          <li class="nav-item d-md-flex flex-md-column">
+            <button class="nav-link fs-sm text-md-start rounded-0 " id="btabs-vertical-profile-tab"
+                    data-bs-toggle="tab" data-bs-target="#btabs-vertical-profile" role="tab"
+                    aria-controls="btabs-vertical-profile" aria-selected="false">
+              {{phrase("autoload")}}
+            </button>
+          </li>
+          <li class="nav-item d-md-flex flex-md-column">
+            <button class="nav-link fs-sm text-md-start rounded-0 " id="btabs-vertical-settings-tab"
+                    data-bs-toggle="tab" data-bs-target="#btabs-vertical-settings" role="tab"
+                    aria-controls="btabs-vertical-settings" aria-selected="false">
+              {{phrase("auto update")}}
+            </button>
+          </li>
+          <li class="nav-item d-md-flex flex-md-column">
+            <button data-phrase="auto exit" class="nav-link fs-sm text-md-start rounded-0 "
+                    id="btabs-vertical-exit-tab" data-bs-toggle="tab" data-bs-target="#btabs-vertical-exit"
+                    role="tab" aria-controls="btabs-vertical-exit" aria-selected="false">
+              !
+            </button>
+          </li>
+          <li class="nav-item d-md-flex flex-md-column">
+            <button class="nav-link fs-sm text-md-start rounded-0 " id="btabs-vertical-stream-tab"
+                    data-bs-toggle="tab" data-bs-target="#btabs-vertical-stream" role="tab"
+                    aria-controls="btabs-vertical-stream" aria-selected="false">
+              {{phrase("streams")}}
+            </button>
+          </li>
+          <li class="nav-item d-md-flex flex-md-column">
+            <button class="nav-link fs-sm text-md-start rounded-0 " id="btabs-vertical-maxSizeFile-tab"
+                    data-bs-toggle="tab" data-bs-target="#btabs-vertical-maxSizeFile" role="tab"
+                    aria-controls="btabs-vertical-maxSizeFile" aria-selected="false">
+              {{phrase("file comparison")}}
+            </button>
+          </li>
+          <li class="nav-item d-md-flex flex-md-column">
+            <button class="nav-link fs-sm text-md-start rounded-0 " id="btabs-vertical-blacklistfiles-tab"
+                    data-bs-toggle="tab" data-bs-target="#btabs-vertical-blacklistfiles" role="tab"
+                    aria-controls="btabs-vertical-blacklistfiles" aria-selected="false">
+              {{phrase("blacklist of files")}}
+            </button>
+          </li>
+          <li class="nav-item d-md-flex flex-md-column">
+            <button class="nav-link fs-sm text-md-start rounded-0 " id="btabs-vertical-startgame-tab"
+                    data-bs-toggle="tab" data-bs-target="#btabs-vertical-startgame" role="tab"
+                    aria-controls="btabs-vertical-startgame" aria-selected="false">
+              Время игры
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content col-md-9">
+          <div class="block-content tab-pane active" id="btabs-vertical-home" role="tabpanel"
+               aria-labelledby="btabs-vertical-home-tab" tabindex="0">
+            <h4 class="fw-semibold">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" value="" id="isClientFilesArchive"
+                       name="isClientFilesArchive" checked>
+                <label class="form-check-label " data-phrase="is_save_loading_file" for="isClientFilesArchive">Сохранять
+                  загруженные файлы</label>
+              </div>
+            </h4>
+            <p class="fs-sm " data-phrase="is_save_loading_file_desc">
+              Если "Да", лаунчер будет сохранять файлы патчей, для того чтоб не загружать их в будущем в случае если
+              когда-то ранее Вы его уже загружали.
+              Данная опция может сократить время загрузки.
+            </p>
+          </div>
+          <div class="block-content tab-pane" id="btabs-vertical-profile" role="tabpanel"
+               aria-labelledby="btabs-vertical-profile-tab" tabindex="0">
+            <h4 class="fw-semibold">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" value="" id="autoStartLauncher"
+                       name="autoStartLauncher">
+                <label class="form-check-label" for="autoStartLauncher" data-phrase="autoload">Автозагрузка</label>
+              </div>
+
+            </h4>
+            <p class="fs-sm" data-phrase="autoload_desc">
+              Лаунчер не нужно будет запускать, он не потербляет память. После старта Windows, лаунчер будет
+              загружен в память, и срабатывать только при обращении к нему.
+            </p>
+          </div>
+
+          <div class="block-content tab-pane" id="btabs-vertical-settings" role="tabpanel"
+               aria-labelledby="btabs-vertical-settings-tab" tabindex="0">
+            <h4 class="fw-semibold">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" value="" id="autoUpdateLauncher"
+                       name="autoUpdateLauncher">
+                <label class="form-check-label" for="autoUpdateLauncher" data-phrase="autoupdate_launcher">Автообновление</label>
+              </div>
+            </h4>
+            <p class="fs-sm" data-phrase="autoupdate_launcher_desc">
+              Лаунчер будет периодически проверять обновление, и обновляться если вышла новая версия.
+            </p>
+          </div>
+
+          <div class="block-content tab-pane" id="btabs-vertical-exit" role="tabpanel"
+               aria-labelledby="btabs-vertical-exit-tab" tabindex="0">
+            <p class="fs-sm" data-phrase="autooff_launcher_desc">
+              Автоматически выключение лаунчера в режиме простоя.
+            </p>
+
+            <div class="row mb-4">
+              <div class="col-md-12">
+                <div class="input-group">
+                                                <span class="input-group-text" data-phrase="auto_off_program_time">
+                                                  Отключение через
+                                                </span>
+                  <select class="form-select form-control-lg" id="auto_disabled" name="auto_disabled">
+                    <option value="300" data-phrase="5 min">5 минут</option>
+                    <option value="600" data-phrase="10 min">10 минут</option>
+                    <option value="180" data-phrase="30 min">30 минут</option>
+                    <option value="3600" data-phrase="1 h">1 час</option>
+                    <option value="10800" data-phrase="3 h">3 часа</option>
+                    <option value="0" data-phrase="not_off_launcher">Не отключать</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="block-content tab-pane" id="btabs-vertical-stream" role="tabpanel"
+               aria-labelledby="btabs-vertical-stream-tab" tabindex="0">
+
+            <label class="form-check-label" for="countStream" data-phrase="countStream">Кол-во потоков
+              загрузки</label>
+            <input type="number" min="1" class="form-control" value="5" id="countStream" name="countStream">
+            <p class="fs-sm" data-phrase="countStream_description">
+              Если у Вас мощный процессор и широкий канал инетернета, можете увеличить.
+            </p>
+            <p class="fs-sm">Recommended: <strong class="text-primary fw-bold cursor-pointer"
+                                                  id="countStreamRecommended">1</strong></p>
+          </div>
+
+          <div class="block-content tab-pane" id="btabs-vertical-maxSizeFile" role="tabpanel"
+               aria-labelledby="btabs-vertical-maxSizeFile-tab" tabindex="0">
+
+            <label class="form-check-label" for="countStream">{{phrase("max_size_hash")}}</label>
+            <input type="number" min="1" class="form-control" value="20" id="maxSizeFile" name="maxSizeFile">
+            <p class="fs-sm">
+              {{phrase("comparison_files")|raw}}
+            </p>
+          </div>
+
+          <div class="block-content tab-pane" id="btabs-vertical-blacklistfiles" role="tabpanel"
+               aria-labelledby="btabs-vertical-blacklistfiles-tab" tabindex="0">
+
+            <label class="form-label" for="save_file_black_list">{{phrase("blacklist of files")}}</label>
+            <textarea class="form-control valid" id="fileslist" name="val-suggestions" rows="5"
+                      placeholder="options.ini" aria-describedby="val-suggestions-error"
+                      aria-invalid="false"></textarea>
+
+            <br>
+            <button id="save_file_black_list" type="submit" class="btn btn-primary">{{phrase("apply")}}</button>
+
+          </div>
+
+          <div class="block-content tab-pane" id="btabs-vertical-startgame" role="tabpanel"
+               aria-labelledby="btabs-vertical-startgame-tab" tabindex="0">
+            <h4 class="fw-semibold">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" value="" id="gameTitleInfo"
+                       name="gameTitleInfo">
+                <label class="form-check-label" for="gameTitleInfo" >Время работы игры</label>
+              </div>
+
+            </h4>
+            <p class="fs-sm" >
+              Если Вы хотите, мы можем выводить в титуле приложения игры время работы.<br>
+              Эта функция требует запуска лаунчера от прав администратора.
+            </p>
+          </div>
+
+        </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="container-fluid">
+
+  <div class="card custom-card d-none" id="block_start_launcher">
+    <div class="card-body custom-card">
+
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <button data-bs-toggle="modal" data-bs-target="#modal-start-launcher" type="button"
+                  class="btn btn-success btn-wave waves-effect waves-light">
+            Start Launcher
+          </button>
+        </div>
+        <div>
+          <a href="#" data-bs-toggle="modal" data-bs-target="#launcherAbout">Don't have a launcher?</a>
+          <a type="button" class="btn btn-danger me-1 mb-1  launcherLink">
+            Download Launcher
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div id="msgUpdLauncher" class="alert alert-danger d-none" role="alert">
+    <div class="d-flex justify-content-between">
+      <p class="mb-0" id="textMsgUpdateLauncher">
+        Ваш лаунчер устарел. Вам необходимо обновиться.
+      </p>
+      <button type="button" class="btn btn-success btn-sm launcherUpdateStart">Обновить лаунчер</button>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="modal-start-launcher" tabindex="-1"
+       aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="exampleModalLabel1">Панель запуска лаунчера</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Download the launcher and you no longer have to have a launcher for each server.</p>
+
+          <p>If you previously downloaded the launcher, then simply launch it.
+            <button id="startLauncher" type="button" class="btn btn-sm btn-success me-1 mb-1 ">
+              Start launcher
+            </button>
+          </p>
+          <p>If you don&#039;t have a launcher, download it.
+            <br>
+            <button type="button" class="btn btn-success me-1 mb-1  launcherLink">
+              Download Launcher
+            </button>
+          </p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-outline-light "
+                  data-bs-dismiss="modal">Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-xl-9">
+      <div class="card custom-card">
+
+        <div class="card-body">
+
+          <div class="block-options">
+            <div class="mb-4">
+              <div class="input-group">
+
+
+                <div role="button"
+                     class="input-group-text cursor-pointer" data-bs-effect="effect-flip-vertical"
+                     data-bs-toggle="modal" href="#settingsLauncher">
+                  <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Настройки лаунчера">
+                    <i class="fe fe-settings"></i>
+                  </div>
+                </div>
+
+                <div role="button"
+                     class="input-group-text cursor-pointer" data-bs-effect="effect-flip-vertical"
+                     data-bs-toggle="modal" href="#selectDirClient">
+                  <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Указать путь к игре">
+                    <i class="fe fe-folder"></i>
+                  </div>
+                </div>
+
+
+                <select class="form-select" id="selectClient" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Месторасположение игровой папки. В неё будет загружаться патч или обновления"></select>
+
+                <button type="button" class="btn btn-success js-click-ripple-enabled" data-phrase="start_update"
+                        data-toggle="click-ripple" id="startUpdateGame"
+                        style="overflow: hidden; position: relative; z-index: 1;">Start Update
+                </button>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="modal fade" id="selectDirClient" tabindex="-1"
+               aria-labelledby="selectDirClient" data-bs-keyboard="true"
+               aria-hidden="true">
+            <div class="modal-dialog modal-xl ">
+              <div class="modal-content">
+                <div class="modal-header">
+
+                  <span id="dirstartpath" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                        data-bs-original-title="Мой компьютер"><i data-all-path="." aria-hidden="true"
+                                                                  class="fe fe-monitor linkdir"></i> </span> &nbsp;
+
+                  <h6 class="modal-title" id="dirfullpath"></h6>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"
+                          aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                  <div class="block-content fs-sm" id="dirlist"></div>
+                </div>
+
+                <div class="card-footer">
+                  <div class="d-flex mt-0">
+
+                    <a class="btn btn-sm btn-teal-light btn-wave waves-effect waves-light">
+                      <i class="ri ri-folder-2-fill"></i> Создать папку
+                    </a>
+
+
+                    <div class="ms-auto">
+                      <button class="btn btn-sm btn-success">Применить</button>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="buttonStartGame" class="row mb-3"></div>
+
+          <div class="border-bottom mb-2"></div>
+
+          <div id="loadPanel">
+
+          </div>
+
+
+        </div>
+        <div class="card-footer d-none border-top-0">
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3">
+      <div class="card custom-card">
+
+        <div class="card-body">
+          <div id="radialbar-multiple"></div>
+          <div id="echart-gauge-basic" class="echart-charts"></div>
+        </div>
+        <div class="card-footer d-none border-top-0">
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="footer card custom-card mt-auto py-3 text-center">
+    <div class="container">
+                <span class="">Вы используете <span class="badge bg-dark text-white">Sphere Launcher</span> версию <span
+                  class="badge bg-dark text-white launcherVersion">?</span>
+                </span>
+    </div>
+  </footer>
+
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+<script>
+
+  var tokenApi = `fdKVnhiRSVUhGkFzbQoCd4zqIDgBtzBtmVi7BBiOArk/YC8QZ0iP60Gei2CRil17LySewePjmhcz34kU7yhXSpOduVjTuTQeGpT8IOya0FynnnxD6nBzQL4SUBoLZTf/HX4ApetEpjMBan1aJb1qC7PnCtxzMqePwPLZaskVBF0ZTFXXzLdBzdleYV5L7dsh`;
+  var serverID = {{id}};
+  var chronicle = `{{chronicle}}`;
+  var application = JSON.parse(`[{"l2exe":"\/system\/l2.exe","args":"","background":"custom\/plugins\/launcher\/tpl\/img\/l2_button.jpg","name":"Start Play"}]`);
+  var userLang = `{{getUser().getLang()}}`;
+
+
+</script>
+
+
+<script src="{{template_plugin}}/tpl/jsl/lang.js?v={{'now'|date('U')}}"></script>
+<script src="{{template_plugin}}/tpl/jsl/general.js?{{'now'|date('U')}}"></script>
+<script src="{{template_plugin}}/tpl/jsl/weblauncher.js?v={{'now'|date('U')}}"></script>
+
+
+<script src="{{template}}/assets/libs/echarts/echarts.min.js"></script>
+<script src="{{template}}/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+<script>
+
+  var totalLoaded = 0;
+
+  var options = {
+    series: [0],
+    chart: {
+      height: 350,
+      type: "radialBar",
+    },
+    plotOptions: {
+      radialBar: {
+        dataLabels: {
+          name: {
+            fontSize: "22px",
+          },
+          value: {
+            fontSize: "16px",
+          },
+          total: {
+            show: true,
+            label: "Ожидание",
+            formatter: function (w) {
+              // Возвращаем значение totalLoaded для отображения
+              return '';
+            },
+          },
+        },
+      },
+    },
+    responsive: [
+      {
+        breakpoint: 500,
+        options: {
+          chart: {
+            height: 200,
+            type: "radialBar",
+          },
+        },
+      },
+    ],
+    colors: ["#6c5ffc"],
+    labels: ["LoadLine"],
+  };
+
+  var chartLoaderStatus = new ApexCharts(
+    document.querySelector("#radialbar-multiple"),
+    options
+  );
+  chartLoaderStatus.render();
+
+  function updateChart(total, action) {
+    totalLoaded = total;
+    chartLoaderStatus.updateSeries([totalLoaded], totalLoaded);
+    // Обновляем текст label
+    chartLoaderStatus.updateOptions({
+      plotOptions: {
+        radialBar: {
+          dataLabels: {
+            total: {
+              show: true,
+              label: action,
+              formatter: function (w) {
+                return totalLoaded + "%";
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  var dom = document.getElementById('echart-gauge-basic');
+  var myChart = echarts.init(dom, null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+  var app = {};
+  var currentMax = 10; // Начальное максимальное значение
+
+  var option = {
+    tooltip: {
+      formatter: '{a} <br/>{b} : {c} MB/s'
+    },
+    series: [
+      {
+        name: 'Speed Downloading',
+        type: 'gauge',
+        max: currentMax, // Используем переменную currentMax
+        progress: {
+          show: true
+        },
+        detail: {
+          valueAnimation: true,
+          formatter: '{value} MB/s'
+        },
+        data: [
+          {
+            value: 0,
+            name: 'MB/s'
+          }
+        ]
+      }
+    ],
+    color: ["#6c5ffc"]
+  };
+
+  if (option && typeof option === 'object') {
+    myChart.setOption(option);
+  }
+
+  window.addEventListener('resize', myChart.resize);
+
+  function updateGauge(value) {
+    // Округляем значение до ближайшего целого, кратного 5
+    value = Math.round(value / 5) * 5;
+
+    if (value > currentMax) {
+      currentMax = Math.ceil(value / 10) * 10; // Увеличиваем максимальное значение на ближайшее кратное 10
+      myChart.setOption({
+        series: [
+          {
+            max: currentMax // Обновляем максимальное значение
+          }
+        ]
+      });
+    }
+
+    myChart.setOption({
+      series: [
+        {
+          data: [
+            {
+              value: value,
+              name: 'Speed'
+            }
+          ]
+        }
+      ]
+    });
+  }
+
+
+</script>
+{% endblock %}

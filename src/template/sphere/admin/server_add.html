@@ -1,0 +1,409 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-9">
+            <div class="card custom-card">
+                <div class="card-body p-0 product-checkout">
+                    <ul class="nav nav-tabs tab-style-2 d-sm-flex d-block border-bottom border-block-end-dashed justify-content-between" id="myTab1" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="order-tab" data-bs-toggle="tab"
+                                    data-bs-target="#order-tab-pane" type="button" role="tab"
+                                    aria-controls="order-tab" aria-selected="true"><i
+                                    class="ri-truck-line me-2 align-middle"></i>Общее</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="confirmed-tab" data-bs-toggle="tab"
+                                    data-bs-target="#confirm-tab-pane" type="button" role="tab"
+                                    aria-controls="confirmed-tab" aria-selected="false"><i
+                                    class="ri-user-3-line me-2 align-middle"></i>Сборка сервера</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="shipped-tab" data-bs-toggle="tab"
+                                    data-bs-target="#shipped-tab-pane" type="button" role="tab"
+                                    aria-controls="shipped-tab" aria-selected="false"><i
+                                    class="ri-bank-card-line me-2 align-middle"></i>Подключение к БД сервера</button>
+                        </li>
+                    </ul>
+                    <form action="/admin/create/server/new" method="POST" class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active border-0 p-0" id="order-tab-pane" role="tabpanel"
+                             aria-labelledby="order-tab-pane" tabindex="0">
+                            <div class="p-4">
+                                <p class="mb-1 fw-semibold text-muted op-5 fs-20">Общая информация о сервере</p>
+
+                                <div class="row gy-4 mb-4">
+                                    <div class="col-xl-4">
+                                        <div class="form-floating">
+                                            <input type="text" name="name" class="form-control" id="name" value="Bartz" placeholder="name">
+                                            <label for="name">Название сервера</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-12">
+                                        <div class="row gy-2">
+                                            <div class="col-xl-2">
+                                                <div class="form-floating">
+                                                    <input min="0" type="number" class="form-control " id="rateExp" name="rateExp" value="1" placeholder="1">
+                                                    <label for="rateExp">Rate Exp</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-2">
+                                                <div class="form-floating">
+                                                    <input min="0" type="number" class="form-control" id="rateSp" name="rateSp" value="1" placeholder="1">
+                                                    <label for="rateSp">Rate SP</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-2">
+                                                <div class="form-floating">
+                                                    <input min="0" type="number" class="form-control" id="rateAdena" name="rateAdena" value="1" placeholder="1">
+                                                    <label for="rateAdena">Rate Adena</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-2">
+                                                <div class="form-floating">
+                                                    <input min="0" type="number" class="form-control" id="rateDrop" name="rateDrop" value="1" placeholder="1">
+                                                    <label for="rateDrop">Rate Drop</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-2">
+                                                <div class="form-floating">
+                                                    <input min="0" type="number" class="form-control" id="rateSpoil" name="rateSpoil" value="1" placeholder="1">
+                                                    <label for="rateSpoil">Rate Spoil</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-end">
+                                <button type="button" class="btn btn-success-light" id="personal-details-trigger">Далее<i class="ri-user-3-line ms-2 align-middle d-inline-block"></i></button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade border-0 p-0" id="confirm-tab-pane"
+                             role="tabpanel" aria-labelledby="confirm-tab-pane" tabindex="0">
+                            <div class="p-4">
+                                <p class="mb-1 fw-semibold text-muted op-5 fs-20">Информация о сборке сервера</p>
+
+                                <div class="row gy-4">
+
+                                    <div class="col-xxl-4">
+                                        <label for="platform" class="form-label">Платформа</label>
+                                        <select disabled class="form-control" data-trigger name="choices-single-default" id="platform">
+                                            <option selected value="java">Java</option>
+                                            <option disabled value="pts">PTS</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-xxl-4">
+                                        <label for="version_client" class="form-label">Версия игры</label>
+                                        <select name="version_client" class="form-control" data-trigger id="version_client">
+                                            {% for client in client_list_default %}
+                                            <option {% if client['name'] == server['chronicle'] %}selected{% endif %}>{{ client['name'] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="col-xxl-4">
+                                        <label for="sql_base_source" class="form-label">Коллекция запросов сервера</label>
+                                        <select class="form-control" data-trigger id="sql_base_source" name="sql_base_source">
+                                            {% for basename in collections %}
+                                            <option value="{{ basename }}">{{ basename }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-between">
+                                <button type="button" class="btn btn-danger-light m-1" id="back-shipping-trigger"><i class="ri-truck-line me-2 align-middle d-inline-block"></i>Назад</button>
+                                <button type="button" class="btn btn-success-light m-1" id="payment-trigger">Далее<i class="bi bi-credit-card-2-front align-middle ms-2 d-inline-block"></i></button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade border-0 p-0" id="shipped-tab-pane" role="tabpanel"
+                             aria-labelledby="shipped-tab-pane" tabindex="0">
+                            <div class="p-4">
+
+                                            <p class="mb-1 fw-semibold text-muted op-5 fs-20">Подключение к логину сервера</p>
+
+                                            <div class="row">
+                                                <div class="col-lg-6 col-xl-6 border-end border-inline-end-dashed">
+                                                    Подключение к базе данных логин-сервера
+
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <div class="form-floating mb-4">
+                                                                <input type="text" class="form-control" name="login_host" id="login_host" value="127.0.0.1">
+                                                                <label class="form-label" for="login_host">IP</label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-6">
+                                                            <div class="form-floating mb-4">
+                                                                <input type="text" class="form-control" name="login_port" id="login_port" value="3306">
+                                                                <label class="form-label" for="login_port">Port</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <div class="form-floating mb-4">
+                                                                <input type="text" class="form-control" name="login_user" value="root" id="login_user">
+                                                                <label class="form-label" for="login_user">User name</label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-6">
+                                                            <div class="form-floating mb-4">
+                                                                <input type="text" class="form-control" name="login_password" id="login_password" value="">
+                                                                <label class="form-label" for="login_password">Password</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-4">
+                                                        <div class="col-lg-6 ">
+                                                            <div id="getDBNameLogin" type="submit" class="btn btn-primary mb-2">
+                                                                <i class="fa fa-arrow-right opacity-50 me-1"></i> Проверка и выбрать базу данных
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-floating mb-4 col-6">
+                                                        <select class="form-select" id="login_name" name="login_name">
+                                                            <option selected="" disabled="">Не выбрано</option>
+                                                        </select>
+                                                        <label class="form-label" for="login_name">База Данных LoginServer</label>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="col-lg-6 col-xl-6 ">
+                                                    Подключение к базе данных гейм-сервера
+
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <div class="form-floating mb-4">
+                                                                <input type="text" class="form-control" name="game_host" id="game_host" value="127.0.0.1">
+                                                                <label class="form-label" for="game_host">IP</label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-6">
+                                                            <div class="form-floating mb-4">
+                                                                <input type="text" class="form-control" name="game_port" id="game_port" value="3306">
+                                                                <label class="form-label" for="game_port">Port</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <div class="form-floating mb-4">
+                                                                <input type="text" class="form-control" name="game_user" id="game_user" value="root">
+                                                                <label class="form-label" for="game_user">User name</label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-6">
+                                                            <div class="form-floating mb-4">
+                                                                <input type="text" class="form-control" name="game_password" id="game_password" value="">
+                                                                <label class="form-label" for="game_password">Password</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-4">
+                                                        <div class="col-lg-6 ">
+                                                            <div id="getDBNameGame" type="submit" class="btn btn-primary mb-2">
+                                                                <i class="fa fa-arrow-right opacity-50 me-1"></i> Проверка и выбрать базу данных
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="form-floating mb-4 col-6">
+                                                            <select class="form-select" id="game_name" name="game_name">
+                                                                <option selected="" disabled="">Не выбрано</option>
+                                                            </select>
+                                                            <label class="form-label" for="game_name">База Данных для GameServer</label>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+
+                                            </div>
+
+
+
+
+                            </div>
+                            <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-between">
+                                <button type="button" class="btn btn-danger-light m-1" id="back-personal-trigger"><i class="ri-user-3-line me-2 align-middle d-inline-block"></i>Назад</button>
+                                <button type="submit" class="btn btn-success-light m-1" id="">Добавить сервер<i class="bi bi-credit-card-2-front align-middle ms-2 d-inline-block"></i></button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title me-1">Описание</div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="p-3 border-bottom border-block-end-dashed">
+                        <div class="ms-2 me-auto text-muted">
+                            CMS Sphere Web не подключается и не сохраняет конфиденциальные данные для подключения к игровой базе данных.
+                            <br>
+                            Вместо этого оно использует промежуточное программное обеспечение, которое связывает ваш сайт с базой данных игрового сервера.
+                            <br>
+                            API Sphere Server (от Sphere Web) позволяет вам подключиться к базе данных игрового сервера и управлять игровыми аккаунтами.<br>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block css %}
+{% endblock %}
+
+
+{% block js %}
+<script>
+    document.getElementById("personal-details-trigger").onclick= ()=>{
+        document.getElementById("confirmed-tab").click()
+    }
+    document.getElementById("payment-trigger").onclick= ()=>{
+        document.getElementById("shipped-tab").click()
+    }
+    document.getElementById("back-shipping-trigger").onclick= ()=>{
+        document.getElementById("order-tab").click()
+    }
+    document.getElementById("back-personal-trigger").onclick= ()=>{
+        document.getElementById("confirmed-tab").click()
+    }
+
+    $(document).on('click', '#getDBNameLogin', function (event) {
+        $.ajax({
+            url: "/admin/option/server/db/connect/select/name",
+            type: "POST",
+            data: {
+                "host": $("#login_host").val(),
+                "port": $("#login_port").val(),
+                "user": $("#login_user").val(),
+                "password": $("#login_password").val(),
+            },
+            dataType: 'json',
+            success: function (response) {
+                $("#login_name").empty();
+                if(response.type==="notice"){
+                    if(!ResponseNotice(response)){
+                        return;
+                    }
+                }
+                //response возвращает массив , его элементы размещаем в select getDBNameLogin
+                $.each(response['databases'], function (index, value) {
+                    $("#login_name").append('<option value="' + value + '">' + value + '</option>');
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Ошибка при выполнении AJAX-запроса:', error);
+            }
+        })
+    });
+
+    $(document).on('click', '#getDBNameGame', function (event) {
+        $.ajax({
+            url: "/admin/option/server/db/connect/select/name",
+            type: "POST",
+            data: {
+                "host": $("#game_host").val(),
+                "port": $("#game_port").val(),
+                "user": $("#game_user").val(),
+                "password": $("#game_password").val(),
+            },
+            dataType: 'json',
+            success: function (response) {
+                $("#game_name").empty();
+
+                if(response.type==="notice"){
+                    if(!ResponseNotice(response)){
+                        return;
+                    }
+                }
+                $.each(response['databases'], function (index, value) {
+                    $("#game_name").append('<option value="' + value + '">' + value + '</option>');
+                });
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Ошибка при выполнении AJAX-запроса:', error);
+            }
+        })
+    });
+
+    $(document).on('change', '#version_client', function (event) {
+        get_collection();
+    });
+
+    function get_collection() {
+        let chronicle_name = $('#version_client').val();
+        let base_source = $("#sql_base_source").data("base_source");
+        $.ajax({
+            type: "POST",
+            url: "/admin/options/server/client/protocol",
+            dataType: "json",
+            data: {
+                chronicle_name: chronicle_name,
+            },
+            success: function (result) {
+                console.log(result)
+                if (result.ok) {
+                    $('#sql_base_source').empty();
+                    if (result.collections === false) {
+                        $('#sql_base_source').append(`<option value="" disabled selected>Not your chronicle SQL base</option>`);
+                        return;
+                    }
+                    result.collections.forEach(function (collection, index) {
+                        collection_class = collection.replace("\\\\", "\\");
+                        collection = basename(collection);
+                        if (base_source == collection_class) {
+                            $('#sql_base_source').append(`<option selected value="${collection_class}">${collection}</option>`);
+                        } else {
+                            $('#sql_base_source').append(`<option value="${collection_class}">${collection}</option>`);
+                        }
+                    });
+                } else {
+                    noticeError(result.message);
+                }
+            },
+            error: function (result) {
+                noticeError(result.message);
+            }
+        });
+    }
+
+
+
+</script>
+
+
+<!-- Simplebar JS -->
+<script src="{{template}}/assets/libs/simplebar/simplebar.min.js"></script>
+<script src="{{template}}/assets/js/simplebar.js"></script>
+
+{% endblock %}

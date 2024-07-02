@@ -1,0 +1,12 @@
+{% if get_setting('__config_fun_wheel__') %}
+<li class="slide__category"><span class="category-name">Рулетка</span></li>
+<li class="slide">
+  {% for name in get_setting('__config_fun_wheel__') %}
+  <a href="/fun/wheel/{{name}}" class="side-menu__item">
+    <span class="side-menu__label">
+    <div class="alert alert-danger" role="alert"><img src="/custom/plugins/wheel/tpl/images/wheel/icon.png" class="avatar avatar-sm" alt="wheel"> {{name|title}}</div>
+    </span>
+  </a>
+  {% endfor %}
+</li>
+{% endif %}

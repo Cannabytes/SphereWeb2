@@ -1,0 +1,358 @@
+{# Смена настроек #}
+<div class="modal modal-lg fade" id="settings" tabindex="-1" aria-labelledby="settings-ComposeLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="/user/change" method="post" class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="settings-ComposeLabel">Настройки</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+      <div class="modal-body px-4ву">
+        <div class="row">
+          <div class="col-xl-6 mb-2">
+            <label for="change_u_name" class="form-label">Название<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
+            <input name="name" type="text" class="form-control" id="change_u_name" value="{{getUser().getName()}}">
+          </div>
+          <div class="col-xl-6 mb-2">
+            <label for="change_u_timezone" class="form-label">Часовой пояс<sup><i
+              class="ri-star-s-fill text-success fs-8"></i></sup></label>
+            <select name="timezone" class="form-control" name="change_u_timezone" id="change_u_timezone">
+              {% for timezone in timezone_list() %}
+              <option {% if getUser().getTimezone()== timezone %}selected{% endif %} value="{{timezone}}">{{timezone}}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <i class="border-top d-block my-3"></i>
+          <div class="col-xl-6 mb-2">
+            <label for="old_u_password" class="form-label text-dark fw-semibold">Старый Пароль</label>
+            <input name="password" type="password" class="form-control" id="old_u_password">
+          </div>
+          <div class="col-xl-6 mb-2">
+            <label for="new_u_password" class="form-label text-dark fw-semibold">Новый пароль</label>
+            <input name="new_password" type="password" class="form-control" id="new_u_password">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Отмена</button>
+        <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Применить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{# Отправка коинов в игру, на персонажа #}
+<div class="modal modal-lg fade" id="sendToPlayer" tabindex="-1" aria-labelledby="sendToPlayer-ComposeLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="sendToPlayer-ComposeLabel">Перевод в игру</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+      <div class="modal-body px-4">
+        <div class="row">
+
+          {% if getUser().isAuth() %}
+
+          {% if getUser().getDonate() == 0 %}
+          <label class="form-label text-dark fw-semibold">У Вас нет донат коинов для перевода на персонажа</label>
+          {% else %}
+
+          <div class="col-xl-6 mb-2">
+            <label for="send_player_name" class="form-label">Игрок</label>
+            <select {% if getUser().getCountPlayers()== 0 %}disabled{% endif %} class="form-control" data-trigger
+                    name="player" id="send_player_name">
+              {% if getUser().getCountPlayers() == 0 %}
+              <option>У Вас нет персонажей</option>
+              {% else %}
+              {% for i, account in getUser().getAccounts() %}
+              <optgroup label="Аккаунт: {{account.getAccount()}}">
+                {% if account.getCharactersCount() == 0 %}
+                <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; Нет персонажей</option>
+                {% else %}
+                {% for i, character in account.getCharacters() %}
+                <option data-account="{{account.getAccount()}}" data-character="{{character.getPlayerName()}}">
+                  {{character.getPlayerName()}}
+                </option>
+                {% endfor %}
+                {% endif %}
+              </optgroup>
+              {% endfor %}
+              {% endif %}
+            </select>
+          </div>
+
+          <div class="col-xl-6 mb-2">
+            <label for="muchSphereCoin" class="form-label text-dark fw-semibold">Кол-во</label>
+            <input min="1" max="{{getUser().getDonate()}}" step="1" value="{{getUser().getDonate()}}" name="coin"
+                   type="number" class="form-control" id="muchSphereCoin">
+          </div>
+          {% set item = get_item_info(config().donate().getItemIdToGameTransfer()) %}
+          <label class="mb-0 fs-12 text-muted text-truncate max-w-150 mx-auto ">На Вашего персонажа будет отправлено
+            <img class="avatar avatar-sm rounded" src="{{item.getIcon()}}"> <span class="text-success">{{ item.itemName }}</span>
+            x<span class="text-success" id="itemCountGameTransfer" data-count-items="{{ config().donate().getCountItemsToGameTransfer() }}">{{ config().donate().getCountItemsToGameTransfer() }}</span></label>
+          {% endif %}
+
+          {% else %}
+          <label class="form-label text-dark fw-semibold">Вам необходимо авторизоваться, после этого вы можете перевести
+            коины в игру</label>
+          {% endif %}
+
+        </div>
+      </div>
+      <div class="modal-footer">
+
+        {% if getUser().isAuth() %}
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Отмена</button>
+        {% if getUser().getDonate() > 0 %}
+        <button id="sendToPlayerBtn" type="submit" class="btn btn-primary">Отправить</button>
+        {% endif %}
+        {% else %}
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Закрыть</button>
+        {% endif %}
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="input-group">
+          <a href="javascript:void(0);" class="input-group-text" id="Search-Grid"><i
+            class="fe fe-search header-link-icon fs-18"></i></a>
+          <input type="search" class="form-control border-0 px-2" placeholder="Search" aria-label="Username">
+          <a href="javascript:void(0);" class="input-group-text" id="voice-search"><i
+            class="fe fe-mic header-link-icon"></i></a>
+          <a href="javascript:void(0);" class="btn btn-light btn-icon" data-bs-toggle="dropdown"
+             aria-expanded="false">
+            <i class="fe fe-more-vertical"></i>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Separated link</a></li>
+          </ul>
+        </div>
+        <div class="mt-4">
+          <p class="font-weight-semibold text-muted mb-2">Are You Looking For...</p>
+          <span class="search-tags"><i class="fe fe-user me-2"></i>People<a href="javascript:void(0)"
+                                                                            class="tag-addon"><i
+            class="fe fe-x"></i></a></span>
+          <span class="search-tags"><i class="fe fe-file-text me-2"></i>Pages<a href="javascript:void(0)"
+                                                                                class="tag-addon"><i
+            class="fe fe-x"></i></a></span>
+          <span class="search-tags"><i class="fe fe-align-left me-2"></i>Articles<a href="javascript:void(0)"
+                                                                                    class="tag-addon"><i
+            class="fe fe-x"></i></a></span>
+          <span class="search-tags"><i class="fe fe-server me-2"></i>Tags<a href="javascript:void(0)"
+                                                                            class="tag-addon"><i
+            class="fe fe-x"></i></a></span>
+        </div>
+        <div class="my-4">
+          <p class="font-weight-semibold text-muted mb-2">Recent Search :</p>
+          <div class="p-2 border br-5 d-flex align-items-center text-muted mb-2 alert">
+            <a href="notifications.html"><span>Notifications</span></a>
+            <a class="ms-auto lh-1" href="javascript:void(0);" data-bs-dismiss="alert" aria-label="Close"><i
+              class="fe fe-x text-muted"></i></a>
+          </div>
+          <div class="p-2 border br-5 d-flex align-items-center text-muted mb-2 alert">
+            <a href="alerts.html"><span>Alerts</span></a>
+            <a class="ms-auto lh-1" href="javascript:void(0);" data-bs-dismiss="alert" aria-label="Close"><i
+              class="fe fe-x text-muted"></i></a>
+          </div>
+          <div class="p-2 border br-5 d-flex align-items-center text-muted mb-0 alert">
+            <a href="mail.html"><span>Mail</span></a>
+            <a class="ms-auto lh-1" href="javascript:void(0);" data-bs-dismiss="alert" aria-label="Close"><i
+              class="fe fe-x text-muted"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="btn-group ms-auto">
+          <button class="btn btn-sm btn-primary-light">Search</button>
+          <button class="btn btn-sm btn-primary">Clear Recents</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function recalculateSphereCoinValue() {
+    let muchSphereCoinVal = parseFloat($('#muchSphereCoin').val());
+    let itemCountGameTransferCount = parseFloat($('#itemCountGameTransfer').data('count-items'));
+
+    if (!isNaN(muchSphereCoinVal) && !isNaN(itemCountGameTransferCount)) {
+      $('#itemCountGameTransfer').text(muchSphereCoinVal * itemCountGameTransferCount);
+    }
+  }
+
+  // Вызовем функцию пересчета при изменении значения в input
+  $('#muchSphereCoin').on('input', recalculateSphereCoinValue);
+
+  // Первый пересчет при загрузке страницы
+  $(document).ready(recalculateSphereCoinValue);
+</script>
+
+{# Авторизация пользователя #}
+{% if getUser().isAuth() == false %}
+
+<div class="modal fade" id="openShopStartpack" tabindex="-1"
+     aria-labelledby="openShopStartpackLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="card-title">
+          Покупка
+        </div>
+
+        <div>
+          <ul class="nav nav-tabs justify-content-end nav-tabs-header mb-0" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#StartpackSendItemsToPlayer" aria-selected="true">Отправка на персонажа</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#StartpackSendItemsToWarhouse" aria-selected="true">Отправка на склад</a>
+            </li>
+          </ul>
+        </div>
+
+
+      </div>
+      <div class="modal-body">
+
+        <div class="card-body">
+
+          <div class="row">
+
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+              <div class="card custom-card overflow-hidden" id="itemListSell">
+              </div>
+              <div class="input-group border rounded flex-nowrap quantityClass">
+                <input id="quantity" min="1" type="number"
+                       class="form-control form-control-sm border-0 text-center w-100 quantity"
+                       aria-label="quantity" value="1">
+              </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+
+              <div class="tab-content">
+                <div class="tab-pane show active text-muted" id="shopSendItemsToPlayer"
+                     role="tabpanel">
+                  <div class="card-body">
+                    <div class="mx-auto">
+                      Выберите персонажа
+
+                      <select {% if getUser().getCountPlayers()== 0 %}disabled{% endif
+                              %} class="form-control" data-trigger id="playerName">
+                        {% if getUser().getCountPlayers() == 0 %}
+                        <option>У Вас нет персонажей</option>
+                        {% else %}
+                        {% for i, account in getUser().getAccounts() %}
+                        <optgroup label="Аккаунт: {{account.getAccount}}">
+                          {% if account.getCharactersCount() == 0 %}
+                          <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; Нет
+                            персонажей
+                          </option>
+                          {% else %}
+                          {% for i, character in account.getCharacters() %}
+                          <option data-account="{{account.getAccount()}}" value="{{character.getPlayerName()}}">
+                            &nbsp;&nbsp;&nbsp;&nbsp; {{character.getPlayerName()}}
+                          </option>
+                          {% endfor %}
+                          {% endif %}
+                        </optgroup>
+                        {% endfor %}
+                        {% endif %}
+                      </select>
+
+                      <div class="d-flex flex-wrap align-items-center">
+                        <div class="me-2 fw-semibold">
+                          Стоимость :
+                        </div>
+                        <span class="fs-12 text-muted shopCostBuy">0</span>
+                      </div>
+
+                      <button data-object-id="0" id="purchase" type="button"
+                              class="btn btn-success btn-wave waves-effect waves-light">
+                        Купить и отправить на персонажа
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tab-pane text-muted" id="StartpackSendItemsToWarhouse"
+                     role="tabpanel">
+                  <div class="card-body">
+
+                    <div class="d-flex flex-wrap align-items-center">
+                      <div class="me-2 fw-semibold">
+                        Стоимость :
+                      </div>
+                      <span class="fs-12 text-muted shopCostBuy">0</span>
+                    </div>
+
+                    <button data-object-id="0" id="StartpackWarehouse" type="button"
+                            class="btn btn-success btn-wave waves-effect waves-light">
+                      Купить и отправить на склад
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    get_captcha();
+
+    document.addEventListener('click', function (event) {
+      if (event.target.classList.contains('captcha_img')) {
+        get_captcha();
+      }
+    });
+
+    function get_captcha() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/captcha', true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var data = xhr.responseText;
+          var captchaImages = document.querySelectorAll('.captcha_img');
+          captchaImages.forEach(function (img) {
+            img.src = data;
+          });
+        }
+      };
+      xhr.send();
+    }
+  });
+</script>
+
+{% endif %}

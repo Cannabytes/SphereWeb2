@@ -1,0 +1,273 @@
+:root {
+	--body-bg-rgb : 									240 ,240, 245;
+	--primary-rgb: 										108, 95, 252;
+	--secondary-rgb :									5, 195, 251;
+	--warning-rgb :										247, 183, 49;
+	--info-rgb :										17, 112, 228;
+	--success-rgb :										9, 173, 149; 
+	--danger-rgb :										232, 38, 70;
+	--light-rgb :										246, 246, 251;
+	--dark-rgb :										52, 58, 64;
+	--orange-rgb : 										252, 115, 3;
+	--pink-rgb :                                       	236, 130, 239;
+	--teal-rgb : 										28, 175, 159;
+	--purple-rgb : 										137, 39, 236;
+	--default-body-bg-color:							rgb(var(--body-bg-rgb));		
+	--primary-color:	 								rgb(var(--primary-rgb));
+	--primary-border: 									rgb(var(--primary-rgb));
+	--primary01: 										rgba(var(--primary-rgb), 0.1);
+	--primary02: 										rgba(var(--primary-rgb), 0.2);
+	--primary03: 										rgba(var(--primary-rgb), 0.3);
+	--primary04: 										rgba(var(--primary-rgb), 0.4);
+	--primary05: 										rgba(var(--primary-rgb), 0.5);
+	--primary06: 										rgba(var(--primary-rgb), 0.6);
+	--primary07: 										rgba(var(--primary-rgb), 0.7);
+	--primary08: 										rgba(var(--primary-rgb), 0.8);
+	--primary09: 										rgba(var(--primary-rgb), 0.9);
+	--primary005: 										rgba(var(--primary-rgb), 0.05);
+	--default-font-family:    							"IBM Plex Sans", sans-serif;
+	--default-font-weight:								400;
+	// --default-text-color:       						#3c4858;	
+	--default-text-color:       						#282f53;	
+	--default-border:									#e9edf4;
+	--default-background: 								#f7f8f9;		
+	--menu-bg:											#fff;	
+	--menu-prime-color:									#212529;
+	--menu-border-color:								#e9edf4;
+	--header-bg:                                        #fff;
+	--header-prime-color:								rgb(var(--primary-rgb));
+	--header-border-color:								#e9edf4;
+	--custom-white:										#fff;
+	--custom-black:										#000;
+	--bootstrap-card-border:							#e9edf4;
+	--list-hover-focus-bg:								#f5f6f7;
+	--text-muted: 										#74829c;
+	--input-border: 									#e9edf6;
+	--form-control-bg: 									#ffffff;
+	--shadow-color:										rgba(168, 180, 208, 0.1);
+
+	/* Gray set */
+	--gray-1:											#f9fafb;
+	--gray-2:											#f2f4f5;
+	--gray-3:											#e6eaeb;
+	--gray-4:											#dbdfe1;
+	--gray-5:											#949eb7;
+	--gray-6:											#7987a1;
+	--gray-7:											#4d5875;
+	--gray-8:											#383853;
+	--gray-9:											#323251;
+
+	/* White set */
+	--white-1:											rgba(255,255,255, 0.1);
+	--white-2:											rgba(255,255,255, 0.2);
+	--white-3:											rgba(255,255,255, 0.3);
+	--white-4:											rgba(255,255,255, 0.4);
+	--white-5:											rgba(255,255,255, 0.5);
+	--white-6:											rgba(255,255,255, 0.6);
+	--white-7:											rgba(255,255,255, 0.7);
+	--white-8:											rgba(255,255,255, 0.8);
+	--white-9:											rgba(255,255,255, 0.9);
+	
+	/* Black set */
+	--black-1:											rgba(0,0,0, 0.1);
+	--black-2:											rgba(0,0,0, 0.2);
+	--black-3:											rgba(0,0,0, 0.3);
+	--black-4:											rgba(0,0,0, 0.4);
+	--black-5:											rgba(0,0,0, 0.5);
+	--black-6:											rgba(0,0,0, 0.6);
+	--black-7:											rgba(0,0,0, 0.7);
+	--black-8:											rgba(0,0,0, 0.8);
+	--black-9:											rgba(0,0,0, 0.9);
+}
+
+
+/*Font Family*/
+$default-font-family:									var(--default-font-family);
+
+/*Font Size*/
+$default-font-size:										14px;
+
+/*Font Weight*/
+$default-font-weight:									var(--default-font-weight);
+
+/*Body & Text colors*/
+$default-body-color: 									var(--default-body-bg-color);
+$default-text-color:									var(--default-text-color);
+
+/*Default Background Color*/
+$default-background: 									var(--default-background);
+
+/*Border Color*/
+$default-border:										var(--default-border);
+
+/*Border Radius*/
+$default-radius:										7px;
+
+/*Box Shadow*/ 
+$box-shadow: 											0 0.125rem 0 rgba(10, 10, 10, .04);
+$box-shadow2: 											var(--shadow-color);
+
+/* Header Variables */
+$header-bg:												var(--header-bg);
+$header-prime-color:									var(--header-prime-color);
+$header-border-color:									var(--header-border-color);
+
+/*Menu Variables*/
+$menu-prime-color: 										var(--menu-prime-color);
+$menu-bg:												var(--menu-bg);
+$menu-border-color:										var(--menu-border-color);
+
+/*Color Variables*/
+$primary:												var(--primary-color);
+$primary-border:										var(--primary-border);
+$primary-transparent:									var(--primary-transparent-color);
+$primary-01:											var(--primary01);
+$primary-02:											var(--primary02);
+$primary-03:											var(--primary03);
+$primary-04:											var(--primary04);
+$primary-05:											var(--primary05);
+$primary-06:											var(--primary06);
+$primary-07:											var(--primary07);
+$primary-08:											var(--primary08);
+$primary-09:											var(--primary09);
+$primary-005:											var(--primary005);
+$custom-white:											var(--custom-white);
+$custom-black:											var(--custom-black);
+$secondary:												rgb(var(--secondary-rgb));
+$warning:												rgb(var(--warning-rgb));
+$info:													rgb(var(--info-rgb));
+$success:												rgb(var(--success-rgb));
+$danger:												rgb(var(--danger-rgb));
+$light:													rgb(var(--light-rgb));
+$dark:													rgb(var(--dark-rgb));
+$orange:												rgb(var(--orange-rgb));
+$pink:													rgb(var(--pink-rgb));
+$purple:												rgb(var(--purple-rgb));
+$teal:													rgb(var(--teal-rgb));
+$red:                                                   #d03d46;
+$blue:													#2b3e65;
+$green:													#1dd871;
+$cyan:													#00D1D1;
+$indigo:												#4d5ddb;
+$white:													#fff;
+$gray:													#8699A3;
+$black:													#000;
+$yellow:												#ffc102;
+$text-muted:											var(--text-muted);
+$bootstrap-card-border:									var(--bootstrap-card-border);
+$list-hover-focus-bg:									var(--list-hover-focus-bg);
+$input-border: 											var(--input-border);
+$form-control-bg:										var(--form-control-bg);
+
+/* social icons colors */
+$facebook: 												#3b5998;
+$twitter: 												#00acee;
+$github:												#333;
+$google: 												#CF4E43;
+$youtube: 												#FF0000;
+
+/*gradient variables*/
+$primary-gradient:										linear-gradient(to right, $primary 0%, #8e77fa 100%);
+$secondary-gradient:									linear-gradient(to right, $secondary 0%, #28b7f9 100%);
+$success-gradient:										linear-gradient(to right,$success 0%, #5cf9e2 100%);
+$warning-gradient:										linear-gradient(to right, $warning 0%, #fbc434 100%);
+$danger-gradient:										linear-gradient(to right,$danger 0%, #fd4a68  100%);
+$info-gradient:											linear-gradient(to right, $info 0%, #00f2fe  100%);
+$pink-gradient:											linear-gradient(to right, $pink 0%, #FFA795 100%);
+$teal-gradient:											linear-gradient(to right, $teal 0%, #0695DD 100%);
+$orange-gradient:										linear-gradient(to right,$orange 0%,#FBB034 100%);
+$purple-gradient:										linear-gradient(to right, $purple 0%, #9b25b7 100%);
+$light-gradient:										linear-gradient(to right, $light 0%, #D1D6DE 100%);
+$dark-gradient:											linear-gradient(to right, $dark 0%, #54505D 100%);
+
+/*gray set*/
+$gray-1:												var(--gray-1);
+$gray-2:												var(--gray-2);
+$gray-3:												var(--gray-3);
+$gray-4:												var(--gray-4);
+$gray-5:												var(--gray-5);
+$gray-6:												var(--gray-6);
+$gray-7:												var(--gray-7);
+$gray-8:												var(--gray-8);
+$gray-9:												var(--gray-9);
+
+/*white set*/
+$white-1:												var(--white-1);
+$white-2:												var(--white-2);
+$white-3:												var(--white-3);
+$white-4:												var(--white-4);
+$white-5:												var(--white-5);
+$white-6:												var(--white-6);
+$white-7:												var(--white-7);
+$white-8:												var(--white-8);
+$white-9:												var(--white-9);
+
+/*black set*/
+$black-1:												var(--black-1);
+$black-2:												var(--black-2);
+$black-3:												var(--black-3);
+$black-4:												var(--black-4);
+$black-5:												var(--black-5);
+$black-6:												var(--black-6);
+$black-7:												var(--black-7);
+$black-8:												var(--black-8);
+$black-9:												var(--black-9);
+
+/* dark mode */
+[data-theme-mode="dark"] {
+	--body-bg-rgb : 									26, 26, 60;
+	--body-bg-rgb2 : 									42, 42, 74;
+	--menu-bg:										  	rgb(var(--body-bg-rgb2));
+	--menu-border-color:								rgba(255,255,255,0.1);
+	--menu-prime-color: 								rgba(255,255,255);
+	--header-bg:										rgb(var(--body-bg-rgb2));	
+	--header-prime-color: 								rgba(255,255,255);
+	--header-border-color:								rgba(255,255,255,0.1);
+	--custom-white:										rgb(var(--body-bg-rgb2));		
+	--custom-black:										#fff;		
+	--default-border:									rgba(255,255,255,0.1);	
+	--default-text-color:       						#dedefd;
+	--light-rgb:										31, 31, 65;	
+	--dark-rgb :										240 ,245 ,248; 	
+	--bootstrap-card-border:							rgba(255,255,255,0.1);		
+	--list-hover-focus-bg:								rgba(255,255,255,0.1);
+	--default-background:								rgba(255,255,255,0.1);
+	--default-body-bg-color:							rgb(var(--body-bg-rgb));	
+	--text-muted: 										#9595b5;
+	--input-border: 									rgba(255,255,255,0.1);
+	--form-control-bg: 									rgb(var(--body-bg-rgb2));
+	--shadow-color:										rgba(28, 28, 51, 0.15);
+
+	/* Gray Set */
+    --gray-100: 										#110f0f;
+    --gray-200: 										#17171c;
+    --gray-300: 										#393946;	
+    --gray-400: 										#505062;
+    --gray-500: 										#73738c;
+    --gray-600: 										#8f8fa3;
+    --gray-700: 										#ababba;
+    --gray-800: 										#c7c7d1;
+    --gray-900: 										#e3e3e8;
+
+	/* white set */
+	--white-1:											rgba(0,0,0,0.1);
+	--white-2:											rgba(0,0,0,0.2);
+	--white-3:											rgba(0,0,0,0.3);
+	--white-4:											rgba(0,0,0,0.4);
+	--white-5:											rgba(0,0,0,0.5);
+	--white-6:											rgba(0,0,0,0.6);
+	--white-7:											rgba(0,0,0,0.7);
+	--white-8:											rgba(0,0,0,0.8);
+	--white-9:											rgba(0,0,0,0.9);
+	
+	/* black set */
+	--black-1:											rgba(255,255,255,0.05);
+	--black-2:											rgba(255,255,255,0.2);
+	--black-3:											rgba(255,255,255,0.3);
+	--black-4:											rgba(255,255,255,0.4);
+	--black-5:											rgba(255,255,255,0.5);
+	--black-6:											rgba(255,255,255,0.6);
+	--black-7:											rgba(255,255,255,0.7);
+	--black-8:											rgba(255,255,255,0.8);
+	--black-9:											rgba(255,255,255,0.9);
+}

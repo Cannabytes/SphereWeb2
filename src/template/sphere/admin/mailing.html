@@ -1,0 +1,147 @@
+{% extends 'struct.html' %}
+
+{% block title %}Почтовая рассылка{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">
+            Содержание писем
+          </div>
+        </div>
+        <div class="card-body d-flex align-items-start">
+          <div class="row">
+            <div class="col-md-2">
+              <div class="nav  nav-pills me-3 tab-style-7" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <button class="nav-link text-start active" id="notice-registration-tab" data-bs-toggle="pill"
+                        data-bs-target="#notice-registration" type="button" role="tab"
+                        aria-controls="notice-registration" aria-selected="false" tabindex="-1"><i
+                  class="ri-u-disk-line me-1 align-middle d-inline-block"></i>Уведомление о регистрации
+                </button>
+                <button class="nav-link text-start " id="forget-password-tab" data-bs-toggle="pill"
+                        data-bs-target="#forget-password" type="button" role="tab" aria-controls="forget-password"
+                        aria-selected="true"><i class="ri-group-line me-1 align-middle d-inline-block"></i>Восстановление
+                  пароля
+                </button>
+
+              </div>
+            </div>
+            <div class="col-md-10">
+              <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane active show" id="notice-registration" role="tabpanel" tabindex="0"
+                     aria-labelledby="notice-registration-tab">
+                  <div class="form-check form-switch mb-2">
+                    <input value="{{get_email_template()['notice_reg_subject']}}" class="form-check-input" type="checkbox" role="switch"
+                           id="switch-primary" checked="">
+                    <label class="form-check-label" for="switch-primary">Отправка на почту оповещение о
+                      регистрации</label>
+                  </div>
+
+                  Это письмо будет отправлено при регистрации пользователю, в виде уведомления о регистрации.
+
+                  <div class="form-floating">
+                    <input value="Вы успешно зарегистрировались" type="text" class="form-control"
+                           id="notice_reg_subject" placeholder="Вы успешно зарегистрировались">
+                    <label for="notice_reg_subject">Тема письма</label>
+                  </div>
+                  <div id="notice-registration-html">{{get_email_template()['notice_registration_html']|raw}}</div>
+
+                </div>
+                <div class="tab-pane" id="forget-password" role="tabpanel" aria-labelledby="forget-password-tab"
+                     tabindex="0">
+                  Это письмо будет отправлено при сбросе пароля пользователю.
+                  <div class="form-floating">
+                    <input value="{{get_email_template()['forget_reg_subject']}}" type="text" class="form-control" id="forget_reg_subject"
+                           placeholder="Восстановление пароля">
+                    <label for="forget_reg_subject">Тема письма</label>
+                  </div>
+                  <div id="forget-password-quill">{{get_email_template()['forget_password_html']|raw}}</div>
+
+                </div>
+              </div>
+            </div>
+            <div class="border-top border-block-start-dashed d-flex justify-content-end mt-3 pt-2">
+              <span id="saveEmailTemplate" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                class="bi bi-sd-card ms-2"></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.snow.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.bubble.css">
+
+{% endblock %}
+
+{% block js %}
+<script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="{{template}}/assets/libs/quill/quill.min.js"></script>
+
+
+<script>
+  var toolbarOptions = [
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ 'font': [] }],
+    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+    ['blockquote', 'code-block'],
+
+    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+
+    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+    [{ 'align': [] }],
+
+    ['image', 'video'],
+    ['clean'],                                         // remove formatting button
+  ];
+  var reg_notice_quill = new Quill('#notice-registration-html', {
+    modules: {
+      toolbar: toolbarOptions,
+    },
+    theme: 'snow',
+  });
+  var forget_password_quill = new Quill('#forget-password-quill', {
+    modules: {
+      toolbar: toolbarOptions,
+    },
+    theme: 'snow',
+  });
+  var new_password_quill = new Quill('#new-password-quill', {
+    modules: {
+      toolbar: toolbarOptions,
+    },
+    theme: 'snow',
+  });
+
+  $(document).on('click', '#saveEmailTemplate', function () {
+    let notice_reg_subject = $('#notice_reg_subject').val();
+    let forget_reg_subject = $('#forget_reg_subject').val();
+
+    let notice_registration_html = reg_notice_quill.root.innerHTML;
+    let forget_password_html = forget_password_quill.root.innerHTML;
+
+    var formData = {
+      __config_name__: '__config_template_email__',
+      notice_reg_subject: notice_reg_subject,
+      forget_reg_subject: forget_reg_subject,
+      notice_registration_html: notice_registration_html,
+      forget_password_html: forget_password_html,
+    };
+
+    AjaxSend('/admin/config/save', 'POST', formData, false);
+
+  });
+
+
+</script>
+{% endblock %}

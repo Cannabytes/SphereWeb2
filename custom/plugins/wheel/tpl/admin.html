@@ -1,0 +1,161 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header d-flex justify-content-between">
+          <div class="card-title">
+            Мои Рулетки для сервера
+          </div>
+          <div class="prism-toggle">
+            <a href="/fun/wheel/create" class="btn btn-sm btn-success-light">Создать рулетку</a>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table text-nowrap">
+              <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Прокруток</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+              </tr>
+              </thead>
+              <tbody>
+
+              {% for wheel in wheels %}
+              <tr id="tr_{{ wheel.name }}">
+                <td>
+                  <div class="d-flex align-items-center">
+
+                    <div class="me-3 lh-1">
+                      <a href="/fun/wheel/edit/{{ wheel.name }}">
+<span class="avatar avatar-xxl bd-gray-200">
+<img src="{{template_plugin}}/tpl/images/wheel/icon.png" alt="">
+</span>
+                        </a>
+
+                    </div>
+                    <div>
+                      <div class="mb-1">
+                        Рулетка: <a href="/fun/wheel/{{wheel.name|lower}}">{{wheel.name}}</a>
+                        <br>
+                        Стоимость: {{wheel.cost}}
+                        <br>
+                        <span data-name="{{wheel.name}}" data-cost="{{wheel.cost}}" data-bs-target="#changeName"
+                              data-bs-toggle="modal"
+                              class="btn btn-icon btn-sm btn-info-light editname"><i class="ri-edit-line"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-primary">{{wheel.spin}}</td>
+                <td>
+                  <span class=" "><a
+                    href="/fun/wheel/edit/items/{{wheel.name|lower}}">Изменить предметы</a></span>
+                </td>
+                <td>
+                  <button data-name="{{wheel.name|lower}}" type="button" class="btn btn-danger-light btn-sm btn-wave waves-effect waves-light removeWheel">Удалить</button>
+                </td>
+              </tr>
+              {% endfor %}
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="changeName" tabindex="-1" aria-labelledby="changeName" data-bs-keyboard="false"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="staticBackdropLabel">Изменить названия
+        </h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Название рулетки будет частью адресной ссылки.</p>
+        <div class="input-group mb-3">
+          <input type="hidden" name="old_name" id="old_name" value="">
+          <span class="input-group-text" id="basic-addon3">{{HTTP_HOST()}}/fun/wheel/</span>
+          <input value="" name="new_name" type="text" class="form-control" id="new_name">
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text" for="wheel_cost">Стоимость прокрутки</span>
+          <input value="1" name="wheel_cost" type="number" class="form-control" id="wheel_cost">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="changeNameSave" type="submit" class="btn btn-sm btn-success">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+  $(document).ready(function () {
+
+    $('.removeWheel').click(function () {
+      let name = $(this).data('name');
+      AjaxSend('/fun/wheel/remove', 'POST', {
+        name: name,
+      }, true).then(function (response) {
+        responseAnalysis(response);
+        if(response.ok) {
+          $("#tr_" + name).remove();
+        }
+      });
+    });
+
+    $('.editname').click(function () {
+      var name = $(this).data('name');
+      $('#old_name').val(name);
+      $('#new_name').val(name);
+      $('#wheel_cost').val($(this).data('cost'));
+    });
+
+    $('#new_name').on('input', function () {
+      let input = $(this).val();
+      let formattedInput = input.toLowerCase().replace(/\s+/g, '_').replace(/[^a-zа-яё0-9_]/gi, '');
+      $(this).val(formattedInput);
+    });
+
+    $('#changeNameSave').on('click', function () {
+
+      let old_name = $('#old_name').val();
+      let new_name = $('#new_name').val();
+      let wheel_cost = $('#wheel_cost').val();
+
+      AjaxSend('/fun/wheel/edit/name', 'POST', {
+        old_name: old_name,
+        new_name: new_name,
+        wheel_cost: wheel_cost,
+      }, true).then(function (response) {
+        responseAnalysis(response);
+        if (response.success) {
+          $('#changeNameSave').modal('hide');
+        }
+      });
+
+    });
+
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="row">
+
+    <div class="col-xl-7">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">
+            Сортировка
+          </div>
+        </div>
+        <div class="card-body row">
+          <div class="col-xl-8">
+            <select class="js-example-placeholder-single js-states form-control">
+              {% for logType in logTypes() %}
+              <option value="{{logType.value}}">{{logType.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-xl-4">
+            <button type="submit" class="btn btn-primary">Применить</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col-xl-5">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">
+            Обновление
+          </div>
+        </div>
+        <div class="card-body row">
+
+          <div class="col-xl-8">
+            <select id="update-time" class="js-example-placeholder-single js-states form-control">
+              <option value="3" selected>3 сек.</option>
+              <option value="7">7 сек.</option>
+              <option value="10">10 сек.</option>
+              <option value="30">30 сек.</option>
+              <option value="60">1 мин.</option>
+              <option value="0">Не обновлять</option>
+            </select>
+          </div>
+          <div class="col-xl-4">
+            <button type="submit" class="btn btn-primary">Применить</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="row justify-content-center">
+    <div class="col-xxl-12 col-xl-12 col-sm-12">
+      <ul class="timeline list-unstyled" id="logs">
+        {% for i, log in logsAll() %}
+        <li class="last-log" data-last-log-id="{{log.id}}">
+          <div class="timeline-time text-end">
+            <span class="time d-inline-block">{{ProhloVremya(log.time, true)}}</span>
+          </div>
+          <div class="timeline-icon ">
+            <a href="javascript:void(0);"></a>
+          </div>
+          <div class="timeline-body">
+            <div class="d-flex align-items-top timeline-main-content  mt-0">
+              <div class="avatar avatar-md  me-3 avatar-rounded mt-sm-0 mt-4 flex-none">
+                <img alt="avatar" src="{{log.user.avatar}}">
+              </div>
+              <div class="flex-fill">
+                <div class="align-items-center">
+                  <div class="mt-sm-0 mt-2">
+                    <p class="mb-0 fs-14 fw-semibold">{{log.user.email}} ({{log.user.name}})</p>
+                    <p class="mb-0 text-muted">{{log.message|raw}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+  window.addEventListener('load', function () {
+    let updateTime = parseInt($('#update-time').val());
+
+    // Проверяем, что updateTime больше 0
+    if (updateTime > 0) {
+      // Функция для отправки запроса и обработки данных
+      function fetchLogs() {
+        // Получаем последний ID лога li
+        var lastLogId = $('ul.timeline li.last-log').first().data('last-log-id');
+
+        // Посылаем запрос на получение новых логов
+        AjaxSend('/admin/logs/update', "POST", {
+          lastLogId: lastLogId,
+        }, true).then(function (data) {
+          // Отладочная информация
+          console.log("Response data:", data);
+
+          // Данные уже являются массивом объектов, поэтому просто используем их напрямую
+          var logs = data;
+
+          if (logs.length > 0) {
+            logs.forEach(function(log) {
+              var logItem = `
+                <li class="last-log" data-last-log-id="${log.id}">
+                  <div class="timeline-time text-end">
+                    <span class="time d-inline-block">${log.time}</span>
+                  </div>
+                  <div class="timeline-icon">
+                    <a href="javascript:void(0);"></a>
+                  </div>
+                  <div class="timeline-body">
+                    <div class="d-flex align-items-top timeline-main-content mt-0">
+                      <div class="avatar avatar-md me-3 avatar-rounded mt-sm-0 mt-4 flex-none">
+                        <img alt="avatar" src="${log.user.avatar}">
+                      </div>
+                      <div class="flex-fill">
+                        <div class="align-items-center">
+                          <div class="mt-sm-0 mt-2">
+                            <p class="mb-0 fs-14 fw-semibold">${log.user.email} (${log.user.name})</p>
+                            <p class="mb-0 text-muted">${log.message}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              `;
+              $('#logs').prepend(logItem);
+            });
+          }
+        }).catch(function (error) {
+          console.error("Ошибка при выполнении запроса:", error);
+        });
+      }
+
+      // Запускаем цикл с интервалом updateTime секунд
+      setInterval(fetchLogs, updateTime * 1000);
+
+      // Немедленно выполняем fetchLogs первый раз
+      fetchLogs();
+    }
+  });
+</script>
+
+
+
+{% endblock %}

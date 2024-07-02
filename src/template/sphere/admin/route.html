@@ -1,0 +1,503 @@
+{% extends 'struct.html' %}
+
+{% block title %}Маршрутизаторы{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+  <div class="modal fade" id="modal-edit-route" tabindex="-1" aria-labelledby="modal-edit-route" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <form action="/admin/route/edit" method="post" class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="edit_staticBackdropLabel">Изменить маршрутизатор
+          </h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row gy-3">
+
+            <div class="col-xl-6">
+              <label for="edit_pattern" class="form-label">Pattern</label>
+              <input type="text" class="form-control" id="edit_pattern" name="pattern" placeholder="pattern">
+            </div>
+
+            <div class="col-xl-6">
+              <label for="edit_typeRoute" class="form-label">Type</label>
+              <select class="form-control" id="edit_typeRoute" name="typeRoute">
+                <option value="">This is a placeholder</option>
+                <option value="method">Method</option>
+                <option value="file">File</option>
+                <option value="debug">Debug</option>
+              </select>
+            </div>
+
+            <div class="col-xl-12">
+              <div id="edit_typeRouteFile">
+                <label for="file" class="form-label">File</label>
+                <input type="text" class="form-control" id="edit_file" name="file" placeholder="file">
+              </div>
+
+              <div id="edit_typeRouteMethod">
+                <div class="border-bottom border-block-end-dashed">
+                  <div class="d-flex flex-wrap align-items-center">
+                    <div class="input-group">
+                      <div class="input-group-text"><i data-dir=""
+                                                       class="ri-refresh-line fw-semibold align-middle me-1 edit_getdir"></i>
+                        Name Space
+                      </div>
+                      <input name="namespace" type="text" class="form-control" id="edit_dirpath"
+                             placeholder="">
+                    </div>
+                  </div>
+
+                  <div id="edit_dirMethodList"></div>
+
+                </div>
+              </div>
+
+            </div>
+
+            <div class="col-xl-4">
+              <label for="edit_access" class="form-label">Access</label>
+              <select class="form-control" name="access[]" id="edit_access" multiple>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+                <option value="guest">Guest</option>
+                <option value="any">Any</option>
+              </select>
+            </div>
+
+
+            <div class="col-xl-4">
+              <label for="edit_method" class="form-label">Method</label>
+              <select class="form-control" name="method" id="edit_method">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="ANY">Any</option>
+              </select>
+            </div>
+
+            <div class="col-xl-4">
+              <label for="weight" class="form-label">Weight</label>
+              <input value="0" step="1" type="number" class="form-control" name="weight" id="edit_weight"
+                     placeholder="weight">
+            </div>
+
+            <div class="col-xl-12">
+              <label for="comment" class="form-label">Comment</label>
+              <input type="text" class="form-control" name="comment" id="edit_comment" placeholder="comment">
+            </div>
+          </div>
+        </div>
+        <input type="hidden" value="" id="edit_objectId" name="objectId">
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+          <button type="submit" data-bs-dismiss="modal" class="btn btn-success">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header justify-content-between">
+          <div class="card-title">
+            Маршрутизаторы
+          </div>
+          <div class="d-flex">
+            <button data-bs-toggle="modal" data-bs-target="#modal-new-address"
+                    class="btn btn-sm btn-primary btn-wave waves-light"><i
+              class="ri-add-line fw-semibold align-middle me-1"></i> Создать маршрутизатор
+            </button>
+
+            <div class="modal fade" id="modal-new-address" tabindex="-1" aria-labelledby="modal-new-address"
+                 aria-hidden="true">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                <form action="/admin/route/add" method="post" class="modal-content">
+                  <div class="modal-header">
+                    <h6 class="modal-title" id="staticBackdropLabel">Новый маршрутизатор
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row gy-3">
+
+                      <div class="col-xl-6">
+                        <label for="pattern" class="form-label">Pattern</label>
+                        <input type="text" class="form-control" id="pattern" name="pattern"
+                               placeholder="pattern">
+                      </div>
+
+                      <div class="col-xl-6">
+                        <label for="typeRoute" class="form-label">Type</label>
+                        <select class="form-control" data-trigger id="typeRoute"
+                                name="typeRoute">
+                          <option value="">This is a placeholder</option>
+                          <option value="method">Method</option>
+                          <option value="file">File</option>
+                          <option value="debug">Debug</option>
+                        </select>
+                      </div>
+
+                      <div class="col-xl-12">
+                        <div id="typeRouteFile">
+                          <label for="file" class="form-label">File</label>
+                          <input type="text" class="form-control" id="file" name="file"
+                                 placeholder="file">
+                        </div>
+
+                        <div id="typeRouteMethod">
+                          <div class="border-bottom border-block-end-dashed">
+                            <div class="d-flex flex-wrap align-items-center">
+                              <div class="input-group">
+                                <div class="input-group-text"><i data-dir=""
+                                                                 class="ri-refresh-line fw-semibold align-middle me-1 getdir"></i>
+                                  Name Space
+                                </div>
+                                <input name="namespace" type="text" class="form-control"
+                                       id="dirpath" placeholder="">
+                              </div>
+                            </div>
+
+                            <div id="dirMethodList"></div>
+
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <div class="col-xl-4">
+                        <label for="access" class="form-label">Access</label>
+                        <select class="form-control" name="access[]" id="access" multiple>
+                          <option value="user">User</option>
+                          <option value="admin">Admin</option>
+                          <option value="guest">Guest</option>
+                          <option value="any">Any</option>
+                        </select>
+                      </div>
+
+
+                      <div class="col-xl-4">
+                        <label for="method" class="form-label">Method</label>
+                        <select class="form-control" data-trigger name="method" id="method">
+                          <option value="GET">GET</option>
+                          <option value="POST">POST</option>
+                          <option value="ANY">Any</option>
+                        </select>
+                      </div>
+
+                      <div class="col-xl-4">
+                        <label for="weight" class="form-label">Weight</label>
+                        <input value="0" step="1" type="number" class="form-control"
+                               name="weight" id="weight" placeholder="weight">
+                      </div>
+
+                      <div class="col-xl-12">
+                        <label for="comment" class="form-label">Comment</label>
+                        <input type="text" class="form-control" name="comment" id="comment"
+                               placeholder="comment">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close
+                    </button>
+                    <button type="submit" class="btn btn-success">Добавить</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="card-body">
+          <table id="routeTable" class="table table-sm table-bordered text-nowrap w-100">
+            <thead>
+            <tr>
+              <th style="width: 1px;">Method</th>
+              <th>Pattern</th>
+              <th>Func</th>
+              <th style="width: 1px;">Access</th>
+              <th></th>
+              <th>Comment</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for route in routers %}
+            <tr>
+              <td>
+                <input {% if route.enable %}checked="" {% endif %} class="form-check-input statusRoute"
+                       type="checkbox" value="{{route.id}}"
+                       data-method="{{route.method}}"
+                       data-pattern="{{route.pattern}}"
+                >
+                {{route.method}}
+              </td>
+              <td>{{route.pattern}}</td>
+              <td>{% if route.func is empty %}
+                <span class="badge bg-primary-transparent">{{ route.page }}</span>
+                {% elseif route.func == "debug" %}
+                <span class="badge bg-danger-transparent">Debug</span>
+                {% else %}
+                {{ route.func }}
+                {% endif %}
+              </td>
+              <td data-access="{% for access in (route.access) %}{{access}}|{% endfor %}">
+                {% for access in (route.access) %}
+                <span class="badge bg-{% if access == 'admin' %}danger
+                                {% elseif access == 'user' %}primary
+                                {% elseif access == 'any' %}success
+                                {% else %}warning
+                                {% endif %}-transparent">{{access}}</span>
+                {% endfor %}
+              </td>
+              <td>
+                <button data-object-id="{{route.id}}" data-weight="{{route.weight}}" data-bs-toggle="modal"
+                        data-bs-target="#modal-edit-route"
+                        class="btn btn-primary-light btn-icon btn-sm edit_route"
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Print"><i
+                  class="ri-edit-fill"></i></button>
+              </td>
+              <td>{{route.comment}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap.min.css">
+
+
+<!-- Choices JS -->
+<script src="{{template}}/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+<link rel="stylesheet" href="{{template}}/assets/libs/choices.js/public/assets/styles/choices.min.css">
+
+{% endblock %}
+
+
+{% block js %}
+
+
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+<!-- Internal Datatables JS -->
+
+<!-- Prism JS -->
+<script src="{{template}}/assets/libs/prismjs/prism.js"></script>
+<script src="{{template}}/assets/js/prism-custom.js"></script>
+
+
+<script>
+  $(document).ready(function () {
+    $('#edit_typeRouteFile').hide();
+    $('#edit_typeRouteMethod').hide();
+
+    $('#typeRouteFile').hide();
+    $('#typeRouteMethod').hide();
+
+    $('#routeTable').DataTable({
+      responsive: true,
+      language: {
+        searchPlaceholder: 'Поиск...',
+        sSearch: '',
+        lengthMenu: 'Показать _MENU_ записей',
+        paginate: {
+          first: 'Первая',
+          last: 'Последняя',
+          next: 'Следующая',
+          previous: 'Предыдущая',
+        },
+      },
+      'lengthMenu': [[50, 100, 200, 500, 1000], [50, 100, 200, 500, 1000]],
+      'pageLength': 100,
+    });
+
+  });
+
+  $('#typeRoute').on('change', function () {
+    $('#typeRouteFile').hide();
+    $('#typeRouteMethod').hide();
+    let getType = $(this).val();
+    switch (getType) {
+      case 'file':
+        $('#typeRouteFile').show();
+        break;
+      case 'method':
+        AjaxSend('/admin/route/get/file', 'POST', { dir: '' }, true).then(function (response) {
+          console.log(response);
+          $('#dirMethodList').empty(); // Очищаем содержимое перед вставкой
+          $.each(response, function (index, dir) {
+            $('#dirMethodList').append('<span data-dir="' + dir + '" class="badge bg-light text-muted m-1 getdir">' + dir + '</span>');
+          });
+        });
+        $('#typeRouteMethod').show();
+        break;
+      case 'debug':
+        $('#typeRouteFile').hidden();
+        $('#typeRouteMethod').hidden();
+        break;
+    }
+  });
+
+  $('#edit_typeRoute').on('change', function () {
+    $('#edit_typeRouteFile').hide();
+    $('#edit_typeRouteMethod').hide();
+    let getType = $(this).val();
+    switch (getType) {
+      case 'file':
+        $('#edit_typeRouteFile').show();
+        break;
+      case 'method':
+        AjaxSend('/admin/route/get/file', 'POST', { dir: '' }, true).then(function (response) {
+          console.log(response);
+          $('#edit_dirMethodList').empty(); // Очищаем содержимое перед вставкой
+          $.each(response, function (index, dir) {
+            $('#edit_dirMethodList').append('<span data-dir="' + dir + '" class="badge bg-light text-muted m-1 edit_getdir">' + dir + '</span>');
+          });
+        });
+        $('#edit_typeRouteMethod').show();
+        break;
+      case 'debug':
+        $('#edit_typeRouteFile').hidden();
+        $('#edit_typeRouteMethod').hidden();
+        break;
+    }
+  });
+
+  $(document).on('click', '.getdir', function () {
+    let dir = $(this).data('dir');
+    AjaxSend('/admin/route/get/file', 'POST', { dir: dir }, true).then(function (response) {
+      $('#dirMethodList').empty();
+      if (response && response.hasOwnProperty('namespace')) {
+        $('#dirpath').val(response.namespace);
+        if (response.hasOwnProperty('methods')) {
+          $.each(response.methods, function (index, methodName) {
+            $('#dirMethodList').append('<span data-namespace="' + response.namespace + '\\' + response.className + '::' + methodName + '" class="badge bg-warning text-muted m-1 namespaceapply">' + methodName + '</span>');
+          });
+        }
+      } else {
+        $.each(response, function (index, item) {
+          $('#dirMethodList').append('<span data-dir="' + item + '" class="badge bg-light text-muted m-1 getdir">' + item + '</span>');
+        });
+      }
+    });
+  });
+
+  $(document).on('click', '.edit_getdir', function () {
+    let dir = $(this).data('dir');
+    AjaxSend('/admin/route/get/file', 'POST', { dir: dir }, true).then(function (response) {
+      $('#edit_dirMethodList').empty();
+      if (response && response.hasOwnProperty('namespace')) {
+        $('#edit_dirpath').val(response.namespace);
+        if (response.hasOwnProperty('methods')) {
+          $.each(response.methods, function (index, methodName) {
+            $('#edit_dirMethodList').append('<span data-namespace="' + response.namespace + '\\' + response.className + '::' + methodName + '" class="badge bg-warning text-muted m-1 edit_namespaceapply">' + methodName + '</span>');
+          });
+        }
+      } else {
+        $.each(response, function (index, item) {
+          $('#edit_dirMethodList').append('<span data-dir="' + item + '" class="badge bg-light text-muted m-1 edit_getdir">' + item + '</span>');
+        });
+      }
+    });
+  });
+
+  $(document).on('click', '.edit_namespaceapply', function () {
+    $('#edit_dirMethodList').empty();
+    let namespace = $(this).data('namespace');
+    $('#edit_dirpath').val(namespace);
+  });
+
+  $(document).on('click', '.namespaceapply', function () {
+    $('#dirMethodList').empty();
+    let namespace = $(this).data('namespace');
+    $('#dirpath').val(namespace);
+  });
+
+  $(document).on('click', '.statusRoute', function () {
+    let method = $(this).data('method');
+    let pattern = $(this).data('pattern');
+    let isChecked = $(this).prop('checked') ? 1 : 0;
+    AjaxSend('/admin/route/update/enable', 'POST', {  method: method, pattern: pattern, isChecked: isChecked });
+  });
+
+  let choices = new Choices('#edit_access', {
+    allowHTML: true,
+    removeItemButton: true,
+  });
+
+  $(document).on('click', '.edit_route', function () {
+    let objectId = $(this).data('object-id');
+    $('#edit_objectId').val(objectId);
+    let weight = $(this).data('weight');
+    $('#edit_weight').val(weight);
+
+    let $tr = $(this).closest('tr');
+    let method = $tr.find('td:nth-child(1)').text().trim();
+    let pattern = $tr.find('td:nth-child(2)').text().trim();
+    let func = $tr.find('td:nth-child(3)').text().trim();
+    let access = $tr.find('td:nth-child(4)').data('access');
+    let comment = $tr.find('td:nth-child(6)').text().trim();
+    $('#edit_method').val(method);
+
+    if (func.endsWith('.html')) {
+      $('#edit_typeRoute').val('file');
+      $('#edit_file').val(func);
+    } else if (func === 'debug') {
+      $('#edit_typeRoute').val('debug');
+    } else {
+      $('#edit_typeRoute').val('method');
+      $('#edit_dirpath').val(func);
+    }
+    $('#edit_typeRoute').trigger('change');
+
+    let accessArray = access.split('|');
+    accessArray = accessArray.filter(function (e) {
+      return e;
+    });
+
+    $('#edit_access option').prop('selected', false);
+    $.each(accessArray, function (index, value) {
+      $('#edit_access option[value="' + value + '"]').prop('selected', true);
+    });
+    $('#edit_access').trigger('change');
+    let selectedValues = choices.getValue(true);
+    selectedValues.forEach(function (value) {
+      choices.removeActiveItemsByValue(value.value);
+    });
+    choices.setChoiceByValue(accessArray);
+
+    $('#edit_pattern').val(pattern);
+    $('#edit_access').val(access);
+    $('#edit_comment').val(comment);
+
+  });
+
+
+</script>
+
+<script>
+  const access = new Choices(
+    '#access',
+    {
+      allowHTML: true,
+      removeItemButton: true,
+    },
+  );
+
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"
+      {% for key, value in config().palette().getAll() %}
+      {{key}}="{{value}}"
+      {% endfor %}
+>
+<head>
+
+  <!-- Meta Data -->
+  <meta charset="UTF-8">
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Личный кабинет - {{ config().other().getAllTitlePage() }}</title>
+  <meta name="Description" content="{{ config().other().getAllTitlePage() }}">
+  <meta name="Author" content="SphereWeb CMS">
+  <meta name="keywords" content="{{ config().other().getKeywords() }}">
+
+{{ config().logo().favicon()  }}
+
+  <!-- Choices JS -->
+  <script src="{{template}}/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+  <!-- Main Theme Js -->
+  <script src="{{template}}/assets/js/main.js?v=3"></script>
+
+  <!-- Bootstrap Css -->
+  <link id="style" href="{{template}}/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Style Css -->
+  <link href="{{template}}/assets/css/styles.min.css" rel="stylesheet">
+
+  <!-- Icons Css -->
+  <link href="{{template}}/assets/css/icons.css" rel="stylesheet">
+
+  <!-- Node Waves Css -->
+  <link href="{{template}}/assets/libs/node-waves/waves.min.css" rel="stylesheet">
+
+  <!-- Simplebar Css -->
+  <link href="{{template}}/assets/libs/simplebar/simplebar.min.css" rel="stylesheet">
+  <!-- Choices Css -->
+  <link rel="stylesheet" href="{{template}}/assets/libs/choices.js/public/assets/styles/choices.min.css">
+
+
+  {% block css %}{% endblock %}
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <style>
+
+    /* Скрыть кнопку вызова меню на экранах больше 992px */
+    @media (min-width: 992px) {
+      .sidemenu-toggle {
+        display: none !important;
+      }
+    }
+
+    /* Показать кнопку вызова меню на экранах меньше 992px */
+    @media (max-width: 991px) {
+      .sidemenu-toggle {
+        display: block !important;
+      }
+    }
+
+
+  </style>
+
+</head>
+
+<body>
+
+{% include 'modals.html' %}
+
+
+<div class="page">
+  <!-- app-header -->
+  {% include 'header.html' %}
+
+  <!-- Start::app-sidebar -->
+  {% include 'sidebar.html' %}
+
+  <!-- Start::app-content -->
+  <div class="main-content app-content">
+    <br>
+    {% block content %}{% endblock %}
+  </div>
+  <!-- End::app-content -->
+
+</div>
+
+
+<!-- Scroll To Top -->
+<div class="scrollToTop">
+  <span class="arrow"><i class="ri-arrow-up-s-fill fs-20"></i></span>
+</div>
+<div id="responsive-overlay"></div>
+
+{% include 'notice_toast.html' %}
+
+
+
+{% include 'struct_js.html' %}
+
+
+<script>
+  var currentPath = window.location.pathname;
+  // Перебираем все ссылки в меню
+  $('.side-menu__item').each(function () {
+    var $this = $(this); // Текущий элемент в цикле
+    var href = $this.attr('href');
+
+    // Определяем, нужно ли подсветить текущую ссылку
+    var isActive = (href === currentPath) ||
+      (href === '/' && currentPath === '/') ||
+      (href !== '/' && href !== 'javascript:void(0);' && currentPath.startsWith(href));
+
+    // Если ссылка активна, применяем стили
+    if (isActive) {
+      // Добавляем класс text-success для выделения
+      $this.addClass('text-success');
+
+      // Проходим через все родительские элементы и открываем их
+      $this.parentsUntil('.side-menu', '.slide-menu').show();
+      $this.parentsUntil('.side-menu', '.has-sub').each(function () {
+        $(this).children('.side-menu__item').find('.fe-chevron-right')
+          .removeClass('fe-chevron-right')
+          .addClass('fe-chevron-down');
+      });
+    }
+  });
+</script>
+{% block js %}{% endblock %}
+
+</body>
+</html>

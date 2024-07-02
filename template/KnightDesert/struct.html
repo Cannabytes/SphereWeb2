@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="{{lang_active().lang }}">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<title>{{title_start_page()}}</title>
+	<meta name="Description" content="{{description_start_page()}}" />
+	<meta name="Keywords" content="{{keywords_start_page()}}" />
+
+	<meta name="theme-color" content="#1c1b1a" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="viewport" content="width=device-width" />
+	<meta name="author" content="Vitalii P. > Get-Web.site" />
+
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://example.com/page.html" />
+	<meta property="og:title" content="{{title_start_page()}}" />
+	<meta property="og:image" content="{{template}}/images/sclbnr-ru.jpg" />
+	<meta property="og:description" content="{{description_start_page()}}" />
+	<meta property="og:site_name" content="{{title_start_page()}}" />
+	<meta property="og:locale" content="ru_RU" />
+	<!-- Next tags are optional but recommended -->
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+
+	{% include "favicon.html" %}
+	{% include "config.html" %}
+	{% include "libs-in-head.html" %}
+</head>
+
+<body class="body">
+	{% include "preload.html" %}
+	{% include "videobg.html" %}
+
+
+	<div class="page">
+		{% include "navigation.html" %}
+		{% include "header.html" %}
+
+		<section class="section" data-section="main">
+			<div class="container">
+				<main class="row main">
+					<aside class="main__sidebar sidebar">
+						{% include "servers.html" %}
+						{% include "forum.html" %}
+						{% include "rating.html" %}
+					</aside>
+
+					<div class="main__content content">
+						{% block content %}{% endblock %}
+					</div>
+				</main>
+				<!-- END  main -->
+			</div>
+			<!-- END  container -->
+		</section>
+		<!-- END  section -->
+
+		{% include "footer.html" %}
+	</div>
+	<!-- END page -->
+
+	{% include "files.html" %}
+
+	{% include "libs-in-footer.html" %}
+</body>
+
+</html>
+
+<!--
+Copyright © SphereWeb
+Design: Vitalii P. |  Get-Web.Site
+Front-End Developer: Vitalii P.
+Back-end developer: Logan22
+ -->

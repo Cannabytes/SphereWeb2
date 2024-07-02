@@ -1,0 +1,158 @@
+[data-nav-style="menu-click"][data-nav-layout="horizontal"] {
+    @extend .menu-click;
+    @media (min-width: 992px) {
+        .app-sidebar {
+            .side-menu__item {
+                display: flex !important;
+                padding-top: 0.93rem;
+                padding-inline-end: 1.75rem;
+                padding-bottom: 0.93rem;
+                padding-inline-start: 0.75rem;
+            }
+            .side-menu__icon {
+                margin-block-end: 0 !important;
+                margin-inline-end: 0.35rem !important;
+            }
+            .side-menu__angle {
+                display: block !important;
+            }
+            .slide.has-sub .slide-menu {
+                inset-inline-start: auto !important;
+                &.active {
+                    inset-inline-start: auto !important;
+                    inset-inline-end: auto !important;
+                }
+                &.child1 {
+                    inset-block-start: 100% !important;
+                }
+            }
+        }
+        .app-header {
+            padding-inline-start: 9.5rem;
+        }
+    }
+}
+[data-nav-style="menu-click"][data-toggled="menu-click-closed"] {
+    @extend .menu-click;
+    .app-header {
+        padding-inline-start: 9.5rem;
+    }
+}
+[data-nav-style="menu-click"][data-nav-layout="vertical"][data-toggled="menu-click-closed"] {
+    @media (min-width: 992px) {
+        .app-sidebar {
+            position: absolute;
+            .main-menu {
+                padding: 0;
+            }
+            .side-menu__item {
+                border-radius: 0.5rem;
+                margin: 0.25rem 0.25rem 0 0.25rem !important;
+                &:last-child {
+                    margin: 0.25rem !important;
+                }
+            }
+        }
+        .app-sidebar {
+            .slide .slide-menu {
+                &.child1,&.child2,&.child3 {
+                    border-radius: 0 0.5rem 0.5rem 0;
+                }
+            } 
+        }
+        &[dir="rtl"] {
+            .app-sidebar {
+                .slide .slide-menu {
+                    &.child1,&.child2,&.child3 {
+                        border-radius: 0.5rem 0 0 0.5rem;
+                    }
+                } 
+            }
+        }
+    }
+}
+.menu-click {
+    @media (min-width: 992px) {
+        .app-sidebar {
+            width: 9.5rem;
+            .main-sidebar {
+                overflow: visible;
+                height: 90%;
+            }
+            .main-sidebar-header {
+                width: 9.5rem;
+            }
+            .side-menu__icon {
+                margin-inline-end: 0;
+                margin-block-end: 0.5rem;
+            }
+            .slide {
+                padding: 0;
+            }
+            .slide-menu {
+                &.child1,
+                &.child2,
+                &.child3 {
+                    min-width: 12rem;
+                    .slide {
+                        .side-menu__item {
+                            text-align: start;
+                            &:before {
+                                inset-block-start: 0.6rem;
+                                inset-inline-start: 0.75rem;
+                            }
+                        }
+                    }
+                    .side-menu__angle {
+                        display: block;
+                        inset-inline-end: 1rem;
+                        inset-block-start: 0.65rem;
+                    }
+                    .slide.has-sub,.slide {
+                        &.side-menu__label1 {
+                            display: none;
+                        }
+                    }
+                }
+            }
+            .slide__category,
+            .side-menu__angle {
+                display: none;
+            }
+            .side-menu__item,
+            .side-menu__label {
+                display: block;
+                text-align: center;
+            }
+            .slide.has-sub .slide-menu {
+                position: absolute !important;
+                inset-inline-start: 9.5rem !important;
+                background: var(--menu-bg);
+                inset-block-start: auto !important;
+                box-shadow: 0.125rem 0.063rem 0.5rem $black-1;
+                transition: none !important;
+                &.child2,
+                &.child3 {
+                    inset-inline-start: 11.92rem!important;
+                }
+            }
+            .simplebar-content-wrapper {
+                position: initial;
+            }
+            .simplebar-mask {
+                position: inherit;
+            }
+            .simplebar-placeholder {
+                height: auto !important;
+            }
+        }
+        .app-content {
+            margin-inline-start: 9.5rem;
+        }
+    }
+    @media (max-width: 991.98px) {
+        .app-sidebar {
+            width: 17rem;
+        }
+    }
+}

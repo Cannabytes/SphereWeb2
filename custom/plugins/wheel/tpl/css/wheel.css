@@ -1,0 +1,209 @@
+[data-section="wheel"] {
+	position: relative;
+	z-index: 0;
+}
+
+[data-wheel-sound] {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	z-index: 20;
+}
+
+.wheel {
+	--wheel-circle-scale: 0.7;
+	position: relative;
+	z-index: 0;
+}
+
+.wheel__container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	max-width: 100%;
+	overflow: hidden;
+	position: relative;
+	z-index: 0;
+}
+
+.wheel__ttl {
+	margin-bottom: 30px;
+}
+
+.wheel__pointer {
+	--wheel-pointer-scale: 0.35;
+	width: calc(237px * var(--wheel-pointer-scale));
+	height: calc(293px * var(--wheel-pointer-scale));
+	background-color: transparent;
+	background-image: url(../images/wheel/pointer.png);
+	background-size: contain;
+	background-position: center center;
+	background-repeat: no-repeat;
+	position: relative;
+	z-index: 10;
+	margin-top: -30px;
+}
+
+.wheel__btns {
+	margin-top: 30px;
+}
+
+.wheel__main {
+	position: relative;
+	z-index: 0;
+}
+
+.wheel__main:after {
+	display: block;
+	content: "";
+	background-color: transparent;
+	background-image: url(../images/wheel/circle.png);
+	background-size: cover;
+	background-position: center center;
+	background-repeat: no-repeat;
+	width: calc(450px * var(--wheel-circle-scale));
+	height: calc(450px * var(--wheel-circle-scale));
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 10;
+	pointer-events: none;
+}
+
+.wheel__wrap {
+	position: relative;
+	z-index: 0;
+	transition: 3s all 2s;
+}
+
+.wheel__circle {
+	background-color: transparent;
+	background-image: url(../images/wheel/wheel.png);
+	background-size: cover;
+	background-position: center center;
+	background-repeat: no-repeat;
+	width: calc(1000px * var(--wheel-circle-scale));
+	height: calc(1000px * var(--wheel-circle-scale));
+	flex-shrink: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	z-index: 0;
+}
+
+.wheel__box {
+	width: calc(64px * var(--wheel-circle-scale));
+	height: calc(64px * var(--wheel-circle-scale));
+	flex-shrink: 0;
+	position: relative;
+	z-index: 0;
+	/* position: absolute;
+    left: 50%;
+    top: 50%; */
+}
+
+.wheel__el {
+	--deg: 0deg;
+	--deg-step: 18deg;
+
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	transform: rotate(var(--deg));
+}
+
+.wheel__el:nth-child(1) {
+	--deg: calc(var(--deg-step) * 1);
+}
+.wheel__el:nth-child(2) {
+	--deg: calc(var(--deg-step) * 2);
+}
+.wheel__el:nth-child(3) {
+	--deg: calc(var(--deg-step) * 3);
+}
+.wheel__el:nth-child(4) {
+	--deg: calc(var(--deg-step) * 4);
+}
+.wheel__el:nth-child(5) {
+	--deg: calc(var(--deg-step) * 5);
+}
+.wheel__el:nth-child(6) {
+	--deg: calc(var(--deg-step) * 6);
+}
+.wheel__el:nth-child(7) {
+	--deg: calc(var(--deg-step) * 7);
+}
+.wheel__el:nth-child(8) {
+	--deg: calc(var(--deg-step) * 8);
+}
+.wheel__el:nth-child(9) {
+	--deg: calc(var(--deg-step) * 9);
+}
+.wheel__el:nth-child(10) {
+	--deg: calc(var(--deg-step) * 10);
+}
+.wheel__el:nth-child(11) {
+	--deg: calc(var(--deg-step) * 11);
+}
+.wheel__el:nth-child(12) {
+	--deg: calc(var(--deg-step) * 12);
+}
+.wheel__el:nth-child(13) {
+	--deg: calc(var(--deg-step) * 13);
+}
+.wheel__el:nth-child(14) {
+	--deg: calc(var(--deg-step) * 14);
+}
+.wheel__el:nth-child(15) {
+	--deg: calc(var(--deg-step) * 15);
+}
+.wheel__el:nth-child(16) {
+	--deg: calc(var(--deg-step) * 16);
+}
+.wheel__el:nth-child(17) {
+	--deg: calc(var(--deg-step) * 17);
+}
+.wheel__el:nth-child(18) {
+	--deg: calc(var(--deg-step) * 18);
+}
+.wheel__el:nth-child(19) {
+	--deg: calc(var(--deg-step) * 19);
+}
+.wheel__el:nth-child(20) {
+	--deg: calc(var(--deg-step) * 20);
+}
+
+.wheel__item {
+	transform: translateY(calc(448px * var(--wheel-circle-scale)));
+	width: calc(64px * var(--wheel-circle-scale));
+	height: calc(64px * var(--wheel-circle-scale));
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+[data-wheel-circle="animated"] {
+	/* transform: translateX(-5200px);
+    transition: 8s all; */
+	animation: wheelTransform 7.3s ease forwards;
+}
+
+@keyframes wheelTransform {
+	0% {
+		transform: rotate(0);
+	}
+
+	100% {
+		transform: rotate(calc(360deg * 5));
+	}
+}
+
+[data-wheel-start="false"] {
+	pointer-events: none;
+	opacity: 0.5;
+}

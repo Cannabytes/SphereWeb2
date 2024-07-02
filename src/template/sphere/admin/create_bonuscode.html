@@ -1,0 +1,176 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xl-6">
+      <div class="card custom-card">
+        <div class="card-header justify-content-between">
+          <div class="card-title">Создание бонус кодов</div>
+        </div>
+
+        <div class="card-body">
+          <div class="row row-cols-lg-auto align-items-center">
+            <span class="fw-semibold mb-1 text-muted">Количество кодов</span>
+            <div class="col-4">
+              <div class="col-sm">
+                <input type="text" class="form-control" id="count_codes" value="50" placeholder="Кол-во кодов"
+                       aria-label="State">
+              </div>
+            </div>
+          </div>
+          <div class="row row-cols-lg-auto align-items-center">
+            <div class="col-4">
+              <span class="fw-semibold mb-1 text-muted">Дата начала работы бонус-кода</span>
+              <div class="input-group">
+                <div class="input-group-text text-muted"><i class="ri-time-line"></i></div>
+                <input type="text" class="form-control" id="startdatetime" placeholder="">
+              </div>
+            </div>
+
+            <div class="col-4">
+              <span class="fw-semibold mb-1 text-muted">Дата окончания бонуса</span>
+              <div class="input-group">
+                <div class="input-group-text text-muted"><i class="ri-time-line"></i></div>
+                <input type="text" class="form-control" id="enddatetime" placeholder="">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <span class="fw-semibold text-muted">Список предметов, которые будут выдаваться за бонус код</span>
+          <div class="bonus_inputs">
+            <div class="row row-cols-lg-auto align-items-center">
+              <div class="col-4">
+                <div class="col-sm">
+                  <label for="count_codes" class="form-label">ID предмета</label>
+                  <input type="number" class="form-control itemId" placeholder="ID предмета" value="57"
+                         aria-label="State">
+                </div>
+              </div>
+
+              <div class="col-4">
+                <div class="col-sm">
+                  <label for="count_codes" class="form-label">Количество предметов</label>
+                  <input type="number" class="form-control count" placeholder="Кол-во предметов" value="1000"
+                         aria-label="State">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="m-lg-1 border-top border-block-start-dashed d-sm-flex justify-content-end">
+            <button class="btn btn-primary-light m-1 add_bonus_inputs">Добавить поле<i class="bi bi-plus-lg ms-2"></i>
+            </button>
+            <button id="generate_codes" class="btn btn-success-light m-1">Сгенерировать коды<i
+              class="bi bi-align-top ms-2"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-6">
+      <div class="card custom-card">
+        <div class="card-header justify-content-between">
+          <div class="card-title">Сгенерированные коды</div>
+        </div>
+        <div class="card-body">
+          <textarea class="form-control" id="bonus_codes" rows="20"></textarea>
+          <label for="bonus_codes" class="form-label mt-1 fs-12 op-5 text-muted mb-0">Сгенерированные бонус-коды</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/flatpickr/flatpickr.min.css">
+{% endblock %}
+
+
+{% block js %}
+<script src="{{template}}/assets/libs/@simonwep/pickr/pickr.es5.min.js"></script>
+<script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>
+
+
+<script>
+
+
+  /* For DateTimePicker with Limited Time Range */
+  flatpickr('#startdatetime', {
+    enableTime: true,
+    dateFormat: 'Y-m-d H:i',
+    altInput: true,
+    altFormat: 'Y-m-d H:i',
+    time_24hr: true,
+  });
+
+  flatpickr('#enddatetime', {
+    enableTime: true,
+    dateFormat: 'Y-m-d H:i',
+    altInput: true,
+    altFormat: 'Y-m-d H:i',
+    time_24hr: true,
+  });
+
+  $('#generate_codes').click(function () {
+    var startDate = $('#startdatetime').val();
+    var endDate = $('#enddatetime').val();
+    if (startDate == '' || endDate == '') {
+      noticeError('Не введены даты начала и окончания бонуса');
+      return;
+    }
+
+    // Получаем все значения itemId и count в виде массива
+    var items = [];
+    $('.bonus_inputs .row').each(function () {
+      var itemId = $(this).find('.itemId').val();
+      var count = $(this).find('.count').val();
+      if (itemId && count) {
+        items.push({ itemId: itemId, count: count });
+      }
+    });
+
+    AjaxSend('/admin/bonuscode/create', 'POST', {
+      count_codes : $('#count_codes').val(),
+      items: items,
+      start_date_code: startDate,
+      end_date_code: endDate,
+    }, true).then(function (response) {
+      if (Array.isArray(response)) {
+        $('#bonus_codes').val(response.join('\n'));
+        noticeSuccess('Коды сгенерированы');
+      } else {
+        noticeError('Произошла ошибка при генерации кодов');
+      }
+    }).catch(function(error) {
+      noticeError('Не удалось отправить запрос');
+    });
+
+  });
+
+  $('.add_bonus_inputs').click(function () {
+    var newRow = '<div class="row row-cols-lg-auto align-items-center">' +
+      '<div class="col-4">' +
+      '<div class="col-sm">' +
+      '<label for="count_codes" class="form-label">ID предмета</label>' +
+      '<input type="number" class="form-control itemId" placeholder="ID предмета" value="57" aria-label="State">' +
+      '</div>' +
+      '</div>' +
+      '<div class="col-4">' +
+      '<div class="col-sm">' +
+      '<label for="count_codes" class="form-label">Количество предметов</label>' +
+      '<input type="number" class="form-control count" placeholder="Кол-во предметов" value="1000" aria-label="State">' +
+      '</div>' +
+      '</div>' +
+      '</div>';
+    $('.bonus_inputs').append(newRow);
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,146 @@
+[data-vertical-style="overlay"][data-toggled="icon-overlay-close"] {
+  @media (min-width: 992px) {
+    &:not([data-icon-overlay="open"]) {
+      .app-sidebar {
+        width: 5rem;
+        .main-sidebar-header {
+          width: 5rem;
+          .header-logo {
+            .toggle-logo {
+              display: block;
+            }
+            .desktop-dark,
+            .desktop-logo,
+            .toggle-dark,
+            .desktop-white,
+            .toggle-white {
+              display: none;
+            }
+          }
+        }
+        .category-name,
+        .side-menu__label,
+        .side-menu__angle {
+          display: none;
+        }
+        .slide.has-sub.open {
+          .slide-menu {
+            display: none !important;
+          }
+        }
+        .side-menu__icon {
+          margin-inline-end: 0;
+          color: $menu-prime-color;
+          fill: $menu-prime-color;
+        }
+        .slide__category {
+          display: none;
+        }
+        .side-menu__item .badge {
+          display: none;
+        }
+      }
+      .side-menu__item {
+        justify-content: center;
+        &.active,
+        &:hover {
+          .side-menu__icon {
+            color: $primary;
+            fill: $primary;
+          }
+        }
+      }
+    }
+    .app-header {
+      padding-inline-start: 5rem;
+    }
+    .app-content {
+      margin-inline-start: 5rem;
+    }
+
+    &[data-icon-overlay="open"] {
+      .app-sidebar {
+        width: 17rem;
+        .main-sidebar-header {
+          width: 17rem;
+          .header-logo {
+            .desktop-logo {
+              display: block;
+            }
+            .desktop-dark,
+            .toggle-logo,
+            .toggle-dark,
+            .desktop-white,
+            .toggle-white {
+              display: none;
+            }
+          }
+        }
+        .side-menu__item .badge {
+          display: inline;
+        }
+        .side-menu__item {
+          justify-content: flex-start;
+        }
+        .side-menu__icon {
+          margin-inline-end: 0.625rem;
+        }
+        .slide__category {
+          padding: 0.75rem 1.65rem;
+          &:before {
+            display: none;
+          }
+        }
+      }
+    }
+
+    &[data-theme-mode="dark"] {
+      .main-sidebar-header {
+        .header-logo {
+          .toggle-dark {
+            display: block;
+          }
+          .desktop-dark,
+          .desktop-logo,
+          .toggle-logo,
+          .desktop-white,
+          .toggle-white {
+            display: none;
+          }
+        }
+      }
+      &[data-icon-overlay="open"] {
+        .main-sidebar-header {
+          .header-logo {
+            .desktop-dark {
+              display: block;
+            }
+            .toggle-dark,
+            .desktop-logo,
+            .toggle-logo,
+            .desktop-white,
+            .toggle-white {
+              display: none;
+            }
+          }
+        }
+        &[data-menu-styles="light"] {
+          .main-sidebar-header {
+            .header-logo {
+              .desktop-logo {
+                display: block;
+              }
+              .toggle-dark,
+              .desktop-white,
+              .toggle-logo,
+              .desktop-dark,
+              .toggle-white {
+                display: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

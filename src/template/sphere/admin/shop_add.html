@@ -1,0 +1,378 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 col-lg-12 col-xl-12">
+            <div class="row">
+                <div class="col-xl-12 ">
+                    <div class="card custom-card ">
+                        <div class="card-header justify-content-between ">
+                            <div class="card-title fw-semibold">
+                                Панель добавления товаров в магазин
+                            </div>
+                            <div>
+                                Общая стоимость: <label id="product_cost_select"></label> SphereCoin
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="row align-items-center mb-0">
+
+                                <small id="itemName" class="fs-14">No Select Item</small>
+
+                                <div class="col-xl-1 mb-0">
+                                    <div class="input-group">
+                                        <img class="avatar avatar-lg" id="AddImgSrc" src="{{path('/uploads/images/icon/NOIMAGE.webp')}}" alt="">
+                                    </div>
+
+                                </div>
+                                <div class="col-xl-2">
+                                    <div class="input-group">
+                                        <div class="input-group-text">ID</div>
+                                        <input value="0" min="0" id="itemId" type="number" class="form-control" placeholder="4037">
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-2">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Count</div>
+                                        <input value="1" min="0" id="count" type="number" class="form-control" placeholder="1">
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-2">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Стоимость</div>
+                                        <input value="1" min="0" id="cost" step="0.01" type="number" class="form-control" placeholder="1">
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-2">
+                                    <div class="input-group">
+                                        <div class="input-group-text">Заточка</div>
+                                        <input value="0" min="0" id="enchant" step="1" type="number" class="form-control" placeholder="0">
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-2">
+                                    <button id="addItemToTable" type="submit" class="btn btn-primary">Добавить товар</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer ">
+                                <div class="table-responsive">
+                                    <table id="product_sheet" class="table table-sm text-nowrap table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 1px" scope="col"></th>
+                                            <th style="width: 1px" scope="col">Item ID</th>
+                                            <th scope="col">Item Name</th>
+                                            <th scope="col">Count</th>
+                                            <th scope="col">Cost</th>
+                                            <th scope="col">Enchant</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                        </div>
+
+
+                        <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-end">
+                            <button class="btn btn-success-light m-1" id="AddToProducts">Добавить в магазин<i class="bi bi-plus-lg ms-2"></i></button>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div id="products_list" class="row">
+                    {% for id, object in getShopItems() %}
+                    <div data-shop-id="{{id}}" class="col-xl-6">
+                        <div class="card custom-card">
+                            <div class="table-responsive">
+                                <table class="table table-sm text-nowrap table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: 1px" scope="col"></th>
+                                        <th style="width: 1px" scope="col">Item ID</th>
+                                        <th scope="col">Item Name</th>
+                                        <th scope="col">Count</th>
+                                        <th scope="col">Cost</th>
+                                        <th scope="col">Enchant</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in object %}
+                                    <tr>
+                                        <td><span class="avatar avatar-sm "><img
+                                                src="{{item.getItemInfo().getIcon()}}" alt=""></span>
+                                        </td>
+                                        <td>{{item.getItemId()}}</td>
+                                        <td>{{item.getItemInfo().getItemName()}}</td>
+                                        <td>{{item.getCount()}}</td>
+                                        <td>{{item.getCost()}}</td>
+                                        <td>{{item.getEnchant()}}</td>
+                                        <td>
+                                            <button data-object-id="{{item.getId()}}" class="btn btn-danger-light btn-icon ms-1 btn-sm removeItem"><i class="ri-delete-bin-5-line"></i></button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer">Общая стоимость: 1 SphereCoin</div>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- End Row -->
+</div>
+
+{% endblock %}
+
+
+{% block css %}
+{% endblock %}
+
+
+{% block js %}
+<script>
+
+    function recalculateTotal() {
+        var total = 0;
+        $('#product_sheet tbody tr').each(function() {
+            var cost = parseFloat($(this).find('td:eq(4)').text()); // Стоимость товара
+            total += cost;
+        });
+        return parseFloat(total.toFixed(2));
+    }
+
+
+    $(document).ready(function() {
+        $('#AddToProducts').click(function() {
+            var items = $('#product_sheet tbody tr').map(function() {
+                return {
+                    itemId: $(this).find('td').eq(1).text(),
+                    itemName: $(this).find('td').eq(2).text(),
+                    count: $(this).find('td').eq(3).text(),
+                    cost: $(this).find('td').eq(4).text(),
+                    enchant: $(this).find('td').eq(5).text()
+                };
+            }).get();
+
+            AjaxSend("/admin/shop", "POST", { items }, true).then(function(response) {
+                if (response.ok === false){
+                    noticeError(response.message);
+                }
+                if (response.ok && response.items && response.items.length > 0) {
+                    let totalCost = 0;
+                    const rowsHtml = response.items.map((item) => {
+                        totalCost += item.cost; // Подсчет общей стоимости
+                        return `<tr>
+                            <td><span class="avatar avatar-sm"><img src="${item.item.icon}" alt=""></span></td>
+                            <td>${item.itemId}</td>
+                            <td>${item.item.itemName}</td>
+                            <td>${item.count}</td>
+                            <td>${item.cost}</td>
+                            <td>${item.enchant}</td>
+                            <td>
+                                <button data-object-id="${item.id}" class="btn btn-danger-light btn-icon ms-1 btn-sm removeItem"><i class="ri-delete-bin-5-line"></i></button>
+                            </td>
+                        </tr>`;
+                    }).join('');
+
+                    const newTableHtml = `<div data-shop-id="${response.id}" class="col-xl-6">
+                                    <div class="card custom-card">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm text-nowrap table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 1px"></th>
+                                                        <th style="width: 1px">Item ID</th>
+                                                        <th>Item Name</th>
+                                                        <th>Count</th>
+                                                        <th>Cost</th>
+                                                        <th>Enchant</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${rowsHtml}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="card-footer">Общая стоимость: ${totalCost} SphereCoin</div>
+                                    </div>
+                                  </div>`;
+
+                    // Добавление новой таблицы в DOM
+                    $('#products_list').append(newTableHtml);
+                    $('#product_sheet tbody').empty();
+                }
+            });
+        });
+
+    });
+
+
+
+
+    $('#addItemToTable').click(function() {
+        // Получаем данные из полей ввода
+        var itemName = $('#itemName').text();
+        var itemId = $('#itemId').val();
+        var count = $('#count').val();
+        var cost = $('#cost').val();
+        var enchant = $('#enchant').val();
+        var imgSrc = $('#AddImgSrc').attr('src');
+
+        if(count===0 || isIssetItem === false){
+            return;
+        }
+
+        // Создаем строку таблицы
+        var newRow = $('<tr></tr>');
+
+        // Добавляем ячейку с изображением
+        var imgCell = $('<td></td>').append('<span class="avatar avatar-sm "><img src="' + imgSrc + '" alt=""></span>');
+        newRow.append(imgCell);
+
+        // Добавляем оставшиеся ячейки
+        newRow.append('<td>' + itemId + '</td>');
+        newRow.append('<td>' + itemName + '</td>');
+        newRow.append('<td>' + count + '</td>');
+        newRow.append('<td>' + cost + '</td>');
+        newRow.append('<td>' + enchant + '</td>');
+
+        // Добавляем ячейку с кнопкой удаления
+        var deleteBtn = $('<button data-object-id="0" class="btn btn-danger-light btn-icon ms-1 btn-sm removeItemSelect"><i class="ri-delete-bin-5-line"></i></button>');
+        var deleteCell = $('<td></td>').append(deleteBtn);
+        newRow.append(deleteCell);
+
+        // Добавляем строку в таблицу
+        $('#product_sheet tbody').append(newRow);
+        var total = recalculateTotal();
+        $("#product_cost_select").text(total)
+    });
+
+    $(document).on('click', '.removeItem', function() {
+        let panel = $(this).closest('.col-xl-6')
+        let table = $(this).closest('table');
+        let shopId = panel.data('shop-id');
+        let objectId = $(this).data("object-id");
+        // Сохранение ссылки на текущий контекст `this`
+        let self = this;
+
+        AjaxSend("/admin/shop/remove/item", "POST", {shopId: shopId, objectId: objectId}, true).then(function (response) {
+            let rowCount = table.find('tbody tr').length;
+            if (rowCount === 1) {
+                // Использование сохранённой ссылки на `this`
+                $(self).closest('.col-xl-6').remove();
+            } else {
+                // Использование сохранённой ссылки на `this`
+                $(self).closest('tr').remove();
+                console.log('Оставшееся количество строк в таблице: ', rowCount - 1);
+            }
+        })
+        let total = recalculateTotal();
+        // Предполагаю, что `total` используется далее в коде
+    });
+
+    $(document).on('click', '.removeItemSelect', function() {
+        $(this).closest('tr').remove();
+        let total = recalculateTotal();
+    });
+
+    var isIssetItem = false;
+    $(document).on('input', '#itemId', debounce(function() {
+        $("#addItemToTable").prop("disabled", true);
+        let itemId = $(this).val().toString();
+        let dataToSend = {
+            itemID: itemId
+        };
+        $.ajax({
+            type: 'POST',
+            url: '/admin/client/item/info',
+            dataType: 'json',
+            data: dataToSend,
+            success: function (response) {
+                console.log(response)
+                if (response.ok) {
+                    isIssetItem = true;
+                    itemInfo = response.item;
+                    $("#AddImgSrc").attr("src", itemInfo.icon);
+                    let addName = '';
+                    if (itemInfo.addName !== '') {
+                        addName = '<span class="badge bg-danger">' + itemInfo.addName + '</span>';
+                    }
+                    $("#itemName").html((addName + " " + itemInfo.itemName).trim());
+
+                    if (itemInfo.description) {
+                        $("#itemName").attr({
+                            "data-bs-toggle": "tooltip",
+                            "data-bs-custom-class": "tooltip-danger",
+                            "data-bs-placement": "top",
+                            "data-bs-original-title": itemInfo.description
+                        });
+                    } else {
+                        $("#itemName").removeAttr("data-bs-toggle data-bs-custom-class data-bs-placement data-bs-original-title");
+                    }
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+
+                    let countInput = $("#count");
+                    if (!itemInfo.isStackable) {
+                        countInput.val(1);
+                        if (!countInput.prop("disabled")) {
+                            countInput.prop("disabled", true);
+                        }
+                    } else {
+                        if (countInput.prop("disabled")) {
+                            countInput.prop("disabled", false);
+                        }
+                    }
+                }else{
+                    $("#AddImgSrc").attr("src", response.icon);
+                    $("#itemName").html(response.name);
+                    isIssetItem = false;
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Произошла ошибка:', error);
+            }
+        });
+        $("#addItemToTable").removeAttr("disabled");
+    }, 300)); // задержка в 500 мс
+
+    function debounce(func, wait, immediate) {
+        var timeout;
+        return function() {
+            var context = this, args = arguments;
+            var later = function() {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            var callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    }
+
+</script>
+{% endblock %}

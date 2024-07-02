@@ -1,0 +1,224 @@
+[data-vertical-style="doublemenu"] {
+    @media (min-width: 992px) {
+        .app-sidebar {
+            width: 5rem;
+            .main-menu{
+                padding: 0;
+            }
+            .main-sidebar {
+                overflow: visible;
+                height: 100%;
+                box-shadow: none;
+                margin-block-start: 0;
+            }
+            .main-sidebar-header {
+                width: 5rem;
+                backdrop-filter: blur(30px);
+                .header-logo {
+                    .toggle-logo {
+                        display: block !important;
+                    }
+                    .desktop-dark,
+                    .desktop-logo,
+                    .toggle-dark,.desktop-white,.toggle-white {
+                        display: none !important;
+                    }
+                }
+            }
+            .main-menu-container {
+                margin-block-start: 3.75rem;
+            }
+            .main-menu >.slide {
+                >.side-menu__item {
+                    justify-content: center;
+                }
+            }
+            .category-name,
+            .side-menu__label,
+            .side-menu__angle {
+                display: none;
+            }
+            .side-menu__icon {
+                margin-inline-end: 0;
+                color: var(--menu-prime-color);
+                fill: var(--menu-prime-color);
+            }
+            .slide__category {
+                display: none;
+            }
+            .simplebar-content-wrapper {
+                position: initial;
+            }
+            .simplebar-mask {
+                position: inherit;
+                
+            }
+            .simplebar-placeholder {
+                height: auto !important;
+            }
+        }
+        .app-header {
+            padding-inline-start: 17rem;
+        }
+        .app-content {
+            margin-inline-start: 17rem;
+        }
+        .slide.has-sub .slide-menu {
+            position: absolute !important;
+            inset-inline-start: 5rem !important;
+            background: $menu-bg;
+            box-shadow: none;
+            transition: none !important;
+            height: 100% !important;
+            inset-inline-end: 0;
+            border-inline-end: 1px solid $default-border;
+            &.child2,
+            &.child3 {
+                border-inline-end: 0 !important;
+                inset-inline-start: 0 !important;
+                position: relative !important;
+                height: auto !important;
+                inset-block-start: 0 !important;
+                .slide {
+                    &:nth-child(2) {
+                        padding-block-start: 0rem;
+                    }
+                }
+            }
+        }
+        .slide-menu {
+            &.child1,
+            &.child2,
+            &.child3 {
+                .slide {
+                    padding-inline-start: 0;
+                    .side-menu__item {
+                        text-align: start;
+                        &:before {
+                            inset-inline-start: 0.75rem;
+                        }
+                    }
+                }
+                .side-menu__angle {
+                    display: block;
+                    inset-inline-end: 1rem;
+                    inset-block-start: 0.65rem;
+                }
+            }
+            &.child2,&.child3 {
+                min-width: 10rem;
+            }
+            &.child1 {
+                min-width: 12rem;
+                .slide {
+                    &:nth-child(2) {
+                        padding-block-start: 0.75rem;
+                    }
+                }
+            }
+        }
+        .side-menu__label1 {
+            display: block !important;
+            font-size: 1rem;
+            font-weight: 500;
+            color: $menu-prime-color;
+            border-block-end: 1px solid $default-border;
+            padding: 2.32rem .75rem!important;
+            width: 12rem;
+            height: 3.75rem;
+            line-height: 0.5;
+        }
+        .slide-menu {
+            display: none;
+
+            &.double-menu-active {
+                visibility: visible !important;
+                display: block !important;
+                height: 100% !important;
+                position: absolute;
+                top: 0;
+                border-radius: 0 !important;
+                border-block-start: 0;
+                overflow: hidden auto;
+            }
+        }
+        &[data-theme-mode="light"] {
+            &[data-menu-styles="dark"] {
+                .app-sidebar .main-sidebar-header {
+                    .header-logo {
+                        .desktop-logo,.desktop-dark,.toggle-logo {
+                            display:none !important;
+                        }
+                        .toggle-dark {
+                            display: block !important;
+                        }
+                    }
+                }
+            }
+            &[data-menu-styles="color"],&[data-menu-styles="gradient"] {
+                .app-sidebar .main-sidebar-header {
+                    .header-logo {
+                        .desktop-logo,.desktop-dark,.toggle-logo,.toggle-dark,.desktop-white {
+                            display:none !important;
+                        }
+                        .toggle-white {
+                            display: block !important;
+                        }
+                    }
+                }
+            }
+        }
+        &[data-theme-mode="dark"] {
+            .app-sidebar .main-sidebar-header {
+                .header-logo {
+                    .desktop-logo,.desktop-dark,.toggle-logo,.desktop-white,.toggle-white {
+                        display: none !important;
+                    }
+                    .toggle-dark {
+                        display: block !important;
+                    }
+                }
+            }
+            &[data-menu-styles="light"] {
+                .app-sidebar .main-sidebar-header {
+                    .header-logo {
+                        .desktop-logo,.desktop-dark,.toggle-dark,.desktop-white,.toggle-white {
+                            display: none !important;
+                        }
+                        .toggle-logo {
+                            display: block !important;
+                        }
+                    }
+                }   
+            }
+            &[data-page-style="classic"] {
+                .slide.has-sub .slide-menu {
+                    border-inline-end: 1px solid $default-border;
+                }
+            }
+        }
+        &[data-toggled="double-menu-close"] {
+            .app-header{
+                padding-inline-start: 5rem;
+            }
+            .app-content {
+                margin-inline-start: 5rem;
+            }
+            .app-sidebar {
+                .slide.has-sub .slide-menu {
+                    display: none !important;
+                }
+                .main-sidebar {
+                    box-shadow: $box-shadow;
+                }
+            }
+        }
+        &[data-toggled="double-menu-open"] {
+            .app-sidebar .main-sidebar {
+                .slide.side-menu__label1 {
+                    border-inline-end: 1px solid $default-border;
+                }
+            }
+        }
+    }
+}

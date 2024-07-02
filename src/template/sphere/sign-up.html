@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light"
+      data-menu-styles="light" data-toggled="close">
+<head>
+
+  {% set referral_name = get_0 %}
+
+  <!-- Meta Data -->
+  <meta charset="UTF-8">
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Регистрация </title>
+  <meta name="Description" content="Bootstrap Responsive Admin Web Dashboard HTML5 Template">
+  <meta name="Author" content="Logan22 SphereWeb">
+  <meta name="keywords" content="admin dashboard,dashboard design htmlbootstrap admin template,html admin panel,admin dashboard html,admin panel html template,bootstrap dashboard,html admin template,html dashboard,html admin dashboard template,bootstrap dashboard template,dashboard html template,bootstrap admin panel,dashboard admin bootstrap,bootstrap admin dashboard">
+
+  <!-- Favicon -->
+  {{ config().logo().favicon() }}
+
+  <!-- Main Theme Js -->
+  <script src="{{template}}/assets/js/authentication-main.js"></script>
+
+  <!-- Bootstrap Css -->
+  <link id="style" href="{{template}}/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Style Css -->
+  <link href="{{template}}/assets/css/styles.min.css" rel="stylesheet">
+
+  <!-- Icons Css -->
+  <link href="{{template}}/assets/css/icons.min.css" rel="stylesheet">
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+</head>
+
+<body>
+
+{% include 'notice_toast.html' %}
+
+<!-- Loader -->
+<div id="loader">
+  <img src="{{template}}/assets/images/media/loader.svg" alt="">
+</div>
+<!-- Loader -->
+
+<div class="autentication-bg">
+  <div class="container-lg">
+    <div class="row justify-content-center authentication authentication-basic align-items-center h-100">
+      <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12">
+        <div class="my-4 d-flex justify-content-center">
+          <a href="index.html">
+            <img src="{{config().logo().getLogo()}}" alt="logo">
+          </a>
+        </div>
+        <div class="card custom-card">
+          <form id="registrationForm" action="/registration/user" method="POST" class="card-body p-5">
+            <p class="h5 fw-semibold mb-2 text-center">Регистрация</p>
+            <p class="mb-4 text-muted op-7 fw-normal text-center">Регистрация позволит Вам использовать все возможности Личного Кабинета</p>
+            <div class="row gy-3">
+              <div class="col-xl-12">
+                <label for="email" class="form-label text-default">Email<i class="text-danger">*</i></label>
+                <input required name="email" type="text" class="form-control form-control-lg" id="email" placeholder="example@example.com">
+              </div>
+              <div class="col-xl-12">
+                <label for="account" class="form-label text-default">Account</label>
+                <div class="input-group mb-3">
+                  {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() == 'prefix' %}
+                  <button class="btn btn-light account_prefix" type="button">{{config().registration().genPrefix()}}</button>
+                  {% endif %}
+                  <input name="account" type="text" class="form-control form-control-lg" id="account" placeholder="">
+                  {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() == 'suffix' %}
+                  <button class="btn btn-light account_prefix" type="button">{{config().registration().genPrefix()}}</button>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-xl-12 mb-2">
+                <label for="signin-password" class="form-label text-default d-block">Password<i class="text-danger">*</i>
+                  <a href="#" tabindex="0" class=" float-end text-info password-popover" role="button"
+                     data-bs-toggle="popover" data-bs-placement="right" title="Пароли"
+                     data-bs-content="
+                     {% for i, word in generation_words_password(10) %}
+                     {{i + 1}}. <a href='#' class='thisPassword'>{{word}}</a><br>
+                     {% endfor %}">Помочь создать пароль?</a></label>
+                <div class="input-group">
+                  <input name="password" type="password" class="form-control form-control-lg" id="signin-password"
+                         placeholder="password" required>
+                  <button class="btn btn-light" type="button" onclick="createpassword('signin-password',this)"
+                          id="button-addon2"><i class="ri-eye-off-line align-middle"></i></button>
+                </div>
+              </div>
+
+              {% if config().captcha().isGoogleCaptcha() %}
+              <div id="g-recaptcha"></div>
+              {% else %}
+              <div class="col-xl-12 ">
+                <div class="row">
+                  <div class="col-xl-7">
+                    <img src="" class="lightbox-thumb img-thumb captchaToken captcha_img"
+                         style="width: 100%; height: 100%;"/>
+                  </div>
+                  <div class="col-xl-5">
+                    <label for="register_captcha" class="form-label captchaToken">Проверочный код</label>
+                    <input type="text" class="form-control" id="register_captcha" name="captcha"
+                           placeholder="Captcha">
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+
+              <div id="referralinput" class="col-xl-12 mb-2 d-none">
+                <label for="referral" class="form-label text-default">Имя пользователя</label>
+                <input name="referral" value="{{referral_name}}" type="text" class="form-control form-control-lg" id="referral" placeholder="">
+              </div>
+
+              <div class="col-xl-12 d-grid mt-2">
+                <button type="submit" aria-label="button" class="btn btn-lg btn-success enter">
+                  Зарегистрировать мастер аккаунт
+                </button>
+              </div>
+            </div>
+            <div class="text-center">
+              <p id="add_referral" class="text-muted mt-3 text-info" role="button">Укажи ник друга (реферала) и получайте бонусы</p>
+            </div>
+            <div class="text-center">
+              <p class="text-muted mt-3">Вы имеете аккаунт? <a href="/login" class="text-primary">Авторизуйтесь</a></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="{{template}}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Show Password JS -->
+<script src="{{template}}/assets/js/show-password.js"></script>
+
+<script src="{{template}}/assets/libs/@popperjs/core/umd/popper.min.js"></script>
+<script src="{{template}}/assets/js/Toasts.js"></script>
+<script src="{{template}}/assets/js/general.js?v=1.0.2"></script>
+
+{% if config().captcha().isGoogleCaptcha() %}
+<script src="https://www.google.com/recaptcha/api.js"></script>
+<script>
+  window.onload = function() {
+    if (typeof grecaptcha !== 'undefined') {
+      grecaptcha.render('g-recaptcha', {
+        'sitekey': '{{ google_secret_key() }}'
+      });
+    } else {
+      console.error('grecaptcha is not defined');
+    }
+  };
+</script>
+{% else %}
+<script>
+  function get_captcha() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/captcha', true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        var data = xhr.responseText;
+        var captchaImages = document.querySelectorAll('.captcha_img');
+        captchaImages.forEach(function(img) {
+          img.src = data;
+        });
+      }
+    };
+    xhr.send();
+  }
+
+  get_captcha();
+
+  document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('captcha_img')) {
+      get_captcha();
+    }
+  });
+</script>
+{% endif %}
+<script>
+  $(document).on('click', '.thisPassword', function() {
+    $('#signin-password').val($(this).text());
+    $('#signin-password').attr('type', 'text');
+    $('.align-middle').removeClass('ri-eye-off-line');
+    $('.align-middle').addClass('ri-eye-line');
+  });
+
+  $(document).on('click', '#add_referral', function() {
+    $('#add_referral').hide();
+    $('#referralinput').removeClass('d-none');
+  });
+
+  $(document).ready(function() {
+    $('.password-popover').popover({
+      container: 'body',
+      html: true,
+    });
+
+    $(document).on('click', '.account_prefix', function() {
+      AjaxSend('/registration/account/prefix', 'POST', {}, true).then(function(prefix) {
+        $('.account_prefix').text(prefix);
+      });
+    });
+  });
+</script>
+</body>
+</html>

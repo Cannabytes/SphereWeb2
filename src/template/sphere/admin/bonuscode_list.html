@@ -1,0 +1,81 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="col-xl-12">
+    <div class="card custom-card">
+      <div class="card-header justify-content-between">
+        <div class="card-title">
+          Бонус коды
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table text-nowrap table-striped table-hover">
+            <thead>
+            <tr>
+              <th scope="col">Code</th>
+              <th scope="col">Items</th>
+              <th scope="col">Start Date</th>
+              <th scope="col">End Date</th>
+            </tr>
+            </thead>
+            <tbody>
+              {% for key, data in codeTable %}
+            <tr>
+              <th scope="row">{{ key }}
+                <i data-code="{{ key }}" class="ri-file-copy-2-line copy" role="button"></i>
+              </th>
+              <td>
+
+                {% for d in data %}
+                <div class="d-flex align-items-center">
+                  <div class="avatar avatar-sm me-2">
+                    <img src="{{ d.info.getIcon() }}" alt="img">
+                  </div>
+                  <div>
+                    <div class="lh-1">
+                      <span>{{ d.info.getAddItemName() }} {{ d.info.getItemName() }}</span>
+                    </div>
+                    <div class="lh-1">
+                                                                <span
+                                                                  class="fs-11 text-muted">x{{ d.count }}</span>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+
+
+              </td>
+              <td>
+                 {{ data[0].start_date_code }}
+              </td>
+              <td>
+                 {{ data[0].end_date_code }}
+              </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+      </div>
+      </div>
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+
+  $('.copy').click(function () {
+    let code = $(this).data('code')
+    navigator.clipboard.writeText(code)
+    noticeSuccess("Код скопирован в буфер обмена")
+  })
+</script>
+
+{% endblock %}

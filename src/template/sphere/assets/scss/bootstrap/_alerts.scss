@@ -1,0 +1,316 @@
+.alert {
+  padding: 0.625rem 0.85rem;
+  border-radius: $default-radius;
+  font-size: 0.8125rem;
+  &.alert-dismissible {
+    padding: 0.625rem 2.25rem 0.625rem 0.85rem;
+  }
+  .btn-close {
+    background-image: none;
+    padding: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    i {
+      font-size: 1.5rem;
+      line-height: 1.5rem;
+    }
+  }
+  &:last-child {
+    margin-bottom: 0;
+  }
+  .alert-link {
+    font-weight: 600;
+  }
+}
+[dir="rtl"] {
+  .alert.alert-dismissible {
+    padding: 0.625rem 0.85rem 0.625rem 2.25rem;
+  }
+}
+
+/* Basic Alerts */
+@mixin custom-close($color) {
+  background-color: $color;
+  color: $white;
+  opacity: 1;
+  border-radius: 50px;
+  box-shadow: $box-shadow;
+  padding: 0.85rem;
+}
+.alert-warning {
+  background-color: rgba(var(--warning-rgb), 0.1);
+  color: $warning;
+  border-color: rgba(var(--warning-rgb), 0.1);
+  .alert-link {
+    color: $warning;
+  }
+  .btn-close {
+    color: $warning;
+    &.custom-close {
+      @include custom-close($warning);
+    }
+  }
+}
+.alert-primary {
+  background-color: $primary-01;
+  color: $primary;
+  border-color: $primary-01;
+  .alert-link {
+    color: $primary;
+  }
+  .btn-close {
+    color: $primary;
+    &.custom-close {
+      @include custom-close($primary);
+    }
+  }
+}
+.alert-secondary {
+  background-color: rgba(var(--secondary-rgb), 0.1);
+  color: $secondary;
+  border-color: rgba(var(--secondary-rgb), 0.1);
+  .alert-link {
+    color: $secondary;
+  }
+  .btn-close {
+    color: $secondary;
+    &.custom-close {
+      @include custom-close($secondary);
+    }
+  }
+}
+.alert-success {
+  background-color: rgba(var(--success-rgb), 0.1);
+  color: $success;
+  border-color: rgba(var(--success-rgb), 0.1);
+  .alert-link {
+    color: $success;
+  }
+  .btn-close {
+    color: $success;
+    &.custom-close {
+      @include custom-close($success);
+    }
+  }
+}
+.alert-info {
+  background-color: rgba(var(--info-rgb), 0.1);
+  color: $info;
+  border-color: rgba(var(--info-rgb), 0.1);
+  .alert-link {
+    color: $info;
+  }
+  .btn-close {
+    color: $info;
+    &.custom-close {
+      @include custom-close($info);
+    }
+  }
+}
+.alert-danger {
+  background-color: rgba(var(--danger-rgb), 0.1);
+  color: $danger;
+  border-color: rgba(var(--danger-rgb), 0.1);
+  .alert-link {
+    color: $danger;
+  }
+  .btn-close {
+    color: $danger;
+    &.custom-close {
+      @include custom-close($danger);
+    }
+  }
+}
+.alert-light {
+  background-color: $light;
+  color: $default-text-color;
+  border-color: $light;
+  .alert-link {
+    color: $default-text-color;
+  }
+  .btn-close {
+    color: $default-text-color;
+    &.custom-close {
+      @include custom-close($light);
+    }
+  }
+}
+.alert-dark {
+  background-color: rgba(var(--dark-rgb), 0.1);
+  color: $default-text-color;
+  border-color: rgba(var(--dark-rgb), 0.1);
+  .alert-link {
+    color: $default-text-color;
+  }
+  .btn-close {
+    color: $white;
+    &.custom-close {
+      @include custom-close($dark);
+    }
+  }
+}
+/* Basic Alerts */
+
+/* Solid Colored Alerts */
+@mixin alert-solid-color($color) {
+  background-color: $color;
+  color: $white;
+  border-color: $color;
+  .btn-close {
+    color: $white;
+  }
+}
+.alert-solid-primary {
+  @include alert-solid-color($primary);
+}
+.alert-solid-secondary {
+  @include alert-solid-color($secondary);
+}
+.alert-solid-warning {
+  @include alert-solid-color($warning);
+}
+.alert-solid-info {
+  @include alert-solid-color($info);
+}
+.alert-solid-success {
+  @include alert-solid-color($success);
+}
+.alert-solid-danger {
+  @include alert-solid-color($danger);
+}
+.alert-solid-light {
+  background-color: $light;
+  color: $default-text-color;
+  border-color: $default-border;
+}
+.alert-solid-dark {
+  @include alert-solid-color($dark);
+}
+/* Solid Colored Alerts */
+
+/* Outline Alerts */
+@mixin outline-alert($color) {
+  background-color: $custom-white;
+  color: $color;
+  border-color: $color;
+  .btn-close {
+    color: $color;
+  }
+}
+.alert-outline-primary {
+  @include outline-alert($primary);
+}
+.alert-outline-secondary {
+  @include outline-alert($secondary);
+}
+.alert-outline-info {
+  @include outline-alert($info);
+}
+.alert-outline-warning {
+  @include outline-alert($warning);
+}
+.alert-outline-success {
+  @include outline-alert($success);
+}
+.alert-outline-danger {
+  @include outline-alert($danger);
+}
+.alert-outline-light {
+  background-color: $custom-white;
+  color: $default-text-color;
+  border-color: $light;
+}
+.alert-outline-dark {
+  @include outline-alert($dark);
+}
+/* Outline Alerts */
+
+/* Customized Alerts */
+@mixin custom-alert($color) {
+  border-inline-start: 0.313rem solid $color !important;
+  color: $text-muted;
+  background-color: $custom-white;
+  border: 1px solid $default-border;
+  font-size: 0.813rem;
+  .btn-close {
+    color: $default-text-color;
+  }
+}
+.alert-primary.custom-alert-icon {
+  @include custom-alert($primary);
+}
+.alert-secondary.custom-alert-icon {
+  @include custom-alert($secondary);
+}
+.alert-warning.custom-alert-icon {
+  @include custom-alert($warning);
+}
+.alert-danger.custom-alert-icon {
+  @include custom-alert($danger);
+}
+.alert-success.custom-alert-icon {
+  @include custom-alert($success);
+}
+.alert-info.custom-alert-icon {
+  @include custom-alert($info);
+}
+.alert-light.custom-alert-icon {
+  @include custom-alert($light);
+}
+.alert-dark.custom-alert-icon {
+  @include custom-alert($dark);
+}
+/* Customized Alerts */
+
+/* Customized Alerts1 */
+.custom-alert1 {
+  margin-block-end: 0;
+  background-color: $custom-white;
+  border: 0;
+  padding: 1.25rem;
+  color: $default-text-color;
+  p {
+    margin-block-end: 2.5rem;
+    color: $text-muted;
+    font-size: 0.8rem;
+  }
+  .custom-alert-icon {
+    width: 3.125rem;
+    height: 3.125rem;
+    margin-bottom: 0.85rem;
+  }
+  .btn-close {
+    padding: 0;
+    margin-block-end: 1rem;
+  }
+  &.alert-primary {
+    border-block-start: 0.313rem solid $primary;
+  }
+  &.alert-secondary {
+    border-block-start: 0.313rem solid $secondary;
+  }
+  &.alert-warning {
+    border-block-start: 0.313rem solid $warning;
+  }
+  &.alert-danger {
+    border-block-start: 0.313rem solid $danger;
+  }
+}
+/* Customized Alerts1 */
+
+/* Image alerts */
+.alert-img {
+  display: flex;
+  align-items: center;
+  .avatar {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+}
+/* Image alerts */
+
+@media screen and (max-width: 400px) {
+  .btn-close.custom-close {
+    margin: 9px 9px 9px 0;
+  }
+}

@@ -1,0 +1,205 @@
+<header class="app-header">
+  <!-- Start::main-header-container -->
+  <div class="main-header-container container-fluid">
+
+    <!-- Start::header-content-left -->
+    <div class="header-content-left">
+
+      <!-- Start::header-element -->
+      <div class="header-element">
+        <div class="horizontal-logo">
+          <a href="/" class="header-logo">
+            <img src="{{config().logo().getLogo()}}" alt="logo" class="desktop-logo">
+            <img src="{{config().logo().getLogo()}}" alt="logo" class="toggle-logo">
+            <img src="{{config().logo().getLogo()}}" alt="logo" class="desktop-dark">
+            <img src="{{config().logo().getLogo()}}" alt="logo" class="toggle-dark">
+            <img src="{{config().logo().getLogo()}}" alt="logo" class="desktop-white">
+            <img src="{{config().logo().getLogo()}}" alt="logo" class="toggle-white">
+          </a>
+        </div>
+      </div>
+
+      <div class="header-element">
+        <!-- Start::header-link -->
+        <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle" data-bs-toggle="sidebar" href="javascript:void(0);"><span></span></a>
+        <!-- End::header-link -->
+      </div>
+
+      <!-- End::header-element -->
+
+      {% if getServerAll()|length > 1 %}
+
+      <!-- End::header-element -->
+      <div class="main-header-center  d-none d-lg-block header-link">
+
+        <select id="select_default_server" class="form-select form-select-sm " aria-label="Default select example">
+          {% for server in getServerAll() %}
+          <option {% if getUser().getServerId()== server.getId() %}selected{% endif %} value="{{server.getId()}}">
+            {{server.getChronicle()}} x{{server.getRateExp()}}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+
+    </div>
+    <!-- End::header-content-left -->
+
+    <!-- Start::header-content-right -->
+    <div class="header-content-right">
+
+
+      <!-- Start::header-element -->
+      <div class="header-element header-search d-lg-none d-block">
+        <!-- Start::header-link -->
+        <a aria-label="anchor" href="javascript:void(0);" class="header-link" data-bs-toggle="modal"
+           data-bs-target="#searchModal">
+          <i class="fe fe-search header-link-icon"></i>
+        </a>
+        <!-- End::header-link -->
+      </div>
+      <!-- End::header-element -->
+
+      {# -------------------------------------------------------------- #}
+
+      <div class="header-element cart-dropdown">
+        <!-- Start::header-link|dropdown-toggle -->
+        <a data-bs-toggle="modal" data-bs-target="#sendToPlayer" href="javascript:void(0);" class="header-link bg-info-transparent" >
+          <span class="fs-14 fw-semibold text-info">Перевести <i class="fe fe-dollar-sign fs-16 me-1 text-danger"></i>в игру</span>
+        </a>
+      </div>
+
+
+      <div class="header-element cart-dropdown">
+        <!-- Start::header-link|dropdown-toggle -->
+        <a id="bonusCodePanel" href="javascript:void(0);" class="header-link dropdown-toggle bg-dark-transparent" data-bs-auto-close="outside" data-bs-toggle="dropdown">
+          <i class="fe fe-shopping-cart header-link-icon"></i>
+          <span class="fs-14 fw-semibold text-info">Бонус-Код</span>
+        </a>
+
+        <div class="main-header-dropdown dropdown-menu dropdown-menu-end" data-popper-placement="none">
+          <div class="p-sm-2">
+            <div class="d-flex align-items-center justify-content-between">
+              <p class="mb-0 fs-15 fw-semibold ">У Вас есть Бонус-Код ?</p>
+            </div>
+          </div>
+          <div><hr class="dropdown-divider"></div>
+
+            <div class="m-3">
+
+              <div class="card-body">
+
+
+                {% if getUser().isAuth() %}
+                <form action="/bonus/code" method="post">
+                <div class="mb-3">
+                  <label for="form-code" class="form-label fs-14 text-dark">Ввести код</label>
+                  <input name="code" type="text" class="form-control" id="form-code" placeholder="code">
+                </div>
+                <button id="bonusCode" class="btn btn-primary" type="button">Получить бонус</button>
+                </form>
+
+                <script defer>
+                  $('#bonusCode').on('click', function() {
+                     AjaxSend('/bonus/code', 'POST', {code:$('#form-code').val()}, true).then(function(response) {
+                        $('#bonusCodePanel').dropdown('hide');
+                        if (response.ok) {
+                           noticeSuccess(response.message);
+                        } else {
+                           noticeError(response.message);
+                        }
+                     })
+                  })
+
+                </script>
+
+                {% else %}
+                 Необходимо сначала <a class="text-success" href="/auth">авторизоваться</a> или <a class="text-success" href="/signup">зарегистрироваться</a> чтобы получить бонус
+                {% endif %}
+
+              </div>
+
+          </div>
+
+        </div>
+        </div>
+
+
+      {% if getCountLang() >= 2 %}
+      <div class="header-element country-selector">
+        <!-- Start::header-link|dropdown-toggle -->
+        <a href="javascript:void(0);" class="header-link dropdown-toggle" data-bs-auto-close="outside"
+           data-bs-toggle="dropdown">
+          <img src="/uploads/images/flags/{{lang_active().lang}}.png" alt="img">
+        </a>
+        <!-- End::header-link|dropdown-toggle -->
+        <ul class="main-header-dropdown dropdown-menu dropdown-menu-end" data-popper-placement="none">
+          {% for lang in getAllowAll() %}
+          <li>
+            <a class="dropdown-item d-flex align-items-center" href="{{action('user_lang', [lang.lang])}}">
+              <span class="avatar avatar-xs lh-1 me-2">
+                <img src="/uploads/images/flags/{{lang.lang}}.png" alt="img">
+              </span>
+              {{lang.name}}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+
+      <!-- Start::header-element -->
+      <div class="header-element main-profile-user">
+        <!-- Start::header-link|dropdown-toggle -->
+        <a href="#" class="header-link dropdown-toggle" id="mainHeaderProfile" data-bs-toggle="dropdown"
+           data-bs-auto-close="outside" aria-expanded="false">
+          <div class="d-flex align-items-center">
+            <div class="me-xxl-2 me-0">
+              <img src="{{ getUser().getAvatar() }}" alt="img" width="32" height="32"
+                   class="rounded-circle user_self_avatar">
+            </div>
+            <div class="d-xxl-block d-none my-auto">
+              <h6 class="fw-semibold mb-0 lh-1 fs-14">{{getUser().getName()}}</h6>
+              <span class="op-7 fw-normal d-block fs-11 text-muted">{{getUser().getEmail()}}</span>
+            </div>
+          </div>
+        </a>
+        <!-- End::header-link|dropdown-toggle -->
+        <ul class="main-header-dropdown dropdown-menu pt-0 header-profile-dropdown dropdown-menu-end"
+            aria-labelledby="mainHeaderProfile">
+          <li class="drop-heading d-xxl-none d-block">
+            <div class="text-center">
+              <h5 class="text-dark mb-0 fs-14 fw-semibold">Json Taylor</h5>
+              <small class="text-muted">Web Designer</small>
+            </div>
+          </li>
+          {% if getUser().isAuth() %}
+<!--          <li class="dropdown-item"><a class="d-flex w-100" href="#"><i-->
+<!--            class="fe fe-file-text fs-18 me-2 text-primary"></i>Уведомление <span-->
+<!--            class="badge bg-danger ms-auto">25</span></a></li>-->
+          <li class="dropdown-item"><a class="d-flex w-100" href="/user/avatar"><i
+            class="fe fe-image fs-18 me-2 text-primary"></i>Аватар</a></li>
+          <li class="dropdown-item"><a class="d-flex w-100" href="#" data-bs-toggle="modal"
+                                       data-bs-target="#settings"><i class="fe fe-settings fs-18 me-2 text-primary"></i>Настройки</a>
+          </li>
+          <li class="dropdown-item"><a class="d-flex w-100" href="/auth/logout"><i
+            class="fe fe-log-out fs-18 me-2 text-primary"></i>Выход</a></li>
+          {% else %}
+
+          <li class="dropdown-item"><a class="d-flex w-100" href="/login"><i
+            class="fe fe-log-in fs-18 me-2 text-primary"></i>Авторизоваться</a></li>
+          <li class="dropdown-item"><a class="d-flex w-100" href="/signup" ><i
+            class="fe fe-user-plus fs-18 me-2 text-primary"></i>Зарегистрироваться</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      <!-- End::header-element -->
+
+
+
+    </div>
+    <!-- End::header-content-right -->
+
+  </div>
+</header>

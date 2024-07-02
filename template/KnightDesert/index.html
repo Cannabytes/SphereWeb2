@@ -1,0 +1,15 @@
+{% extends 'struct.html' %} 
+
+    {% block title %}
+        {{title_start_page()}}
+    {% endblock%} 
+
+{% block content %}
+
+    {% include "streams.html" %}
+    {% include "news.html" %}
+
+    {% include "about-server.html" %} 
+    {% include "events.html" %} 
+
+{% endblock %}

@@ -1,0 +1,28 @@
+<div class="sidebar__forum forum">
+    <div class="heading">
+        <h3 class="title mt mb">{{phrase("forum_title")|raw}}</h3>
+    </div>
+    <div class="forum__themes">
+        {% if forum().isEnabled() %}
+        {% for forum in forum().lastMessage() %}
+        <div class="theme">
+            <a href="{{get_forum_link(thread)}}" class="theme__link"></a>
+            <div class="theme__img"></div>
+            <div class="theme__content">
+                <div class="theme__title">{{forum.title}}</div>
+                <div class="theme__info">
+                    <div class="theme__author-wrp">
+                        {{forum.username}}:
+                        <span class="theme__author">{{forum.message}}</span>
+                    </div>
+                    <div class="theme__date">{{forum.last_post_date|date('h:m:s')}}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% else %}
+            {{ forum().getMessageError() }}
+        {% endif %}
+    </div>
+</div>

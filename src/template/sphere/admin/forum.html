@@ -1,0 +1,122 @@
+{% extends 'struct.html' %}
+
+{% block title %}Forum{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title">
+                            Настройки подключения к форуму
+                        </div>
+                    </div>
+                    <div id="forumForm" class="card-body row gx-3 gy-2 align-items-center mt-0 ">
+                        <div class="col-auto">
+                            <div class="form-check">
+                                <input {% if forum().isEnabled() %}checked{% endif %} name="enabled" class="form-check-input" type="checkbox" id="autoSizingCheck2">
+                                <label class="form-check-label" for="autoSizingCheck2">
+                                    Включить форум
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                            Движок форума
+                            <label class="visually-hidden" for="specificSizeSelect">Preference</label>
+                            <select name="engine" class="form-select" id="specificSizeSelect">
+                                <option {% if forum().getEngine() == 'xenforo' %}selected{% endif %} value="xenforo">XenForo</option>
+                                <option {% if forum().getEngine() == 'ips4' %}selected{% endif %} value="ips4">IPS 4</option>
+                            </select>
+                            </div>
+
+                            <div class="col-sm-2">
+                                Ссылка на форум
+                            <input name="url" type="text" class="form-control" id="url" value="https://forum.example.net" placeholder="https://forum.example.net">
+                            </div>
+                        </div>
+
+                        <hr>
+                        <label class="form-check-label" for="autoSizingCheck2">
+                            Подключение к БД форума
+                        </label>
+                            <div class="col-sm-2">
+                                <label class="" for="host">Host</label>
+                                <input value="{{forum().getHost()}}" name="host" type="text" class="form-control" id="host" placeholder="127.0.0.1">
+                            </div>
+                            <div class="col-sm-1">
+                                <label class="" for="port">PORT</label>
+                                <input value="{{forum().getPort()}}" name="port" type="text" class="form-control" id="port" placeholder="3306">
+                            </div>
+                            <div class="col-sm-2">
+                                <label class="" for="user">User</label>
+                                <input value="{{forum().getUser()}}" name="user" type="text" class="form-control" id="user" placeholder="root">
+                            </div>
+                            <div class="col-sm-2">
+                                <label class="" for="password">Password</label>
+                                <input value="{{forum().getPassword()}}" name="password" type="text" class="form-control" id="password" placeholder="pa$$w0rd">
+                            </div>
+                            <div class="col-sm-2">
+                                <label class="" for="name">Name DB</label>
+                                <input value="{{forum().getName()}}" name="name" type="text" class="form-control" id="name" placeholder="forum">
+                            </div>
+                            <hr>
+                            <div class="col-sm-3">
+                                Сортировка вывода
+                                <select name="sort" class="form-select">
+                                    <option selected value="messages">По сообщениям</option>
+                                    <option value="threads">По темам</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2">
+                                <label class="" for="elements">Кол-во выводимых элементов</label>
+                                <input name="elements" min="1" max="100" type="number" class="form-control" id="elements" placeholder="10" value="{{forum().getElements()}}">
+                            </div>
+                            <hr>
+                            <div class="col-auto">
+                                <button id="saveForum" type="button" class="btn btn-primary">Подключить</button>
+                            </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        </div>
+
+{% endblock %}
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block js %}
+<script>
+    $(document).ready(function() {
+        $('#saveForum').on('click', function(e) {
+            e.preventDefault();
+            console.log('Attempting to submit form');
+
+            let formData = {};
+            $('#forumForm').find('input, select').each(function() {
+                if (this.type === 'checkbox') {
+                    formData[this.name] = this.checked ? 'true' : 'false';
+                } else {
+                    formData[this.name] = $(this).val();
+                }
+            });
+            console.log(formData)
+            AjaxSend("/admin/forum", "POST", formData, true).then(function (response){
+                console.log(response);
+            })
+
+        });
+    });
+</script>
+
+{% endblock %}
+

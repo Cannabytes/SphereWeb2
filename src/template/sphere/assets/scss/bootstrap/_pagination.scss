@@ -1,0 +1,182 @@
+.page-link {
+    color: $default-text-color;
+    background-color: $custom-white;
+    border: 1px solid $default-border;
+    &:focus {
+        box-shadow: none;
+        background-color: $light;
+    }
+    &:hover {
+        color: $primary;
+        background-color: $light;
+        border-color: $default-border;
+    }
+}
+.page-item.active .page-link {
+    color: $white;
+    background-color: $primary;
+    border-color: $primary;
+}
+.disabled>.page-link, .page-link.disabled {
+    color: $default-text-color;
+    background-color: $custom-white;
+    border-color: $default-border;
+    opacity: 0.7;
+}
+
+[dir="rtl"] { 
+    .pagination{
+        .page-link{
+            .bx-chevron-left::before{
+                content: "\ea50";
+            }
+            .bx-chevron-right::before{
+                content: "\ea4d";
+            }
+            .ri-arrow-right-s-line:before{
+                content: "\ea64";
+            }
+            .ri-arrow-left-s-line:before{
+                content: "\ea6e";
+            }
+        }
+    }
+}
+/* Start:: pagination-style-1 */
+.pagination-style-1 .pagination {
+    .page-item {
+        margin: 0 0.25rem;
+        .page-link {
+            border: 0;
+            border-radius: $default-radius;
+            font-size: 0.8125rem;
+            i {
+                font-weight: 600;
+            }
+        }
+        &.active {
+            .page-link {
+                border-radius: $default-radius;
+                background-color: $primary;
+                color: $white;
+            }
+            &:hover {
+                .page-link {
+                    border-radius: $default-radius;
+                    background-color: $primary;
+                    color: $white;
+                }
+            } 
+        }
+        &:hover {
+            .page-link {
+                background-color: $light;
+                color: $default-text-color;
+            }
+        }
+    }
+}
+/* End:: pagination-style-1 */
+
+/* Start:: pagination-style-2 */
+.pagination-style-2 .pagination {
+    border-radius: $default-radius;
+    .page-item {
+        margin: 0 0.25rem;
+        .page-link {
+            border: 0 !important;
+            font-size: 0.8125rem;
+        }
+        &.active {
+            .page-link {
+                background-color: $custom-white;
+                color: $primary;
+                position: relative;
+                font-weight: bold;
+                &:before {
+                    position: absolute;
+                    content: "";
+                    inset-block-end: 0;
+                    inset-inline-start: 0;
+                    width: 100%;
+                    height: 0.1rem;
+                    background-color: $primary;
+                }
+            }
+        }
+        &:hover {
+            .page-link {
+                background-color: transparent;
+            }
+        }
+    }
+}
+/* End:: pagination-style-2 */
+
+/* Start:: pagination-sytle-3 */
+.pagination-style-3 .pagination {
+    border-radius: 50px;
+    padding: 0.25rem;
+    align-items: center;
+    .page-item {
+        margin: 0 0.25rem;
+        .page-link {
+            border: 0;
+            border-radius: 50px;
+            font-size: 0.8125rem;
+            i {
+                font-weight: 600;
+            }
+        }
+        &.active {
+            .page-link {
+                background-color: $primary;
+                color: $white;
+            }
+            &:hover {
+                .page-link {
+                    background-color: $primary;
+                }
+            }
+        }
+        &:hover {
+            .page-link {
+                background-color: $light;
+            }
+        }
+    }
+}
+/* End:: pagination-sytle-3 */
+
+/* Start:: pagination-style-4 */
+.pagination-style-4 .pagination {
+    .page-item {
+        .page-link {
+            border: 0 !important;
+            font-size: 0.8125rem;
+            border-radius: $default-radius;
+            i {
+                font-weight: 600;
+            }
+        }
+        &.active {
+            .page-link {
+                border: 0;
+                border-radius: $default-radius;
+                background-color: $primary;
+                color: $white;
+            }
+            &:hover {
+                .page-link {
+                    background-color: $primary;
+                }
+            }
+        }
+        &:hover {
+            .page-link {
+                background-color: transparent;
+            }
+        }
+    }
+}
+/* End:: pagination-style-4 */

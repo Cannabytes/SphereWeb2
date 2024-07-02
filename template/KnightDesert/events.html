@@ -1,0 +1,16 @@
+<section class="content__events events">
+  <div class="heading">
+    <h3 class="title mt mb">{{phrase("events_title")|raw}}</h3>
+  </div>
+  <div class="events__list">
+    {% for el in events[lang_active().lang] %}
+    <a href="{{el.link}}" {% if el.target %} target="{{el.target}}" {% endif %} class="events__event event">
+      <div class="event__img" style=" background-image: url({{template}}{{el.img}});"></div>
+      <div class="event__inner"></div>
+      <div class="event__content">
+        <div class="event__title">{{el.title}}</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>

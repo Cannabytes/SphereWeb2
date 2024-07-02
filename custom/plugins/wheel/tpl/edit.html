@@ -1,0 +1,364 @@
+{% extends 'struct.html' %}
+
+{% block title %}Редактирование рулетки{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="row">
+
+    <div class="col-xl-12">
+      <div class="card custom-card">
+
+        <div class="card-header justify-content-between">
+
+          <a href="/fun/wheel/admin"><i class="las la-arrow-alt-circle-left la-3x"></i></a>
+
+          <div class="card-title">
+            Рулетка - {{name}}
+          </div>
+
+
+          <div class="prism-toggle">
+            <div class="input-group ">
+              <input type="text" value="{{name}}" class="form-control form-control-sm" id="wheel_name" name="wheel_name" placeholder="Название рулетки" aria-label="Name" >
+              <input type="number" value="{{cost}}" step="0.1" class="form-control form-control-sm " id="wheel_cost" name="wheel_cost" placeholder="Стоимость прокрутки" aria-label="Name" >
+              <button class="btn btn-sm btn-success-light" type="button"  id="save">Сохранить</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="card-body">
+
+          <div class="col-xl-12">
+            <div class="card custom-card">
+              <div class="row">
+                <div class="col-xl-3">
+                  <div class="nav flex-column nav-pills me-3 tab-style-7" id="v-pills-tab" role="tablist"
+                       aria-orientation="vertical">
+                    {% for i in range(1,20) %}
+                    {% set item = wheelsItems[i-1] %}
+
+                    <button class="nav-link text-start {% if i == 1 %}active{% endif %}" id="item-data-tab_{{i}}"
+                            data-bs-toggle="pill"
+                            data-bs-target="#item-data_{{i}}" type="button" role="tab"
+                            aria-controls="item-data_{{i}}"
+                            aria-selected="true">
+                      {{i}} |
+                      <span class="avatar avatar-sm bd-placeholder-img  float-md-end rounded ">
+                                    <img src="{{item.icon}}" alt="img">
+                                  {% if item.enchant > 0 %}
+                                    <span class="badge rounded-pill bg-danger avatar-badge">{{item.enchant}}</span>
+                                  {% endif %}
+                                 </span>
+
+                       <span class="text-muted op-7">{{item.name}}</span> x{{item.count}}
+                    </button>
+                    {% endfor %}
+
+                  </div>
+                </div>
+                <div class="col-xl-9">
+                  <div class="tab-content" id="v-pills-tabContent">
+                    {% for i in range(1,20) %}
+                    {% set item = wheelsItems[i-1] %}
+
+                    <div class="tab-pane {% if i == 1 %}active show{% endif %}" id="item-data_{{i}}"
+                         role="tabpanel" tabindex="0"
+                         aria-labelledby="item-data-tab_{{i}}">
+
+                      <div class="my-md-auto mt-4 ms-md-1">
+
+                        <div class="row">
+
+                          <div class="col-xl-4 col-lg-6  col-sm-12">
+                            <label class="form-label">Item ID</label>
+                            <input name="item" type="number" class="form-control itemId itemId_{{i}}"
+                                   data-obj="{{i}}" placeholder="57" value="{{item.item_id}}">
+                          </div>
+
+                          <div class="col-xl-4 col-lg-6  col-sm-12">
+                            <label class="form-label">Enchant</label>
+                            <input name="enchant" type="number" class="form-control enchant_{{i}} enchant"
+                                   data-obj="{{i}}"
+                                   {% if item.crystal_type== null %}disabled{% endif %}
+                                   placeholder="0" value="{{item.enchant}}">
+                          </div>
+
+                          <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                            <label for="probability" class="form-label">Вероятность выигрыша</label>
+                            <input name="probability" type="number" step="0.1" class="form-control"
+                                   id="probability"
+                                   placeholder="0.25" value="{{item.probability}}">
+                          </div>
+
+                        </div>
+
+                        <div class="d-sm-flex mb-1 mt-2">
+                          <div class="me-3">
+                                                        <span class="avatar avatar-lg">
+                                                            <img class="item_icon_{{i}}" src="{{item.icon}}" alt="img">
+                                                        </span>
+                          </div>
+                          <h5 class="font-weight-semibold ms-2 mb-1 mt-2 pb-0 item_enchant_{{i}}">{% if
+                            item.enchant > 0 %}+{{item.enchant}}{% endif %}</h5>
+
+
+                          <h5 class="font-weight-semibold ms-2 mb-1 mt-2 pb-0 itemName_{{i}}">
+                            {% if item.crystal_type != null %}
+                            <span class="badge bg-dark">{{ item.crystal_type }}</span>
+                            {% endif %}
+
+                            {{item.add_name}}
+                            {{item.name}}</h5>
+                        </div>
+
+                        <h5 class="font-weight-semibold ms-2 mb-1 mt-2 pb-0">Способ выигрыша количества
+                          предметов</h5>
+
+                        <div class="accordion accordionicon-left accordions-wheelsItems-seperate"
+                             id="accordioniconLeftExample">
+                          <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingleftOne">
+                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                      data-bs-target="#collapseleftOne" aria-expanded="false"
+                                      aria-controls="collapseleftOne">
+                                Точное количество предметов
+                              </button>
+                            </h2>
+                            <div id="collapseleftOne" class="accordion-collapse collapse"
+                                 aria-labelledby="headingleftOne" data-bs-parent="#accordioniconLeftExample"
+                                 style="">
+                              <div class="accordion-body">
+                                <div class="form-check form-check-md">
+                                  <input class="form-check-input" type="radio" name="radio_way_{{i}}"
+                                         id="radio-md_one_{{i}}" value="1" {% if item.count_type== 1 or item.count_type == null %}checked{%
+                                         endif %}>
+                                  <label class="form-check-label" for="radio-md_one_{{i}}">
+                                    Выбрать этот способ
+                                  </label>
+                                </div>
+
+                                Введите количество предметов, которые будут можно будет выиграть
+                                <div class="row g-3 align-wheelsItems-center ">
+                                  <div class="col-auto">
+                                    <input name="count" type="text" class="form-control form-control-sm mb-1 "
+                                           placeholder="100" value="{{item.count}}">
+                                  </div>
+
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingleftTwo">
+                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                      data-bs-target="#collapseLeftTwo" aria-expanded="false"
+                                      aria-controls="collapseLeftTwo">
+                                Диапазон количества предметов
+                              </button>
+                            </h2>
+                            <div id="collapseLeftTwo"
+                                 class="accordion-collapse collapse {% if item.count_type == 2 %}show{% endif %}"
+                                 aria-labelledby="headingleftTwo" data-bs-parent="#accordioniconLeftExample">
+                              <div class="accordion-body">
+
+                                <div class="form-check form-check-md">
+                                  <input class="form-check-input" type="radio" name="radio_way_{{i}}"
+                                         id="radio-md_dia_{{i}}" value="2" {% if item.count_type== 2
+                                         %}checked{% endif %}>
+                                  <label class="form-check-label" for="radio-md_dia_{{i}}">
+                                    Выбрать этот способ
+                                  </label>
+                                </div>
+
+                                Вы можете указать диапазон количества предметов, которые будут можно будет
+                                выиграть
+
+                                <div class="input-group input-group-sm mb-3 col-xl-6">
+                                  <span class="input-group-text">От</span>
+                                  <input name="count_min" type="number" step="1" class="form-control "
+                                         placeholder="1" value="{{item.count_min}}">
+                                  <span class="input-group-text">до</span>
+                                  <input name="count_max" type="number" step="1" class="form-control"
+                                         placeholder="10" value="{{item.count_max}}">
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+
+
+                        </div>
+
+                      </div>
+
+                    </div>
+                    {% endfor %}
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  $(document).on('input', '.enchant', debounce(function () {
+    let enchant = $(this).val() || 0;
+    let obj = $(this).data('obj');
+    let value = $(this).val();
+
+    if ($('.itemId_' + obj).val() == undefined || $('.itemId_' + obj).val() == '' || $('.itemId_' + obj).val() == 0) {
+      $('.enchant_' + obj).val(0);
+      return;
+    }
+
+    if (value.length > 1 && value.startsWith('0')) {
+      enchant = value.slice(1);
+      $('.enchant_' + obj).val(enchant);
+    }
+
+    if (enchant > 0) {
+      $('.item_enchant_' + obj).text('+' + enchant);
+    }
+
+  }));
+
+  $(document).on('input', '.itemId', debounce(function () {
+
+    let itemId = $(this).val();
+    let obj = $(this).data('obj');
+    let enchant = $('.enchant_' + obj).val() || 0;
+    let dataToSend = {
+      itemID: itemId,
+    };
+    $.ajax({
+      type: 'POST',
+      url: '/admin/client/item/info',
+      dataType: 'json',
+      data: dataToSend,
+      success: function (response) {
+        if (response.ok) {
+          let item = response.item;
+
+          if (item.type == 'etcitem' || item.crystal_type === null) {
+            enchant = 0;
+            $('.enchant_' + obj).val(0);
+            $('.enchant_' + obj).prop('disabled', true);
+          } else {
+            $('.enchant_' + obj).prop('disabled', false);
+          }
+
+          if (enchant > 0) {
+            enchant = '+' + enchant + ' ';
+            $('.item_enchant_' + obj).html(enchant + ' ');
+          } else {
+            enchant = '';
+            $('.item_enchant_' + obj).html('');
+          }
+
+          let grade = '';
+          console.log(item.crystal_type);
+          if (item.crystal_type !== null) {
+            grade = '<span class="badge bg-dark">' + item.crystal_type + '</span> ';
+          }
+
+          let addName = item.addName ? '<span class="badge bg-warning">' + item.addName + '</span>' : ' ';
+          $('.itemName_' + obj).html(grade + addName + ' ' + item.itemName);
+          $('.item_icon_' + obj).attr('src', item.icon);
+        }
+
+      },
+      error: function (xhr, status, error) {
+        console.error('Произошла ошибка:', error);
+      },
+    });
+
+  }, 300)); // задержка в 500 мс
+
+  function debounce(func, wait, immediate) {
+    var timeout;
+    return function () {
+      var context = this, args = arguments;
+      var later = function () {
+        timeout = null;
+        if (!immediate) {
+          func.apply(context, args);
+        }
+      };
+      var callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) {
+        func.apply(context, args);
+      }
+    };
+  }
+</script>
+
+<script>
+  $(document).on('click', '#save', function () {
+    var data = {};
+
+    $('#v-pills-tabContent [name]').each(function () {
+      var name = $(this).attr('name');
+      var value;
+
+      if ($(this).is(':checkbox') || $(this).is(':radio')) {
+        if ($(this).is(':checked')) {
+          value = $(this).val();
+        } else {
+          return; // Пропускаем не отмеченные чекбоксы и радио-кнопки
+        }
+      } else {
+        value = $(this).val();
+      }
+
+      if (name.startsWith('radio_way_')) {
+        name = 'way';
+      }
+
+      if (data[name]) {
+        if (!Array.isArray(data[name])) {
+          data[name] = [data[name]];
+        }
+        data[name].push(value);
+      } else {
+        data[name] = value;
+      }
+    });
+
+    data['object_id'] = '{{object_id}}';
+    data['wheel_name'] = $('#wheel_name').val();
+    data['wheel_cost'] = $('#wheel_cost').val();
+    data['type'] = 'update';
+
+    $.ajax({
+      type: 'POST',
+      url: '/fun/wheel/saveWheel',
+      data: $.param(data),  // Сериализуем объект в строку формата URL-кодировки
+      success: function (response) {
+        responseAnalysis(response);
+      },
+      error: function (xhr, status, error) {
+        console.error('Произошла ошибка:', error);
+      },
+    });
+  });
+</script>
+
+
+{% endblock %}

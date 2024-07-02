@@ -1,0 +1,291 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Статистика онлайна сервера</div>
+        </div>
+        <div class="card-body">
+          <div id="area-stacked"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="col-xl-12">
+  <div class="card custom-card">
+    <div class="card-header">
+      <div class="card-title">Онлайн по часам</div>
+    </div>
+    <div class="card-body">
+      <div id="heatmap-range"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+
+<script src="{{template}}/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+<script>
+  // Получаем данные из шаблона Twig
+  var serverData = {{ data|json_encode|raw }};
+  var serverTime = "{{ server_time }}";
+  var timeZone = "{{ timeZone }}";
+
+  // Функция для преобразования данных в формат ApexCharts
+  var convertToChartData = function(data) {
+    var seriesData = [];
+    for (var date in data) {
+      for (var time in data[date]) {
+        var dateTimeStr = date + " " + time + ":00";
+        var timestamp = new Date(dateTimeStr).getTime();
+        seriesData.push([timestamp, data[date][time]]);
+      }
+    }
+    return seriesData;
+  };
+
+  // Пример данных о Player Online
+  var playerOnlineData = convertToChartData(serverData);
+
+  var optionsAreaStacked = {
+    series: [
+      {
+        name: 'Player Online',
+        data: playerOnlineData
+      }
+    ],
+    chart: {
+      type: 'area',
+      height: 350,
+      stacked: true,
+      events: {
+        selection: function (chart, e) {
+          console.log(new Date(e.xaxis.min))
+        }
+      },
+    },
+    colors: ['#6c5ffc', '#05c3fb', '#e6eaeb'],
+    grid: {
+      borderColor: '#f2f5f7',
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      curve: 'smooth'
+    },
+    fill: {
+      type: 'gradient',
+      gradient: {
+        opacityFrom: 0.2,
+        opacityTo: 0.6,
+      }
+    },
+    legend: {
+      position: 'top',
+      horizontalAlign: 'left',
+      offsetX: -10
+    },
+    xaxis: {
+      type: 'datetime',
+      labels: {
+        formatter: function(value) {
+          // Форматируем метки оси X, показываем только дни (DD-MM-YYYY)
+          var date = new Date(value);
+          var day = date.getDate();
+          var month = date.getMonth() + 1; // Месяцы нумеруются с 0
+          var year = date.getFullYear();
+          return day + '-' + (month < 10 ? '0' + month : month) + '-' + year;
+        }
+      },
+      tooltip: {
+        enabled: false
+      }
+    },
+    tooltip: {
+      x: {
+        format: 'dd MMM yyyy' // Форматирование даты в тултипе
+      }
+    },
+  };
+
+  // Создание первого графика
+  var chartAreaStacked = new ApexCharts(document.querySelector("#area-stacked"), optionsAreaStacked);
+  chartAreaStacked.render();
+
+
+
+  // Функция для генерации данных для ApexCharts
+  function generateDataFromResponse(data) {
+    var series = [];
+    for (var date in data) {
+      if (data.hasOwnProperty(date)) {
+        var hoursData = [];
+        var hours = data[date];
+        for (var hour in hours) {
+          // Добавляем проверку на наличие свойства и добавляем значение даже если оно равно 0
+          if (hours.hasOwnProperty(hour)) {
+            hoursData.push({
+              x: hour,
+              y: hours[hour] !== undefined ? hours[hour] : 0 // Если значение неопределено, устанавливаем 0
+            });
+          }
+        }
+        series.push({
+          name: date,
+          data: hoursData
+        });
+      }
+    }
+    return series;
+  }
+
+  var seriesData = generateDataFromResponse(serverData);
+
+  // Опции для второго графика (тепловая карта)
+  var optionsHeatmap = {
+    series: seriesData,
+    chart: {
+      height: 150,
+      type: 'heatmap',
+    },
+    stroke: {
+      width: 0
+    },
+    plotOptions: {
+      heatmap: {
+        radius: 25,
+        enableShades: false,
+        colorScale: {
+          ranges: [
+            {
+              from: 0,
+              to: 10,
+              color: '#950000' // Случайный цвет
+            },
+            {
+              from: 10,
+              to: 50,
+              color: '#E59A3C' // Случайный цвет
+            },
+            {
+              from: 51,
+              to: 100,
+              color: '#4C8BF5' // Случайный цвет
+            },
+            {
+              from: 101,
+              to: 150,
+              color: '#23D3C4' // Случайный цвет
+            },
+            {
+              from: 151,
+              to: 200,
+              color: '#9054F5' // Случайный цвет
+            },
+            {
+              from: 201,
+              to: 300,
+              color: '#D47E2E' // Случайный цвет
+            },
+            {
+              from: 301,
+              to: 400,
+              color: '#18D665' // Случайный цвет
+            },
+            {
+              from: 401,
+              to: 500,
+              color: '#E23490' // Случайный цвет
+            },
+            {
+              from: 501,
+              to: 600,
+              color: '#2CAEE4' // Случайный цвет
+            },
+            {
+              from: 601,
+              to: 800,
+              color: '#E9D22C' // Случайный цвет
+            },
+            {
+              from: 801,
+              to: 1000,
+              color: '#45A4F7' // Случайный цвет
+            },
+            {
+              from: 1001,
+              to: 2000,
+              color: '#F58B54' // Случайный цвет
+            }
+          ],
+        },
+      }
+    },
+    grid: {
+      borderColor: '#f2f5f7',
+    },
+    dataLabels: {
+      enabled: true,
+      style: {
+        colors: ['#fff']
+      }
+    },
+    xaxis: {
+      type: 'category',
+      labels: {
+        show: true,
+        style: {
+          colors: "#8c9097",
+          fontSize: '11px',
+          fontWeight: 600,
+          cssClass: 'apexcharts-xaxis-label',
+        },
+        formatter: function(value) {
+          return value + ':00';
+        },
+      },
+      categories: ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'],
+    },
+    yaxis: {
+      labels: {
+        show: true,
+        style: {
+          colors: "#8c9097",
+          fontSize: '13px',
+          fontWeight: 600,
+          cssClass: 'apexcharts-yaxis-label',
+        },
+      }
+    },
+    title: {
+      align: 'left',
+      style: {
+        fontSize: '13px',
+        fontWeight: 'bold',
+        color: '#8c9097'
+      },
+    },
+  };
+
+  // Создание второго графика
+  var chartHeatmap = new ApexCharts(document.querySelector("#heatmap-range"), optionsHeatmap);
+  chartHeatmap.render();
+</script>
+
+{% endblock %}
+
+{% block css %}
+{% endblock %}

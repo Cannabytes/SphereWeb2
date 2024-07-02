@@ -1,0 +1,2983 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+
+
+<div class="container-fluid">
+  <div class="row mb-5">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header d-sm-flex d-block">
+          <ul class="nav nav-tabs nav-tabs-header mb-0 d-sm-flex d-block" role="tablist">
+            <li class="nav-item m-1">
+              <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#langSystem" aria-selected="true">Язык</a>
+            </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#donateSystem" aria-selected="true">Пожертвование</a>
+            </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#referralSystem" aria-selected="true">Реферальная</a>
+            </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#functionsdata" aria-selected="true">Функции</a>
+            </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#captchaSystem" aria-selected="true">Капча</a>
+            </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#onlineCheating" aria-selected="true">Накрутка</a>
+            </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#registration" aria-selected="true">Регистрация</a>
+            </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#email" aria-selected="true">Почта</a>
+            </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#cache" aria-selected="true">Кэш</a>
+            </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#other" aria-selected="true">Разное</a>
+            </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#template" aria-selected="true">Шаблон</a>
+            </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#logoImg" aria-selected="true">Лого</a>
+            </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#palette" aria-selected="true">Палитра</a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="tab-content">
+            <div class="tab-pane show active" id="langSystem"
+                 role="tabpanel">
+              <div class="p-sm-1 p-0">
+
+                <div id="langSettings" class="row mb-1">
+
+                  <div class="col-xl-6">
+                    <label class="form-label">Используемые языки :</label>
+
+                    {% for lang in getLangList() %}
+                    <div class="form-check">
+                      <input {% if isAllowAllLang(lang.lang) %}checked{% endif %} name="list[]" class="form-check-input"
+                             type="checkbox" value="{{ lang.name }}" id="lang_{{ lang.lang }}">
+                      <label class="form-check-label" for="lang_{{ lang.lang }}">
+                        {{ lang.name }}
+                      </label>
+                    </div>
+                    {% endfor %}
+
+                  </div>
+
+                  <div class="col-xl-6">
+                    <label class="form-label">Язык сайта по-умолчанию :</label>
+                    <select class="form-control" data-trigger name="default" id="langDefault">
+                      {% for lang in getLangList() %}
+                      <option {% if lang.lang== config().lang().getDefault() %}selected{% endif %}
+                              value="{{lang.lang}}">{{lang.name}}
+                      </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                </div>
+
+                <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
+                  <span id="saveLangData" class="btn btn-success-light m-1 btn-sm">{{phrase(271)}}<i
+                    class="bi bi-sd-card ms-2"></i></span>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="donateSystem"
+                 role="tabpanel">
+              <div class="row">
+                <div class="col-xl-6">
+                  <div class="card custom-card shadow-none mb-0 border">
+                    <div class="card-body">
+
+                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div>
+                          <p class="fs-14 mb-1 fw-semibold">Платежная система по умолчанию</p>
+                          <p class="fs-12 text-muted mb-0">Платежная система будет выбрана по умолчанию для
+                            пользователей</p>
+                        </div>
+                        <div class="custom-toggle-switch ms-sm-2 ms-0">
+                          <select class="form-control" data-trigger="" name="paySystemDefault" id="paySystemDefault">
+                            {% for donate in donateSysNames %}
+                            <option {% if config().donate().getPaySystemDefault()== donate.name %}selected{% endif %}
+                                    value="{{donate.name}}">{{donate.name}}
+                            </option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+
+                      <hr>
+                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div>
+                          <p class="fs-14 mb-1 fw-semibold">Диапазон пожертвования</p>
+                          <p class="fs-12 text-muted mb-0">Укажите мин. и макс. число, которое пользователю разрешено
+                            вводить для пожертвований</p>
+                        </div>
+
+                        <div class="col-xl-3">
+                          <label for="first-name" class="form-label">Мин. сумма</label>
+                          <input value="{{config().donate().getMinSummaPaySphereCoin()}}" type="number"
+                                 class="form-control" id="minSummaPaySphereCoin" placeholder="1">
+                        </div>
+                        <div class="col-xl-3">
+                          <label for="last-name" class="form-label">Макс. сумма</label>
+                          <input value="{{config().donate().getMaxSummaPaySphereCoin()}}" type="number"
+                                 class="form-control" id="maxSummaPaySphereCoin" placeholder="999999">
+                        </div>
+                      </div>
+
+                      <hr>
+
+                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div>
+                          <p class="fs-14 mb-1 fw-semibold">Стоимость 1 SphereCoin по отношению к 1 доллару</p>
+                          <p class="fs-12 text-muted mb-0">Укажите сколько получит пользователь SphereCoin за 1
+                            доллар</p>
+                        </div>
+
+                        <div class="col-xl-3">
+                          <input min="0.01" step="0.01" type="number" value="{{config().donate().getSphereCoinCost()}}"
+                                 class="form-control" id="sphereCoinCost" placeholder="1">
+                        </div>
+                      </div>
+
+                      <hr>
+
+                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div>
+                          <p class="fs-14 mb-1 fw-semibold">Соотношение валют</p>
+                        </div>
+                        <div class="col-xl-2">
+                          <label for="ratioUSD" class="form-label">USD</label>
+                          <input min="0.01" step="0.01" type="number" class="form-control" disabled id="ratioUSD"
+                                 value="{{config().donate().getRatioUSD()}}" placeholder="1">
+                        </div>
+                        <div class="col-xl-2">
+                          <label for="ratioEUR" class="form-label">EUR</label>
+                          <input min="0.01" step="0.01" type="number" class="form-control" id="ratioEUR"
+                                 value="{{config().donate().getRatioEUR()}}" placeholder="1.05">
+                        </div>
+                        <div class="col-xl-2">
+                          <label for="ratioUAH" class="form-label">UAH</label>
+                          <input min="0.01" step="0.01" type="number" class="form-control" id="ratioUAH"
+                                 value="{{config().donate().getRatioUAH()}}" placeholder="38.5">
+                        </div>
+                        <div class="col-xl-2">
+                          <label for="ratioRUB" class="form-label">RUB</label>
+                          <input min="0.01" step="0.01" type="number" class="form-control" id="ratioRUB"
+                                 value="{{config().donate().getRatioRUB()}}" placeholder="100">
+                        </div>
+                      </div>
+
+                      <hr>
+
+                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div>
+                          <p class="fs-14 mb-1 fw-semibold">Включить накопительную систему скидок ?</p>
+                          <p class="fs-12 text-muted mb-0">
+                            Накопительная система скидок, дает дополнительный бонус к сумме пополнения пользователем
+                            исходя из общей суммы пополнения аккаунтом пользователя за всё время.
+                            К примеру: Если выставлено сумма 100 и процент 10, и пользователь за всё время задонатил на
+                            100 SphereCoin, тогда мы даем ему 10% дополнительно, таким образом он получит 100 + 10.
+                          </p>
+                        </div>
+                        <div class="custom-toggle-switch ms-sm-2 ms-0">
+                          <input {% if config().donate().isEnableCumulativeDiscountSystem() %}checked{% endif %}
+                                 id="enableCumulativeDiscountSystem" name="enableCumulativeDiscountSystem"
+                                 type="checkbox">
+                          <label for="enableCumulativeDiscountSystem" class="label-primary mb-1"></label>
+                        </div>
+                      </div>
+                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div class="mb-sm-0 mb-2">
+                          <div class="mb-0">
+                            <div class="row">
+
+                              <div class="table-responsive">
+                                <table class="table text-nowrap table-bordered" id="table_CumulativeDiscountSystem">
+                                  <thead>
+                                  <tr>
+                                    <th data-name="coin" scope="col">Кол-во SphereCoin</th>
+                                    <th data-name="percent" scope="col">Процент бонуса</th>
+                                    <th scope="col"></th>
+                                  </tr>
+                                  </thead>
+                                  <tbody>
+
+                                  {% for table in config().donate().getTableCumulativeDiscountSystem() %}
+                                  <tr>
+                                    <th scope="row">{{table.coin}}</th>
+                                    <td>{{table.percent}}</td>
+                                    <td>
+                                      <div class="hstack gap-2 flex-wrap">
+                                        <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i
+                                          class="ri-edit-line"></i></a>
+                                        <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i
+                                          class="ri-delete-bin-5-line"></i></a>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  {% endfor %}
+
+                                  </tbody>
+                                </table>
+                                <button id="AddNewCumulativeDiscountSystem" type="button"
+                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">Добавить
+                                </button>
+                              </div>
+
+
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <hr>
+                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div>
+                          <p class="fs-14 mb-1 fw-semibold">Включить разовый бонус ?</p>
+                          <p class="fs-12 text-muted mb-0">
+                            Разовый бонус - это бонусный процент от кол-ва пополненных SphereCoin.
+                            Если у нас выставлено 5% за пополнение от 100 SphereCoin, тогда пользователь бонусом получит
+                            дополнительно ещё и 5 SphereCoin.
+                          </p>
+                        </div>
+                        <div class="custom-toggle-switch ms-sm-2 ms-0">
+                          <input {% if config().donate().isEnableOneTimeBonus() %}checked{% endif %}
+                                 id="enableOneTimeBonus" name="enableOneTimeBonus" type="checkbox">
+                          <label for="enableOneTimeBonus" class="label-primary mb-1"></label>
+                        </div>
+                      </div>
+                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div class="mb-sm-0 mb-2">
+                          <div class="mb-0">
+                            <div class="row">
+
+                              <div class="table-responsive" id="table_EnableOneTimeBonus">
+                                <table class="table text-nowrap table-bordered">
+                                  <thead>
+                                  <tr>
+                                    <th data-name="coin" scope="col">Кол-во SphereCoin</th>
+                                    <th data-name="percent" scope="col">Процент бонуса</th>
+                                    <th scope="col"></th>
+                                  </tr>
+                                  </thead>
+                                  <tbody>
+                                  {% for table in config().donate().getTableEnableOneTimeBonus() %}
+                                  <tr>
+                                    <th data-name="coin" scope="row">{{table.coin}}</th>
+                                    <td data-name="percent">{{table.percent}}</td>
+                                    <td>
+                                      <div class="hstack gap-2 flex-wrap">
+                                        <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i
+                                          class="ri-edit-line"></i></a>
+                                        <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i
+                                          class="ri-delete-bin-5-line"></i></a>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  {% endfor %}
+                                  </tbody>
+                                </table>
+                                <button id="AddNewEnableOneTimeBonus" type="button"
+                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">Добавить
+                                </button>
+                              </div>
+
+
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <hr>
+
+
+                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div>
+                          <p class="fs-14 mb-1 fw-semibold">Включить систему скидок на покупку предметов ?</p>
+                          <p class="fs-12 text-muted mb-0">
+                            Предоставляется скидка на покупку товара в Магазине, скидка формируется от общей суммы
+                            пожертвований пользователем за всё время.
+                            К примеру: Если пользователь пожертвовал за всё время N SphereCoin, тогда в магазине при
+                            покупке будет даваться скидка X%.
+
+                          </p>
+                        </div>
+                        <div class="custom-toggle-switch ms-sm-2 ms-0">
+                          <input {% if config().donate().isEnableSystemDiscountsOnItemPurchases() %}checked{% endif %}
+                                 id="enableSystemDiscountsOnItemPurchases" name="enableSystemDiscountsOnItemPurchases"
+                                 type="checkbox">
+                          <label for="enableSystemDiscountsOnItemPurchases" class="label-primary mb-1"></label>
+                        </div>
+                      </div>
+                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div class="mb-sm-0 mb-2">
+                          <div class="mb-0">
+                            <div class="row">
+
+                              <div class="table-responsive">
+                                <table class="table text-nowrap table-bordered"
+                                       id="table_SystemDiscountsOnItemPurchases">
+                                  <thead>
+                                  <tr>
+                                    <th data-name="coin" scope="col">Кол-во SphereCoin</th>
+                                    <th data-name="percent" scope="col">Процент бонуса</th>
+                                    <th scope="col"></th>
+                                  </tr>
+                                  </thead>
+                                  <tbody>
+                                  {% for table in config().donate().getTableSystemDiscountsOnItemPurchases() %}
+                                  <tr>
+                                    <th scope="row">{{table.coin}}</th>
+                                    <td>{{table.percent}}</td>
+                                    <td>
+                                      <div class="hstack gap-2 flex-wrap">
+                                        <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i
+                                          class="ri-edit-line"></i></a>
+                                        <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i
+                                          class="ri-delete-bin-5-line"></i></a>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  {% endfor %}
+
+                                  </tbody>
+                                </table>
+                                <button id="AddNewSystemDiscountsOnItemPurchases" type="button"
+                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">Добавить
+                                </button>
+                              </div>
+
+
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <hr>
+
+
+                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div>
+                          <p class="fs-14 mb-1 fw-semibold">Включить разовые скидки на покупку предметов по кол-ву</p>
+                          <p class="fs-12 text-muted mb-0">
+                            Предоставляется скидка на покупку товара в Магазине, скидка формируется от общей суммы
+                            пожертвований пользователем за всё время.
+                            К примеру: Если пользователь пожертвовал за всё время N SphereCoin, тогда в магазине при
+                            покупке будет даваться скидка X%.
+                          </p>
+                        </div>
+                        <div class="custom-toggle-switch ms-sm-2 ms-0">
+                          <input {% if config().donate().isEnableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity()
+                                 %}checked{% endif %} id="enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity"
+                                 name="enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity" type="checkbox">
+                          <label for="enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity"
+                                 class="label-primary mb-1"></label>
+                        </div>
+                      </div>
+                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div class="mb-sm-0 mb-2">
+                          <div class="mb-0">
+                            <div class="row">
+
+                              <div class="table-responsive">
+                                <table class="table text-nowrap table-bordered"
+                                       id="table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity">
+                                  <thead>
+                                  <tr>
+                                    <th data-name="count" scope="col">Кол-во SphereCoin</th>
+                                    <th data-name="percent" scope="col">Процент бонуса</th>
+                                    <th scope="col"></th>
+                                  </tr>
+                                  </thead>
+                                  <tbody>
+                                  {% for table in
+                                  config().donate().getTableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity() %}
+                                  <tr>
+                                    <th scope="row">{{table.count}}</th>
+                                    <td>{{table.percent}}</td>
+                                    <td>
+                                      <div class="hstack gap-2 flex-wrap">
+                                        <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i
+                                          class="ri-edit-line"></i></a>
+                                        <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i
+                                          class="ri-delete-bin-5-line"></i></a>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  {% endfor %}
+
+                                  </tbody>
+                                </table>
+                                <button id="AddNewIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity" type="button"
+                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">Добавить
+                                </button>
+                              </div>
+
+                            </div>
+
+                            Список ID предметов, на которые распостраняются скидки. Если пусто, тогда для всех предметов
+                            действует скидка.
+                            <div class="row">
+
+                              <div class="table-responsive">
+                                <table class="table text-nowrap table-bordered" id="table_ListOfItemsForDiscount">
+                                  <thead>
+                                  <tr>
+                                    <th data-name="count" scope="col">Кол-во покупаемых предметов</th>
+                                    <th data-name="percent" scope="col">Процент скидки</th>
+                                    <th scope="col"></th>
+                                  </tr>
+                                  </thead>
+                                  <tbody>
+
+                                  {% for table in config().donate().getTableListOfItemsForDiscount() %}
+                                  <tr>
+                                    <th scope="row">{{table.count}}</th>
+                                    <td>{{table.percent}}</td>
+                                    <td>
+                                      <div class="hstack gap-2 flex-wrap">
+                                        <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i
+                                          class="ri-edit-line"></i></a>
+                                        <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i
+                                          class="ri-delete-bin-5-line"></i></a>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  {% endfor %}
+                                  </tbody>
+                                </table>
+                                <button id="AddNewListOfItemsForDiscount" type="button"
+                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">Добавить
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+                <div class="col-xl-6">
+
+
+
+                  <div class="card custom-card shadow-none mb-4 border">
+                    <div class="card-header">
+                      <div class="card-title">Перевод в игру</div>
+                    </div>
+                    <div class="card-body row">
+
+                      <label class="form-label op-5 ">Эти предметы отправляются игроку напрямую, при переводе через функцию "Перевод в игру"</label>
+                      <label class="form-label op-5 ">Укажите количество предметов, которое получит пользователь за 1 Donate Coin.</label>
+
+                      <div class="col-xxl-4 col-xl-6 ">
+                        <div class="input-group">
+                          <div class="input-group-text">ID</div>
+                          <input name="item_id_to_game_transfer" min="1" type="number" class="form-control form-control-sm"
+                                 id="item_id_to_game_transfer"
+                                 placeholder="4037"
+                                 value="{{config().donate().getItemIdToGameTransfer()}}">
+                        </div>
+                      </div>
+
+                      <div class="col-xxl-4 col-xl-6 mb-1">
+                        <div class="input-group">
+                          <div class="input-group-text">Count</div>
+                          <input name="count_items_to_game_transfer" min="1" type="number" class="form-control form-control-sm"
+                                 id="count_items_to_game_transfer"
+                                 placeholder="1000"
+                                 value="{{config().donate().getCountItemsToGameTransfer()}}">
+                        </div>
+                      </div>
+
+
+                    </div>
+                  </div>
+
+
+
+
+
+                  <div id="bonus_Item_donation"
+                       class="card custom-card shadow-none mb-4 border">
+                    <div class="card-header justify-content-between d-sm-flex d-block">
+                      <div class="card-title">Награда за пожертвование предметами
+                      </div>
+                      <div class="mt-sm-0 mt-2">
+                        <div class="custom-toggle-switch ms-sm-2 ms-0">
+                          <input {% if config().donate().isRewardForDonatingItems()
+                                 %}checked{% endif %} id="rewardForDonatingItems"
+                                 name="rewardForDonatingItems" type="checkbox">
+                          <label for="rewardForDonatingItems"
+                                 class="label-primary mb-1"></label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-body">
+
+                      <div class="row">
+
+                        <label class="form-label op-5 ">После пожертвование
+                          пользователь больше N суммы, мы выдаем ему предметы в
+                          склад как бонус. Укажите какие предметы хотите Выдавать
+                          пользователю и за какой диапазон пожертвований.</label>
+
+                        <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-end">
+                          <div class="col-xl-4">
+                            <input id="costItem" type="text"
+                                   class="form-control" placeholder="Стоимость">
+                          </div>
+                          <button id="addCostItem"
+                                  class="btn btn-primary-light m-1">Добавить
+                            вкладку<i class="bi bi-plus-lg ms-2"></i></button>
+                        </div>
+                      </div>
+
+
+                      <ul class="nav nav-tabs mb-3 tab-style-6" id="myTab"
+                          role="tablist">
+                        {% set i = 1 %}
+                        {% for key, table in config().donate().getTableItemsBonus() %}
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link {% if i==1 %} active{% endif %}"
+                                  id="list_{{i}}" data-bs-toggle="tab"
+                                  data-bs-target="#list_{{i}}-pane" type="button"
+                                  role="tab"
+                                  aria-controls="list_{{i}}-pane"
+                                  aria-selected="true">{{key}}
+                          </button>
+                        </li>
+                        {% set i = i+1 %}
+                        {% endfor %}
+
+                      </ul>
+
+                      <div class="tab-content" id="allItemsBonusData">
+                        {% set i = 1 %}
+                        {% for key, table in config().donate().getTableItemsBonus() %}
+                        <div class="tab-pane fade p-0 border-bottom-0 {% if i==1 %}show active{% endif %} "
+                             id="list_{{i}}-pane"
+                             role="tabpanel" aria-labelledby="list_{{i}}"
+                             tabindex="0">
+                          <div class="table-responsive">
+                            <table class="table mb-0">
+                              <thead>
+                              <tr>
+                                <th scope="col"></th>
+                                <th scope="col">Предмет</th>
+                                <th scope="col">Кол-во</th>
+                                <th scope="col">Заточен</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              {% for data in table %}
+                              <tr>
+                                <th scope="row">
+                                                                                <span class="avatar avatar-sm">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/ecommerce/orders/6.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                </th>
+                                <td>{{data.id}}</td>
+                                <td>{{data.count}}</td>
+                                <td>{{data.enchant}}</td>
+                              </tr>
+                              {% endfor %}
+                              </tbody>
+                            </table>
+
+
+                          </div>
+                        </div>
+                        {% set i = i+1 %}
+                        {% endfor %}
+                      </div>
+
+
+                      <div class="row gy-2 gx-3 align-items-center mb-4">
+                        <div class="col-xxl-2 col-xl-3 mb-2">
+                          <div class="input-group">
+                            <div class="input-group-text">ID</div>
+                            <input type="text" class="form-control"
+                                   id="item_id_insert_to_bonus_donate"
+                                   placeholder="57">
+                          </div>
+                        </div>
+                        <div class="col-xxl-3 col-xl-3 mb-2">
+                          <div class="input-group">
+                            <div class="input-group-text">Count</div>
+                            <input type="text" class="form-control"
+                                   id="count_insert_to_bonus_donate"
+                                   placeholder="1000">
+                          </div>
+                        </div>
+                        <div class="col-xxl-4 col-xl-3 mb-2">
+                          <div class="input-group">
+                            <div class="input-group-text">Enchant</div>
+                            <input type="text" class="form-control"
+                                   id="enchant_insert_to_bonus_donate"
+                                   placeholder="0">
+                          </div>
+                        </div>
+                        <div class="col-xxl-2 col-xl-3 mb-2">
+                          <button id="add_insert_to_bonus_donate" type="submit"
+                                  class="btn btn-primary">Добавить
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                  <div class="card custom-card shadow-none mb-3 border">
+                    <div class="card-header">
+                      <div class="card-title">
+                        Настройка платежных систем
+                      </div>
+                    </div>
+                    <div class="card-body  align-items-start">
+                      <div class="row">
+                        <div class="col-md-3">
+                          <div class="nav flex-column nav-pills me-3 tab-style-7"
+                               id="v-pills-tab" role="tablist"
+                               aria-orientation="vertical">
+                            {% for i, donate in donateSysNames %}
+                            <button class="nav-link text-start {% if i == 0 %}active{% endif %}"
+                                    id="{{donate.name}}-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#{{donate.name}}"
+                                    type="button" role="tab"
+                                    aria-controls="{{donate.name}}"
+                                    aria-selected="false" tabindex="-1">
+                              {{donate.name}}
+                            </button>
+                            {% endfor %}
+                          </div>
+                        </div>
+
+                        <div class="col-md-9">
+                          <div class="tab-content" id="v-pills-tabContent">
+                            {% for i, donate in config().donate().getDonateSystems() %}
+                            <div class="tab-pane {% if i == 0 %}active show{% endif %}"
+                                 id="{{donate.getName()}}" role="tabpanel"
+                                 tabindex="0"
+                                 aria-labelledby="{{donate.getName()}}-tab">
+                              <div class="d-sm-flex">
+
+                                <div data-pay-name="{{donate.getName()}}">
+                                  <div class="my-md-auto mt-4 ms-md-3">
+
+                                    <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                                      <div>
+                                        <p class="fs-14 mb-1 fw-semibold">
+                                          Включить платежную
+                                          систему
+                                          {{donate.getName()}}</p>
+                                      </div>
+                                      <div class="custom-toggle-switch ms-sm-2 ms-0">
+                                        <input id="is_enable_{{donate.getName()}}"
+                                               name="is_enable_{{donate.getName()}}"
+                                               type="checkbox"
+                                               {% if donate.isEnable() %}checked{% endif %}>
+                                        <label for="is_enable_{{donate.getName()}}"
+                                               class="label-primary mb-1"></label>
+                                      </div>
+                                    </div>
+
+                                    <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                                      <div>
+                                        <p class="fs-14 mb-1 fw-semibold">
+                                          Включить только для администратора
+                                          {{donate.getName()}}</p>
+                                      </div>
+                                      <div class="custom-toggle-switch ms-sm-2 ms-0">
+                                        <input id="forAdmin_{{donate.getName()}}"
+                                               name="forAdmin_{{donate.getName()}}"
+                                               type="checkbox"
+                                               {% if donate.forAdmin() %}checked{% endif %}>
+                                        <label for="forAdmin_{{donate.getName()}}"
+                                               class="label-primary mb-1"></label>
+                                      </div>
+                                    </div>
+
+                                    {% for key, val in donate.getInputs() %}
+                                    <div class="form-floating mb-3">
+                                      <input data-name="{{key}}"
+                                             value="{{val}}"
+                                             type="text"
+                                             class="form-control"
+                                             id="donateSys_{{key}}"
+                                             placeholder="">
+                                      <label for="donateSys_{{key}}">{{key}}</label>
+                                    </div>
+                                    {% endfor %}
+
+                                    <hr>
+                                    <div class="form-floating mb-3">
+                                      <input
+                                        value="{{donate.getDescription()}}"
+                                        type="text"
+                                        class="form-control"
+                                        id="description_{{donate.getName()}}"
+                                        placeholder="">
+                                      <label for="description_{{donate.getName()}}">Описание платежной системы</label>
+                                    </div>
+
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer mt-2">
+                  <div class="float-end">
+                    <button id="saveDonateConfig" type="button" class="btn btn-success">
+                      Сохранить
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane p-0" id="referralSystem" role="tabpanel">
+              <ul class="list-group list-group-flush rounded">
+                <li class="list-group-item text-center">
+                  <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
+                    <div class="">
+                      <span class="fs-6 mb-0 badge bg-primary text-wrap">Требования для завершения реферальной системы привлеченному игроку</span>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
+                    <div class="col-xl-6">
+                      <span class="fs-14 mb-0">Минимальное время проведенное в игре</span>
+                    </div>
+                    <div class="col-xl-2">
+                      <div class="form-floating mb-3">
+                        <input value="{{config().referral().getTimeGame()}}" type="number" step="60"
+                               class="form-control"
+                               id="game_time_referral" placeholder="3600">
+                        <label for="game_time_referral">Секунды</label>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                    <div class="col-xl-6">
+                      <span class="fs-14 mb-0">Минимальный уровень :</span>
+                    </div>
+                    <div class="col-xl-2">
+                      <div class="form-floating mb-3">
+                        <input value="{{config().referral().getLevel()}}" type="number" step="1" class="form-control"
+                               id="ref_level" placeholder="80">
+                        <label for="ref_level">Уровень</label>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                    <div class="col-xl-6">
+                      <span class="fs-14 mb-0">Небходимые PvP / PK :</span>
+                    </div>
+                    <div class="col-xl-3">
+
+                      <div class="input-group">
+                        <div class="form-floating mb-3 col-xl-2">
+                          <input value="{{config().referral().getPvp()}}" type="number" step="1" class="form-control"
+                                 id="ref_pvp" placeholder="80">
+                          <label for="ref_pvp">PvP</label>
+                        </div>
+
+                        <div class="form-floating mb-3 col-xl-2">
+                          <input value="{{config().referral().getPK()}}" type="number" step="1" class="form-control"
+                                 id="ref_pk" placeholder="80">
+                          <label for="ref_pk">PK</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item text-center">
+                  <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
+                    <div class="">
+                      <span class="fs-6 mb-0 badge bg-primary text-wrap ">Выдача бонусов за выполнение требований (лидеру)</span>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                    <div class="col-xl-6">
+                      <span class="fs-14 mb-0">Кол-во бонусных SphereCoin, которые получит игрок за завершения реферала :</span>
+                    </div>
+                    <div class="col-xl-2">
+                      <div class="form-floating mb-3">
+                        <input value="{{config().referral().getBonusAmount()}}" type="number" step="1"
+                               class="form-control"
+                               id="ref_bonus_amount" placeholder="80">
+                        <label for="ref_bonus_amount">SphereCoin</label>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                    <div class="col-xl-6">
+                      <span class="fs-14 mb-0">Если приглашенный пользователь задонатит, давать ли бонус-вознаграждение привлекшему реферела?</span>
+                    </div>
+                    <div class="col-xl-5">
+                      <div class="custom-toggle-switch float-sm-end">
+                        <input {% if config().referral().getEnableDonateBonusReferral() %}checked{% endif %}
+                               id="enable_referral_donate_bonus" name="enable_referral_donate_bonus" type="checkbox">
+                        <label for="enable_referral_donate_bonus" class="label-danger mb-1"></label>
+                      </div>
+                    </div>
+                  </div>
+
+                </li>
+                <li class="list-group-item">
+                  <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                    <div class="col-xl-6">
+                      <span class="fs-14 mb-0">Установите процент вознаграждения от суммы пополнения SphereCoin?</span>
+                    </div>
+                    <div class="col-xl-2">
+                      <div class="form-floating mb-3">
+                        <input value="{{config().referral().getProcentDonateBonus()}}" type="number" step="1"
+                               class="form-control" id="ref_precent" placeholder="5" min="0" max="1000">
+                        <label for="ref_precent">Процент</label>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                    <div class="col-xl-6">
+                      <span class="fs-14 mb-0">Какой предмет будет выдан бонусом пользователю </span>
+                    </div>
+                    <div class="col-xl-3">
+                      <div class="form-floating mb-3">
+
+                        <div class="input-group input-group-sm">
+
+                          <div class="form-floating mb-3 ">
+                            <input value="" type="number" step="1" class="form-control "
+                                   id="item_id_ref_bonus_leader" placeholder="4037">
+                            <label for="item_id_ref_bonus_leader">Item ID</label>
+                          </div>
+
+                          <div class="form-floating mb-3 ">
+                            <input value="" type="number" step="1" class="form-control "
+                                   id="count_ref_bonus_leader" placeholder="10">
+                            <label for="count_ref_bonus_leader">Кол-во</label>
+                          </div>
+
+                          <div class="form-floating mb-3 ">
+                            <input value="" type="number" step="1" class="form-control "
+                                   id="enchant_ref_bonus_leader" placeholder="10">
+                            <label for="enchant_ref_bonus_leader">Enchant</label>
+                          </div>
+
+                          <div class="form-floating mb-3 ">
+                            <button type="button" class="btn btn-success btn-wave waves-effect waves-light"
+                                    id="item_add_to_leader">Добавить
+                            </button>
+                          </div>
+
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <div class="table-responsive">
+                      <table class="table text-nowrap table-bordered bonus_ref_leader_table">
+                        <tbody>
+
+                        {% for item in config().referral().getLeaderBonusItems() %}
+                        <tr data-item-id="{{ item.item_id }}" data-count="{{ item.count }}"
+                            data-enchant="{{ item.enchant }}">
+                          {% set icon = item.getIcon() %}
+                          {% set name = item.getItemName() %}
+
+                          {% if item.getAddName() %}
+                          {% set name = item.getAddName() + ' ' + name %}
+                          {% endif %}
+
+                          {% if item.getEnchant() > 0 %}
+                          {% set name = ' +' ~ item.getEnchant() ~ ' ' ~ name %}
+                          {% endif %}
+
+                          <td><span class="avatar avatar-sm"><img src="{{ item.getIcon() }}" alt="img"></span> (ID:
+                            {{item.getItemId()}})
+                            {{name}}
+                          </td>
+                          </td>
+                          <td>{{ item.count }}</td>
+
+                          <td>
+                            <div class="hstack gap-2 flex-wrap"><a href="javascript:void(0);"
+                                                                   class="text-danger fs-14 lh-1"><i
+                              class="ri-delete-bin-5-line"></i></a></div>
+                          </td>
+
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                      </table>
+                    </div>
+
+
+                  </div>
+                </li>
+
+                <li class="list-group-item text-center">
+                  <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
+                    <div class="">
+                      <span class="fs-6 mb-0 badge bg-primary text-wrap">Выдача бонусов за выполнение требований (приглашенному игроку)</span>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                    <div class="col-xl-6">
+                      <span class="fs-14 mb-0">Какой предмет будет выдан бонусом пользователю </span>
+                    </div>
+                    <div class="col-xl-3">
+                      <div class="form-floating mb-3">
+
+                        <div class="input-group input-group-sm">
+
+                          <div class="form-floating mb-3 ">
+                            <input value="" type="number" step="1" class="form-control "
+                                   id="item_id_ref_bonus_slave" placeholder="4037">
+                            <label for="item_id_ref_bonus_slave">Item ID</label>
+                          </div>
+
+                          <div class="form-floating mb-3 ">
+                            <input value="" type="number" step="1" class="form-control "
+                                   id="count_ref_bonus_slave" placeholder="10">
+                            <label for="count_ref_bonus_slave">Кол-во</label>
+                          </div>
+
+                          <div class="form-floating mb-3 ">
+                            <input value="" min="0" type="number" step="1" class="form-control "
+                                   id="enchant_ref_bonus_slave" placeholder="10">
+                            <label for="enchant_ref_bonus_slave">Enchant</label>
+                          </div>
+
+                          <div class="form-floating mb-3 ">
+                            <button type="button" class="btn btn-success btn-wave waves-effect waves-light"
+                                    id="item_add_to_slave">Добавить
+                            </button>
+                          </div>
+
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <div class="table-responsive">
+                      <table class="table text-nowrap table-bordered bonus_ref_slave_table">
+                        <tbody>
+
+                        {% for item in config().referral().getSlaveBonusItems() %}
+                        <tr data-item-id="{{ item.item_id }}" data-count="{{ item.count }}"
+                            data-enchant="{{ item.enchant }}">
+                          {% set icon = item.getIcon() %}
+                          {% set name = item.getItemName() %}
+
+                          {% if item.getAddName() %}
+                          {% set name = item.getAddName() + ' ' + name %}
+                          {% endif %}
+
+                          {% if item.getEnchant() > 0 %}
+                          {% set name = ' +' ~ item.getEnchant() ~ ' ' ~ name %}
+                          {% endif %}
+
+                          <td><span class="avatar avatar-sm"><img src="{{ item.getIcon() }}" alt="img"></span> (ID:
+                            {{item.getItemId()}})
+                            {{name}}
+                          </td>
+                          </td>
+                          <td>{{ item.count }}</td>
+
+                          <td>
+                            <div class="hstack gap-2 flex-wrap"><a href="javascript:void(0);"
+                                                                   class="text-danger fs-14 lh-1"><i
+                              class="ri-delete-bin-5-line"></i></a></div>
+                          </td>
+
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                      </table>
+                    </div>
+
+
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="float-end">
+                    <button id="saveConfigReferral" type="button" class="btn btn-success">
+                      Сохранить
+                    </button>
+                  </div>
+                </li>
+
+              </ul>
+
+            </div>
+            <div class="tab-pane" id="functionsdata" role="tabpanel">
+              <div id="function_list" class="row gy-2">
+                <div class="col-xl-3">
+                  <div class="card custom-card shadow-none border">
+                    <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+                      <div class="">
+                        <span class="fw-semibold">Новости</span>
+                      </div>
+                      <div>
+                        <div class="custom-toggle-switch float-sm-end">
+                          <input class="enableFunction" id="enable_news" name="enable_news" type="checkbox" {% if
+                                 config().enabled().isEnableNews()
+                                 %}checked="" {% endif %}>
+                          <label for="enable_news" class="label-success mb-1"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3">
+                  <div class="card custom-card shadow-none border">
+                    <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+                      <div class="">
+                        <span class="fw-semibold">Магазин</span>
+                      </div>
+                      <div>
+                        <div class="custom-toggle-switch float-sm-end">
+                          <input class="enableFunction" id="enable_shop" name="enable_shop" type="checkbox" {% if
+                                 config().enabled().isEnableShop()
+                                 %}checked="" {% endif %}>
+                          <label for="enable_shop" class="label-success mb-1"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3">
+                  <div class="card custom-card shadow-none border">
+                    <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+                      <div class="">
+                        <span class="fw-semibold">Баланс</span>
+                      </div>
+                      <div>
+                        <div class="custom-toggle-switch float-sm-end">
+                          <input class="enableFunction" id="enable_balance" name="enable_balance" type="checkbox" {% if
+                                 config().enabled().isEnableBalance() %}checked="" {% endif %}>
+                          <label for="enable_balance" class="label-success mb-1"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3">
+                  <div class="card custom-card shadow-none border">
+                    <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+                      <div class="">
+                        <span class="fw-semibold">Статистика</span>
+                      </div>
+                      <div>
+                        <div class="custom-toggle-switch float-sm-end">
+                          <input class="enableFunction" id="enable_statistic" name="enable_statistic" type="checkbox" {%
+                                 if
+                                 config().enabled().isEnableStatistic() %}checked="" {% endif %}>
+                          <label for="enable_statistic" class="label-success mb-1"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3">
+                  <div class="card custom-card shadow-none border">
+                    <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+                      <div class="">
+                        <span class="fw-semibold">Реферальная</span>
+                      </div>
+                      <div>
+                        <div class="custom-toggle-switch float-sm-end">
+                          <input class="enableFunction" id="enable_referral" name="enable_referral" type="checkbox" {%
+                                 if
+                                 config().enabled().isEnableReferral() %}checked="" {% endif %}>
+                          <label for="enable_referral" class="label-success mb-1"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3">
+                  <div class="card custom-card shadow-none border">
+                    <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+                      <div class="">
+                        <span class="fw-semibold">Тикет</span>
+                      </div>
+                      <div>
+                        <div class="custom-toggle-switch float-sm-end">
+                          <input class="enableFunction" id="enable_ticket" name="enable_ticket" type="checkbox" {% if
+                                 config().enabled().isEnableTicket() %}checked="" {% endif %}>
+                          <label for="enable_ticket" class="label-success mb-1"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane p-0" id="captchaSystem"
+                 role="tabpanel">
+
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-xl-2">
+                    <ul class="nav nav-tabs flex-column nav-style-4" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
+                           href="#home-vertical" aria-selected="true">Простая капча</a>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page" href="#about-vertical"
+                           aria-selected="false" tabindex="-1">Google Captcha v2</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="col-xl-10">
+                    <div id="captcha" class="tab-content">
+                      <div class="tab-pane text-muted active show" id="home-vertical" role="tabpanel">
+                        <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                          <div>
+                            <p class="fs-14 mb-1 fw-semibold">Включить обычную капчу</p>
+                            <p class="fs-12 mb-0 text-muted"></p>
+                          </div>
+                          <div>
+                            <div class="custom-toggle-switch float-sm-end">
+                              <input class="btnCaptcha" id="defaultCaptcha" name="defaultCaptcha" type="checkbox" {% if
+                                     config().captcha().isDefaultCaptcha() %}checked="" {% endif %}>
+                              <label for="defaultCaptcha" class="label-success mb-1"></label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="tab-pane text-muted" id="about-vertical" role="tabpanel">
+                        <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                          <div>
+                            <p class="fs-14 mb-1 fw-semibold">Включить Google Captcha v2</p>
+                            <p class="fs-12 mb-0 text-muted"></p>
+                          </div>
+                          <div>
+                            <div class="custom-toggle-switch float-sm-end">
+                              <input class="btnCaptcha" id="googleCaptcha" name="googleCaptcha" type="checkbox" {% if
+                                     config().captcha().isGoogleCaptcha() %}checked="" {% endif %}>
+                              <label for="googleCaptcha" class="label-success mb-1"></label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <div class="text-muted">
+                            Если Вы решите использовать Google reCAPTCHA V2<br>
+                            Ключи для капчи брать тут - <a href="https://www.google.com/recaptcha/admin/create">Регистрация на сайте Google</a>
+                          </div>
+
+                          <div class="form-floating mb-3">
+                            <input value="{{config().captcha().getGoogleClientKey()}}" type="text" class="form-control"
+                                   id="googleClientKey" placeholder="name@example.com">
+                            <label for="googleClientKey">GOOGLE CLIENT KEY</label>
+                          </div>
+                          <div class="form-floating">
+                            <input value="{{config().captcha().getGoogleServerKey()}}" type="text" class="form-control"
+                                   id="googleServerKey" placeholder="googleServerKey">
+                            <label for="googleServerKey">GOOGLE SERVER KEY</label>
+                          </div>
+
+                          <hr class="mt-3">
+                          <p>
+                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                              Пример ввода ключей капчи
+                            </button>
+                          </p>
+                          <div class="collapse" id="collapseExample">
+                            <div class="card card-body">
+
+                              <div class="col-lg-4 col-md-6 col-sm-12">
+                                <a href="{{template}}/assets/images/step1.png" class="glightbox card" data-gallery="gallery1">
+                                  <img src="{{template}}/assets/images/step1.png" alt="image">
+                                </a>
+                              </div>
+
+                              <div class="col-lg-4 col-md-6 col-sm-12">
+                                <a href="{{template}}/assets/images/googlev2.jpg" class="glightbox card" data-gallery="gallery1">
+                                  <img src="{{template}}/assets/images/googlev2.jpg" alt="image">
+                                </a>
+                              </div>
+
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
+                <span id="saveCaptcha" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                  class="bi bi-sd-card ms-2"></i></span>
+              </div>
+            </div>
+            <div class="tab-pane p-0" id="onlineCheating"
+                 role="tabpanel">
+
+              <div class="card-body p-0">
+
+
+                <div class="card-body">
+
+                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                    <div>
+                      <p class="fs-14 mb-1 fw-semibold">Включить накрутку онлайна</p>
+                      <p class="fs-12 mb-0 text-muted"></p>
+                    </div>
+                    <div>
+                      <div class="custom-toggle-switch float-sm-end">
+                        <input id="isEnableOnlineCheaters" name="isEnableOnlineCheaters" type="checkbox" {% if
+                               config().onlineCheating().isEnabled() %}checked="" {%endif%}>
+                        <label for="isEnableOnlineCheaters" class="label-success mb-1"></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  Сколько выводить (рандом) минимальное и максимальное кол-во онлайна (на случай если реальный онлайн
+                  0).<br>
+                  Если хотите чтоб онлайн был всегда 0 если онлайн действительно 0, то установите min и max 0
+
+                  <div class="row">
+                    <div class="col-xl-2">
+                      <label class="form-label fs-14 text-dark">Min online show</label>
+                      <input value="{{config().onlineCheating().getMinOnlineShow()}}" type="number" class="form-control"
+                             placeholder="0">
+                    </div>
+                    <div class="col-xl-2">
+                      <label for="form-password" class="form-label fs-14 text-dark">Max online show</label>
+                      <input value="{{config().onlineCheating().getMaxOnlineShow()}}" type="number" class="form-control"
+                             id="form-password" placeholder="0">
+                    </div>
+
+                  </div>
+
+                  <hr>
+                  Кол-во онлайна => [ время => коэффициент накрутки онлайна ]<br>
+                  <br>
+                  К примеру: Онлайн 37 человек, время сейчас 10:57<br>
+                  Тогда коэффициент накрутки онлайна будет 3.15<br>
+                  Примечание: 37 человек - это между 30 и 60, а время 10:57 - это между 10:00 и 12:00<br>
+                  Это соответствует коэффициенту накрутки онлайна 3.15<br>
+                  37*3.15 = 116.55 онлайна, результат будет округляем до большего числа, таким образом получим 117
+                  онлайна.<br>
+                  <br>
+
+                  <div class="row">
+                    <div class="col-auto">
+                      <input id="players_online_cheating" min="1" type="number" class="form-control" placeholder="100">
+                    </div>
+                    <div class="col-auto">
+                      <button type="button" class="btn btn-info add-accordion-item">Добавить</button>
+                    </div>
+                  </div>
+
+                  {% set cheating_details = config().onlineCheating().getCheatingDetails() %}
+                  {% set details_list = cheating_details|keys %}
+
+                  {% for i in range(0, details_list|length - 1) %}
+                  {% set online = details_list[i] %}
+                  {% set next_online = details_list[i + 1] %}
+                  {% set data = cheating_details[online] %}
+                  {% set next_data = cheating_details[next_online] %}
+                  <div class="accordion accordion-flush" id="accordionFlushExample_{{online}}">
+
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="flush-headingOne">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#flush-collapseOne_{{online}}" aria-expanded="false"
+                                aria-controls="flush-collapseOne">
+                          Настройки для онлайна от : {{online}} {% if next_online != null %}и до : {{next_online}}
+                          онлайна{% endif %}
+                        </button>
+                      </h2>
+                      <div id="flush-collapseOne_{{online}}" class="accordion-collapse collapse"
+                           aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample_{{online}}"
+                           style="">
+
+                        {% for time in data %}
+                        <div class="accordion-body">
+                          <div class="row">
+                            <div class="col-xl-2">
+                              <input value="{{time.getTime()}}" class="form-control time-format-2" placeholder="hh:mm">
+                            </div>
+                            <div class="col-xl-2">
+                              В это время умножить онлайн на:
+                            </div>
+                            <div class="col-xl-2">
+                              <input min="1" value="{{time.getMultiplier()}}" step="0.1" type="number"
+                                     class="form-control" placeholder="1">
+                            </div>
+                          </div>
+                        </div>
+                        {% endfor %}
+                        <div class="col-md-12">
+                          <button type="button" class="btn btn-primary add-time">Добавить время</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+
+
+                </div>
+                <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
+                  <span id="saveCheatingOnline" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                    class="bi bi-sd-card ms-2"></i></span>
+                </div>
+              </div>
+
+            </div>
+            <div class="tab-pane p-0" id="registration"
+                 role="tabpanel">
+              <div class="card-body">
+
+                <div class="col-12">
+                  <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                    <input id="enablePrefix" name="enablePrefix" type="checkbox" {% if
+                           config().registration().getEnablePrefix() %}checked="" {% endif %}>
+                    <label for="enablePrefix" class="label-success"></label><span class="ms-3">Включить префиксы</span>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <select class="form-select" id="prefixType">
+                    <option {% if config().registration().getPrefixType()==
+                    "prefix" %}selected=""{% endif %} value="prefix" >Префикс</option>
+                    <option {% if config().registration().getPrefixType()==
+                    "suffix" %}selected=""{% endif %} value="suffix">Суффикс</option>
+                  </select>
+                </div>
+
+                <div class="col-12">
+                  <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                    <input id="massRegistration" name="massRegistration" type="checkbox" {% if
+                           config().registration().getMassRegistration() %}checked="" {% endif %}>
+                    <label for="massRegistration" class="label-success"></label><span class="ms-3">Включить регистрацию сразу на всех серверах</span>
+                  </div>
+                </div>
+
+
+                <div class="col-auto">
+                  <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                    <input id="enableLoadFileRegistration" name="enableLoadFileRegistration" type="checkbox" {% if
+                           config().registration().getEnableLoadFileRegistration() %}checked="" {% endif %}>
+                    <label for="enableLoadFileRegistration" class="label-success"></label><span class="ms-3">Загрузка файла информации о регистрации пользователем</span>
+                  </div>
+                </div>
+
+
+                <div class="col-auto">
+                  <label class="" for="phraseRegistrationDownloadFile">Укажите ID фразы, которые будет получать
+                    пользователь.<br>
+                    Создать свою фразу можно <a href="/admin/phrases" target="_blank">тут</a>.
+                  </label>
+                  <input value="{{ config().registration().getPhraseRegistrationDownloadFile() }}" type="text"
+                         class="form-control" id="phraseRegistrationDownloadFile" placeholder="Phrase ID">
+                </div>
+
+              </div>
+
+              <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
+                <span id="saveRegistration" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                  class="bi bi-sd-card ms-2"></i></span>
+              </div>
+
+            </div>
+
+            <div class="tab-pane p-0" id="email" role="tabpanel">
+              <div class="card-body">
+
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <div class="form-floating">
+                      <input value="{{config().email().getHost()}}" type="text" class="form-control" id="emailHost" placeholder="Host">
+                      <label for="emailHost">Host</label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-floating">
+                      <input value="{{config().email().getPort()}}" type="text" class="form-control" id="emailPort" placeholder="Port">
+                      <label for="emailPort">Port</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <div class="form-floating">
+                      <input value="{{config().email().getUsername()}}" type="text" class="form-control" id="emailUsername" placeholder="Username">
+                      <label for="emailUsername">SMTP имя пользователя</label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-floating">
+                      <input value="{{config().email().getPassword()}}" type="text" class="form-control" id="emailPassword" placeholder="Password">
+                      <label for="emailPassword">SMTP пароль</label>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <div class="form-floating">
+                      <select class="form-select" id="emailProtocol" aria-label="Floating label select example">
+                        <option value="ssl" {% if config().email().getProtocol()=="ssl" %}selected{% endif %}>SSL</option>
+                        <option value="tls" {% if config().email().getProtocol()=="tls" %}selected{% endif %}>TLS</option>
+                      </select>
+                      <label for="emailProtocol">Протокол</label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-check">
+                      <input {% if config().email().isSmtpAuth() %}checked{% endif %} class="form-check-input" type="checkbox" id="emailSMTPAuth">
+                      <label class="form-check-label" for="emailSMTPAuth">SMTP Авторизация</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 mt-3">
+                  <label class="form-label">Конструктор HTML письма</label>
+                  <div class="form-floating mb-3">
+                    <input value="Ура, удалось отправить письмо!" type="text" class="form-control nosave" id="emailHeader" placeholder="Username">
+                    <label for="emailHeader">Заголовок письма</label>
+                  </div>
+                  <div id="email-html">Вы большой <strong>молодец</strong>, Вам удалось настроить почту для отправки писем😀😀😀😀!</div>
+                </div>
+
+                <div class="row g-3 align-items-center mt-3">
+                  <div class="col-md-6">
+                    <div class="form-floating">
+                      <input value="" type="email" class="form-control nosave" id="emailTestFromAddress" placeholder="Email Address for test">
+                      <label for="emailTestFromAddress">Email для проверки получения письма</label>
+                    </div>
+                  </div>
+                  <div class="col-md-1">
+                    <button id="emailSendTest" type="submit" class="btn btn-success w-100">Отправить</button>
+                  </div>
+                  <div class="col-md-3">
+                    <p class="fs-14 mb-0 fw-semibold" id="emailSendTestResponse">{{response.message}}</p>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="border-top border-block-start-dashed d-flex justify-content-end mt-3 pt-2">
+                <span id="saveEmail" class="btn btn-success-light m-1 btn-sm">Сохранить<i class="bi bi-sd-card ms-2"></i></span>
+              </div>
+            </div>
+
+
+            <div class="tab-pane p-0" id="cache" role="tabpanel">
+              <div class="card-body">
+                Указывайте в секундах время кэширования данных
+                <div class="row g-3 mt-0">
+
+                  <div class="col-md-2">
+                    <label class="form-label">Форум</label>
+                    <input id="forumCache" value="{{config().cache().getForum()}}" type="number" class="form-control"
+                           placeholder="60"
+                           aria-label="Форум">
+                  </div>
+
+                  <div class="col-md-2">
+                    <label class="form-label">Статус</label>
+                    <input id="statusCache" value="{{config().cache().getStatus()}}" type="number" class="form-control"
+                           placeholder="60"
+                           aria-label="Статус">
+                  </div>
+
+                  <div class="col-md-2">
+                    <label class="form-label">PvP</label>
+                    <input id="pvpCache" value="{{config().cache().getPvP()}}" type="number" class="form-control"
+                           placeholder="60" aria-label="PK">
+                  </div>
+
+                  <div class="col-md-2">
+                    <label class="form-label">PK</label>
+                    <input id="pkCache" value="{{config().cache().getPvP()}}" type="number" class="form-control"
+                           placeholder="60" aria-label="PvP">
+                  </div>
+
+                  <div class="col-md-2">
+                    <label class="form-label">Кланы</label>
+                    <input id="clanCache" value="{{config().cache().getClan()}}" type="number" class="form-control"
+                           placeholder="60"
+                           aria-label="Clan">
+                  </div>
+
+                  <div class="col-md-2">
+                    <label class="form-label">Замков</label>
+                    <input id="castleCache" value="{{config().cache().getCastle()}}" type="number" class="form-control"
+                           placeholder="60"
+                           aria-label="Castle">
+                  </div>
+
+                  <div class="col-md-2">
+                    <label class="form-label">Рефералы</label>
+                    <input id="referralCache" value="{{config().cache().getReferral()}}" type="number"
+                           class="form-control" placeholder="60"
+                           aria-label="Referral">
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
+                <span id="saveCache" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                  class="bi bi-sd-card ms-2"></i></span>
+              </div>
+
+            </div>
+            <div class="tab-pane p-0" id="other" role="tabpanel">
+              <ul class="list-group list-group-flush rounded">
+
+                <li class="list-group-item">
+                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                    <div>
+                      <p class="fs-14 mb-1 fw-semibold">Скрывать пароли игроков</p>
+                      <p class="fs-12 mb-0 text-muted">Функция необходима на случай если Вы используете лаунчер, с
+                        автовходом в игру на персонажа, без авторизации в игре. К примеру SphereLauncher обладает
+                        возможностью сделать автовход в игру (если клиент позволяет).</p>
+                    </div>
+                    <div>
+                      <div class="custom-toggle-switch float-sm-end">
+                        <input id="saveOpenPassword" name="saveOpenPassword" type="checkbox" {% if
+                               config().other().getOpenPassword() %}checked="" {% endif %}>
+                        <label for="saveOpenPassword" class="label-success mb-1"></label>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                    <div>
+                      <p class="fs-14 mb-1 fw-semibold">Технические работы</p>
+                      <p class="fs-12 mb-0 text-muted">Отключение сайта, вход и пользование доступно только для
+                        администраторов.</p>
+                    </div>
+                    <div>
+                      <div class="custom-toggle-switch float-sm-end">
+                        <input id="enableTechnicalWork" name="enableTechnicalWork" type="checkbox" {% if
+                               config().other().getEnableTechnicalWork() %}checked="" {% endif %}>
+                        <label for="enableTechnicalWork" class="label-success mb-1"></label>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-3 row">
+                    <div class="col-xl-12">
+                      <p class="fs-14 mb-1 fw-semibold">Сообщение о технической работе</p>
+                      <textarea class="form-control" id="messageTechnicalWork" rows="3">{{ config().other().getMessageTechnicalWork() }}</textarea>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-3 row">
+                    <div class="col-xl-12">
+                      <p class="fs-14 mb-1 fw-semibold">Титул всех страниц</p>
+                      <input value="{{ config().other().getAllTitlePage() }}" type="text" class="form-control"
+                             id="allTitlePage" placeholder="SphereWeb">
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-3 row">
+                    <div class="col-xl-12">
+                      <p class="fs-14 mb-1 fw-semibold">Key words</p>
+                      <textarea type="text" class="form-control" rows="6" id="keywords" placeholder="keywords">{{ config().other().getKeywords() }}</textarea>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                    <div>
+                      <p class="fs-14 mb-1 fw-semibold">Сохранять ли данные статистики онлайн игроков</p>
+                      <p class="fs-12 mb-0 text-muted"></p>
+                    </div>
+                    <div>
+                      <div class="custom-toggle-switch float-sm-end">
+                        <input id="saveStatisticData" name="saveStatisticData" type="checkbox" {% if
+                               config().other().getSaveStatisticData() %}checked="" {% endif %}>
+                        <label for="saveStatisticData" class="label-success mb-1"></label>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="row gx-5 gy-3">
+
+                    <div class="col-xl-12">
+                      <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                        <div>
+                          <p class="fs-14 mb-1 fw-semibold">Частота сохранения статистики онлайна</p>
+                        </div>
+                        <div class="col-xl-2">
+                          <select class="form-control" data-trigger name="timeoutSaveStatistic"
+                                  id="timeoutSaveStatistic">
+                            <option {% if config().other().getTimeoutSaveStatistic()== 300 %}selected{% endif %}
+                                    value="300" selected>5 мин
+                            </option>
+                            <option {% if config().other().getTimeoutSaveStatistic()== 600 %}selected{% endif %}
+                                    value="600">10 мин
+                            </option>
+                            <option {% if config().other().getTimeoutSaveStatistic()== 1800 %}selected{% endif %}
+                                    value="1800">30 мин
+                            </option>
+                            <option {% if config().other().getTimeoutSaveStatistic()== 3600 %}selected{% endif %}
+                                    value="3600">1 ч.
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <div class="row gx-5 gy-3">
+
+                    <div class="col-xl-12">
+                      <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                        <div>
+                          <p class="fs-14 mb-1 fw-semibold">Умножить выводимый онлайн</p>
+                        </div>
+                        <div class="col-xl-2">
+                          <input value="{{ config().other().getOnlineMul() }}" min="1.0" step="0.1" type="number"
+                                 class="form-control" id="onlinemul"
+                                 placeholder="SphereWeb">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                    <div>
+                      <p class="fs-14 mb-1 fw-semibold">Требовать авторизацию, чтоб зайти в ЛК</p>
+                      <p class="fs-12 mb-0 text-muted"></p>
+                    </div>
+                    <div>
+                      <div class="custom-toggle-switch float-sm-end">
+                        <input id="isAuthShow" name="isAuthShow" type="checkbox" {% if config().other().getIsAuthShow()
+                               %}checked="" {% endif %}>
+                        <label for="isAuthShow" class="label-success mb-1"></label>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="row gx-5 gy-3">
+                    <div class="col-xl-12">
+                      <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                        <div>
+                          <p class="fs-14 mb-1 fw-semibold">TimeZone по умолчанию</p>
+                          <p class="fs-12 mb-0 text-muted">Для синхронизации времени, необходимо указать TimeZone</p>
+                        </div>
+                        <div class="col-xl-2">
+                          <select class="form-control" data-trigger name="timezone"
+                                  id="timezone">
+                            {% for timezone in timezone_list() %}
+                            <option value="{{timezone}}" {% if timezone== config().other().getTimezone() %}selected{%
+                                    endif %}>{{timezone}}
+                            </option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+
+                <li class="list-group-item">
+                  <div class="row gx-5 gy-3">
+                    <div class="col-xl-12">
+                      <p class="fs-14 mb-1 fw-semibold">Ссылка на главную страницу</p>
+                      <input value="{{ config().other().getLinkMainPage() }}" type="text" class="form-control"
+                             id="linkMainPage" placeholder="/">
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+
+                  <div class="col-xl-12">
+                    <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                      <div>
+                        <p class="fs-14 mb-1 fw-semibold">Кол-во регистрируемых аккаунтов</p>
+                      </div>
+                      <div class="col-xl-2">
+                        <input value="{{ config().other().getMaxAccount() }}" type="number" step="1"
+                               class="form-control" id="max_account" placeholder="100">
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-3 row">
+                    <div class="col-xl-12">
+                      <p class="fs-14 mb-1 fw-semibold">Связь с администратором проекта</p>
+                      <p class="fs-12 mb-0 text-muted">Используйте HTML-тег <code>&lt;br&gt;</code> для переноса строк и
+                        другие теги для отображения текста. Иконки можно <a href="https://icons.getbootstrap.com/"
+                                                                            target="_blank">найти тут</a></p>
+                      <textarea type="text" class="form-control" rows="6" id="contactAdmin" placeholder="">{{ config().other().getContactAdmin() }}</textarea>
+                    </div>
+                  </div>
+                </li>
+
+              </ul>
+
+
+              <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
+                <span id="saveOther" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                  class="bi bi-sd-card ms-2"></i></span>
+              </div>
+            </div>
+            <div class="tab-pane p-0" id="template" role="tabpanel">
+
+              <div class="row">
+                <div class="col-xl-8">
+                  <div class="row">
+                    <div class="col-xl-12">
+                      <div class="card custom-card">
+                        <div class="card-body">
+                          <a href="javascript:void(0);">
+                            <img id="templateScreen" src="{{config().template().getImg()}}" class="br-7 w-100"
+                                 alt="...">
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-4">
+                  <div class="row">
+                    <div class="col-xl-12">
+                      <div class="card custom-card">
+                        <div class="card-header justify-content-between">
+                          <div class="card-title">
+                            Информация о шаблоне
+                          </div>
+                        </div>
+                        <div class="card-body ">
+                          <div class="table-responsive">
+                            <table class="table table-bordered text-nowrap mb-0">
+                              <tbody class="top-selling">
+                              <tr>
+                                <th class="">
+                                  <span class="fw-semibold fs-13">Template Name</span>
+                                </th>
+                                <td>
+                                  <select id="templateSelect" class="form-select form-select-lg">
+                                    {% for name in templates() %}
+                                    <option {% if config().template().getName()== name %}selected="" {% endif %}>
+                                      {{name}}
+                                    </option>
+                                    {% endfor %}
+                                  </select>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="">
+                                  <span class="fw-semibold fs-13">Author</span>
+                                </th>
+                                <td><span id="templateAuthor" class="text-muted fs-13 fw-normal">{{config().template().getAuthor()|raw}}</span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="">
+                                  <span class="fw-semibold fs-13">Date</span>
+                                </th>
+                                <td><span id="templateDate" class="text-muted fs-13 fw-normal">{{ config().template().getDate()|date("d.m.Y") }}</span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="">
+                                  <span class="fw-semibold fs-13">Version</span>
+                                </th>
+                                <td><span id="templateVersion" class="text-muted fs-13 fw-normal">{{config().template().getVersion()}}</span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="">
+                                  <span class="fw-semibold fs-13">Desc</span>
+                                </th>
+                                <td><span id="templateDescription" class="text-muted fs-13 fw-normal">{{config().template().getDescription()|raw}}</span>
+                                </td>
+                              </tr>
+
+                              </tbody>
+                            </table>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
+                <span id="saveTemplate" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                  class="bi bi-sd-card ms-2"></i></span>
+              </div>
+            </div>
+            <div class="tab-pane p-0" id="logoImg" role="tabpanel">
+
+              <div class="row">
+
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xxl-6">
+                  <div class="card overflow-hidden">
+                    <div class="card-body">
+                      Изображение (лого) Вашего проекта. Лого выводится в верхней части страницы, над меню.
+                      <br> Рекомендуемое соотношение сторон: 3.5:1 или 4:1 (280px:80px, или 240px:60px)
+                      <input type="file" class="single-fileupload1 sphereLogo" name="filepond" data-type="logo"
+                             data-max-file-size="3MB" data-max-files="1">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xxl-3">
+                  <div class="card overflow-hidden">
+                    <div class="card-body">
+                      Изображение иконки страницы (favicon). Иконка выводится во вкладках страниц.
+                      <input type="file" class="single-fileupload1 sphereLogo" name="filepond" data-type="favicon"
+                             data-max-file-size="3MB" data-max-files="1">
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+
+            </div>
+            <div class="tab-pane p-0" id="palette" role="tabpanel">
+
+              <div class="row">
+                <nav class="border-bottom border-block-end-dashed">
+                  <div class="nav nav-tabs nav-justified" id="switcher-main-tab" role="tablist">
+                    <button class="nav-link active" id="switcher-profile-tab" data-bs-toggle="tab"
+                            data-bs-target="#switcher-profile"
+                            type="button" role="tab" aria-controls="switcher-profile" aria-selected="false">Theme Colors
+                    </button>
+                  </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                  <div class="tab-pane fade show active border-0" id="switcher-profile" role="tabpanel"
+                       aria-labelledby="switcher-profile-tab" tabindex="0">
+                    <div>
+                      <div class="theme-colors">
+                        <p class="switcher-style-head">Menu Colors:</p>
+                        <div class="d-flex switcher-style pb-2">
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-white" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Light Menu" type="radio" name="menu-colors"
+                                   id="switcher-menu-light">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-dark" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Dark Menu" type="radio" name="menu-colors"
+                                   id="switcher-menu-dark" checked>
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-primary" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Color Menu" type="radio" name="menu-colors"
+                                   id="switcher-menu-primary">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-gradient" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Gradient Menu" type="radio" name="menu-colors"
+                                   id="switcher-menu-gradient">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-transparent"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Transparent Menu"
+                                   type="radio" name="menu-colors" id="switcher-menu-transparent">
+                          </div>
+                        </div>
+                        <div class="px-4 pb-3 text-muted fs-11">Note:If you want to change color Menu dynamically change
+                          from below Theme Primary color picker
+                        </div>
+                      </div>
+                      <div class="theme-colors">
+                        <p class="switcher-style-head">Header Colors:</p>
+                        <div class="d-flex switcher-style pb-2">
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-white" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Light Header" type="radio" name="header-colors"
+                                   id="switcher-header-light" checked>
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-dark" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Dark Header" type="radio" name="header-colors"
+                                   id="switcher-header-dark">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-primary" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Color Header" type="radio" name="header-colors"
+                                   id="switcher-header-primary">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-gradient" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Gradient Header" type="radio" name="header-colors"
+                                   id="switcher-header-gradient">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-transparent" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Transparent Header" type="radio" name="header-colors"
+                                   id="switcher-header-transparent">
+                          </div>
+                        </div>
+                        <div class="px-4 pb-3 text-muted fs-11">Note:If you want to change color Header dynamically
+                          change from below Theme Primary color picker
+                        </div>
+                      </div>
+                      <div class="theme-colors">
+                        <p class="switcher-style-head">Theme Primary:</p>
+                        <div class="d-flex flex-wrap align-items-center switcher-style">
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-primary-1" type="radio"
+                                   name="theme-primary" id="switcher-primary">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-primary-2" type="radio"
+                                   name="theme-primary" id="switcher-primary1">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-primary-3" type="radio"
+                                   name="theme-primary"
+                                   id="switcher-primary2">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-primary-4" type="radio"
+                                   name="theme-primary"
+                                   id="switcher-primary3">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-primary-5" type="radio"
+                                   name="theme-primary"
+                                   id="switcher-primary4">
+                          </div>
+                          <div class="form-check switch-select ps-0 mt-1 color-primary-light">
+                            <div class="theme-container-primary"></div>
+                            <div class="pickr-container-primary"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="theme-colors">
+                        <p class="switcher-style-head">Theme Background:</p>
+                        <div class="d-flex flex-wrap align-items-center switcher-style">
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-bg-1" type="radio"
+                                   name="theme-background" id="switcher-background">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-bg-2" type="radio"
+                                   name="theme-background" id="switcher-background1">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-bg-3" type="radio" name="theme-background"
+                                   id="switcher-background2">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-bg-4" type="radio"
+                                   name="theme-background" id="switcher-background3">
+                          </div>
+                          <div class="form-check switch-select me-3">
+                            <input class="form-check-input color-input color-bg-5" type="radio"
+                                   name="theme-background" id="switcher-background4">
+                          </div>
+                          <div class="form-check switch-select ps-0 mt-1 tooltip-static-demo color-bg-transparent">
+                            <div class="theme-container-background"></div>
+                            <div class="pickr-container-background"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="menu-image mb-3">
+                        <p class="switcher-style-head">Menu With Background Image:</p>
+                        <div class="d-flex flex-wrap align-items-center switcher-style">
+                          <div class="form-check switch-select m-2">
+                            <input class="form-check-input bgimage-input bg-img1" type="radio"
+                                   name="theme-background" id="switcher-bg-img">
+                          </div>
+                          <div class="form-check switch-select m-2">
+                            <input class="form-check-input bgimage-input bg-img2" type="radio"
+                                   name="theme-background" id="switcher-bg-img1">
+                          </div>
+                          <div class="form-check switch-select m-2">
+                            <input class="form-check-input bgimage-input bg-img3" type="radio" name="theme-background"
+                                   id="switcher-bg-img2">
+                          </div>
+                          <div class="form-check switch-select m-2">
+                            <input class="form-check-input bgimage-input bg-img4" type="radio"
+                                   name="theme-background" id="switcher-bg-img3">
+                          </div>
+                          <div class="form-check switch-select m-2">
+                            <input class="form-check-input bgimage-input bg-img5" type="radio"
+                                   name="theme-background" id="switcher-bg-img4">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-center canvas-footer flex-wrap px-0 px-sm-5">
+                    <a href="javascript:void(0);" id="reset-all" class="btn btn-danger m-1">Reset</a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
+                <span id="savePalette" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                  class="bi bi-sd-card ms-2"></i></span>
+              </div>
+
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block css %}
+<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
+
+<link rel="stylesheet" href="{{template}}/assets/libs/dropzone/dropzone.css">
+
+<!-- Swiper Css -->
+<link rel="stylesheet" href="{{template}}/assets/libs/swiper/swiper-bundle.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/@simonwep/pickr/themes/classic.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/@simonwep/pickr/themes/monolith.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/@simonwep/pickr/themes/nano.min.css">
+
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.snow.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.bubble.css">
+<!-- Date & Time Picker CSS -->
+<link rel="stylesheet" href="{{template}}/assets/libs/flatpickr/flatpickr.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/glightbox/css/glightbox.min.css">
+{% endblock %}
+
+
+{% block js %}
+
+<script src="{{template}}/assets/libs/cleave.js/cleave.min.js"></script>
+<script src="{{template}}/assets/libs/@simonwep/pickr/pickr.es5.min.js"></script>
+
+<script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="{{template}}/assets/libs/quill/quill.min.js"></script>
+
+<script src="{{template}}/assets/js/custom-switcher.min.js?v=7"></script>
+<script src="{{template}}/assets/js/custom.js?v=3"></script>
+<script src="{{template}}/assets/libs/glightbox/js/glightbox.min.js"></script>
+<script>
+
+  $(document).ready(function () {
+
+
+    var lightboxVideo = GLightbox({
+      selector: '.glightbox'
+    });
+    lightboxVideo.on('slide_changed', ({ prev, current }) => {
+      console.log('Prev slide', prev);
+      console.log('Current slide', current);
+
+      const { slideIndex, slideNode, slideConfig, player } = current;
+    });
+
+
+    $('#item_add_to_slave').click(function () {
+      let itemId = $('#item_id_ref_bonus_slave').val();
+      let count = $('#count_ref_bonus_slave').val();
+      let enchant = $('#enchant_ref_bonus_slave').val();
+
+      AjaxSend('/admin/client/item/info', 'POST', { 'itemID': itemId }, true).then(function (response) {
+          let icon = response.item.icon;
+          let name = response.item.itemName;
+
+          if (response.item.addName) {
+            name = response.item.addName + ' ' + name;
+          }
+
+          if (enchant > 0) {
+            name = ' +' + enchant + ' ' + name;
+          }
+
+          let newRow = '<tr data-item-id="' + itemId + '" data-count="' + count + '" data-enchant="' + enchant + '">' +
+            '<th scope="row"><span class="avatar avatar-sm"><img src="' + icon + '" alt="img"></span> (ID: ' + itemId + ') ' + name + '</td>' +
+            '<td>' + count + '</td>' +
+            '<td>' +
+            '<div class="hstack gap-2 flex-wrap">' +
+            '<a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>' +
+            ' </div>' +
+            '</td>' +
+            '</tr>';
+          $('.bonus_ref_slave_table tbody').append(newRow);
+
+        },
+      );
+    });
+
+    $('#item_add_to_leader').click(function () {
+      let itemId = $('#item_id_ref_bonus_leader').val();
+      let count = $('#count_ref_bonus_leader').val();
+      let enchant = $('#enchant_ref_bonus_leader').val();
+
+      AjaxSend('/admin/client/item/info', 'POST', { 'itemID': itemId }, true).then(function (response) {
+          let icon = response.item.icon;
+          let name = response.item.itemName;
+
+          if (response.item.addName) {
+            name = response.item.addName + ' ' + name;
+          }
+
+          if (enchant > 0) {
+            name = ' +' + enchant + ' ' + name;
+          }
+
+          let newRow = '<tr data-item-id="' + itemId + '" data-count="' + count + '" data-enchant="' + enchant + '">' +
+            '<th scope="row"><span class="avatar avatar-sm"><img src="' + icon + '" alt="img"></span> (ID: ' + itemId + ') ' + name + '</td>' +
+            '<td>' + count + '</td>' +
+            '<td>' +
+            '<div class="hstack gap-2 flex-wrap">' +
+            '<a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>' +
+            ' </div>' +
+            '</td>' +
+            '</tr>';
+          $('.bonus_ref_leader_table tbody').append(newRow);
+
+        },
+      );
+    });
+
+    $('#savePalette').click(function () {
+      var formData = {
+        __config_name__: '__config_palette__',
+      };
+      var htmlElement = $('html')[0];
+      $.each(htmlElement.attributes, function (index, attr) {
+        if (attr.name.startsWith('data-')) {
+          var key = attr.name.substring(5);
+          formData[key] = attr.value;
+        }
+      });
+      //добавить в formData style
+      var style = $('html').attr('style');
+      if (style) {
+        formData['style'] = style;
+      }
+      AjaxSend('/admin/config/save', 'POST', formData, false);
+    });
+
+    if ($('.time-format-2').length > 0) {
+      new Cleave('.time-format-2', {
+        time: true,
+        timePattern: ['h', 'm'],
+      });
+      console.log('Cleave initialized');
+    } else {
+      console.error('Element with class .time-format-2 not found');
+    }
+
+    new Cleave('.time-format-2', {
+      time: true,
+      timePattern: ['h', 'm'],
+    });
+
+    if (window.location.hash) {
+      var hash = window.location.hash;
+      $('.nav-tabs a[href="' + hash + '"]').tab('show');
+    }
+
+    // Обработчик клика по табам для обновления URL без перезагрузки страницы и без прокрутки
+    $('.nav-tabs a').on('click', function (e) {
+      e.preventDefault(); // Отмена стандартного поведения перехода по ссылке
+      var hash = this.hash;
+
+      // Изменяем хэш в URL, не вызывая прокрутку
+      if (history.pushState) {
+        history.pushState(null, null, hash); // Изменение хэша без прокрутки
+      } else {
+        window.location.hash = hash; // Для браузеров, которые не поддерживают history.pushState
+      }
+
+      $(this).tab('show'); // Показываем выбранный таб
+      return false;
+    });
+
+    function addNewRow(tableId) {
+      var newRow = `<tr>
+            <th scope="row"><input type="text" class="form-control"></th>
+            <td><input type="text" class="form-control"></td>
+            <td>
+                <div class="hstack gap-2 flex-wrap">
+                    <a href="javascript:void(0);" class="text-success fs-14 lh-1"><i class="ri-save-3-line"></i></a>
+                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+                </div>
+            </td>
+          </tr>`;
+      $(tableId + ' tbody').append(newRow);
+    }
+
+    $('#AddNewCumulativeDiscountSystem').click(function () {
+      addNewRow('#table_CumulativeDiscountSystem');
+    });
+
+    $('#AddNewEnableOneTimeBonus').click(function () {
+      addNewRow('#table_EnableOneTimeBonus');
+    });
+
+    $('#AddNewSystemDiscountsOnItemPurchases').click(function () {
+      addNewRow('#table_SystemDiscountsOnItemPurchases');
+    });
+
+    $('#AddNewIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity').click(function () {
+      addNewRow('#table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity');
+    });
+
+    $('#AddNewListOfItemsForDiscount').click(function () {
+      addNewRow('#table_ListOfItemsForDiscount');
+    });
+
+    $('.table-responsive').on('click', '.ri-delete-bin-5-line', function () {
+      $(this).closest('tr').remove();
+    });
+
+    $('.table-responsive').on('click', '.ri-edit-line', function () {
+      var $row = $(this).closest('tr');
+      var currentValue1 = $row.find('th:nth-child(1)').text().trim();
+      var currentValue2 = $row.find('td:nth-child(1)').text().trim();
+      var newRow = `<tr>
+            <th scope="row"><input type="text" class="form-control" value="${currentValue1}"></th>
+            <td><input type="text" class="form-control" value="${currentValue2}"></td>
+            <td>
+                <div class="hstack gap-2 flex-wrap">
+                    <a href="javascript:void(0);" class="text-success fs-14 lh-1"><i class="ri-save-3-line"></i></a>
+                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+                </div>
+            </td>
+          </tr>`;
+      $row.replaceWith(newRow);
+    });
+
+    $('.table-responsive').on('click', '.ri-save-3-line', function () {
+      var $row = $(this).closest('tr');
+      var input1Value = $row.find('th input').val().trim();
+      var input2Value = $row.find('td input').val().trim();
+      var updatedRow = `<tr>
+            <th scope="row">${input1Value}</th>
+            <td>${input2Value}</td>
+            <td>
+                <div class="hstack gap-2 flex-wrap">
+                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i class="ri-edit-line"></i></a>
+                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+                </div>
+            </td>
+          </tr>`;
+      $row.replaceWith(updatedRow);
+    });
+
+    $(document).on('click', '#saveDonateConfig', function () {
+      let tableItemsBonus = {}; // Инициализация результирующего объекта
+      // Перебор всех вкладок и сбор данных
+      $('#bonus_Item_donation .nav-tabs .nav-link').each(function () {
+        var tabId = $(this).attr('id');
+        var tabPaneId = $(this).attr('aria-controls');
+        var tabValue = $(this).text().trim(); // Используем текст вкладки как ключ
+        tableItemsBonus[tabValue] = gatherTableData(tabPaneId); // Сбор данных из таблицы вкладки
+      });
+
+      AjaxSend('/admin/setting/donate/save', 'POST', {
+        paySystemDefault: $('#paySystemDefault').val(),
+        minSummaPaySphereCoin: $('#minSummaPaySphereCoin').val(),
+        maxSummaPaySphereCoin: $('#maxSummaPaySphereCoin').val(),
+        sphereCoinCost: $('#sphereCoinCost').val(),
+        ratioUSD: $('#ratioUSD').val(),
+        ratioEUR: $('#ratioEUR').val(),
+        ratioUAH: $('#ratioUAH').val(),
+        ratioRUB: $('#ratioRUB').val(),
+        enableCumulativeDiscountSystem: $('#enableCumulativeDiscountSystem').is(':checked'),
+        table_CumulativeDiscountSystem: extractTableData('table_CumulativeDiscountSystem'),
+        enableOneTimeBonus: $('#enableOneTimeBonus').is(':checked'),
+        table_EnableOneTimeBonus: extractTableData('table_EnableOneTimeBonus'),
+        enableSystemDiscountsOnItemPurchases: $('#enableSystemDiscountsOnItemPurchases').is(':checked'),
+        table_SystemDiscountsOnItemPurchases: extractTableData('table_SystemDiscountsOnItemPurchases'),
+        enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity: $('#enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity').is(':checked'),
+        table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity: extractTableData('table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity'),
+        table_ListOfItemsForDiscount: extractTableData('table_ListOfItemsForDiscount'),
+        rewardForDonatingItems: $('#rewardForDonatingItems').is(':checked'),
+        tableItemsBonus: tableItemsBonus,
+        donateSystems: collectPaymentSystemsData(),
+        item_id_to_game_transfer: $('#item_id_to_game_transfer').val(),
+        count_items_to_game_transfer: $('#count_items_to_game_transfer').val(),
+
+      }, false);
+    });
+
+    $(document).on('click', '#saveConfigReferral', function () {
+      let slave_bonus_items = [];
+      let leader_bonus_items = [];
+
+      // Проходим по каждой строке таблицы и собираем данные
+      $('.bonus_ref_slave_table tbody tr').each(function () {
+        let itemId = $(this).data('item-id');
+        let count = $(this).data('count');
+        let enchant = $(this).data('enchant');
+        slave_bonus_items.push({ item_id: itemId, count: count, enchant: enchant });
+      });
+
+      $('.bonus_ref_leader_table tbody tr').each(function () {
+        let itemId = $(this).data('item-id');
+        let count = $(this).data('count');
+        let enchant = $(this).data('enchant');
+        leader_bonus_items.push({ item_id: itemId, count: count, enchant: enchant });
+      });
+
+      AjaxSend('/admin/setting/referral/save', 'POST', {
+        time_game: $('#game_time_referral').val(),
+        level: $('#ref_level').val(),
+        pvp: $('#ref_pvp').val(),
+        pk: $('#ref_pk').val(),
+        bonus_amount: $('#ref_bonus_amount').val(),
+        enable_referral_donate_bonus: $('#enable_referral_donate_bonus').is(':checked'),
+        procent_donate_bonus: $('#ref_precent').val(),
+        slave_bonus_items: slave_bonus_items,
+        leader_bonus_items: leader_bonus_items,
+      }, false);
+    });
+
+    $('#add_insert_to_bonus_donate').click(function () {
+
+      let itemId = $('#item_id_insert_to_bonus_donate').val();
+      let count = $('#count_insert_to_bonus_donate').val();
+      let enchant = $('#enchant_insert_to_bonus_donate').val();
+      let activeTabPane = $('#bonus_Item_donation .tab-pane.active.show');
+
+      let icon = '';
+      AjaxSend('/admin/client/item/info', 'POST', { 'itemID': itemId }, true).then(function (response) {
+          icon = response.icon;
+          let table = activeTabPane.find('table');
+          let newRow = '<tr>' +
+            '<th scope="row"><span class="avatar avatar-sm"><img src="' + icon + '" alt="img"></span></th>' +
+            '<td>' + itemId + '</td>' +
+            '<td>' + count + '</td>' +
+            '<td>' + enchant + '</td>' +
+            '</tr>';
+          table.find('tbody').append(newRow);
+        },
+      );
+
+    });
+
+    $(document).on('click', '#addCostItem', function () {
+      var costItemName = $('#costItem').val(); // Получаем значение из поля ввода
+      var tabID = 'list_' + costItemName.replace(/\s+/g, '-').toLowerCase(); // Преобразуем имя в ID с префиксом 'list_'
+      var isActive = $('#myTab li').length === 0; // Проверяем, будет ли это первая вкладка
+      var newTab = `
+<li class="nav-item ${isActive ? 'active' : ''}" role="presentation">
+    <button class="nav-link ${isActive ? 'active' : ''}" id="${tabID}-tab" data-bs-toggle="tab"
+            data-bs-target="#${tabID}-pane" type="button" role="tab"
+            aria-controls="${tabID}-pane" aria-selected="${isActive ? 'true' : 'false'}">${costItemName}</button>
+</li>
+`;
+      $('#myTab').append(newTab);
+      var newTabPane = `
+<div class="tab-pane fade ${isActive ? 'show active' : ''}" id="${tabID}-pane" role="tabpanel"
+     aria-labelledby="${tabID}-tab" tabindex="0">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Предмет</th>
+                    <th scope="col">Кол-во</th>
+                    <th scope="col">Заточен</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+`;
+      $('#allItemsBonusData').append(newTabPane);
+    });
+
+    $('#function_list input[type="checkbox"]').on('change', function () {
+
+      let className = $(this).attr('id');
+      if ($(this).is(':checked')) {
+        $('.' + className).show();
+      } else {
+        $('.' + className).hide();
+      }
+
+      let data = {};
+      $('#function_list .custom-toggle-switch').each(function () {
+        let checkboxId = $(this).find('input[type="checkbox"]').attr('id');
+        data[checkboxId] = $(this).find('input[type="checkbox"]').is(':checked');
+      });
+      data['__config_name__'] = '__config_enabled__';
+      AjaxSend('/admin/config/save', 'POST', data, false);
+    });
+
+    $('#saveLangData').click(function () {
+      let languages = [];
+      $('input[name="list[]"]:checked').each(function () {
+        languages.push(this.id.replace('lang_', ''));
+      });
+      let defaultLanguage = $('#langDefault').val();
+      let formData = {
+        __config_name__: '__config_lang__',
+        allow: languages,
+        default: defaultLanguage,
+      };
+      AjaxSend('/admin/config/save', 'POST', formData, false);
+    });
+
+    $('#saveRegistration').on('click', function (e) {
+      e.preventDefault();
+      let formData = {
+        __config_name__: '__config_registration__',
+      };
+      $('#registration input').each(function () {
+        let id = $(this).attr('id');
+        let value;
+        if ($(this).attr('type') === 'checkbox') {
+          value = $(this).is(':checked');
+        } else {
+          value = $(this).val();
+        }
+        formData[id] = value;
+      });
+      $('#registration select').each(function () {
+        let id = $(this).attr('id');
+        let value = $(this).val();
+        formData[id] = value;
+      });
+      AjaxSend('/admin/config/save', 'POST', formData, false);
+    });
+
+    $('.btnCaptcha').on('change', function () {
+      $('.btnCaptcha').not(this).prop('checked', false);
+    });
+
+    $('#saveCaptcha').on('click', function (e) {
+      e.preventDefault();
+      let formData = {
+        __config_name__: '__config_captcha__',
+      };
+      $('#captcha input').each(function () {
+        let id = $(this).attr('id');
+        let value;
+        if ($(this).attr('type') === 'checkbox') {
+          value = $(this).is(':checked');
+        } else {
+          value = $(this).val();
+        }
+        formData[id] = value;
+      });
+      $('#registration select').each(function () {
+        let id = $(this).attr('id');
+        let value = $(this).val();
+        formData[id] = value;
+      });
+      AjaxSend('/admin/config/save', 'POST', formData, false);
+    });
+
+    $('#saveEmail').on('click', function (e) {
+      e.preventDefault();
+      let formData = {
+        __config_name__: '__config_email__',
+      };
+
+      $('#email input').each(function () {
+        if ($(this).hasClass('nosave')) {
+          return; // Пропускаем этот input
+        }
+        let id = $(this).attr('id');
+        if (!id) {
+          return; // Пропускаем, если у input нет id
+        }
+        let value;
+        if ($(this).attr('type') === 'checkbox') {
+          value = $(this).is(':checked');
+        } else {
+          value = $(this).val();
+        }
+        formData[id] = value;
+      });
+
+      $('#email select').each(function () {
+        if ($(this).hasClass('nosave')) {
+          return; // Пропускаем этот select
+        }
+        let id = $(this).attr('id');
+        if (!id) {
+          return; // Пропускаем, если у select нет id
+        }
+        let value = $(this).val();
+        formData[id] = value;
+      });
+
+      AjaxSend('/admin/config/save', 'POST', formData, false);
+    });
+
+
+
+    $('#saveOther').on('click', function (e) {
+      e.preventDefault();
+      let formData = {
+        __config_name__: '__config_other__',
+      };
+      $('#other input').each(function () {
+        let id = $(this).attr('id');
+        let value;
+        if ($(this).attr('type') === 'checkbox') {
+          value = $(this).is(':checked');
+        } else {
+          value = $(this).val();
+        }
+        formData[id] = value;
+      });
+      $('#other select').each(function () {
+        let id = $(this).attr('id');
+        let value = $(this).val();
+        formData[id] = value;
+      });
+      $('#other textarea').each(function () {
+        let id = $(this).attr('id');
+        let value = $(this).val();
+        formData[id] = value;
+      });
+      AjaxSend('/admin/config/save', 'POST', formData, false);
+    });
+
+    $('#saveCache').on('click', function (e) {
+      e.preventDefault();
+      let formData = {
+        __config_name__: '__config_cache__',
+      };
+      $('#cache input').each(function () {
+        let id = $(this).attr('id');
+        value = $(this).val();
+        formData[id] = value;
+      });
+      AjaxSend('/admin/config/save', 'POST', formData, false);
+    });
+
+    $('#saveTemplate').on('click', function (e) {
+      e.preventDefault();
+      let formData = {
+        __config_name__: '__config_template__',
+        template: $('#templateSelect').val(),
+      };
+      AjaxSend('/admin/config/save', 'POST', formData, false);
+    });
+
+    $('.add-time').click(function () {
+      var newRow = $('.accordion-body .row:first').clone();
+      newRow.find('input').val(''); // Очищаем значения input-ов в новой строке
+      $('.accordion-body').append(newRow); // Добавляем новую строку в accordion-body
+
+      // Применяем Cleave.js к только что добавленному элементу input
+      newRow.find('.time-format-2').each(function () {
+        new Cleave(this, {
+          time: true,
+          timePattern: ['h', 'm'],
+        });
+      });
+    });
+
+    $('.add-accordion-item').click(function () {
+      var numItems = $('#players_online_cheating').val();
+
+      var newAccordionItem = `
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-heading${numItems}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${numItems}" aria-expanded="false" aria-controls="flush-collapse${numItems}">
+                    Для онлайна: ${numItems}
+                </button>
+            </h2>
+            <div id="flush-collapse${numItems}" class="accordion-collapse collapse" aria-labelledby="flush-heading${numItems}" data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    <div class="row my-2">
+                        <div class="col-xl-2">
+                            <input class="form-control time-format-2" placeholder="hh:mm">
+                        </div>
+                        <div class="col-xl-3">
+                            В это время онлайн умножить онлайн на:
+                        </div>
+                        <div class="col-xl-2">
+                            <input value="1" step="0.1" type="number" class="form-control" placeholder="1">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-primary add-time">Добавить время</button>
+                </div>
+            </div>
+        </div>`;
+
+      $('#accordionFlushExample').append(newAccordionItem);
+      new Cleave(`#flush-collapse${numItems} .time-format-2`, {
+        time: true,
+        timePattern: ['h', 'm'],
+      });
+      $(`#flush-collapse${numItems} .add-time`).click(function () {
+        var newRow = $(this).closest('.accordion-collapse').find('.accordion-body .row:first').clone();
+        newRow.find('input').val('');
+        $(this).closest('.accordion-collapse').find('.accordion-body').append(newRow);
+        newRow.find('.time-format-2').each(function () {
+          new Cleave(this, {
+            time: true,
+            timePattern: ['h', 'm'],
+          });
+        });
+      });
+    });
+
+    // Функция для сбора данных
+    function collectData() {
+      var data = {
+        isEnableOnlineCheaters: $('#isEnableOnlineCheaters').is(':checked'),
+        minOnlineShow: $('input[type="number"].form-control').eq(0).val(),
+        maxOnlineShow: $('input[type="number"].form-control').eq(1).val(),
+        cheatingDetails: {},
+      };
+
+      // Сбор данных из аккордеона
+      $('.accordion-item').each(function () {
+        var online = $(this).find('.accordion-button').text().match(/\d+/)[0]; // Извлекаем число онлайн игроков из заголовка
+        var times = [];
+
+        $(this).find('.accordion-body div.row').each(function () {
+          var time = $(this).find('.time-format-2').val();
+          var multiplier = $(this).find('input[type="number"]').last().val();
+          times.push({ time: time, multiplier: multiplier });
+        });
+        data.__config_name__ = '__config_cheating__';
+        data.cheatingDetails[online] = times; // Добавляем времена и множители под ключом онлайн игроков
+      });
+
+      return data;
+    }
+
+    // Подключение обработчика кнопки сохранения
+    $('#saveCheatingOnline').click(function () {
+      var collectedData = collectData();
+      AjaxSend('/admin/config/save', 'POST', collectedData, false);
+    });
+
+  });
+
+  function extractTableData(tableId) {
+    let data = [];
+    $('#' + tableId + ' tbody tr').each(function () {
+      let row = $(this);
+      let obj = {};
+      $('#' + tableId + ' thead th').each(function (index) {
+        let dataName = $(this).data('name');
+        if (dataName) {
+          let cellValue = row.find(index === 0 ? 'th:eq(' + index + ')' : 'td:eq(' + (index - 1) + ')').text().trim();
+          obj[dataName] = cellValue;
+        }
+      });
+      data.push(obj);
+    });
+    return data;
+  }
+
+  function gatherTableData(tabPaneId) {
+    var data = []; // Инициализация массива данных для текущей вкладки
+    $('#bonus_Item_donation #' + tabPaneId + ' .table tbody tr').each(function () {
+      var rowData = {
+        id: $(this).find('td:nth-child(2)').text().trim(),
+        count: $(this).find('td:nth-child(3)').text().trim(),
+        enchant: $(this).find('td:nth-child(4)').text().trim(),
+      };
+      data.push(rowData); // Добавление данных текущей строки в массив
+    });
+    return data;
+  }
+
+  function collectPaymentSystemsData() {
+    var systemsData = [];
+
+    // Итерируем через все блоки платежных систем
+    $('[data-pay-name]').each(function () {
+      var payName = $(this).data('pay-name'); // Получаем имя платежной системы
+      var isEnabled = $('#is_enable_' + payName).is(':checked'); // Проверяем, включена ли система
+      var forAdmin = $('#forAdmin_' + payName).is(':checked'); // Проверяем, является ли система по умолчанию для администратора
+      var description = $('#description_' + payName).val(); // Получаем описание платежной системы
+
+      var inputsData = {};
+      // Итерируем через все поля ввода текущей платежной системы
+      $(this).find('[data-name]').each(function () {
+        var inputName = $(this).data('name'); // Получаем имя поля
+        var inputValue = $(this).val(); // Получаем значение поля
+        inputsData[inputName] = inputValue; // Сохраняем данные поля
+      });
+
+      // Собираем и сохраняем данные платежной системы
+      systemsData.push({
+        [payName]: {
+          enable: isEnabled,
+          forAdmin: forAdmin,
+          inputs: inputsData,
+          description: description,
+        },
+      });
+    });
+
+    return systemsData;
+  }
+
+  $('#templateSelect').change(function () {
+    let selectedTemplate = $(this).val();
+    AjaxSend('/admin/template/readme', 'POST', { template: selectedTemplate }, true).then(function (response) {
+      let date = new Date(response.date * 1000);
+      let formattedDate = ('0' + date.getDate()).slice(-2) + '.' +
+        ('0' + (date.getMonth() + 1)).slice(-2) + '.' +
+        date.getFullYear();
+      $('#templateAuthor').html(response.author);
+      $('#templateContact').html(response.contact);
+      $('#templateDate').text(formattedDate); // Используем отформатированную дату
+      $('#templateDescription').html(response.description);
+      $('#templateScreen').attr('src', '/template/' + selectedTemplate + '/' + response.screen);
+      $('#templateVersion').text(response.version);
+      console.log(response);
+    });
+
+  });
+
+
+</script>
+<script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+<link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+
+<script>
+  // Register the plugins
+  FilePond.registerPlugin(
+    FilePondPluginImagePreview,
+  );
+
+  // Set up FilePond instance
+  document.querySelectorAll('.sphereLogo').forEach(inputElement => {
+    const pond = FilePond.create(inputElement, {
+      labelIdle: `Drag & Drop your picture or <span class="filepond--label-action">Browse</span>`,
+      imagePreviewHeight: 200,
+      imageCropAspectRatio: '2:1',
+      imageResizeTargetWidth: 400,
+      imageResizeTargetHeight: 200,
+      allowPaste: false,
+      stylePanelLayout: 'compact',
+      styleLoadIndicatorPosition: 'center bottom',
+      styleButtonRemoveItemPosition: 'center bottom',
+    });
+
+    const dataType = inputElement.getAttribute('data-type');
+
+    const url = dataType === 'favicon' ? '/admin/setting/favicon/save' : '/admin/setting/logo/save';
+
+    pond.setOptions({
+      server: {
+        process: (fieldName, file, metadata, load, error, progress, abort) => {
+          // Create a new FormData object
+          const formData = new FormData();
+          formData.append(fieldName, file, file.name);
+
+          // Use jQuery AJAX to send the file
+          $.ajax({
+            url: url, // Use the dynamic URL
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            xhr: function () {
+              var myXhr = $.ajaxSettings.xhr();
+              if (myXhr.upload) {
+                myXhr.upload.addEventListener('progress', function (e) {
+                  if (e.lengthComputable) {
+                    progress(e.lengthComputable, e.loaded, e.total);
+                  }
+                }, false);
+              }
+              return myXhr;
+            },
+            success: function (response) {
+              if (response.status === 'error') {
+                noticeError(response.message);
+                error('oh no');
+              }
+              load(response);
+              if (response.status === 'success') {
+                if (dataType === 'logo') {
+                  $('.desktop-logo').attr('src', response.path);
+                }
+              }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              error('oh no');
+            },
+          });
+
+          // Return abort function
+          return {
+            abort: () => {
+              abort();
+            },
+          };
+        },
+      },
+    });
+  });
+
+
+</script>
+
+<script>
+
+
+  // Email Constructor
+  var toolbarOptions = [
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ 'font': [] }],
+    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+    ['blockquote', 'code-block'],
+
+    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+
+    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+    [{ 'align': [] }],
+
+    ['image', 'video'],
+    ['clean'],                                         // remove formatting button
+  ];
+  var quill = new Quill('#email-html', {
+    modules: {
+      toolbar: toolbarOptions,
+    },
+    theme: 'snow',
+  });
+
+  $(document).ready(function () {
+
+    $('#emailSendTest').click(function () {
+      let address = $('#emailTestFromAddress').val();
+      let emailHeader = $('#emailHeader').val();
+      let emailBody = quill.root.innerHTML;
+
+      let emailHost = $('#emailHost').val();
+      let username = $('#emailUsername').val();
+      let password = $('#emailPassword').val();
+      let emailPort = $('#emailPort').val();
+      let emailProtocol = $('#emailProtocol').val();
+      let isSMTPAuth = $('#emailSMTPAuth').is(':checked');
+
+      AjaxSend('/admin/setting/email/send/test', 'POST', {
+        'email': address,
+        'header': emailHeader,
+        'body': emailBody ,
+        'host': emailHost,
+        'username': username,
+        'password': password,
+        'port': emailPort,
+        'protocol': emailProtocol,
+        'smtpAuth': isSMTPAuth,
+      }, true).then(function (response) {
+        console.log(response);
+        $('#emailSendTestResponse').html(response.message);
+      });
+
+    });
+  });
+
+</script>
+{% endblock %}
