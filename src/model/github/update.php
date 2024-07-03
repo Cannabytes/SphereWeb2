@@ -51,7 +51,7 @@ class update
 
     static function addLastCommit($last_commit_now): void
     {
-        $s = sql::debug_query("INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)", [
+        sql::run("INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)", [
           $last_commit_now,
           "Cannabytes",
           "https://github.com/Cannabytes/SphereWeb2/commit/" . $last_commit_now,
@@ -59,7 +59,6 @@ class update
           time::mysql(),
           time::mysql(),
         ]);
-        var_dump($s);exit();
         if (sql::isError()) {
             board::error("Ошибка записи коммита");
         }
