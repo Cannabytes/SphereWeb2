@@ -9,7 +9,7 @@
   <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> Sash – Bootstrap 5 Admin &amp; Dashboard Template </title>
+  <title> Install </title>
   <meta name="Description" content="Bootstrap Responsive Admin Web Dashboard HTML5 Template">
   <meta name="Author" content="Spruko Technologies Private Limited">
   <meta name="keywords"
@@ -456,7 +456,7 @@
   });
 
   $('#nextToCreateAdmin').click(function () {
-    checkConnectDB().then(function() {
+    checkConnectDB().then(function(response) {
       if(MySQLVersionOK) {
         $('#admin-tab').tab('show');
         $('#admin-tab').removeAttr('disabled');
@@ -493,7 +493,6 @@
       noticeError("Никнейм должен содержать не менее 3 символов");
       return;
     }
-
 
     $('#install-tab').tab('show');
     $('#install-tab').removeAttr('disabled');
@@ -534,7 +533,8 @@
         dataType: 'json',
         encode: true,
       }).done(function (data) {
-        needMinMySQLVer = parseFloat('{{need_mysql_version}}');
+        console.log(data)
+        var needMinMySQLVer = parseFloat('{{need_mysql_version}}');
         if (data.ok) {
           MySQLVersion = parseFloat(data.mysqlVersion);
           if(MySQLVersion >= needMinMySQLVer) {
@@ -547,9 +547,11 @@
         }
       });
     }).then(function(message) {
+      console.log(message);
       noticeSuccess(message);
       MySQLVersionOK = true;
     }).catch(function(message) {
+      console.log(message);
       noticeError(message);
     });
   }

@@ -6,7 +6,6 @@
 namespace Ofey\Logan22\controller\install;
 
 use Exception;
-use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\server;
@@ -187,7 +186,12 @@ class install
     {
         if ($only_admin) {
             if (auth::get_access_level() != "admin") {
-                board::notice(false, 'Access is denied');
+                echo json_encode([
+                  "type"    => "notice",
+                  "ok"      => true,
+                  "message" => 'Access is denied',
+                ]);
+                exit;
             }
         }
         $host     = $_POST['host'];
@@ -197,18 +201,24 @@ class install
         $name     = $_POST['name'];
         $pdo      = \Ofey\Logan22\model\install\install::test_connect_mysql($host, $port, $user, $password, $name);
         if ($pdo) {
-            //Вернуть версию MySQL
             $ver = $pdo->query("SELECT VERSION()")->fetchColumn();
             $ver = preg_replace('/^(\d+\.\d+).*$/', '$1', $ver);
-            board::alert([
+            $arr = json_encode([
               "type"         => "notice",
               "ok"           => true,
               "mysqlVersion" => $ver,
+              'message'      => 'Next install',
             ]);
-            //            self::install_sql_struct($pdo, fileSys::get_dir("/uploads/sql/struct/*.sql"));
-            board::notice(true, 'Next install');
+            echo $arr;
+            exit;
         } else {
-            board::notice(false, 'Database connection error');
+            $data = [
+              'type'    => 'notice',
+              'ok'      => false,
+              'message' => 'Database connection error',
+            ];
+            echo json_encode($data);
+            exit;
         }
     }
 
@@ -228,6 +238,8 @@ class install
 
     public static function startInstall(): void
     {
+        header('Content-Type: application/json; charset=utf-8');
+
         $email         = $_POST['email'];
         $nickname      = $_POST['nickname'];
         $adminPassword = password_hash($_POST['adminPassword'], PASSWORD_BCRYPT);
@@ -242,16 +254,19 @@ class install
          * Создаем проверочный файл
          */
         $filenameCheck = substr(bin2hex(random_bytes(10)), 0, (10)) . ".txt";
-        $file     = file_put_contents($filenameCheck, "OK");
+        $file          = file_put_contents($filenameCheck, "OK");
         if ($file) {
             server::tokenDisable(true);
             $response = server::send(type::SPHERE_INSTALL, [
               'filename' => $filenameCheck,
             ])->show()->getResponse();
-            if($response['success']){
+            if ($response['success']) {
                 $token = $response['token'];
-                file_put_contents(fileSys::get_dir("/data/token.php"), "<?php
-const __TOKEN__ = \"$token\";\n");
+                file_put_contents(
+                  fileSys::get_dir("/data/token.php"),
+                  "<?php
+const __TOKEN__ = \"$token\";\n"
+                );
                 unlink($filenameCheck);
             }
         }
@@ -266,7 +281,9 @@ const __TOKEN__ = \"$token\";\n");
 
         $lastCommitData = self::getLastCommitData();
         if ($lastCommitData) {
-            $query = $pdo->prepare("INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)");
+            $query = $pdo->prepare(
+              "INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)"
+            );
             $query->execute([
               $lastCommitData['sha'],
               $lastCommitData['author'],
@@ -287,15 +304,20 @@ const __TOKEN__ = \"$token\";\n");
           $ip,
           'admin',
         ])) {
-            //            \Ofey\Logan22\model\install\install::add_first_news();
-            board::alert([
+            echo json_encode([
               "type"     => "notice",
               "ok"       => true,
               "message"  => "Gooooood job!",
               "redirect" => "/main",
             ]);
+            exit;
         }
-        board::notice(false, "Не удалось создать администратора");
+        echo json_encode([
+          "type"    => "notice",
+          "ok"      => false,
+          "message" => "Не удалось создать администратора",
+        ]);
+        exit;
     }
 
     private static function install_sql_struct($pdo, $dir): void
@@ -307,91 +329,94 @@ const __TOKEN__ = \"$token\";\n");
         }
     }
 
+    private static function getLastCommitData()
+    {
+        function getLastCommitDetails($gitDir = '.git')
+        {
+            // Получаем последний хеш коммита
+            $commitHash = getLastCommitHash($gitDir);
 
-   private static function getLastCommitData() {
-       function getLastCommitDetails($gitDir = '.git') {
-           // Получаем последний хеш коммита
-           $commitHash = getLastCommitHash($gitDir);
+            // Определяем путь к объекту коммита в .git/objects
+            $objectPath = sprintf('%s/objects/%s/%s', $gitDir, substr($commitHash, 0, 2), substr($commitHash, 2));
 
-           // Определяем путь к объекту коммита в .git/objects
-           $objectPath = sprintf('%s/objects/%s/%s', $gitDir, substr($commitHash, 0, 2), substr($commitHash, 2));
+            if ( ! file_exists($objectPath)) {
+                throw new Exception("Object file not found: $objectPath");
+            }
 
-           if (!file_exists($objectPath)) {
-               throw new Exception("Object file not found: $objectPath");
-           }
+            // Читаем и распаковываем содержимое файла объекта коммита
+            $objectContent = file_get_contents($objectPath);
+            $objectContent = gzuncompress($objectContent);
 
-           // Читаем и распаковываем содержимое файла объекта коммита
-           $objectContent = file_get_contents($objectPath);
-           $objectContent = gzuncompress($objectContent);
+            if ( ! $objectContent) {
+                throw new Exception("Unable to decompress object content");
+            }
 
-           if (!$objectContent) {
-               throw new Exception("Unable to decompress object content");
-           }
+            // Извлекаем данные коммита
+            $commitDetails = parseCommitObject($commitHash, $objectContent);
 
-           // Извлекаем данные коммита
-           $commitDetails = parseCommitObject($commitHash, $objectContent);
+            return $commitDetails;
+        }
 
-           return $commitDetails;
-       }
+        function getLastCommitHash($gitDir)
+        {
+            $headFile = $gitDir . '/HEAD';
+            if ( ! file_exists($headFile)) {
+                throw new Exception('HEAD file not found in .git directory');
+            }
 
-       function getLastCommitHash($gitDir) {
-           $headFile = $gitDir . '/HEAD';
-           if (!file_exists($headFile)) {
-               throw new Exception('HEAD file not found in .git directory');
-           }
+            $headContent = file_get_contents($headFile);
+            if (strpos($headContent, 'ref: ') === 0) {
+                $refPath        = trim(str_replace('ref: ', '', $headContent));
+                $commitHashFile = $gitDir . '/' . $refPath;
+            } else {
+                return trim($headContent);
+            }
 
-           $headContent = file_get_contents($headFile);
-           if (strpos($headContent, 'ref: ') === 0) {
-               $refPath = trim(str_replace('ref: ', '', $headContent));
-               $commitHashFile = $gitDir . '/' . $refPath;
-           } else {
-               return trim($headContent);
-           }
+            if ( ! file_exists($commitHashFile)) {
+                throw new Exception("Commit hash file not found: $commitHashFile");
+            }
 
-           if (!file_exists($commitHashFile)) {
-               throw new Exception("Commit hash file not found: $commitHashFile");
-           }
+            return trim(file_get_contents($commitHashFile));
+        }
 
-           return trim(file_get_contents($commitHashFile));
-       }
+        function parseCommitObject($commitHash, $objectContent)
+        {
+            // Разбиваем данные по строкам
+            $lines = explode("\n", $objectContent);
 
-       function parseCommitObject($commitHash, $objectContent) {
-           // Разбиваем данные по строкам
-           $lines = explode("\n", $objectContent);
+            $commitInfo = [
+              'hash'    => $commitHash,
+              'author'  => '',
+              'date'    => '',
+              'message' => '',
+            ];
 
-           $commitInfo = [
-             'hash' => $commitHash,
-             'author' => '',
-             'date' => '',
-             'message' => ''
-           ];
+            foreach ($lines as $line) {
+                if (str_starts_with($line, 'author ')) {
+                    // Извлекаем автора и дату
+                    preg_match('/author (.*) <.*> (\d+) ([+-]\d{4})/', $line, $matches);
+                    $commitInfo['author'] = $matches[1];
+                    $commitInfo['date']   = time::mysql();
+                }
+                if (empty($line)) {
+                    // Следующая строка будет сообщением коммита
+                    $commitInfo['message'] = trim(implode("\n", array_slice($lines, array_search($line, $lines) + 1)));
+                    break;
+                }
+            }
 
-           foreach ($lines as $line) {
-               if (str_starts_with($line, 'author ')) {
-                   // Извлекаем автора и дату
-                   preg_match('/author (.*) <.*> (\d+) ([+-]\d{4})/', $line, $matches);
-                   $commitInfo['author'] = $matches[1];
-                   $commitInfo['date'] = time::mysql();
-               }
-               if (empty($line)) {
-                   // Следующая строка будет сообщением коммита
-                   $commitInfo['message'] = trim(implode("\n", array_slice($lines, array_search($line, $lines) + 1)));
-                   break;
-               }
-           }
+            return $commitInfo;
+        }
 
-           return $commitInfo;
-       }
+        try {
+            return getLastCommitDetails();
+        } catch (Exception $e) {
+            return self::requestGetLastCommitData();
+        }
+    }
 
-       try {
-           return getLastCommitDetails();
-       } catch (Exception $e) {
-           return self::requestGetLastCommitData();
-       }
-
-   }
-
-    private static function requestGetLastCommitData(){
+    private static function requestGetLastCommitData()
+    {
         $url = "https://api.github.com/repos/Cannabytes/SphereWeb2/commits";
 
         // Инициализируем cURL
