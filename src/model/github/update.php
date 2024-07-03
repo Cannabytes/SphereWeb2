@@ -39,6 +39,7 @@ class update
             self::addLastCommit($last_commit_now);
             board::success("ПО обновлено");
         }
+        board::success("Обновление не требуется");
     }
 
     static function getLastCommit(): string|null

@@ -52,8 +52,8 @@
     $('#startUpdate').on('click', function (e) {
         e.preventDefault();
         AjaxSend('/github/update', 'POST', {}, true).then(function (response) {
+            console.log(response)
             responseAnalysis(response);
-            alert("Обновлено")
         })
     });
 
