@@ -586,7 +586,7 @@ return [
       'enable'  => 1,
       'method'  => 'GET',
       'pattern' => '/',
-      'func'    => 'controller\\main\\main::index',
+      'func'    => 'controller\\promo\\promo::index',
       'access'  =>
         [
           0 => 'any',

@@ -33,6 +33,9 @@ class update
                 if ($status == 'added' || $status == 'modified') {
                     file_put_contents(fileSys::get_dir($file), file_get_contents($link));
                 } elseif ($status == 'removed') {
+                    if($file == 'data/db.php'){
+                        continue;
+                    }
                     unlink(fileSys::get_dir($file));
                 }
             }

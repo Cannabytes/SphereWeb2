@@ -6,12 +6,14 @@
 
 namespace Ofey\Logan22\controller\main;
 
-use Ofey\Logan22\model\donate\donateConfig;
 use Ofey\Logan22\template\tpl;
 
-class main {
+class main
+{
 
-    public static function index() {
+    public static function index()
+    {
         tpl::display("index.html");
     }
+
 }
