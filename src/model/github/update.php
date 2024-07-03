@@ -23,7 +23,7 @@ class update
     {
         $sphere = server::send(type::GET_COMMIT_LAST, [
           'last_commit' => self::getLastCommit(),
-        ])->show()->getResponse();
+        ])->getResponse();
         if ( ! $sphere['status']) {
             $last_commit_now = $sphere['last_commit_now'];
             foreach ($sphere['data'] as $data) {
@@ -36,8 +36,9 @@ class update
                     unlink(fileSys::get_dir($file));
                 }
             }
+            self::addLastCommit($last_commit_now);
+            board::success("ПО обновлено");
         }
-        self::addLastCommit($last_commit_now);
     }
 
     static function getLastCommit(): string|null
@@ -49,7 +50,7 @@ class update
 
     static function addLastCommit($last_commit_now): void
     {
-        sql::run("INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)", [
+        $s = sql::debug_query("INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)", [
           $last_commit_now,
           "Cannabytes",
           "https://github.com/Cannabytes/SphereWeb2/commit/" . $last_commit_now,
@@ -57,9 +58,9 @@ class update
           time::mysql(),
           time::mysql(),
         ]);
+        var_dump($s);exit();
         if (sql::isError()) {
-            $err = sql::getException();
-            board::error($err->getMessage());
+            board::error("Ошибка записи коммита");
         }
     }
 

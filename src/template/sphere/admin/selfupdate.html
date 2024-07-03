@@ -11,107 +11,26 @@
                 <div class="card custom-card">
                     <div class="card-header">
                         <div class="card-title">
-                            Github Update
+                            Обновление
                         </div>
                     </div>
                     <div class="card-body">
-                        <ul class="nav nav-tabs mb-2 border-bottom-0" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link active" data-bs-toggle="tab" role="tab" href="#home1" aria-selected="false" tabindex="-1">Описание</a>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link" data-bs-toggle="tab" role="tab" href="#about1" aria-selected="false" tabindex="-1">Настройка</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
+
+                        <div class="">
                             <div class="tab-pane text-muted active show" id="home1" role="tabpanel">
                                 <p class="card-text">Экспериментальная функция для обновления программного обеспечения SphereWeb.</p>
                                 <p> Рекомендую иметь актуальный код программного обеспечения.</p>
 
-                                {% if config().github().getCountCommits() == 0 %}
-                                 <p> Для Вас нет обновлений </p>
-                                {% else %}
-                                <button id="startUpdate" class="btn btn-success">Обновить программное обновление</button>
-                                {% endif %}
+                                <button id="startUpdate" class="btn btn-success">Проверить и обновить ПО</button>
+
                             </div>
-                            <div class="tab-pane text-muted" id="about1" role="tabpanel">
-                                <p class="card-text"> Для обновления Вам необходимо создать GitHub Token.</p> 
-                                <p>Это можно сделать по ссылке: <a target="_blank" href="https://github.com/settings/personal-access-tokens/new">GitHub Token</a></p>
-                                <p>После создания GitHub Token, укажите его в следующем поле.</p>
-                                <p>Срок действия токена в днях необходимо указать, чтоб напоминать об его актуальности.</p>
-                                <div id="githubdata" class="input-group mb-3">
-                                    <span class="input-group-text">GitHub Token</span>
-                                    <input id="githubToken" type="text" value="{{config().github().getToken()}}" class="form-control" placeholder="GitHub Token" aria-label="GitHub Token" aria-describedby="button-addon2">
-                                    <span class="input-group-text">Срок действия</span>
-                                    <input id="tokenDays" min="1" max="365" value="{{config().github().getTokenDays()}}" type="number" class="form-control" placeholder="Срок действия токена в днях" aria-label="Срок действия токена в днях" aria-describedby="button-addon2">
-                                    <button class="btn btn-success" type="button" id="saveGithub">Сохранить</button>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row justify-content-center">
-            {% if config().github().isError() == true %}
-
-            <div class="col-xl-12">
-                <div class="card custom-card">
-                    <div class="card-body">
-                        <blockquote class="blockquote custom-blockquote danger mb-0 text-center">
-                            <p class="text-danger"> {{ config().github().getError() }} </p>
-                          </blockquote>
-                    </div>
-
-                </div>
-            </div>
-
-
-            {% else %}
-            <div class="col-xxl-9 col-xl-10 col-sm-12">
-                <ul class="timeline list-unstyled">
-
-                    {% set IsNeedUpdate = true %}
-                    {% for git in config().github().getUpdateSphere() %}
-                    {% set lastSHA = config().github().getLastUpdateSphereCommitSHA() %}
-                    {% if IsNeedUpdate == true %}
-                    {% set IsNeedUpdate = lastSHA != git.getSha() %}
-                    {% endif %}
-                    <li>
-                        <div class="timeline-time text-end">
-                            {% if IsNeedUpdate == true %}
-                            <svg class="flex-shrink-0 me-2 svg-danger" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><g><rect fill="none" height="24" width="24"/></g><g><g><g><path d="M15.73,3H8.27L3,8.27v7.46L8.27,21h7.46L21,15.73V8.27L15.73,3z M19,14.9L14.9,19H9.1L5,14.9V9.1L9.1,5h5.8L19,9.1V14.9z"/><rect height="6" width="2" x="11" y="7"/><rect height="2" width="2" x="11" y="15"/></g></g></g></svg>
-                            {% else %}
-                            <svg class="flex-shrink-0 me-2 svg-success" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0V0zm0 0h24v24H0V0z" fill="none"></path><path d="M16.59 7.58L10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg>
-                            {% endif %}
-                            <span class="time d-inline-block">{{git.getDate()|date('d.m.Y H:i:s')}}</span>
-                        </div>
-                        <div class="timeline-icon">
-                            <a href="javascript:void(0);"></a>
-                        </div>
-                        <div class="timeline-body">
-                            <div class="d-flex align-items-top alert {% if IsNeedUpdate == true %}alert-danger{% else %}alert-success{% endif %}  timeline-main-content mt-0">
-                                <div class="flex-fill">
-                                    <div class=" align-items-center">
-                                        <div class="mt-sm-0 mt-2">
-                                            <p class="mb-0 fs-14 fw-semibold">Автор: {{git.getAuthor()}}</p>
-                                            <p class="mb-0 text-muted">Сообщение: {{git.getMessage()}}</p>
-                                            <p class="mb-0 text-muted">SHA: {{git.getSha()}}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    {% endfor %}
-
-
-                </ul>
-            </div>
-            {% endif %}
-
-            </div>
 
     </div>
 
@@ -129,33 +48,13 @@
 {% block js %}
 
 <script>
-    $('#saveGithub').on('click', function (e) {
-        e.preventDefault();
-        let formData = {
-            __config_name__: '__config_github__',
-        };
-        let stop = false
-        $('#githubdata input').each(function () {
-            if (stop) return false;
-            let id = $(this).attr('id');
-            let value = $(this).val();
-            if (value === '') {
-                noticeError("Not github data");
-                stop = true;
-                return false;
-            }
-            formData[id] = value;
-        });
-        if (stop) return false;
-        AjaxSend('/admin/config/save', 'POST', formData, false);
-        setTimeout(function() {
-            window.location.reload();
-        }, 2000);
-    });
 
     $('#startUpdate').on('click', function (e) {
         e.preventDefault();
-        AjaxSend('/admin/sphere/update/start', 'POST', {}, false)
+        AjaxSend('/github/update', 'POST', {}, true).then(function (response) {
+            responseAnalysis(response);
+            alert("Обновлено")
+        })
     });
 
 </script>
