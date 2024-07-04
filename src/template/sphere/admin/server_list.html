@@ -8,10 +8,15 @@
   <div class="row">
     <div class="col-xl-12">
       <div class="card custom-card">
-        <div class="card-header">
+        <div class="card-header justify-content-between">
           <div class="card-title">
             Мои сервера
           </div>
+
+          <div class="prism-toggle">
+            <a href="/admin/server/add" class="btn btn-sm btn-success">Добавить сервер</a>
+          </div>
+
         </div>
         <div class="card-body d-flex align-items-start">
           <div class="col-md-2">
@@ -102,6 +107,9 @@
 
                       <a class="btn btn-success btn-sm shadow-success btn-wave waves-effect waves-light"
                          href="/admin/server/statistic/{{server.getId()}}">Статистика</a>
+
+                      <button class="btn btn-danger btn-sm shadow-success btn-wave waves-effect waves-light removeServer"
+                      data-server-id="{{server.getId()}}">Удаление</button>
 
                     </div>
                   </div>
@@ -650,16 +658,6 @@
 
   });
 
-  $(document).on('click', '#saveCollection', function () {
-      var serverid = $(this).data('serverid');
-      var name = $('#sql_base_source').val();
-      AjaxSend('/admin/server/edit/collection', 'POST', {
-        serverId: serverid,
-        name: name,
-      }, false);
-
-  });
-
   $(document).on('click', '#saveOther', function () {
     var serverid = $(this).data('serverid');
     var date_start_server = $('#date_start_server').val();
@@ -785,6 +783,16 @@
 
 </script>
 {% endif %}
+
+<script>
+  $(document).on("click", ".removeServer", function (event){
+    AjaxSend("/admin/server/delete", "POST", {
+         serverId: $(this).data('server-id')
+      }, false).then(function (data) {
+         console.log(data)
+    })
+  });
+</script>
 
 <script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>
 <script src="{{template}}/assets/js/date&time_pickers.js"></script>

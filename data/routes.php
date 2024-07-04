@@ -1411,4 +1411,18 @@ return [
       'page'    => '',
       'comment' => '',
     ],
+  93 =>
+    [
+      'enable'  => 1,
+      'method'  => 'POST',
+      'pattern' => '/admin/server/delete',
+      'func'    => 'controller\\admin\\options::delete_server',
+      'access'  =>
+        [
+          0 => 'admin',
+        ],
+      'weight'  => 0,
+      'page'    => '',
+      'comment' => '',
+    ],
 ];

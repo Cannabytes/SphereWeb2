@@ -30,6 +30,19 @@ use Ofey\Logan22\template\tpl;
 class options
 {
 
+    //POST
+    public static function delete_server(): void {
+        $server_id = $_POST['serverId'] ?? board::error("Server id is empty");
+        $response = \Ofey\Logan22\component\sphere\server::send(type::DELETE_SERVER, [
+          "id" => (int)$server_id
+        ])->show()->getResponse();
+        if($response['success']){
+            sql::run("DELETE FROM `servers` WHERE `id` = ?", [$server_id]);
+            board::redirect("/admin/server/list");
+            board::success("Сервер удален");
+        }
+    }
+
     //POST - Регистрация сервера
     public static function create_server(): void
     {
@@ -86,7 +99,8 @@ class options
               "source"    => $sql_base_source,
             ];
             sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
-            board::success(lang::get_phrase(243))->redirect("/admin/server/edit");
+            board::redirect("/admin/server/list");
+            board::success(lang::get_phrase(243));
         }
 
         board::error(lang::get_phrase("error"));

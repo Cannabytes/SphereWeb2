@@ -27,6 +27,7 @@ enum type
     //Получение статуса сервера
     case GET_STATUS_SERVER;
     case UPDATE_COLLECTION;
+    case DELETE_SERVER;
     //Отправка запроса на синхронизацию внутренней базы данных
     case SYNCHRONIZATION;
     //Статистика для админов, о онлайне
@@ -68,6 +69,7 @@ enum type
               self::UPDATE_STATUS_SERVER => '/api/server/update/status',
               self::GET_STATUS_SERVER => '/api/server/status',
               self::UPDATE_COLLECTION => '/api/server/update/collection',
+              self::DELETE_SERVER => '/api/server/delete',
 
               self::SYNCHRONIZATION => '/api/user/accounts/synchronization',
               self::SERVER_STATISTIC_ONLINE => '/api/server/statistic/online',

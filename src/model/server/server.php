@@ -93,7 +93,11 @@ class server
 
         // Если запрашиваемый ID передан, возвращаем соответствующий сервер или последний сервер из массива
         if ($id !== null) {
-            return isset(self::$server_info[$id]) ? self::$server_info[$id] : (end(self::$server_info) instanceof serverModel ? end(self::$server_info) : null);
+            //Проверить что в $server_info есть записи
+            if (empty(self::$server_info)) {
+                return null;
+            }
+            return self::$server_info[$id] ?? (end(self::$server_info) instanceof serverModel ? end(self::$server_info) : null);
         }
 
         // Если self::$server_info не пуст, возвращаем первый сервер, иначе null
