@@ -23,6 +23,7 @@ use Ofey\Logan22\model\admin\update_cache;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\install\install;
+use Ofey\Logan22\model\server\serverModel;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
@@ -31,12 +32,13 @@ class options
 {
 
     //POST
-    public static function delete_server(): void {
+    public static function delete_server(): void
+    {
         $server_id = $_POST['serverId'] ?? board::error("Server id is empty");
-        $response = \Ofey\Logan22\component\sphere\server::send(type::DELETE_SERVER, [
-          "id" => (int)$server_id
+        $response  = \Ofey\Logan22\component\sphere\server::send(type::DELETE_SERVER, [
+          "id" => (int)$server_id,
         ])->show()->getResponse();
-        if($response['success']){
+        if ($response['success']) {
             sql::run("DELETE FROM `servers` WHERE `id` = ?", [$server_id]);
             board::redirect("/admin/server/list");
             board::success("Сервер удален");
@@ -110,10 +112,10 @@ class options
     static public function updateCollection()
     {
         $response = \Ofey\Logan22\component\sphere\server::send(type::UPDATE_COLLECTION, [
-          "id" => (int)$_POST['serverId'],
-          "name"     => $_POST['name'],
+          "id"   => (int)$_POST['serverId'],
+          "name" => $_POST['name'],
         ])->show()->getResponse();
-        if($response['status'] == 'success'){
+        if ($response['status'] == 'success') {
             board::success("Коллекция обновлена");
         }
     }
@@ -122,22 +124,51 @@ class options
     {
         validation::user_protection("admin");
 
+        //Подгрузка списокв серверов с сервера сферы
+        $servers_id = \Ofey\Logan22\component\sphere\server::send(type::SERVER_LIST)->show()->getResponse();
         if ($id) {
             $serverInfo = \Ofey\Logan22\model\server\server::getServer($id);
             if ($serverInfo->getId() != $id) {
                 redirect::location("/admin/server/list");
             }
+
             tpl::addVar([
               'serverInfo' => $serverInfo,
             ]);
+        }
+
+        function filterUniqueIds($objects, $ids)
+        {
+            // Получаем все ID из первого массива
+            $objectIds = array_map(function ($object) {
+                return $object->getId(); // Предполагается, что в классе есть метод getId()
+            }, $objects);
+
+            // Фильтруем второй массив, исключая ID, которые есть в первом массиве
+            $filteredIds = array_filter($ids, function ($id) use ($objectIds) {
+                return ! in_array($id, $objectIds);
+            });
+
+            return $filteredIds;
+        }
+
+        $servers = \Ofey\Logan22\model\server\server::getServerAll();
+        $arrayUniq = filterUniqueIds(\Ofey\Logan22\model\server\server::getServerAll(), $servers_id['ids']);
+        foreach ($arrayUniq as $id) {
+            $sm = new serverModel([
+              'id' => $id,
+            ]);
+            sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode(['id' => $id])]);
+            $sphereServers  = $sm;
+            $servers[] = $sphereServers;
         }
 
         tpl::addVar([
           'client_list_default'   => client::all(),
           'timezone_list_default' => timezone::all(),
           "title"                 => lang::get_phrase(221),
+          'sphereServers'    => $servers,
         ]);
-
         tpl::display("/admin/server_list.html");
     }
 
@@ -175,6 +206,7 @@ class options
                   FILTER_VALIDATE_INT
                 ) ? (int)$status['statusGameServerPort'] : -1;
 
+                \Ofey\Logan22\component\sphere\server::setServer($server_id);
                 $data = \Ofey\Logan22\component\sphere\server::send(type::UPDATE_STATUS_SERVER, [
                   "enableStatusServer"    => filter_var($status['enableStatusServer'], FILTER_VALIDATE_BOOLEAN),
                   "statusLoginServerIP"   => $status['statusLoginServerIP'] ?? "",

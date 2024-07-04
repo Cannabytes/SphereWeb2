@@ -58,11 +58,11 @@ class serverModel
     {
         $this->id              = $server['id'] ?? null;
         $this->name            = $server['name'] ?? '';
-        $this->rateExp         = $server['rateExp'] ?? 0;
-        $this->rateSp          = $server['rateSp'] ?? 0;
-        $this->rateAdena       = $server['rateAdena'] ?? 0;
-        $this->rateDrop        = $server['rateDrop'] ?? 0;
-        $this->rateSpoil       = $server['rateSpoil'] ?? 0;
+        $this->rateExp         = $server['rateExp'] ?? 1;
+        $this->rateSp          = $server['rateSp'] ?? 1;
+        $this->rateAdena       = $server['rateAdena'] ?? 1;
+        $this->rateDrop        = $server['rateDrop'] ?? 1;
+        $this->rateSpoil       = $server['rateSpoil'] ?? 1;
         $this->chronicle       = $server['chronicle'] ?? '';
         $this->chatGameEnabled = $server['chat_game_enabled'] ?? 0;
         $this->launcherEnabled = $server['launcher_enabled'] ?? 0;
@@ -249,19 +249,6 @@ class serverModel
         return $this;
     }
 
-    public
-    function save(): void
-    {
-        if ($this->getId() === null) {
-            sql::sql("INSERT INTO `servers` (data) VALUES (?)", ['wait...']);
-            $this->setId(sql::lastInsertId());
-        }
-        $jsonData = json_encode($this->getArrayVar());
-        sql::sql("UPDATE `servers` SET `data` = ? WHERE `id` = ?", [
-          $jsonData,
-          $this->getId(),
-        ]);
-    }
 
     public
     function getArrayVar(): array
@@ -477,7 +464,7 @@ class serverModel
     public
     function getCheckserver(): int
     {
-        return $this->checkserver;
+        return $this->checkserver ?? 0;
     }
 
     /**

@@ -28,6 +28,8 @@ class server
 
     private static bool $tokenDisable = false;
 
+    private static ?int $server_id = null;
+
     /**
      * Указываем аргументом которые отправятся запросом массив, для того чтоб указывать дополнительные данные, типо ID пользователя и т.д.
      *
@@ -73,6 +75,9 @@ class server
             return $instance;
         }
         self::$error = false;
+
+
+
         $json        = json_encode($arr) ?? "";
         $url         = type::url($type) ?? board::error("Не указан URL запроса");
         $ch          = curl_init();
@@ -81,10 +86,14 @@ class server
           'Authorization: BoberKurwa',
         ];
         if (self::$user !== null) {
+
+            if(self::$server_id==null){
+                self::$server_id = self::$user->getServerId();
+            }
             // Данные для аутентификации
             $headers[] = "User-Id: " . self::$user->getId();
             $headers[] = "User-Email: " . self::$user->getEmail();
-            $headers[] = "User-Server-Id: " . self::$user->getServerId();
+            $headers[] = "User-Server-Id: " . self::$server_id;
             $headers[] = "IP: " . self::$user->getIp();
         } else {
             if (type::SPHERE_INSTALL != $type) {
@@ -172,6 +181,10 @@ class server
         }
 
         return self::$token;
+    }
+
+    public static function setServer(int $server_id) {
+        self::$server_id = $server_id;
     }
 
     public function show($showError = true): self

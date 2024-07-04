@@ -22,14 +22,15 @@
           <div class="col-md-2">
             <div class="nav flex-column nav-pills me-3 tab-style-7" id="v-pills-tab" role="tablist"
                  aria-orientation="vertical">
+
               {% if serverInfo %}
               {% set active = false %}
               {% else %}
               {% set active = true %}
               {% endif %}
 
-              {% for i, server in getServerAll() %}
-              
+              {% for i, server in sphereServers %}
+
               {% set serverName = server.getName()|replace({' ': '_'}) %}
               {% set serverName = serverName|replace({'#': '_'}) %}
               {% set serverName = serverName ~ '_' ~ i %}
@@ -59,7 +60,7 @@
               {% set active = true %}
               {% endif %}
 
-              {% for i, server in getServerAll() %}
+              {% for i, server in sphereServers %}
               {% set serverName = server.getName()|replace({' ': '_'}) %}
               {% set serverName = serverName|replace({'#': '_'}) %}
               {% set serverName = serverName ~ '_' ~ i %}
@@ -123,7 +124,6 @@
       </div>
     </div>
   </div>
-
 
   {% if serverInfo %}
   <div class="row">

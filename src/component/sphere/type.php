@@ -32,6 +32,7 @@ enum type
     case SYNCHRONIZATION;
     //Статистика для админов, о онлайне
     case SERVER_STATISTIC_ONLINE;
+    case SERVER_LIST;
 
     // Игра в рулетку
     case GAME_WHEEL_SAVE;
@@ -70,6 +71,7 @@ enum type
               self::GET_STATUS_SERVER => '/api/server/status',
               self::UPDATE_COLLECTION => '/api/server/update/collection',
               self::DELETE_SERVER => '/api/server/delete',
+              self::SERVER_LIST => '/api/server/list',
 
               self::SYNCHRONIZATION => '/api/user/accounts/synchronization',
               self::SERVER_STATISTIC_ONLINE => '/api/server/statistic/online',
