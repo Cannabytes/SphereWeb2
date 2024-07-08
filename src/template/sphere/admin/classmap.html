@@ -1,0 +1,28 @@
+{% extends 'struct.html' %}
+
+{% block title %} {{title}} {% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header justify-content-between">
+          <div class="card-title">
+            {{typeDescription}}
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            {{class|raw}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

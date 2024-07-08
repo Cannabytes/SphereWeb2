@@ -9,9 +9,6 @@ use Ofey\Logan22\template\tpl;
 class promo {
 
     public static function index(): void {
-        tpl::addVar([
-            'title'       => lang::get_phrase(238),
-        ]);
         tpl::displayDemo("index.html");
     }
 }

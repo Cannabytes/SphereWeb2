@@ -43,10 +43,10 @@ class template
             $template   = $this->template;
             $readmeJson = "template/{$template}/readme.json";
             $img        = "/src/template/logan22/assets/images/none.png";
+            $this->name        = $template;
             if (file_exists($readmeJson)) {
                 $jsonContents      = file_get_contents($readmeJson);
                 $demo              = json_decode($jsonContents, true);
-                $this->name        = $template;
                 $this->version     = $demo['version'] ?? 0.0;
                 $this->date        = $demo['date'] ?? 0;
                 $this->author      = $demo['author'] ?? "";
@@ -104,7 +104,6 @@ class template
     public function getName(): string
     {
         $this->loadJSONTemplate();
-
         return $this->name;
     }
 

@@ -81,13 +81,13 @@ class online {
 
             //Проверка на накрутку онлайна
             if($connect_game===true){
-                if (ONLINE_CHEATING_ENABLE) {
-                    if($player_count_online==0){
-                        $player_count_online = mt_rand(ONLINE_CHEATING_MIN_MAX_ONLINE['min'], ONLINE_CHEATING_MIN_MAX_ONLINE['max']);
-                    } else {
-                        $player_count_online = self::findValuesForPlayerCountRange($player_count_online);
-                    }
-                }
+//                if (ONLINE_CHEATING_ENABLE) {
+//                    if($player_count_online==0){
+//                        $player_count_online = mt_rand(ONLINE_CHEATING_MIN_MAX_ONLINE['min'], ONLINE_CHEATING_MIN_MAX_ONLINE['max']);
+//                    } else {
+//                        $player_count_online = self::findValuesForPlayerCountRange($player_count_online);
+//                    }
+//                }
             }
 
             self::$server_status[] = [

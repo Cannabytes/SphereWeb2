@@ -840,13 +840,14 @@ class tpl
             return $grade_img;
         }));
 
-        $twig->addFunction(new TwigFunction('generation_words_password', function($count = 10): array {
+        $twig->addFunction(new TwigFunction('generation_words_password', function ($count = 10): array {
             $words = [];
             for ($i = 0; $i < $count; $i++) {
-                $word = generation::word();
+                $word    = generation::word();
                 $mt_rand = mt_rand(0, mt_rand(100, 999));
                 $words[] = $word . $mt_rand;
             }
+
             return $words;
         }));
 
@@ -1237,7 +1238,6 @@ class tpl
                 return action::get($name);
             }
         }));
-
 
         $twig->addFunction(new TwigFunction('get_collection', function ($chronicle_name) {
             function basename_php($str): string
