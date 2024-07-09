@@ -15,6 +15,7 @@ enum logTypes: int
     case LOG_CHANGE_AVATAR = 9;
     case LOG_REGISTRATION_USER = 10;
     case LOG_BONUS_CODE = 11;
+    case LOG_SAVE_CONFIG = 12;
 
 }
 

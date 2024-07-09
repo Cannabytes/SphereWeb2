@@ -4,1244 +4,1349 @@
 
 {% block content %}
 
-    <div class="container-fluid">
+<div class="container-fluid">
 
-        <!-- Start::row-4 -->
-        <div class="row">
-            <div class="col-xl-9">
-                <div class="card custom-card">
-                    <div class="card-body p-0">
-                        <div class="row">
-                            <div class="col-xl-3 border-end border-inline-end-dashed">
-                                <div class="d-flex flex-wrap align-items-top p-4">
-                                    <div class="me-3 lh-1">
-                                                <span class="avatar avatar-md avatar-rounded bg-primary shadow-sm">
-                                                    <i class="ti ti-package fs-18"></i>
-                                                </span>
-                                    </div>
-                                    <div class="flex-fill">
-                                        <h5 class="fw-semibold mb-1">45,280</h5>
-                                        <p class="text-muted mb-0 fs-12">Total Products</p>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-success-transparent"><i class="ri-arrow-up-s-line align-middle me-1 d-inline-block"></i>1.31%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 border-end border-inline-end-dashed">
-                                <div class="d-flex flex-wrap align-items-top p-4">
-                                    <div class="me-3 lh-1">
-                                                <span class="avatar avatar-md avatar-rounded bg-secondary shadow-sm">
-                                                    <i class="ti ti-rocket fs-18"></i>
-                                                </span>
-                                    </div>
-                                    <div class="flex-fill">
-                                        <h5 class="fw-semibold mb-1">10,500</h5>
-                                        <p class="text-muted mb-0 fs-12">Total Sales</p>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-danger-transparent"><i class="ri-arrow-down-s-line align-middle me-1"></i>1.14%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 border-end border-inline-end-dashed">
-                                <div class="d-flex flex-wrap align-items-top p-4">
-                                    <div class="me-3 lh-1">
-                                                <span class="avatar avatar-md avatar-rounded bg-success shadow-sm">
-                                                    <i class="ti ti-wallet fs-18"></i>
-                                                </span>
-                                    </div>
-                                    <div class="flex-fill">
-                                        <h5 class="fw-semibold mb-1">$69,270</h5>
-                                        <p class="text-muted mb-0 fs-12">Income</p>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-success-transparent"><i class="ri-arrow-up-s-line align-middle me-1 d-inline-block"></i>2.58%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3">
-                                <div class="d-flex flex-wrap align-items-top p-4">
-                                    <div class="me-3 lh-1">
-                                                <span class="avatar avatar-md avatar-rounded bg-warning shadow-sm">
-                                                    <i class="ti ti-packge-import fs-18"></i>
-                                                </span>
-                                    </div>
-                                    <div class="flex-fill">
-                                        <h5 class="fw-semibold mb-1">12,088</h5>
-                                        <p class="text-muted mb-0 fs-12">Total Orders</p>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-success-transparent"><i class="ri-arrow-up-s-line align-middle me-1 d-inline-block"></i>12.05%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-3">
-                <div class="card custom-card card-bg-primary text-fixed-white">
-                    <div class="card-body p-0">
-                        <div class="d-flex align-items-top p-4 flex-wrap">
-                            <div class="me-3 lh-1">
-                                        <span class="avatar avatar-md avatar-rounded bg-white text-primary shadow-sm">
-                                            <i class="ti ti-coin fs-18"></i>
-                                        </span>
-                            </div>
-                            <div class="flex-fill">
-                                <h5 class="fw-semibold mb-1 text-fixed-white">$21,520</h5>
-                                <p class="op-7 mb-0 fs-12">Expenses</p>
-                            </div>
-                            <div>
-                                <span class="badge bg-success"><i class="ri-arrow-up-s-line align-middle me-1 d-inline-block"></i>14.69%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+  <!-- Start::row-1 -->
+  <div class="row">
+    <div class="col-xxl-3">
+
+      {% if self_last_commit != sphere_last_commit %}
+      <div class="card custom-card">
+        <div class="p-4 border-bottom border-block-end-dashed">
+          <p class="fw-semibold mb-2 text-danger">Обнаружено обновление SphereWeb. Предлагаем обновить ПО.</p>
+          <a href="/admin/sphere/update" class="btn btn-light btn-wave btn-sm ms-auto">Перейти к обновлению</a>
         </div>
-        <!-- End::row-4 -->
+      </div>
+      {% endif %}
 
-        <!-- Start::row-5 -->
-        <div class="row">
-            <div class="col-xl-2">
-                <div class="card custom-card border-top-card border-top-primary rounded-0">
-                    <div class="card-body">
-                        <div class="text-center">
-                                    <span class="avatar avatar-md bg-primary shadow-sm avatar-rounded mb-2">
-                                        <i class="ri-briefcase-2-line fs-16"></i>
-                                    </span>
-                            <p class="fs-14 fw-semibold mb-2">Total Sales</p>
-                            <div class="d-flex align-items-center justify-content-center flex-wrap">
-                                <h5 class="mb-0 fw-semibold">15,800</h5>
-                                <span class="badge bg-success-transparent rounded-pill ms-1">+25.8%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      {% for server in servers %}
+      {% set serverInfo = getServer(server.id) %}
+      <div class="card custom-card overflow-hidden">
+
+        <div class="card-body border-bottom">
+          <div class="d-sm-flex  main-profile-cover">
+
+            <div class="flex-fill main-profile-info my-auto">
+              <h5 class="fw-semibold mb-1 ">{{serverInfo.getName()}} x{{serverInfo.getRateExp()}} - {{serverInfo.getChronicle}}</h5>
+              <div>
+                <p class="mb-1 text-muted">Активирован: до {{server.license_expiration_date|date('d.m.Y')}}</p>
+                <p class="mb-1 text-muted">Статус: Работает</p>
+                <p class="fs-12 op-7 mb-0">
+                  <span class="me-3 d-inline-flex align-items-center"><a href="/admin/server/statistic/{{server.id}}"><i class="ri-building-line me-1 align-middle"></i>Статистика</a></span>
+                  <span class="d-inline-flex align-items-center"><i class="ri-map-pin-line me-1 align-middle"></i>Тестовый SphereAPI</span>
+                </p>
+              </div>
             </div>
-            <div class="col-xl-2">
-                <div class="card custom-card border-top-card border-top-secondary rounded-0">
-                    <div class="card-body">
-                        <div class="text-center">
-                                    <span class="avatar avatar-md bg-secondary shadow-sm avatar-rounded mb-2">
-                                        <i class="ri-bill-line fs-16"></i>
-                                    </span>
-                            <p class="fs-14 fw-semibold mb-2">Total Tax</p>
-                            <div class="d-flex align-items-center justify-content-center flex-wrap">
-                                <h5 class="mb-0 fw-semibold">$12,650</h5>
-                                <span class="badge bg-success-transparent rounded-pill ms-1">+12.2%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-2">
-                <div class="card custom-card border-top-card border-top-success rounded-0">
-                    <div class="card-body">
-                        <div class="text-center">
-                                    <span class="avatar avatar-md bg-success shadow-sm avatar-rounded mb-2">
-                                        <i class="ri-wallet-2-line fs-16"></i>
-                                    </span>
-                            <p class="fs-14 fw-semibold mb-2">Total Income</p>
-                            <div class="d-flex align-items-center justify-content-center flex-wrap">
-                                <h5 class="mb-0 fw-semibold">$14,800</h5>
-                                <span class="badge bg-success-transparent rounded-pill ms-1">+7.45%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-2">
-                <div class="card custom-card border-top-card border-top-info rounded-0">
-                    <div class="card-body">
-                        <div class="text-center">
-                                    <span class="avatar avatar-md bg-info shadow-sm avatar-rounded mb-2">
-                                        <i class="ri-line-chart-line fs-16"></i>
-                                    </span>
-                            <p class="fs-14 fw-semibold mb-2">Total Expenses</p>
-                            <div class="d-flex align-items-center justify-content-center flex-wrap">
-                                <h5 class="mb-0 fw-semibold">$7,566</h5>
-                                <span class="badge bg-danger-transparent rounded-pill ms-1">-3.21%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-2">
-                <div class="card custom-card border-top-card border-top-warning rounded-0">
-                    <div class="card-body">
-                        <div class="text-center">
-                                    <span class="avatar avatar-md bg-warning shadow-sm avatar-rounded mb-2">
-                                        <i class="ri-money-dollar-box-line fs-16"></i>
-                                    </span>
-                            <p class="fs-14 fw-semibold mb-2">Sales Profit</p>
-                            <div class="d-flex align-items-center justify-content-center flex-wrap">
-                                <h5 class="mb-0 fw-semibold">$7,474</h5>
-                                <span class="badge bg-success-transparent rounded-pill ms-1">+36.03%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-2">
-                <div class="card custom-card border-top-card border-top-danger rounded-0">
-                    <div class="card-body">
-                        <div class="text-center">
-                                    <span class="avatar avatar-md bg-danger shadow-sm avatar-rounded mb-2">
-                                        <i class="ri-profile-line fs-16"></i>
-                                    </span>
-                            <p class="fs-14 fw-semibold mb-2">Opex Ratio</p>
-                            <div class="d-flex align-items-center justify-content-center flex-wrap">
-                                <h5 class="mb-0 fw-semibold">32%</h5>
-                                <span class="badge bg-success-transparent rounded-pill ms-1">+0.89%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-        <!-- End::row-5 -->
 
-        <!-- Start::row-6 -->
-        <div class="row">
-            <div class="col-xl-4">
-                <div class="card custom-card">
-                    <div class="card-header justify-content-between">
-                        <div class="card-title">
-                            Upcoming Events
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-primary-light">View All</button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <nav class="nav nav-style-1 nav-pills mb-4 nav-justified" role="tablist">
-                            <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page" href="#mon" aria-selected="false" tabindex="-1">
-                                <span class="d-block mb-1">09</span>
-                                <span class="d-block mb-0 op-7 fs-12">Mon</span>
-                            </a>
-                            <a class="nav-link" data-bs-toggle="tab" role="tab" href="#tue" aria-selected="false" tabindex="-1">
-                                <span class="d-block mb-1">10</span>
-                                <span class="d-block mb-0 op-7 fs-12">Tue</span>
-                            </a>
-                            <a class="nav-link" data-bs-toggle="tab" role="tab" href="#wed" >
-                                <span class="d-block mb-1">11</span>
-                                <span class="d-block mb-0 op-7 fs-12">Wed</span>
-                            </a>
-                            <a class="nav-link" data-bs-toggle="tab" role="tab" href="#thu" aria-selected="true">
-                                <span class="d-block mb-1">12</span>
-                                <span class="d-block mb-0 op-7 fs-12">Thu</span>
-                            </a>
-                            <a class="nav-link" data-bs-toggle="tab" role="tab" href="#fri" aria-selected="true">
-                                <span class="d-block mb-1">13</span>
-                                <span class="d-block mb-0 op-7 fs-12">Fri</span>
-                            </a>
-                            <a class="nav-link" data-bs-toggle="tab" role="tab" href="#sat" aria-selected="true">
-                                <span class="d-block mb-1">14</span>
-                                <span class="d-block mb-0 op-7 fs-12">Sat</span>
-                            </a>
-                            <a class="nav-link" data-bs-toggle="tab" role="tab" href="#sun" aria-selected="true">
-                                <span class="d-block mb-1">15</span>
-                                <span class="d-block mb-0 op-7 fs-12">Sun</span>
-                            </a>
-                        </nav>
-                        <div class="tab-content pt-3 my-3">
-                            <div class="tab-pane show active border-0 p-0" id="mon" role="tabpanel">
-                                <ul class="list-unstyled mb-0 upcoming-events-list">
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Meeting with client</p>
-                                                <p class="mb-0 text-muted">Video Conference</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block "></i>9:00am - 10:00am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Lunch with team members</p>
-                                                <p class="mb-0 text-muted">Dolores Ait Labore Sit</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>12:00pm - 12:45am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">General board meeting</p>
-                                                <p class="mb-0 text-muted">Golden PArk</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>4:00pm - 5:30pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Create New Registration Page</p>
-                                                <p class="mb-0 text-muted">2UA Project</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>5:00pm - 5:45pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="tab-pane border-0 p-0" id="tue" role="tabpanel">
-                                <ul class="list-unstyled mb-0 upcoming-events-list">
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Meeting with client</p>
-                                                <p class="mb-0 text-muted">Video Conference</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>9:00am - 10:00am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Lunch with team members</p>
-                                                <p class="mb-0 text-muted">Dolores Ait Labore Sit</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>12:00pm - 12:45am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">General board meeting</p>
-                                                <p class="mb-0 text-muted">Golden PArk</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>4:00pm - 5:30pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Create New Registration Page</p>
-                                                <p class="mb-0 text-muted">2UA Project</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>5:00pm - 5:45pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="tab-pane border-0 p-0" id="wed" role="tabpanel">
-                                <ul class="list-unstyled mb-0 upcoming-events-list">
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Meeting with client</p>
-                                                <p class="mb-0 text-muted">Video Conference</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>9:00am - 10:00am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Lunch with team members</p>
-                                                <p class="mb-0 text-muted">Dolores Ait Labore Sit</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>12:00pm - 12:45am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">General board meeting</p>
-                                                <p class="mb-0 text-muted">Golden PArk</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>4:00pm - 5:30pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Create New Registration Page</p>
-                                                <p class="mb-0 text-muted">2UA Project</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>5:00pm - 5:45pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="tab-pane border-0 p-0" id="thu" role="tabpanel">
-                                <ul class="list-unstyled mb-0 upcoming-events-list">
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Meeting with client</p>
-                                                <p class="mb-0 text-muted">Video Conference</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>9:00am - 10:00am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Lunch with team members</p>
-                                                <p class="mb-0 text-muted">Dolores Ait Labore Sit</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>12:00pm - 12:45am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">General board meeting</p>
-                                                <p class="mb-0 text-muted">Golden PArk</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>4:00pm - 5:30pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Create New Registration Page</p>
-                                                <p class="mb-0 text-muted">2UA Project</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>5:00pm - 5:45pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="tab-pane border-0 p-0" id="fri" role="tabpanel">
-                                <ul class="list-unstyled mb-0 upcoming-events-list">
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Meeting with client</p>
-                                                <p class="mb-0 text-muted">Video Conference</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>9:00am - 10:00am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Lunch with team members</p>
-                                                <p class="mb-0 text-muted">Dolores Ait Labore Sit</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>12:00pm - 12:45am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">General board meeting</p>
-                                                <p class="mb-0 text-muted">Golden PArk</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>4:00pm - 5:30pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Create New Registration Page</p>
-                                                <p class="mb-0 text-muted">2UA Project</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>5:00pm - 5:45pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="tab-pane border-0 p-0" id="sat" role="tabpanel">
-                                <ul class="list-unstyled mb-0 upcoming-events-list">
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Meeting with client</p>
-                                                <p class="mb-0 text-muted">Video Conference</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>9:00am - 10:00am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Lunch with team members</p>
-                                                <p class="mb-0 text-muted">Dolores Ait Labore Sit</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>12:00pm - 12:45am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">General board meeting</p>
-                                                <p class="mb-0 text-muted">Golden PArk</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>4:00pm - 5:30pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Create New Registration Page</p>
-                                                <p class="mb-0 text-muted">2UA Project</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>5:00pm - 5:45pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="tab-pane border-0 p-0" id="sun" role="tabpanel">
-                                <ul class="list-unstyled mb-0 upcoming-events-list">
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Meeting with client</p>
-                                                <p class="mb-0 text-muted">Video Conference</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>9:00am - 10:00am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Lunch with team members</p>
-                                                <p class="mb-0 text-muted">Dolores Ait Labore Sit</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>12:00pm - 12:45am</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">General board meeting</p>
-                                                <p class="mb-0 text-muted">Golden PArk</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>4:00pm - 5:30pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex align-items-top justify-conent-between">
-                                            <div class="flex-fill">
-                                                <p class="mb-0 fs-14">Create New Registration Page</p>
-                                                <p class="mb-0 text-muted">2UA Project</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-muted"><i class="ri-time-line align-middle me-1 d-inline-block"></i>5:00pm - 5:45pm</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="card-body p-0 main-profile-info">
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="py-3 border-end w-100 text-center">
+              <p class="fw-bold fs-20  text-shadow mb-0">{{server.request_count}}</p>
+              <p class="mb-0 fs-12 text-muted ">Запросов</p>
             </div>
-            <div class="col-xl-4">
-                <div class="card custom-card">
-                    <div class="card-header justify-content-between">
-                        <div class="card-title">
-                            Timeline
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-primary-light btn-wave">View All</button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-unstyled timeline-widget mb-0 my-3">
-                            <li class="timeline-widget-list mb-3">
-                                <div class="d-flex align-items-top">
-                                    <div class="me-4 text-center">
-                                        <span class="d-block fs-20 fw-semibold">02</span>
-                                        <span class="d-block fs-12 text-muted">Mon</span>
-                                    </div>
-                                    <div class="d-flex flex-wrap flex-fill align-items-center justify-content-between">
-                                        <div>
-                                            <p class="mb-1 text-truncate timeline-widget-content text-wrap">You have an announcement - Ipsum Est Diam Eirmod</p>
-                                            <p class="mb-0 fs-12 lh-1 text-muted">10:00AM<span class="badge bg-primary-transparent ms-2">Announcement</span></p>
-                                        </div>
-                                        <div class="dropdown">
-                                            <a href="javascript:void(0);" class="p-2 fs-16 text-muted" data-bs-toggle="dropdown">
-                                                <i class="fe fe-more-vertical"></i>
-                                            </a>
-                                            <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Action</a></li>
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Another action</a></li>
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Something else here</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="timeline-widget-list mb-3">
-                                <div class="d-flex align-items-top">
-                                    <div class="me-4 text-center">
-                                        <span class="d-block fs-20 fw-semibold">15</span>
-                                        <span class="d-block fs-12 text-muted">Sun</span>
-                                    </div>
-                                    <div class="d-flex flex-wrap flex-fill align-items-center justify-content-between">
-                                        <div>
-                                            <p class="mb-1 text-truncate timeline-widget-content text-wrap">National holiday - Vero Jayanti</p>
-                                            <p class="mb-0 fs-12 lh-1 text-muted"><span class="badge bg-warning-transparent">Holiday</span></p>
-                                        </div>
-                                        <div class="dropdown">
-                                            <a href="javascript:void(0);" class="p-2 fs-16 text-muted" data-bs-toggle="dropdown">
-                                                <i class="fe fe-more-vertical"></i>
-                                            </a>
-                                            <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Action</a></li>
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Another action</a></li>
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Something else here</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="timeline-widget-list mb-3">
-                                <div class="d-flex align-items-top">
-                                    <div class="me-4 text-center">
-                                        <span class="d-block fs-20 fw-semibold">23</span>
-                                        <span class="d-block fs-12 text-muted">Mon</span>
-                                    </div>
-                                    <div class="d-flex flex-wrap flex-fill align-items-center justify-content-between">
-                                        <div>
-                                            <p class="mb-1 text-truncate timeline-widget-content text-wrap">John pup birthday - Team Member</p>
-                                            <p class="mb-4 fs-12 lh-1 text-muted">09:00AM<span class="badge bg-success-transparent ms-2">Birthday</span></p>
-                                            <p class="mb-1 text-truncate timeline-widget-content text-wrap">Amet sed no dolor kasd - Et Dolores Tempor Erat</p>
-                                            <p class="mb-0 fs-12 lh-1 text-muted">04:00PM<span class="badge bg-primary-transparent ms-2">Announcement</span></p>
-                                        </div>
-                                        <div class="dropdown">
-                                            <a href="javascript:void(0);" class="p-2 fs-16 text-muted" data-bs-toggle="dropdown">
-                                                <i class="fe fe-more-vertical"></i>
-                                            </a>
-                                            <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Action</a></li>
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Another action</a></li>
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Something else here</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="timeline-widget-list mb-3">
-                                <div class="d-flex align-items-top">
-                                    <div class="me-4 text-center">
-                                        <span class="d-block fs-20 fw-semibold">31</span>
-                                        <span class="d-block fs-12 text-muted">Tue</span>
-                                    </div>
-                                    <div class="d-flex flex-wrap flex-fill align-items-center justify-content-between">
-                                        <div>
-                                            <p class="mb-1 text-truncate timeline-widget-content text-wrap">National Holiday - Dolore Ipsum</p>
-                                            <p class="mb-0 fs-12 lh-1 text-muted"><span class="badge bg-warning-transparent">Holiday</span></p>
-                                        </div>
-                                        <div class="dropdown">
-                                            <a href="javascript:void(0);" class="p-2 fs-16 text-muted" data-bs-toggle="dropdown">
-                                                <i class="fe fe-more-vertical"></i>
-                                            </a>
-                                            <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Action</a></li>
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Another action</a></li>
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Something else here</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="py-3 w-100 text-center">
+              <p class="fw-bold fs-20  text-shadow mb-0">{{server.count_errors}}</p>
+              <p class="mb-0 fs-12 text-muted ">Ошибок</p>
             </div>
-            <div class="col-xl-4">
-                <div class="card custom-card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            Traffic Sources
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover text-nowrap">
-                                <thead>
-                                <tr>
-                                    <th>Browser</th>
-                                    <th>Sessions</th>
-                                    <th>Views</th>
-                                    <th>Traffic</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                                        <span class="avatar avatar-rounded avatar-sm p-2 bg-primary me-2">
-                                                            <i class="ri-google-fill fs-18 text-fixed-white"></i>
-                                                        </span>
-                                            <div class="fw-semibold">Google</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span><i class="ri-arrow-up-s-fill me-1 text-success align-middle fs-18"></i>23,379</span>
-                                    </td>
-                                    <td>
-                                        <span>16,890</span>
-                                    </td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 34%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100">
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                                        <span class="avatar avatar-rounded avatar-sm p-2 bg-primary me-2">
-                                                            <i class="ri-safari-line fs-18 text-fixed-white"></i>
-                                                        </span>
-                                            <div class="fw-semibold">Safari</div>
-                                        </div>
-
-                                    </td>
-                                    <td>
-                                        <span><i class="ri-arrow-up-s-fill me-1 text-success align-middle fs-18"></i>78,973</span>
-                                    </td>
-                                    <td>
-                                        <span>29,906</span>
-                                    </td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 58%" aria-valuenow="58" aria-valuemin="0" aria-valuemax="100">
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                                        <span class="avatar avatar-rounded avatar-sm p-2 bg-primary me-2">
-                                                            <i class="ri-opera-fill fs-18 text-fixed-white"></i>
-                                                        </span>
-                                            <div class="fw-semibold">Opera</div>
-                                        </div>
-
-                                    </td>
-                                    <td>
-                                        <span><i class="ri-arrow-up-s-fill me-1 text-success align-middle fs-18"></i>12,457</span>
-                                    </td>
-                                    <td>
-                                        <span>8,674</span>
-                                    </td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 62%" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100">
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                                        <span class="avatar avatar-rounded avatar-sm p-2 bg-primary me-2">
-                                                            <i class="ri-edge-fill fs-18 text-fixed-white"></i>
-                                                        </span>
-                                            <div class="fw-semibold">Edge</div>
-                                        </div>
-
-                                    </td>
-                                    <td>
-                                        <span><i class="ri-arrow-up-s-fill me-1 text-success align-middle fs-18"></i>8,570</span>
-                                    </td>
-                                    <td>
-                                        <span>4,980</span>
-                                    </td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 71%" aria-valuenow="71" aria-valuemin="0" aria-valuemax="100">
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                                        <span class="avatar avatar-rounded avatar-sm p-2 bg-primary me-2">
-                                                            <i class="ri-firefox-fill fs-18 text-fixed-white"></i>
-                                                        </span>
-                                            <div class="fw-semibold">Firefox</div>
-                                        </div>
-
-                                    </td>
-                                    <td>
-                                        <span><i class="ri-arrow-up-s-fill me-1 text-success align-middle fs-18"></i>6,135</span>
-                                    </td>
-                                    <td>
-                                        <span>4,436</span>
-                                    </td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 48%" aria-valuenow="48" aria-valuemin="0" aria-valuemax="100">
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                                        <span class="avatar avatar-rounded avatar-sm p-2 bg-primary me-2">
-                                                            <i class="ri-ubuntu-fill fs-18 text-fixed-white"></i>
-                                                        </span>
-                                            <div class="fw-semibold">Ubuntu</div>
-                                        </div>
-
-                                    </td>
-                                    <td>
-                                        <span><i class="ri-arrow-up-s-fill me-1 text-success align-middle fs-18"></i>4,789</span>
-                                    </td>
-                                    <td>
-                                        <span>2,447</span>
-                                    </td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 28%" aria-valuenow="28" aria-valuemin="0" aria-valuemax="100">
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-        <!-- End::row-6 -->
+      </div>
+      {% endfor %}
 
-        <!-- Start:: row-7 -->
-        <div class="row">
-            <div class="col-xl-6">
-                <div class="card custom-card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            Users By Country
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex flex-wrap justify-content-between mb-5">
-                            <div class="me-5 d-flex align-items-center">
-                                <div class="me-2">
-                                    <span class="avatar avatar-rounded bg-primary-transparent text-primary"><i class="ri-user-3-line fs-16"></i></span>
-                                </div>
-                                <div class="flex-fill">
-                                    <p class="fs-18 mb-0 text-primary fw-semibold">25,350</p>
-                                    <span class="text-muted fs-12">This month</span>
-                                </div>
-                            </div>
-                            <div class="me-3 d-flex align-items-center">
-                                <div class="me-2">
-                                    <span class="avatar avatar-rounded bg-light text-default"><i class="ri-user-3-line fs-16"></i></span>
-                                </div>
-                                <div class="flex-fill">
-                                    <p class="fs-18 mb-0 fw-semibold">19,200</p>
-                                    <span class="text-muted fs-12">Last month</span>
-                                </div>
-                            </div>
-                            <div class="me-3 d-flex align-items-center">
-                                <div class="me-2">
-                                    <span class="avatar avatar-rounded bg-success-transparent"><i class="ri-user-3-line fs-16"></i></span>
-                                </div>
-                                <div class="flex-fill">
-                                    <p class="fs-18 mb-0 text-success fw-semibold">1,24,890</p>
-                                    <span class="text-muted fs-12">This Year</span>
-                                </div>
-                            </div>
-                            <div class="me-3 d-flex align-items-center">
-                                <div class="me-2">
-                                    <span class="avatar avatar-rounded bg-secondary-transparent"><i class="ri-user-3-line fs-16"></i></span>
-                                </div>
-                                <div class="flex-fill">
-                                    <p class="fs-18 mb-0 text-secondary fw-semibold">97,799</p>
-                                    <span class="text-muted fs-12">Last Year</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xl-5">
-                                <div class="h-100 my-auto">
-                                    <ul class="list-group">
-                                        <li class="list-group-item">
-                                            <div class="d-flex flex-wrap align-items-center justify-content-between">
-                                                <div><i class="ri-checkbox-blank-circle-fill text-primary fs-8 me-1 align-middle d-inline-block"></i>Brazil</div>
-                                                <div>1,290</div>
-                                                <div class="text-success"><i class="ri-arrow-up-s-line align-middle me-1 d-inline-block"></i>2.90%</div>
-                                            </div>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div class="d-flex flex-wrap align-items-center justify-content-between">
-                                                <div><i class="ri-checkbox-blank-circle-fill text-secondary fs-8 me-1 align-middle d-inline-block"></i>Greenland</div>
-                                                <div>2,596</div>
-                                                <div class="text-danger"><i class="ri-arrow-down-s-line align-middle me-1 d-inline-block"></i>1.1%</div>
-                                            </div>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div class="d-flex flex-wrap align-items-center justify-content-between">
-                                                <div><i class="ri-checkbox-blank-circle-fill text-success fs-8 me-1 align-middle d-inline-block"></i>Russia</div>
-                                                <div>3,710</div>
-                                                <div class="text-success"><i class="ri-arrow-up-s-line align-middle me-1 d-inline-block"></i>0.8%</div>
-                                            </div>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div class="d-flex flex-wrap align-items-center justify-content-between">
-                                                <div><i class="ri-checkbox-blank-circle-fill text-warning fs-8 me-1 align-middle d-inline-block"></i>Palestine</div>
-                                                <div>1,116</div>
-                                                <div class="text-danger"><i class="ri-arrow-up-s-line align-middle me-1 d-inline-block"></i>10.06%</div>
-                                            </div>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div class="d-flex flex-wrap align-items-center justify-content-between">
-                                                <div><i class="ri-checkbox-blank-circle-fill text-danger fs-8 me-1 align-middle d-inline-block"></i>Canada</div>
-                                                <div>12,150</div>
-                                                <div class="text-success"><i class="ri-arrow-up-s-line align-middle me-1 d-inline-block"></i>9.05%</div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-xl-7">
-                                <div id="users-map"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-6">
-                <div class="card custom-card">
-                    <div class="card-header justify-content-between">
-                        <div class="card-title">
-                            Recent Tasks
-                        </div>
-                        <div class="dropdown">
-                            <a href="javascript:void(0);" class="p-2 fs-12 text-muted" data-bs-toggle="dropdown">
-                                View All<i class="ri-arrow-down-s-line align-middle ms-1"></i>
-                            </a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a class="dropdown-item" href="javascript:void(0);">Download</a></li>
-                                <li><a class="dropdown-item" href="javascript:void(0);">Import</a></li>
-                                <li><a class="dropdown-item" href="javascript:void(0);">Export</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table text-nowrap table-bordered">
-                                <thead>
-                                <tr>
-                                    <th>S.No</th>
-                                    <th>Title</th>
-                                    <th>Assigned To</th>
-                                    <th>Progress</th>
-                                    <th>Status</th>
-                                    <th>Due Date</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>01</td>
-                                    <td>Server Side Validation</td>
-                                    <td>
-                                        <div class="avatar-list-stacked">
-                                                        <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/2.jpg" alt="img">
-                                                        </span>
-                                            <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/8.jpg" alt="img">
-                                                        </span>
-                                            <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/2.jpg" alt="img">
-                                                        </span>
-                                            <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/10.jpg" alt="img">
-                                                        </span>
-                                            <a class="avatar avatar-xs bg-primary avatar-rounded text-fixed-white" href="javascript:void(0);">
-                                                +2
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-primary-transparent">In Progress</span>
-                                    </td>
-                                    <td>
-                                        17-04-2023
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>02</td>
-                                    <td>Multipurpose Dashboard Template</td>
-                                    <td>
-                                        <div class="avatar-list-stacked">
-                                                        <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/6.jpg" alt="img">
-                                                        </span>
-                                            <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/8.jpg" alt="img">
-                                                        </span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-warning-transparent">Pending</span>
-                                    </td>
-                                    <td>
-                                        14-05-2023
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>03</td>
-                                    <td>Documentation Project</td>
-                                    <td>
-                                        <div class="avatar-list-stacked">
-                                                        <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/4.jpg" alt="img">
-                                                        </span>
-                                            <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/15.jpg" alt="img">
-                                                        </span>
-                                            <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/11.jpg" alt="img">
-                                                        </span>
-                                            <a class="avatar avatar-xs bg-primary avatar-rounded text-fixed-white" href="javascript:void(0);">
-                                                +1
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-success-transparent">Completed</span>
-                                    </td>
-                                    <td>
-                                        20-04-2023
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>04</td>
-                                    <td>HR Management Template Design</td>
-                                    <td>
-                                        <div class="avatar-list-stacked">
-                                                        <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/5.jpg" alt="img">
-                                                        </span>
-                                            <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/12.jpg" alt="img">
-                                                        </span>
-                                            <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/13.jpg" alt="img">
-                                                        </span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-primary-transparent">In Progress</span>
-                                    </td>
-                                    <td>
-                                        29-05-2023
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>05</td>
-                                    <td>Developing Backend</td>
-                                    <td>
-                                        <div class="avatar-list-stacked">
-                                                        <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/1.jpg" alt="img">
-                                                        </span>
-                                            <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/8.jpg" alt="img">
-                                                        </span>
-                                            <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/9.jpg" alt="img">
-                                                        </span>
-                                            <a class="avatar avatar-xs bg-primary avatar-rounded text-fixed-white" href="javascript:void(0);">
-                                                +3
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-primary-transparent">In Progress</span>
-                                    </td>
-                                    <td>
-                                        25-05-2023
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>06</td>
-                                    <td>	Design New Dashboard Template</td>
-                                    <td>
-                                        <div class="avatar-list-stacked">
-                                                        <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/4.jpg" alt="img">
-                                                        </span>
-                                            <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/12.jpg" alt="img">
-                                                        </span>
-                                            <span class="avatar avatar-xs avatar-rounded">
-                                                            <img src="../assets/images/faces/16.jpg" alt="img">
-                                                        </span>
-                                            <a class="avatar avatar-xs bg-primary avatar-rounded text-fixed-white" href="javascript:void(0);">
-                                                +3
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-success-transparent">Completed</span>
-                                    </td>
-                                    <td>
-                                        04-05-2023
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End:: row-7 -->
 
-        <!-- Start::row-8 -->
-        <div class="row">
-            <div class="col-xl-4">
-                <div class="card custom-card">
-                    <div class="card-header">
-                        <div class="card-title">Recent Applicants</div>
-                    </div>
-                    <div class="card-body">
-                        <div id="views"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-4">
-                <div class="card custom-card">
-                    <div class="card-header">
-                        <div class="card-title">Sessions By Device</div>
-                    </div>
-                    <div class="card-body">
-                        <div id="sessionsByDevice"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-4">
-                <div class="card custom-card">
-                    <div class="card-header">
-                        <div class="card-title">Target Report</div>
-                        <div class="ms-auto">
-                            <a href="#" class="btn btn-sm btn-primary-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                Details
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card-body pb-3">
-                        <div class="mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="float-end text-primary" fill="currentColor" width="36px" height="36px" viewBox="0 0 24 24"><path fill="currentColor" d="M11,9h4a1,1,0,0,0,0-2H13V6a1,1,0,0,0-2,0V7a3,3,0,0,0,0,6h2a1,1,0,0,1,0,2H9a1,1,0,0,0,0,2h2v1a1,1,0,0,0,2,0V17a3,3,0,0,0,0-6H11a1,1,0,0,1,0-2Zm1-8A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,20a9,9,0,1,1,9-9A9,9,0,0,1,12,21Z"/></svg>
-                            <p class="text-primary fw-500 mb-2">Revenue by week</p>
-                            <h4 class="mb-2 fw-semibold">$54,125.03</h4>
-                            <span class="text-danger me-1 fs-14"> - 1.3%<i class="ri-arrow-down-s-fill align-middle ms-1"></i>  </span>
-                            <span class="text-muted fs-12">33% of target reached</span>
-                        </div>
-                        <div id="report"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End::row-8 -->
 
     </div>
+    <div class="col-xxl-9">
+      <div class="row">
+        <div class="col-xl-12">
+          <div class=" custom-card">
+            <div class="card-body p-0">
+              <div class="border-block-end-dashed  bg-white rounded-2 p-2">
+                <div>
+                  <ul class="nav nav-pills nav-justified gx-3 tab-style-6 d-sm-flex d-block " id="myTab" role="tablist">
+                    <li class="nav-item rounded" role="presentation">
+                      <button class="nav-link active" id="activity-tab" data-bs-toggle="tab"
+                              data-bs-target="#activity-tab-pane" type="button" role="tab"
+                              aria-controls="activity-tab-pane" aria-selected="true"><i
+                        class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>Логи и события
+                      </button>
+                    </li>
+                    <li class="nav-item rounded" role="presentation">
+                      <button class="nav-link" id="gallery-tab" data-bs-toggle="tab"
+                              data-bs-target="#gallery-tab-pane" type="button" role="tab"
+                              aria-controls="gallery-tab-pane" aria-selected="false"><i
+                        class="ri-exchange-box-line me-1 align-middle d-inline-block fs-16"></i>Gallery
+                      </button>
+                    </li>
+                    <li class="nav-item rounded" role="presentation">
+                      <button class="nav-link" id="posts-tab" data-bs-toggle="tab"
+                              data-bs-target="#posts-tab-pane" type="button" role="tab"
+                              aria-controls="posts-tab-pane" aria-selected="false"><i
+                        class="ri-bill-line me-1 align-middle d-inline-block fs-16"></i>Projects
+                      </button>
+                    </li>
+                    <li class="nav-item rounded" role="presentation">
+                      <button class="nav-link" id="followers-tab" data-bs-toggle="tab"
+                              data-bs-target="#followers-tab-pane" type="button" role="tab"
+                              aria-controls="followers-tab-pane" aria-selected="false"><i
+                        class="ri-money-dollar-box-line me-1 align-middle d-inline-block fs-16"></i>Настройки
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="py-4">
+                <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane show active fade p-0 border-0 bg-white p-4 rounded-3" id="activity-tab-pane"
+                       role="tabpanel" aria-labelledby="activity-tab" tabindex="0">
+                    <ul class="list-unstyled profile-timeline">
+
+                      {% for i, log in logsAll() %}
+                      <li>
+                        <div>
+                          <span class="fs-12 text-muted fw-semibold text-end profile-timeline-time">{{ProhloVremya(log.time, true)}}</span>
+                          <span class="avatar avatar-sm avatar-rounded profile-timeline-avatar">
+                                                                        <img
+                                                                          src="{{log.user.avatar}}"
+                                                                          alt="">
+                                                                    </span>
+                          <p class="text-muted mb-1">
+                            <span class="text-default"><b>{{log.user.email}}</b> ({{log.user.name}})</span>.
+                          </p>
+                          <p class="text-muted mb-0">{{log.message|raw}}</p>
+                        </div>
+                      </li>
+                      {% endfor %}
+
+
+                    </ul>
+                  </div>
+                  <div class="tab-pane fade p-0 border-0" id="gallery-tab-pane"
+                       role="tabpanel" aria-labelledby="gallery-tab" tabindex="0">
+                    <div class="row">
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <a href="{{template}}/assets/images/media/media-40.jpg" class="glightbox card"
+                           data-gallery="gallery1">
+                          <img src="{{template}}/assets/images/media/media-40.jpg" alt="image">
+                        </a>
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <a href="{{template}}/assets/images/media/media-41.jpg" class="glightbox card"
+                           data-gallery="gallery1">
+                          <img src="{{template}}/assets/images/media/media-41.jpg" alt="image">
+                        </a>
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <a href="{{template}}/assets/images/media/media-42.jpg" class="glightbox card"
+                           data-gallery="gallery1">
+                          <img src="{{template}}/assets/images/media/media-42.jpg" alt="image">
+                        </a>
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <a href="{{template}}/assets/images/media/media-43.jpg" class="glightbox card"
+                           data-gallery="gallery1">
+                          <img src="{{template}}/assets/images/media/media-43.jpg" alt="image">
+                        </a>
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <a href="{{template}}/assets/images/media/media-44.jpg" class="glightbox card"
+                           data-gallery="gallery1">
+                          <img src="{{template}}/assets/images/media/media-44.jpg" alt="image">
+                        </a>
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <a href="{{template}}/assets/images/media/media-45.jpg" class="glightbox card"
+                           data-gallery="gallery1">
+                          <img src="{{template}}/assets/images/media/media-45.jpg" alt="image">
+                        </a>
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <a href="{{template}}/assets/images/media/media-46.jpg" class="glightbox card"
+                           data-gallery="gallery1">
+                          <img src="{{template}}/assets/images/media/media-46.jpg" alt="image">
+                        </a>
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <a href="{{template}}/assets/images/media/media-60.jpg" class="glightbox card"
+                           data-gallery="gallery1">
+                          <img src="{{template}}/assets/images/media/media-60.jpg" alt="image">
+                        </a>
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <a href="{{template}}/assets/images/media/media-26.jpg" class="glightbox card"
+                           data-gallery="gallery1">
+                          <img src="{{template}}/assets/images/media/media-26.jpg" alt="image">
+                        </a>
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <a href="{{template}}/assets/images/media/media-32.jpg" class="glightbox card"
+                           data-gallery="gallery1">
+                          <img src="{{template}}/assets/images/media/media-32.jpg" alt="image">
+                        </a>
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <a href="{{template}}/assets/images/media/media-30.jpg" class="glightbox card"
+                           data-gallery="gallery1">
+                          <img src="{{template}}/assets/images/media/media-30.jpg" alt="image">
+                        </a>
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <a href="{{template}}/assets/images/media/media-31.jpg" class="glightbox card"
+                           data-gallery="gallery1">
+                          <img src="{{template}}/assets/images/media/media-31.jpg" alt="image">
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane fade p-0 border-0" id="posts-tab-pane"
+                       role="tabpanel" aria-labelledby="posts-tab" tabindex="0">
+                    <div class="row">
+                      <div class=" col-md-6 task-card">
+                        <div class="card custom-card task-pending-card">
+                          <div class="card-body">
+                            <a href="javascript:void(0);" class="fs-14 fw-semibold mb-3 d-flex align-items-center">Testing</a>
+                            <p class="mb-3">Status : <span class="badge bg-info">pending</span></p>
+                            <div class="d-flex align-items-center">
+                              <p class="mb-0">Assigned To :</p>
+                              <span class="avatar-list-stacked ms-1">
+                                                                                    <span
+                                                                                      class="avatar avatar-sm avatar-rounded">
+                                                                                        <img
+                                                                                          src="{{template}}/assets/images/faces/2.jpg"
+                                                                                          alt="img">
+                                                                                    </span>
+                                                                                    <span
+                                                                                      class="avatar avatar-sm avatar-rounded">
+                                                                                        <img
+                                                                                          src="{{template}}/assets/images/faces/8.jpg"
+                                                                                          alt="img">
+                                                                                    </span>
+                                                                                    <span
+                                                                                      class="avatar avatar-sm avatar-rounded">
+                                                                                        <img
+                                                                                          src="{{template}}/assets/images/faces/2.jpg"
+                                                                                          alt="img">
+                                                                                    </span>
+                                                                                </span>
+                              <span class="me-2"><button
+                                class="btn btn-sm btn-icon btn-wave btn-secondary-light waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#addpromodal1"><i
+                                class="ri-add-fill"></i></button></span>
+                              <div class="modal fade" id="addpromodal1" tabindex="-1" aria-labelledby="AddModalLabel1"
+                                   aria-hidden="true">
+                                <div class="modal-dialog ">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h6 class="modal-title" id="AddModalLabel1">Edit Assigne</h6>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                              aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form>
+                                        <div class="row">
+                                          <div class="col-12">
+                                            <div class="mb-3">
+                                              <label for="recipient-name2"
+                                                     class="col-form-label">Assigne To:</label>
+                                              <input type="text" class="form-control" id="recipient-name2">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                              data-bs-dismiss="modal">Save
+                                      </button>
+                                      <button type="button" class="btn btn-primary">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class=" col-md-6 task-card">
+                        <div class="card custom-card task-completed-card">
+                          <div class="card-body">
+                            <a href="javascript:void(0);" class="fs-14 fw-semibold mb-3 d-flex align-items-center">Creating
+                              Home Page Website </a>
+                            <p class="mb-3">Status : <span class="badge bg-success">Completed</span></p>
+                            <div class="d-flex align-items-center">
+                              <p class="mb-0">Assigned To :</p>
+                              <span class="avatar-list-stacked ms-1">
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/8.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                            </span>
+                              <span class="me-2"><button
+                                class="btn btn-sm btn-icon btn-wave btn-success-light waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#addpromodal2"><i
+                                class="ri-add-fill"></i></button></span>
+                              <div class="modal fade" id="addpromodal2" tabindex="-1" aria-labelledby="AddModalLabel2"
+                                   aria-hidden="true">
+                                <div class="modal-dialog ">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h6 class="modal-title" id="AddModalLabel2">Edit Assigne</h6>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                              aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form>
+                                        <div class="row">
+                                          <div class="col-12">
+                                            <div class="mb-3">
+                                              <label for="recipient-name3"
+                                                     class="col-form-label">Assigne To:</label>
+                                              <input type="text" class="form-control" id="recipient-name3">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                              data-bs-dismiss="modal">Save
+                                      </button>
+                                      <button type="button" class="btn btn-primary">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class=" col-md-6 task-card">
+                        <div class="card custom-card task-pending-card">
+                          <div class="card-body">
+                            <a href="javascript:void(0);" class="fs-14 fw-semibold mb-3 d-flex align-items-center">Data
+                              table Design</a>
+                            <p class="mb-3">Status : <span class="badge bg-info">Pending</span></p>
+                            <div class="d-flex align-items-center">
+                              <p class="mb-0">Assigned To :</p>
+                              <span class="avatar-list-stacked ms-1">
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/8.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                            </span>
+                              <span class="me-2"><button
+                                class="btn btn-sm btn-icon btn-wave btn-primary-light waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#addpromodal3"><i
+                                class="ri-add-fill"></i></button></span>
+                              <div class="modal fade" id="addpromodal3" tabindex="-1" aria-labelledby="AddModalLabel3"
+                                   aria-hidden="true">
+                                <div class="modal-dialog ">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h6 class="modal-title" id="AddModalLabel3">Edit Assigne</h6>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                              aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form>
+                                        <div class="row">
+                                          <div class="col-12">
+                                            <div class="mb-3">
+                                              <label for="recipient-name4"
+                                                     class="col-form-label">Assigne To:</label>
+                                              <input type="text" class="form-control" id="recipient-name4">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                              data-bs-dismiss="modal">Save
+                                      </button>
+                                      <button type="button" class="btn btn-primary">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class=" col-md-6 task-card">
+                        <div class="card custom-card task-completed-card">
+                          <div class="card-body">
+                            <a href="javascript:void(0);" class="fs-14 fw-semibold mb-3 d-flex align-items-center">Design
+                              Horizontal Layout</a>
+                            <p class="mb-3">Status : <span class="badge bg-success">completed</span></p>
+                            <div class="d-flex align-items-center">
+                              <p class="mb-0">Assigned To :</p>
+                              <span class="avatar-list-stacked ms-1">
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/8.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                            </span>
+                              <span class="me-2"><button
+                                class="btn btn-sm btn-icon btn-wave btn-success-light waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#addpromodal4"><i
+                                class="ri-add-fill"></i></button></span>
+                              <div class="modal fade" id="addpromodal4" tabindex="-1" aria-labelledby="AddModalLabel4"
+                                   aria-hidden="true">
+                                <div class="modal-dialog ">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h6 class="modal-title" id="AddModalLabel4">Edit Assigne</h6>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                              aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form>
+                                        <div class="row">
+                                          <div class="col-12">
+                                            <div class="mb-3">
+                                              <label for="recipient-name5"
+                                                     class="col-form-label">Assigne To:</label>
+                                              <input type="text" class="form-control" id="recipient-name5">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                              data-bs-dismiss="modal">Save
+                                      </button>
+                                      <button type="button" class="btn btn-primary">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class=" col-md-6 task-card">
+                        <div class="card custom-card task-inprogress-card">
+                          <div class="card-body">
+                            <a href="javascript:void(0);" class="fs-14 fw-semibold mb-3 d-flex align-items-center">Fix
+                              Header issue</a>
+                            <p class="mb-3">Status : <span class="badge bg-pink">Inprogress</span></p>
+                            <div class="d-flex align-items-center">
+                              <p class="mb-0">Assigned To :</p>
+                              <span class="avatar-list-stacked ms-1">
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/8.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                            </span>
+                              <span class="me-2"><button
+                                class="btn btn-sm btn-icon btn-wave btn-primary-light waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#addpromodal5"><i
+                                class="ri-add-fill"></i></button></span>
+                              <div class="modal fade" id="addpromodal5" tabindex="-1" aria-labelledby="AddModalLabel5"
+                                   aria-hidden="true">
+                                <div class="modal-dialog ">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h6 class="modal-title" id="AddModalLabel5">Edit Assigne</h6>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                              aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form>
+                                        <div class="row">
+                                          <div class="col-12">
+                                            <div class="mb-3">
+                                              <label for="recipient-name6"
+                                                     class="col-form-label">Assigne To:</label>
+                                              <input type="text" class="form-control" id="recipient-name6">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                              data-bs-dismiss="modal">Save
+                                      </button>
+                                      <button type="button" class="btn btn-primary">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class=" col-md-6 task-card">
+                        <div class="card custom-card task-inprogress-card">
+                          <div class="card-body">
+                            <a href="javascript:void(0);" class="fs-14 fw-semibold mb-3 d-flex align-items-center">Create
+                              a blog post</a>
+                            <p class="mb-3">Status : <span class="badge bg-pink">Inprogress</span></p>
+                            <div class="d-flex">
+                              <p class="mb-0">Assigned To : </p>
+                              <span class="avatar-list-stacked ms-1">
+                                                                                    <span
+                                                                                      class="avatar avatar-sm avatar-rounded">
+                                                                                        <img
+                                                                                          src="{{template}}/assets/images/faces/2.jpg"
+                                                                                          alt="img">
+                                                                                    </span>
+                                                                                    <span
+                                                                                      class="avatar avatar-sm avatar-rounded">
+                                                                                        <img
+                                                                                          src="{{template}}/assets/images/faces/8.jpg"
+                                                                                          alt="img">
+                                                                                    </span>
+                                                                                    <span
+                                                                                      class="avatar avatar-sm avatar-rounded">
+                                                                                        <img
+                                                                                          src="{{template}}/assets/images/faces/2.jpg"
+                                                                                          alt="img">
+                                                                                    </span>
+                                                                                </span>
+                              <span class="me-2"><button
+                                class="btn btn-sm btn-icon btn-wave btn-primary-light waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#addpromodal6"><i
+                                class="ri-add-fill"></i></button></span>
+                              <div class="modal fade" id="addpromodal6" tabindex="-1" aria-labelledby="AddModalLabel6"
+                                   aria-hidden="true">
+                                <div class="modal-dialog ">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h6 class="modal-title" id="AddModalLabel6">Edit Assigne</h6>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                              aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form>
+                                        <div class="row">
+                                          <div class="col-12">
+                                            <div class="mb-3">
+                                              <label for="recipient-name7"
+                                                     class="col-form-label">Assigne To:</label>
+                                              <input type="text" class="form-control" id="recipient-name7">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                              data-bs-dismiss="modal">Save
+                                      </button>
+                                      <button type="button" class="btn btn-primary">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class=" col-md-6 task-card">
+                        <div class="card custom-card task-pending-card">
+                          <div class="card-body">
+                            <a href="javascript:void(0);" class="fs-14 fw-semibold mb-3 d-flex align-items-center">Testing</a>
+                            <p class="mb-3">Status : <span class="badge bg-info">pending</span></p>
+                            <div class="d-flex align-items-center">
+                              <p class="mb-0">Assigned To :</p>
+                              <span class="avatar-list-stacked ms-1">
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/8.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                            </span>
+                              <span class="me-2"><button
+                                class="btn btn-sm btn-icon btn-wave btn-secondary-light waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#addpromodal7"><i
+                                class="ri-add-fill"></i></button></span>
+                              <div class="modal fade" id="addpromodal7" tabindex="-1" aria-labelledby="AddModalLabel7"
+                                   aria-hidden="true">
+                                <div class="modal-dialog ">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h6 class="modal-title" id="AddModalLabel7">Edit Assigne</h6>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                              aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form>
+                                        <div class="row">
+                                          <div class="col-12">
+                                            <div class="mb-3">
+                                              <label for="recipient-name8"
+                                                     class="col-form-label">Assigne To:</label>
+                                              <input type="text" class="form-control" id="recipient-name8">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                              data-bs-dismiss="modal">Save
+                                      </button>
+                                      <button type="button" class="btn btn-primary">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class=" col-md-6 task-card">
+                        <div class="card custom-card task-completed-card">
+                          <div class="card-body">
+                            <a href="javascript:void(0);" class="fs-14 fw-semibold mb-3 d-flex align-items-center">Fix
+                              the Data Table Issue</a>
+                            <p class="mb-3">Status : <span class="badge bg-success">Completed</span></p>
+                            <div class="d-flex align-items-center">
+                              <p class="mb-0">Assigned To :</p>
+                              <span class="avatar-list-stacked ms-1">
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/8.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                            </span>
+                              <span class="me-2"><button
+                                class="btn btn-sm btn-icon btn-wave btn-primary-light waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#addpromodal8"><i
+                                class="ri-add-fill"></i></button></span>
+                              <div class="modal fade" id="addpromodal8" tabindex="-1" aria-labelledby="AddModalLabel8"
+                                   aria-hidden="true">
+                                <div class="modal-dialog ">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h6 class="modal-title" id="AddModalLabel8">Edit Assigne</h6>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                              aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form>
+                                        <div class="row">
+                                          <div class="col-12">
+                                            <div class="mb-3">
+                                              <label for="recipient-name9"
+                                                     class="col-form-label">Assigne To:</label>
+                                              <input type="text" class="form-control" id="recipient-name9">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                              data-bs-dismiss="modal">Save
+                                      </button>
+                                      <button type="button" class="btn btn-primary">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class=" col-md-6 task-card">
+                        <div class="card custom-card task-pending-card">
+                          <div class="card-body">
+                            <a href="javascript:void(0);" class="fs-14 fw-semibold mb-3 d-flex align-items-center">Fix
+                              the Data Table Issue</a>
+                            <p class="mb-3">Status : <span class="badge bg-info">pending</span></p>
+                            <div class="d-flex align-items-center">
+                              <p class="mb-0">Assigned To :</p>
+                              <span class="avatar-list-stacked ms-1">
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/8.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                            </span>
+                              <span class="me-2"><button
+                                class="btn btn-sm btn-icon btn-wave btn-primary-light waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#addpromodal9"><i
+                                class="ri-add-fill"></i></button></span>
+                              <div class="modal fade" id="addpromodal9" tabindex="-1" aria-labelledby="AddModalLabel9"
+                                   aria-hidden="true">
+                                <div class="modal-dialog ">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h6 class="modal-title" id="AddModalLabel9">Edit Assigne</h6>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                              aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form>
+                                        <div class="row">
+                                          <div class="col-12">
+                                            <div class="mb-3">
+                                              <label for="recipient-name10"
+                                                     class="col-form-label">Assigne To:</label>
+                                              <input type="text" class="form-control" id="recipient-name10">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                              data-bs-dismiss="modal">Save
+                                      </button>
+                                      <button type="button" class="btn btn-primary">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class=" col-md-6 task-card">
+                        <div class="card custom-card task-inprogress-card">
+                          <div class="card-body">
+                            <a href="javascript:void(0);" class="fs-14 fw-semibold mb-3 d-flex align-items-center">Data
+                              table Design</a>
+                            <p class="mb-3">Status : <span class="badge bg-pink">Inprogress</span></p>
+                            <div class="d-flex align-items-center">
+                              <p class="mb-0">Assigned To :</p>
+                              <span class="avatar-list-stacked ms-1">
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/8.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                            </span>
+                              <span class="me-2"><button
+                                class="btn btn-sm btn-icon btn-wave btn-primary-light waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#addpromodal10"><i
+                                class="ri-add-fill"></i></button></span>
+                              <div class="modal fade" id="addpromodal10" tabindex="-1" aria-labelledby="AddModalLabel10"
+                                   aria-hidden="true">
+                                <div class="modal-dialog ">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h6 class="modal-title" id="AddModalLabel10">Edit Assigne</h6>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                              aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form>
+                                        <div class="row">
+                                          <div class="col-12">
+                                            <div class="mb-3">
+                                              <label for="recipient-name11"
+                                                     class="col-form-label">Assigne To:</label>
+                                              <input type="text" class="form-control" id="recipient-name11">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                              data-bs-dismiss="modal">Save
+                                      </button>
+                                      <button type="button" class="btn btn-primary">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class=" col-md-6 task-card">
+                        <div class="card custom-card task-pending-card">
+                          <div class="card-body">
+                            <a href="javascript:void(0);" class="fs-14 fw-semibold mb-3 d-flex align-items-center">Fix
+                              the Data Table Issue</a>
+                            <p class="mb-3">Status : <span class="badge bg-info">pending</span></p>
+                            <div class="d-flex align-items-center">
+                              <p class="mb-0">Assigned To :</p>
+                              <span class="avatar-list-stacked ms-1">
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/8.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                            </span>
+                              <span class="me-2"><button
+                                class="btn btn-sm btn-icon btn-wave btn-primary-light waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#addpromodal11"><i
+                                class="ri-add-fill"></i></button></span>
+                              <div class="modal fade" id="addpromodal11" tabindex="-1" aria-labelledby="AddModalLabel11"
+                                   aria-hidden="true">
+                                <div class="modal-dialog ">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h6 class="modal-title" id="AddModalLabel11">Edit Assigne</h6>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                              aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form>
+                                        <div class="row">
+                                          <div class="col-12">
+                                            <div class="mb-3">
+                                              <label for="recipient-name12"
+                                                     class="col-form-label">Assigne To:</label>
+                                              <input type="text" class="form-control" id="recipient-name12">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                              data-bs-dismiss="modal">Save
+                                      </button>
+                                      <button type="button" class="btn btn-primary">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class=" col-md-6 task-card">
+                        <div class="card custom-card task-inprogress-card">
+                          <div class="card-body">
+                            <a href="javascript:void(0);" class="fs-14 fw-semibold mb-3 d-flex align-items-center">Home
+                              page design</a>
+                            <p class="mb-3">Status : <span class="badge bg-pink">Inprogress</span></p>
+                            <div class="d-flex align-items-center">
+                              <p class="mb-0">Assigned To :</p>
+                              <span class="avatar-list-stacked ms-1">
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/8.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                                <span
+                                                                                  class="avatar avatar-sm avatar-rounded">
+                                                                                    <img
+                                                                                      src="{{template}}/assets/images/faces/2.jpg"
+                                                                                      alt="img">
+                                                                                </span>
+                                                                            </span>
+                              <span class="me-2"><button
+                                class="btn btn-sm btn-icon btn-wave btn-primary-light waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#addpromodal12"><i
+                                class="ri-add-fill"></i></button></span>
+                              <div class="modal fade" id="addpromodal12" tabindex="-1" aria-labelledby="AddModalLabel12"
+                                   aria-hidden="true">
+                                <div class="modal-dialog ">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h6 class="modal-title" id="AddModalLabel12">Edit Assigne</h6>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                              aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form>
+                                        <div class="row">
+                                          <div class="col-12">
+                                            <div class="mb-3">
+                                              <label for="recipient-name1"
+                                                     class="col-form-label">Assigne To:</label>
+                                              <input type="text" class="form-control" id="recipient-name1">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                              data-bs-dismiss="modal">Save
+                                      </button>
+                                      <button type="button" class="btn btn-primary">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane fade p-0 border-0" id="followers-tab-pane"
+                       role="tabpanel" aria-labelledby="followers-tab" tabindex="0">
+                    <div class="row">
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/general.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Общие настройки</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/setting" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/pages.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Новости и страницы</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/pages" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/news.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Переводы</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/phrases" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/servers.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Сервер</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/server/list" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/shop.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Магазин</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/shop" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/startpack.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Наборы</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/shop/startpack" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/bonuscode.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Бонус Коды</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/bonuscode/create" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/bonuscode/list" class="btn btn-sm btn-light btn-wave">Список</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/forum.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Подключить Форум</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/forum" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/users.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Пользователи</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/users" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/routers.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Маршрутизаторы</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/route" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/mailing.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Почтовое</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/mailing" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/updates.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Обновление ПО</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/sphere/update" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/logs.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Логи</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/logs" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/paidext.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Платные расширения</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/extensions/paid" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!--End::row-1 -->
+
+</div>
 
 {% endblock %}
-
-
-
 
 
 {% block css %}

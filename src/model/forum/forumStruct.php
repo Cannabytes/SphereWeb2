@@ -28,7 +28,7 @@ class forumStruct {
         $this->enabled = filter_var($config['enabled'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
         $this->engine = $config['engine'];
         $this->sort = $config['sort'];
-        $this->elements = $config['elements'] ?? 20;
+        $this->elements =  $config['elements'] ?: 20;
         $this->url = $config['url'] ?? "https://";
         if($this->enabled){
             fdb::connect($this->host, $this->port, $this->user, $this->password, $this->name);
@@ -50,7 +50,7 @@ class forumStruct {
         return $this->sort;
     }
 
-    public function getElements()
+    public function getElements(): int
     {
         return $this->elements;
     }

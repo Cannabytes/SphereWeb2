@@ -834,7 +834,7 @@ class userModel
         return $allPlayerCount;
     }
 
-    public function addLog(logTypes $type, $phrase, $variables = []): void
+    public function addLog(logTypes $type, $phrase , $variables = []): void
     {
         $variables = json_encode($variables);
         $request = $_REQUEST;

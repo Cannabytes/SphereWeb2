@@ -1,0 +1,58 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="col-xl-12">
+    <div class="card custom-card">
+      <div class="card-header justify-content-between">
+        <div class="card-title">
+          Дополнительные расширения
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table  table-bordered">
+            <thead>
+            <tr>
+              <th style="width: 10%" scope="col">Название</th>
+              <th scope="col">Описание</th>
+              <th scope="col">Стоимость</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+
+              <td><a href="/fun/wheel/admin" class="btn btn-sm btn-light">Рулетка удачи</a></td>
+              <td>
+                 Рулетка удачи это возможность предоставить пользователю шанс выиграть в игре.
+              </td>
+              <td>10$/мес.</td>
+
+            </tr>
+            <tr>
+
+              <td><a href="/admin/launcher" class="btn btn-sm btn-light">Лаунчер</a></td>
+              <td>
+                 Лаунчер Сферы - это самый быстрый и прогрессивное программное обеспечение для обновления игры.
+                 Скорость вычисления файлов необходимых для обновления и скорость загрузки файлов игры, самая высокая из всех существующих лаунчеров.
+                 Лаунчер Сферы универсальный, и игроку нет необходимости его устанавливать дважды.
+              </td>
+              <td>10$/мес.</td>
+            </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

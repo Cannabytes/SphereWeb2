@@ -637,6 +637,7 @@ return [
 	'578' => 'Help me come up with an account name?',
 	'579' => 'Pairing a game account with a profile',
 	'580' => 'Mass sending to a character',
+  '581' => 'Save configuration',
 	'5451' => 'Issued +%s SphereCoin for %s (%s)',
 	'5461' => 'Cumulative bonus for donation: +%s',
 	'LOG_REGISTRATION_USER' => 'New user registered',

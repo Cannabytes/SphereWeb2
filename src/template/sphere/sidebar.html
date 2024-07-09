@@ -118,106 +118,14 @@
 
 
         {% if getUser().isAdmin() %}
-        <li class="slide has-sub">
-          <a href="javascript:void(0);" class="side-menu__item">
+
+        <li class="slide">
+          <a href="/admin" class="side-menu__item">
             <i class="fe fe-grid side-menu__icon"></i>
             <span class="side-menu__label">Админ-панель</span>
-            <i class="fe fe-chevron-right side-menu__angle"></i>
           </a>
-          <ul class="slide-menu child1">
-
-            <li class="slide">
-              <a href="/admin/setting" class="side-menu__item">Общие настройки</a>
-            </li>
-
-            <li class="slide">
-              <a href="/admin/pages" class="side-menu__item">Новости и страницы</a>
-            </li>
-
-            <li class="slide">
-              <a href="/admin/phrases" class="side-menu__item">Фразы и перевод</a>
-            </li>
-
-            <li class="slide has-sub">
-              <a href="javascript:void(0);" class="side-menu__item">Сервер
-                <i class="fe fe-chevron-right side-menu__angle"></i></a>
-              <ul class="slide-menu child2" style="box-sizing: border-box; display: none;">
-                <li class="slide">
-                  <a href="/admin/server/add/new" class="side-menu__item">Добавить сервер</a>
-                </li>
-                <li class="slide">
-                  <a href="/admin/server/list" class="side-menu__item">Список серверов</a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="slide">
-              <a href="/admin/shop" class="side-menu__item">Магазин</a>
-            </li>
-
-            <li class="slide">
-              <a href="/admin/shop/startpack" class="side-menu__item">Стартовые наборы</a>
-            </li>
-
-            <li class="slide has-sub">
-              <a href="javascript:void(0);" class="side-menu__item">Бонус-код
-                <i class="fe fe-chevron-right side-menu__angle"></i></a>
-              <ul class="slide-menu child2" style="box-sizing: border-box; display: none;">
-                <li class="slide">
-                  <a href="/admin/bonuscode/create" class="side-menu__item">Создать</a>
-                </li>
-                <li class="slide">
-                  <a href="/admin/bonuscode/list" class="side-menu__item">Список</a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="slide">
-              <a href="/admin/forum" class="side-menu__item">Форум</a>
-            </li>
-
-            <li class="slide">
-              <a href="/admin/users" class="side-menu__item">Пользователи</a>
-            </li>
-
-            <li class="slide">
-              <a href="/admin/route" class="side-menu__item">Маршрутизаторы</a>
-            </li>
-
-            <li class="slide">
-              <a href="/admin/mailing" class="side-menu__item">Рассылка</a>
-            </li>
-
-            <li class="slide">
-              <a href="/admin/sphere/update" class="side-menu__item">Обновление ПО</a>
-            </li>
-
-            <li class="slide">
-              <a href="/admin/logs" class="side-menu__item">Логи</a>
-            </li>
-
-            <li class="slide has-sub">
-              <a href="javascript:void(0);" class="side-menu__item">Платные расширения
-                <i class="fe fe-chevron-right side-menu__angle"></i></a>
-              <ul class="slide-menu child2" style="box-sizing: border-box; display: none;">
-                <li class="slide">
-                  <a href="javascript:void(0);" class="side-menu__item">Описание</a>
-                </li>
-                <li class="slide">
-                  <a href="javascript:void(0);" class="side-menu__item">Лаунчер</a>
-                </li>
-                <li class="slide">
-                  <a href="/fun/wheel/admin" class="side-menu__item">Рулетка</a>
-                </li>
-                <li class="slide">
-                  <a href="javascript:void(0);" class="side-menu__item">Кейсы</a>
-                </li>
-              </ul>
-            </li>
-
-
-          </ul>
         </li>
+
         {% endif %}
 
       </ul>

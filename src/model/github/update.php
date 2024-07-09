@@ -48,7 +48,6 @@ class update
     static function getLastCommit(): string|null
     {
         $github = sql::getRow("SELECT * FROM `github_updates` ORDER BY `id` DESC LIMIT 1");
-
         return $github['sha'];
     }
 

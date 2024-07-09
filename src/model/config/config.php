@@ -7,6 +7,9 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\lang\lang;
+use Ofey\Logan22\model\log\log;
+use Ofey\Logan22\model\log\logTypes;
+use Ofey\Logan22\model\user\user;
 
 class config
 {
@@ -70,6 +73,7 @@ class config
             time::mysql(),
           ]
         );
+        user::self()->addLog(logTypes::LOG_SAVE_CONFIG, 581);
         board::success("Настройки сохранены");
     }
 

@@ -33,6 +33,7 @@ enum type
     //Статистика для админов, о онлайне
     case SERVER_STATISTIC_ONLINE;
     case SERVER_LIST;
+    case SERVER_FULL_INFO;
 
     // Игра в рулетку
     case GAME_WHEEL_SAVE;
@@ -72,6 +73,7 @@ enum type
               self::UPDATE_COLLECTION => '/api/server/update/collection',
               self::DELETE_SERVER => '/api/server/delete',
               self::SERVER_LIST => '/api/server/list',
+              self::SERVER_FULL_INFO => '/api/server/full/info',
 
               self::SYNCHRONIZATION => '/api/user/accounts/synchronization',
               self::SERVER_STATISTIC_ONLINE => '/api/server/statistic/online',

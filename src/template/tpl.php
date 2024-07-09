@@ -1179,8 +1179,8 @@ class tpl
             return \Ofey\Logan22\component\mail\mail::getTemplates();
         }));
 
-        $twig->addFunction(new TwigFunction("logsAll", function () {
-            return log::getLogs();
+        $twig->addFunction(new TwigFunction("logsAll", function ($limit = 100) {
+            return log::getLogs($limit);
         }));
 
         $twig->addFunction(new TwigFunction("logTypes", function () {
