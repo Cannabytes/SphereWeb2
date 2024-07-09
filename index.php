@@ -1,7 +1,5 @@
 <?php
 
-set_time_limit(15);
-
 error_reporting(E_ALL); // Логировать все ошибки
 ini_set('display_errors', 0); // Не показывать ошибки в браузере
 ini_set('log_errors', 1); // Логировать ошибки
