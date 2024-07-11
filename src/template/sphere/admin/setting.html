@@ -1285,18 +1285,17 @@
 
                 <div class="card-body">
 
-                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
-                    <div>
-                      <p class="fs-14 mb-1 fw-semibold">Включить накрутку онлайна</p>
-                      <p class="fs-12 mb-0 text-muted"></p>
-                    </div>
+                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-1">
                     <div>
                       <div class="custom-toggle-switch float-sm-end">
                         <input id="isEnableOnlineCheaters" name="isEnableOnlineCheaters" type="checkbox" {% if
                                config().onlineCheating().isEnabled() %}checked="" {%endif%}>
                         <label for="isEnableOnlineCheaters" class="label-success mb-1"></label>
                       </div>
+                      <p class="fs-14 mb-1 fw-semibold">Включить накрутку онлайна</p>
+                      <p class="fs-12 mb-0 text-muted"></p>
                     </div>
+
                   </div>
 
                   Сколько выводить (рандом) минимальное и максимальное кол-во онлайна (на случай если реальный онлайн
@@ -1305,14 +1304,14 @@
 
                   <div class="row">
                     <div class="col-xl-2">
-                      <label class="form-label fs-14 text-dark">Min online show</label>
+                      <label for="minOnlineShow" class="form-label fs-14 text-dark">Min online show</label>
                       <input value="{{config().onlineCheating().getMinOnlineShow()}}" type="number" class="form-control"
-                             placeholder="0">
+                           id="minOnlineShow"  placeholder="0">
                     </div>
                     <div class="col-xl-2">
-                      <label for="form-password" class="form-label fs-14 text-dark">Max online show</label>
+                      <label for="maxOnlineShow" class="form-label fs-14 text-dark">Max online show</label>
                       <input value="{{config().onlineCheating().getMaxOnlineShow()}}" type="number" class="form-control"
-                             id="form-password" placeholder="0">
+                             id="maxOnlineShow" placeholder="0">
                     </div>
 
                   </div>
@@ -1345,7 +1344,7 @@
                   {% set next_online = details_list[i + 1] %}
                   {% set data = cheating_details[online] %}
                   {% set next_data = cheating_details[next_online] %}
-                  <div class="accordion accordion-flush" id="accordionFlushExample_{{online}}">
+                  <div class="accordion accordion-flush " id="accordionFlushExample_{{online}}">
 
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="flush-headingOne">
@@ -1383,6 +1382,7 @@
                     </div>
                   </div>
                   {% endfor %}
+                  <div class="accordionFlushExample"></div>
 
 
                 </div>
@@ -2702,7 +2702,7 @@
             </div>
         </div>`;
 
-      $('#accordionFlushExample').append(newAccordionItem);
+      $('.accordionFlushExample').append(newAccordionItem);
       new Cleave(`#flush-collapse${numItems} .time-format-2`, {
         time: true,
         timePattern: ['h', 'm'],
@@ -2724,8 +2724,8 @@
     function collectData() {
       var data = {
         isEnableOnlineCheaters: $('#isEnableOnlineCheaters').is(':checked'),
-        minOnlineShow: $('input[type="number"].form-control').eq(0).val(),
-        maxOnlineShow: $('input[type="number"].form-control').eq(1).val(),
+        minOnlineShow: $('#minOnlineShow').val(),
+        maxOnlineShow: $('#maxOnlineShow').val(),
         cheatingDetails: {},
       };
 
