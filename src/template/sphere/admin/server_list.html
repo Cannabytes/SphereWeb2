@@ -630,6 +630,17 @@
     }, false);
   });
 
+  $(document).on('click', '#saveCollection', function () {
+    var version_client = $('#version_client').val();
+    var serverid = $(this).data('serverid');
+    var collection = $('#sql_base_source').val();
+    AjaxSend('/admin/server/edit/collection', 'POST', {
+      version_client: version_client,
+      collection: collection,
+      serverId: serverid,
+    }, false);
+  })
+
   $(document).on('click', '#saveMySQL', function () {
     var serverid = $(this).data('serverid');
     var login_host = $('#login_host').val();

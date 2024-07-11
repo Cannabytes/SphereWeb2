@@ -109,15 +109,34 @@ class options
     }
 
     // Обновление коллекции
-    static public function updateCollection()
+    static public function updateCollection(): void
     {
         $response = \Ofey\Logan22\component\sphere\server::send(type::UPDATE_COLLECTION, [
           "id"   => (int)$_POST['serverId'],
-          "name" => $_POST['name'],
-        ])->show()->getResponse();
-        if ($response['status'] == 'success') {
+          "name" => $_POST['collection'],
+        ])->show(true)->getResponse();
+        if ($response['success']) {
+            $server =\Ofey\Logan22\model\server\server::getServer((int)$_POST['serverId']);
+            $server->setChronicle($_POST['version_client']);
+            $server->setCollection($_POST['collection']);
+            $server->save();
             board::success("Коллекция обновлена");
         }
+    }
+
+    static private function filterUniqueIds($objects, $ids): array
+    {
+        // Получаем все ID из первого массива
+        $objectIds = array_map(function ($object) {
+            return $object->getId(); // Предполагается, что в классе есть метод getId()
+        }, $objects);
+
+        // Фильтруем второй массив, исключая ID, которые есть в первом массиве
+        $filteredIds = array_filter($ids, function ($id) use ($objectIds) {
+            return ! in_array($id, $objectIds);
+        });
+
+        return $filteredIds;
     }
 
     static public function edit_server_show($id = null): void
@@ -137,23 +156,10 @@ class options
             ]);
         }
 
-        function filterUniqueIds($objects, $ids)
-        {
-            // Получаем все ID из первого массива
-            $objectIds = array_map(function ($object) {
-                return $object->getId(); // Предполагается, что в классе есть метод getId()
-            }, $objects);
 
-            // Фильтруем второй массив, исключая ID, которые есть в первом массиве
-            $filteredIds = array_filter($ids, function ($id) use ($objectIds) {
-                return ! in_array($id, $objectIds);
-            });
-
-            return $filteredIds;
-        }
 
         $servers = \Ofey\Logan22\model\server\server::getServerAll();
-        $arrayUniq = filterUniqueIds(\Ofey\Logan22\model\server\server::getServerAll(), $servers_id['ids']);
+        $arrayUniq = self::filterUniqueIds(\Ofey\Logan22\model\server\server::getServerAll(), $servers_id['ids']);
         foreach ($arrayUniq as $id) {
             $sm = new serverModel([
               'id' => $id,

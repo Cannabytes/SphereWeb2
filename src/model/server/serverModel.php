@@ -7,7 +7,6 @@ use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
-use Ofey\Logan22\model\user\user;
 
 class serverModel
 {
@@ -67,6 +66,7 @@ class serverModel
         $this->chatGameEnabled = $server['chat_game_enabled'] ?? 0;
         $this->launcherEnabled = $server['launcher_enabled'] ?? 0;
         $this->timezone        = $server['timezone'] ?? '';
+        $this->collection      = $server['collection'] ?? null;
         if ($server_data) {
             foreach ($server_data as $data) {
                 $this->server_data[] = new serverDataModel($data);
@@ -82,6 +82,11 @@ class serverModel
     public function getCollection(): ?string
     {
         return $this->collection;
+    }
+
+    public function setCollection(string $collection): void
+    {
+        $this->collection = $collection;
     }
 
     public function getMaxOnline(): int
@@ -166,19 +171,14 @@ class serverModel
      */
     public function getStatus($forceUpdate = false): serverStatus
     {
-
-
         //Когда принудительное обновление включено, мы не используем кэш из бд
         if ( ! $forceUpdate) {
-
             if ($this->serverStatus !== null) {
                 return $this->serverStatus;
             }
 
-
             $serverCache = sql::getRow(
-              "SELECT `data`, `date_create` FROM `server_cache` WHERE `server_id` = ? AND `type` = 'status' ORDER BY `id` DESC LIMIT 1",
-              [
+              "SELECT `data`, `date_create` FROM `server_cache` WHERE `server_id` = ? AND `type` = 'status' ORDER BY `id` DESC LIMIT 1", [
                 $this->getId(),
               ]
             );
@@ -198,23 +198,23 @@ class serverModel
                     $serverStatus->setEnable(filter_var($serverCache['isEnableStatus'], FILTER_VALIDATE_BOOLEAN));
                     $serverStatus->licenseExpirationDate($serverCache['licenseExpirationDate']);
                     $this->serverStatus = $serverStatus;
+
                     return $serverStatus;
                 }
             }
         }
 
-
         $serverStatus = new serverStatus();
         $serverStatus->setServerId($this->getId());
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::GET_STATUS_SERVER)->getResponse();
-        if(isset($sphere['error']) or $sphere==null){
+        if (isset($sphere['error']) or $sphere == null) {
             $serverStatus->setEnable(false);
             $serverStatus->setLoginServer(false);
             $serverStatus->setGameServer(false);
             $serverStatus->setOnline(0);
             $serverStatus->licenseExpirationDate(null);
             $serverStatus->save();
-        }else {
+        } else {
             $serverStatus->setEnable(filter_var($sphere['isEnableStatus'], FILTER_VALIDATE_BOOLEAN));
             $serverStatus->setLoginServer($sphere['loginServer']);
             $serverStatus->setGameServer($sphere['gameServer']);
@@ -223,14 +223,14 @@ class serverModel
             $serverStatus->save();
         }
         $this->serverStatus = $serverStatus;
+
         return $serverStatus;
     }
 
     /**
      * @return int|null
      */
-    public
-    function getId(): ?int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -240,8 +240,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setId(
+    public function setId(
       int $id
     ): serverModel {
         $this->id = $id;
@@ -249,9 +248,32 @@ class serverModel
         return $this;
     }
 
+    public function save()
+    {
+        $arr = [
+          'id'              => $this->id,
+          'name'            => $this->name,
+          'rateExp'         => $this->rateExp,
+          'rateSp'          => $this->rateSp,
+          'rateAdena'       => $this->rateAdena,
+          'rateDrop'        => $this->rateDrop,
+          'rateSpoil'       => $this->rateSpoil,
+          'chronicle'       => $this->chronicle,
+          'chatGameEnabled' => $this->chatGameEnabled,
+          'launcherEnabled' => $this->launcherEnabled,
+          'timezone'        => $this->timezone,
+          'collection'      => $this->collection,
+        ];
+        sql::run(
+          "UPDATE `servers` SET `data` = ? WHERE `id` = ?",
+          [
+            json_encode($arr),
+            $this->id,
+          ]
+        );
+    }
 
-    public
-    function getArrayVar(): array
+    public function getArrayVar(): array
     {
         return [
           'id'                            => $this->getId(),
@@ -277,8 +299,7 @@ class serverModel
     /**
      * @return string
      */
-    public
-    function getName(): string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -288,8 +309,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setName(
+    public function setName(
       string $name
     ): serverModel {
         $this->name = $name;
@@ -300,8 +320,7 @@ class serverModel
     /**
      * @return int
      */
-    public
-    function getRateExp(): int
+    public function getRateExp(): int
     {
         return $this->rateExp;
     }
@@ -311,8 +330,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setRateExp(
+    public function setRateExp(
       int $rateExp
     ): serverModel {
         $this->rateExp = $rateExp;
@@ -323,8 +341,7 @@ class serverModel
     /**
      * @return int
      */
-    public
-    function getRateSp(): int
+    public function getRateSp(): int
     {
         return $this->rateSp;
     }
@@ -334,8 +351,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setRateSp(
+    public function setRateSp(
       int $rateSp
     ): serverModel {
         $this->rateSp = $rateSp;
@@ -346,8 +362,7 @@ class serverModel
     /**
      * @return int
      */
-    public
-    function getRateAdena(): int
+    public function getRateAdena(): int
     {
         return $this->rateAdena;
     }
@@ -357,8 +372,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setRateAdena(
+    public function setRateAdena(
       int $rateAdena
     ): serverModel {
         $this->rateAdena = $rateAdena;
@@ -369,8 +383,7 @@ class serverModel
     /**
      * @return int
      */
-    public
-    function getrateDrop(): int
+    public function getrateDrop(): int
     {
         return $this->rateDrop;
     }
@@ -380,8 +393,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setrateDrop(
+    public function setrateDrop(
       int $rateDrop
     ): serverModel {
         $this->rateDrop = $rateDrop;
@@ -392,8 +404,7 @@ class serverModel
     /**
      * @return int
      */
-    public
-    function getRateSpoil(): int
+    public function getRateSpoil(): int
     {
         return $this->rateSpoil;
     }
@@ -403,8 +414,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setRateSpoil(
+    public function setRateSpoil(
       int $rateSpoil
     ): serverModel {
         $this->rateSpoil = $rateSpoil;
@@ -415,8 +425,7 @@ class serverModel
     /**
      * @return ?string
      */
-    public
-    function getDateStartServer(): ?string
+    public function getDateStartServer(): ?string
     {
         return $this->dateStartServer;
     }
@@ -426,8 +435,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setDateStartServer(
+    public function setDateStartServer(
       string $dateStartServer
     ): serverModel {
         $this->dateStartServer = $dateStartServer;
@@ -438,8 +446,7 @@ class serverModel
     /**
      * @return string
      */
-    public
-    function getChronicle(): string
+    public function getChronicle(): string
     {
         return $this->chronicle;
     }
@@ -449,8 +456,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setChronicle(
+    public function setChronicle(
       string $chronicle
     ): serverModel {
         $this->chronicle = $chronicle;
@@ -461,8 +467,7 @@ class serverModel
     /**
      * @return int
      */
-    public
-    function getCheckserver(): int
+    public function getCheckserver(): int
     {
         return $this->checkserver ?? 0;
     }
@@ -470,8 +475,7 @@ class serverModel
     /**
      * @return string|null
      */
-    public
-    function getCheckLoginServerHost(): ?string
+    public function getCheckLoginServerHost(): ?string
     {
         return $this->checkLoginServerHost;
     }
@@ -481,8 +485,7 @@ class serverModel
      *
      * @return \Ofey\Logan22\model\server\serverModel
      */
-    public
-    function setCheckLoginServerHost(
+    public function setCheckLoginServerHost(
       string $checkLoginServerHost
     ): serverModel {
         $this->checkLoginServerHost = $checkLoginServerHost;
@@ -493,8 +496,7 @@ class serverModel
     /**
      * @return int
      */
-    public
-    function getCheckLoginServerPort(): int
+    public function getCheckLoginServerPort(): int
     {
         return $this->checkLoginServerPort ?? 9014;
     }
@@ -504,8 +506,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setCheckLoginServerPort(
+    public function setCheckLoginServerPort(
       int $checkLoginServerPort
     ): serverModel {
         $this->checkLoginServerPort = $checkLoginServerPort;
@@ -516,8 +517,7 @@ class serverModel
     /**
      * @return string
      */
-    public
-    function getCheckGameServerHost(): string
+    public function getCheckGameServerHost(): string
     {
         return $this->checkGameServerHost ?? 7777;
     }
@@ -527,8 +527,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setCheckGameServerHost(
+    public function setCheckGameServerHost(
       string $checkGameServerHost
     ): serverModel {
         $this->checkGameServerHost = $checkGameServerHost;
@@ -539,8 +538,7 @@ class serverModel
     /**
      * @return int
      */
-    public
-    function getCheckGameServerPort(): int
+    public function getCheckGameServerPort(): int
     {
         return $this->checkGameServerPort ?? 7777;
     }
@@ -550,8 +548,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setCheckGameServerPort(
+    public function setCheckGameServerPort(
       int $checkGameServerPort
     ): serverModel {
         $this->checkGameServerPort = $checkGameServerPort;
@@ -562,8 +559,7 @@ class serverModel
     /**
      * @return int
      */
-    public
-    function getChatGameEnabled(): int
+    public function getChatGameEnabled(): int
     {
         return $this->chatGameEnabled;
     }
@@ -573,8 +569,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setChatGameEnabled(
+    public function setChatGameEnabled(
       int $chatGameEnabled
     ): serverModel {
         $this->chatGameEnabled = $chatGameEnabled;
@@ -585,8 +580,7 @@ class serverModel
     /**
      * @return int
      */
-    public
-    function getLauncherEnabled(): int
+    public function getLauncherEnabled(): int
     {
         return $this->launcherEnabled;
     }
@@ -596,8 +590,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setLauncherEnabled(
+    public function setLauncherEnabled(
       int $launcherEnabled
     ): serverModel {
         $this->launcherEnabled = $launcherEnabled;
@@ -608,8 +601,7 @@ class serverModel
     /**
      * @return string
      */
-    public
-    function getTimezone(): string
+    public function getTimezone(): string
     {
         return $this->timezone;
     }
@@ -619,8 +611,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setTimezone(
+    public function setTimezone(
       string $timezone
     ): serverModel {
         $this->timezone = $timezone;
@@ -628,14 +619,12 @@ class serverModel
         return $this;
     }
 
-    public
-    function getToken(): string
+    public function getToken(): string
     {
         return $this->getServerData('token')?->getVal() ?? "";
     }
 
-    public
-    function getServerData(
+    public function getServerData(
       $key = null
     ): null|array|serverDataModel {
         if ($key == null) {
@@ -653,27 +642,23 @@ class serverModel
         return null;
     }
 
-    public
-    function setServerData(
+    public function setServerData(
       array $server_data
     ): void {
         $this->server_data = $server_data;
     }
 
-    public
-    function getTokenAdmin(): string
+    public function getTokenAdmin(): string
     {
         return $this->getServerData('tokenAdmin')?->getVal() ?? "";
     }
 
-    public
-    function getPage(): ?array
+    public function getPage(): ?array
     {
         return $this->page;
     }
 
-    public
-    function setPage(
+    public function setPage(
       ?array $page
     ): void {
         $this->page = $page;
@@ -684,8 +669,7 @@ class serverModel
      *
      * @return server
      */
-    public
-    function setCheckserver(
+    public function setCheckserver(
       int $checkserver
     ): serverModel {
         $this->checkserver = $checkserver;
