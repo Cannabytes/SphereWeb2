@@ -52,7 +52,7 @@
     $('#startUpdate').on('click', function (e) {
         e.preventDefault();
         $(this).attr('disabled', 'disabled');
-        AjaxSend('/github/update', 'POST', {}, true).then(function (response) {
+        AjaxSend('/github/update', 'POST', {}, true, 30).then(function (response) {
             console.log(response)
             responseAnalysis(response);
          })

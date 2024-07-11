@@ -182,6 +182,7 @@ class tpl
                     }
                 }
             }
+
         }
 
         $all_plugins_dir = fileSys::get_dir_files("/custom/plugins", [

@@ -26,19 +26,19 @@
       <ul class="main-menu">
 
 
-        <li class="slide__category"><span class="category-name">Меню</span></li>
+        <li class="slide__category"><span class="category-name">{{phrase('menu')}}</span></li>
 
         <li class="slide">
           <a href="/main" class="side-menu__item">
             <i class="fe fe-home side-menu__icon"></i>
-            <span class="side-menu__label">Главная</span>
+            <span class="side-menu__label">{{phrase('menu_main')}}</span>
           </a>
         </li>
         <li class="slide enable_news" {% if config().enabled().isEnableNews()== false %}style="display: none;" {% endif
             %}>
           <a href="/news" class="side-menu__item">
             <i class="fe fe-layers side-menu__icon"></i>
-            <span class="side-menu__label">Новости</span>
+            <span class="side-menu__label">{{phrase('news')}}</span>
           </a>
         </li>
 
@@ -46,7 +46,7 @@
             %}>
           <a href="/shop" class="side-menu__item">
             <i class="fe fe-shopping-cart side-menu__icon"></i>
-            <span class="side-menu__label">Магазин</span>
+            <span class="side-menu__label">{{phrase(215)}}</span>
           </a>
         </li>
 
@@ -55,7 +55,7 @@
             endif %}>
           <a href="/balance" class="side-menu__item">
             <i class="fe fe-dollar-sign side-menu__icon"></i>
-            <span class="side-menu__label">Баланс</span>
+            <span class="side-menu__label">{{phrase(486)}}</span>
             <span class="badge bg-success-transparent ms-2 count_sphere_coin">{{ getUser().getDonate() }}</span>
           </a>
         </li>
@@ -64,8 +64,7 @@
         <li class="slide">
           <a href="#" data-bs-toggle="modal" data-bs-target="#sendToPlayer" class="side-menu__item">
             <i class="fe fe-corner-down-right side-menu__icon"></i>
-            <span class="side-menu__label">Перевести <i
-              class="fe fe-dollar-sign fs-16 me-1 text-danger"></i>в игру</span>
+            <span class="side-menu__label">{{phrase('donate_coin_to_game')|raw}}</span>
           </a>
         </li>
 
@@ -74,7 +73,7 @@
             {% endif %}>
           <a href="/statistic" class="side-menu__item">
             <i class="fe fe-pie-chart side-menu__icon"></i>
-            <span class="side-menu__label">Статистика</span>
+            <span class="side-menu__label">{{phrase('menu_statistics')}}</span>
           </a>
         </li>
 
@@ -83,7 +82,7 @@
             %}style="display: none;" {% endif %}>
           <a href="/referral" class="side-menu__item">
             <i class="fe fe-users side-menu__icon"></i>
-            <span class="side-menu__label">Реферальная</span>
+            <span class="side-menu__label">{{phrase(306)}}</span>
           </a>
         </li>
         {% endif %}
@@ -99,12 +98,12 @@
 
 
 
-        <li class="slide__category"><span class="category-name">Остальное</span></li>
+        <li class="slide__category"><span class="category-name">{{phrase('other')}}</span></li>
 
         <li class="slide">
           <a href="{{ config().other().getLinkMainPage() }}" class="side-menu__item">
             <i class="fe fe-corner-down-left side-menu__icon"></i>
-            <span class="side-menu__label">Вернуться на сайт</span>
+            <span class="side-menu__label">{{phrase('return_demo_page')}}</span>
           </a>
         </li>
 
@@ -122,7 +121,7 @@
         <li class="slide">
           <a href="/admin" class="side-menu__item">
             <i class="fe fe-grid side-menu__icon"></i>
-            <span class="side-menu__label">Админ-панель</span>
+            <span class="side-menu__label">{{phrase(221)}}</span>
           </a>
         </li>
 
@@ -154,7 +153,7 @@
                   {% else %}
                   <div class="fs-3 fw-semibold text-danger">OFF</div>
                   {% endif %}
-                  <div class="fs-sm fw-semibold text-uppercase text-muted">Server</div>
+                  <div class="fs-sm fw-semibold text-uppercase text-muted">{{phrase('status')}}</div>
                 </div>
 
                 <div class="col-6">

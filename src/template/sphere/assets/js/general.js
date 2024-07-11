@@ -13,12 +13,13 @@ function basename(str) {
     return base;
 }
 
-function AjaxSend(url, method, data, isReturn = false) {
+function AjaxSend(url, method, data, isReturn = false, timeout = 2) {
     return new Promise(function(resolve, reject) {
         $.ajax({
             url: url,
             type: method,
             data: data,
+            timeout: timeout * 1000,
             dataType: 'json',
             success: function (response) {
                 if (isReturn) {

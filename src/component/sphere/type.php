@@ -35,6 +35,9 @@ enum type
     case SERVER_LIST;
     case SERVER_FULL_INFO;
 
+    //Отправка запроса на сервер игровой
+    case GAME_SERVER_REQUEST;
+
     // Игра в рулетку
     case GAME_WHEEL_SAVE;
     case GAME_WHEEL;
@@ -74,6 +77,7 @@ enum type
               self::DELETE_SERVER => '/api/server/delete',
               self::SERVER_LIST => '/api/server/list',
               self::SERVER_FULL_INFO => '/api/server/full/info',
+              self::GAME_SERVER_REQUEST => '/api/server/request/mysql',
 
               self::SYNCHRONIZATION => '/api/user/accounts/synchronization',
               self::SERVER_STATISTIC_ONLINE => '/api/server/statistic/online',

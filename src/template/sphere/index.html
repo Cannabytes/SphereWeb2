@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}qwe{% endblock %}
+{% block title %}{% endblock %}
 
 {% block content %}
 
@@ -25,9 +25,8 @@
                 </svg>
               </div>
               <div class="mt-0 text-start">
-                <p class="fs-14 text-muted mb-0">У Вас нет ни одного подключенного сервера, пожалуйста заполните данные
-                  подключения к Вашему серверу.<br>
-                  <a href="/admin/server/add/new" class=" text-primary d-inline-flex">Зарегистрировать сервер</a></p>
+                <p class="fs-14 text-muted mb-0">{{phrase('no_registration_servers')}}<br>
+                  <a href="/admin/server/add/new" class=" text-primary d-inline-flex">{{phrase('register_server')}}</a></p>
               </div>
             </div>
           </div>
@@ -46,8 +45,8 @@
         <div class="col-xl-4">
           <div class="card custom-card">
             <div class="card-body">
-              <p class="card-text">Авторизуйтесь и создавайте игровой аккаунт.</p>
-              <a href="/login" class="btn btn-success">Авторизоваться</a>
+              <p class="card-text">{{phrase('log_in_crt_gm_acc')}}</p>
+              <a href="/login" class="btn btn-success">{{phrase('authorization')}}</a>
             </div>
           </div>
         </div>
@@ -55,8 +54,8 @@
         <div class="col-xl-4">
           <div class="card custom-card">
             <div class="card-body">
-              <p class="card-text">Пройдите регистрацию и создавайте игровые аккаунты.</p>
-              <a href="/signup" class="btn btn-dark">Регистрация</a>
+              <p class="card-text">{{phrase('reg_crt_gm_accs')}}</p>
+              <a href="/signup" class="btn btn-dark">{{phrase('registration')}}</a>
             </div>
           </div>
         </div>
@@ -64,8 +63,8 @@
         <div class="col-xl-4">
           <div class="card custom-card">
             <div class="card-body">
-              <p class="card-text">Если вы забыли пароль, то вы можете восстановить его используя Email.</p>
-              <a href="/forget" class="btn btn-info">Восстановление пароля</a>
+              <p class="card-text">{{phrase('forgot_pwd_recover_email')}}</p>
+              <a href="/forget" class="btn btn-info">{{phrase(67)}}</a>
             </div>
           </div>
         </div>
@@ -88,20 +87,20 @@
           <ul class="nav nav-pills justify-content-center nav-style-2 mb-3" role="tablist">
             <li class="nav-item" role="presentation">
               <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page" href="#account_list"
-                 aria-selected="true">Аккаунты</a>
+                 aria-selected="true">{{phrase(43)}}</a>
             </li>
             {% if getUser().isAuth() %}
             {% if getUser().getCountPlayers() > 0 %}
             <li class="nav-item" role="presentation">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page" href="#players_list"
-                 aria-selected="false" tabindex="-1">Персонажи</a>
+                 aria-selected="false" tabindex="-1">{{phrase(203)}}</a>
             </li>
             {% endif %}
 
             <li class="nav-item" role="presentation">
               <a class="nav-link {% if getUser().countWarehouseItems() >=1 %}pulse pulse-danger{% endif %}"
                  data-bs-toggle="tab" role="tab" aria-current="page" href="#warehouse_panel" aria-selected="false"
-                 tabindex="-1">Склад
+                 tabindex="-1">{{phrase('stock')}}
                 {% if getUser().countWarehouseItems() >=1 %}<span
                   class=" top-0 start-50 translate-middle badge rounded-pill bg-danger">{{getUser().countWarehouseItems()}}</span>{%
                 endif %}
@@ -122,20 +121,18 @@
 
                       {% if getUser().isAuth() == false %}
 
-                      Вам необходимо <a href="#" data-bs-toggle="modal" data-bs-target="#modal-auth-user"
-                                        class="alert-link text-danger">авторизоваться</a>,
-                      или <a href="#" data-bs-toggle="modal" data-bs-target="#modal-new-user"
-                             class="alert-link text-danger">зарегистрировать аккаунт</a>, чтобы управлять вашими
-                      персонажами.
+                      {{phrase('you_need')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-auth-user"
+                                        class="alert-link text-danger">{{phrase('log_in')}}</a>,
+                      {{phrase('or')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-new-user"
+                             class="alert-link text-danger">{{phrase('reg_acc')}}</a>, {{phrase('ctrl_chars')}}.
 
                       {% else %}
 
                       <form action="/registration/account" method="POST">
 
 
-
                         <div class="row mb-3">
-                          <label for="accountRegistration" class="col-sm-2 col-form-label">Аккаунт</label>
+                          <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>
 
                           <div class="col-sm-4">
                             <div class="input-group mb-3">

@@ -65,7 +65,7 @@
       <div class="header-element cart-dropdown">
         <!-- Start::header-link|dropdown-toggle -->
         <a data-bs-toggle="modal" data-bs-target="#sendToPlayer" href="javascript:void(0);" class="header-link bg-info-transparent" >
-          <span class="fs-14 fw-semibold text-info">Перевести <i class="fe fe-dollar-sign fs-16 me-1 text-danger"></i>в игру</span>
+          <span class="fs-14 fw-semibold text-info">{{phrase('donate_coin_to_game')|raw}}</span>
         </a>
       </div>
 
@@ -74,15 +74,10 @@
         <!-- Start::header-link|dropdown-toggle -->
         <a id="bonusCodePanel" href="javascript:void(0);" class="header-link dropdown-toggle bg-dark-transparent" data-bs-auto-close="outside" data-bs-toggle="dropdown">
           <i class="fe fe-shopping-cart header-link-icon"></i>
-          <span class="fs-14 fw-semibold text-info">Бонус-Код</span>
+          <span class="fs-14 fw-semibold text-info">{{phrase('code_bonus')}}</span>
         </a>
 
         <div class="main-header-dropdown dropdown-menu dropdown-menu-end" data-popper-placement="none">
-          <div class="p-sm-2">
-            <div class="d-flex align-items-center justify-content-between">
-              <p class="mb-0 fs-15 fw-semibold ">У Вас есть Бонус-Код ?</p>
-            </div>
-          </div>
           <div><hr class="dropdown-divider"></div>
 
             <div class="m-3">
@@ -93,10 +88,10 @@
                 {% if getUser().isAuth() %}
                 <form action="/bonus/code" method="post">
                 <div class="mb-3">
-                  <label for="form-code" class="form-label fs-14 text-dark">Ввести код</label>
-                  <input name="code" type="text" class="form-control" id="form-code" placeholder="code">
+                  <label for="form-code" class="form-label fs-14 text-dark">{{phrase('enter_bonus_code')}}</label>
+                  <input name="code" type="text" class="form-control" id="form-code" placeholder="{{phrase('code_bonus')}}">
                 </div>
-                <button id="bonusCode" class="btn btn-primary" type="button">Получить бонус</button>
+                <button id="bonusCode" class="btn btn-primary" type="button">{{phrase('receive')}}</button>
                 </form>
 
                 <script defer>
@@ -114,7 +109,7 @@
                 </script>
 
                 {% else %}
-                 Необходимо сначала <a class="text-success" href="/auth">авторизоваться</a> или <a class="text-success" href="/signup">зарегистрироваться</a> чтобы получить бонус
+                 {{phrase('need_auth_for_bonus_code')|raw}}
                 {% endif %}
 
               </div>
@@ -179,18 +174,18 @@
 <!--            class="fe fe-file-text fs-18 me-2 text-primary"></i>Уведомление <span-->
 <!--            class="badge bg-danger ms-auto">25</span></a></li>-->
           <li class="dropdown-item"><a class="d-flex w-100" href="/user/avatar"><i
-            class="fe fe-image fs-18 me-2 text-primary"></i>Аватар</a></li>
+            class="fe fe-image fs-18 me-2 text-primary"></i>{{phrase(192)}}</a></li>
           <li class="dropdown-item"><a class="d-flex w-100" href="#" data-bs-toggle="modal"
-                                       data-bs-target="#settings"><i class="fe fe-settings fs-18 me-2 text-primary"></i>Настройки</a>
+                                       data-bs-target="#settings"><i class="fe fe-settings fs-18 me-2 text-primary"></i>{{phrase(54)}}</a>
           </li>
           <li class="dropdown-item"><a class="d-flex w-100" href="/auth/logout"><i
-            class="fe fe-log-out fs-18 me-2 text-primary"></i>Выход</a></li>
+            class="fe fe-log-out fs-18 me-2 text-primary"></i>{{phrase('logout')}}</a></li>
           {% else %}
 
           <li class="dropdown-item"><a class="d-flex w-100" href="/login"><i
-            class="fe fe-log-in fs-18 me-2 text-primary"></i>Авторизоваться</a></li>
+            class="fe fe-log-in fs-18 me-2 text-primary"></i>{{phrase('authorization')}}</a></li>
           <li class="dropdown-item"><a class="d-flex w-100" href="/signup" ><i
-            class="fe fe-user-plus fs-18 me-2 text-primary"></i>Зарегистрироваться</a></li>
+            class="fe fe-user-plus fs-18 me-2 text-primary"></i>{{phrase('menu_registration')}}</a></li>
           {% endif %}
         </ul>
       </div>

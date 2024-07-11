@@ -1046,6 +1046,39 @@ class userModel
         redirect::location($_SERVER['HTTP_REFERER'] ?? "/main");
     }
 
+    //Добавление переменной
+    public function addVar(string $name, mixed $data) {
+
+        sql::run('DELETE FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?', [
+          $this->getServerId(),
+          $this->getId(),
+          $name,
+        ]);
+
+        return sql::run('INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)', [
+          $this->getServerId(),
+          $this->getId(),
+          $name,
+          $data,
+        ]);
+    }
+
+    // Получение переменной
+    // Если $serverId null , тогда не обращаем внимание на сервер
+    public function getVar(string $name, $serverId = null) {
+        if ($serverId !== null) {
+            return sql::getRow('SELECT `val` FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?', [
+              $serverId,
+              $this->getId(),
+              $name,
+            ]);
+        }
+        return sql::getRow('SELECT `val` FROM `user_variables` WHERE `user_id` = ? AND `var` = ?', [
+          $this->getId(),
+          $name,
+        ]);
+    }
+
     /**
      * @return void
      * @throws \Exception
