@@ -100,7 +100,7 @@
             <li class="nav-item" role="presentation">
               <a class="nav-link {% if getUser().countWarehouseItems() >=1 %}pulse pulse-danger{% endif %}"
                  data-bs-toggle="tab" role="tab" aria-current="page" href="#warehouse_panel" aria-selected="false"
-                 tabindex="-1">{{phrase('stock')}}
+                 tabindex="-1">{{phrase('warehouse')}}
                 {% if getUser().countWarehouseItems() >=1 %}<span
                   class=" top-0 start-50 translate-middle badge rounded-pill bg-danger">{{getUser().countWarehouseItems()}}</span>{%
                 endif %}
@@ -151,7 +151,7 @@
                         </div>
 
                         <div class="row mb-3">
-                          <label for="passwordRegistration" class="col-sm-2 col-form-label">Пароль</label>
+                          <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
                           <div class="col-sm-4">
                             <input type="password" class="form-control" name="password" id="passwordRegistration"
                                    autocomplete="off">
@@ -163,7 +163,7 @@
                             <div class="form-check">
                               <input class="form-check-input" type="checkbox" id="password_hide" name="password_hide">
                               <label class="form-check-label" for="password_hide">
-                                Оставить пароль видимым
+                                {{phrase('lv_pwd_vis')}}
                               </label>
                             </div>
                           </div>
@@ -197,7 +197,7 @@
                             <div class="col-sm-6">
                               <button type="submit"
                                       class="btn btn-success shadow-success btn-wave waves-effect waves-light">
-                                Зарегистрировать аккаунт
+                                {{phrase('reg_new_acc')}}
                               </button>
                             </div>
 
@@ -219,7 +219,7 @@
                       {% if getUser().isAuth() %}
                       {% if statusSphereServer() is same as(false) %}
                       <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Не удалось подключиться к серверу Sphere.</strong>
+                        <strong>{{phrase('fail_conn_sphereapi_srv')}}</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                       </div>
                       {% else %}
@@ -227,8 +227,8 @@
                         <table class="table text-nowrap table-bordered table-sm">
                           <thead>
                           <tr>
-                            <th>Аккаунт</th>
-                            <th>Пароль</th>
+                            <th>{{phrase('account')}}</th>
+                            <th>{{phrase('password')}}</th>
                             <th></th>
                           </tr>
                           </thead>
@@ -250,7 +250,6 @@
                                  data-bs-toggle="modal"
                                  data-bs-effect="effect-slide-in-right"
                                  data-bs-target="#changepassword"></i>
-
                             </td>
                           </tr>
                           {% endfor %}
@@ -271,30 +270,30 @@
                     <div class="modal-dialog modal-dialog-centered text-center" role="document">
                       <div class="modal-content modal-content-demo">
                         <div class="modal-header">
-                          <h6 class="modal-title">Смена пароля</h6>
+                          <h6 class="modal-title">{{phrase(1)}}</h6>
                           <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <input name="login" type="hidden" class="account_new_change_password_input" value="">
                         <div class="modal-body text-start">
-                          <h6 class="text-center">Новый пароль для аккаунта <span
+                          <h6 class="text-center">{{phrase('new_password')}} <span
                             class="text-danger account_new_change_password">{{getUser().getName()}}</span></h6>
                           <div class="form-floating">
                             <input name="password" type="password" class="form-control" id="floatingPassword"
                                    placeholder="Password">
-                            <label for="floatingPassword">Password</label>
+                            <label for="floatingPassword">{{phrase('password')}}</label>
                           </div>
                           <div class="col-sm-10">
                             <div class="form-check">
                               <input name="password_hide" class="form-check-input" type="checkbox" id="hidePassword">
                               <label class="form-check-label" for="hidePassword">
-                                Оставить пароль видимым
+                                {{phrase('lv_pwd_vis')}}
                               </label>
                             </div>
                           </div>
                         </div>
                         <div class="modal-footer">
-                          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Отмена</button>
-                          <button type="submit" class="btn btn-primary">Сохранить</button>
+                          <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase(80)}}</button>
+                          <button type="submit" class="btn btn-primary">{{phrase(89)}}</button>
                         </div>
                       </div>
                     </div>
@@ -314,7 +313,7 @@
 
                     {% if statusSphereServer() is same as(false) %}
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                      <strong>Не удалось подключиться к серверу Sphere.</strong>
+                      <strong>{{phrase('fail_conn_sphereapi_srv')}}</strong>
                       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     {% else %}
@@ -332,7 +331,7 @@
 
                       <li class="nav-item ms-auto" role="presentation">
                         <button id="playersRefresh" class="btn btn-outline-success btn-wave waves-effect waves-light">
-                          Обновить
+                          {{phrase('refresh')}}
                         </button>
                       </li>
 
@@ -360,8 +359,8 @@
                                   </svg>
                                 </div>
                                 <div class="mt-0 text-start">
-                                  <span class="fs-14 fw-semibold">Уведомление</span>
-                                  <p class="fs-13 text-muted mb-0">На данном аккаунте нет персонажей</p>
+                                  <span class="fs-14 fw-semibold">{{phrase('notification')}}</span>
+                                  <p class="fs-13 text-muted mb-0">{{phrase('no_chars_acc')}}</p>
                                 </div>
                               </div>
 
@@ -404,7 +403,7 @@
                                               data-bs-target="#collapse_open_list_{{character.getPlayerId()}}"
                                               aria-expanded="false"
                                               aria-controls="collapse_open_list_{{character.getPlayerId()}}">
-                                        Застрял или критует
+                                        {{phrase('stuck_crit_err')}}
                                       </button>
                                     </h2>
                                     <div id="collapse_open_list_{{character.getPlayerId()}}"
@@ -412,7 +411,7 @@
                                          aria-labelledby="open_list_{{character.getPlayerId()}}"
                                          data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
                                       <div class="accordion-body">
-                                        Экстренная функция отправки персонажа в город.
+                                        {{phrase('emerg_send_char_town')}}
                                         <hr>
                                         <form method="post" action="/player/relocation">
                                           <div class="mb-3 form-check">
@@ -420,11 +419,10 @@
                                             <input name="player" type="hidden" value="{{character.getPlayerName()}}">
                                             <input checked name="itemsToWarehouse" type="checkbox" class="form-check-input"
                                                    id="check_{{character.getPlayerId()}}">
-                                            <label class="form-check-label" for="check_{{character.getPlayerId()}}">Отправить
-                                              предметы в склад</label>
+                                            <label class="form-check-label" for="check_{{character.getPlayerId()}}">{{phrase('send_items_wh')}}</label>
                                           </div>
                                           <button type="submit" class="btn btn-success btn-sm label-btn label-end">
-                                            Отправить
+                                            {{phrase(364)}}
                                             <i class="ri-send-plane-fill label-btn-icon ms-2"></i>
                                           </button>
                                         </form>
@@ -439,7 +437,7 @@
                                               data-bs-target="#collapse_hwid_remove_{{character.getPlayerId()}}"
                                               aria-expanded="false"
                                               aria-controls="collapse_hwid_remove_{{character.getPlayerId()}}">
-                                        Сбросить HWID
+                                        {{phrase('reset_hwid')}}
                                       </button>
                                     </h2>
                                     <div id="collapse_hwid_remove_{{character.getPlayerId()}}"
@@ -447,12 +445,12 @@
                                          aria-labelledby="open_list_{{character.getPlayerId()}}"
                                          data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
                                       <div class="accordion-body">
-                                        Если вы хотите сбросить HWID, то вы можете воспользоваться экстренной функцией.
+                                        {{phrase('reset_hwid_emerg_fn')}}.
                                         <br>
                                         <button type="submit"
                                                 class="btn btn-success btn-sm label-btn label-end removeHWID"
                                                 data-obj="{{character.getPlayerId()}}">
-                                          Сброс HWID
+                                          {{phrase('reset_hwid')}}
                                           <i class="ri-lock-unlock-line label-btn-icon ms-2"></i>
                                         </button>
                                       </div>
@@ -494,7 +492,7 @@
                     <input {% if getUser().getCountPlayers()== 0 %}disabled{% endif %} class="form-check-input"
                            type="checkbox" value="" id="selectAllItems" checked="">
                     <label class="form-check-label" for="selectAllItems">
-                      Выбрать все предметы
+                      {{phrase('sel_all_items')}}
                     </label>
                   </div>
                 </div>
@@ -505,12 +503,12 @@
                           endif %} class="form-control" data-trigger
                           name="warehousePlayerSend" id="warehousePlayerSend">
                     {% if getUser().getCountPlayers() == 0 %}
-                    <option>У Вас нет персонажей</option>
+                    <option>{{phrase('no_chars')}}</option>
                     {% else %}
                     {% for i, account in getUser().getAccounts() %}
-                    <optgroup label="Аккаунт: {{account.getAccount()}}">
+                    <optgroup label="{{phrase('account')}}: {{account.getAccount()}}">
                       {% if account.getCharactersCount() == 0 %}
-                      <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; Нет персонажей</option>
+                      <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_chars')}}</option>
                       {% else %}
                       {% for i, character in account.getCharacters() %}
                       {% set isPlayers = true %}
@@ -528,8 +526,7 @@
 
                 <div class="col-xl-4">
                   <button {% if isPlayers== false %}disabled{% endif %} id="warehouseSendItemsToPlayer"
-                          type="button" class="btn btn-dark btn-wave text-white waves-effect waves-light">Отправить
-                    предметы
+                          type="button" class="btn btn-dark btn-wave text-white waves-effect waves-light">{{phrase('send_items')}}
                   </button>
                 </div>
 
@@ -542,8 +539,7 @@
                   <div class="card custom-card">
                     <div class="card-body">
                       <div class="alert alert-danger" role="alert">
-                        Сначала <a href="#" class="alert-link">зарегистрируйтесь</a>, тогда сможете владеть предметами
-                        на складе.
+                        {{phrase('first_reg_then_own_items_wh')}}
                       </div>
                     </div>
                   </div>
@@ -562,9 +558,8 @@
                         </svg>
                       </div>
                       <div class="mt-0 text-start">
-                        <span class="fs-14 fw-semibold">Уведомление</span>
-                        <p class="fs-13 text-muted mb-0">На данном аккаунте нет персонажей на который можно отправить
-                          предметы из склада</p>
+                        <span class="fs-14 fw-semibold">{{phrase('notification')}}</span>
+                        <p class="fs-13 text-muted mb-0">{{phrase('no_chars_send_items_wh')}}</p>
                       </div>
                     </div>
                   </div>
@@ -584,9 +579,8 @@
                         </svg>
                       </div>
                       <div class="mt-0 text-start">
-                        <span class="fs-14 fw-semibold">Уведомление</span>
-                        <p class="fs-13 text-muted mb-0">У вас нет предметов для отправки в своему игровому
-                          персонажу.</p>
+                        <span class="fs-14 fw-semibold">{{phrase('notification')}}</span>
+                        <p class="fs-13 text-muted mb-0">{{phrase('no_items_send_char')}}</p>
                       </div>
                     </div>
                   </div>
@@ -634,7 +628,7 @@
     <div class="col-xxl-12 col-md-12">
       <div class="card">
         <div class="card-header">
-          <h4 class="card-title fw-semibold">Последняя активность на форуме</h4>
+          <h4 class="card-title fw-semibold">{{phrase('last_act_forum')}}</h4>
         </div>
         <div class="card-body pb-0">
 
@@ -716,7 +710,7 @@
                 <span class="btn btn-primary-light btn-wave waves-effect waves-light btn-open-shop"
                       data-startpack-id="{{ data.id }}"
                       type="button" data-bs-target="#openShopStartpack"
-                      data-bs-toggle="modal">Купить</span>
+                      data-bs-toggle="modal">{{phrase(74)}}</span>
                 </div>
               </div>
             </div>
@@ -734,18 +728,18 @@
       <div class="modal-content">
         <div class="modal-header">
           <div class="card-title">
-            Покупка
+            {{phrase('purchase')}}
           </div>
 
           <div>
             <ul class="nav nav-tabs justify-content-end nav-tabs-header mb-0" role="tablist">
               <li class="nav-item">
                 <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
-                   href="#StartpackSendItemsToPlayer" aria-selected="true">Отправка на персонажа</a>
+                   href="#StartpackSendItemsToPlayer" aria-selected="true">{{phrase('send_to_char')}}</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                   href="#StartpackSendItemsToWarhouse" aria-selected="true">Отправка на склад</a>
+                   href="#StartpackSendItemsToWarhouse" aria-selected="true">{{phrase('send_to_wh')}}</a>
               </li>
             </ul>
           </div>
@@ -771,18 +765,17 @@
                        role="tabpanel">
                     <div class="card-body">
                       <div class="mx-auto">
-                        Выберите персонажа
+                        {{phrase(77)}}
 
                         <select {% if getUser().getCountPlayers()== 0 %}disabled{% endif
                                 %} class="form-control" data-trigger id="StartpackPlayer">
                           {% if getUser().getCountPlayers() == 0 %}
-                          <option>У Вас нет персонажей</option>
+                          <option>{{phrase('no_chars')}}</option>
                           {% else %}
                           {% for i, account in getUser().getAccounts() %}
-                          <optgroup label="Аккаунт: {{account.getAccount}}">
+                          <optgroup label="{{phrase('account')}}: {{account.getAccount}}">
                             {% if account.getCharactersCount() == 0 %}
-                            <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; Нет
-                              персонажей
+                            <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_chars')}}
                             </option>
                             {% else %}
                             {% for i, character in account.getCharacters() %}
@@ -798,14 +791,14 @@
 
                         <div class="d-flex flex-wrap align-items-center">
                           <div class="me-2 fw-semibold">
-                            Стоимость :
+                            {{phrase(72)}} :
                           </div>
                           <span class="fs-12 text-muted StartPackCostBuy">0</span>
                         </div>
 
                         <button data-object-id="0" id="Startpackpurchase" type="button"
                                 class="btn btn-success btn-wave waves-effect waves-light">
-                          Купить и отправить на персонажа
+                          {{phrase('buy_send_to_char')}}
                         </button>
                       </div>
                     </div>
@@ -817,14 +810,14 @@
 
                       <div class="d-flex flex-wrap align-items-center">
                         <div class="me-2 fw-semibold">
-                          Стоимость :
+                          {{phrase(72)}} :
                         </div>
                         <span class="fs-12 text-muted StartPackCostBuy">0</span>
                       </div>
 
                       <button data-object-id="0" id="StartpackWarehouse" type="button"
                               class="btn btn-success btn-wave waves-effect waves-light">
-                        Купить и отправить на склад
+                        {{phrase('buy_send_to_wh')}}
                       </button>
                     </div>
                   </div>
