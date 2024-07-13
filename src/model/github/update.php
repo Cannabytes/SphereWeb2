@@ -24,9 +24,10 @@ class update
         $sphere = server::send(type::GET_COMMIT_LAST, [
           'last_commit' => self::getLastCommit(),
         ])->getResponse();
+
         if ( ! $sphere['status']) {
             set_time_limit(600);
-            $last_commit_now = $sphere['last_commit_now'];
+            $last_commit_now = $sphere['last_commit'];
             foreach ($sphere['data'] as $data) {
                 $file   = $data['file'];
                 $status = $data['status'];

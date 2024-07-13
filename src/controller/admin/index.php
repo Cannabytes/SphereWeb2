@@ -19,7 +19,7 @@ class index {
         tpl::addVar([
             "title" => lang::get_phrase("admin_panel"),
             "servers" => $info['servers'],
-            "sphere_last_commit" => $lastCommit,
+            "sphere_last_commit" => $lastCommit['last_commit'],
             "self_last_commit" => update::getLastCommit(),
         ]);
         tpl::display("admin/index.html");
