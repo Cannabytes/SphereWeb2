@@ -31,7 +31,7 @@ class update
 
         if ( ! $sphere['status']) {
             set_time_limit(600);
-            $last_commit_now = $sphere['last_commit'];
+            $last_commit_now = $sphere['last_commit_now'];
             foreach ($sphere['data'] as $data) {
                 $file   = $data['file'];
                 $status = $data['status'];
