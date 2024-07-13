@@ -21,7 +21,7 @@ class update
 
     static function checkNewCommit()
     {
-        $sphere = server::send(type::GET_COMMIT_LAST, [
+        $sphere = server::send(type::GET_COMMIT_FILES, [
           'last_commit' => self::getLastCommit(),
         ])->getResponse();
 

@@ -51,7 +51,7 @@ enum type
     case RESET_HWID;
 
     case GET_COMMIT_LAST;
-
+    case GET_COMMIT_FILES;
 
     static function url(type $type): string
     {
@@ -92,6 +92,7 @@ enum type
               self::RESET_HWID => '/api/user/player/reset/hwid',
 
               self::GET_COMMIT_LAST => '/api/github/last/commit',
+              self::GET_COMMIT_FILES => '/api/github/commit/files',
               default => null,
           };
     }
