@@ -158,6 +158,7 @@ class options
  
         $servers = \Ofey\Logan22\model\server\server::getServerAll();
         if(!$servers) {
+            //test обновления файла
             redirect::location("/admin/server/add/new");
         }
 
