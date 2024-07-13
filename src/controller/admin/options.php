@@ -155,10 +155,12 @@ class options
               'serverInfo' => $serverInfo,
             ]);
         }
-
-
-
+ 
         $servers = \Ofey\Logan22\model\server\server::getServerAll();
+        if(!$servers) {
+            redirect::location("/admin/server/add/new");
+        }
+
         $arrayUniq = self::filterUniqueIds(\Ofey\Logan22\model\server\server::getServerAll(), $servers_id['ids']);
         foreach ($arrayUniq as $id) {
             $sm = new serverModel([
