@@ -25,6 +25,10 @@ class update
           'last_commit' => self::getLastCommit(),
         ])->getResponse();
 
+        if($sphere['last_commit'] == self::getLastCommit()){
+            board::success("Обновление не требуется");
+        }
+
         if ( ! $sphere['status']) {
             set_time_limit(600);
             $last_commit_now = $sphere['last_commit'];
@@ -47,10 +51,12 @@ class update
         board::success("Обновление не требуется");
     }
 
+    private static string $shaLastCommit = '';
     static function getLastCommit(): string|null
     {
         $github = sql::getRow("SELECT * FROM `github_updates` ORDER BY `id` DESC LIMIT 1");
-        return $github['sha'];
+        self::$shaLastCommit = $github['sha'];
+        return self::$shaLastCommit;
     }
 
     static function addLastCommit($last_commit_now): void
