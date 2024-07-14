@@ -257,9 +257,9 @@ class install
         $file          = file_put_contents($filenameCheck, "OK");
         if ($file) {
             server::tokenDisable(true);
-            $response = server::send(type::SPHERE_INSTALL, [
+            $response = server::send([
               'filename' => $filenameCheck,
-            ])->show()->getResponse();
+            ], type::SPHERE_INSTALL)->show()->getResponse();
             if ($response['success']) {
                 $token = $response['token'];
                 file_put_contents(
@@ -329,9 +329,9 @@ const __TOKEN__ = \"$token\";\n"
         }
     }
 
-    private static function getLastCommitData()
+    private static function getLastCommitData(): ?array
     {
-        function getLastCommitDetails($gitDir = '.git')
+        function getLastCommitDetails($gitDir = '.git'): array
         {
             // Получаем последний хеш коммита
             $commitHash = getLastCommitHash($gitDir);
@@ -357,7 +357,7 @@ const __TOKEN__ = \"$token\";\n"
             return $commitDetails;
         }
 
-        function getLastCommitHash($gitDir)
+        function getLastCommitHash($gitDir): string
         {
             $headFile = $gitDir . '/HEAD';
             if ( ! file_exists($headFile)) {
@@ -379,7 +379,7 @@ const __TOKEN__ = \"$token\";\n"
             return trim(file_get_contents($commitHashFile));
         }
 
-        function parseCommitObject($commitHash, $objectContent)
+        function parseCommitObject($commitHash, $objectContent): array
         {
             // Разбиваем данные по строкам
             $lines = explode("\n", $objectContent);

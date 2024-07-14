@@ -62,6 +62,10 @@ class server
         self::$tokenDisable = $on;
     }
 
+    private static function is_valid_domain($domain) {
+        return (bool)filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME);
+    }
+
     static public function send(type $type, array $arr = []): self
     {
         self::isOffline();
@@ -101,7 +105,14 @@ class server
             }
         }
         $headers[] = "Token: " . self::getToken();
-        $headers[] = "Domain: " . $_SERVER['HTTP_HOST'];
+        $host = $_SERVER['HTTP_HOST'];
+        if (empty($host) || !self::is_valid_domain(parse_url($host, PHP_URL_HOST))) {
+            $host = $_SERVER['SERVER_NAME'];
+        }
+
+        $parsedHost = parse_url($host, PHP_URL_HOST) ?: $host;
+        $parsedHost = preg_replace('/:\d+$/', '', $parsedHost);
+        $headers[] = "Domain: " . $parsedHost;
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_URL, $url);

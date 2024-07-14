@@ -21,7 +21,12 @@
                                 <p class="card-text">Экспериментальная функция для обновления программного обеспечения SphereWeb.</p>
                                 <p> Рекомендую иметь актуальный код программного обеспечения.</p>
 
+                                <div class="text-success" id="messagedata"></div>
                                 <button id="startUpdate" class="btn btn-success">Проверить и обновить ПО</button>
+                                <div class="d-none" id="loading">
+                                    Идет обновление. Пожалуйста, подождите...<br>
+                                    <span id="progressText" class=""></span>
+                                </div>
 
                             </div>
 
@@ -52,11 +57,52 @@
     $('#startUpdate').on('click', function (e) {
         e.preventDefault();
         $(this).attr('disabled', 'disabled');
-        AjaxSend('/github/update', 'POST', {}, true, 30).then(function (response) {
-            console.log(response)
-            responseAnalysis(response);
-         })
+
+        $.ajax({
+            url: '/github/update',
+            method: 'POST',
+            success: function (response) {
+                if(response.ok){
+                    $("#messagedata").text("Обновление не требуется")
+                }
+                checkProgress();
+            }
+        });
+
     });
+
+
+    function checkProgress() {
+        $.ajax({
+            url: '/github/update/progress',
+            dataType: 'json',
+            method: 'POST',
+            success: function (response) {
+                if(response.status){
+                    $("#loading").removeClass('d-none');
+                } else if(response.status === false){
+                    // Остановить setTimeout, если статус false
+                    return;
+                }
+
+                var progress = response.progress;
+                $('#progressText').text('Прогресс: ' + progress + '%');
+
+                if (progress < 100) {
+                    setTimeout(checkProgress, 100);
+                } else {
+                    $('#startUpdate').removeAttr('disabled');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Ошибка при обновлении прогресса: ", error);
+            }
+        });
+    }
+
+
+
+
 
 </script>
 
