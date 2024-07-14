@@ -1369,4 +1369,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  96 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/github/update/progress',
+    'func' => 'model\\github\\update::getUpdateProgress',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );
