@@ -15,26 +15,22 @@
   <div class="col-xl-6">
     <div class="card custom-card">
       <div class="card-body d-flex align-items-center justify-content-between">
-        <div class="fs-15 mb-0">Привлекайте друзей, знакомых играть вместе с Вами, и получите бонус!
-          <br>
-          Распространите ссылку на Ваш профиль регистрации, среди жильцов нашего ЖЭКа, среди друзей и пронизанных сплошь
-          и
-          рядом, опиумным дурманом молодых лиц.
+        <div class="fs-15 mb-0">{{phrase('invite_friends_get_bonus')|raw}}
         </div>
 
       </div>
       <div class="card-body d-flex align-items-center justify-content-between">
-        Ваша ссылка: <span class="text-success" id="referralLink">{{referral_link()}}</span>
+        {{phrase('your_link')}}: <span class="text-success" id="referralLink">{{referral_link()}}</span>
 
         <button id="copyLink" class="btn btn-info custom-button rounded-pill">
           <span class="custom-btn-icons"><i class="ri-file-copy-2-line text-info"></i></span>
-          Скопировать ссылку
+          {{phrase(314)}}
         </button>
       </div>
 
       <div class="card-body d-flex align-items-center justify-content-between">
-        Вам удалось привлечь {{allCount}} игроков<br>
-        Завершили реферальный квест {{doneCountOk}} игроков<br>
+        {{phrase('attracted_players_count', allCount)}}<br>
+        {{phrase('completed_ref_quest_count', doneCountOk)}}<br>
       </div>
     </div>
 
@@ -44,13 +40,13 @@
   <div class="col-xl-6">
     <div class="card custom-card">
       <div class="card-body  align-items-center justify-content-between">
-        Если привлеченные Вами игроки, выполнят одним из персонажей необходимые требования, Вы получите бонус.
+        {{phrase('invite_meet_req_bonus')}}
         <br>
         <br>
-        Требования
+        {{phrase('requirements')}}
         <ul>
           {% if config().referral().getLevel() > 0 %}
-          <li>Уровень: {{ config().referral().getLevel() }}</li>
+          <li>{{phrase(100)}}: {{ config().referral().getLevel() }}</li>
           {% endif %}
           {% if config().referral().getPvP() > 0 %}
           <li>PvP: {{ config().referral().getPvP() }}</li>
@@ -59,11 +55,11 @@
           <li>PK: {{ config().referral().getPK() }}</li>
           {% endif %}
           {% if config().referral().getTimeGame() > 0 %}
-          <li>Время в игре: {{ timeHasPassed ( config().referral().getTimeGame() , true ) }}</li>
+          <li>{{phrase(95)}}: {{ timeHasPassed ( config().referral().getTimeGame() , true ) }}</li>
           {% endif %}
 
           {% if config().referral().getLevel() is empty and config().referral().getPvP() is empty and config().referral().getPK() is empty and config().referral().getTimeGame() is empty %}
-          <li class="text-danger">Не установлены требования.</li>
+          <li class="text-danger">{{phrase('req_not_set')}}</li>
           {% endif %}
 
         </ul>
@@ -73,8 +69,8 @@
           <table class="table text-nowrap table-bordered border-success">
             <thead>
             <tr>
-              <th scope="col">Бонус для лидера</th>
-              <th scope="col">Бонус для привлеченных игроков</th>
+              <th scope="col">{{phrase('leader_bonus')}}</th>
+              <th scope="col">{{phrase('ref_players_bonus')}}</th>
             </tr>
             </thead>
             <tbody>
@@ -83,7 +79,7 @@
               <th scope="row">
                 {% if config().referral().getProcentDonateBonus() > 0 %}
                 <ul>
-                  <li>{{ config().referral().getProcentDonateBonus() }}% Donate Coin за каждый донат привлеченного игрока</li>
+                  <li>{{phrase('donate_coin_per_ref_donation', config().referral().getProcentDonateBonus())}}</li>
                 </ul>
                 {% endif %}
 
@@ -140,7 +136,8 @@
       <div class="alert alert-success d-flex align-items-center rounded-0 shadow-none" role="alert">
         <svg class="flex-shrink-0 me-2 svg-success" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0V0zm0 0h24v24H0V0z" fill="none"></path><path d="M16.59 7.58L10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg>
         <div>
-          <strong>Мы заметили что игрок(и) выполнили требования.</strong> <button id="get_ref_bonus" data-bs-effect="effect-rotate-bottom" data-bs-toggle="modal" href="#modal_bonus_list" class="modal-effect btn btn-danger-gradient btn-wave btn-sm ms-auto waves-effect waves-light">Получить бонус!</button>
+          <strong>{{phrase('players_met_reqs')}}</strong>
+          <button id="get_ref_bonus" data-bs-effect="effect-rotate-bottom" data-bs-toggle="modal" href="#modal_bonus_list" class="modal-effect btn btn-danger-gradient btn-wave btn-sm ms-auto waves-effect waves-light">{{phrase('get_bonus')}}</button>
         </div>
       </div>
       {% endif %}
@@ -153,10 +150,10 @@
     <div class="modal-dialog modal-dialog-centered text-center" role="document">
       <div class="modal-content modal-content-demo">
         <div class="modal-header">
-          <h6 class="modal-title">Успешно</h6><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"></button>
+          <h6 class="modal-title">{{phrase('305')}}</h6><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body text-start">
-          <h6>Мы благодарим Вас за привлечение игроков!</h6>
+          <h6>{{phrase('thank_for_inviting_players')}}</h6>
           <p class="text-muted mb-0 referral_message">
           </p>
         </div>

@@ -49,7 +49,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h6 class="modal-title" id="sendToPlayer-ComposeLabel">Перевод в игру</h6>
+        <h6 class="modal-title" id="sendToPlayer-ComposeLabel">{{phrase('transfer_to_game')}}</h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal"
                 aria-label="Close"></button>
       </div>
@@ -59,7 +59,7 @@
           {% if getUser().isAuth() %}
 
           {% if getUser().getDonate() == 0 %}
-          <label class="form-label text-dark fw-semibold">У Вас нет донат коинов для перевода на персонажа</label>
+          <label class="form-label text-dark fw-semibold">{{phrase('no_donate_coin_transfer')}}</label>
           {% else %}
 
           <div class="col-xl-6 mb-2">
@@ -67,12 +67,12 @@
             <select {% if getUser().getCountPlayers()== 0 %}disabled{% endif %} class="form-control" data-trigger
                     name="player" id="send_player_name">
               {% if getUser().getCountPlayers() == 0 %}
-              <option>У Вас нет персонажей</option>
+              <option>{{phrase('no_chars')}}</option>
               {% else %}
               {% for i, account in getUser().getAccounts() %}
-              <optgroup label="Аккаунт: {{account.getAccount()}}">
+              <optgroup label="{{phrase('account')}}: {{account.getAccount()}}">
                 {% if account.getCharactersCount() == 0 %}
-                <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; Нет персонажей</option>
+                <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_chars')}}</option>
                 {% else %}
                 {% for i, character in account.getCharacters() %}
                 <option data-account="{{account.getAccount()}}" data-character="{{character.getPlayerName()}}">
@@ -87,19 +87,18 @@
           </div>
 
           <div class="col-xl-6 mb-2">
-            <label for="muchSphereCoin" class="form-label text-dark fw-semibold">Кол-во</label>
+            <label for="muchSphereCoin" class="form-label text-dark fw-semibold">{{phrase(71)}}</label>
             <input min="1" max="{{getUser().getDonate()}}" step="1" value="{{getUser().getDonate()}}" name="coin"
                    type="number" class="form-control" id="muchSphereCoin">
           </div>
           {% set item = get_item_info(config().donate().getItemIdToGameTransfer()) %}
-          <label class="mb-0 fs-12 text-muted text-truncate max-w-150 mx-auto ">На Вашего персонажа будет отправлено
+          <label class="mb-0 fs-12 text-muted text-truncate max-w-150 mx-auto ">{{phrase('char_will_be_sent')}}
             <img class="avatar avatar-sm rounded" src="{{item.getIcon()}}"> <span class="text-success">{{ item.itemName }}</span>
             x<span class="text-success" id="itemCountGameTransfer" data-count-items="{{ config().donate().getCountItemsToGameTransfer() }}">{{ config().donate().getCountItemsToGameTransfer() }}</span></label>
           {% endif %}
 
           {% else %}
-          <label class="form-label text-dark fw-semibold">Вам необходимо авторизоваться, после этого вы можете перевести
-            коины в игру</label>
+          <label class="form-label text-dark fw-semibold">{{phrase('login_then_transfer_donate_coin')}}</label>
           {% endif %}
 
         </div>
@@ -107,12 +106,12 @@
       <div class="modal-footer">
 
         {% if getUser().isAuth() %}
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Отмена</button>
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase('close')}}</button>
         {% if getUser().getDonate() > 0 %}
-        <button id="sendToPlayerBtn" type="submit" class="btn btn-primary">Отправить</button>
+        <button id="sendToPlayerBtn" type="submit" class="btn btn-primary">{{phrase(364)}}</button>
         {% endif %}
         {% else %}
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase('close')}}</button>
         {% endif %}
       </div>
 
@@ -222,11 +221,11 @@
           <ul class="nav nav-tabs justify-content-end nav-tabs-header mb-0" role="tablist">
             <li class="nav-item">
               <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#StartpackSendItemsToPlayer" aria-selected="true">Отправка на персонажа</a>
+                 href="#StartpackSendItemsToPlayer" aria-selected="true">{{phrase('send_to_char')}}</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#StartpackSendItemsToWarhouse" aria-selected="true">Отправка на склад</a>
+                 href="#StartpackSendItemsToWarhouse" aria-selected="true">{{phrase('send_to_wh')}}</a>
             </li>
           </ul>
         </div>
@@ -256,18 +255,17 @@
                      role="tabpanel">
                   <div class="card-body">
                     <div class="mx-auto">
-                      Выберите персонажа
+                      {{phrase(76)}}
 
                       <select {% if getUser().getCountPlayers()== 0 %}disabled{% endif
                               %} class="form-control" data-trigger id="playerName">
                         {% if getUser().getCountPlayers() == 0 %}
-                        <option>У Вас нет персонажей</option>
+                        <option>{{phrase('no_chars')}}</option>
                         {% else %}
                         {% for i, account in getUser().getAccounts() %}
-                        <optgroup label="Аккаунт: {{account.getAccount}}">
+                        <optgroup label="{{phrase('account')}}: {{account.getAccount}}">
                           {% if account.getCharactersCount() == 0 %}
-                          <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; Нет
-                            персонажей
+                          <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_chars')}}
                           </option>
                           {% else %}
                           {% for i, character in account.getCharacters() %}
@@ -283,14 +281,14 @@
 
                       <div class="d-flex flex-wrap align-items-center">
                         <div class="me-2 fw-semibold">
-                          Стоимость :
+                          {{phrase(72)}} :
                         </div>
                         <span class="fs-12 text-muted shopCostBuy">0</span>
                       </div>
 
                       <button data-object-id="0" id="purchase" type="button"
                               class="btn btn-success btn-wave waves-effect waves-light">
-                        Купить и отправить на персонажа
+                        {{phrase('buy_send_to_char')}}
                       </button>
                     </div>
                   </div>
@@ -302,14 +300,14 @@
 
                     <div class="d-flex flex-wrap align-items-center">
                       <div class="me-2 fw-semibold">
-                        Стоимость :
+                        {{phrase(72)}} :
                       </div>
                       <span class="fs-12 text-muted shopCostBuy">0</span>
                     </div>
 
                     <button data-object-id="0" id="StartpackWarehouse" type="button"
                             class="btn btn-success btn-wave waves-effect waves-light">
-                      Купить и отправить на склад
+                      {{phrase('buy_send_to_char')}}
                     </button>
                   </div>
                 </div>

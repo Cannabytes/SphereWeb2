@@ -12,12 +12,12 @@
             <div class="card">
                 <div class="card-header">
                     <div>
-                        <h3 class="card-title">Пополнение баланса на мастер аккаунт</h3>
+                        <h3 class="card-title">{{phrase('topup_master_acc_bal')}}</h3>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="input-group">
-                        <div class="mb-1 text-muted">Сколько <span class="text-info">Donate Coin</span> купить?</div>
+                        <div class="mb-1 text-muted">{{phrase('how_many_donate_coin_buy')|raw}}</div>
                         <div class="input-group border rounded flex-nowrap">
                             <button class="btn btn-icon btn-primary input-group-text flex-fill "
                                     id="product-quantity-minus"><i class="ri-subtract-line"></i></button>
@@ -29,7 +29,7 @@
                         </div>
                     </div>
 
-                    <div class="text-center">Примерная стоимость пополнения</div>
+                    <div class="text-center">{{phrase('estimated_cost')}}</div>
 
                     <div class="block-content block-content-full">
                         <div class="row text-center">
@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="card-header">
-                    <div class="card-title">Выберите платежную систему</div>
+                    <div class="card-title">{{phrase('sel_payment_sys')}}</div>
                 </div>
                 <div class="">
                     {% for donSys in donateSysNames %}
@@ -80,7 +80,7 @@
                 <div class="card-footer text-center">
                     <div class="btn-list">
                         <button id="paynext" type="button" class="btn btn-success btn-wave waves-effect waves-light">
-                            Оплатить
+                            {{phrase('pay')}}
                         </button>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
             <div class="card custom-card">
                 <div class="card-header">
                     <div class="card-title">
-                        Бонусы
+                        {{phrase('bonuses')}}
                     </div>
                 </div>
                 <div class="card-body">
@@ -103,7 +103,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link active" data-bs-toggle="tab" role="tab"
                                        aria-current="page" href="#home-vertical"
-                                       aria-selected="true">Предметные бонусы</a>
+                                       aria-selected="true">{{phrase('item_bonuses')}}</a>
                                 </li>
                                 {% endif %}
 
@@ -111,7 +111,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link {% if config().donate().isRewardForDonatingItems() == false %}active{% endif %}" data-bs-toggle="tab" role="tab"
                                        aria-current="page" href="#about-vertical"
-                                       aria-selected="true">Единоразовый бонус</a>
+                                       aria-selected="true">{{phrase('one_time_bonus')}}</a>
                                 </li>
                                 {% endif %}
 
@@ -119,7 +119,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false %}active{% endif %}" data-bs-toggle="tab" role="tab"
                                        aria-current="page" href="#services-vertical"
-                                       aria-selected="true">Накопительные бонусы</a>
+                                       aria-selected="true">{{phrase('accum_bonuses')}}</a>
                                 </li>
                                 {% endif %}
 
@@ -127,7 +127,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link btn btn-success btn-sm {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false and config().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %} " data-bs-toggle="tab" role="tab"
                                        aria-current="page" href="#contacts-vertical"
-                                       aria-selected="true">Связь с администратором</a>
+                                       aria-selected="true">{{phrase('contact_admin')}}</a>
                                 </li>
                                 {% endif %}
 
@@ -139,8 +139,7 @@
                                 <div class="tab-pane show active text-muted" id="home-vertical"
                                      role="tabpanel">
 
-                                    Вы можете получить бонус предметы при пополнении, в зависимости от суммы пополнения
-                                    своего баланса.<br>
+                                    {{phrase('bonus_items_topup_amt')}}<br>
 
 
                                     {% for cost, bonus in config().donate().getTableItemsBonus() %}
@@ -175,15 +174,14 @@
                                 {% if config().donate().isEnableOneTimeBonus() %}
                                 <div class="tab-pane text-muted {% if config().donate().isRewardForDonatingItems() == false %}active{% endif %}" id="about-vertical"
                                      role="tabpanel">
-                                    Единоразовые бонусы - это при пополнении Вам дадут дополнительный процент
-                                    вознаграждения от суммы пополнения.
+                                    {{phrase('one_time_bonus_pct_topup')}}
                                     <br>
                                     <div class="table-responsive mt-4">
                                         <table class="table table-sm text-nowrap table-bordered border-primary">
                                             <thead>
                                             <tr>
-                                                <th>Минимальное пополнение</th>
-                                                <th>Процент вознаграждения</th>
+                                                <th>{{phrase('min_topup')}}</th>
+                                                <th>{{phrase('reward_pct')}}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -205,18 +203,15 @@
                                 <div class="tab-pane text-muted {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false %}active{% endif %}" id="services-vertical"
                                      role="tabpanel">
 
+                                    {{phrase('accum_sys_bonus', count_all_donate_bonus, count_all_donate_bonus_percent)}}
 
-
-                                    Накопительная система - чем больше Вы пополняете, тем больше получаете
-                                    дополнительный бонус. <br>
-                                    Вы накопили уже {{count_all_donate_bonus}} Donate Coin ({{count_all_donate_bonus_percent}}% дополнительных бонусов)
                                     <br>
                                     <div class="table-responsive mt-4">
                                         <table class="table table-sm text-nowrap table-bordered border-primary">
                                             <thead>
                                             <tr>
-                                                <th>Накопление</th>
-                                                <th>Процент вознаграждения</th>
+                                                <th>{{phrase('funds_accum')}}</th>
+                                                <th>{{phrase('reward_pct')}}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -256,17 +251,17 @@
             <div class="card custom-card">
                 <div class="card-header">
                     <div class="card-title">
-                        Последние пожертвования и бонусы
+                        {{phrase('recent_donations_bonuses')}}
                     </div>
                 </div>
                 <div class="card-body">
                     <table id="scroll-vertical" class="table table-bordered text-nowrap w-100">
                         <thead>
                         <tr>
-                            <td style="width: 1px">Дата</td>
-                            <th style="width: 1px">Сумма</th>
-                            <th>Сообщение</th>
-                            <th style="width: 1px">Система пожертвования</th>
+                            <td style="width: 1px">{{phrase(262)}}</td>
+                            <th style="width: 1px">{{phrase('summa')}}</th>
+                            <th>{{phrase('message')}}</th>
+                            <th style="width: 1px">{{phrase('donation_sys')}}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -275,7 +270,7 @@
                             <td>{{history.date|date('H:i:s d.m.Y')}}</td>
                              <td>+{{history.point}}</td>
                             <td>{{history.message}}</td>
-                            <td> {% if history.sphere == 0 %}{{history.pay_system}}{% else %}Бонус{% endif %}</td>
+                            <td> {% if history.sphere == 0 %}{{history.pay_system}}{% else %}{{phrase('bonus')}}{% endif %}</td>
                         </tr>
                         {% endfor %}
 
@@ -419,7 +414,7 @@
         if (selectedValue !== undefined && selectedValue !== null) {
             return selectedValue;
         } else {
-            noticeError("Выберите платежную систему")
+            noticeError('{{phrase("sel_payment_sys")}}');
         }
     }
 

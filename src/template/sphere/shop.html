@@ -9,7 +9,7 @@
       <div class="card custom-card" id="cart-container-delete">
         <div class="card-header">
           <div class="card-title">
-            Магазин
+             {{phrase(215)}}
           </div>
         </div>
         {% for objectId, products in getShopItems() %}
@@ -18,8 +18,8 @@
             <table class="table table-sm table-bordered text-nowrap">
               <thead>
               <tr>
-                <th scope="col">Товар</th>
-                <th scope="col">Цена</th>
+                <th scope="col">{{phrase('product')}}</th>
+                <th scope="col">{{phrase('price')}}</th>
               </tr>
               </thead>
 
@@ -81,7 +81,7 @@
                           data-object-id="{{objectId}}" data-bs-target="#openShop"
                           data-bs-toggle="modal"
                           class="btn w-100 btn-sm btn-success shadow-success btn-wave waves-effect waves-light showSelectBuy">
-                    Купить за {{ sumGetValue(products, 'getCost') }}
+                    {{phrase('buy_for')}} {{ sumGetValue(products, 'getCost') }}
                   </button>
                 </div>
               </div>
@@ -98,18 +98,18 @@
           <div class="modal-content">
             <div class="modal-header">
               <div class="card-title">
-                Покупка
+                {{phrase('purchase')}}
               </div>
 
               <div>
                 <ul class="nav nav-tabs justify-content-end nav-tabs-header mb-0" role="tablist">
                   <li class="nav-item">
                     <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
-                       href="#shopSendItemsToPlayer" aria-selected="true">Отправка на персонажа</a>
+                       href="#shopSendItemsToPlayer" aria-selected="true">{{phrase('send_to_char')}}</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                       href="#shopSendItemsToWarhouse" aria-selected="true">Отправка на склад</a>
+                       href="#shopSendItemsToWarhouse" aria-selected="true">{{phrase('send_to_wh')}}</a>
                   </li>
                 </ul>
               </div>
@@ -139,19 +139,17 @@
                            role="tabpanel">
                         <div class="card-body">
                           <div class="mx-auto">
-                            Выберите персонажа
+                            {{phrase(76)}}
 
                             <select {% if getUser().getCountPlayers()== 0 %}disabled{% endif
                                     %} class="form-control" data-trigger id="playerName">
                               {% if getUser().getCountPlayers() == 0 %}
-                              <option>У Вас нет персонажей</option>
+                              <option>{{phrase('no_chars')}}</option>
                               {% else %}
                               {% for i, account in getUser().getAccounts() %}
-                              <optgroup label="Аккаунт: {{account.getAccount}}">
+                              <optgroup label="{{phrase(480)}}: {{account.getAccount}}">
                                 {% if account.getCharactersCount() == 0 %}
-                                <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; Нет
-                                  персонажей
-                                </option>
+                                <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_chars')}} </option>
                                 {% else %}
                                 {% for i, character in account.getCharacters() %}
                                 <option data-account="{{account.getAccount()}}" value="{{character.getPlayerName()}}">
@@ -166,14 +164,14 @@
 
                             <div class="d-flex flex-wrap align-items-center">
                               <div class="me-2 fw-semibold">
-                                Стоимость :
+                                {{phrase(72)}} :
                               </div>
                               <span class="fs-12 text-muted shopCostBuy">0</span>
                             </div>
 
                             <button data-object-id="0" id="purchase" type="button"
                                     class="btn btn-success btn-wave waves-effect waves-light">
-                              Купить и отправить на персонажа
+                              {{phrase('buy_send_to_char')}}
                             </button>
                           </div>
                         </div>
@@ -185,14 +183,14 @@
 
                           <div class="d-flex flex-wrap align-items-center">
                             <div class="me-2 fw-semibold">
-                              Стоимость :
+                              {{phrase(72)}} :
                             </div>
                             <span class="fs-12 text-muted shopCostBuy">0</span>
                           </div>
 
                           <button data-object-id="0" id="toWarehouse" type="button"
                                   class="btn btn-success btn-wave waves-effect waves-light">
-                            Купить и отправить на склад
+                            {{phrase('buy_send_to_wh')}}
                           </button>
                         </div>
                       </div>
@@ -276,7 +274,7 @@
             '</span>' +
             '<div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">' +
             '<p class="mb-0 lh-1">' + item.item.itemName + ' x<span class="dynamic-count">' + quantity * item.count + '</span></p>' +
-            '<span class="fs-11 text-muted op-7">Цена: ' + quantity * item.cost + '</span>' +
+            '<span class="fs-11 text-muted op-7">' + {{phrase('price')}} +': ' + quantity * item.cost + '</span>' +
             '</div>' +
             '</div>' +
             '</li>';
