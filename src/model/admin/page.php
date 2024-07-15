@@ -158,7 +158,7 @@ class page
         if ($request) {
             board::alert([
               'type'     => 'notice',
-              'text'     => lang::get_phrase(144),
+              'message'     => lang::get_phrase(144),
               'ok'       => true,
               'redirect' => fileSys::localdir("/page/" . $id),
             ]);
@@ -200,8 +200,8 @@ class page
     public static function trash_send($id)
     {
         sql::run('DELETE FROM `pages` WHERE `id` = ?', [$id]);
-        redirect::location("/admin/pages");
-        die();
+        board::redirect("/admin/pages");
+        board::success("Страница удалена");
     }
 
     public static function show_page()

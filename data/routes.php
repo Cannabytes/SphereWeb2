@@ -1383,4 +1383,46 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  97 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/pages/create',
+    'func' => 'controller\\admin\\page::create_news',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  98 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/pages/edit',
+    'func' => 'controller\\admin\\page::update_news',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  99 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/pages/trash',
+    'func' => 'controller\\admin\\page::trash_send',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

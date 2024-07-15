@@ -88,8 +88,10 @@
         </div>
         <div class="card-footer">
           <div class="btn-list text-end">
-            <button id="saveEdit" type="button" class="btn btn-success">Сохранить</button>
-          </div>
+              <button id="remove" type="button" class="btn btn-danger">Удалить</button>
+              <button id="saveEdit" type="button" class="btn btn-success">Сохранить</button>
+            </div>
+
         </div>
       </div>
     </div>
@@ -127,8 +129,6 @@
 
 {% block js %}
 
-<!-- Custom-Switcher JS -->
-<script src="{{template}}/assets/js/custom-switcher.min.js"></script>
 
 <!-- Date & Time Picker JS -->
 <script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>
@@ -270,6 +270,10 @@
     $('#removeImgSrc').click(function () {
       $('#profile-img').attr('src', $("#profile-img").data('image'));
     });
+  });
+
+  $("#remove").on("click", function () {
+      AjaxSend("/admin/pages/trash", "POST", { id: $("#id").val() });
   });
 
 </script>

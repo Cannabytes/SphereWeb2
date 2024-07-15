@@ -90,8 +90,9 @@ class page {
         \Ofey\Logan22\model\admin\page::update();
     }
 
-    public static function trash_send($id) {
+    public static function trash_send() {
         validation::user_protection("admin");
+        $id = $_POST['id'] ?? board::error("Нет данных страницы");
         \Ofey\Logan22\model\admin\page::trash_send($id);
     }
 
