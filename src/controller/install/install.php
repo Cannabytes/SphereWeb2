@@ -259,7 +259,7 @@ class install
             server::tokenDisable(true);
             $response = server::send(type::SPHERE_INSTALL, [
               'filename' => $filenameCheck,
-            ]gt t t)->show()->getResponse();
+            ])->show()->getResponse();
             if ($response['success']) {
                 $token = $response['token'];
                 file_put_contents(
