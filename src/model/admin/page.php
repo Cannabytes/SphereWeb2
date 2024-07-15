@@ -7,13 +7,16 @@
 
 namespace Ofey\Logan22\model\admin;
 
+use Intervention\Image\Drivers\Gd\Encoders\WebpEncoder;
+use Intervention\Image\Drivers\Imagick\Driver;
+use Intervention\Image\ImageManager;
+
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
-use Verot\Upload\Upload;
 
 class page
 {
@@ -77,46 +80,26 @@ class page
 
     private static function processImage($file)
     {
-        $handle = new Upload($file['tmp_name']);
-        if ($handle->uploaded) {
-            $handle->allowed       = ['image/*'];
-            $handle->mime_check    = true;
-            $handle->file_max_size = 5 * 1024 * 1024; // Разрешенная максимальная загрузка 4mb
 
-            $filename = md5(mt_rand(1, 100000) + time());
+        $manager = ImageManager::gd();
+        $file = $file['tmp_name'];
+        $image = $manager->read($file);
 
-            $handle->file_new_name_body = $filename;
-            $handle->image_resize       = true;
-            $handle->image_x            = 450;
-            $handle->image_ratio_y      = true;
-            $handle->file_name_body_pre = 'thumb_';
-            $handle->image_convert      = 'webp';
-            $handle->webp_quality       = 95;
-            $handle->process('uploads/images/news');
-            if (!$handle->processed) {
-                board::notice(false, $handle->error);
-            }
+        $filename = md5(mt_rand(1, 100000) + time());
 
-            $handle->file_new_name_body = $filename;
-            $handle->image_resize       = true;
-            $handle->image_x            = 1200;
-            $handle->image_ratio_y      = true;
-            $handle->image_convert      = 'webp';
-            $handle->webp_quality       = 95;
-            $handle->process('uploads/images/news');
-            if ($handle->processed) {
-                $handle->clean();
-                return $filename . ".webp";
-            }
-            if ($handle->error) {
-                $fileName = $file['name'];
-                $msg      = lang::get_phrase(455) . " '" . $fileName . "'\n" . lang::get_phrase(456) . " : " . $handle->error;
-                board::notice(false, $msg);
-            }
-        } else {
-            board::notice(false, $handle->error);
-        }
-        return "";
+        // Сохранение оригинала в формате WebP
+        $originalWebpPath = 'uploads/images/news/' . $filename . '.webp';
+        $image->toWebp(95)->save($originalWebpPath);
+
+        // Создание уменьшенной копии 450x450
+        $thumbnailPath = 'uploads/images/news/thumb_' . $filename . '.webp';
+        $image->resize(450, 450, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        })->toWebp(95)->save($thumbnailPath);
+
+        return $filename;
+
     }
 
     // Обновление данных
