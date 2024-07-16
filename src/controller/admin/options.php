@@ -372,6 +372,14 @@ class options
         if ( ! $post) {
             board::error("Ошибка парсинга JSON");
         }
+        $data = json_decode($post, true);
+        foreach($data['donateSystems'] as $i => $system) {
+            $sysData = reset($system);
+            if(!$sysData['inputs']){
+                unset($data['donateSystems'][$i]);
+            }
+        }
+        $post = json_encode($data, JSON_UNESCAPED_UNICODE);
         sql::sql("DELETE FROM `settings` WHERE `key` = '__config_donate__' AND serverId = ? ", [
           user::self()->getServerId(),
         ]);

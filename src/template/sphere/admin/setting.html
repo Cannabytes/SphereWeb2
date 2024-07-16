@@ -692,6 +692,7 @@
                         <div class="col-md-9">
                           <div class="tab-content" id="v-pills-tabContent">
                             {% for i, donate in config().donate().getDonateSystems() %}
+
                             <div class="tab-pane {% if i == 0 %}active show{% endif %}"
                                  id="{{donate.getName()}}" role="tabpanel"
                                  tabindex="0"
@@ -733,7 +734,6 @@
                                                class="label-primary mb-1"></label>
                                       </div>
                                     </div>
-
                                     {% for key, val in donate.getInputs() %}
                                     <div class="form-floating mb-3">
                                       <input data-name="{{key}}"
@@ -2802,6 +2802,7 @@
         inputsData[inputName] = inputValue; // Сохраняем данные поля
       });
 
+
       // Собираем и сохраняем данные платежной системы
       systemsData.push({
         [payName]: {
@@ -2815,6 +2816,7 @@
 
     return systemsData;
   }
+
 
   $('#templateSelect').change(function () {
     let selectedTemplate = $(this).val();

@@ -24,8 +24,8 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
     public static function inputs(): array
     {
         return [
-            'publicKey' => 'Публичный ключ',
-            'secretKey' => 'Секретный ключ',
+            'publicKey' => '',
+            'secretKey' => '',
         ];
     }
 

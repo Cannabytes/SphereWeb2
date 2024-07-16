@@ -19,9 +19,8 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
     public static function inputs(): array
     {
         return [
-          'merchant_id' => '',
-          'secret_1'   => '',
-          'secret_2'   => '',
+          'shop_id' => '',
+          'secret_key'   => '',
         ];
     }
 
@@ -57,56 +56,113 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
         }
 
         $order_amount = $_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost());
-        $payment_id = time();
-        $sign = md5(self::getConfigValue('merchant_id') . ':' . $order_amount . ':' . self::getConfigValue('secret_1') . ':' . $payment_id);
 
+        $shop_id = self::getConfigValue('shop_id');
+        $email = user::self()->getEmail();
+        $secret_word = self::getConfigValue('secret_key');
+        $currency = "RUB";
+        $order_id = uniqid();
+        $sign = md5($shop_id . ':' . $order_amount . ':' . $secret_word . ':' . $currency . ':' . $order_id);
+
+        // Подготовка данных для отправки запроса
         $params = [
-            'm' => self::getConfigValue('merchant_id'),
-            'oa' => $order_amount,
-            'o' => $payment_id,
-            's' => $sign,
-            'cf[user_id]' => user::self()->getId(),
+          'amount' => $order_amount,
+          'order_id' => $order_id,
+          'email' => $email,
+          'currency' => $currency,
+          'shop_id' => $shop_id,
+          's' => $sign,
+          "custom_fields" => ["order" => user::self()->getId()],
         ];
-        echo "https://enot.io/pay/?" . http_build_query($params);
+
+        // Формируем заголовки для запроса
+        $headers = [
+          'Accept: application/json',
+          'Content-Type: application/json',
+          'x-api-key: ' . self::getConfigValue('secret_key')
+        ];
+
+        // Инициализируем CURL-сессию
+        $ch = curl_init();
+
+        // Устанавливаем опции CURL
+        curl_setopt($ch, CURLOPT_URL, 'https://api.enot.io/invoice/create');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        // Выполняем запрос и получаем ответ
+        $response = curl_exec($ch);
+
+        // Закрываем CURL-сессию
+        curl_close($ch);
+
+        $response_object = json_decode($response);
+
+        // Проверяем успешность запроса
+        if ($response_object->status === 200 && $response_object->status_check) {
+            // Если запрос успешен, вытаскиваем URL из объекта
+            $url = $response_object->data->url;
+
+            // Выводим URL
+            echo $url;
+        } else {
+            // Если запрос не успешен, выводим соответствующее сообщение или обрабатываем ошибку
+            echo "Request failed: " . $response_object->error;
+        }
+
     }
 
     function transfer(): void
     {
-        file_put_contents( __DIR__ . '/debug.log', '_REQUEST: ' . print_r( $_REQUEST, true ) . PHP_EOL, FILE_APPEND );
+        $requestData = json_decode(file_get_contents('php://input'), true);
+        file_put_contents( __DIR__ . '/debug.log', '_REQUEST: ' . print_r( $requestData, true ) . PHP_EOL, FILE_APPEND );
 
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
+//
+//        // Использование данных из тела запроса
+        $status = $requestData['status'] ?? null;
+        $amount = $requestData['amount'] ?? null;
+        $currency = $requestData['currency'] ?? "RUB";
+        $secret_word = self::getConfigValue('secret_key');
+//
+        $order = $requestData['custom_fields']['order'] ?? null;
+//
+//        // Преобразование значения $order в целочисленное значение (int)
+        $user_id = $order !== null ? (int) $order : null;
+//
+//        // Получение подписи из заголовка запроса
+        $signature = $_SERVER['HTTP_X_API_SHA256_SIGNATURE'];
+        if(!self::checkSignature($requestData, $signature, $secret_word)) {
+            echo 'SIGNATURE ERROR';
+            exit;
+        }
 
-        $merchant = $_POST['merchant'] ?? 0;
-        $amount = $_POST['amount'] ?? 0;
-        $payment_id = $_POST['merchant_id'] ?? 0;
-        $sign = md5( $merchant . ':' . $amount . ':' . self::getConfigValue('secret_2') . ':' . $payment_id );
-        $sign_2 = $_POST['sign_2'] ?? '';
-        $user_id  = $_POST['custom_field']['user_id'] ?? false;
-        if ( $sign != $sign_2 ) die( 'bad sign!' );
-
-        donate::control_uuid($payment_id, get_called_class());
-
-        $amount = donate::currency($amount, "RUB");
-
-        user::self()->addLog(logTypes::LOG_DONATE_SUCCESS, "LOG_DONATE_SUCCESS", [
-          $_POST['amount'], $_POST['currency'], $amount,
-        ]);
-        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование", get_called_class());
-        donate::addUserBonus($user_id, $amount);
-        echo 'YES';
-
-    }
-
-    //Получение информации об оплате
-
-    /**
-     * @return void
-     * Проверка IP адреса
-     */
-    function allowIP(): void
-    {
-        if (!in_array($_SERVER['REMOTE_ADDR'], $this->allowIP)) {
-            die("Forbidden: Your IP is not in the list of allowed");
+        $logFile = fopen('log.txt', 'a');
+//
+//        // Записываем сигнатуру в файл логов
+        fwrite($logFile, 'Signature: ' . $signature . "\n");
+//
+        // Закрываем файл логов
+        fclose($logFile);
+        // Проверка подписи и условие статуса
+        if ($signature !== null && $status === "success") {
+            $amount = donate::currency($amount, $currency);
+            \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['sum'], $_POST['currency'], get_called_class()]);
+            user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование Enot", get_called_class());
+            donate::addUserBonus($user_id, $amount);
+            echo 'YES';
         }
     }
+
+    static function checkSignature(string $hookJson, string $headerSignature, string $secretKey): bool
+    {
+        $hookArr = json_decode($hookJson, true);
+        ksort($hookArr);
+        $sortedHookJson = json_encode($hookArr, JSON_UNESCAPED_UNICODE);
+        $calculatedSignature = hash_hmac('sha256', $sortedHookJson, $secretKey);
+        return hash_equals($headerSignature, $calculatedSignature);
+    }
+
 }

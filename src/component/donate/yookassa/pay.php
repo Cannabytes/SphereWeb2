@@ -16,8 +16,8 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
     public static function inputs(): array
     {
         return [
-            'shopId' => 'ID Магазина',
-            'secretKey' => 'Секретный ключ',
+            'shopId' => '',
+            'secretKey' => '',
         ];
     }
 

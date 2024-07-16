@@ -174,6 +174,66 @@ class donate
      */
     private function parseDonateSystem(): array
     {
+
+
+        $all_donate_system = fileSys::get_dir_files("src/component/donate", [
+          'basename' => true,
+          'fetchAll' => true,
+        ]);
+        $donateSysNames    = [];
+        foreach ($all_donate_system as $system) {
+            if ( ! $system::isEnable()) {
+                continue;
+            }
+            if (method_exists($system, 'forAdmin')) {
+                if ($system::forAdmin() and auth::get_access_level() != 'admin') {
+                    continue;
+                }
+            }
+            $inputs = [];
+            if (method_exists($system, 'inputs')) {
+                $inputs = $system::inputs();
+            }
+            if (method_exists($system, 'getDescription')) {
+                $donateSysNames[] = [
+                  'name'   => basename($system),
+                  'desc'   => $system::getDescription()[config::load()->lang()->getDefault()] ?? "",
+                  'inputs' => $inputs,
+                ];
+            } else {
+                $donateSysNames[] = [
+                  'name'   => basename($system),
+                  'desc'   => basename($system),
+                  'inputs' => $inputs,
+                ];
+            }
+        }
+
+        $fileDonateSys = [];
+
+        foreach($donateSysNames AS $donateSysName){
+
+            $isExist = false;
+            foreach($this->donateSystems AS $system){
+                $systemName  = key($system);
+                if($donateSysName['name']==$systemName){
+                    $isExist = true;
+                    break;
+                }
+            }
+            if($isExist){
+                continue;
+            }
+            $systemName  = $donateSysName['name'];
+            $enable      = $donateSysName['enable'] ?? false;
+            $inputs      = $donateSysName['inputs'] ?? [];
+            $description = $donateSysName['desc'] ?? "";
+            $forAdmin    = $donateSysName['forAdmin'] ?? false;
+
+            $fileDonateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin);
+
+        }
+
         $donateSys = [];
         foreach ($this->donateSystems as $system) {
             $systemName  = key($system);
@@ -184,8 +244,14 @@ class donate
             $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin);
         }
 
+
+        $donateSys = array_merge($donateSys, $fileDonateSys);
+        usort($donateSys, function($a, $b) {
+            return strcmp($a->getName(), $b->getName());
+        });
         return $donateSys;
     }
+
 
     public function get($name): donateSystem
     {
