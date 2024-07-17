@@ -652,7 +652,7 @@ return [
 	'account' => 'Account',
 	'account_characters' => 'Account characters',
 	'accum_bonuses' => 'Accumulated bonuses',
-	'accum_sys_bonus' => 'Accumulation system - the more you top up, the more additional bonus you get. You have already accumulated %s Donate Coin (%s% additional bonuses)',
+	'accum_sys_bonus' => 'Accumulation system - the more you top up, the more additional bonus you get. You have already accumulated %s Donate Coin (%s%% additional bonuses)',
 	'activate' => 'Activate',
 	'active' => 'Active',
 	'add_category' => 'Add category',
