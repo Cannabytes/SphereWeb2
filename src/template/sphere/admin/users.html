@@ -6,46 +6,46 @@
 
 
 <div class="container-fluid">
-<div class="row">
-  <div class="col-xl-12">
-    <div class="card custom-card">
-      <div class="card-header">
-        <div class="card-title">
-          Пользователи ( {{getUsers()|length}} )
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">
+            Пользователи ( {{getUsers()|length}} )
+          </div>
         </div>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table id="datatable-users" class="table table-bordered text-nowrap w-100">
-            <thead>
-            <tr>
-              <th>User</th>
-              <th>Coin</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for i, user in getUsers() %}
-            <tr>
-              <td>
-                <div class="d-flex align-items-center  mt-auto">
-                  <div class="avatar  avatar-md me-1 cover-image" data-bs-image-src="{{user.getAvatar()}}"
-                       style="background: url('{{user.getAvatar()}}') center center;"></div>
-                  <div>
-                    <a href="#" class="text-default">{{user.getEmail()}} <br> {{user.getName()}}</a>
-                    <small class="d-block text-muted">{{user.getDateCreate()|date("d F, Y")}}</small>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table id="datatable-users" class="table table-bordered text-nowrap w-100">
+              <thead>
+              <tr>
+                <th>User</th>
+                <th>Coin</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for i, user in getUsers() %}
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center  mt-auto">
+                    <div class="avatar  avatar-md me-1 cover-image" data-bs-image-src="{{user.getAvatar()}}"
+                         style="background: url('{{user.getAvatar()}}') center center;"></div>
+                    <div>
+                      <a href="#" class="text-default">{{user.getEmail()}} <br> {{user.getName()}}</a>
+                      <small class="d-block text-muted">{{user.getDateCreate()|date("d F, Y")}}</small>
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td class="text-center">
+                </td>
+                <td class="text-center">
                 <span data-user-id="{{user.getId()}}" data-user-balance="{{user.getDonate()}}"
                       class="reply-btn btn btn-sm btn-success sendToBalance">
                 <i class="ri-add-circle-line"></i>
                 </span><br>
-                {{user.getDonate()}}
-              </td>
-            </tr>
-            {% endfor %}
-            </tbody>
+                  <span id="user_id_count_{{user.getId()}}">{{user.getDonate()}}</div>
+          </td>
+          </tr>
+          {% endfor %}
+          </tbody>
           </table>
         </div>
       </div>
@@ -111,37 +111,45 @@
 
 <script>
 
-  $('#datatable-users').DataTable({
-    language: {
-      searchPlaceholder: 'Search...',
-      sSearch: '',
-    },
-    lengthMenu: [
-      [10, 100, 1000, -1],
-      [10, 100, 1000,  "All"]
-    ],
-    buttons: [
-      'copy', 'csv', 'excel', 'pdf', 'print'
-    ],
-    sort : true,
-    autoWidth: true,
-
-    "pageLength": 10,
-    // scrollX: true
-  });
-
   $(document).ready(function () {
     var userid = 0;
-    $('.sendToBalance').on('click', function () {
-      $('#balance').modal('show');
-      userid = $(this).data('user-id');
-      var userbalance = $(this).data('user-balance');
-      $('input[name=\'userid\']').val(userid);
-      $('#user-balance-show').text(userbalance);
+
+    var table = $('#datatable-users').DataTable({
+      language: {
+        searchPlaceholder: 'Search...',
+        sSearch: '',
+      },
+      lengthMenu: [
+        [10, 100, 1000, -1],
+        [10, 100, 1000, "All"]
+      ],
+      buttons: [
+        'copy', 'csv', 'excel', 'pdf', 'print'
+      ],
+      sort: true,
+      autoWidth: true,
+      pageLength: 10,
+      // scrollX: true
     });
+
+    // Используем событие draw для привязки обработчиков событий
+    table.on('draw', function () {
+      // Сначала удаляем все старые обработчики
+      $(document).off('click', '.sendToBalance');
+
+      // Затем привязываем новые обработчики
+      $(document).on('click', '.sendToBalance', function () {
+        $('#balance').modal('show');
+        userid = $(this).data('user-id');
+        var userbalance = $(this).data('user-balance');
+        $('input[name="userid"]').val(userid);
+        $('#user-balance-show').text(userbalance);
+      });
+    });
+
     $('#balanceSend').on('click', function () {
-      count = $('#countBalanceSend').val();
-      addBonus = $('#isAddBonus').is(':checked');
+      var count = $('#countBalanceSend').val();
+      var addBonus = $('#isAddBonus').is(':checked');
 
       AjaxSend('/admin/users/sendToBalance', 'POST', {
         'userid': userid,
@@ -155,7 +163,11 @@
         $('#balance').modal('hide');
       });
     });
+
+    // Вручную вызываем событие draw для первоначальной привязки обработчиков
+    table.draw();
   });
+
 </script>
 
 
