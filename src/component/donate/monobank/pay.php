@@ -70,8 +70,8 @@ class monobank extends \Ofey\Logan22\model\donate\pay_abstract
             "reference" => auth::get_id(),
             "comment"   => "Помощь проекту",
           ],
-          "redirectUrl"      => "{$selfSite}/donate/pay/donate/pay",
-          "webHookUrl"       => "{$selfSite}/donate/pay/donate/webhook/monobank",
+          "redirectUrl"      => "{$selfSite}/donate/pay",
+          "webHookUrl"       => "{$selfSite}/donate/webhook/monobank",
           "validity"         => 3600, // Срок действия в секундах (1 час)
           "paymentType"      => "debit", // Тип операции
         ];
@@ -108,7 +108,6 @@ class monobank extends \Ofey\Logan22\model\donate\pay_abstract
 
         if (isset($jsonData['pageUrl'])) {
             echo $jsonData['pageUrl'];
-
             return true;
         } else {
             $errCode = $jsonData['errCode'] ?? 'UNKNOWN';
@@ -123,6 +122,8 @@ class monobank extends \Ofey\Logan22\model\donate\pay_abstract
     // Получение информации об оплате
     function webhook(): void
     {
+        file_put_contents( __DIR__ . '/debug.log', '_REQUEST: ' . print_r( json_decode(file_get_contents('php://input'), true), true ) . PHP_EOL, FILE_APPEND );
+
         if (empty($this->monobank_token)) {
             board::error("Monobank token is empty");
 
