@@ -53,7 +53,7 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
     $route->post("/install", "Ofey\Logan22\controller\install\install::startInstall");
 }
 
-$route->set404(function ($s) {
+$route->set404(function () {
     \Ofey\Logan22\component\redirect::location("/main");
 });
 $route->run();
