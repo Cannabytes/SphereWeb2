@@ -39,56 +39,48 @@
               <p class="fw-bold fs-20  text-shadow mb-0">{{userInfo.getDonate()}}</p>
               <p class="mb-0 fs-12 text-muted ">Баланс </p>
             </div>
-            <div class="py-3 border-end w-100 text-center">
-              <p class="fw-bold fs-20  text-shadow mb-0">24</p>
-              <p class="mb-0 fs-12 text-muted ">Рефераллов</p>
-            </div> 
+
           </div>
         </div>
       </div>
+
+
       <div class="card custom-card">
-        <div class="p-4  border-bottom border-block-end-dashed">
-          <p class="fs-15 mb-2 me-4 fw-semibold">Данные:</p>
-          <ul class="list-group">
-            <li class="list-group-item border-0">
-              <div class="d-flex flex-wrap align-items-center">
-                <div class="me-2 fw-semibold">
-                  Аккаунтов :
-                </div>
-                <span class="fs-12 text-muted">{{userInfo.getAccounts()|length}}</span>
-              </div>
-            </li>
-            <li class="list-group-item border-0">
-              <div class="d-flex flex-wrap align-items-center">
-                <div class="me-2 fw-semibold">
-                  Персонажей :
-                </div>
-                <span class="fs-12 text-muted">{{userInfo.getCharacters()|length}}</span>
-              </div>
-            </li>
 
-          </ul>
-        </div>
 
-          <ul class="list-group followers-list">
+        <ul class="list-group followers-list">
 
-            {% for i, account in getUser().getAccounts() %}
-            <li class="list-group-item">
-              <div class="d-sm-flex align-items-top">
-                                                <span class="avatar avatar-sm">
-                                                    <img src="{{template}}/assets/images/faces/1.jpg" alt="img">
-                                                </span>
-                <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
-                  <p class="mb-0 lh-1">{{account.getName()}}</p>
+          {% for i, account in userInfo.getAccounts() %}
+          <li class="list-group-item">
+            <div class="d-sm-flex align-items-top">
+
+              <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
+                <p class="mb-0 lh-1">{{account.getAccount()}}</p>
+
+
+                <ul class="list-unstyled mb-0">
                   {% for i, character in account.getCharacters() %}
-                  <span class="fs-11 text-muted op-7">{{character.getName()}}</span>
-                  {% endfor %}
-                </div>
-               </div>
-            </li>
-            {% endfor %}
 
-          </ul>
+                  <li class="d-flex align-items-center mb-1">
+                                                                <span class="me-1">
+												<span class="avatar avatar-sm {% if character.getOnline() %}online{% else %}offline{% endif %}">
+                                                    <img src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg" alt="img">
+                                                </span>
+                                                                 </span>
+                    <span>
+                                                                    <strong class="me-1">{{clan_icon(character.getClanCrest())|raw}}{{character.getPlayerName()}}</strong>[{{character.getLevel()}}]
+                                                                </span>
+                  </li>
+                  {% endfor %}
+
+                </ul>
+
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+
+        </ul>
 
       </div>
     </div>
@@ -146,7 +138,7 @@
                           <p class="text-muted mb-2">
                             <span class="text-default">{{log.message}}</span>
                           </p>
-                         </div>
+                        </div>
                       </li>
                       {% endfor %}
 
@@ -173,7 +165,7 @@
                               <span class="badge bg-success-transparent ms-3">{{history.pay_system}} {% if history.id_admin_pay != null %}| {{getUser(history.id_admin_pay).getName()}} {% endif %}</span></p>
                           </div>
 
-                         </div>
+                        </div>
                       </li>
                       {% endfor %}
 
