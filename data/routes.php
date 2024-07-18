@@ -1425,4 +1425,32 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  100 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/user/info/(.*)',
+    'func' => 'controller\\admin\\users::getUserInfo',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '/admin/user_profile.html',
+    'comment' => '',
+  ),
+  101 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/user/edit',
+    'func' => 'controller\\admin\\users::edit',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );
