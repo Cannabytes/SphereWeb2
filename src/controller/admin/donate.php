@@ -86,8 +86,12 @@ class donate {
     public static function add_bonus_money() {
         validation::user_protection("admin");
         $user_id = $_POST['userid'] ?? board::error("Не указан ID пользователя");
-        $amount = $_POST['count'] ?? 0;
+        $amount = filter_var($_POST['count'], FILTER_VALIDATE_FLOAT) ?? 0;
         $addBonus = filter_var($_POST['addBonus'], FILTER_VALIDATE_BOOLEAN);
+
+        if ($amount === false || $amount <= 0) {
+            board::error("Укажите значение больше 0");
+        }
 
         $user = user::getUserId($user_id);
         if ($user) {
@@ -97,6 +101,7 @@ class donate {
                 \Ofey\Logan22\model\donate\donate::addUserBonus($user_id, $amount);
             }
             board::alert([
+                "ok" => true,
                 "sphereCoin" => user::getUserId($user_id)->getDonate(),
             ]);
         }else{

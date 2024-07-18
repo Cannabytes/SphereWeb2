@@ -15,7 +15,7 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="table-responsive">
+          <span class="table-responsive">
             <table id="datatable-users" class="table table-bordered text-nowrap w-100">
               <thead>
               <tr>
@@ -31,7 +31,7 @@
                     <div class="avatar  avatar-md me-1 cover-image" data-bs-image-src="{{user.getAvatar()}}"
                          style="background: url('{{user.getAvatar()}}') center center;"></div>
                     <div>
-                      <a href="#" class="text-default">{{user.getEmail()}} <br> {{user.getName()}}</a>
+                      <a href="/admin/user/info/{{user.getId()}}" class="text-default">{{user.getEmail()}} <br> {{user.getName()}}</a>
                       <small class="d-block text-muted">{{user.getDateCreate()|date("d F, Y")}}</small>
                     </div>
                   </div>
@@ -41,7 +41,7 @@
                       class="reply-btn btn btn-sm btn-success sendToBalance">
                 <i class="ri-add-circle-line"></i>
                 </span><br>
-                  <span id="user_id_count_{{user.getId()}}">{{user.getDonate()}}</div>
+                  <span id="user_id_count_{{user.getId()}}" data-user-balance="{{user.getDonate()}}">{{user.getDonate()}}</span>
           </td>
           </tr>
           {% endfor %}
@@ -156,13 +156,29 @@
         'count': count,
         'addBonus': addBonus,
       }, true).then(function (data) {
-        if (data.sphereCoin) {
-          $('#user_id_count_' + userid).text(data.sphereCoin);
+        if(data.ok) {
+          let userBalance = $("#user_id_count_" + userid).attr("data-user-balance");
+          let countInt = parseInt(count);
+          userBalance = parseInt(userBalance);
+          if (isNaN(userBalance) || isNaN(countInt)) {
+            console.error("Одна из переменных не является числом");
+          } else {
+            let newBalance = userBalance + countInt;
+            $("#user_id_count_" + userid).attr("data-user-balance", newBalance);
+            console.log(newBalance);
+            $('#user_id_count_' + userid).text(newBalance);
+            $('.sendToBalance[data-user-id="'+userid+'"]').attr("data-user-balance", newBalance);
+            $('#user-balance-show').text(newBalance);
+          }
           noticeSuccess('Пополнение баланса успешно');
+        }else{
+          noticeError(data.message);
         }
+        $("#countBalanceSend").val("");
         $('#balance').modal('hide');
       });
     });
+
 
     // Вручную вызываем событие draw для первоначальной привязки обработчиков
     table.draw();

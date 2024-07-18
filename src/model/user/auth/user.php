@@ -39,9 +39,7 @@ class user {
     }
 
     public static function edit($id, $email = null, $name = "", $donate = 0, $password = "", $group = "userModel"): bool {
-        if (auth::get_access_level() != $group and auth::get_id() == $id) {
-            board::notice(false, "Запрещено менять свою группу администратору");
-        }
+
         if ($password == "") {
             $sql = "UPDATE users SET email = ?, name = ?, donate_point = ?, access_level = ? WHERE id = ?";
             $ok = sql::sql($sql, [$email, $name, $donate, $group, $id]);
@@ -56,10 +54,6 @@ class user {
         $sql = "UPDATE users SET email = ?, name = ?, donate_point = ?, password = ?, access_level = ? WHERE id = ?";
         $ok = sql::sql($sql, [$email, $name, $donate, $password_hash, $group, $id]);
         if ($ok) {
-            if (auth::get_id() == $id) {
-                auth::set_password($password);
-                auth::apply_password();
-            }
             return true;
         } else {
             return false;

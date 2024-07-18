@@ -1,0 +1,254 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+
+  <!-- Start::row-1 -->
+  <div class="row">
+    <div class="col-xxl-3">
+      <div class="card custom-card overflow-hidden">
+        <div class="card-body border-bottom">
+          <div class="d-sm-flex  main-profile-cover">
+                                        <span class="avatar avatar-xxl online me-3">
+                                            <img src="{{userInfo.getAvatar()}}" alt="" class="avatar avatar-xxl">
+                                        </span>
+            <div class="flex-fill main-profile-info my-auto">
+              <h5 class="fw-semibold mb-1 ">{{userInfo.getEmail()}}</h5>
+              <div>
+                <p class="mb-1 text-muted">{{userInfo.getName()}}</p>
+
+                <p class="me-3  fs-12 op-7 mb-0"><i
+                  class="ri-building-line me-1 align-middle"></i>{{userInfo.getDateCreate()|date("d F, Y")}}</p>
+
+                <p class="me-3  fs-12 op-7 mb-0"><i
+                  class="ri-map-pin-line me-1 align-middle"></i>{{userInfo.getCountry() ?? 'N/A'}} {{userInfo.getCity() ?? 'N/A'}}</p>
+
+                <p class="me-3  fs-12 op-7 mb-0"><i
+                  class="ri-global-line me-1 align-middle"></i>{{userInfo.getLang() ?? 'N/A'}}</p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0 main-profile-info">
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="py-3 border-end w-100 text-center">
+              <p class="fw-bold fs-20  text-shadow mb-0">{{userInfo.getDonate()}}</p>
+              <p class="mb-0 fs-12 text-muted ">Баланс </p>
+            </div>
+            <div class="py-3 border-end w-100 text-center">
+              <p class="fw-bold fs-20  text-shadow mb-0">24</p>
+              <p class="mb-0 fs-12 text-muted ">Рефераллов</p>
+            </div> 
+          </div>
+        </div>
+      </div>
+      <div class="card custom-card">
+        <div class="p-4  border-bottom border-block-end-dashed">
+          <p class="fs-15 mb-2 me-4 fw-semibold">Данные:</p>
+          <ul class="list-group">
+            <li class="list-group-item border-0">
+              <div class="d-flex flex-wrap align-items-center">
+                <div class="me-2 fw-semibold">
+                  Аккаунтов :
+                </div>
+                <span class="fs-12 text-muted">{{userInfo.getAccounts()|length}}</span>
+              </div>
+            </li>
+            <li class="list-group-item border-0">
+              <div class="d-flex flex-wrap align-items-center">
+                <div class="me-2 fw-semibold">
+                  Персонажей :
+                </div>
+                <span class="fs-12 text-muted">{{userInfo.getCharacters()|length}}</span>
+              </div>
+            </li>
+
+          </ul>
+        </div>
+
+          <ul class="list-group followers-list">
+
+            {% for i, account in getUser().getAccounts() %}
+            <li class="list-group-item">
+              <div class="d-sm-flex align-items-top">
+                                                <span class="avatar avatar-sm">
+                                                    <img src="{{template}}/assets/images/faces/1.jpg" alt="img">
+                                                </span>
+                <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
+                  <p class="mb-0 lh-1">{{account.getName()}}</p>
+                  {% for i, character in account.getCharacters() %}
+                  <span class="fs-11 text-muted op-7">{{character.getName()}}</span>
+                  {% endfor %}
+                </div>
+               </div>
+            </li>
+            {% endfor %}
+
+          </ul>
+
+      </div>
+    </div>
+    <div class="col-xxl-9">
+      <div class="row">
+        <div class="col-xl-12">
+          <div class=" custom-card">
+            <div class="card-body p-0">
+              <div class="border-block-end-dashed  bg-white rounded-2 p-2">
+                <div>
+                  <ul class="nav nav-pills nav-justified gx-3 tab-style-6 d-sm-flex d-block " id="myTab" role="tablist">
+
+                    <li class="nav-item rounded" role="presentation">
+                      <button class="nav-link active" id="activity-tab" data-bs-toggle="tab"
+                              data-bs-target="#activity-tab-pane" type="button" role="tab"
+                              aria-controls="activity-tab-pane" aria-selected="true"><i
+                        class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>Лог пользователя
+                      </button>
+                    </li>
+
+                    <li class="nav-item rounded" role="presentation">
+                      <button class="nav-link " id="donate-tab" data-bs-toggle="tab"
+                              data-bs-target="#donate-tab-pane" type="button" role="tab"
+                              aria-controls="donate-tab-pane" aria-selected="true"><i
+                        class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>Лог Пожертвований
+                      </button>
+                    </li>
+
+                    <li class="nav-item rounded" role="presentation">
+                      <button class="nav-link" id="posts-tab" data-bs-toggle="tab"
+                              data-bs-target="#posts-tab-pane" type="button" role="tab"
+                              aria-controls="posts-tab-pane" aria-selected="false"><i
+                        class="ri-bill-line me-1 align-middle d-inline-block fs-16"></i>Редактировать
+                      </button>
+                    </li>
+
+                  </ul>
+                </div>
+              </div>
+              <div class="py-4">
+                <div class="tab-content" id="myTabContent">
+
+                  <div class="tab-pane show active fade p-0 border-0 bg-white p-2 rounded-3" id="activity-tab-pane"
+                       role="tabpanel" aria-labelledby="activity-tab" tabindex="0">
+                    <ul class="list-unstyled profile-timeline">
+
+                      {% for i, log in logs %}
+                      <li>
+                        <span class="fs-12 text-muted fw-semibold text-end profile-timeline-time">{{ProhloVremya(log.time, true)}}</span>
+                        <div>
+                                                                    <span
+                                                                      class="avatar avatar-sm avatar-rounded profile-timeline-avatar">
+                                                                        <img src="{{getUser().getAvatar()}}" alt="">
+                                                                    </span>
+                          <p class="text-muted mb-2">
+                            <span class="text-default">{{log.message}}</span>
+                          </p>
+                         </div>
+                      </li>
+                      {% endfor %}
+
+
+                    </ul>
+                  </div>
+
+                  <div class="tab-pane fade p-0 border-0 bg-white p-2 rounded-3" id="donate-tab-pane"
+                       role="tabpanel" aria-labelledby="donate-tab" tabindex="0">
+                    <ul class="list-unstyled profile-timeline">
+
+                      {% for i, history in donate_history_pay %}
+                      <li>
+                        <span class="fs-12 text-muted fw-semibold text-end profile-timeline-time">{{ProhloVremya(history.date, true)}}</span>
+                        <div>
+                                                                    <span
+                                                                      class="avatar avatar-sm avatar-rounded profile-timeline-avatar">
+                                                                        <img src="{{getUser().getAvatar()}}" alt="">
+                                                                    </span>
+
+                          <div class="flex-fill">
+                            <p class="mb-0 fw-semibold">{{history.message}}</p>
+                            <p class="mb-0 text-muted fs-12">Донат Бонус : +{{history.point}}
+                              <span class="badge bg-success-transparent ms-3">{{history.pay_system}} {% if history.id_admin_pay != null %}| {{getUser(history.id_admin_pay).getName()}} {% endif %}</span></p>
+                          </div>
+
+                         </div>
+                      </li>
+                      {% endfor %}
+
+
+                    </ul>
+                  </div>
+
+                  <div class="tab-pane fade p-0 border-0" id="posts-tab-pane"
+                       role="tabpanel" aria-labelledby="posts-tab" tabindex="0">
+                    <div class="row">
+
+                      <div class="col-xl-12">
+                        <div class="card custom-card">
+                          <div class="card-header justify-content-between">
+                            <div class="card-title">
+                              Редактирование параметров пользователей
+                            </div>
+                          </div>
+                          <form action="/admin/user/edit" method="POST" class="card-body">
+
+                            <input type="hidden" name="id" value="{{userInfo.getId()}}">
+
+                            <div class="mb-3">
+                              <label for="email" class="form-label fs-14 text-dark">Почта</label>
+                              <input id="email" type="text" class="form-control" name="email" placeholder="" value="{{userInfo.getEmail()}}">
+                            </div>
+
+                            <div class="mb-3">
+                              <label for="name" class="form-label fs-14 text-dark">Ник</label>
+                              <input name="name" id="name" type="text" class="form-control" placeholder="" value="{{userInfo.getName()}}">
+                            </div>
+
+
+                            <div class="mb-3">
+                              <label for="password" class="form-label fs-14 text-dark">Password</label>
+                              <input name="password" type="password" class="form-control" id="password" placeholder="">
+                            </div>
+
+                            <div class="mb-3">
+                              <label for="group" class="form-label">Группа</label>
+                              <select name="group" id="group" class="form-select form-select-lg">
+                                <option {% if userInfo.getAccessLevel() == "user" %}selected{% endif %} value="user">Пользователь</option>
+                                <option {% if userInfo.getAccessLevel() == "admin" %}selected{% endif %} value="admin">Администратор</option>
+                              </select>
+                            </div>
+
+                            <div class="mb-3">
+                              <label for="donate" class="form-label fs-14 text-dark">Баланс</label>
+                              <input id="donate" name="donate" type="number" step="0.1" class="form-control" placeholder="" value="{{userInfo.getDonate()}}">
+                            </div>
+
+                            <button class="btn btn-primary" type="submit">Сохранить</button>
+                          </form>
+
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!--End::row-1 -->
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}
