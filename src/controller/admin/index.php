@@ -14,13 +14,16 @@ class index {
     public static function index() {
         validation::user_protection("admin");
 
-        $info = server::send(type::SERVER_FULL_INFO)->show()->getResponse();
+        $info = server::send(type::SERVER_FULL_INFO)->show(false)->getResponse();
+        if(isset($info['error'])){
+            $info['servers'] = [];
+        }
         $lastCommit = server::send(type::GET_COMMIT_LAST)->show()->getResponse();
         tpl::addVar([
-            "title" => lang::get_phrase("admin_panel"),
-            "servers" => $info['servers'],
-            "sphere_last_commit" => $lastCommit['last_commit'],
-            "self_last_commit" => update::getLastCommit(),
+          "title" => lang::get_phrase("admin_panel"),
+          "servers" => $info['servers'],
+          "sphere_last_commit" => $lastCommit['last_commit'],
+          "self_last_commit" => update::getLastCommit(),
         ]);
         tpl::display("admin/index.html");
     }
@@ -28,7 +31,7 @@ class index {
     public static function support(){
         validation::user_protection("admin");
         tpl::addVar([
-            "title" => lang::get_phrase("support"),
+          "title" => lang::get_phrase("support"),
         ]);
         tpl::display("admin/support.html");
     }
