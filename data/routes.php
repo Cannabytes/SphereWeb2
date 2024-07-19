@@ -1481,4 +1481,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  104 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/sphereapi/check',
+    'func' => 'controller\\sphereapi\\sphereapi::check',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

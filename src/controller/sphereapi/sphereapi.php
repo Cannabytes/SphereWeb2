@@ -3,6 +3,8 @@
 namespace Ofey\Logan22\controller\sphereapi;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\sphere\server;
+use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\template\tpl;
@@ -12,6 +14,15 @@ class sphereapi
     static function index()
     {
         tpl::display("/admin/sphereapi.html");
+    }
+
+    static function check()
+    {
+        $lastCommit = server::send(type::GET_COMMIT_LAST)->show(false)->getResponse();
+        if(isset($lastCommit['last_commit'])){
+            board::success("Проверка подключения удалась");
+        }
+        board::error("Проверка подключения не удалась");
     }
 
     static function save()
@@ -31,7 +42,7 @@ class sphereapi
 
         $data = json_encode([
             "ip" => $ip,
-            "port" => $port
+            "port" => $port,
         ]);
 
         sql::run("DELETE FROM `settings` WHERE `key` = '__config_sphere_api__'");

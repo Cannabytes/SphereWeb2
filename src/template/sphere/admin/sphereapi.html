@@ -28,7 +28,9 @@
                             <label for="floatingPassword">PORT</label>
                         </div>
 
-                        <button class="btn btn-primary" type="submit">Сохранить</button>
+
+                        <button id="checkConnectToServerApi" class="btn btn-light" type="button">Проверка соединения</button>
+                        <button class="btn btn-success" type="submit">Сохранить</button>
                     </form>
 
                 </div>
@@ -50,5 +52,13 @@
 
 
 {% block js %}
+
+<script>
+    $("#checkConnectToServerApi").on("click", function () {
+        AjaxSend("/admin/sphereapi/check", "POST", {}, false).then(function (data) {
+            console.log(data)
+        })
+    });
+</script>
 
 {% endblock %}
