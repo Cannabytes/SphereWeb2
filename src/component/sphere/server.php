@@ -7,6 +7,7 @@ use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\userModel;
+use Ofey\Logan22\template\tpl;
 
 class server
 {
@@ -75,12 +76,9 @@ class server
                 board::error("Сервер недоступен");
             }
             self::$error = 'Sphere Server is offline';
-
             return $instance;
         }
         self::$error = false;
-
-
 
         $json        = json_encode($arr) ?? "";
         $url         = type::url($type) ?? board::error("Не указан URL запроса");
@@ -122,6 +120,11 @@ class server
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
         curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
         $response = curl_exec($ch);
+        if($response === false){
+             self::$error = 'Ошибка соединения с Sphere API. Попробуйте еще раз. Возможно сервер на перезагрузке либо указаны неверные данные подключения к Sphere API. Если ошибка повторится, обратитесь в службу поддержки.';
+             self::$isOfflineServer = true;
+             return $instance;
+        }
         if (curl_errno($ch)) {
             sql::sql("DELETE FROM `server_cache` WHERE `type` = 'sphereServer'");
             sql::sql("INSERT INTO `server_cache` (`server_id`, `type`, `data`, `date_create`) VALUES (0, ?, ?, ?)", [
@@ -166,7 +169,7 @@ class server
             return self::$isOfflineServer = false;
         }
         // Проверяем что прошло более 5 сек и если нет, то возвращаем true
-        if (time::diff($ss['date_create'], time::mysql()) < 5) {
+        if (time::diff($ss['date_create'], time::mysql()) < 1) {
             return self::$isOfflineServer = true;
         }
         //Если прошло более минуты, тогда удаляем данные из кэша

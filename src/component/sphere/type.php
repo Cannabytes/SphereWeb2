@@ -2,6 +2,8 @@
 
 namespace Ofey\Logan22\component\sphere;
 
+use Ofey\Logan22\controller\config\config;
+
 enum type
 {
 
@@ -55,7 +57,8 @@ enum type
 
     static function url(type $type): string
     {
-        $link = "http://167.235.239.166";
+
+        $link = config::load()->sphereApi()->getIp() . ':' . config::load()->sphereApi()->getPort();
 
         return $link . match ($type) {
               self::SPHERE_INSTALL => '/api/admin/install',

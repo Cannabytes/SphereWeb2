@@ -1,0 +1,54 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title">
+                            Подключение к Sphere API
+                        </div>
+                    </div>
+                    <form action="/admin/sphereapi/save" method="post" class="card-body">
+
+                        <div>
+                            <p class="mb-1 text-truncate timeline-widget-content text-wrap">Sphere API - это высокопроизводимая программа, которая является посредником, между сервером и сайтом.</p>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input name="ip" type="text" class="form-control" id="floatingInput" placeholder="IP" value="{{config().SphereApi().getIP()}}">
+                            <label for="floatingInput">IP</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input name="port" type="text" class="form-control" id="floatingPassword" placeholder="PORT" value="{{config().SphereApi().getPort()}}">
+                            <label for="floatingPassword">PORT</label>
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">Сохранить</button>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+
+
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block js %}
+
+{% endblock %}

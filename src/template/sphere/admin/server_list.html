@@ -13,13 +13,22 @@
             Мои сервера
           </div>
 
+          {% if sphereAPIError == false %}
           <div class="prism-toggle">
             <a href="/admin/server/add/new" class="btn btn-sm btn-success">Добавить сервер</a>
           </div>
+          {% endif %}
 
         </div>
         <div class="card-body d-flex align-items-start">
           <div class="col-md-2">
+
+            {% if sphereAPIError %}
+            <div class="alert alert-danger" role="alert">
+              Ошибка соединения с Sphere API
+            </div>
+            {% endif %}
+
             <div class="nav flex-column nav-pills me-3 tab-style-7" id="v-pills-tab" role="tablist"
                  aria-orientation="vertical">
 

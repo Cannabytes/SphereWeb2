@@ -13,13 +13,18 @@ class index {
 
     public static function index() {
         validation::user_protection("admin");
-
+        $sphereAPIError = null;
         $info = server::send(type::SERVER_FULL_INFO)->show(false)->getResponse();
-        if(isset($info['error'])){
+        if(isset($info['error']) OR $info===null){
+            $sphereAPIError = true;
             $info['servers'] = [];
         }
-        $lastCommit = server::send(type::GET_COMMIT_LAST)->show()->getResponse();
+        $lastCommit = server::send(type::GET_COMMIT_LAST)->show(false)->getResponse();
+        if($lastCommit===null){
+            $lastCommit['last_commit'] = "";
+        }
         tpl::addVar([
+          "sphereAPIError" => $sphereAPIError,
           "title" => lang::get_phrase("admin_panel"),
           "servers" => $info['servers'],
           "sphere_last_commit" => $lastCommit['last_commit'],

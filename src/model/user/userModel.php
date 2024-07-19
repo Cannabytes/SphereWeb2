@@ -317,7 +317,7 @@ class userModel
 
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::ACCOUNT_PLAYERS, [
           'email' => $this->getEmail(),
-        ])->getResponse();
+        ])->show(false)->getResponse();
 
         if (isset($sphere['error']) or ! $sphere) {
             return [];
@@ -330,10 +330,7 @@ class userModel
             $account->setCharacters($player['characters']);
             $this->account[] = $account;
         }
-
         $this->saveAccounts();
-
-        //        var_dump($this->account);exit();
         return $this->account;
     }
 

@@ -11,6 +11,17 @@
   <div class="row">
     <div class="col-xxl-3">
 
+      {% if sphereAPIError %}
+      <div class="card custom-card">
+        <div class="p-4 border-bottom border-block-end-dashed">
+          К сожалению сервер SphereAPI не доступен.
+          Попробуйте указать адрес сервера <a href="/admin/sphereapi">в настройках</a>.
+          Пожалуйста, обратитесь в службу поддержки.
+        </div>
+      </div>
+
+      {% else %}
+
       {% if self_last_commit != sphere_last_commit %}
       <div class="card custom-card">
         <div class="p-4 border-bottom border-block-end-dashed">
@@ -19,6 +30,7 @@
         </div>
       </div>
       {% endif %}
+
 
       {% for server in servers %}
       {% set serverInfo = getServer(server.id) %}
@@ -56,6 +68,7 @@
       </div>
       {% endfor %}
 
+      {% endif %}
 
 
     </div>
@@ -451,7 +464,7 @@
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/extensions/paid" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/sphereapi" class="btn btn-sm btn-light btn-wave">Открыть</a>
                             </div>
                           </div>
                         </div>

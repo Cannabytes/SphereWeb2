@@ -7,6 +7,23 @@
 
 <div class="container-fluid">
 
+  {% if SphereApiError() %}
+  <div class="col-xl-12">
+    <div class="card custom-card">
+
+      <div class="card-body">
+        <div class="row gy-3">
+          <div class="col-xl-12">
+            <div class="alert alert-danger" role="alert">
+              {{ SphereApiError() }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
   {# Если нет серверов, то показываем сообщение, что нужно зарегистрировать сервер #}
   {% if getUser().isAdmin() and getServerCount() == 0 %}
   <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
