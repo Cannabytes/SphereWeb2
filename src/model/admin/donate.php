@@ -73,7 +73,7 @@ class donate {
                  }
              }
              if(empty($items)){
-                sql::run("DELETE FROM `sphere`.`shop_items` WHERE `id` = ?", [$shopId]);
+                sql::run("DELETE FROM `shop_items` WHERE `id` = ?", [$shopId]);
              }else{
                  $newItemsJson = json_encode(array_values($items));
                  sql::run("UPDATE `shop_items` SET `items` = ? WHERE id = ?", [
