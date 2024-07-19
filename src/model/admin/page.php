@@ -119,7 +119,7 @@ class page
             $constraint->upsize();
         })->toWebp(95)->save($thumbnailPath);
 
-        return $filename;
+        return $filename . '.webp';
     }
 
     public static function update()
