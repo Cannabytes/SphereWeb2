@@ -77,6 +77,11 @@ class inventory
 
     public static function sendToGame()
     {
+
+        if (!config::load()->enabled()->isEnableSendBalanceGame()) {
+            board::error("Disabled");
+        }
+
         $account = $_POST['account'] ?? board::error("Не передан аккаунт");
         $player  = $_POST['player'] ?? board::error("Не передано имя игрока");
         $coins   = $_POST['coin'] ?? board::error("Не переданы монеты");
