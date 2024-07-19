@@ -144,7 +144,10 @@ class options
         validation::user_protection("admin");
 
         //Подгрузка списокв серверов с сервера сферы
-        $servers_id = \Ofey\Logan22\component\sphere\server::send(type::SERVER_LIST)->show()->getResponse();
+        $servers_id = \Ofey\Logan22\component\sphere\server::send(type::SERVER_LIST)->show(false)->getResponse();
+        if(isset($servers_id['error'])){
+            redirect::location("/admin/server/list");
+        }
         if ($id) {
             $serverInfo = \Ofey\Logan22\model\server\server::getServer($id);
             if ($serverInfo->getId() != $id) {
