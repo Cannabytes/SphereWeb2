@@ -46,23 +46,26 @@ class update
         if ( ! $sphere['status']) {
             set_time_limit(600);
             $last_commit_now = $sphere['last_commit_now'];
-            $totalFiles                  = count($sphere['data']);
-            $_SESSION['update_status']   = true;
-            $_SESSION['time']            = time();
-            $_SESSION['total_files']     = $totalFiles;
+            $totalFiles = count($sphere['data']);
+            $_SESSION['update_status'] = true;
+            $_SESSION['time'] = time();
+            $_SESSION['total_files'] = $totalFiles;
             $_SESSION['processed_files'] = 0;
 
             foreach ($sphere['data'] as $data) {
-                $file   = $data['file'];
+                $file = $data['file'];
                 $status = $data['status'];
-                $link   = $data['link'];
+                $link = $data['link'];
+                $filePath = fileSys::get_dir($file);
+
                 if ($status == 'added' || $status == 'modified') {
-                    file_put_contents(fileSys::get_dir($file), file_get_contents($link));
+                    self::ensureDirectoryExists($filePath);
+                    file_put_contents($filePath, file_get_contents($link));
                 } elseif ($status == 'removed') {
                     if ($file == 'data/db.php') {
                         continue;
                     }
-                    unlink(fileSys::get_dir($file));
+                    unlink($filePath);
                 }
                 $_SESSION['processed_files']++;
             }
@@ -71,6 +74,14 @@ class update
         }
         board::success("Обновление не требуется");
     }
+
+   private static function ensureDirectoryExists($filePath) {
+        $directory = dirname($filePath);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0777, true);
+        }
+    }
+
 
     static function getLastCommit(): string|null
     {
