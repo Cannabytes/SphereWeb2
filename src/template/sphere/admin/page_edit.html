@@ -29,8 +29,8 @@
             <div class="col-xl-12">
               <label for="type" class="form-label">Тип страницы</label>
               <select class="form-control" data-trigger name="type" id="type">
-                <option {% if page.type == 1 %}selected{% endif %} value="news">Новость</option>
-                <option {% if page.type == 0 %}selected{% endif %} value="page">Страница</option>
+                <option {% if page.is_news == 1 %}selected{% endif %} value="news">Новость</option>
+                <option {% if page.is_news == 0 %}selected{% endif %} value="page">Страница</option>
               </select>
             </div>
 
