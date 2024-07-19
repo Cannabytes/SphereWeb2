@@ -1453,4 +1453,32 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  102 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/sphereapi',
+    'func' => 'controller\\sphereapi\\sphereapi::index',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  103 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/sphereapi/save',
+    'func' => 'controller\\sphereapi\\sphereapi::save',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );
