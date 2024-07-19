@@ -278,7 +278,6 @@
         let objectId = $(this).data("object-id");
         // Сохранение ссылки на текущий контекст `this`
         let self = this;
-
         AjaxSend("/admin/shop/remove/item", "POST", {shopId: shopId, objectId: objectId}, true).then(function (response) {
             let rowCount = table.find('tbody tr').length;
             if (rowCount === 1) {

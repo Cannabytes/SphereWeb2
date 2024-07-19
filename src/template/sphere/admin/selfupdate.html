@@ -24,7 +24,7 @@
                                 <div class="text-success" id="messagedata"></div>
                                 <button id="startUpdate" class="btn btn-success">Проверить и обновить ПО</button>
                                 <div class="d-none" id="loading">
-                                    Идет обновление. Пожалуйста, подождите...<br>
+                                    Пожалуйста, подождите...<br>
                                     <span id="progressText" class=""></span>
                                 </div>
 
@@ -57,6 +57,7 @@
     $('#startUpdate').on('click', function (e) {
         e.preventDefault();
         $(this).attr('disabled', 'disabled');
+        checkProgress();
 
         $.ajax({
             url: '/github/update',
@@ -65,7 +66,6 @@
                 if(response.ok){
                     $("#messagedata").text("Обновление не требуется")
                 }
-                checkProgress();
             }
         });
 

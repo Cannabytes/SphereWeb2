@@ -1,42 +1,33 @@
-{# Максимальный онлайн для каждого сервера по порядку #}
-
-{% set maxOnline = [
-    1000, 
-    1200, 
-    2000,  
-    1500,  
-    ] 
-%}
-
 <div class="sidebar__servers servers">
     <div class="heading">
-        <h3 class="title mt mb">{{phrase("servers_title")|raw}}</h3>
+        <h3 class="title mt mb">{{ phrase("servers_title")|raw }}</h3>
     </div>
     <div class="servers__list">
-        {% for server in server_online_status() %}
+        {% for server in getServerAll() %}
+        {% if server.getStatus().isEnable() %}
         <a class="servers__server server" data-gw-server>
             <div class="server__container">
                 <div class="server__row">
                     <div class="server__title">
-                        {{server.name}}
-                        <span class="color-orange">x{{server.rateExp}}</span>
-                        - {{server.chronicle}}
+                        {{ server.name }}
+                        <span class="color-orange">x{{ server.rateExp }}</span>
+                        - {{ server.chronicle }}
                     </div>
                     <div class="server__online">
-                        {% if server.connect_game %}
-                            Online
+                        {% if server.getStatus().getGameServer() %}
+                        <span class="color-orange">Online</span>
                         {% else %}
-                            Offline
-                        {% endif %}:
-                        <span class="color-orange" data-server-percent>0</span><span class="color-orange">%</span>
+                        Offline
+                        {% endif %}
                     </div>
                 </div>
-                <div class="server__progress" data-gw-server-online="{{server.player_count_online}}" data-gw-server-online-max="{{maxOnline[loop.index0]}}">
-                    <div class="server__load" data-server-load=""></div>
+                <div class="server__progress" data-gw-server-online="{{ server.getStatus().getOnline() }}" data-gw-server-online-max="{{ server.getMaxOnline() }}">
+                    <div class="server__load" data-server-load="" style="width: {{ server.getStatus().getOnline() * server.getMaxOnline() / 100 }}%;"></div>
                 </div>
             </div>
         </a>
+        {% endif %}
         {% endfor %}
     </div>
 </div>
-<!-- END  servers -->
+<!-- END servers -->

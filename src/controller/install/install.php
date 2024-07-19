@@ -285,7 +285,7 @@ const __TOKEN__ = \"$token\";\n"
               "INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)"
             );
             $query->execute([
-              $lastCommitData['sha'],
+              $lastCommitData['hash'],
               $lastCommitData['author'],
               $lastCommitData['url'],
               $lastCommitData['message'],
@@ -441,7 +441,7 @@ const __TOKEN__ = \"$token\";\n"
             $commit = $commits[0];
 
             return [
-              'sha'     => $commit['sha'],
+              'hash'     => $commit['sha'],
               'author'  => $commit['commit']['author']['name'],
               'url'     => $commit['html_url'],
               'message' => $commit['commit']['message'],
