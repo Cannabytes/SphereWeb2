@@ -44,6 +44,7 @@
 </div>
 
 {# Отправка коинов в игру, на персонажа #}
+{% if config().enabled().isEnableSendBalanceGame() %}
 <div class="modal modal-lg fade" id="sendToPlayer" tabindex="-1" aria-labelledby="sendToPlayer-ComposeLabel"
      aria-hidden="true">
   <div class="modal-dialog">
@@ -131,6 +132,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModal" aria-hidden="true">
   <div class="modal-dialog">

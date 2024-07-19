@@ -61,7 +61,8 @@
         </li>
         {% endif %}
 
-        <li class="slide">
+        <li class="slide enable_send_balance_game" {% if config().enabled().isEnableSendBalanceGame()== false
+            %}style="display: none;" {% endif %}>
           <a href="#" data-bs-toggle="modal" data-bs-target="#sendToPlayer" class="side-menu__item">
             <i class="fe fe-corner-down-right side-menu__icon"></i>
             <span class="side-menu__label">{{phrase('donate_coin_to_game')|raw}}</span>

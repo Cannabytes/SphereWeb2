@@ -61,8 +61,8 @@
       <!-- End::header-element -->
 
       {# -------------------------------------------------------------- #}
-
-      <div class="header-element cart-dropdown">
+      <div class="header-element cart-dropdown enable_send_balance_game" {% if config().enabled().isEnableSendBalanceGame()== false
+           %}style="display: none;" {% endif %}>
         <!-- Start::header-link|dropdown-toggle -->
         <a data-bs-toggle="modal" data-bs-target="#sendToPlayer" href="javascript:void(0);" class="header-link bg-info-transparent" >
           <span class="fs-14 fw-semibold text-info">{{phrase('donate_coin_to_game')|raw}}</span>

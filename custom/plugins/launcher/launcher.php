@@ -17,11 +17,6 @@ class launcher
     public function show($launcher_name = null)
     {
         $serverInfo = server::getServer(user::self()->getServerId());
-
-        tpl::addVar(
-          "tokenApi",
-          "iJUUs861cDCAcApwSGc8+WjdiQwJnxEo5CJIu3OJP0KSLNLSdc7wluKOUQ8+zCcRUfNfOLNTnCZuz5AiuRPdjCPKw+a6+zCodWRwZ89MKdDEK1uwRhFdWNHfCNN9qffWmvmBcam/2Q04zc7tKlalc/9IDMpNZsXwSeP9gYvJ6IOxrnd71LXTxhJtzOuB1vV7qLcQq8JJJuQw6T8FjfR5MVn2lza7VJ0UcwyEJvW2njg="
-        );
         tpl::addVar("id", $serverInfo->getId());
         tpl::addVar("chronicle", $serverInfo->getChronicle());
         tpl::displayPlugin("/launcher/tpl/show.html");

@@ -8,7 +8,7 @@ $routes = [
             "pattern" => "/launcher",
             "file"    => "launcher.php",
             "call"    => function() {
-                (new \launcher\metamask())->show();
+                (new \launcher\launcher())->show();
             },
        ],
     [
@@ -16,7 +16,7 @@ $routes = [
         "pattern" => "/launcher/{id}",
         "file" => "launcher.php",
         "call" => function ($id) {
-            (new \launcher\metamask())->show($id);
+            (new \launcher\launcher())->show($id);
         },
     ],
     [
@@ -24,7 +24,7 @@ $routes = [
         "pattern" => "/admin/launcher/add",
         "file" => "launcher.php",
         "call" => function(){
-            (new \launcher\metamask())->add();
+            (new \launcher\launcher())->add();
         }
     ],
     [
@@ -32,7 +32,7 @@ $routes = [
         "pattern" => "/admin/launcher/add",
         "file" => "launcher.php",
         "call" => function(){
-            (new \launcher\metamask())->saveConfig();
+            (new \launcher\launcher())->saveConfig();
         }
     ],
     [
@@ -40,7 +40,7 @@ $routes = [
         "pattern" => "/admin/launcher",
         "file" => "launcher.php",
         "call" => function(){
-            (new \launcher\metamask())->desc();
+            (new \launcher\launcher())->desc();
         }
     ],
     [
@@ -48,7 +48,7 @@ $routes = [
         "pattern" => "/admin/launcher/edit/{id}",
         "file" => "launcher.php",
         "call" => function($id){
-            (new \launcher\metamask())->edit($id);
+            (new \launcher\launcher())->edit($id);
         }
     ],
     [
@@ -56,7 +56,7 @@ $routes = [
         "pattern" => "/admin/launcher/edit",
         "file" => "launcher.php",
         "call" => function(){
-            (new \launcher\metamask())->editSave();
+            (new \launcher\launcher())->editSave();
         }
     ],
     [
@@ -64,7 +64,7 @@ $routes = [
         "pattern" => "/admin/launcher/set/server/default",
         "file" => "launcher.php",
         "call" => function(){
-            (new \launcher\metamask())->setServerDefault();
+            (new \launcher\launcher())->setServerDefault();
         }
     ],
     [
@@ -72,7 +72,7 @@ $routes = [
         "pattern" => "/admin/launcher/remove",
         "file" => "launcher.php",
         "call" => function(){
-            (new \launcher\metamask())->removeLauncher();
+            (new \launcher\launcher())->removeLauncher();
         }
     ],
 
@@ -81,7 +81,7 @@ $routes = [
         "pattern" => "/admin/launcher/create/patch",
         "file" => "launcher.php",
         "call" => function () {
-            (new \launcher\metamask())->admin();
+            (new \launcher\launcher())->admin();
         },
     ],
     [
@@ -89,7 +89,7 @@ $routes = [
         "pattern" => "/admin/launcher/update/patch",
         "file" => "launcher.php",
         "call" => function () {
-            (new \launcher\metamask())->updatePatch();
+            (new \launcher\launcher())->updatePatch();
         },
     ],
 
