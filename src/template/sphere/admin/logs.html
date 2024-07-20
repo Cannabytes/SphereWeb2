@@ -11,7 +11,7 @@
       <div class="card custom-card">
         <div class="card-header">
           <div class="card-title">
-            Сортировка
+            {{ phrase('output_sorting') }}
           </div>
         </div>
         <div class="card-body row">
@@ -23,7 +23,7 @@
             </select>
           </div>
           <div class="col-xl-4">
-            <button type="submit" class="btn btn-primary">Применить</button>
+            <button type="submit" class="btn btn-primary">{{ phrase('apply') }}</button>
           </div>
         </div>
 
@@ -34,23 +34,23 @@
       <div class="card custom-card">
         <div class="card-header">
           <div class="card-title">
-            Обновление
+            {{phrase('auto_update_time')}}
           </div>
         </div>
         <div class="card-body row">
 
           <div class="col-xl-8">
             <select id="update-time" class="js-example-placeholder-single js-states form-control">
-              <option value="3" selected>3 сек.</option>
-              <option value="7">7 сек.</option>
-              <option value="10">10 сек.</option>
-              <option value="30">30 сек.</option>
-              <option value="60">1 мин.</option>
-              <option value="0">Не обновлять</option>
+              <option value="3" selected>3 {{phrase('sec')}}.</option>
+              <option value="7">7 {{phrase('sec')}}.</option>
+              <option value="10">10 {{phrase('sec')}}.</option>
+              <option value="30">30 {{phrase('sec')}}.</option>
+              <option value="60">1 {{phrase('sec')}}.</option>
+              <option value="0">{{phrase('do_not_update')}}</option>
             </select>
           </div>
           <div class="col-xl-4">
-            <button type="submit" class="btn btn-primary">Применить</button>
+            <button type="submit" class="btn btn-primary">{{ phrase('apply') }}</button>
           </div>
 
         </div>

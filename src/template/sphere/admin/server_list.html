@@ -10,12 +10,12 @@
       <div class="card custom-card">
         <div class="card-header justify-content-between">
           <div class="card-title">
-            Мои сервера
+            {{ phrase('my_servers') }}
           </div>
 
           {% if sphereAPIError == false %}
           <div class="prism-toggle">
-            <a href="/admin/server/add/new" class="btn btn-sm btn-success">Добавить сервер</a>
+            <a href="/admin/server/add/new" class="btn btn-sm btn-success">{{phrase('add_server')}}</a>
           </div>
           {% endif %}
 
@@ -25,7 +25,7 @@
 
             {% if sphereAPIError %}
             <div class="alert alert-danger" role="alert">
-              Ошибка соединения с Sphere API
+              {{phrase('sphere_api_connection_error')}}
             </div>
             {% endif %}
 
@@ -105,21 +105,21 @@
                       {% set status_server_release = server.getServerData('status_server_release').val ?? "none" %}
 
                       <p class="text-muted ms-0 mb-2"><span
-                        class="font-weight-semibold me-2">Start Server Date:</span><span> {{ phrase(status_server_release) }}</span>
+                        class="font-weight-semibold me-2">{{phrase('server_start_date')}}:</span><span> {{ phrase(status_server_release) }}</span>
                       </p>
-                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">Chronicle:</span><span> {{ server.getServerData('knowledge_base').val ?? "none" }}</span>
+                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">{{phrase('game_version')}} :</span><span> {{ server.getServerData('knowledge_base').val ?? "none" }}</span>
                       </p>
-                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">Max Online:</span><span> {{ server.getServerData('max_online').val ?? "none" }}</span>
+                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">{{phrase('max_expected_online')}} :</span><span> {{ server.getServerData('max_online').val ?? "none" }}</span>
                       </p>
 
                       <a class="btn btn-success btn-sm shadow-success btn-wave waves-effect waves-light"
-                         href="/admin/server/edit/{{server.getId()}}">Изменить информацию сервера</a>
+                         href="/admin/server/edit/{{server.getId()}}">{{ phrase('edit_server_info') }}</a>
 
                       <a class="btn btn-success btn-sm shadow-success btn-wave waves-effect waves-light"
-                         href="/admin/server/statistic/{{server.getId()}}">Статистика</a>
+                         href="/admin/server/statistic/{{server.getId()}}">{{ phrase('menu_statistics') }}</a>
 
                       <button class="btn btn-danger btn-sm shadow-success btn-wave waves-effect waves-light removeServer"
-                      data-server-id="{{server.getId()}}">Удаление</button>
+                      data-server-id="{{server.getId()}}">{{ phrase('delete') }}</button>
 
                     </div>
                   </div>
@@ -140,7 +140,7 @@
       <div class="card custom-card">
         <div class="card-header justify-content-between">
           <div class="card-title">
-            Редактирование сервера {{serverInfo.getName()}} x{{serverInfo.getRateExp()}}
+            {{ phrase('server_parameter_change') }} - {{serverInfo.getName()}} x{{serverInfo.getRateExp()}}
           </div>
         </div>
         <div class="card-body">
@@ -150,14 +150,14 @@
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                         data-bs-target="#collapsecustomicon1One" aria-expanded="false"
                         aria-controls="collapsecustomicon1One">
-                  Общее
+                  {{ phrase('general') }}
                 </button>
               </h2>
               <div id="collapsecustomicon1One" class="accordion-collapse collapse"
                    aria-labelledby="headingcustomicon1One" data-bs-parent="#accordioncustomicon1Example" style="">
                 <div class="accordion-body">
 
-                  <p class="mb-1 fw-semibold text-muted op-5 fs-20">Общая информация о сервере</p>
+                  <p class="mb-1 fw-semibold text-muted op-5 fs-20">{{ phrase('general_server_info') }}</p>
 
                   <div class="row gy-4 mb-4">
                     <div class="col-xl-4">
@@ -210,13 +210,13 @@
 
                   </div>
 
-                  <p class="mb-1 fw-semibold text-muted op-5 fs-20">Для проверки статуса сервера</p>
+                  <p class="mb-1 fw-semibold text-muted op-5 fs-20">{{ phrase('check_server_status') }}</p>
 
                   <div class="col-xl-12">
 
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" role="switch" id="enableStatusServer" checked="">
-                      <label class="form-check-label" for="enableStatusServer">Включить вывод статуса сервера</label>
+                      <label class="form-check-label" for="enableStatusServer">{{ phrase('enable_server_status_display') }}</label>
                     </div>
 
                     <div class="row">
@@ -277,7 +277,7 @@
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                         data-bs-target="#collapsecustomicon1Two" aria-expanded="false"
                         aria-controls="collapsecustomicon1Two">
-                  Сборка сервера
+                  {{phrase('server_build')}}
                 </button>
               </h2>
               <div id="collapsecustomicon1Two" class="accordion-collapse collapse"
@@ -285,12 +285,12 @@
                 <div class="accordion-body">
 
                   <div class="p-0">
-                    <p class="mb-1 fw-semibold text-muted op-5 fs-20">Информация о сборке сервера</p>
+                    <p class="mb-1 fw-semibold text-muted op-5 fs-20">{{phrase('server_build_info')}}</p>
 
                     <div class="row gy-4">
 
                       <div class="col-xxl-4">
-                        <label for="platform" class="form-label">Платформа</label>
+                        <label for="platform" class="form-label">{{phrase('platform')}}</label>
                         <select disabled class="form-control" data-trigger name="choices-single-default" id="platform">
                           <option selected value="java">Java</option>
                           <option disabled value="pts">PTS</option>
@@ -298,7 +298,7 @@
                       </div>
 
                       <div class="col-xxl-4">
-                        <label for="version_client" class="form-label">Версия игры</label>
+                        <label for="version_client" class="form-label">{{ phrase('game_version') }}</label>
                         <select name="version_client" class="form-control" data-trigger id="version_client">
                           {% for client in client_list_default %}
                           <option {% if client.name== serverInfo.getChronicle() %}selected{% endif %}>{{ client.name
@@ -309,7 +309,7 @@
                       </div>
 
                       <div class="col-xxl-4">
-                        <label for="sql_base_source" class="form-label">Коллекция запросов сервера</label>
+                        <label for="sql_base_source" class="form-label">{{ phrase(34) }}</label>
                         <select class="form-control" data-trigger id="sql_base_source" name="sql_base_source">
                           {% for basename in collections %}
                           <option value="{{ basename }}">{{ basename }}</option>
@@ -324,7 +324,7 @@
                 <div class="card-footer">
                   <div class="float-end">
                     <button data-serverid="{{serverInfo.getId()}}" id="saveCollection" type="button" class="btn btn-sm btn-success m-1">
-                      Сохранить
+                      {{ phrase(89) }}
                     </button>
                   </div>
                 </div>
@@ -335,7 +335,7 @@
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                         data-bs-target="#collapsecustomicon1Three" aria-expanded="false"
                         aria-controls="collapsecustomicon1Three">
-                  База Данных Игрового сервера
+                  {{ phrase('game_server_database')}}
                 </button>
               </h2>
               <div id="collapsecustomicon1Three" class="accordion-collapse collapse"
@@ -344,15 +344,14 @@
 
                   <div class="p-0">
 
-                    <p class="mb-1 fw-semibold text-muted op-5 fs-20">Подключение к логину сервера</p>
+                    <p class="mb-1 fw-semibold text-muted op-5 fs-20">{{phrase('login_server_connection')}}</p>
 
-                    <p class="mb-1 fw-semibold text-warning op-5 ">Sphere Web не выводит данные подключения к базе
-                      данных.</p>
+                    <p class="mb-1 fw-semibold text-warning op-5 ">{{phrase('sphere_web_db_connection_error')}}</p>
 
 
                     <div class="row">
                       <div class="col-lg-6 col-xl-6 border-end border-inline-end-dashed">
-                        Подключение к базе данных логин-сервера
+                        {{ phrase(32) }}
 
                         <div class="row">
                           <div class="col-6">
@@ -406,7 +405,7 @@
                       </div>
 
                       <div class="col-lg-6 col-xl-6 ">
-                        Подключение к базе данных гейм-сервера
+                        {{ phrase(33) }}
 
                         <div class="row">
                           <div class="col-6">
@@ -443,7 +442,7 @@
                         <div class="row mb-4">
                           <div class="col-lg-6 ">
                             <div id="getDBNameGame" type="submit" class="btn btn-primary mb-2">
-                              <i class="fa fa-arrow-right opacity-50 me-1"></i> Проверка и выбрать базу данных
+                              <i class="fa fa-arrow-right opacity-50 me-1"></i> {{ phrase('check_and_select_db') }}
                             </div>
                           </div>
                         </div>
@@ -451,9 +450,9 @@
                         <div class="row">
                           <div class="form-floating mb-4 col-6">
                             <select class="form-select" id="game_name" name="game_name">
-                              <option selected="" disabled="">Не выбрано</option>
+                              <option selected="" disabled="">{{ phrase('no_select') }}</option>
                             </select>
-                            <label class="form-label" for="game_name">База Данных для GameServer</label>
+                            <label class="form-label" for="game_name">{{ phrase('db_game') }}</label>
                           </div>
                         </div>
 
@@ -472,7 +471,7 @@
                   <div class="float-end">
                     <button id="saveMySQL" data-serverid="{{serverInfo.getId()}}" type="button"
                             class="btn btn-sm btn-success m-1">
-                      Сохранить
+                      {{ phrase(271) }}
                     </button>
                   </div>
                 </div>
@@ -484,7 +483,7 @@
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                         data-bs-target="#collapsecustomicon1QQQ" aria-expanded="false"
                         aria-controls="collapsecustomicon1QQQ">
-                  Дополнительные настройки
+                  {{ phrase('additional_settings') }}
                 </button>
               </h2>
               <div id="collapsecustomicon1QQQ" class="accordion-collapse collapse"
@@ -496,14 +495,14 @@
                       <div class="d-sm-flex align-items-top">
 
                         <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
-                          <p class="mb-0 lh-1">Дата запуска сервера</p>
-                          <span class="fs-11 text-muted op-7">Дата и время запуска официального сервера</span>
+                          <p class="mb-0 lh-1">{{phrase('server_launch_date')}}</p>
+                          <span class="fs-11 text-muted op-7">{{phrase('official_server_launch_datetime')}}</span>
                         </div>
 
                         <div class="col-2">
                           <input type="text" class="form-control" id="date_start_server" name="date_start_server"
                                  value="{{ serverInfo.getStartServerDate() }}"
-                                 placeholder="Время запуска сервера">
+                                 placeholder="{{phrase('server_start_time')}}">
                         </div>
 
                       </div>
@@ -512,8 +511,8 @@
                     <li class="list-group-item">
                       <div class="d-sm-flex align-items-top">
                         <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
-                          <p class="mb-0 lh-1">Chronicle</p>
-                          <span class="fs-11 text-muted op-7">Базу знаний из какой версии игры использовать</span>
+                          <p class="mb-0 lh-1">{{ phrase('game_version') }}</p>
+                          <span class="fs-11 text-muted op-7">{{phrase('knowledge_base_version')}}</span>
                         </div>
 
 
@@ -537,8 +536,8 @@
                     <li class="list-group-item">
                       <div class="d-sm-flex align-items-top">
                         <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
-                          <p class="mb-0 lh-1">Максимальный онлайн</p>
-                          <span class="fs-11 text-muted op-7">Какое количество игроков может играть на сервере. Это значение может быть использовано для progress bar на главной странице.</span>
+                          <p class="mb-0 lh-1">{{ phrase(572) }}</p>
+                          <span class="fs-11 text-muted op-7">{{phrase('max_players_for_progress_bar')}}</span>
                         </div>
 
                         <div class="col-2">
@@ -552,8 +551,8 @@
                     <li class="list-group-item">
                       <div class="d-sm-flex align-items-top">
                         <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
-                          <p class="mb-0 lh-1">Сброс HWID</p>
-                          <span class="fs-11 text-muted op-7">Если в сборке реализован HWID, тогда можете включить пользователям функцию сброса HWID.</span>
+                          <p class="mb-0 lh-1">{{phrase('reset_hwid')}}</p>
+                          <span class="fs-11 text-muted op-7">{{phrase('enable_hwid_reset_function')}}</span>
                         </div>
                         <div class="col-2 form-check form-check-lg form-switch">
                           <input {% if serverInfo.getServerData('resetHWID').getVal() %}checked{% endif %} class="form-check-input" type="checkbox" id="resetHWID">
@@ -569,7 +568,7 @@
                   <div class="float-end">
                     <button id="saveOther" data-serverid="{{serverInfo.getId()}}" type="button"
                             class="btn btn-sm btn-success m-1">
-                      Сохранить
+                      {{ phrase(271) }}
                     </button>
                   </div>
                 </div>

@@ -11,7 +11,7 @@
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="card-title">
-                        Языки
+                        {{ phrase('lang') }}
                     </div>
                 </div>
 
@@ -37,11 +37,11 @@
             <div class="card custom-card">
                 <div class="card-header">
                     <div class="">
-                        <button id="add_new_phrase" class="btn btn-sm btn-primary-light">Добавить фразу</button>
+                        <button id="add_new_phrase" class="btn btn-sm btn-primary-light">{{ phrase('add_phrase') }}</button>
                     </div>
 
                     <div class="">
-                        <button id="save_phrases" class="btn btn-sm btn-primary-light">Сохранить таблицу</button>
+                        <button id="save_phrases" class="btn btn-sm btn-primary-light">{{ phrase('save_table') }}</button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -52,7 +52,7 @@
 
                             <tr>
                                 <th data-save="false" style="width: 1px;"></th>
-                                <th data-save="false">Ключ</th>
+                                <th data-save="false">{{phrase('key')}}</th>
                                 {% for lang in all_phrase().lang_list %}
                                 <th data-save="true">{{lang|upper}}</th>
                                 {% endfor %}
@@ -67,7 +67,9 @@
                                     <div class="dropdown">
                                         <a aria-label="anchor" class="nav-link text-muted" href="javascript:void(0);" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fe fe-more-vertical"></i></a>
                                         <div class="dropdown-menu dropdown-menu-end" style="">
-                                            <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i class="fe fe-copy me-2"></i>{% verbatim %}{{ phrase('{% endverbatim %}{{ key }}{% verbatim %}') }}{% endverbatim %}</a>
+
+
+                                            <a class="dropdown-item d-inline-flex align-items-center copy" href="javascript:void(0)"><i class="fe fe-copy me-2"></i>{% verbatim %}{{ phrase({% endverbatim %}{% if is_numeric(key) %}{{ key }}{% else %}'{{ key }}'{% endif %}{% verbatim %}) }}{% endverbatim %}</a></a>
                                             <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i class="fe fe-corner-up-left me-2"></i> Reply</a>
                                             <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i class="fe fe-flag me-2"></i> Report Abuse</a>
                                             <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i class="fe fe-trash-2 me-2"></i> Delete</a>
@@ -108,6 +110,13 @@
 <script>
 
     $(document).ready(function() {
+
+        $('.copy').click(function() {
+            var textToCopy = $(this).text();
+            navigator.clipboard.writeText(textToCopy).then(function() { }).catch(function(error) {
+                console.error("Ошибка при копировании: ", error);
+            });
+        });
 
         $('#phraseDataTable').DataTable({
             responsive: false,

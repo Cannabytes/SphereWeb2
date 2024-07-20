@@ -11,10 +11,10 @@
                     <div class="card custom-card ">
                         <div class="card-header justify-content-between ">
                             <div class="card-title fw-semibold">
-                                Панель добавления товаров в магазин
+                                {{ phrase('product_addition_panel') }}
                             </div>
                             <div>
-                                Общая стоимость: <label id="product_cost_select"></label> SphereCoin
+                                {{phrase('total_cost')}}: <label id="product_cost_select"></label> Donate Coin
                             </div>
                         </div>
 
@@ -22,7 +22,7 @@
 
                             <div class="row align-items-center mb-0">
 
-                                <small id="itemName" class="fs-14">No Select Item</small>
+                                <small id="itemName" class="fs-14">{{ phrase('no_items_selected') }}</small>
 
                                 <div class="col-xl-1 mb-0">
                                     <div class="input-group">
@@ -46,20 +46,20 @@
 
                                 <div class="col-xl-2">
                                     <div class="input-group">
-                                        <div class="input-group-text">Стоимость</div>
+                                        <div class="input-group-text">{{ phrase(72) }}</div>
                                         <input value="1" min="0" id="cost" step="0.01" type="number" class="form-control" placeholder="1">
                                     </div>
                                 </div>
 
                                 <div class="col-xl-2">
                                     <div class="input-group">
-                                        <div class="input-group-text">Заточка</div>
+                                        <div class="input-group-text">{{phrase('enchant')}}</div>
                                         <input value="0" min="0" id="enchant" step="1" type="number" class="form-control" placeholder="0">
                                     </div>
                                 </div>
 
                                 <div class="col-xl-2">
-                                    <button id="addItemToTable" type="submit" class="btn btn-primary">Добавить товар</button>
+                                    <button id="addItemToTable" type="submit" class="btn btn-primary">{{phrase('add_item')}}</button>
                                 </div>
                             </div>
                         </div>
@@ -85,7 +85,7 @@
 
 
                         <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-end">
-                            <button class="btn btn-success-light m-1" id="AddToProducts">Добавить в магазин<i class="bi bi-plus-lg ms-2"></i></button>
+                            <button class="btn btn-success-light m-1" id="AddToProducts">{{phrase('add_to_store')}}<i class="bi bi-plus-lg ms-2"></i></button>
                         </div>
 
                     </div>
@@ -110,7 +110,9 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    {% set TotalCost = 0 %}
                                     {% for item in object %}
+                                    {% set TotalCost = TotalCost + item.getCost() %}
                                     <tr>
                                         <td><span class="avatar avatar-sm "><img
                                                 src="{{item.getItemInfo().getIcon()}}" alt=""></span>
@@ -128,7 +130,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="card-footer">Общая стоимость: 1 SphereCoin</div>
+                            <div class="card-footer">{{ phrase('total_cost') }}: {{TotalCost}} Donate Coin</div>
                         </div>
                     </div>
 

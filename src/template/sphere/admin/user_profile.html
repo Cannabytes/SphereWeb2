@@ -37,7 +37,7 @@
           <div class="d-flex align-items-center justify-content-between w-100">
             <div class="py-3 border-end w-100 text-center">
               <p class="fw-bold fs-20  text-shadow mb-0">{{userInfo.getDonate()}}</p>
-              <p class="mb-0 fs-12 text-muted ">Баланс </p>
+              <p class="mb-0 fs-12 text-muted ">{{phrase('user_balance')}} </p>
             </div>
 
           </div>
@@ -97,7 +97,7 @@
                       <button class="nav-link active" id="activity-tab" data-bs-toggle="tab"
                               data-bs-target="#activity-tab-pane" type="button" role="tab"
                               aria-controls="activity-tab-pane" aria-selected="true"><i
-                        class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>Лог пользователя
+                        class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>{{ phrase('user_log') }}
                       </button>
                     </li>
 
@@ -105,7 +105,7 @@
                       <button class="nav-link " id="donate-tab" data-bs-toggle="tab"
                               data-bs-target="#donate-tab-pane" type="button" role="tab"
                               aria-controls="donate-tab-pane" aria-selected="true"><i
-                        class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>Лог Пожертвований
+                        class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>{{phrase('donation_log')}}
                       </button>
                     </li>
 
@@ -113,7 +113,7 @@
                       <button class="nav-link" id="posts-tab" data-bs-toggle="tab"
                               data-bs-target="#posts-tab-pane" type="button" role="tab"
                               aria-controls="posts-tab-pane" aria-selected="false"><i
-                        class="ri-bill-line me-1 align-middle d-inline-block fs-16"></i>Редактировать
+                        class="ri-bill-line me-1 align-middle d-inline-block fs-16"></i>{{ phrase('edit') }}
                       </button>
                     </li>
 
@@ -161,7 +161,7 @@
 
                           <div class="flex-fill">
                             <p class="mb-0 fw-semibold">{{history.message}}</p>
-                            <p class="mb-0 text-muted fs-12">Донат Бонус : +{{history.point}}
+                            <p class="mb-0 text-muted fs-12">{{phrase('donation_bonus')}} : +{{history.point}}
                               <span class="badge bg-success-transparent ms-3">{{history.pay_system}} {% if history.id_admin_pay != null %}| {{getUser(history.id_admin_pay).getName()}} {% endif %}</span></p>
                           </div>
 
@@ -181,7 +181,7 @@
                         <div class="card custom-card">
                           <div class="card-header justify-content-between">
                             <div class="card-title">
-                              Редактирование параметров пользователей
+                              {{phrase('edit_user_parameters')}}
                             </div>
                           </div>
                           <form action="/admin/user/edit" method="POST" class="card-body">
@@ -189,35 +189,35 @@
                             <input type="hidden" name="id" value="{{userInfo.getId()}}">
 
                             <div class="mb-3">
-                              <label for="email" class="form-label fs-14 text-dark">Почта</label>
+                              <label for="email" class="form-label fs-14 text-dark">{{ phrase('email') }}</label>
                               <input id="email" type="text" class="form-control" name="email" placeholder="" value="{{userInfo.getEmail()}}">
                             </div>
 
                             <div class="mb-3">
-                              <label for="name" class="form-label fs-14 text-dark">Ник</label>
+                              <label for="name" class="form-label fs-14 text-dark">{{ phrase('user_nick') }}</label>
                               <input name="name" id="name" type="text" class="form-control" placeholder="" value="{{userInfo.getName()}}">
                             </div>
 
 
                             <div class="mb-3">
-                              <label for="password" class="form-label fs-14 text-dark">Password</label>
+                              <label for="password" class="form-label fs-14 text-dark">{{ phrase('password') }}</label>
                               <input name="password" type="password" class="form-control" id="password" placeholder="">
                             </div>
 
                             <div class="mb-3">
-                              <label for="group" class="form-label">Группа</label>
+                              <label for="group" class="form-label">{{ phrase('group') }}</label>
                               <select name="group" id="group" class="form-select form-select-lg">
-                                <option {% if userInfo.getAccessLevel() == "user" %}selected{% endif %} value="user">Пользователь</option>
-                                <option {% if userInfo.getAccessLevel() == "admin" %}selected{% endif %} value="admin">Администратор</option>
+                                <option {% if userInfo.getAccessLevel() == "user" %}selected{% endif %} value="user">{{ phrase('userModel') }}</option>
+                                <option {% if userInfo.getAccessLevel() == "admin" %}selected{% endif %} value="admin">{{ phrase('admin') }}</option>
                               </select>
                             </div>
 
                             <div class="mb-3">
-                              <label for="donate" class="form-label fs-14 text-dark">Баланс</label>
+                              <label for="donate" class="form-label fs-14 text-dark">{{ phrase(486) }}</label>
                               <input id="donate" name="donate" type="number" step="0.1" class="form-control" placeholder="" value="{{userInfo.getDonate()}}">
                             </div>
 
-                            <button class="btn btn-primary" type="submit">Сохранить</button>
+                            <button class="btn btn-primary" type="submit">{{ phrase(89) }}</button>
                           </form>
 
                         </div>

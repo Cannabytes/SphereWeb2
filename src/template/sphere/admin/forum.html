@@ -10,7 +10,7 @@
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
                         <div class="card-title">
-                            Настройки подключения к форуму
+                            {{phrase('forum_connection_settings')}}
                         </div>
                     </div>
                     <div id="forumForm" class="card-body row gx-3 gy-2 align-items-center mt-0 ">
@@ -18,30 +18,30 @@
                             <div class="form-check">
                                 <input {% if forum().isEnabled() %}checked{% endif %} name="enabled" class="form-check-input" type="checkbox" id="autoSizingCheck2">
                                 <label class="form-check-label" for="autoSizingCheck2">
-                                    Включить форум
+                                    {{phrase('enable_forum')}}
                                 </label>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-sm-2">
-                            Движок форума
+                            {{phrase('forum_engine')}}
                             <label class="visually-hidden" for="specificSizeSelect">Preference</label>
                             <select name="engine" class="form-select" id="specificSizeSelect">
                                 <option {% if forum().getEngine() == 'xenforo' %}selected{% endif %} value="xenforo">XenForo</option>
-                                <option {% if forum().getEngine() == 'ips4' %}selected{% endif %} value="ips4">IPS 4</option>
+                                <option disabled {% if forum().getEngine() == 'ips4' %}selected{% endif %} value="ips4">IPS 4</option>
                             </select>
                             </div>
 
                             <div class="col-sm-2">
-                                Ссылка на форум
+                                {{phrase('forum_link')}}
                             <input name="url" type="text" class="form-control" id="url" value="https://forum.example.net" placeholder="https://forum.example.net">
                             </div>
                         </div>
 
                         <hr>
                         <label class="form-check-label" for="autoSizingCheck2">
-                            Подключение к БД форума
+                            {{phrase('forum_db_connection')}}
                         </label>
                             <div class="col-sm-2">
                                 <label class="" for="host">Host</label>
@@ -65,19 +65,19 @@
                             </div>
                             <hr>
                             <div class="col-sm-3">
-                                Сортировка вывода
+                                {{phrase('output_sorting')}}
                                 <select name="sort" class="form-select">
-                                    <option selected value="messages">По сообщениям</option>
-                                    <option value="threads">По темам</option>
+                                    <option selected value="messages">{{phrase('by_messages')}}</option>
+                                    <option value="threads">{{phrase('by_topics')}}</option>
                                 </select>
                             </div>
                             <div class="col-sm-2">
-                                <label class="" for="elements">Кол-во выводимых элементов</label>
+                                <label class="" for="elements">{{phrase('items_displayed')}}</label>
                                 <input name="elements" min="1" max="100" type="number" class="form-control" id="elements" placeholder="10" value="{{forum().getElements()}}">
                             </div>
                             <hr>
                             <div class="col-auto">
-                                <button id="saveForum" type="button" class="btn btn-primary">Подключить</button>
+                                <button id="saveForum" type="button" class="btn btn-primary">{{phrase('connect')}}</button>
                             </div>
                     </div>
 

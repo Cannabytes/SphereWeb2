@@ -11,10 +11,10 @@
           <div class="card custom-card ">
             <div class="card-header justify-content-between ">
               <div class="card-title fw-semibold">
-                Стартовый набор
+                {{ phrase('starter_pack') }}
               </div>
               <div>
-                Общая стоимость: <label id="product_cost_select"></label> SphereCoin
+                {{ phrase('total_cost') }}: <label id="product_cost_select"></label> {{phrase('donate_coin')}}
               </div>
             </div>
 
@@ -27,13 +27,13 @@
                   <div class="form-floating">
                     <input type="email" class="form-control" id="startpack_name" placeholder="Premium Pack"
                            value="Premium Pack">
-                    <label for="startpack_name">Название набора</label>
+                    <label for="startpack_name">{{phrase('starter_pack_name')}}</label>
                   </div>
                 </div>
                 <div class="col-md">
                   <div class="form-floating">
                     <input type="number" class="form-control" id="startpack_cost" placeholder="100" value="100">
-                    <label for="startpack_cost">Стоимость набора</label>
+                    <label for="startpack_cost">{{phrase('pack_price')}}</label>
                   </div>
                 </div>
               </div>
@@ -41,7 +41,7 @@
 
               <div class="row align-items-center mb-0">
 
-                <small id="itemName" class="fs-14">No Select Item</small>
+                <small id="itemName" class="fs-14">{{ phrase('no_items_selected') }}</small>
 
                 <div class="col-xl-1 mb-0">
                   <div class="input-group">
@@ -72,7 +72,7 @@
                 </div>
 
                 <div class="col-xl-2">
-                  <button id="addItemToTable" type="submit" class="btn btn-primary">Добавить в набор</button>
+                  <button id="addItemToTable" type="submit" class="btn btn-primary">{{ phrase('add_to_pack') }}</button>
                 </div>
               </div>
             </div>
@@ -97,7 +97,7 @@
 
 
             <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-end">
-              <button class="btn btn-success-light m-1" id="AddToProductsPack">Добавить в магазин<i
+              <button class="btn btn-success-light m-1" id="AddToProductsPack">{{ phrase('add_to_store') }}<i
                 class="bi bi-plus-lg ms-2"></i></button>
             </div>
 
@@ -121,7 +121,7 @@
         <div class="card-header justify-content-between">
           <div class="card-title">{{ data.name }}</div>
 
-          <div class="ms-auto d-md-flex">Цена: {{ data.cost }} SphereCoin</div>
+          <div class="ms-auto d-md-flex">{{ phrase('price') }}: {{ data.cost }} SphereCoin</div>
 
         </div>
         <div class="card-body">

@@ -11,20 +11,19 @@
                 <div class="card custom-card">
                     <div class="card-header">
                         <div class="card-title">
-                            Обновление
+                            {{ phrase(444) }}
                         </div>
                     </div>
                     <div class="card-body">
 
                         <div class="">
                             <div class="tab-pane text-muted active show" id="home1" role="tabpanel">
-                                <p class="card-text">Экспериментальная функция для обновления программного обеспечения SphereWeb.</p>
-                                <p> Рекомендую иметь актуальный код программного обеспечения.</p>
+                                <p class="card-text">{{phrase('experimental_update_function')}}</p>
 
                                 <div class="text-success" id="messagedata"></div>
-                                <button id="startUpdate" class="btn btn-success">Проверить и обновить ПО</button>
+                                <button id="startUpdate" class="btn btn-success">{{phrase('check_update_software')}}</button>
                                 <div class="d-none" id="loading">
-                                    Пожалуйста, подождите...<br>
+                                    {{phrase('please_wait')}}<br>
                                     <span id="progressText" class=""></span>
                                 </div>
 
@@ -64,7 +63,7 @@
             method: 'POST',
             success: function (response) {
                 if(response.ok){
-                    $("#messagedata").text("Обновление не требуется")
+                    $("#messagedata").text("{{ phrase(463) }}")
                 }
             }
         });
@@ -86,7 +85,7 @@
                 }
 
                 var progress = response.progress;
-                $('#progressText').text('Прогресс: ' + progress + '%');
+                $('#progressText').text("{{ phrase('progress') }} : " + progress + '%');
 
                 if (progress < 100) {
                     setTimeout(checkProgress, 100);

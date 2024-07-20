@@ -8,7 +8,7 @@
     <div class="card custom-card">
       <div class="card-header justify-content-between">
         <div class="card-title">
-          Бонус коды
+          {{ phrase('bonus_codes') }}
         </div>
       </div>
       <div class="card-body">
@@ -74,7 +74,7 @@
   $('.copy').click(function () {
     let code = $(this).data('code')
     navigator.clipboard.writeText(code)
-    noticeSuccess("Код скопирован в буфер обмена")
+    noticeSuccess("{{ phrase('code_copied_clipboard') }}")
   })
 </script>
 

@@ -942,7 +942,6 @@
   function warehouseSelectItems() {
     var objectIdList = [];
     $('.warehouseInventory:checked').each(function () {
-      // Получаем значение атрибута data-object-id и добавляем его в массив, если чекбокс выбран и значение атрибута существует
       var objectId = $(this).data('object-id');
       if (objectId) {
         objectIdList.push(objectId);
@@ -952,11 +951,8 @@
   }
 
   $(document).on('click', '#warehouseSendItemsToPlayer', function () {
-    // Получаем выбранный элемент
     var selectedOption = $('#warehousePlayerSend option:selected');
-    // Получаем значение account из data-account
     var account = selectedOption.data('account');
-    // Получаем значение player из data-character
     var player = selectedOption.data('character');
 
     AjaxSend('/inventory/send', 'POST', {

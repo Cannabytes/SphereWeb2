@@ -3,20 +3,20 @@
   <div class="modal-dialog">
     <form action="/user/change" method="post" class="modal-content">
       <div class="modal-header">
-        <h6 class="modal-title" id="settings-ComposeLabel">Настройки</h6>
+        <h6 class="modal-title" id="settings-ComposeLabel">{{ phrase(54) }}</h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal"
                 aria-label="Close"></button>
       </div>
       <div class="modal-body px-4ву">
         <div class="row">
           <div class="col-xl-6 mb-2">
-            <label for="change_u_name" class="form-label">Название<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
+            <label for="change_u_name" class="form-label">{{ phrase(27) }}<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
             <input name="name" type="text" class="form-control" id="change_u_name" value="{{getUser().getName()}}">
           </div>
           <div class="col-xl-6 mb-2">
-            <label for="change_u_timezone" class="form-label">Часовой пояс<sup><i
+            <label for="change_u_timezone" class="form-label">{{ phrase('timezone') }}<sup><i
               class="ri-star-s-fill text-success fs-8"></i></sup></label>
-            <select name="timezone" class="form-control" name="change_u_timezone" id="change_u_timezone">
+            <select name="timezone" class="form-control" id="change_u_timezone">
               {% for timezone in timezone_list() %}
               <option {% if getUser().getTimezone()== timezone %}selected{% endif %} value="{{timezone}}">{{timezone}}
               </option>
@@ -26,18 +26,18 @@
 
           <i class="border-top d-block my-3"></i>
           <div class="col-xl-6 mb-2">
-            <label for="old_u_password" class="form-label text-dark fw-semibold">Старый Пароль</label>
+            <label for="old_u_password" class="form-label text-dark fw-semibold">{{ phrase('old_password') }}</label>
             <input name="password" type="password" class="form-control" id="old_u_password">
           </div>
           <div class="col-xl-6 mb-2">
-            <label for="new_u_password" class="form-label text-dark fw-semibold">Новый пароль</label>
+            <label for="new_u_password" class="form-label text-dark fw-semibold">{{ phrase(60) }}</label>
             <input name="new_password" type="password" class="form-control" id="new_u_password">
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Отмена</button>
-        <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Применить</button>
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ phrase('cancel') }}</button>
+        <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">{{ phrase('apply') }}</button>
       </div>
     </form>
   </div>
@@ -66,7 +66,7 @@
           {% set item = get_item_info(config().donate().getItemIdToGameTransfer()) %}
 
           {% if item == null %}
-            Увы, но в настоящее время нет предмета для перевода
+            {{ phrase('no_item_to_send') }}
           {% else %}
 
           <div class="col-xl-6 mb-2">
@@ -206,16 +206,11 @@
   function recalculateSphereCoinValue() {
     let muchSphereCoinVal = parseFloat($('#muchSphereCoin').val());
     let itemCountGameTransferCount = parseFloat($('#itemCountGameTransfer').data('count-items'));
-
     if (!isNaN(muchSphereCoinVal) && !isNaN(itemCountGameTransferCount)) {
       $('#itemCountGameTransfer').text(muchSphereCoinVal * itemCountGameTransferCount);
     }
   }
-
-  // Вызовем функцию пересчета при изменении значения в input
   $('#muchSphereCoin').on('input', recalculateSphereCoinValue);
-
-  // Первый пересчет при загрузке страницы
   $(document).ready(recalculateSphereCoinValue);
 </script>
 
@@ -228,7 +223,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <div class="card-title">
-          Покупка
+          {{ phrase('purchase') }}
         </div>
 
         <div>

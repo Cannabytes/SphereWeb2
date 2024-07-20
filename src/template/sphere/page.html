@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}qwe{% endblock %}
+{% block title %}{% endblock %}
 
 {% block content %}
 
@@ -25,7 +25,7 @@
               <span class="my-auto ms-2 text-muted fw-semibold">{{page.date_create|date("F d, Y")}}</span>
             </a>
             {% if getUser().isAdmin() %}
-            <a class="btn btn-sm btn-success" href="/admin/pages/edit/{{page.id}}">Редактировать</a>
+            <a class="btn btn-sm btn-success" href="/admin/pages/edit/{{page.id}}">{{ phrase('edit') }}</a>
             {% endif %}
           </div>
         </div>

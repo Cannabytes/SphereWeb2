@@ -9,7 +9,7 @@
     <div class="card custom-card">
       <div class="card-header justify-content-between">
         <div class="card-title">
-          Дополнительные расширения
+          {{phrase('additional_extensions')}}
         </div>
       </div>
       <div class="card-body">
@@ -17,30 +17,28 @@
           <table class="table  table-bordered">
             <thead>
             <tr>
-              <th style="width: 10%" scope="col">Название</th>
-              <th scope="col">Описание</th>
-              <th scope="col">Стоимость</th>
+              <th style="width: 10%" scope="col">{{ phrase(27) }}</th>
+              <th scope="col">{{ phrase(0) }}</th>
+              <th scope="col">{{ phrase(72) }}</th>
             </tr>
             </thead>
             <tbody>
             <tr>
 
-              <td><a href="/fun/wheel/admin" class="btn btn-sm btn-light">Рулетка удачи</a></td>
+              <td><a href="/fun/wheel/admin" class="btn btn-sm btn-light">{{phrase('lucky_wheel')}}</a></td>
               <td>
-                 Рулетка удачи это возможность предоставить пользователю шанс выиграть в игре.
+                 {{phrase('lucky_wheel_description')}}
               </td>
-              <td>10$/мес.</td>
+              <td>10$/{{ phrase('month') }}.</td>
 
             </tr>
             <tr>
 
-              <td><a href="/admin/launcher" class="btn btn-sm btn-light">Лаунчер</a></td>
+              <td><a href="/admin/launcher" class="btn btn-sm btn-light">{{ phrase('menu_launcher') }}</a></td>
               <td>
-                 Лаунчер Сферы - это самый быстрый и прогрессивное программное обеспечение для обновления игры.
-                 Скорость вычисления файлов необходимых для обновления и скорость загрузки файлов игры, самая высокая из всех существующих лаунчеров.
-                 Лаунчер Сферы универсальный, и игроку нет необходимости его устанавливать дважды.
+                 {{phrase('sphere_launcher_description')}}
               </td>
-              <td>10$/мес.</td>
+              <td>10$/{{ phrase('month') }}.</td>
             </tr>
 
             </tbody>

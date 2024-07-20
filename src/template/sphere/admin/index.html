@@ -14,9 +14,7 @@
       {% if sphereAPIError %}
       <div class="card custom-card">
         <div class="p-4 border-bottom border-block-end-dashed">
-          К сожалению сервер SphereAPI не доступен.
-          Попробуйте указать адрес сервера <a href="/admin/sphereapi">в настройках</a>.
-          Пожалуйста, обратитесь в службу поддержки.
+          {{ phrase('sphereapi_unavailable') }}
         </div>
       </div>
 
@@ -25,8 +23,8 @@
       {% if self_last_commit != sphere_last_commit %}
       <div class="card custom-card">
         <div class="p-4 border-bottom border-block-end-dashed">
-          <p class="fw-semibold mb-2 text-danger">Обнаружено обновление SphereWeb. Предлагаем обновить ПО.</p>
-          <a href="/admin/sphere/update" class="btn btn-light btn-wave btn-sm ms-auto">Перейти к обновлению</a>
+          <p class="fw-semibold mb-2 text-danger">{{ phrase('sphereweb_update_detected') }}</p>
+          <a href="/admin/sphere/update" class="btn btn-light btn-wave btn-sm ms-auto">{{ phrase('proceed_to_update') }}</a>
         </div>
       </div>
       {% endif %}
@@ -42,11 +40,11 @@
             <div class="flex-fill main-profile-info my-auto">
               <h5 class="fw-semibold mb-1 ">{{serverInfo.getName()}} x{{serverInfo.getRateExp()}} - {{serverInfo.getChronicle}}</h5>
               <div>
-                <p class="mb-1 text-muted">Активирован: до {{server.license_expiration_date|date('d.m.Y')}}</p>
-                <p class="mb-1 text-muted">Статус: Работает</p>
+                <p class="mb-1 text-muted">{{ phrase('activated_until') }} {{server.license_expiration_date|date('d.m.Y')}}</p>
+                <p class="mb-1 text-muted">{{ phrase('status') }}: Работает</p>
                 <p class="fs-12 op-7 mb-0">
-                  <span class="me-3 d-inline-flex align-items-center"><a href="/admin/server/statistic/{{server.id}}"><i class="ri-building-line me-1 align-middle"></i>Статистика</a></span>
-                  <span class="d-inline-flex align-items-center"><i class="ri-map-pin-line me-1 align-middle"></i>Тестовый SphereAPI</span>
+                  <span class="me-3 d-inline-flex align-items-center"><a href="/admin/server/statistic/{{server.id}}"><i class="ri-building-line me-1 align-middle"></i>{{ phrase('menu_statistics') }}</a></span>
+                  <span class="d-inline-flex align-items-center"><i class="ri-map-pin-line me-1 align-middle"></i>{{ phrase('test_sphereapi_server') }}</span>
                 </p>
               </div>
             </div>
@@ -57,11 +55,11 @@
           <div class="d-flex align-items-center justify-content-between w-100">
             <div class="py-3 border-end w-100 text-center">
               <p class="fw-bold fs-20  text-shadow mb-0">{{server.request_count}}</p>
-              <p class="mb-0 fs-12 text-muted ">Запросов</p>
+              <p class="mb-0 fs-12 text-muted ">{{ phrase('requests') }}</p>
             </div>
             <div class="py-3 w-100 text-center">
               <p class="fw-bold fs-20  text-shadow mb-0">{{server.count_errors}}</p>
-              <p class="mb-0 fs-12 text-muted ">Ошибок</p>
+              <p class="mb-0 fs-12 text-muted ">{{ phrase('errors') }}</p>
             </div>
           </div>
         </div>
@@ -84,7 +82,7 @@
                       <button class="nav-link active" id="followers-tab" data-bs-toggle="tab"
                               data-bs-target="#followers-tab-pane" type="button" role="tab"
                               aria-controls="followers-tab-pane" aria-selected="false"><i
-                        class="ri-money-dollar-box-line me-1 align-middle d-inline-block fs-16"></i>Настройки
+                        class="ri-money-dollar-box-line me-1 align-middle d-inline-block fs-16"></i>{{ phrase('settings') }}
                       </button>
                     </li>
 
@@ -92,7 +90,7 @@
                       <button class="nav-link " id="activity-tab" data-bs-toggle="tab"
                               data-bs-target="#activity-tab-pane" type="button" role="tab"
                               aria-controls="activity-tab-pane" aria-selected="true"><i
-                        class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>Логи и события
+                        class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>{{ phrase('logs_and_events') }}
                       </button>
                     </li>
                   </ul>
@@ -139,13 +137,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Общие настройки</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('general_settings') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/setting" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/setting" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -162,13 +160,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Новости и страницы</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('news_and_pages') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/pages" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/pages" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -184,13 +182,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Переводы</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('translations') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/phrases" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/phrases" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -206,13 +204,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Сервер</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('servers') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/server/list" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/server/list" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -228,13 +226,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Магазин</p>
+                                <p class="mb-0 fw-semibold">{{ phrase(215) }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/shop" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/shop" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -250,13 +248,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Наборы</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('starter_pack') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/shop/startpack" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/shop/startpack" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -272,14 +270,14 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Бонус Коды</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('bonus_codes') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/bonuscode/create" class="btn btn-sm btn-light btn-wave">Открыть</a>
-                              <a href="/admin/bonuscode/list" class="btn btn-sm btn-light btn-wave">Список</a>
+                              <a href="/admin/bonuscode/create" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
+                              <a href="/admin/bonuscode/list" class="btn btn-sm btn-light btn-wave">{{ phrase(56) }}</a>
                             </div>
                           </div>
                         </div>
@@ -295,13 +293,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Подключить Форум</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('connect_forum') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/forum" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/forum" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -318,13 +316,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Пользователи</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('users') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/users" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/users" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -341,13 +339,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Маршрутизаторы</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('routers') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/route" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/route" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -364,13 +362,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Почтовое</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('mail_messages') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/mailing" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/mailing" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -387,13 +385,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Обновление ПО</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('software_update') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/sphere/update" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/sphere/update" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -411,13 +409,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Логи</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('logs') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/logs" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/logs" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -434,13 +432,13 @@
                                                                                   alt="">
                                                                             </span>
                               <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Платные расширения</p>
+                                <p class="mb-0 fw-semibold">{{ phrase('extensions') }}</p>
                               </div>
                             </div>
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/extensions/paid" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/extensions/paid" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>
@@ -464,7 +462,7 @@
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/sphereapi" class="btn btn-sm btn-light btn-wave">Открыть</a>
+                              <a href="/admin/sphereapi" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
                           </div>
                         </div>

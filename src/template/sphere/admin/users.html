@@ -11,7 +11,7 @@
       <div class="card custom-card">
         <div class="card-header">
           <div class="card-title">
-            Пользователи ( {{getUsers()|length}} )
+            {{ phrase('users') }} ( {{getUsers()|length}} )
           </div>
         </div>
         <div class="card-body">
@@ -19,8 +19,8 @@
             <table id="datatable-users" class="table table-bordered text-nowrap w-100">
               <thead>
               <tr>
-                <th>User</th>
-                <th>Coin</th>
+                <th>{{ phrase('user') }}</th>
+                <th>{{ phrase('donate_coin') }}</th>
               </tr>
               </thead>
               <tbody>
@@ -60,26 +60,26 @@
     <div class="modal-content">
       <input type="hidden" name="userid" value="">
       <div class="modal-header">
-        <h6 class="modal-title" id="staticBackdropLabel">Пополнение баланса</h6>
+        <h6 class="modal-title" id="staticBackdropLabel">{{phrase('balance_topup')}}</h6>
         </h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal"
                 aria-label="Close"></button>
       </div>
 
       <div class="modal-body">
-        У пользователя : <span class="fs-15 fw-semibold" id="user-balance-show"></span> SphereCoin
+        {{phrase('user_balance')}} : <span class="fs-15 fw-semibold" id="user-balance-show"></span> {{phrase('donate_coin')}}
         <br>
-        <label for="countBalanceSend" class="form-label">Сколько SphereCoin добавить на баланс?</label>
+        <label for="countBalanceSend" class="form-label">{{phrase('add_donate_coins')}}</label>
         <input value="" type="text" class="form-control" name="count" id="countBalanceSend" placeholder="100">
 
         <div class="form-check form-switch">
           <input id="isAddBonus" name="addBonus" type="checkbox" class="form-check-input">
-          <label class="form-check-label" for="isAddBonus">Зачислять бонусы пополнения к балансу</label>
+          <label class="form-check-label" for="isAddBonus">{{phrase('add_topup_bonuses')}}</label>
         </div>
 
       </div>
       <div class="modal-footer">
-        <button id="balanceSend" type="submit" class="btn btn-sm btn-success">Отправить</button>
+        <button id="balanceSend" type="submit" class="btn btn-sm btn-success">{{ phrase(364) }}</button>
       </div>
     </div>
   </div>
@@ -170,7 +170,7 @@
             $('.sendToBalance[data-user-id="'+userid+'"]').attr("data-user-balance", newBalance);
             $('#user-balance-show').text(newBalance);
           }
-          noticeSuccess('Пополнение баланса успешно');
+          noticeSuccess("{{phrase('balance_topup_successful')}}");
         }else{
           noticeError(data.message);
         }

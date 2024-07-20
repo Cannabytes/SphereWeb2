@@ -8,22 +8,22 @@
     <div class="col-xl-6">
       <div class="card custom-card">
         <div class="card-header justify-content-between">
-          <div class="card-title">Создание бонус кодов</div>
+          <div class="card-title">{{ phrase('create_bonus_codes') }}</div>
         </div>
 
         <div class="card-body">
           <div class="row row-cols-lg-auto align-items-center">
-            <span class="fw-semibold mb-1 text-muted">Количество кодов</span>
+            <span class="fw-semibold mb-1 text-muted">{{ phrase('number_of_codes') }}</span>
             <div class="col-4">
               <div class="col-sm">
-                <input type="text" class="form-control" id="count_codes" value="50" placeholder="Кол-во кодов"
+                <input type="text" class="form-control" id="count_codes" value="50" placeholder="{{ phrase('number_of_codes') }}"
                        aria-label="State">
               </div>
             </div>
           </div>
           <div class="row row-cols-lg-auto align-items-center">
             <div class="col-4">
-              <span class="fw-semibold mb-1 text-muted">Дата начала работы бонус-кода</span>
+              <span class="fw-semibold mb-1 text-muted">{{ phrase('bonus_code_start_date') }}</span>
               <div class="input-group">
                 <div class="input-group-text text-muted"><i class="ri-time-line"></i></div>
                 <input type="text" class="form-control" id="startdatetime" placeholder="">
@@ -31,7 +31,7 @@
             </div>
 
             <div class="col-4">
-              <span class="fw-semibold mb-1 text-muted">Дата окончания бонуса</span>
+              <span class="fw-semibold mb-1 text-muted">{{phrase('bonus_end_date')}}</span>
               <div class="input-group">
                 <div class="input-group-text text-muted"><i class="ri-time-line"></i></div>
                 <input type="text" class="form-control" id="enddatetime" placeholder="">
@@ -41,21 +41,21 @@
         </div>
 
         <div class="card-body">
-          <span class="fw-semibold text-muted">Список предметов, которые будут выдаваться за бонус код</span>
+          <span class="fw-semibold text-muted">{{phrase('items_for_bonus_code')}}</span>
           <div class="bonus_inputs">
             <div class="row row-cols-lg-auto align-items-center">
               <div class="col-4">
                 <div class="col-sm">
-                  <label for="count_codes" class="form-label">ID предмета</label>
-                  <input type="number" class="form-control itemId" placeholder="ID предмета" value="57"
+                  <label for="count_codes" class="form-label">{{phrase('item_id')}}</label>
+                  <input type="number" class="form-control itemId" placeholder="{{phrase('item_id')}}" value="57"
                          aria-label="State">
                 </div>
               </div>
 
               <div class="col-4">
                 <div class="col-sm">
-                  <label for="count_codes" class="form-label">Количество предметов</label>
-                  <input type="number" class="form-control count" placeholder="Кол-во предметов" value="1000"
+                  <label for="count_codes" class="form-label">{{phrase('item_quantity')}}</label>
+                  <input type="number" class="form-control count" placeholder="{{phrase('item_quantity')}}" value="1000"
                          aria-label="State">
                 </div>
               </div>
@@ -63,9 +63,9 @@
           </div>
 
           <div class="m-lg-1 border-top border-block-start-dashed d-sm-flex justify-content-end">
-            <button class="btn btn-primary-light m-1 add_bonus_inputs">Добавить поле<i class="bi bi-plus-lg ms-2"></i>
+            <button class="btn btn-primary-light m-1 add_bonus_inputs">{{phrase('add_field')}}<i class="bi bi-plus-lg ms-2"></i>
             </button>
-            <button id="generate_codes" class="btn btn-success-light m-1">Сгенерировать коды<i
+            <button id="generate_codes" class="btn btn-success-light m-1">{{phrase('generate_codes')}}<i
               class="bi bi-align-top ms-2"></i></button>
           </div>
         </div>
@@ -75,11 +75,11 @@
     <div class="col-xl-6">
       <div class="card custom-card">
         <div class="card-header justify-content-between">
-          <div class="card-title">Сгенерированные коды</div>
+          <div class="card-title">{{phrase('generated_codes')}}</div>
         </div>
         <div class="card-body">
           <textarea class="form-control" id="bonus_codes" rows="20"></textarea>
-          <label for="bonus_codes" class="form-label mt-1 fs-12 op-5 text-muted mb-0">Сгенерированные бонус-коды</label>
+          <label for="bonus_codes" class="form-label mt-1 fs-12 op-5 text-muted mb-0">{{phrase('generated_bonus_codes')}}</label>
         </div>
       </div>
     </div>
@@ -122,7 +122,7 @@
     var startDate = $('#startdatetime').val();
     var endDate = $('#enddatetime').val();
     if (startDate == '' || endDate == '') {
-      noticeError('Не введены даты начала и окончания бонуса');
+      noticeError("{{phrase('bonus_dates_not_entered')}}");
       return;
     }
 
@@ -144,12 +144,12 @@
     }, true).then(function (response) {
       if (Array.isArray(response)) {
         $('#bonus_codes').val(response.join('\n'));
-        noticeSuccess('Коды сгенерированы');
+        noticeSuccess("{{phrase('codes_generated')}}");
       } else {
-        noticeError('Произошла ошибка при генерации кодов');
+        noticeError("{{phrase('code_generation_error')}}");
       }
     }).catch(function(error) {
-      noticeError('Не удалось отправить запрос');
+      noticeError("{{phrase('request_failed')}}");
     });
 
   });
@@ -158,14 +158,14 @@
     var newRow = '<div class="row row-cols-lg-auto align-items-center">' +
       '<div class="col-4">' +
       '<div class="col-sm">' +
-      '<label for="count_codes" class="form-label">ID предмета</label>' +
-      '<input type="number" class="form-control itemId" placeholder="ID предмета" value="57" aria-label="State">' +
+      '<label for="count_codes" class="form-label">{{ phrase("item_id") }}</label>' +
+      '<input type="number" class="form-control itemId" placeholder="{{ phrase("item_id") }}" value="57" aria-label="State">' +
       '</div>' +
       '</div>' +
       '<div class="col-4">' +
       '<div class="col-sm">' +
-      '<label for="count_codes" class="form-label">Количество предметов</label>' +
-      '<input type="number" class="form-control count" placeholder="Кол-во предметов" value="1000" aria-label="State">' +
+      '<label for="count_codes" class="form-label">{{ phrase("number_of_items") }}</label>' +
+      '<input type="number" class="form-control count" placeholder="{{ phrase("number_of_items") }}" value="1000" aria-label="State">' +
       '</div>' +
       '</div>' +
       '</div>';

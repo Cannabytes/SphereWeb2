@@ -10,13 +10,13 @@
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
                         <div class="card-title">
-                            Подключение к Sphere API
+                            {{phrase('connect_to_sphere_api')}}
                         </div>
                     </div>
                     <form action="/admin/sphereapi/save" method="post" class="card-body">
 
                         <div>
-                            <p class="mb-1 text-truncate timeline-widget-content text-wrap">Sphere API - это высокопроизводимая программа, которая является посредником, между сервером и сайтом.</p>
+                            <p class="mb-1 text-truncate timeline-widget-content text-wrap">{{phrase('sphere_api_description')}}</p>
                         </div>
 
                         <div class="form-floating mb-3">
@@ -29,8 +29,8 @@
                         </div>
 
 
-                        <button id="checkConnectToServerApi" class="btn btn-light" type="button">Проверка соединения</button>
-                        <button class="btn btn-success" type="submit">Сохранить</button>
+                        <button id="checkConnectToServerApi" class="btn btn-light" type="button">{{ phrase(35) }}</button>
+                        <button class="btn btn-success" type="submit">{{ phrase(89) }}</button>
                     </form>
 
                 </div>

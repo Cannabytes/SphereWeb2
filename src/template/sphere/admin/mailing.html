@@ -10,7 +10,7 @@
       <div class="card custom-card">
         <div class="card-header">
           <div class="card-title">
-            Содержание писем
+            {{phrase('email_content')}}
           </div>
         </div>
         <div class="card-body d-flex align-items-start">
@@ -20,12 +20,11 @@
                 <button class="nav-link text-start active" id="notice-registration-tab" data-bs-toggle="pill"
                         data-bs-target="#notice-registration" type="button" role="tab"
                         aria-controls="notice-registration" aria-selected="false" tabindex="-1"><i
-                  class="ri-u-disk-line me-1 align-middle d-inline-block"></i>Уведомление о регистрации
+                  class="ri-u-disk-line me-1 align-middle d-inline-block"></i>{{phrase('registration_notification')}}
                 </button>
                 <button class="nav-link text-start " id="forget-password-tab" data-bs-toggle="pill"
                         data-bs-target="#forget-password" type="button" role="tab" aria-controls="forget-password"
-                        aria-selected="true"><i class="ri-group-line me-1 align-middle d-inline-block"></i>Восстановление
-                  пароля
+                        aria-selected="true"><i class="ri-group-line me-1 align-middle d-inline-block"></i>{{ phrase(67) }}
                 </button>
 
               </div>
@@ -37,27 +36,26 @@
                   <div class="form-check form-switch mb-2">
                     <input value="{{get_email_template()['notice_reg_subject']}}" class="form-check-input" type="checkbox" role="switch"
                            id="switch-primary" checked="">
-                    <label class="form-check-label" for="switch-primary">Отправка на почту оповещение о
-                      регистрации</label>
+                    <label class="form-check-label" for="switch-primary">{{phrase('send_registration_notification_email')}}</label>
                   </div>
 
-                  Это письмо будет отправлено при регистрации пользователю, в виде уведомления о регистрации.
+                  {{phrase('registration_notification_email')}}
 
                   <div class="form-floating">
-                    <input value="Вы успешно зарегистрировались" type="text" class="form-control"
-                           id="notice_reg_subject" placeholder="Вы успешно зарегистрировались">
-                    <label for="notice_reg_subject">Тема письма</label>
+                    <input value="{{ phrase(177) }}" type="text" class="form-control"
+                           id="notice_reg_subject" placeholder="{{ phrase(177) }}">
+                    <label for="notice_reg_subject">{{phrase('email_subject')}}</label>
                   </div>
                   <div id="notice-registration-html">{{get_email_template()['notice_registration_html']|raw}}</div>
 
                 </div>
                 <div class="tab-pane" id="forget-password" role="tabpanel" aria-labelledby="forget-password-tab"
                      tabindex="0">
-                  Это письмо будет отправлено при сбросе пароля пользователю.
+                  {{phrase('password_reset_email')}}
                   <div class="form-floating">
                     <input value="{{get_email_template()['forget_reg_subject']}}" type="text" class="form-control" id="forget_reg_subject"
                            placeholder="Восстановление пароля">
-                    <label for="forget_reg_subject">Тема письма</label>
+                    <label for="forget_reg_subject">{{phrase('email_subject')}}</label>
                   </div>
                   <div id="forget-password-quill">{{get_email_template()['forget_password_html']|raw}}</div>
 
@@ -65,7 +63,7 @@
               </div>
             </div>
             <div class="border-top border-block-start-dashed d-flex justify-content-end mt-3 pt-2">
-              <span id="saveEmailTemplate" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+              <span id="saveEmailTemplate" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
                 class="bi bi-sd-card ms-2"></i></span>
             </div>
           </div>

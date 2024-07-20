@@ -104,12 +104,12 @@
       <div class="card custom-card">
         <div class="card-header justify-content-between">
           <div class="card-title">
-            Маршрутизаторы
+            {{ phrase('routers') }}
           </div>
           <div class="d-flex">
             <button data-bs-toggle="modal" data-bs-target="#modal-new-address"
                     class="btn btn-sm btn-primary btn-wave waves-light"><i
-              class="ri-add-line fw-semibold align-middle me-1"></i> Создать маршрутизатор
+              class="ri-add-line fw-semibold align-middle me-1"></i> {{phrase('create_router')}}
             </button>
 
             <div class="modal fade" id="modal-new-address" tabindex="-1" aria-labelledby="modal-new-address"
@@ -117,7 +117,7 @@
               <div class="modal-dialog modal-lg modal-dialog-centered">
                 <form action="/admin/route/add" method="post" class="modal-content">
                   <div class="modal-header">
-                    <h6 class="modal-title" id="staticBackdropLabel">Новый маршрутизатор
+                    <h6 class="modal-title" id="staticBackdropLabel">{{phrase('create_router')}}
                     </h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
@@ -205,7 +205,7 @@
                   <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close
                     </button>
-                    <button type="submit" class="btn btn-success">Добавить</button>
+                    <button type="submit" class="btn btn-success">{{ phrase(438) }}</button>
                   </div>
                 </form>
               </div>
@@ -314,10 +314,10 @@
         sSearch: '',
         lengthMenu: 'Показать _MENU_ записей',
         paginate: {
-          first: 'Первая',
-          last: 'Последняя',
-          next: 'Следующая',
-          previous: 'Предыдущая',
+          first: "{{phrase('first')}}",
+          last: "{{phrase('last')}}",
+          next: "{{phrase('next')}}",
+          previous: "{{phrase('previous')}}",
         },
       },
       'lengthMenu': [[50, 100, 200, 500, 1000], [50, 100, 200, 500, 1000]],

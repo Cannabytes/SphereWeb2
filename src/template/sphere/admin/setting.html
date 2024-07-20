@@ -13,55 +13,55 @@
           <ul class="nav nav-tabs nav-tabs-header mb-0 d-sm-flex d-block" role="tablist">
             <li class="nav-item m-1">
               <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#langSystem" aria-selected="true">Язык</a>
+                 href="#langSystem" aria-selected="true">{{ phrase('lang') }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#donateSystem" aria-selected="true">Пожертвование</a>
+                 href="#donateSystem" aria-selected="true">{{ phrase('menu_donate') }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#referralSystem" aria-selected="true">Реферальная</a>
+                 href="#referralSystem" aria-selected="true">{{ phrase(306) }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#functionsdata" aria-selected="true">Функции</a>
+                 href="#functionsdata" aria-selected="true">{{ phrase('functions') }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#captchaSystem" aria-selected="true">Капча</a>
+                 href="#captchaSystem" aria-selected="true">{{ phrase('captcha') }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#onlineCheating" aria-selected="true">Накрутка</a>
+                 href="#onlineCheating" aria-selected="true">{{ phrase('boosting') }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#registration" aria-selected="true">Регистрация</a>
+                 href="#registration" aria-selected="true">{{ phrase('menu_registration') }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#email" aria-selected="true">Почта</a>
+                 href="#email" aria-selected="true">{{ phrase('email') }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#cache" aria-selected="true">Кэш</a>
+                 href="#cache" aria-selected="true">{{ phrase(320) }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#other" aria-selected="true">Разное</a>
+                 href="#other" aria-selected="true">{{ phrase(568) }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#template" aria-selected="true">Шаблон</a>
+                 href="#template" aria-selected="true">{{ phrase('template') }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#logoImg" aria-selected="true">Лого</a>
+                 href="#logoImg" aria-selected="true">{{ phrase('logo') }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#palette" aria-selected="true">Палитра</a>
+                 href="#palette" aria-selected="true">{{ phrase('palette') }}</a>
             </li>
           </ul>
         </div>
@@ -74,7 +74,7 @@
                 <div id="langSettings" class="row mb-1">
 
                   <div class="col-xl-6">
-                    <label class="form-label">Используемые языки :</label>
+                    <label class="form-label">{{ phrase('used_languages') }} :</label>
 
                     {% for lang in getLangList() %}
                     <div class="form-check">
@@ -89,7 +89,7 @@
                   </div>
 
                   <div class="col-xl-6">
-                    <label class="form-label">Язык сайта по-умолчанию :</label>
+                    <label class="form-label">{{ phrase('default_site_language') }} :</label>
                     <select class="form-control" data-trigger name="default" id="langDefault">
                       {% for lang in getLangList() %}
                       <option {% if lang.lang== config().lang().getDefault() %}selected{% endif %}
@@ -116,9 +116,8 @@
 
                       <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
                         <div>
-                          <p class="fs-14 mb-1 fw-semibold">Платежная система по умолчанию</p>
-                          <p class="fs-12 text-muted mb-0">Платежная система будет выбрана по умолчанию для
-                            пользователей</p>
+                          <p class="fs-14 mb-1 fw-semibold">{{ phrase('default_payment_system') }}</p>
+                          <p class="fs-12 text-muted mb-0">{{ phrase('default_payment_system_for_users') }}</p>
                         </div>
                         <div class="custom-toggle-switch ms-sm-2 ms-0">
                           <select class="form-control" data-trigger="" name="paySystemDefault" id="paySystemDefault">
@@ -134,18 +133,17 @@
                       <hr>
                       <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
                         <div>
-                          <p class="fs-14 mb-1 fw-semibold">Диапазон пожертвования</p>
-                          <p class="fs-12 text-muted mb-0">Укажите мин. и макс. число, которое пользователю разрешено
-                            вводить для пожертвований</p>
+                          <p class="fs-14 mb-1 fw-semibold">{{ phrase('donation_range') }}</p>
+                          <p class="fs-12 text-muted mb-0">{{ phrase('donation_min_max') }}</p>
                         </div>
 
                         <div class="col-xl-3">
-                          <label for="first-name" class="form-label">Мин. сумма</label>
+                          <label for="minSummaPaySphereCoin" class="form-label">{{ phrase('min_amount') }}</label>
                           <input value="{{config().donate().getMinSummaPaySphereCoin()}}" type="number"
                                  class="form-control" id="minSummaPaySphereCoin" placeholder="1">
                         </div>
                         <div class="col-xl-3">
-                          <label for="last-name" class="form-label">Макс. сумма</label>
+                          <label for="maxSummaPaySphereCoin" class="form-label">{{ phrase('max_amount') }}</label>
                           <input value="{{config().donate().getMaxSummaPaySphereCoin()}}" type="number"
                                  class="form-control" id="maxSummaPaySphereCoin" placeholder="999999">
                         </div>
@@ -155,9 +153,8 @@
 
                       <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
                         <div>
-                          <p class="fs-14 mb-1 fw-semibold">Стоимость 1 SphereCoin по отношению к 1 доллару</p>
-                          <p class="fs-12 text-muted mb-0">Укажите сколько получит пользователь SphereCoin за 1
-                            доллар</p>
+                          <p class="fs-14 mb-1 fw-semibold">{{ phrase('donate_coin_to_dollar') }}</p>
+                          <p class="fs-12 text-muted mb-0">{{ phrase('donate_coin_per_dollar') }}</p>
                         </div>
 
                         <div class="col-xl-3">
@@ -170,7 +167,7 @@
 
                       <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
                         <div>
-                          <p class="fs-14 mb-1 fw-semibold">Соотношение валют</p>
+                          <p class="fs-14 mb-1 fw-semibold">{{ phrase('currency_ratio') }}</p>
                         </div>
                         <div class="col-xl-2">
                           <label for="ratioUSD" class="form-label">USD</label>
@@ -198,12 +195,9 @@
 
                       <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
                         <div>
-                          <p class="fs-14 mb-1 fw-semibold">Включить накопительную систему скидок ?</p>
+                          <p class="fs-14 mb-1 fw-semibold">{{ phrase('enable_cumulative_discount_system') }}</p>
                           <p class="fs-12 text-muted mb-0">
-                            Накопительная система скидок, дает дополнительный бонус к сумме пополнения пользователем
-                            исходя из общей суммы пополнения аккаунтом пользователя за всё время.
-                            К примеру: Если выставлено сумма 100 и процент 10, и пользователь за всё время задонатил на
-                            100 SphereCoin, тогда мы даем ему 10% дополнительно, таким образом он получит 100 + 10.
+                            {{ phrase('cumulative_discount_description') }}
                           </p>
                         </div>
                         <div class="custom-toggle-switch ms-sm-2 ms-0">
@@ -222,8 +216,8 @@
                                 <table class="table text-nowrap table-bordered" id="table_CumulativeDiscountSystem">
                                   <thead>
                                   <tr>
-                                    <th data-name="coin" scope="col">Кол-во SphereCoin</th>
-                                    <th data-name="percent" scope="col">Процент бонуса</th>
+                                    <th data-name="coin" scope="col">{{ phrase('amount_of_donate_coin') }}</th>
+                                    <th data-name="percent" scope="col">{{ phrase('bonus_percentage') }}</th>
                                     <th scope="col"></th>
                                   </tr>
                                   </thead>
@@ -247,7 +241,7 @@
                                   </tbody>
                                 </table>
                                 <button id="AddNewCumulativeDiscountSystem" type="button"
-                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">Добавить
+                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">{{ phrase(438) }}
                                 </button>
                               </div>
 
@@ -261,11 +255,9 @@
                       <hr>
                       <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
                         <div>
-                          <p class="fs-14 mb-1 fw-semibold">Включить разовый бонус ?</p>
+                          <p class="fs-14 mb-1 fw-semibold">{{ phrase('enable_one_time_bonus') }}</p>
                           <p class="fs-12 text-muted mb-0">
-                            Разовый бонус - это бонусный процент от кол-ва пополненных SphereCoin.
-                            Если у нас выставлено 5% за пополнение от 100 SphereCoin, тогда пользователь бонусом получит
-                            дополнительно ещё и 5 SphereCoin.
+                            {{ phrase('one_time_bonus_description') }}
                           </p>
                         </div>
                         <div class="custom-toggle-switch ms-sm-2 ms-0">
@@ -283,8 +275,8 @@
                                 <table class="table text-nowrap table-bordered">
                                   <thead>
                                   <tr>
-                                    <th data-name="coin" scope="col">Кол-во SphereCoin</th>
-                                    <th data-name="percent" scope="col">Процент бонуса</th>
+                                    <th data-name="coin" scope="col">{{ phrase('amount_of_donate_coin') }}</th>
+                                    <th data-name="percent" scope="col">{{ phrase('bonus_percentage') }}</th>
                                     <th scope="col"></th>
                                   </tr>
                                   </thead>
@@ -306,7 +298,7 @@
                                   </tbody>
                                 </table>
                                 <button id="AddNewEnableOneTimeBonus" type="button"
-                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">Добавить
+                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">{{ phrase(438) }}
                                 </button>
                               </div>
 
@@ -322,13 +314,9 @@
 
                       <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
                         <div>
-                          <p class="fs-14 mb-1 fw-semibold">Включить систему скидок на покупку предметов ?</p>
+                          <p class="fs-14 mb-1 fw-semibold">{{ phrase('enable_item_purchase_discounts') }}</p>
                           <p class="fs-12 text-muted mb-0">
-                            Предоставляется скидка на покупку товара в Магазине, скидка формируется от общей суммы
-                            пожертвований пользователем за всё время.
-                            К примеру: Если пользователь пожертвовал за всё время N SphereCoin, тогда в магазине при
-                            покупке будет даваться скидка X%.
-
+                            {{ phrase('item_purchase_discount_description') }}
                           </p>
                         </div>
                         <div class="custom-toggle-switch ms-sm-2 ms-0">
@@ -348,8 +336,8 @@
                                        id="table_SystemDiscountsOnItemPurchases">
                                   <thead>
                                   <tr>
-                                    <th data-name="coin" scope="col">Кол-во SphereCoin</th>
-                                    <th data-name="percent" scope="col">Процент бонуса</th>
+                                    <th data-name="coin" scope="col">{{ phrase('amount_of_donate_coin') }}</th>
+                                    <th data-name="percent" scope="col">{{ phrase('bonus_percentage') }}</th>
                                     <th scope="col"></th>
                                   </tr>
                                   </thead>
@@ -372,7 +360,7 @@
                                   </tbody>
                                 </table>
                                 <button id="AddNewSystemDiscountsOnItemPurchases" type="button"
-                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">Добавить
+                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">{{ phrase(438) }}
                                 </button>
                               </div>
 
@@ -388,12 +376,9 @@
 
                       <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
                         <div>
-                          <p class="fs-14 mb-1 fw-semibold">Включить разовые скидки на покупку предметов по кол-ву</p>
+                          <p class="fs-14 mb-1 fw-semibold">{{ phrase('enable_quantity_discounts') }}</p>
                           <p class="fs-12 text-muted mb-0">
-                            Предоставляется скидка на покупку товара в Магазине, скидка формируется от общей суммы
-                            пожертвований пользователем за всё время.
-                            К примеру: Если пользователь пожертвовал за всё время N SphereCoin, тогда в магазине при
-                            покупке будет даваться скидка X%.
+                            {{ phrase('donation_based_discount') }}
                           </p>
                         </div>
                         <div class="custom-toggle-switch ms-sm-2 ms-0">
@@ -414,8 +399,8 @@
                                        id="table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity">
                                   <thead>
                                   <tr>
-                                    <th data-name="count" scope="col">Кол-во SphereCoin</th>
-                                    <th data-name="percent" scope="col">Процент бонуса</th>
+                                    <th data-name="count" scope="col">{{ phrase('amount_of_donate_coin') }}</th>
+                                    <th data-name="percent" scope="col">{{ phrase('bonus_percentage') }}</th>
                                     <th scope="col"></th>
                                   </tr>
                                   </thead>
@@ -439,22 +424,21 @@
                                   </tbody>
                                 </table>
                                 <button id="AddNewIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity" type="button"
-                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">Добавить
+                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">{{ phrase(438) }}
                                 </button>
                               </div>
 
                             </div>
 
-                            Список ID предметов, на которые распостраняются скидки. Если пусто, тогда для всех предметов
-                            действует скидка.
+                            {{ phrase('discount_item_ids') }}
                             <div class="row">
 
                               <div class="table-responsive">
                                 <table class="table text-nowrap table-bordered" id="table_ListOfItemsForDiscount">
                                   <thead>
                                   <tr>
-                                    <th data-name="count" scope="col">Кол-во покупаемых предметов</th>
-                                    <th data-name="percent" scope="col">Процент скидки</th>
+                                    <th data-name="count" scope="col">{{ phrase('quantity_of_items_purchased') }}</th>
+                                    <th data-name="percent" scope="col">{{ phrase('discount_percentage') }}</th>
                                     <th scope="col"></th>
                                   </tr>
                                   </thead>
@@ -477,7 +461,7 @@
                                   </tbody>
                                 </table>
                                 <button id="AddNewListOfItemsForDiscount" type="button"
-                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">Добавить
+                                        class="btn btn-sm btn-success btn-wave waves-effect waves-light">{{ phrase(438) }}
                                 </button>
                               </div>
                             </div>
@@ -497,12 +481,12 @@
 
                   <div class="card custom-card shadow-none mb-4 border">
                     <div class="card-header">
-                      <div class="card-title">Перевод в игру</div>
+                      <div class="card-title">{{ phrase('transfer_to_game') }}</div>
                     </div>
                     <div class="card-body row">
 
-                      <label class="form-label op-5 ">Эти предметы отправляются игроку напрямую, при переводе через функцию "Перевод в игру"</label>
-                      <label class="form-label op-5 ">Укажите количество предметов, которое получит пользователь за 1 Donate Coin.</label>
+                      <label class="form-label op-5 ">{{ phrase('direct_transfer_items') }}</label>
+                      <label class="form-label op-5 ">{{ phrase('items_per_donate_coin') }}</label>
 
                       <div class="col-xxl-4 col-xl-6 ">
                         <div class="input-group">
@@ -535,7 +519,7 @@
                   <div id="bonus_Item_donation"
                        class="card custom-card shadow-none mb-4 border">
                     <div class="card-header justify-content-between d-sm-flex d-block">
-                      <div class="card-title">Награда за пожертвование предметами
+                      <div class="card-title">{{ phrase('item_donation_reward') }}
                       </div>
                       <div class="mt-sm-0 mt-2">
                         <div class="custom-toggle-switch ms-sm-2 ms-0">
@@ -551,19 +535,16 @@
 
                       <div class="row">
 
-                        <label class="form-label op-5 ">После пожертвование
-                          пользователь больше N суммы, мы выдаем ему предметы в
-                          склад как бонус. Укажите какие предметы хотите Выдавать
-                          пользователю и за какой диапазон пожертвований.</label>
+                        <label class="form-label op-5 ">{{ phrase('donation_bonus_items') }}</label>
 
                         <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-end">
                           <div class="col-xl-4">
                             <input id="costItem" type="text"
-                                   class="form-control" placeholder="Стоимость">
+                                   class="form-control" placeholder="{{ phrase(72) }}">
                           </div>
                           <button id="addCostItem"
-                                  class="btn btn-primary-light m-1">Добавить
-                            вкладку<i class="bi bi-plus-lg ms-2"></i></button>
+                                  class="btn btn-primary-light m-1">{{ phrase(438) }}
+                            {{ phrase('tab') }}<i class="bi bi-plus-lg ms-2"></i></button>
                         </div>
                       </div>
 
@@ -598,9 +579,9 @@
                               <thead>
                               <tr>
                                 <th scope="col"></th>
-                                <th scope="col">Предмет</th>
-                                <th scope="col">Кол-во</th>
-                                <th scope="col">Заточен</th>
+                                <th scope="col">{{ phrase(301) }}</th>
+                                <th scope="col">{{ phrase(71) }}</th>
+                                <th scope="col">{{ phrase('enchant') }}</th>
                               </tr>
                               </thead>
                               <tbody>
@@ -656,7 +637,7 @@
                         </div>
                         <div class="col-xxl-2 col-xl-3 mb-2">
                           <button id="add_insert_to_bonus_donate" type="submit"
-                                  class="btn btn-primary">Добавить
+                                  class="btn btn-primary">{{ phrase(438) }}
                           </button>
                         </div>
                       </div>
@@ -666,7 +647,7 @@
                   <div class="card custom-card shadow-none mb-3 border">
                     <div class="card-header">
                       <div class="card-title">
-                        Настройка платежных систем
+                        {{ phrase('payment_system_settings') }}
                       </div>
                     </div>
                     <div class="card-body  align-items-start">
@@ -705,9 +686,7 @@
                                     <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
                                       <div>
                                         <p class="fs-14 mb-1 fw-semibold">
-                                          Включить платежную
-                                          систему
-                                          {{donate.getName()}}</p>
+                                          {{ phrase('enable_payment_system') }} {{donate.getName()}}</p>
                                       </div>
                                       <div class="custom-toggle-switch ms-sm-2 ms-0">
                                         <input id="is_enable_{{donate.getName()}}"
@@ -722,8 +701,7 @@
                                     <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
                                       <div>
                                         <p class="fs-14 mb-1 fw-semibold">
-                                          Включить только для администратора
-                                          {{donate.getName()}}</p>
+                                          {{ phrase('admin_only_enable') }} {{donate.getName()}}</p>
                                       </div>
                                       <div class="custom-toggle-switch ms-sm-2 ms-0">
                                         <input id="forAdmin_{{donate.getName()}}"
@@ -754,7 +732,7 @@
                                         class="form-control"
                                         id="description_{{donate.getName()}}"
                                         placeholder="">
-                                      <label for="description_{{donate.getName()}}">Описание платежной системы</label>
+                                      <label for="description_{{donate.getName()}}">{{ phrase('payment_system_description') }}</label>
                                     </div>
 
                                   </div>
@@ -850,14 +828,14 @@
                 <li class="list-group-item">
                   <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
                     <div class="col-xl-6">
-                      <span class="fs-14 mb-0">Кол-во бонусных SphereCoin, которые получит игрок за завершения реферала :</span>
+                      <span class="fs-14 mb-0">Кол-во бонусных Donate Coin, которые получит игрок за завершения реферала :</span>
                     </div>
                     <div class="col-xl-2">
                       <div class="form-floating mb-3">
                         <input value="{{config().referral().getBonusAmount()}}" type="number" step="1"
                                class="form-control"
                                id="ref_bonus_amount" placeholder="80">
-                        <label for="ref_bonus_amount">SphereCoin</label>
+                        <label for="ref_bonus_amount">Donate Coin</label>
                       </div>
                     </div>
                   </div>
@@ -880,7 +858,7 @@
                 <li class="list-group-item">
                   <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
                     <div class="col-xl-6">
-                      <span class="fs-14 mb-0">Установите процент вознаграждения от суммы пополнения SphereCoin?</span>
+                      <span class="fs-14 mb-0">Установите процент вознаграждения от суммы пополнения Donate Coin?</span>
                     </div>
                     <div class="col-xl-2">
                       <div class="form-floating mb-3">
@@ -922,7 +900,7 @@
 
                           <div class="form-floating mb-3 ">
                             <button type="button" class="btn btn-success btn-wave waves-effect waves-light"
-                                    id="item_add_to_leader">Добавить
+                                    id="item_add_to_leader">{{ phrase(438) }}
                             </button>
                           </div>
 
@@ -1011,7 +989,7 @@
 
                           <div class="form-floating mb-3 ">
                             <button type="button" class="btn btn-success btn-wave waves-effect waves-light"
-                                    id="item_add_to_slave">Добавить
+                                    id="item_add_to_slave">{{ phrase(438) }}
                             </button>
                           </div>
 
@@ -1351,7 +1329,7 @@
                       <input id="players_online_cheating" min="1" type="number" class="form-control" placeholder="100">
                     </div>
                     <div class="col-auto">
-                      <button type="button" class="btn btn-info add-accordion-item">Добавить</button>
+                      <button type="button" class="btn btn-info add-accordion-item">{{ phrase(438) }}</button>
                     </div>
                   </div>
 
@@ -1395,7 +1373,7 @@
                         </div>
                         {% endfor %}
                         <div class="col-md-12">
-                          <button type="button" class="btn btn-primary add-time">Добавить время</button>
+                          <button type="button" class="btn btn-primary add-time">{{ phrase(438) }} время</button>
                         </div>
                       </div>
                     </div>
@@ -2263,7 +2241,7 @@
           formData[key] = attr.value;
         }
       });
-      //добавить в formData style
+      //{{ phrase(438) }} в formData style
       var style = $('html').attr('style');
       if (style) {
         formData['style'] = style;
@@ -2716,7 +2694,7 @@
                     </div>
                 </div>
                 <div class="col-md-12">
-                    <button type="button" class="btn btn-primary add-time">Добавить время</button>
+                    <button type="button" class="btn btn-primary add-time">{{ phrase(438) }} время</button>
                 </div>
             </div>
         </div>`;
