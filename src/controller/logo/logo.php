@@ -2,9 +2,7 @@
 
 namespace Ofey\Logan22\controller\logo;
 
-use Intervention\Image\Drivers\Imagick\Driver;
 use Intervention\Image\ImageManager;
-use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
 
@@ -16,9 +14,8 @@ class logo
      */
     public static function logo()
     {
-
         if (isset($_FILES['filepond']) && $_FILES['filepond']['error'] == 0) {
-            $manager =   ImageManager::gd();
+            $manager = ImageManager::gd();
             $file    = $_FILES['filepond']['tmp_name'];
             $image   = $manager->read($file);
             // Получаем текущие размеры изображения
@@ -49,11 +46,11 @@ class logo
             $logo = 'uploads/logo/logo.webp';
             //Проверка существования папки
             if ( ! file_exists('uploads/logo')) {
-               $mkdir = mkdir('uploads/logo', 0777, true);
+                $mkdir = mkdir('uploads/logo', 0777, true);
             }
             $success = $image->save($logo);
             if ($success) {
-                $logo = $logo  . "?v=" . uniqid();
+                $logo = $logo . "?v=" . uniqid();
                 // Найти
                 $favicon = null;
                 $setting = sql::getRow("SELECT `id`, `setting` FROM `settings` WHERE `key` = '__config_logo__'");
@@ -82,7 +79,7 @@ class logo
                 echo json_encode([
                   'status'  => 'success',
                   'message' => 'Image uploaded and processed successfully',
-                  'path'    => "/" . $logo  ,
+                  'path'    => "/" . $logo,
                 ]);
                 exit;
             }
@@ -97,7 +94,7 @@ class logo
     public static function favicon()
     {
         if (isset($_FILES['filepond']) && $_FILES['filepond']['error'] == 0) {
-            $manager =   ImageManager::gd();
+            $manager = ImageManager::gd();
             $file    = $_FILES['filepond']['tmp_name'];
             $image   = $manager->read($file);
 
@@ -153,11 +150,10 @@ class logo
             // Сохраняем изображение в различных размерах
             $arrNamesFavicon = [];
             foreach ($allowedSizes as $size) {
-                    $savePath = "uploads/logo/favicon_{$size}.png";
-                    $image->resize($size, $size)->save($savePath, 94);
-                    $arrNamesFavicon[$size] = "/" . $savePath;
+                $savePath = "uploads/logo/favicon_{$size}.png";
+                $image->resize($size, $size)->save($savePath, 94);
+                $arrNamesFavicon[$size] = "/" . $savePath;
             }
-
 
             // Найти
             $logo    = null;
@@ -165,7 +161,7 @@ class logo
             if ($setting) {
                 $data = $setting['setting'];
                 $data = json_decode($data, true);
-                $logo = $data['logo']   . "?v=" . uniqid() ?? '';
+                $logo = $data['logo'] . "?v=" . uniqid() ?? '';
                 sql::run("UPDATE `settings` SET `setting` = ?, `dateUpdate` = ? WHERE `key` = '__config_logo__'", [
                   json_encode([
                     'favicon' => $arrNamesFavicon,
@@ -187,7 +183,7 @@ class logo
             echo json_encode([
               'status'  => 'success',
               'message' => 'Image uploaded and processed successfully',
-              'path'    => "/" . $logo  . "?v=" . uniqid(),
+              'path'    => "/" . $logo . "?v=" . uniqid(),
             ]);
             exit;
         }

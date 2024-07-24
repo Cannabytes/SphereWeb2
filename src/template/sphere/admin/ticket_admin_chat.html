@@ -1,0 +1,566 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+
+
+        <div class="main-chart-wrapper gap-4 mb-5 d-flex">
+            <div class="chat-info border">
+
+                <div class="d-flex align-items-center justify-content-between w-100 p-3 border-bottom">
+                    {% if id %}
+                    <a href="/ticket"><i class="ri-arrow-left-circle-line"></i></a>
+                    {% endif %}
+
+                    <h6 class="fw-semibold mb-0">{{ phrase('posts') }}</h6>
+
+
+                </div>
+
+
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active border-0 chat-users-tab" id="users-tab-pane"
+                         role="tabpanel" aria-labelledby="users-tab" tabindex="0">
+                        <ul class="list-unstyled mb-0 mt-2 chat-users-tab" id="chat-msg-scroll">
+                            <li class="pb-0">
+                                <p class="text-muted fs-11 fw-semibold mb-2 op-7">{{ phrase(350) }}</p>
+                            </li>
+                            {% for ticket in lastTicketsList %}
+                            {% set userInfo = getUser(ticket.user_id) %}
+                            <li class="chat-inactive checkforactive" >
+                                <a href="/ticket/{{ticket.id}}" >
+                                    <div class="d-flex align-items-top {% if id == ticket.id %}p-2 bg-success-transparent mb-1 rounded{% endif %}">
+                                        <div class="me-1 lh-1">
+                                                    <span class="avatar avatar-md offline me-2 avatar-rounded" >
+                                                        <img  src="{{userInfo.getAvatar()}}" alt="img">
+                                                    </span>
+                                        </div>
+                                        <div class="flex-fill">
+                                            <p class="mb-0 fw-semibold">
+                                                {{userInfo.getName()}}<span
+                                              class="float-end text-muted fw-normal fs-11">{{ticket.date|date("H:i | j F")}}</span>
+                                            </p>
+                                            <p class="fs-12 mb-0">
+                                                        <span class="chat-msg text-truncate">{% if ticket.last_author_id == getUser().getId() %}Вы: {%endif%}
+                                                          <span class="panel_message" data-ticket-id="{{ticket.id}}"> {% if ticket.is_file %}<span class="text-success">Отправлен файл</span>{% else %}{{ticket.message}}{% endif %}</span></span>
+                                                <span class="chat-read-icon float-end align-middle"><i
+                                                  class="ri-check-double-fill"></i></span>
+
+                                                {% if ticket.unread_count > 0 %}
+                                                <span class="badge bg-success-transparent rounded-circle float-end">{{ticket.unread_count}}</span>
+                                                {% endif %}
+
+                                            </p>
+
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="main-chat-area border">
+                <div class="d-flex align-items-center p-3 border-bottom">
+                    <div class="me-2 lh-1">
+                                <span class="avatar avatar-lg online me-2 avatar-rounded chatstatusperson">
+                                    <img class="chatimageperson" src="{{getUser(getTicket.user_id).getAvatar()}}" alt="img">
+                                </span>
+                    </div>
+                    <div class="flex-fill">
+                        <a href="/admin/user/info/{{getTicket.user_id}}" class="chatnameperson responsive-userinfo-open"    >{{getUser(getTicket.user_id).getName()}} - {{getUser(getTicket.user_id).getEmail()}}</a>
+                        <p class="text-muted mb-0 chatpersonstatus">online</p>
+                    </div>
+
+                    {% if id != 0 %}
+                    <div class="d-flex">
+
+                        <div class="dropdown ms-2">
+                            <button aria-label="button" type="button" class="btn btn-icon btn-light btn-wave waves-light"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ti ti-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><button data-status-block="{{getTicket.is_closed}}" id="blockUserTicket" class="dropdown-item" >{% if getTicket.is_closed %}{{phrase('unblock')}}{% else %}{{phrase('block')}}{% endif %}</button></li>
+                                <li><button id="clearDialog" class="dropdown-item" >{{phrase('clear_dialog')}}</button></li>
+                            </ul>
+                        </div>
+                        <button aria-label="button" type="button" class="btn btn-icon btn-outline-light ms-2 responsive-chat-close">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                    {%endif%}
+
+
+                </div>
+
+                <div class="chat-content" id="main-chat-content">
+                    <ul class="list-unstyled" id="messageList">
+
+                        {% if id == 0 %}
+                        <li class="chat-day-label">
+                            {{phrase('select_user_ticket')}}
+                        </li>
+                        {%endif%}
+                        {% for chat in chatMessage %}
+                        {% set userInfo = getUser(chat.user_id) %}
+                        {% set isMyMessage = (chat.user_id == getUser().getId()) %}
+
+                        {% if isMyMessage %}
+                        <li class="chat-item-end">
+                            <div class="chat-list-inner">
+                                <div class="me-3">
+                                            <span class="chatting-user-info d-inline-flex align-items-center">
+                                                <span class="msg-sent-time">
+                                                    <span class="chat-read-mark align-middle"> </span></span> Вы
+                                            </span>
+                                    <div class="main-chat-msg" data-self="true">
+                                        {% for message in chat.messages %}
+                                           {% if message.is_file %}
+                                                {% for file in message.files %}
+                                                      <div>
+                                                          <p class="mb-0 d-sm-flex d-block">
+                                                            <a href="/uploads/ticket/{{file.filename}}" class="glightbox card avatar avatar-xl m-1" data-gallery="gallery1">
+                                                              <img src="/uploads/ticket/{{file.filename}}" alt="image">
+                                                            </a>
+                                                          </p>
+                                                      </div>
+                                                {% endfor %}
+                                           {% else %}
+                                              <div>
+                                                  <p class="mb-0">{{message.message}}</p>
+                                              </div>
+                                          {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="chat-user-profile">
+                                            <span class="avatar avatar-md online avatar-rounded">
+                                                <img src="{{userInfo.getAvatar()}}" alt="img">
+                                            </span>
+                                </div>
+                            </div>
+                        </li>
+                        {% else %}
+                        <li class="chat-item-start">
+                            <div class="chat-list-inner">
+                                <div class="chat-user-profile">
+                                            <span class="avatar avatar-md online avatar-rounded chatstatusperson">
+                                                <img class="chatimageperson" src="{{userInfo.getAvatar()}}" alt="img">
+                                            </span>
+                                </div>
+                                <div class="ms-3">
+                                            <span class="chatting-user-info d-inline-flex align-items-center">
+                                                <span class="chatnameperson">
+                                                    <a href="/admin/user/info/{{userInfo.getId()}}">
+                                                    {{userInfo.getName()}}
+                                                    </a>
+                                                </span>
+                                            </span>
+
+                                    <div class="main-chat-msg" data-self="false">
+                                      {% for message in chat.messages %}
+                                        {% if message.is_file %}
+                                        {% for file in message.files %}
+                                        <div>
+                                          <p class="mb-0 d-sm-flex d-block">
+                                            <a href="/uploads/ticket/{{file.filename}}" class="glightbox card avatar avatar-xl m-1" data-gallery="gallery1">
+                                              <img src="/uploads/ticket/{{file.filename}}" alt="image">
+                                            </a>
+                                          </p>
+                                        </div>
+                                        {% endfor %}
+                                        {% else %}
+                                        <div>
+                                          <p class="mb-0">{{message.message}}</p>
+                                        </div>
+                                        {% endif %}
+                                      {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        {% endif %}
+
+
+                        {% endfor %}
+
+
+                        {% if getTicket.is_closed %}
+                        <li class="chat-day-label">
+                            {{phrase('you_blocked_user_from_write_message_ticket')}}
+                        </li>
+                        {%endif%}
+
+                    </ul>
+                </div>
+
+                <div class="chat-footer">
+                    <input {% if id == 0 %}disabled{%endif%} class="form-control" id="messageText" placeholder="{{phrase('type_your_message_here')}}" type="text">
+                    <button {% if id == 0 %}disabled{%endif%} aria-label="anchor" class="btn btn-icon mx-2 btn-primary-light"
+                            type="button"  data-bs-toggle="modal"
+                            data-bs-target="#exampleModalScrollable2" >
+                        <i class="ri-attachment-2"></i>
+                    </button>
+                    <button {% if id == 0 %}disabled{%endif%} class="btn btn-primary d-inline-flex" id="sendMessage">
+                        <i class="ri-send-plane-2-line me-2"></i>{{ phrase(364) }}
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+{# Панель загрузки изображений #}
+<div class="modal fade" id="exampleModalScrollable2" tabindex="-1"
+     aria-labelledby="exampleModalScrollable2" data-bs-keyboard="false"
+     aria-hidden="true">
+    <!-- Scrollable modal -->
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                <input type="file" class="multiple-filepond" name="filepond" multiple data-allow-reorder="true" data-max-file-size="3MB" data-max-files="6">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/prismjs/themes/prism-coy.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond/filepond.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond-plugin-image-edit/filepond-plugin-image-edit.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/dropzone/dropzone.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/glightbox/css/glightbox.min.css">
+{% endblock %}
+
+
+{% block js %}
+
+<script src="{{template}}/assets/libs/filepond/filepond.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-exif-orientation/filepond-plugin-image-exif-orientation.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-encode/filepond-plugin-file-encode.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-edit/filepond-plugin-image-edit.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-crop/filepond-plugin-image-crop.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-resize/filepond-plugin-image-resize.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-transform/filepond-plugin-image-transform.min.js"></script>
+<script src="{{template}}/assets/libs/glightbox/js/glightbox.min.js"></script>
+<script src="{{template}}/assets/js/gallery.js"></script>
+<script src="{{template}}/assets/libs/dropzone/dropzone-min.js"></script>
+
+<script>
+    (function () {
+        "use strict";
+
+        var myElement4 = document.getElementById('main-chat-content');
+        new SimpleBar(myElement4, {autoHide: true});
+        var lastMessage = document.querySelector('#main-chat-content li:last-child');
+        if (lastMessage) {
+            lastMessage.scrollIntoView({behavior: 'smooth'});
+        }
+
+
+    })();
+
+</script>
+
+
+<script>
+    // Глобальные переменные
+    let owner_last_message_author = {{owner_last_message_author ?? 0}};
+    let last_element_id = {{last_element_id ?? 0}};
+    const ticketId = {{id ?? 0}};
+
+    // Обработчик отправки сообщения
+    $('#messageText').keypress(function(event) {
+        if (event.which === 13) {
+            event.preventDefault();
+            const message = $(this).val().trim();
+            if (message !== "") {
+                sendMessage(message);
+                $(this).val('');
+            }
+        }
+    });
+
+
+    // Обработчик отправки сообщения
+    $('#sendMessage').on('click', function() {
+        const message = $('#messageText').val().trim();
+        if (message !== "") {
+            sendMessage(message);
+            $('#messageText').val('');
+        }
+    });
+
+    // Функция отправки сообщения
+    function sendMessage(message) {
+        AjaxSend("/ticket/send/message", "POST", {message, id: ticketId, last_element_id}, true)
+          .then(function (response) {
+              updateChat(response)
+          });
+    }
+
+    // Функция прокрутки чата
+    function chatScroll() {
+        const myElement = document.querySelector('#main-chat-content');
+        new SimpleBar(myElement, {autoHide: true});
+        const lastMessage = document.querySelector('#main-chat-content li:last-child');
+        if (lastMessage) {
+            lastMessage.scrollIntoView({behavior: 'smooth'});
+        }
+    }
+
+    // Функция создания HTML для сообщения
+    function createMessageHTML(message, userInfo, isOwner) {
+      let messageContent = '';
+
+      if (message.is_file) {
+        messageContent = message.files.map(file => `
+            <div>
+                <p class="mb-0 d-sm-flex d-block">
+                    <a href="/uploads/ticket/${file.filename}" class="glightbox card avatar avatar-xl m-1" data-gallery="gallery1">
+                        <img src="/uploads/ticket/${file.filename}" alt="image">
+                    </a>
+                </p>
+            </div>
+        `).join('');
+      } else {
+        messageContent = `<div><p class="mb-0">${message.message}</p></div>`;
+      }
+
+      if (owner_last_message_author === userInfo.id) {
+        return messageContent;
+      }
+
+      const avatarHTML = `
+        <span class="avatar avatar-md online avatar-rounded ${isOwner ? '' : 'chatstatusperson'}">
+            <img class="${isOwner ? '' : 'chatimageperson'}" src="${userInfo.avatar}" alt="img">
+        </span>
+    `;
+
+      const userInfoHTML = `
+        <span class="chatting-user-info d-inline-flex align-items-center">
+            ${isOwner ? `
+                <span class="msg-sent-time">
+                    <span class="chat-read-mark align-middle"><i class="ri-check-double-line"></i></span>
+                </span> Вы
+            ` : `
+                <span class="chatnameperson">${userInfo.name}</span>
+            `}
+        </span>
+    `;
+
+      return `
+        <li class="chat-item-${isOwner ? 'end' : 'start'}">
+            <div class="chat-list-inner">
+                ${isOwner ? '' : `<div class="chat-user-profile">${avatarHTML}</div>`}
+                <div class="${isOwner ? 'me-3' : 'ms-3'}">
+                    <a href="/admin/user/info/${userInfo.id}">${userInfoHTML}</a>
+                    <div class="main-chat-msg" data-self="${isOwner}">
+                        ${messageContent}
+                    </div>
+                </div>
+                ${isOwner ? `<div class="chat-user-profile">${avatarHTML}</div>` : ''}
+            </div>
+        </li>
+    `;
+    }
+
+
+    // Функция обновления чата
+    function updateChat(data) {
+      responseAnalysis(data);
+      if (data.new_message) {
+        last_element_id = data.last_element_id;
+        data.chatMessage.forEach(chat => {
+          const { ownerMessage, userInfo, messages } = chat;
+
+          messages.forEach(message => {
+            const messageHTML = createMessageHTML(message, userInfo, ownerMessage);
+
+            if (owner_last_message_author === userInfo.id) {
+              if (ownerMessage) {
+                $('.main-chat-msg[data-self="true"]').last().append(messageHTML);
+              } else {
+                $('.main-chat-msg[data-self="false"]').last().append(messageHTML);
+              }
+            } else {
+              $("#messageList").append(messageHTML);
+            }
+
+            owner_last_message_author = userInfo.id;
+          });
+        });
+
+        chatScroll();
+
+        // Инициализация GLightbox для новых изображений
+        const lightbox = GLightbox({
+          selector: '.glightbox'
+        });
+      }
+      console.log(data);
+    }
+
+
+    // Функция получения данных
+    function fetchData() {
+        AjaxSend("/ticket/get/message", "POST", {id: ticketId, last_element_id}, true)
+          .then(updateChat);
+    }
+
+    // Запуск функции fetchData каждые 3 секунды
+    setInterval(fetchData, 1000);
+
+    $("#blockUserTicket").on("click", function() {
+        let setClosed = parseInt($("#blockUserTicket").attr("data-status-block"), 10); // Приведение к числу
+        if (setClosed === 0) {
+            $("#blockUserTicket").attr("data-status-block", 1);
+            $("#blockUserTicket").text("Заблокировать");
+        } else {
+            $("#blockUserTicket").attr("data-status-block", 0);
+            $("#blockUserTicket").text("Разблокировать");
+        }
+        console.log(setClosed, $("#blockUserTicket").attr("data-status-block"));
+
+        AjaxSend("/ticket/block", "POST", {id: ticketId, setClosed: setClosed}, true)
+          .then(function (response) {
+              console.log(response);
+          });
+    });
+
+    $("#clearDialog").on("click", function() {
+        AjaxSend("/ticket/clear/dialog", "POST", {id: ticketId})
+          .then(function (response) {
+              responseAnalysis(response);
+          });
+    });
+
+    setInterval(getLastTicketsList, 1000);
+
+    function getLastTicketsList() {
+        AjaxSend("/ticket/get/last/list", "POST", {}, true)
+          .then(function (response) {
+              if (response && response.lastTicketsList) {
+                  updateTicketsList(response.lastTicketsList, response.user_id);
+              } else {
+                  console.error('Unexpected response format');
+              }
+          })
+          .catch(function (error) {
+              console.error('Error fetching tickets:', error);
+          });
+    }
+
+    function updateTicketsList(tickets, currentUserId) {
+      const ticketList = document.getElementById('chat-msg-scroll');
+      if (!ticketList) return;
+
+      // Очищаем текущий список, оставляя только заголовок
+      while (ticketList.children.length > 1) {
+        ticketList.removeChild(ticketList.lastChild);
+      }
+
+      // Добавляем новые тикеты
+      tickets.forEach(ticket => {
+        const listItem = document.createElement('li');
+        listItem.className = 'chat-inactive checkforactive';
+        listItem.innerHTML = `
+    <a href="/ticket/${ticket.id}">
+        <div class="d-flex align-items-top ${ticket.id === ticketId ? 'p-2 bg-success-transparent mb-1 rounded' : ''}">
+            <div class="me-1 lh-1">
+                <span class="avatar avatar-md offline me-2 avatar-rounded">
+                    <img src="${ticket.avatar}" alt="img">
+                </span>
+            </div>
+            <div class="flex-fill">
+                <p class="mb-0 fw-semibold">
+                    ${ticket.name}
+                    <span class="float-end text-muted fw-normal fs-11">${formatDate(ticket.date)}</span>
+                </p>
+                <p class="fs-12 mb-0">
+                    <span class="chat-msg text-truncate">
+                        ${ticket.last_author_id === currentUserId ? 'Вы: ' : ''}
+                        <span class="panel_message" data-ticket-id="${ticket.id}">
+                            ${ticket.is_file === 0 ? ticket.message : '<span class="text-success">Отправлен файл</span>'}
+                        </span>
+                    </span>
+                    <span class="chat-read-icon float-end align-middle">
+                        <i class="ri-check-double-fill"></i>
+                    </span>
+                    ${ticket.unread_count > 0 && ticket.id !== ticketId ? `
+                        <span class="badge bg-success-transparent rounded-circle float-end">
+                            ${ticket.unread_count}
+                        </span>
+                    ` : ''}
+                </p>
+            </div>
+        </div>
+    </a>
+`;
+        ticketList.appendChild(listItem);
+      });
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const time = date.toLocaleTimeString('en-EN', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+        const day = date.toLocaleString('en-EN', {
+            day: 'numeric'
+        });
+        const month = date.toLocaleString('en-EN', {
+            month: 'long'
+        });
+
+        return `${time} | ${day} ${month}`;
+    }
+
+
+
+</script>
+
+
+<script>
+    (function () {
+        'use strict'
+
+        // Настройка FilePond
+        FilePond.setOptions({
+            server: {
+                url: '/ticket/load/file',
+                process: {
+                    ondata: (formData) => {
+                        formData.append('ticket_id', ticketId); // Добавляем ticket_id
+                        return formData;
+                    }
+                }
+            }
+        });
+
+        /* multiple upload */
+        const MultipleElement = document.querySelector('.multiple-filepond');
+        FilePond.create(MultipleElement);
+
+
+    })();
+</script>
+
+
+{% endblock %}

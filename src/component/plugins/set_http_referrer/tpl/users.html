@@ -1,0 +1,103 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+
+
+        <div class="row">
+
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <div class="team-header">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between">
+
+                                <a href="/admin/statistic/http/referral"><i class="ri-arrow-left-circle-line"></i></a>
+
+                                <div class="h5 fw-semibold mb-sm-0">Переходов: {{views}} / Регистраций: {{users|length}} / Пожертвований:
+                                    {{countAllDonate}}</div>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="input-group">
+                                        <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                        <input type="text" class="form-control" id="daterange" placeholder="Date">
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-12">
+
+                <div class="card custom-card">
+
+                    <div class="card-body">
+                        <table id="responsiveDataTable" class="table table-bordered text-nowrap w-100">
+                            <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Data Create</th>
+                                <th>Donates</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for user in users %}
+                            {% set userInfo = getUser(user.user_id) %}
+                            <tr>
+                                <td><img class="avatar avatar-md" src="{{userInfo.getAvatar()}}">
+                                    <a href="/admin/user/info/{{userInfo.getId()}}">{{ userInfo.getEmail() }}</a></td>
+                                <td>{{ user.date_create }}</td>
+                                <td>{{ userInfo.getHistoryDonate(true) }}</td>
+                            </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+
+
+
+
+{% block css %}
+
+<link rel="stylesheet" href="{{template}}/assets/libs/flatpickr/flatpickr.min.css">
+
+{% endblock %}
+
+
+{% block js %}
+<script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script>
+    flatpickr("#daterange", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        onChange: function(selectedDates, dateStr, instance) {
+            // Проверка, выбраны ли обе даты
+            if (selectedDates.length === 2) {
+                // Получение начальной и конечной даты
+                let startDate = selectedDates[0].toISOString().split('T')[0];
+                let endDate = selectedDates[1].toISOString().split('T')[0];
+
+                // Формирование нового URL с добавлением дат
+                // Переход по новому URL
+                window.location.href = "/admin/statistic/http/referral/{{refererName}}/" + startDate + '/' + endDate;
+            }
+        }
+    });
+</script>
+{% endblock %}

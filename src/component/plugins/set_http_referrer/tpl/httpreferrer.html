@@ -1,0 +1,59 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+
+
+        <div class="row">
+            <div class="col-xl-12">
+
+
+                <div class="card custom-card">
+
+                    <div class="card-body">
+                        <table id="responsiveDataTable" class="table table-bordered text-nowrap w-100">
+                            <thead>
+                            <tr>
+                                <th>HTTP REFERRER</th>
+                                <th>Click</th>
+                                <th>Count Registration</th>
+                                <th>Donate</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for referrer in getReferrers %}
+                            <tr>
+                                <td><a href="/admin/statistic/http/referral/{{ referrer.referer }}">{{ referrer.referer }}</a></td>
+                                <td>{{ referrer.views }}</td>
+                                <td>{{ referrer.user_count }}</td>
+                                <td>{{ referrer.total_donations }}</td>
+                            </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+
+
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block js %}
+
+{% endblock %}

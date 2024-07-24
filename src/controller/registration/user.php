@@ -7,9 +7,11 @@ use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\request\request;
 use Ofey\Logan22\component\request\request_config;
+use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\validation;
+use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\log\logTypes;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\auth\auth;
@@ -40,7 +42,6 @@ class user
         if (\Ofey\Logan22\model\user\user::self()->isAuth()) {
             board::error(lang::get_phrase("error"));
         }
-
         $email    = $_POST['email'] ?? null;
         if ( ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             board::notice(false, lang::get_phrase(213));
@@ -69,6 +70,15 @@ class user
         \Ofey\Logan22\model\user\user::self()->addLog(logTypes::LOG_REGISTRATION_USER, "LOG_REGISTRATION_USER", [$email]);
 
         registration::add($email, $password, $account_name);
+        if(session::get("HTTP_REFERER")){
+            sql::run('INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)', [
+              0,
+              $_SESSION['id'],
+              "HTTP_REFERER",
+              session::get("HTTP_REFERER"),
+            ]);
+        }
+
         if(server::get_count_servers() > 0 ) {
             board::redirect("/main");
             $user = \Ofey\Logan22\model\user\user::getUserId($_SESSION['id']);

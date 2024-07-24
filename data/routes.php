@@ -144,24 +144,23 @@ return array (
   ),
   10 => 
   array (
-    'enable' => 1,
+    'enable' => true,
     'method' => 'GET',
     'pattern' => '/ticket/(\\d+)',
-    'func' => 'controller\\ticket\\ticket::get',
+    'func' => 'controller\\ticket\\ticket::ticketAdmin',
     'access' => 
     array (
       0 => 'admin',
-      1 => 'user',
     ),
     'weight' => 0,
-    'page' => NULL,
+    'page' => '',
     'comment' => 'Ticket read',
   ),
   11 => 
   array (
     'enable' => 1,
     'method' => 'POST',
-    'pattern' => '/ticket/message',
+    'pattern' => '/ticket/send/message',
     'func' => 'controller\\ticket\\ticket::message',
     'access' => 
     array (
@@ -1490,6 +1489,92 @@ return array (
     'access' => 
     array (
       0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  105 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/logan22',
+    'func' => 'component\\plugins\\set_http_referrer\\httpReferrerPlugin::addUserReferer',
+    'access' => 
+    array (
+      0 => 'any',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  106 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/ticket/get/message',
+    'func' => 'controller\\ticket\\ticket::getNewMessage',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  107 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/ticket/block',
+    'func' => 'controller\\ticket\\ticket::blockTicket',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  108 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/ticket/clear/dialog',
+    'func' => 'controller\\ticket\\ticket::clearDiaglog',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  109 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/ticket/get/last/list',
+    'func' => 'controller\\ticket\\ticket::getUpdateTicketList',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  110 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/ticket/load/file',
+    'func' => 'controller\\ticket\\ticket::fileLoad',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
     ),
     'weight' => 0,
     'page' => '',

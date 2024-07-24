@@ -88,6 +88,16 @@
         </li>
         {% endif %}
 
+        {% if getUser().isAuth() %}
+        <li class="slide enable_ticket" {% if config().enabled().isEnableTicket() == false
+            %}style="display: none;" {% endif %}>
+          <a href="/ticket" class="side-menu__item">
+            <i class="fe fe-activity side-menu__icon"></i>
+            <span class="side-menu__label">{{phrase("menu_ticket")}}</span>
+          </a>
+        </li>
+        {% endif %}
+
 
         <!--                <li class="slide__category"><span class="category-name">Подключение</span></li>-->
         <!--                <li class="slide">-->

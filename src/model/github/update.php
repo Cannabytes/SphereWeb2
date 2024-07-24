@@ -101,21 +101,6 @@ class update
           time::mysql(),
           time::mysql(),
         ]);
-        if (sql::isError()) {
-            $sql = sql::debug_query(
-              "INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)",
-              [
-                $last_commit_now,
-                "Cannabytes",
-                "https://github.com/Cannabytes/SphereWeb2/commit/" . $last_commit_now,
-                "Autoupdated",
-                time::mysql(),
-                time::mysql(),
-              ]
-            );
-            error_log($sql);
-            board::error("Ошибка записи коммита");
-        }
     }
 
     static function getUpdateProgress(): false|string
