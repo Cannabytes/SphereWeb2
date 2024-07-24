@@ -62,7 +62,7 @@ class ticketModel
             return;
         }
 
-        if($ticketData['user_id'] != user::self()->getId() OR !user::self()->isAdmin()){
+        if($ticketData['user_id'] != user::self()->getId() AND !user::self()->isAdmin()){
             board::error(lang::get_phrase("access_is_denied"));
             return;
         }

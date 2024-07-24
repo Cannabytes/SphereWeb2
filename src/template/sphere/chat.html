@@ -269,7 +269,21 @@
   }
 
   function createMessageHTML(message, userInfo, isOwner) {
-    const messageContent = `<div><p class="mb-0">${message.message}</p></div>`;
+    let messageContent = '';
+
+    if (message.is_file) {
+      messageContent = message.files.map(file => `
+            <div>
+                <p class="mb-0 d-sm-flex d-block">
+                    <a href="/uploads/ticket/${file.filename}" class="glightbox card avatar avatar-xl m-1" data-gallery="gallery1">
+                        <img src="/uploads/ticket/${file.filename}" alt="image">
+                    </a>
+                </p>
+            </div>
+        `).join('');
+    } else {
+      messageContent = `<div><p class="mb-0">${message.message}</p></div>`;
+    }
 
     if (owner_last_message_author === userInfo.id) {
       return messageContent;
@@ -298,7 +312,7 @@
             <div class="chat-list-inner">
                 ${isOwner ? '' : `<div class="chat-user-profile">${avatarHTML}</div>`}
                 <div class="${isOwner ? 'me-3' : 'ms-3'}">
-                    ${userInfoHTML}
+                    <a href="/admin/user/info/${userInfo.id}">${userInfoHTML}</a>
                     <div class="main-chat-msg" data-self="${isOwner}">
                         ${messageContent}
                     </div>
