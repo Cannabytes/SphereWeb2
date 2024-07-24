@@ -117,6 +117,17 @@
                       </button>
                     </li>
 
+                    <li class="nav-item rounded" role="presentation">
+                      <button class="nav-link" id="warehouse-tab" data-bs-toggle="tab"
+                              data-bs-target="#warehouse-tab-pane" type="button" role="tab"
+                              aria-controls="warehouse-tab-pane" aria-selected="false"><i
+                        class="ri-bill-line me-1 align-middle d-inline-block fs-16"></i>{{ phrase('warehouse') }}
+                        {% if userInfo.countWarehouseItems() >=1 %}<span
+                          class=" top-0 start-50 translate-middle badge rounded-pill bg-danger">{{userInfo.countWarehouseItems()}}</span>{%
+                        endif %}
+                      </button>
+                    </li>
+
                   </ul>
                 </div>
               </div>
@@ -133,7 +144,7 @@
                         <div>
                                                                     <span
                                                                       class="avatar avatar-sm avatar-rounded profile-timeline-avatar">
-                                                                        <img src="{{getUser().getAvatar()}}" alt="">
+                                                                        <img src="{{userInfo.getAvatar()}}" alt="">
                                                                     </span>
                           <p class="text-muted mb-2">
                             <span class="text-default">{{log.message}}</span>
@@ -156,7 +167,7 @@
                         <div>
                                                                     <span
                                                                       class="avatar avatar-sm avatar-rounded profile-timeline-avatar">
-                                                                        <img src="{{getUser().getAvatar()}}" alt="">
+                                                                        <img src="{{userInfo.getAvatar()}}" alt="">
                                                                     </span>
 
                           <div class="flex-fill">
@@ -225,6 +236,62 @@
 
                     </div>
                   </div>
+
+
+                  <div class="tab-pane fade p-0 border-0" id="warehouse-tab-pane"
+                       role="tabpanel" aria-labelledby="warehouse-tab" tabindex="0">
+                    <div class="card custom-card">
+
+                    <div class="row ">
+
+                      {% if userInfo.countWarehouseItems() == 0 %}
+                      <div class="card mb-3  bg-danger-transparent border-danger">
+                        <div class="d-flex p-3 border-bottom-0">
+                          <div class="d-sm-flex">
+                            <div class="">
+                              <svg class="me-4  bg-danger  alt-notify" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path fill="#ff9ea7"
+                                      d="M20.057 22H3.943a3.023 3.023 0 0 1-2.618-4.534L9.382 3.511a3.023 3.023 0 0 1 5.236 0l8.057 13.955A3.023 3.023 0 0 1 20.057 22Z"></path>
+                                <circle cx="12" cy="17" r="1" fill="#dc3545"></circle>
+                                <path fill="#dc3545" d="M12 14a1 1 0 0 1-1-1V9a1 1 0 0 1 2 0v4a1 1 0 0 1-1 1Z"></path>
+                              </svg>
+                            </div>
+                            <div class="mt-0 text-start">
+                              <span class="fs-14 fw-semibold">{{phrase('notification')}}</span>
+                              <p class="fs-13 text-muted mb-0">{{phrase('no_items_send_char')}}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {% else %}
+                      {% for warehouse in userInfo.getWarehouse() %}
+                      <div class="col-xl-2 col-12 my-2">
+                        <div class="text-center">
+                          <div class="similar-products-image me-2">
+                            <img class="avatar avatar-xl bg-light p-1" src="{{warehouse.item.getIcon()}}" alt="">
+                          </div>
+                          <div class="form-switch">
+
+                            <label class="my-0 fs-14 fw-semibold form-label"  >{% if
+                              warehouse.enchant > 0 %}+{{warehouse.enchant}} {% endif %}{{warehouse.item.getItemName()}} <span
+                                class="text-muted ms-1">({{warehouse.count}})</span></label>
+                          </div>
+                          <div class="d-flex align-items-center justify-content-center mb-0">
+                            <p class="mb-0 text-muted">
+                              <span class="text-muted fs-12 ms-1">{{phrase(warehouse.phrase)}}</span>
+                            </p>
+                          </div>
+
+                        </div>
+                      </div>
+                      {% endfor %}
+                      {% endif %}
+
+                  </div>
+                  </div>
+
+                  </div>
+
 
                 </div>
               </div>

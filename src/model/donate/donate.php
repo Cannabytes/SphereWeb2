@@ -248,7 +248,7 @@ class donate
                   $item->getItemId(),
                   $item->getCount() * $quantity,
                   $item->getEnchant(),
-                  123
+                  "purchase"
                 );
                 if ( ! $data['success']) {
                     if (user::self()->isAdmin()) {
