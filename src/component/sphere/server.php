@@ -5,6 +5,7 @@ namespace Ofey\Logan22\component\sphere;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\userModel;
 use Ofey\Logan22\template\tpl;
@@ -67,6 +68,12 @@ class server
         return (bool)filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME);
     }
 
+    private static $installLink = null;
+
+    public static function setInstallLink(string $link): void {
+        self::$installLink = $link;
+    }
+
     static public function send(type $type, array $arr = []): self
     {
         self::isOffline();
@@ -80,8 +87,14 @@ class server
         }
         self::$error = false;
 
+        if(self::$installLink != null) {
+          $link = self::$installLink;
+        }else{
+            $link = config::load()->sphereApi()->getIp() . ':' . config::load()->sphereApi()->getPort();
+        }
+
         $json        = json_encode($arr) ?? "";
-        $url         = type::url($type) ?? board::error("Не указан URL запроса");
+        $url         = $link . type::url($type) ?? board::error("Не указан URL запроса");
         $ch          = curl_init();
         $headers     = [
           'Content-Type: application/json', // Изменяем тип контента на application/json

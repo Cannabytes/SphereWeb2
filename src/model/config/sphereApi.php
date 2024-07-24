@@ -2,6 +2,7 @@
 
 namespace Ofey\Logan22\model\config;
 
+use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\model\db\sql;
 
 class sphereApi
@@ -13,6 +14,10 @@ class sphereApi
 
     public function __construct()
     {
+        //Проверка на существоване token.php
+        if(!file_exists(fileSys::get_dir('/data/token.php'))){
+            return;
+        }
         $configData = sql::getRow("SELECT `setting` FROM `settings` WHERE `key` = '__config_sphere_api__'");
         if ($configData) {
             $setting    = json_decode($configData['setting'], true);
