@@ -63,6 +63,9 @@ class serverStatus
 
     public function getGameServer(): bool
     {
+        if( ! $this->gameServer AND $this->online >= 1){
+            return true;
+        }
         return $this->gameServer;
     }
 
@@ -73,6 +76,9 @@ class serverStatus
 
     public function getLoginServer(): bool
     {
+        if( ! $this->loginServer AND $this->online >= 1){
+            return true;
+        }
         return $this->loginServer;
     }
 
