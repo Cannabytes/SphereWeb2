@@ -6,6 +6,7 @@ use Ofey\Logan22\model\db\fdb;
 
 class forumStruct {
 
+    private bool $showForumSphereMainPage;
     private bool $enabled;
     private string $engine;
     private string $sort;
@@ -20,6 +21,7 @@ class forumStruct {
     public function __construct($json)
     {
         $config = json_decode($json, true);
+        $this->showForumSphereMainPage = filter_var($config['showForumSphereMainPage'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
         $this->host = $config['host'];
         $this->port = $config['port'];
         $this->user = $config['user'];
@@ -34,6 +36,11 @@ class forumStruct {
             fdb::connect($this->host, $this->port, $this->user, $this->password, $this->name);
         }
     }
+
+    public function isShowForumSphereMainPage(): bool
+    {
+        return $this->showForumSphereMainPage;
+    } 
 
     public function isEnabled(): bool
     {
