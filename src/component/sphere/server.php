@@ -32,6 +32,13 @@ class server
 
     private static ?int $server_id = null;
 
+    private static null|int|string $codeError = null;
+
+    public static function getCodeError(): int|string|null
+    {
+        return self::$codeError;
+    }
+
     /**
      * Указываем аргументом которые отправятся запросом массив, для того чтоб указывать дополнительные данные, типо ID пользователя и т.д.
      *
@@ -134,6 +141,7 @@ class server
         curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
         $response = curl_exec($ch);
         if($response === false){
+             self::$codeError = "sphereapi_unavailable";
              self::$error = 'Ошибка соединения с Sphere API. Попробуйте еще раз. Возможно сервер на перезагрузке либо указаны неверные данные подключения к Sphere API. Если ошибка повторится, обратитесь в службу поддержки.';
              self::$isOfflineServer = true;
              return $instance;
@@ -158,6 +166,9 @@ class server
 
         if (isset($response['error'])) {
             self::$error = $response['error'];
+            if(isset($response['code'])){
+                self::$codeError = $response['code'];
+            }
             if (self::$showError or ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(
                                                                                     $_SERVER['HTTP_X_REQUESTED_WITH']
                                                                                   ) == 'xmlhttprequest') {

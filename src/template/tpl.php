@@ -960,6 +960,10 @@ class tpl
            return \Ofey\Logan22\component\sphere\server::isError();
         }));
 
+        $twig->addFunction(new TwigFunction('SphereApiCodeError', function () {
+           return \Ofey\Logan22\component\sphere\server::getCodeError();
+        }));
+
         $twig->addFunction(new TwigFunction('statusSphereServer', function () {
             \Ofey\Logan22\component\sphere\server::isOffline();
         }));

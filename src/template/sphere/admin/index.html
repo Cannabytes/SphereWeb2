@@ -14,10 +14,9 @@
       {% if sphereAPIError %}
       <div class="card custom-card">
         <div class="p-4 border-bottom border-block-end-dashed">
-          {{ phrase('sphereapi_unavailable') }}
+          {{ phrase(SphereApiCodeError())|raw }}
         </div>
       </div>
-
       {% else %}
 
       {% if self_last_commit != sphere_last_commit %}
@@ -29,16 +28,30 @@
       </div>
       {% endif %}
 
+      {% if servers|length == 0 %}
+      <div class="card custom-card">
+        <div class="p-4 border-bottom border-block-end-dashed">
+          <p class="fw-semibold mb-2 text-danger">{{ phrase('you_have_no_servers') }}</p>
+          <a href="/admin/server/add/new" class="btn btn-light btn-wave btn-sm ms-auto">{{ phrase('add_server') }}</a>
+        </div>
+      </div>
+      {% endif %}
 
       {% for server in servers %}
       {% set serverInfo = getServer(server.id) %}
       <div class="card custom-card overflow-hidden">
 
         <div class="card-body border-bottom">
+
+          {% if serverInfo == null %}
+           <div class="text-danger">Сервер не найден в Вашей внутренней БД, но существует в Sphere API.</div>
+          {% endif %}
+
           <div class="d-sm-flex  main-profile-cover">
 
+
             <div class="flex-fill main-profile-info my-auto">
-              <h5 class="fw-semibold mb-1 ">{{serverInfo.getName()}} x{{serverInfo.getRateExp()}} - {{serverInfo.getChronicle}}</h5>
+              <h5 class="fw-semibold mb-1 ">{{serverInfo.getName()}} x{{serverInfo.getRateExp() ?? 0}} - {{serverInfo.getChronicle ?? 'N/A'}}</h5>
               <div>
                 <p class="mb-1 text-muted">{{ phrase('activated_until') }} {{server.license_expiration_date|date('d.m.Y')}}</p>
                 <p class="mb-1 text-muted">{{ phrase('status') }}: Работает</p>

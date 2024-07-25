@@ -35,14 +35,34 @@ class options
     public static function delete_server(): void
     {
         $server_id = $_POST['serverId'] ?? board::error("Server id is empty");
-        $response  = \Ofey\Logan22\component\sphere\server::send(type::DELETE_SERVER, [
-          "id" => (int)$server_id,
-        ])->show()->getResponse();
-        if ($response['success']) {
-            sql::run("DELETE FROM `servers` WHERE `id` = ?", [$server_id]);
-            board::redirect("/admin/server/list");
-            board::success("Сервер удален");
+
+        $serverInfo = \Ofey\Logan22\model\server\server::getServer($server_id);
+        if ($serverInfo->getId() != $server_id) {
+            redirect::location("/admin/server/list");
         }
+
+        $servers_id = \Ofey\Logan22\component\sphere\server::send(type::SERVER_LIST)->show(false)->getResponse();
+        if (isset($servers_id['error']) or $servers_id === null) {
+            $sphereAPIError        = true;
+            $servers_id['servers'] = [];
+        }
+
+        foreach ($servers_id['ids'] as $sid) {
+            if ($serverInfo->getId() == $sid) {
+                $response = \Ofey\Logan22\component\sphere\server::send(type::DELETE_SERVER, [
+                  "id" => (int)$sid,
+                ])->show()->getResponse();
+                if ($response['success']) {
+                    sql::run("DELETE FROM `servers` WHERE `id` = ?", [$sid]);
+                    board::redirect("/admin/server/list");
+                    board::success("Сервер удален");
+                }
+            }
+        }
+
+        sql::run("DELETE FROM `servers` WHERE `id` = ?", [$server_id]);
+        board::redirect("/admin/server/list");
+        board::success("Сервер удален");
     }
 
     //POST - Регистрация сервера
@@ -116,12 +136,73 @@ class options
           "name" => $_POST['collection'],
         ])->show(true)->getResponse();
         if ($response['success']) {
-            $server =\Ofey\Logan22\model\server\server::getServer((int)$_POST['serverId']);
+            $server = \Ofey\Logan22\model\server\server::getServer((int)$_POST['serverId']);
             $server->setChronicle($_POST['version_client']);
             $server->setCollection($_POST['collection']);
             $server->save();
             board::success("Коллекция обновлена");
         }
+    }
+
+    static public function edit_server_show($id = null): void
+    {
+        validation::user_protection("admin");
+
+        $sphereAPIError = null;
+
+        //Подгрузка списокв серверов с сервера сферы
+        $servers_id = \Ofey\Logan22\component\sphere\server::send(type::SERVER_LIST)->show(false)->getResponse();
+        if (isset($servers_id['error']) or $servers_id === null) {
+            $sphereAPIError        = true;
+            $servers_id['servers'] = [];
+        }
+        if ($id) {
+            $serverInfo = \Ofey\Logan22\model\server\server::getServer($id);
+            if ($serverInfo->getId() != $id) {
+                redirect::location("/admin/server/list");
+            }
+            foreach ($servers_id['ids'] as $server_id) {
+                if ($serverInfo->getId() == $server_id) {
+                    $serverInfo->setIsSphereServer(true);
+                }
+            }
+            tpl::addVar([
+              'serverInfo' => $serverInfo,
+            ]);
+        }
+        $servers = \Ofey\Logan22\model\server\server::getServerAll();
+        if ( ! $servers) {
+            redirect::location("/admin/server/add/new");
+        }
+        foreach ($servers as &$server) {
+            foreach ($servers_id['ids'] as $server_id) {
+                if ($server->getId() == $server_id) {
+                    $server->setIsSphereServer(true);
+                }
+            }
+        }
+        if ( ! $sphereAPIError) {
+            $arrayUniq = self::filterUniqueIds(\Ofey\Logan22\model\server\server::getServerAll(), $servers_id['ids']);
+            foreach ($arrayUniq as $id) {
+                $sm = new serverModel([
+                  'id' => $id,
+                ]);
+                sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode(['id' => $id])]);
+                $sphereServers = $sm;
+                $servers[]     = $sphereServers;
+            }
+            tpl::addVar([
+              'sphereServers' => $servers,
+            ]);
+        }
+
+        tpl::addVar([
+          'sphereAPIError'        => $sphereAPIError,
+          'client_list_default'   => client::all(),
+          'timezone_list_default' => timezone::all(),
+          "title"                 => lang::get_phrase(221),
+        ]);
+        tpl::display("/admin/server_list.html");
     }
 
     static private function filterUniqueIds($objects, $ids): array
@@ -137,56 +218,6 @@ class options
         });
 
         return $filteredIds;
-    }
-
-    static public function edit_server_show($id = null): void
-    {
-        validation::user_protection("admin");
-
-        $sphereAPIError = null;
-
-        //Подгрузка списокв серверов с сервера сферы
-        $servers_id = \Ofey\Logan22\component\sphere\server::send(type::SERVER_LIST)->show(false)->getResponse();
-        if(isset($servers_id['error']) OR $servers_id===null){
-            $sphereAPIError = true;
-            $servers_id['servers'] = [];
-        }
-        if ($id) {
-            $serverInfo = \Ofey\Logan22\model\server\server::getServer($id);
-            if ($serverInfo->getId() != $id) {
-                redirect::location("/admin/server/list");
-            }
-            tpl::addVar([
-              'serverInfo' => $serverInfo,
-            ]);
-        }
-        $servers = \Ofey\Logan22\model\server\server::getServerAll();
-        if(!$servers) {
-            //test обновления файла
-            redirect::location("/admin/server/add/new");
-        }
-        if(!$sphereAPIError){
-            $arrayUniq = self::filterUniqueIds(\Ofey\Logan22\model\server\server::getServerAll(), $servers_id['ids']);
-            foreach ($arrayUniq as $id) {
-                $sm = new serverModel([
-                  'id' => $id,
-                ]);
-                sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode(['id' => $id])]);
-                $sphereServers  = $sm;
-                $servers[] = $sphereServers;
-            }
-            tpl::addVar([
-              'sphereServers'    => $servers,
-            ]);
-        }
-
-        tpl::addVar([
-          'sphereAPIError' => $sphereAPIError,
-          'client_list_default'   => client::all(),
-          'timezone_list_default' => timezone::all(),
-          "title"                 => lang::get_phrase(221),
-        ]);
-        tpl::display("/admin/server_list.html");
     }
 
     public static function saveGeneral(): void
@@ -309,6 +340,8 @@ class options
           "serverId" => $server_id,
 
         ])->show()->getResponse();
+
+        board::success(lang::get_phrase(217));
     }
 
     static public function new_server(): void
@@ -381,9 +414,9 @@ class options
             board::error("Ошибка парсинга JSON");
         }
         $data = json_decode($post, true);
-        foreach($data['donateSystems'] as $i => $system) {
+        foreach ($data['donateSystems'] as $i => $system) {
             $sysData = reset($system);
-            if(!$sysData['inputs']){
+            if ( ! $sysData['inputs']) {
                 unset($data['donateSystems'][$i]);
             }
         }

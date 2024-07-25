@@ -54,8 +54,11 @@
                       id="server_{{serverName}}-tab" data-bs-toggle="pill"
                       data-bs-target="#server_{{serverName}}" type="button" role="tab"
                       aria-controls="server_{{serverName}}" aria-selected="true"><i
-                class="ri-shield-user-line me-1 align-middle d-inline-block"></i>{{ serverName }} x{{
-                server.getRateExp() }}
+                class="ri-shield-user-line me-1 align-middle d-inline-block"></i>
+                {% if server.getIsSphereServer() == false %}<s>{% endif %}
+                  {{ serverName }} x{{ server.getRateExp() }}
+                {% if server.getIsSphereServer() == false %}</s>{% endif %}
+
               </button>
               {% set active = false %}
               {% endfor %}
@@ -87,6 +90,12 @@
 
                   <div>
                     <div class="my-md-auto mt-4 ms-md-3">
+
+                      {% if server.getIsSphereServer() == false %}
+                      <span class="fs-5 text-danger">Данный сервер не зарегистрирован в Sphere API. Он не используемый. Можете его удалить.</span>
+                      {% endif %}
+
+
                       <h5 class="font-weight-semibold ms-0 mb-1 pb-0">{{serverName}}</h5>
 
                       <p class="text-danger ms-0 mb-2"><span class="font-weight-semibold me-2">Server ID:</span><span> {{server.getId()}}</span>
@@ -112,11 +121,13 @@
                       <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">{{phrase('max_expected_online')}} :</span><span> {{ server.getServerData('max_online').val ?? "none" }}</span>
                       </p>
 
+                      {% if server.getIsSphereServer() %}
                       <a class="btn btn-success btn-sm shadow-success btn-wave waves-effect waves-light"
                          href="/admin/server/edit/{{server.getId()}}">{{ phrase('edit_server_info') }}</a>
 
                       <a class="btn btn-success btn-sm shadow-success btn-wave waves-effect waves-light"
                          href="/admin/server/statistic/{{server.getId()}}">{{ phrase('menu_statistics') }}</a>
+                      {% endif %}
 
                       <button class="btn btn-danger btn-sm shadow-success btn-wave waves-effect waves-light removeServer"
                       data-server-id="{{server.getId()}}">{{ phrase('delete') }}</button>
