@@ -43,6 +43,11 @@ class server
         return array_keys(self::getServerAll());
     }
 
+    public static function clearServerInfo(): void
+    {
+        self::$server_info = null;
+    }
+
     /**
      * @return serverModel[]|null
      * @throws Exception

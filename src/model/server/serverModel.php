@@ -53,6 +53,9 @@ class serverModel
 
     private ?string $collection = null;
 
+    // Есть ли данный сервер на сервере сферы
+    private ?bool $isSphereServer = null;
+
     public function __construct(array $server, array $server_data = [], ?int $pageId = null)
     {
         $this->id              = $server['id'] ?? null;
@@ -78,6 +81,17 @@ class serverModel
 
         return $this;
     }
+
+    public function getIsSphereServer(): ?bool
+    {
+        return $this->isSphereServer;
+    }
+
+    public function setIsSphereServer(bool $isSphereServer): void
+    {
+        $this->isSphereServer = $isSphereServer;
+    }
+
 
     public function getCollection(): ?string
     {
