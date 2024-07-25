@@ -218,9 +218,11 @@ class serverModel
             }
         }
 
+
+
         $serverStatus = new serverStatus();
         $serverStatus->setServerId($this->getId());
-        $sphere = \Ofey\Logan22\component\sphere\server::send(type::GET_STATUS_SERVER)->getResponse();
+        $sphere = \Ofey\Logan22\component\sphere\server::send(type::GET_STATUS_SERVER, ['id' => $this->getId()])->getResponse();
         if (isset($sphere['error']) or $sphere == null) {
             $serverStatus->setEnable(false);
             $serverStatus->setLoginServer(false);
