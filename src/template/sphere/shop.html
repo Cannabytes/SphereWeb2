@@ -126,8 +126,8 @@
                     <div class="card custom-card overflow-hidden" id="itemListSell">
                     </div>
                     <div class="input-group border rounded flex-nowrap quantityClass">
-                      <input id="quantity" min="1" type="number"
-                             class="form-control form-control-sm border-0 text-center w-100 quantity"
+                      <input id="quantityModal" min="1" type="number"
+                             class="form-control form-control-sm border-0 text-center w-100 quantityModal"
                              aria-label="quantity" value="1">
                     </div>
                   </div>
@@ -274,7 +274,7 @@
             '</span>' +
             '<div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">' +
             '<p class="mb-0 lh-1">' + item.item.itemName + ' x<span class="dynamic-count">' + quantity * item.count + '</span></p>' +
-            '<span class="fs-11 text-muted op-7">' + {{phrase('price')}} +': ' + quantity * item.cost + '</span>' +
+            '<span class="fs-11 text-muted op-7">{{phrase("price")}} : ' + quantity * item.cost + '</span>' +
             '</div>' +
             '</div>' +
             '</li>';
@@ -292,30 +292,78 @@
 
     function updatePriceAndCountForCard($quantityInput) {
       let totalCost = 0;
-      let $cardBody = $quantityInput.closest('.card-body');  // Находим карточку, которая содержит изменённое поле quantity
-      let quantity = parseInt($quantityInput.val()) || 1;  // Получаем текущее значение количества
+      let $cardBody = $quantityInput.closest('.card-body');
+      let quantity = parseInt($quantityInput.val()) || 1;
       $('#quantity').val(quantity);
+
       $cardBody.find('table tbody tr').each(function () {
         let $row = $(this);
-        let baseCount = parseInt($row.find('.product-count').data('cost'));  // Получаем базовое количество товара
-        let basePrice = parseFloat($row.find('td[data-base-price]').data('base-price'));  // И базовую цену
-        let totalProductCount = baseCount * quantity;  // Рассчитываем новое количество товара
-        let totalPrice = basePrice * quantity;  // И новую цену
+        let baseCount = parseInt($row.find('.product-count').data('cost'));
+        let basePrice = parseFloat($row.find('td[data-base-price]').data('base-price'));
 
-        $row.find('.product-count').text(totalProductCount);  // Обновляем количество товара в строке
-        $row.find('.fw-semibold.fs-14').text(totalPrice.toFixed(0));  // Обновляем цену в строке
-        totalCost += totalPrice;  // Добавляем к общей стоимости
+        let totalProductCount = baseCount * quantity;
+        let totalPrice = basePrice * quantity;
+
+        $row.find('.product-count').text(totalProductCount);
+        $row.find('.fw-semibold.fs-14').text(totalPrice.toFixed(0));
+        totalCost += totalPrice;
       });
-      $('.shopCostBuy').text(totalCost);
-      $cardBody.find('.showSelectBuy').text('Купить за ' + totalCost.toFixed(0));  // Обновляем текст кнопки покупки в текущей карточке
+
+      updateAllShopCostBuy(totalCost);
+      $cardBody.find('.showSelectBuy').text('Купить за ' + totalCost.toFixed(0));
+      $("#quantityModal").val(quantity);
+
+      // Обновляем данные в модальном окне
+      updateModalData(quantity, totalCost);
+    }
+
+    function updateModalData(quantity, totalCost) {
+      $('#itemListSell .list-group-item').each(function() {
+        let $item = $(this);
+        let baseCount = parseInt($item.data('base-count'));
+        let basePrice = parseFloat($item.data('base-price'));
+
+        let newCount = baseCount * quantity;
+        let newPrice = basePrice * quantity;
+
+        $item.find('.dynamic-count').text(newCount);
+        $item.find('.fs-11.text-muted.op-7').text('{{phrase("price")}} : ' + newPrice.toFixed(0));
+      });
+
+      updateAllShopCostBuy(totalCost);
+    }
+
+    function updateAllShopCostBuy(totalCost) {
+      $('.shopCostBuy').text(totalCost.toFixed(0));
     }
 
     $('body').on('input change', '.quantity', function () {
-      updatePriceAndCountForCard($(this));  // Вызываем функцию для элемента, от которого произошло изменение
+      updatePriceAndCountForCard($(this));
+    });
+
+    $('.quantityModal').on('input change', function() {
+      let quantity = parseInt($(this).val()) || 1;
+      let totalCost = 0;
+
+      $('#itemListSell .list-group-item').each(function() {
+        let $item = $(this);
+        let baseCount = parseInt($item.data('base-count'));
+        let basePrice = parseFloat($item.data('base-price'));
+
+        let newCount = baseCount * quantity;
+        let newPrice = basePrice * quantity;
+        totalCost += newPrice;
+        console.log(basePrice, newPrice, totalCost)
+
+        $item.find('.dynamic-count').text(newCount);
+        $('.shopCostBuy').text(newPrice.toFixed(0));
+      });
+
+      updateAllShopCostBuy(totalCost);
     });
 
     $('.quantity').each(function () {
-      updatePriceAndCountForCard($(this));  // Обновляем цены и количество для каждой карточки
+      updatePriceAndCountForCard($(this));
     });
 
   });

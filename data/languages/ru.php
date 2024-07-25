@@ -776,7 +776,7 @@ return [
 	'do_you_want_to_receive' => 'хотите получить?',
 	'donate_coin' => 'Donate Coin',
 	'donate_coin_per_dollar' => 'Укажите сколько получит пользователь Donate Coin за 1 доллар',
-	'donate_coin_per_ref_donation' => '%d% Donate Coin за каждый донат привлеченного игрока',
+	'donate_coin_per_ref_donation' => '%d%% Donate Coin за каждый донат привлеченного игрока',
 	'donate_coin_to_dollar' => 'Стоимость 1 Donate Coin по отношению к 1 доллару',
 	'donate_coin_to_game' => 'Перевести <i class=\'fe fe-dollar-sign fs-16 me-1 text-danger\'></i>в игру',
 	'donate_percent_referral' => 'Пользователь получил %s за донат реферала %s (%s)',
