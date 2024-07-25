@@ -7,6 +7,7 @@
 
 namespace Ofey\Logan22\component\session;
 
+use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\model\db\sql;
 
 class session
@@ -19,6 +20,9 @@ class session
         ini_set('session.gc_probability', 1);
         ini_set('session.gc_divisor', 100);
         session_start();
+        if (!file_exists(fileSys::get_dir('/data/db.php'))) {
+            return;
+        }
         if ( ! isset($_SESSION['id'])) {
             if ( ! isset($_SESSION['HTTP_REFERER'])) {
                 if (isset($_SERVER['HTTP_REFERER'])) {
