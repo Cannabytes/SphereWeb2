@@ -244,7 +244,7 @@ class forum {
      * Создание ссылки на форум
      */
     public static function get_link($forum): string {
-        return match (self::get_engine()) {
+        return match (forum::get()->getEngine()) {
             'xenforo' => self::link_xenforo($forum),
             'ipb' => self::link_ipb($forum),
             'sphere' => self::link_sphere($forum),
@@ -255,7 +255,8 @@ class forum {
     private static function link_xenforo($forum): string {
         $thread_id = $forum['thread_id'];
         $post_id = $forum['post_id'];
-        return sprintf("%s/index.php?threads/%s/#post-%s", self::get_url(), $thread_id, $post_id);
+        $url = forum::get()->getUrl();
+        return sprintf("%s/index.php?threads/%s/#post-%s", $url, $thread_id, $post_id);
     }
 
     private static function link_ipb($forum): string {
