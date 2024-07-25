@@ -7,13 +7,15 @@ use Ofey\Logan22\model\db\sql;
 class email
 {
 
+    private string $url = "";
+
     private string $emailHost = "";
 
     private string $emailUsername = "";
 
     private string $emailPassword = "";
 
-    private string $emailPort  = "";
+    private string $emailPort = "";
 
     private bool $emailSMTPAuth = true;
 
@@ -21,11 +23,12 @@ class email
 
     public function __construct()
     {
-        $configData          = sql::getRow(
+        $configData = sql::getRow(
           "SELECT * FROM `settings` WHERE `key` = '__config_email__'"
         );
-        if($configData){
+        if ($configData) {
             $setting             = json_decode($configData['setting'], true);
+            $this->url           = $setting['url'];
             $this->emailHost     = $setting['emailHost'];
             $this->emailUsername = $setting['emailUsername'];
             $this->emailPassword = $setting['emailPassword'];
@@ -36,6 +39,11 @@ class email
               FILTER_VALIDATE_BOOLEAN
             );
         }
+    }
+
+    public function getURL(): string
+    {
+        return $this->url;
     }
 
     public function getHost(): string

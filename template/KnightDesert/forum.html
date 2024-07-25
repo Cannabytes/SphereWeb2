@@ -6,7 +6,7 @@
         {% if forum().isEnabled() %}
         {% for forum in forum().lastMessage() %}
         <div class="theme">
-            <a href="{{get_forum_link(thread)}}" class="theme__link"></a>
+            <a href="{{get_forum_link(forum)}}" class="theme__link"></a>
             <div class="theme__img"></div>
             <div class="theme__content">
                 <div class="theme__title">{{forum.title}}</div>
