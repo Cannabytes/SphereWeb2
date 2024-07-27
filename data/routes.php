@@ -1580,4 +1580,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  111 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/github/update/auto',
+    'func' => 'model\\github\\update::autoRemoteUpdate',
+    'access' => 
+    array (
+      0 => 'any',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Тестируемая функция автоматического старта обновлений',
+  ),
 );

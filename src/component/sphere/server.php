@@ -202,7 +202,7 @@ class server
         return self::$isOfflineServer = false;
     }
 
-    private static function getToken(): string
+    public static function getToken(): string
     {
         if (self::$tokenDisable) {
             return "disable";

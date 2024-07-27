@@ -362,6 +362,13 @@ class race_class {
         188 => 'Eviscerator',
         189 => 'Sayha\'s Seer',
     ];
+    static private array $shinemaker_id    = [
+      231 => 'Dwarf Maker',
+      232 => 'Earth Maker',
+      233 => 'Wind Maker',
+      234 => 'Soul Make',
+      235 => 'Shine Maker',
+    ];
 
     //Раса по классу
     static public function get_class_race($class_id): string {
@@ -385,6 +392,9 @@ class race_class {
         }
         if(array_key_exists($class_id, self::$ertheia_id)) {
             return 'ertheia';
+        }
+        if(array_key_exists($class_id, self::$shinemaker_id)) {
+            return 'shineMaker';
         }
         return 'none';
     }

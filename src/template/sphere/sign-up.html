@@ -56,15 +56,15 @@
         </div>
         <div class="card custom-card">
           <form id="registrationForm" action="/registration/user" method="POST" class="card-body p-5">
-            <p class="h5 fw-semibold mb-2 text-center">Регистрация</p>
-            <p class="mb-4 text-muted op-7 fw-normal text-center">Регистрация позволит Вам использовать все возможности Личного Кабинета</p>
+            <p class="h5 fw-semibold mb-2 text-center">{{ phrase('registration') }}</p>
+            <p class="mb-4 text-muted op-7 fw-normal text-center">{{ phrase('reg_enable_all_features') }}</p>
             <div class="row gy-3">
               <div class="col-xl-12">
                 <label for="email" class="form-label text-default">Email<i class="text-danger">*</i></label>
                 <input required name="email" type="text" class="form-control form-control-lg" id="email" placeholder="example@example.com">
               </div>
               <div class="col-xl-12">
-                <label for="account" class="form-label text-default">Account</label>
+                <label for="account" class="form-label text-default">{{ phrase(480) }}</label>
                 <div class="input-group mb-3">
                   {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() == 'prefix' %}
                   <button class="btn btn-light account_prefix" type="button">{{config().registration().genPrefix()}}</button>
@@ -76,13 +76,13 @@
                 </div>
               </div>
               <div class="col-xl-12 mb-2">
-                <label for="signin-password" class="form-label text-default d-block">Password<i class="text-danger">*</i>
+                <label for="signin-password" class="form-label text-default d-block">{{ phrase('password') }}<i class="text-danger">*</i>
                   <a href="#" tabindex="0" class=" float-end text-info password-popover" role="button"
                      data-bs-toggle="popover" data-bs-placement="right" title="Пароли"
                      data-bs-content="
                      {% for i, word in generation_words_password(10) %}
                      {{i + 1}}. <a href='#' class='thisPassword'>{{word}}</a><br>
-                     {% endfor %}">Помочь создать пароль?</a></label>
+                     {% endfor %}">{{ phrase('help_create_password') }}</a></label>
                 <div class="input-group">
                   <input name="password" type="password" class="form-control form-control-lg" id="signin-password"
                          placeholder="password" required>
@@ -101,7 +101,7 @@
                          style="width: 100%; height: 100%;"/>
                   </div>
                   <div class="col-xl-5">
-                    <label for="register_captcha" class="form-label captchaToken">Проверочный код</label>
+                    <label for="register_captcha" class="form-label captchaToken">{{ phrase('verification_code') }}</label>
                     <input type="text" class="form-control" id="register_captcha" name="captcha"
                            placeholder="Captcha">
                   </div>
@@ -110,21 +110,21 @@
               {% endif %}
 
               <div id="referralinput" class="col-xl-12 mb-2 d-none">
-                <label for="referral" class="form-label text-default">Имя пользователя</label>
+                <label for="referral" class="form-label text-default">{{ phrase('username') }}</label>
                 <input name="referral" value="{{referral_name}}" type="text" class="form-control form-control-lg" id="referral" placeholder="">
               </div>
 
               <div class="col-xl-12 d-grid mt-2">
                 <button type="submit" aria-label="button" class="btn btn-lg btn-success enter">
-                  Зарегистрировать мастер аккаунт
+                  {{ phrase('register_master_account') }}
                 </button>
               </div>
             </div>
             <div class="text-center">
-              <p id="add_referral" class="text-muted mt-3 text-info" role="button">Укажи ник друга (реферала) и получайте бонусы</p>
+              <p id="add_referral" class="text-muted mt-3 text-info" role="button">{{ phrase('register_master_account') }}</p>
             </div>
             <div class="text-center">
-              <p class="text-muted mt-3">Вы имеете аккаунт? <a href="/login" class="text-primary">Авторизуйтесь</a></p>
+              <p class="text-muted mt-3">{{ phrase('have_account') }} <a href="/login" class="text-primary">{{ phrase('log_in') }}</a></p>
             </div>
           </form>
         </div>

@@ -40,24 +40,22 @@
 
               {% for i, server in sphereServers %}
 
-              {% set serverName = server.getName()|replace({' ': '_'}) %}
-              {% set serverName = serverName|replace({'#': '_'}) %}
-              {% set serverName = serverName ~ '_' ~ i %}
-              
+              {% set serverName = server.getName() %}
+
               {% if serverInfo %}
-                {% if serverInfo.getId() == server.getId() %}
-                  {% set active = true %}
-                {% endif %}
+              {% if serverInfo.getId() == server.getId() %}
+              {% set active = true %}
+              {% endif %}
               {% endif %}
 
               <button class="nav-link text-start {% if active %}active{% endif %}"
-                      id="server_{{serverName}}-tab" data-bs-toggle="pill"
-                      data-bs-target="#server_{{serverName}}" type="button" role="tab"
-                      aria-controls="server_{{serverName}}" aria-selected="true"><i
+                      id="server_{{server.getId()}}-tab" data-bs-toggle="pill"
+                      data-bs-target="#server_{{server.getId()}}" type="button" role="tab"
+                      aria-controls="server_{{server.getId()}}" aria-selected="true"><i
                 class="ri-shield-user-line me-1 align-middle d-inline-block"></i>
                 {% if server.getIsSphereServer() == false %}<s>{% endif %}
-                  {{ serverName }} x{{ server.getRateExp() }}
-                {% if server.getIsSphereServer() == false %}</s>{% endif %}
+                  {{ serverName }} - {{server.getChronicle()}}
+                  {% if server.getIsSphereServer() == false %}</s>{% endif %}
 
               </button>
               {% set active = false %}
@@ -73,9 +71,7 @@
               {% endif %}
 
               {% for i, server in sphereServers %}
-              {% set serverName = server.getName()|replace({' ': '_'}) %}
-              {% set serverName = serverName|replace({'#': '_'}) %}
-              {% set serverName = serverName ~ '_' ~ i %}
+              {% set serverName = server.getName()  %}
 
 
               {% if serverInfo %}
@@ -84,8 +80,8 @@
               {% endif %}
               {% endif %}
 
-              <div class="tab-pane {% if active %}show active{% endif %}" id="server_{{serverName}}"
-                   role="tabpanel" tabindex="0" aria-labelledby="server_{{serverName}}-tab">
+              <div class="tab-pane {% if active %}show active{% endif %}" id="server_{{server.getId()}}"
+                   role="tabpanel" tabindex="0" aria-labelledby="server_{{server.getId()}}-tab">
                 <div class="d-sm-flex">
 
                   <div>
@@ -130,7 +126,7 @@
                       {% endif %}
 
                       <button class="btn btn-danger btn-sm shadow-success btn-wave waves-effect waves-light removeServer"
-                      data-server-id="{{server.getId()}}">{{ phrase('delete') }}</button>
+                              data-server-id="{{server.getId()}}">{{ phrase('delete') }}</button>
 
                     </div>
                   </div>
@@ -567,7 +563,7 @@
                         </div>
                         <div class="col-2 form-check form-check-lg form-switch">
                           <input {% if serverInfo.getServerData('resetHWID').getVal() %}checked{% endif %} class="form-check-input" type="checkbox" id="resetHWID">
-                         </div>
+                        </div>
                       </div>
                     </li>
 
@@ -817,9 +813,9 @@
 <script>
   $(document).on("click", ".removeServer", function (event){
     AjaxSend("/admin/server/delete", "POST", {
-         serverId: $(this).data('server-id')
-      }, false).then(function (data) {
-         console.log(data)
+      serverId: $(this).data('server-id')
+    }, false).then(function (data) {
+      console.log(data)
     })
   });
 </script>
