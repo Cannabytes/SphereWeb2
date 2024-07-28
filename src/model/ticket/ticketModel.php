@@ -7,6 +7,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\notification\notification;
 use Ofey\Logan22\model\user\user;
 
 class ticketModel
@@ -155,6 +156,11 @@ class ticketModel
           "UPDATE tickets SET last_message_id = ?, last_user_id = ? WHERE id = ?",
           [$newLastElementId, user::self()->getId(), $ticketId]
         );
+
+        if(!user::self()->isAdmin()){
+            notification::toAdmin("user_wrote_ticket", "/ticket/" . $ticketId);
+        }
+
         return $newLastElementId;
     }
 

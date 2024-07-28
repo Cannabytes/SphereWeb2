@@ -244,23 +244,73 @@
 
                     <div class="row ">
 
-                      {% if userInfo.countWarehouseItems() == 0 %}
-                      <div class="card mb-3  bg-danger-transparent border-danger">
-                        <div class="d-flex p-3 border-bottom-0">
-                          <div class="d-sm-flex">
-                            <div class="">
-                              <svg class="me-4  bg-danger  alt-notify" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <path fill="#ff9ea7"
-                                      d="M20.057 22H3.943a3.023 3.023 0 0 1-2.618-4.534L9.382 3.511a3.023 3.023 0 0 1 5.236 0l8.057 13.955A3.023 3.023 0 0 1 20.057 22Z"></path>
-                                <circle cx="12" cy="17" r="1" fill="#dc3545"></circle>
-                                <path fill="#dc3545" d="M12 14a1 1 0 0 1-1-1V9a1 1 0 0 1 2 0v4a1 1 0 0 1-1 1Z"></path>
-                              </svg>
-                            </div>
-                            <div class="mt-0 text-start">
-                              <span class="fs-14 fw-semibold">{{phrase('notification')}}</span>
-                              <p class="fs-13 text-muted mb-0">{{phrase('no_items_send_char')}}</p>
+                      <div class="col-xl-12 col-12 my-2">
+                        <div class="text-center">
+                          <p class="mb-0 text-muted">
+                            <a class="text-success" href="#" data-bs-toggle="modal" data-bs-target="#mail-Compose">Добавить пользователю предмет на склад</a>
+
+                          <div class="modal modal-lg fade" id="mail-Compose" tabindex="-1" aria-labelledby="mail-ComposeLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <form method="post" action="/admin/user/add/item/warehouse" class="modal-content">
+                                <div class="modal-header">
+                                  <h6 class="modal-title" id="mail-ComposeLabel">Добавление предмета</h6>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                          aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body px-4">
+                                  <div class="row">
+
+
+                                    <input type="hidden" id="userId" name="userId" value="{{userInfo.getId()}}">
+
+                                    <div class="col-xl-3 mb-2">
+                                      <label for="itemId" class="form-label text-dark fw-semibold">Сервер</label>
+                                      <select name="serverId" class="form-select" aria-label="Default select example">
+                                        {% for server in getServerAll() %}
+                                          <option value="{{server.getId()}}">{{server.getName()}} x{{server.getRateExp()}}</option>
+                                        {% endfor %}
+                                      </select>
+                                    </div>
+
+                                    <div class="col-xl-3 mb-2">
+                                      <label for="itemId" class="form-label text-dark fw-semibold">ID Item</label>
+                                      <input type="number" class="form-control" name="itemId" id="itemId" value="">
+                                    </div>
+
+                                    <div class="col-xl-3 mb-2">
+                                      <label for="count" class="form-label text-dark fw-semibold">Count</label>
+                                      <input type="number" class="form-control" name="count" id="count" value="1">
+                                    </div>
+
+                                    <div class="col-xl-3 mb-2">
+                                      <label for="enchant" class="form-label">Enchant</label>
+                                      <input type="number" class="form-control" name="enchant" id="enchant" placeholder="0">
+                                    </div>
+
+
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-light"
+                                          data-bs-dismiss="modal">Cancel</button>
+                                  <button type="submit" class="btn btn-primary">Send</button>
+                                </div>
+                              </form>
                             </div>
                           </div>
+
+
+                          </p>
+                        </div>
+                      </div>
+
+                      {% if userInfo.countWarehouseItems() == 0 %}
+
+                      <div class="col-xl-12 col-12 my-2">
+                        <div class="text-center">
+                          <p class="mb-0 text-muted">
+                            У пользователя отсутствуют предметы на складе
+                          </p>
                         </div>
                       </div>
                       {% else %}
@@ -270,12 +320,11 @@
                           <div class="similar-products-image me-2">
                             <img class="avatar avatar-xl bg-light p-1" src="{{warehouse.item.getIcon()}}" alt="">
                           </div>
-                          <div class="form-switch">
 
                             <label class="my-0 fs-14 fw-semibold form-label"  >{% if
                               warehouse.enchant > 0 %}+{{warehouse.enchant}} {% endif %}{{warehouse.item.getItemName()}} <span
                                 class="text-muted ms-1">({{warehouse.count}})</span></label>
-                          </div>
+
                           <div class="d-flex align-items-center justify-content-center mb-0">
                             <p class="mb-0 text-muted">
                               <span class="text-muted fs-12 ms-1">{{phrase(warehouse.phrase)}}</span>

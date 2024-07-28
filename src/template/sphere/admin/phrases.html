@@ -5,91 +5,114 @@
 {% block content %}
 <div class="container-fluid">
 
-    <div class="row">
+  <div class="row">
 
-        <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
-            <div class="card custom-card">
-                <div class="card-header justify-content-between">
-                    <div class="card-title">
-                        {{ phrase('lang') }}
-                    </div>
-                </div>
-
-                <div id="lang_used_list" class="card-body d-sm-flex align-items-center justify-content-between">
-                    <div class="form-check form-check-md d-flex align-items-center">
-                        <input class="form-check-input" type="checkbox" value="" id="lang_en" checked="">
-                        <label class="form-check-label" for="lang_en">EN (English)</label>
-                    </div>
-
-                    <div class="form-check form-check-md d-flex align-items-center">
-                        <input class="form-check-input" type="checkbox" value="" id="lang_ru" checked="">
-                        <label class="form-check-label" for="lang_ru">RU (Русский)</label>
-                    </div>
-                </div>
-
-            </div>
+    <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+      <div class="card custom-card">
+        <div class="card-header justify-content-between">
+          <div class="card-title">
+            {{ phrase('lang') }}
+          </div>
         </div>
 
-    </div>
 
-    <div class="row">
-        <div class="col-xl-12">
-            <div class="card custom-card">
-                <div class="card-header">
-                    <div class="">
-                        <button id="add_new_phrase" class="btn btn-sm btn-primary-light">{{ phrase('add_phrase') }}</button>
-                    </div>
-
-                    <div class="">
-                        <button id="save_phrases" class="btn btn-sm btn-primary-light">{{ phrase('save_table') }}</button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="phraseDataTable" class="table table-bordered  w-100 text-wrap">
-
-                            <thead>
-
-                            <tr>
-                                <th data-save="false" style="width: 1px;"></th>
-                                <th data-save="false">{{phrase('key')}}</th>
-                                {% for lang in all_phrase().lang_list %}
-                                <th data-save="true">{{lang|upper}}</th>
-                                {% endfor %}
-                            </tr>
-
-                            </thead>
-
-                            {% for key, phrases in all_phrase().phrases %}
-
-                            <tr>
-                                <td>
-                                    <div class="dropdown">
-                                        <a aria-label="anchor" class="nav-link text-muted" href="javascript:void(0);" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fe fe-more-vertical"></i></a>
-                                        <div class="dropdown-menu dropdown-menu-end" style="">
+        <div class="card-body">
 
 
-                                            <a class="dropdown-item d-inline-flex align-items-center copy" href="javascript:void(0)"><i class="fe fe-copy me-2"></i>{% verbatim %}{{ phrase({% endverbatim %}{% if is_numeric(key) %}{{ key }}{% else %}'{{ key }}'{% endif %}{% verbatim %}) }}{% endverbatim %}</a></a>
-                                            <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i class="fe fe-corner-up-left me-2"></i> Reply</a>
-                                            <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i class="fe fe-flag me-2"></i> Report Abuse</a>
-                                            <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i class="fe fe-trash-2 me-2"></i> Delete</a>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{ key }}</td>
-                                {% for lang, phrase in phrases %}
-                                <td data-lang="{{lang}}">{{ phrase ?? '' }}</td>
-                                {% endfor %}
-                            </tr>
-                            {% endfor %}
 
-                        </table>
-                    </div>
-                </div>
-            </div>
+          </select>
+
+          Язык который требуется добавить
+          <select class="form-select" id="country" name="country">
+            <option value="es">Español</option>
+            <option value="pt">Português</option>
+            <option value="fr">Français</option>
+            <option value="zh">中文</option>
+            <option value="ua">Українська</option>
+            <option value="tr">Türkçe</option>
+            <option value="de">Deutsch</option>
+            <option value="it">Italiano</option>
+            <option value="pl">Polski</option>
+            <option value="ge">საქართველო</option>
+            <option value="kr">한국어</option>
+          </select>
+
+
+          <button id="addNewTableLang" type="submit" class="btn btn-primary">Добавить перевод</button>
+
         </div>
+
+
+      </div>
     </div>
-    <!-- End:: row-2 -->
+
+  </div>
+
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="">
+            <button id="add_new_phrase" class="btn btn-sm btn-primary-light">{{ phrase('add_phrase') }}</button>
+          </div>
+
+          <div class="">
+            <button id="save_phrases" class="btn btn-sm btn-primary-light">{{ phrase('save_table') }}</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table id="phraseDataTable" class="table table-bordered  w-100 text-wrap">
+
+              <thead>
+
+              <tr>
+                <th data-save="false" style="width: 1px;"></th>
+                <th data-save="false">{{phrase('key')}}</th>
+                {% for lang in all_phrase().lang_list %}
+                <th data-save="true">{{lang|upper}}</th>
+                {% endfor %}
+              </tr>
+
+              </thead>
+
+              {% for key, phrases in all_phrase().phrases %}
+
+              <tr>
+                <td>
+                  <div class="dropdown">
+                    <a aria-label="anchor" class="nav-link text-muted" href="javascript:void(0);"
+                       data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+                      class="fe fe-more-vertical"></i></a>
+                    <div class="dropdown-menu dropdown-menu-end" style="">
+
+
+                      <a class="dropdown-item d-inline-flex align-items-center copy" href="javascript:void(0)"><i
+                        class="fe fe-copy me-2"></i>{% verbatim %}{{ phrase({% endverbatim %}{% if is_numeric(key) %}{{
+                        key }}{% else %}'{{ key }}'{% endif %}{% verbatim %}) }}{% endverbatim %}</a></a>
+                      <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i
+                        class="fe fe-corner-up-left me-2"></i> Reply</a>
+                      <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i
+                        class="fe fe-flag me-2"></i> Report Abuse</a>
+                      <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i
+                        class="fe fe-trash-2 me-2"></i> Delete</a>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ key }}</td>
+                {% for lang, phrase in phrases %}
+                <td data-lang="{{lang}}">{{ phrase ?? '' }}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End:: row-2 -->
 
 </div>
 
@@ -109,139 +132,147 @@
 
 <script>
 
-    $(document).ready(function() {
+  $(document).ready(function () {
 
-        $('.copy').click(function() {
-            var textToCopy = $(this).text();
-            navigator.clipboard.writeText(textToCopy).then(function() { }).catch(function(error) {
-                console.error("Ошибка при копировании: ", error);
-            });
-        });
-
-        $('#phraseDataTable').DataTable({
-            responsive: false,
-            autoWidth: true,
-            lengthChange: false,  // Отключаем возможность изменять количество отображаемых записей
-            pageLength: 3000,
-            searching: false
-        });
-
-
-        $('#save_phrases').click(function() {
-            var columnIndices = {};
-            var data = {};
-
-            $('#phraseDataTable thead th').each(function(index) {
-                if ($(this).data('save') === true) {
-                    let lang = $(this).text().trim().toLowerCase();
-                    columnIndices[index] = lang;
-                }
-            });
-
-            $('#phraseDataTable tbody tr').each(function() {
-                var key = $(this).find('td').eq(1).text().trim(); // Получаем ключ из первой колонки
-                var row_data = {};
-
-                $(this).find('td').each(function(index) {
-                    if (columnIndices.hasOwnProperty(index)) { // Проверяем, сохраняем ли мы данные из этой колонки
-                        let text = $(this).text().trim();
-                        let lang = columnIndices[index];
-                        row_data[lang] = text; // Сохраняем текст по языку
-                    }
-                });
-
-                if (Object.keys(row_data).length > 0) { // Если в row_data есть данные
-                    data[key] = row_data;
-                }
-            });
-
-
-            var jsonData = JSON.stringify(data);
-            AjaxSend("/admin/phrases", "POST", {phrases: jsonData}, false)
-        });
-
-
-        $('#add_new_phrase').click(function() {
-            var newRow = $('<tr>');
-            $('#phraseDataTable thead th').each(function() {
-                var columnTitle = $(this).text();
-                newRow.append('<td><textarea class="form-control" placeholder="' + columnTitle + '"></textarea></td>');
-            });
-
-            $('#phraseDataTable tbody').prepend(newRow); // добавление новой строки в начало тела таблицы
-
-            // Фокусировка на первом textarea новой строки
-            newRow.find('textarea:first').focus();
-        });
-
-
-        $('#lang_used_list .form-check-input').change(function() {
-            var lang = $(this).attr('id');
-            var languageCode = lang.split('_')[1].toUpperCase();
-            var languageName = $(this).next('label').text();
-            var formattedName = languageName.split(' ')[0];
-
-            if ($(this).is(':checked')) {
-                addColumn(languageCode, formattedName);
-            } else {
-                removeColumn(languageCode);
-            }
-        });
-
-        function addColumn(code, name) {
-            $('#phraseDataTable thead tr').append('<th>' + name + '</th>');
-            $('#phraseDataTable tbody tr').each(function() {
-                $(this).append('<td></td>');
-            });
+      $('#addNewTableLang').on('click', function() {
+        var newLang = $('#country').val();
+        var newLangName = $('#country option:selected').text();
+        // Проверяем, не существует ли уже колонка для этого языка
+        if ($('#phraseDataTable th[data-save="true"]').filter(function() {
+          return $(this).text().trim().toUpperCase() === newLang.toUpperCase();
+        }).length > 0) {
+          alert('Этот язык уже существует в таблице!');
+          return;
         }
+        $('#phraseDataTable thead tr').append(
+          $('<th>').attr('data-save', 'true').text(newLang.toUpperCase())
+        );
+        $('#phraseDataTable tbody tr').each(function() {
+          var key = $(this).find('td:eq(1)').text().trim();
+          var newCell = $('<td>').attr('data-lang', newLang);
+          if (key === 'lang_name') {
+            newCell.text(newLangName);
+          }
 
-        function removeColumn(code) {
-            var columnIndex = $('#phraseDataTable th').index($('th:contains("' + code + '")'));
-            $('#phraseDataTable th').eq(columnIndex).remove();
-            $('#phraseDataTable tbody tr').each(function() {
-                $(this).find('td').eq(columnIndex).remove();
-            });
-        }
-
-        // Добавляем возможность редактирования ячеек
-        $('#phraseDataTable').on('click', 'td', function() {
-            var cell = $(this);
-            var cellIndex = cell.index(); // Получаем индекс столбца текущей ячейки
-
-            // Убедимся, что ячейка не в первом столбце
-            if (cellIndex > 0) {
-                if (!cell.find('textarea').length) { // проверяем, нет ли уже textarea в ячейке
-                    var content = cell.text();
-                    cell.data('original-text', content); // сохраняем оригинальный текст
-                    cell.html('<textarea class="form-control">' + content + '</textarea>');
-                    cell.find('textarea').focus();
-                }
-            }
+          $(this).append(newCell);
         });
+        $('#country option[value="' + newLang + '"]').remove();
+      });
 
-        $('#phraseDataTable').on('keydown', 'td textarea', function(e) {
-            var textarea = $(this);
-            var cell = textarea.parent('td');
-            if (e.key === 'Enter') {
-                var value = textarea.val();
-                cell.text(value);
-            } else if (e.key === 'Escape') {
-                var originalText = cell.data('original-text'); // получаем оригинальный текст
-                cell.text(originalText); // восстанавливаем оригинальный текст
-            }
-        });
-
-        $('#phraseDataTable').on('blur', 'td textarea', function(e) {
-            var textarea = $(this);
-            var cell = textarea.parent('td');
-            var value = textarea.val();
-            cell.text(value); // сохраняем измененное значение
-        });
-
-        $('#phraseDataTable').on('click', 'td textarea', function(e) {
-            e.stopPropagation(); // Останавливаем всплывание события
-        });
+    $('.copy').click(function () {
+      var textToCopy = $(this).text();
+      navigator.clipboard.writeText(textToCopy).then(function () { }).catch(function (error) {
+        console.error("Ошибка при копировании: ", error);
+      });
     });
+
+    $('#phraseDataTable').DataTable({
+      responsive: false,
+      autoWidth: true,
+      lengthChange: false,  // Отключаем возможность изменять количество отображаемых записей
+      pageLength: 3000,
+      searching: false
+    });
+
+    $('#save_phrases').click(function () {
+      var columnIndices = {};
+      var data = {};
+
+      $('#phraseDataTable thead th').each(function (index) {
+        if ($(this).data('save') === true) {
+          let lang = $(this).text().trim().toLowerCase();
+          columnIndices[index] = lang;
+        }
+      });
+
+      $('#phraseDataTable tbody tr').each(function () {
+        var key = $(this).find('td').eq(1).text().trim(); // Получаем ключ из первой колонки
+        var row_data = {};
+
+        $(this).find('td').each(function (index) {
+          if (columnIndices.hasOwnProperty(index)) { // Проверяем, сохраняем ли мы данные из этой колонки
+            let text = $(this).text().trim();
+            let lang = columnIndices[index];
+            row_data[lang] = text; // Сохраняем текст по языку
+          }
+        });
+
+        if (Object.keys(row_data).length > 0) { // Если в row_data есть данные
+          data[key] = row_data;
+        }
+      });
+
+      var jsonData = JSON.stringify(data);
+      AjaxSend("/admin/phrases", "POST", {phrases: jsonData}, false)
+    });
+
+    $('#add_new_phrase').click(function () {
+      var newRow = $('<tr>');
+      $('#phraseDataTable thead th').each(function () {
+        var columnTitle = $(this).text();
+        newRow.append('<td><textarea class="form-control" placeholder="' + columnTitle + '"></textarea></td>');
+      });
+
+      $('#phraseDataTable tbody').prepend(newRow); // добавление новой строки в начало тела таблицы
+
+      // Фокусировка на первом textarea новой строки
+      newRow.find('textarea:first').focus();
+    });
+
+    function addColumn(code, name) {
+      $('#phraseDataTable thead tr').append('<th>' + name + '</th>');
+      $('#phraseDataTable tbody tr').each(function () {
+        $(this).append('<td></td>');
+      });
+    }
+
+    function removeColumn(code) {
+      var columnIndex = $('#phraseDataTable th').index($('th:contains("' + code + '")'));
+      $('#phraseDataTable th').eq(columnIndex).remove();
+      $('#phraseDataTable tbody tr').each(function () {
+        $(this).find('td').eq(columnIndex).remove();
+      });
+    }
+
+    // Добавляем возможность редактирования ячеек
+    $('#phraseDataTable').on('click', 'td', function () {
+      var cell = $(this);
+      var cellIndex = cell.index(); // Получаем индекс столбца текущей ячейки
+
+      // Убедимся, что ячейка не в первом столбце
+      if (cellIndex > 0) {
+        if (!cell.find('textarea').length) { // проверяем, нет ли уже textarea в ячейке
+          var content = cell.text();
+          cell.data('original-text', content); // сохраняем оригинальный текст
+          cell.html('<textarea class="form-control">' + content + '</textarea>');
+          cell.find('textarea').focus();
+        }
+      }
+    });
+
+    $('#phraseDataTable').on('keydown', 'td textarea', function (e) {
+      var textarea = $(this);
+      var cell = textarea.parent('td');
+      if (e.key === 'Enter') {
+        var value = textarea.val();
+        cell.text(value);
+      } else if (e.key === 'Escape') {
+        var originalText = cell.data('original-text'); // получаем оригинальный текст
+        cell.text(originalText); // восстанавливаем оригинальный текст
+      }
+    });
+
+    $('#phraseDataTable').on('blur', 'td textarea', function (e) {
+      var textarea = $(this);
+      var cell = textarea.parent('td');
+      var value = textarea.val();
+      cell.text(value); // сохраняем измененное значение
+    });
+
+    $('#phraseDataTable').on('click', 'td textarea', function (e) {
+      e.stopPropagation(); // Останавливаем всплывание события
+    });
+  });
 
 
 </script>

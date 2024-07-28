@@ -16,6 +16,10 @@ use Ofey\Logan22\template\tpl;
 class ticket
 {
 
+    public static function getCount(): int {
+        return sql::getRow("SELECT COUNT(*) AS count FROM tickets WHERE read = 0")['count'] ?? 0;
+    }
+
     //TODO в будущем удалить.
     // Сделано для тех у кого нет этих таблиц.
     public static function install() {

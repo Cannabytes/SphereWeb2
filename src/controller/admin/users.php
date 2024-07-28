@@ -77,4 +77,23 @@ class users {
 
     }
 
+    //Выдача предмета пользователю от администратора
+    static public function addItemUserToWarehouse(): void
+    {
+        validation::user_protection("admin");
+        $serverId = $_POST['serverId'] ?? board::error("No POST serverId");
+        $userId = $_POST["userId"] ?? board::error("No POST userId");
+        $itemId = $_POST["itemId"] ?? board::error("No POST itemId");
+        $count = $_POST["count"] ?: 1;
+        $enchant = $_POST["enchant"] ?: 0;
+
+       $ok =  \Ofey\Logan22\model\user\user::getUserId($userId)->addToWarehouse($serverId, $itemId, $count, $enchant, 'issued_by_the_administration');
+        if( ! $ok['success']){
+            board::error($ok['errorInfo']['message']);
+        }
+        board::reload();
+        board::success("Предмет выдан");
+
+    }
+
 }

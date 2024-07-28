@@ -21,9 +21,10 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
     $routes          = route::getRoutes($userAccessLevel);
 
     foreach ($routes as $dbRoute) {
-        if ( ! $dbRoute['enable']) {
+        if(route::getDisabledRoutes($dbRoute['pattern'])) {
             continue;
         }
+
         $access  = $dbRoute['access'];
         $method  = $dbRoute['method'];
         $pattern = $dbRoute['pattern'];

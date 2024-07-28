@@ -26,6 +26,7 @@ use Ofey\Logan22\component\time\microtime;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\controller\admin\startpack;
+use Ofey\Logan22\controller\ticket\ticket;
 use Ofey\Logan22\model\admin\launcher;
 use Ofey\Logan22\model\config\referralConfig;
 use Ofey\Logan22\model\donate\donate;
@@ -42,6 +43,7 @@ use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\statistic\statistic as statistic_model;
 use Ofey\Logan22\model\template\async;
 use Ofey\Logan22\model\ticket\ticket_model;
+use Ofey\Logan22\model\ticket\ticketModel;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\player\character;
 use Ofey\Logan22\model\user\player\player_account;
@@ -1276,17 +1278,17 @@ class tpl
             return $collection;
         }));
 
-        $twig->addFunction(new TwigFunction("get_self_notification", function ($bool = 0) {
-            return notification::get_self_notification($bool);
+        $twig->addFunction(new TwigFunction("ticket_get_count", function () {
+            return ticket::getCount();
+        }));
+
+        $twig->addFunction(new TwigFunction("get_self_notification", function () {
+            return notification::get_self_notification();
         }));
 
         //Список плагинов, которые показываем в меню пользователю
         $twig->addFunction(new TwigFunction("show_plugins", function () {
             return self::pluginsAll();
-        }));
-
-        $twig->addFunction(new TwigFunction("get_ticket_data", function () {
-            return ticket_model::get_ticket_data();
         }));
 
         $twig->addFunction(new TwigFunction("startpacks", function () {

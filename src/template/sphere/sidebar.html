@@ -94,6 +94,9 @@
           <a href="/ticket" class="side-menu__item">
             <i class="fe fe-activity side-menu__icon"></i>
             <span class="side-menu__label">{{phrase("menu_ticket")}}</span>
+             {% if getUser().isAdmin() %}
+              <span class="badge bg-danger-transparent ms-2">{{ticket_get_count()}}</span>
+             {% endif %}
           </a>
         </li>
         {% endif %}

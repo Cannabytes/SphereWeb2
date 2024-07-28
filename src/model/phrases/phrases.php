@@ -9,6 +9,7 @@ use Ofey\Logan22\component\fileSys\fileSys;
 class phrases
 {
 
+
     static function save()
     {
         $phrases = $_POST['phrases'] ?? board::error("Not phrases array");
@@ -21,6 +22,7 @@ class phrases
                 $phraseFormat[$lang][$key] = $phrase;
             }
         }
+
         // Директория для сохранения файлов
         $directory = fileSys::get_dir('/data/languages/');
         if (!file_exists($directory)) {
@@ -40,10 +42,9 @@ class phrases
 
             // Добавление каждой пары ключ-значение с экранированием кавычек
             foreach ($values as $subKey => $value) {
-                // Экранирование потенциально опасных символов в ключах и значениях
-                $escapedKey = addslashes($subKey);
+                $value = str_replace("\"", "'", $value);
                 $escapedValue = addslashes($value);
-                $data .= "\t'$escapedKey' => '$escapedValue',\n";
+                $data .= "\t'$subKey' => '{$escapedValue}',\n";
             }
 
             // Закрытие массива и файла

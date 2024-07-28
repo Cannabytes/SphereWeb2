@@ -4,29 +4,82 @@ namespace Ofey\Logan22\controller\route;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
+use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\template\tpl;
 use ReflectionMethod;
 
 class route
 {
+
     private const ROUTES_FILE = '/data/routes.php';
 
     private static ?array $routes = null;
+
     private static ?array $routesAll = null;
+
+    private static ?array $disableList = null;
 
     public static function all(): void
     {
+        foreach(self::$routesAll as &$route) {
+            $route['enable'] = route::getDisabledRoutes($route['pattern']) === false;
+        }
         tpl::addVar(['routers' => self::$routesAll]);
         tpl::display("/admin/route.html");
     }
 
     public static function getRoutes($userAccessLevel): array
     {
+        //Загружаем отключенные роутеры
+        self::getDisabledRoutes();
         if (self::$routes === null) {
             self::$routes = self::loadRoutesFromFile($userAccessLevel);
-         }
+        }
+
         return self::$routes;
+    }
+
+    public static function getDisabledRoutes($pattern = null): null|array|bool
+    {
+        if ($pattern != null) {
+            return in_array($pattern, self::$disableList);
+        }
+
+        if (self::$disableList != null) {
+            return self::$disableList;
+        }
+
+        $rows = sql::getRow("SELECT `data` FROM `server_cache` WHERE `type` = 'route_disabled'");
+        if ($rows === false) {
+            return self::$disableList = [];
+        }
+        return self::$disableList = json_decode($rows['data'], true);
+    }
+
+    private static function loadRoutesFromFile($userAccessLevel): array
+    {
+        $filePath        = fileSys::get_dir(self::ROUTES_FILE);
+        $routes          = file_exists($filePath) ? include $filePath : [];
+        self::$routesAll = $routes;
+        if ($userAccessLevel === null) {
+            return $routes;
+        }
+
+        return self::filterAccessByRole($routes, $userAccessLevel);
+    }
+
+    private static function filterAccessByRole(array $data, string $role): array
+    {
+        return array_filter($data, function ($item) use ($role) {
+            // Проверка наличия 'any' в access
+            if (in_array('any', $item['access'])) {
+                return true;
+            }
+
+            // Проверка наличия указанной роли в access
+            return in_array($role, $item['access']);
+        });
     }
 
     public static function add(): void
@@ -40,7 +93,7 @@ class route
         $weight    = (int)($_POST['weight'] ?? 0);
         $comment   = $_POST['comment'] ?? '';
 
-        if (!str_starts_with($pattern, '/')) {
+        if ( ! str_starts_with($pattern, '/')) {
             $pattern = '/' . $pattern;
         }
 
@@ -50,6 +103,59 @@ class route
 
         self::saveRoutesOrFail();
         board::success("Добавлен новый маршрутизатор");
+    }
+
+    private static function errorAndExit(string $message): void
+    {
+        board::error($message);
+        exit;
+    }
+
+    private static function determineFunction(string $typeRoute, string $namespace): ?string
+    {
+        return match ($typeRoute) {
+            'debug' => 'debug',
+            'method' => $namespace,
+            default => null,
+        };
+    }
+
+    private static function createRoute(
+      string $method,
+      string $pattern,
+      ?string $func,
+      array $access,
+      int $weight,
+      string $page,
+      string $comment,
+      bool $enable = true
+    ): array {
+        $func = str_replace('\\\\', "\\", $func);
+
+        return [
+          'enable'  => $enable,
+          'method'  => $method,
+          'pattern' => $pattern,
+          'func'    => $func,
+          'access'  => $access,
+          'weight'  => $weight,
+          'page'    => $page,
+          'comment' => $comment,
+        ];
+    }
+
+    private static function saveRoutesOrFail(): void
+    {
+        if ( ! self::saveRoutesToFile()) {
+            self::errorAndExit("Не удалось записать данные роутер.");
+        }
+    }
+
+    private static function saveRoutesToFile(): bool
+    {
+        $fileContent = "<?php\n\nreturn " . var_export(self::$routesAll, true) . ";\n";
+
+        return file_put_contents(fileSys::get_dir(self::ROUTES_FILE), $fileContent) !== false;
     }
 
     public static function edit(): void
@@ -63,7 +169,7 @@ class route
         $weight    = (int)($_POST['weight'] ?? 0);
         $comment   = $_POST['comment'] ?? '';
 
-        if (!str_starts_with($pattern, '/')) {
+        if ( ! str_starts_with($pattern, '/')) {
             $pattern = '/' . $pattern;
         }
 
@@ -89,99 +195,29 @@ class route
     public static function update_enable(): void
     {
         $pattern   = $_POST['pattern'] ?? self::errorAndExit("Не заполнен паттерн");
-        $method    = $_POST['method'] ?? self::errorAndExit("Не заполнен метод");
-        $isChecked = filter_var($_POST['isChecked'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-
-        if ($isChecked === null) {
-            board::error("Состояние роутера не изменено");
-            return;
-        }
-
-        $found = false;
-        foreach (self::$routesAll as &$route) {
-            if ($route['method'] === $method && $route['pattern'] === $pattern) {
-                $route['enable'] = $isChecked;
-                $found = true;
-                break;
+        $isRemove = false;
+        $isDisable = self::getDisabledRoutes($pattern);
+        if ($isDisable) {
+            $key = array_search($pattern, self::$disableList);
+            if ($key !== false) {
+                $isRemove = true;
+                unset(self::$disableList[$key]);
             }
-        }
-
-        if ($found) {
-            self::saveRoutesOrFail();
-            $message = $isChecked ? "Роутер включен" : "Роутер отключен";
-            board::success($message);
         } else {
-            board::error("Роутер не найден");
+            self::$disableList[] = $pattern;
         }
+
+        $data = json_encode(self::$disableList, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        sql::run("DELETE FROM `server_cache` WHERE `type` = 'route_disabled'");
+        sql::sql("INSERT INTO `server_cache` (`server_id`, `type`, `data`, `date_create`) VALUES (0, ?, ?, ?)", [
+          "route_disabled",
+          $data,
+          time::mysql(),
+        ]);
+
+        board::success($isRemove ? "Роутер включен" : "Роутер отключен");
+
     }
-
-
-    private static function createRoute(string $method, string $pattern, ?string $func, array $access, int $weight, string $page, string $comment, bool $enable = true): array
-    {
-        $func = str_replace('\\\\',  "\\", $func);
-
-        return [
-          'enable'  => $enable,
-          'method'  => $method,
-          'pattern' => $pattern,
-          'func'    => $func,
-          'access'  => $access,
-          'weight'  => $weight,
-          'page'    => $page,
-          'comment' => $comment,
-        ];
-    }
-
-    private static function determineFunction(string $typeRoute, string $namespace): ?string
-    {
-        return match ($typeRoute) {
-            'debug' => 'debug',
-            'method' => $namespace,
-            default => null,
-        };
-    }
-
-    private static function errorAndExit(string $message): void
-    {
-        board::error($message);
-        exit;
-    }
-
-    private static function saveRoutesOrFail(): void
-    {
-        if (!self::saveRoutesToFile()) {
-            self::errorAndExit("Не удалось записать данные роутер.");
-        }
-    }
-
-    private static function loadRoutesFromFile($userAccessLevel): array
-    {
-        $filePath = fileSys::get_dir(self::ROUTES_FILE);
-        $routes = file_exists($filePath) ? include $filePath : [];
-        self::$routesAll = $routes;
-        if ($userAccessLevel === null) {
-            return $routes;
-        }
-        return self::filterAccessByRole($routes, $userAccessLevel);
-    }
-
-    private static function saveRoutesToFile(): bool
-    {
-        $fileContent = "<?php\n\nreturn " . var_export(self::$routesAll, true) . ";\n";
-        return file_put_contents(fileSys::get_dir(self::ROUTES_FILE), $fileContent) !== false;
-    }
-
-    private static function filterAccessByRole(array $data, string $role): array {
-        return array_filter($data, function($item) use ($role) {
-            // Проверка наличия 'any' в access
-            if (in_array('any', $item['access'])) {
-                return true;
-            }
-            // Проверка наличия указанной роли в access
-            return in_array($role, $item['access']);
-        });
-    }
-
 
     public static function getDirFiles(): void
     {

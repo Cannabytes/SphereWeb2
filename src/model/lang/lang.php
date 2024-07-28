@@ -181,7 +181,14 @@ class lang
      */
     public function package(): void {
         $lang = $_SESSION['lang'] ?? $this->default;
-        $this->phrasesData = require fileSys::get_dir("/data/languages/{$lang}.php");
+        // Проверка что файл существует
+        $filename = fileSys::get_dir("/data/languages/{$lang}.php");
+        if(file_exists($filename)) {
+            $this->phrasesData = require fileSys::get_dir("/data/languages/{$lang}.php");
+            return;
+        }
+        $this->phrasesData = require fileSys::get_dir("/data/languages/en.php");
+
     }
 
     /**

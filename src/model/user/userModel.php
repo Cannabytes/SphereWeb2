@@ -125,7 +125,7 @@ class userModel
 
             \Ofey\Logan22\component\sphere\server::setUser($this);
             $this->warehouse = $this->warehouse() ?? null;
-            $this->accounts  = false;
+            $this->accounts  = null;
 
             //            $this->players   = $this->getCharacters();
 
@@ -238,17 +238,17 @@ class userModel
      */
     public function getAccounts($account = null): array|null|false|AccountModel
     {
-        if ($this->accounts === null) {
-            return null;
+        if ($this->accounts === []) {
+            return [];
         }
         $this->accounts = $this->getLoadAccounts();
+        if ($this->accounts === null or $this->accounts == []) {
+            return [];
+        }
         foreach ($this->accounts as $accountObj) {
             if ($accountObj->getAccount() == $account) {
                 return $accountObj;
             }
-        }
-        if ($this->accounts === null or $this->accounts == []) {
-            return [];
         }
 
         return $this->accounts;
@@ -278,7 +278,6 @@ class userModel
             $this->getServerId(),
           ]
         );
-
         $currentTime = time();
         $needUpdate  = true;
         foreach ($accounts as $account) {
@@ -318,7 +317,6 @@ class userModel
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::ACCOUNT_PLAYERS, [
           'email' => $this->getEmail(),
         ])->show(false)->getResponse();
-
         if (isset($sphere['error']) or ! $sphere) {
             return [];
         }
@@ -952,11 +950,6 @@ class userModel
                     $count            = $warehouse->getCount();
                     $enchant          = $warehouse->getEnchant();
                     $serverId         = $warehouse->getServerId();
-                    $arrObjectItems[] = [
-                      'itemId'  => $itemId,
-                      'count'   => $count,
-                      'enchant' => $enchant,
-                    ];
                     userlog::add("inventory_to_game", 542, [$itemId, $count, $enchant, $playerName]);
                     $this->addToInventoryPlayer($serverId, $itemId, $count, $enchant, $playerName);
                     $this->removeWarehouseObjectId($warehouse->getId());
