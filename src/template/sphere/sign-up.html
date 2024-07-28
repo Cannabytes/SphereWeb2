@@ -50,12 +50,12 @@
     <div class="row justify-content-center authentication authentication-basic align-items-center h-100">
       <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12">
         <div class="my-4 d-flex justify-content-center">
-          <a href="index.html">
+          <a href="/main">
             <img src="{{config().logo().getLogo()}}" alt="logo">
           </a>
         </div>
         <div class="card custom-card">
-          <form id="registrationForm" action="/registration/user" method="POST" class="card-body p-5">
+          <form id="registrationForm" action="/registration/user" method="POST" class="card-body">
             <p class="h5 fw-semibold mb-2 text-center">{{ phrase('registration') }}</p>
             <p class="mb-4 text-muted op-7 fw-normal text-center">{{ phrase('reg_enable_all_features') }}</p>
             <div class="row gy-3">
@@ -119,14 +119,42 @@
                   {{ phrase('register_master_account') }}
                 </button>
               </div>
+
             </div>
+
             <div class="text-center">
               <p id="add_referral" class="text-muted mt-3 text-info" role="button">{{ phrase('register_master_account') }}</p>
             </div>
-            <div class="text-center">
-              <p class="text-muted mt-3">{{ phrase('have_account') }} <a href="/login" class="text-primary">{{ phrase('log_in') }}</a></p>
+
+            <div class="text-center my-1 authentication-barrier">
+              <span><i class="ti ti-lock"></i></span>
             </div>
+
+              <div class="btn-list text-center">
+                <a href="/signup" aria-label="button" class="btn  btn-primary-transparent">
+                  {{ phrase('menu_registration') }}
+                </a>
+
+                <a href="/forget" class="btn  btn-primary-transparent">
+                  {{ phrase(67) }}
+                </a>
+              </div>
+
           </form>
+
+
+          <div class="text-center">
+            {% for lang in getAllowAll() %}
+            {% if lang.isActive == false %}
+            <a class="align-items-center" href="{{action('user_lang', [lang.lang])}}">
+                    <span class="avatar avatar-xs lh-1 me-0">
+                      <img src="/uploads/images/flags/{{lang.lang}}.png" alt="img">
+                    </span>
+            </a>
+            {% endif %}
+            {% endfor %}
+          </div>
+
         </div>
       </div>
     </div>

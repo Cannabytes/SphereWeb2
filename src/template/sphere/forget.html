@@ -49,7 +49,7 @@
                     </a>
                 </div>
                 <div class="card custom-card">
-                    <form id="authForm" action="/forget/create" method="POST" class="card-body p-5">
+                    <form id="authForm" action="/forget/create" method="POST" class="card-body">
                         <p class="h5 fw-semibold mb-2 text-center">{{ phrase(67) }}</p>
                         <p class="mb-4 text-muted op-7 fw-normal text-center">{{ phrase('enter_email_reset_link') }}</p>
                         <div class="row gy-3">
@@ -96,6 +96,19 @@
                             </a>
                         </div>
                     </form>
+
+                    <div class="text-center">
+                        {% for lang in getAllowAll() %}
+                        {% if lang.isActive == false %}
+                        <a class="align-items-center" href="{{action('user_lang', [lang.lang])}}">
+                    <span class="avatar avatar-xs lh-1 me-0">
+                      <img src="/uploads/images/flags/{{lang.lang}}.png" alt="img">
+                    </span>
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+
                 </div>
             </div>
         </div>

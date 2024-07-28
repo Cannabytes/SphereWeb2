@@ -35,7 +35,6 @@ class update
             $json = file_get_contents('php://input');
             $data = json_decode($json, true);
             if (server::getToken() == $data['token']) {
-                file_put_contents('test.txt', file_get_contents('php://input'));
                 self::checkNewCommit();
             }
         }
