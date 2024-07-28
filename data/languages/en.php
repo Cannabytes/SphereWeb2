@@ -158,8 +158,8 @@ return [
 	'155' => 'Admin already exists',
 	'156' => 'No connection to db',
 	'157' => 'Admin profile created',
-	'158' => '<p><b>Greetings!</b></p><p>You have installed software for administering the Java server.</p><p>What next? - Then log in and go to the admin panel and set your server parameters, site settings and others.<br>The full range of settings in SphereWeb is located in the <code>/src/config</code> files. Also familiarize yourself with the plugins: they are located in two directories <code>/src/component/plugin</code> and <code>/custom/plugins</code></p><p>If you have ideas for improvement, possible development proposals, modifications for your server - write to the project chat <a href="https://t.me/shpereweb" target="_blank">telegram</a>.<br></p >',
-	'159' => '',
+	'158' => '<p><b>Greetings!</b></p><p>You have installed software for administering the Java server.</p><p>What next? - Then log in and go to the admin panel and set your server parameters, site settings and others.<br>The full range of settings in SphereWeb is located in the <code>/src/config</code> files. Also familiarize yourself with the plugins: they are located in two directories <code>/src/component/plugin</code> and <code>/custom/plugins</code></p><p>If you have ideas for improvement, possible development proposals, modifications for your server - write to the project chat <a href=\'https://t.me/shpereweb\' target=\'_blank\'>telegram</a>.<br></p >',
+	'159' => 'Successfully installed web engine!',
 	'160' => 'You are already logged in',
 	'161' => 'No data',
 	'162' => 'You didn\'t enter a mailing address',
@@ -282,7 +282,7 @@ return [
 	'274' => 'The page will be available only after the registration of the game server',
 	'275' => 'Game server registration',
 	'276' => 'In order to combine the work of the site and your server, you need to register information about your server in the system.<br>
-             Server registration is located in the menu <b><a href="/admin/options"> Admin Panel -> Settings -> Add</a></b>.<br>
+             Server registration is located in the menu <b><a href=\'/admin/options\'> Admin Panel -> Settings -> Add</a></b>.<br>
              <hr>
              Server information is needed to inform the userModel which server he is interacting with.<br>',
 	'277' => 'A new password will be generated and sent to your email.',
@@ -459,7 +459,7 @@ return [
 	'431' => 'Where can I get information about the launcher?',
 	'432' => 'There is no single site for discussion. However, there is a page on github in which
                                              I will try to organize a general idea of the launcher.</p>
-                                         <p><a href="cannabytes.github.io" target="_blank">cannabytes.github.io</a>',
+                                         <p><a href=\'cannabytes.github.io\' target=\'_blank\'>cannabytes.github.io</a>',
 	'433' => 'Is the launcher free?',
 	'434' => 'For users (players) the launcher is free. It is part of
                                              free open-source project SphereWeb.<br>
@@ -482,11 +482,11 @@ return [
                                              that you agree to the modified rules.</p>
                                          <hr>
                                          <p>Above the main provision, read more on the website <a
-                                                 href="cannabytes.github.io" target="_blank">cannabytes.github.io</a>',
+                                                 href=\'cannabytes.github.io\' target=\'_blank\'>cannabytes.github.io</a>',
 	'437' => 'Update Folder<br>Specify Client: %s',
 	'438' => 'Add',
 	'439' => 'Keep uploaded files',
-	'440' => 'If "Yes", the launcher will save patch files in order not to load them into
+	'440' => 'If \'Yes\', the launcher will save patch files in order not to load them into
                                      in the future if you have downloaded it before.<br>
                                      This option can reduce download time.',
 	'441' => 'Startup',
@@ -606,7 +606,7 @@ return [
 	'555' => 'What is it and how does it work',
 	'556' => 'If you already have a game account registered not through the personal account and you want to link it to your profile, please specify the data of your accounts for synchronization. This will allow you to manage your accounts.<br>
                     <hr>
-                    <span class="text-danger">Note: The number of synchronization attempts is limited.<br>
+                    <span class=\'text-danger\'>Note: The number of synchronization attempts is limited.<br>
                         The server administration will be notified in case of:<br>
                     <ol>
                         <li>Attempt to guess the password for the account.</li>
@@ -640,7 +640,7 @@ return [
 	'581' => 'Save configuration',
 	'5451' => 'Issued +%s SphereCoin for %s (%s)',
 	'5461' => 'Cumulative bonus for donation: +%s',
-	'password_copied_clipboard' => 'Password copied to clipboard',
+	'issued_by_the_administration' => 'Issued by the administration',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Access is denied',
 	'account' => 'Account',
@@ -860,10 +860,10 @@ I recommend keeping the software up to date.',
                     Providing paid services in this CMS is prohibited.<br/>
                     Exceptions: Working on web templates.<br/>
                     Exceptions: Those involved in the development of Sphere-Web.<br/>
-                    Copies of Sphere-Web must contain links to the original <a target="_blank" href="https://github.com/Cannabytes/SphereWeb">github</a> Sphere-Web project.',
-	'install_rules_3' => '<p>You can order the development of additional functionality from the CMS developer - my <a href="https://t.me/white_hungry_rabbit" target="_blank" class=" m-1 text-success">Telegram</a>.</p>
-                  <p>Sphere Telegram chat - <a href="https://t.me/shpereweb" target="_blank" class=" m-1 text-success">Telegram</a>.</p>
-                  <footer class="blockquote-footer">SphereWeb forum section on <a target="_blank" href="https://mmo-dev.info/forums/sphereweb-cms.166/" class="">mmo-dev.info</a></footer>',
+                    Copies of Sphere-Web must contain links to the original <a target=\'_blank\' href=\'https://github.com/Cannabytes/SphereWeb\'>github</a> Sphere-Web project.',
+	'install_rules_3' => '<p>You can order the development of additional functionality from the CMS developer - my <a href=\'https://t.me/white_hungry_rabbit\' target=\'_blank\' class=\' m-1 text-success\'>Telegram</a>.</p>
+                  <p>Sphere Telegram chat - <a href=\'https://t.me/shpereweb\' target=\'_blank\' class=\' m-1 text-success\'>Telegram</a>.</p>
+                  <footer class=\'blockquote-footer\'>SphereWeb forum section on <a target=\'_blank\' href=\'https://mmo-dev.info/forums/sphereweb-cms.166/\' class=\'\'>mmo-dev.info</a></footer>',
 	'install_sphere' => 'Install Sphere',
 	'invite_friends_get_bonus' => 'Invite friends and acquaintances to play with you and get a bonus! Share the link to your registration profile among the residents of our housing office, among friends.',
 	'invite_meet_req_bonus' => 'If the players you invited meet the necessary requirements with one of their characters, you will receive a bonus.',
@@ -1008,6 +1008,7 @@ I recommend keeping the software up to date.',
 	'palette' => 'Palette',
 	'param' => 'Parameter',
 	'password' => 'Password',
+	'password_copied_clipboard' => 'Password copied to clipboard',
 	'password_reset' => 'You have reset your password',
 	'password_reset_email' => 'This email will be sent to the user upon password reset',
 	'pay' => 'Pay',
@@ -1098,10 +1099,10 @@ I recommend keeping the software up to date.',
 	'Sphere-Coin' => 'Sphere-Coin',
 	'sphere_api_connection_error' => 'Connection error with Sphere API',
 	'sphere_api_description' => 'Sphere API is a high-performance program that acts as an intermediary between the server and the website.',
-	'sphere_footer' => 'The Sphere project was created with <i class="fa fa-heart text-danger"></i> for all L2 ][ lovers',
+	'sphere_footer' => 'The Sphere project was created with <i class=\'fa fa-heart text-danger\'></i> for all L2 ][ lovers',
 	'sphere_inventory' => 'Inventory',
 	'sphere_launcher_description' => 'Sphere Launcher is the fastest and most advanced software for game updates. The speed of calculating the files needed for updates and the speed of downloading game files are the highest among all existing launchers. Sphere Launcher is versatile, and players do not need to install it twice.',
-	'sphere_project_name' => '<span class="fs-4 text-dual">Sphere</span><span class="fs-4 text-primary">Web</span>',
+	'sphere_project_name' => '<span class=\'fs-4 text-dual\'>Sphere</span><span class=\'fs-4 text-primary\'>Web</span>',
 	'sphere_web_db_connection_error' => 'Sphere Web does not display database connection details',
 	'sphereapi_unavailable' => 'Unfortunately, the SphereAPI server is unavailable. Try specifying the server address in the <a href=\'/admin/sphereapi\'>settings</a>. Please contact support.',
 	'sphereweb_update_detected' => 'SphereWeb update detected.',
@@ -1118,9 +1119,9 @@ I recommend keeping the software up to date.',
 	'technical support' => 'Technical support',
 	'technical support_desc_1' => 'If you encounter a problem and need assistance, there are several ways.',
 	'technical support_desc_10' => 'Supporting Sphere on your project, adding new developments, fixes, etc.',
-	'technical support_desc_11' => 'The cost of the service is discussed individually, depending on the complexity of the task.<br>For all questions, contact Telegram - <a href="https://t.me/white_hungry_rabbit" target="_blank">Developer Telegram</a>',
-	'technical support_desc_2' => 'On the <a href="https://mmo-dev.info" target="_blank">mmo-dev.info</a> forum, in the <u>Sphere CMS</u> section, create a topic, explain everything in detail, and wait for a response.',
-	'technical support_desc_3' => 'There is a chat in Telegram - <a href="https://t.me/shpereweb" target="_blank">https://t.me/shpereweb.</a> You can ask questions and get answers there.',
+	'technical support_desc_11' => 'The cost of the service is discussed individually, depending on the complexity of the task.<br>For all questions, contact Telegram - <a href=\'https://t.me/white_hungry_rabbit\' target=\'_blank\'>Developer Telegram</a>',
+	'technical support_desc_2' => 'On the <a href=\'https://mmo-dev.info\' target=\'_blank\'>mmo-dev.info</a> forum, in the <u>Sphere CMS</u> section, create a topic, explain everything in detail, and wait for a response.',
+	'technical support_desc_3' => 'There is a chat in Telegram - <a href=\'https://t.me/shpereweb\' target=\'_blank\'>https://t.me/shpereweb.</a> You can ask questions and get answers there.',
 	'technical support_desc_4' => 'Contact the developer only for commercial inquiries.<br> I am engaged in solving commercial issues, customization, bug fixes, and more for CMS.<br> Approximate cost:',
 	'technical support_desc_5' => 'Implementing a collection of queries (SQL) for your build',
 	'technical support_desc_6' => 'Customize/Develop functionality for your project',
@@ -1167,6 +1168,7 @@ Password: %%password%%',
 	'user_nick' => 'User nickname',
 	'user_referral' => 'Who Invited You',
 	'user_referral_desc' => 'Specify the ID or username of the userModel<br>who invited you.',
+	'user_wrote_ticket' => 'User %s wrote in a ticket',
 	'username' => 'Username',
 	'users' => 'Users',
 	'verification_code' => 'Verification code',

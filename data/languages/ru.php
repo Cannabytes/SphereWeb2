@@ -158,7 +158,7 @@ return [
 	'155' => 'Админ уже существует',
 	'156' => 'Нет соединился с бд',
 	'157' => 'Администратора профиль создан',
-	'158' => '<p><b>Приветствую Вас!</b></p><p>Вы установили ПО для администрирования Java сервера.</p><p>Что дальше? - Дальше авторизуйтесь, и перейдите в админ панель и установите свои параметры к сервера, настройки сайта и прочие.<br>Для полный спект настроек в SphereWeb находится в файлах <code>/src/config</code>. Так же ознакотесь с плагинами: они находятся в двух в директориях <code>/src/component/plugin</code> и <code>/custom/plugins</code></p><p>Если у Вас есть идеи по улучшению, возможно предложения по разработке, доработка под Ваш сервер - пишите в чат проекта <a href="https://t.me/shpereweb" target="_blank">в телеграмм</a>.<br></p>',
+	'158' => '<p><b>Приветствую Вас!</b></p><p>Вы установили ПО для администрирования Java сервера.</p><p>Что дальше? - Дальше авторизуйтесь, и перейдите в админ панель и установите свои параметры к сервера, настройки сайта и прочие.<br>Для полный спект настроек в SphereWeb находится в файлах <code>/src/config</code>. Так же ознакотесь с плагинами: они находятся в двух в директориях <code>/src/component/plugin</code> и <code>/custom/plugins</code></p><p>Если у Вас есть идеи по улучшению, возможно предложения по разработке, доработка под Ваш сервер - пишите в чат проекта <a href=\'https://t.me/shpereweb\' target=\'_blank\'>в телеграмм</a>.<br></p>',
 	'159' => 'Успешная установка веб движка завершена!',
 	'160' => 'Вы уже авторизован',
 	'161' => 'Нет данных',
@@ -282,7 +282,7 @@ return [
 	'274' => 'Страница будет доступна только после регистрации игрового сервера',
 	'275' => 'Регистрация игрового сервера',
 	'276' => 'Чтоб совместить работу сайта и Вашего сервера, Вам необходимо зарегистрировать в системе информацию о Вашем сервере.<br>
-            Регистрация сервера находится в меню <b><a href="/admin/options"> Админ-Панель -> Настройки -> Добавить</a></b>.<br>
+            Регистрация сервера находится в меню <b><a href=\'/admin/options\'> Админ-Панель -> Настройки -> Добавить</a></b>.<br>
             <hr>
             Информация о сервере необходима, для того чтоб информировать пользователя с каким сервером он взаимодействует.<br>',
 	'277' => 'Будет сгенерирован новый пароль и отправлен Вам на почту.',
@@ -435,7 +435,7 @@ return [
 	'420' => 'Скачать лаунчер',
 	'421' => 'Запустить',
 	'422' => 'Ссылки для загрузки лаунчера',
-	'423' => '<a target="_blank" href="https://cannabytes.github.io/#download">Перейти на сайт загрузки</a>',
+	'423' => '<a target=\'_blank\' href=\'https://cannabytes.github.io/#download\'>Перейти на сайт загрузки</a>',
 	'424' => 'Не установлена папка для обновления клиента',
 	'425' => 'Загружается',
 	'426' => 'Нет',
@@ -459,7 +459,7 @@ return [
 	'431' => 'Где получить информацию о лаунчере?',
 	'432' => 'Единого сайта для обсуживания нет. Одноко, есть страница на github, в которой
                                             я попробую организовать общее представление о лаунчере.</p>
-                                        <p><a href="cannabytes.github.io" target="_blank">cannabytes.github.io</a>',
+                                        <p><a href=\'cannabytes.github.io\' target=\'_blank\'>cannabytes.github.io</a>',
 	'433' => 'Является ли лаунчер бесплатным?',
 	'434' => 'Для пользователей (игроков) лаунчер бесплатный. Он является частью
                                             бесплатного open-source проекта SphereWeb.<br>
@@ -482,11 +482,11 @@ return [
                                             что вы соглашаетесь с измененными правилами.</p>
                                         <hr>
                                         <p>Выше основное положение, более детальное читайте на сайте <a
-                                                href="cannabytes.github.io" target="_blank">cannabytes.github.io</a>',
+                                                href=\'cannabytes.github.io\' target=\'_blank\'>cannabytes.github.io</a>',
 	'437' => 'Папка для обновления<br>Укажите клиент: %s',
 	'438' => 'Добавить',
 	'439' => 'Сохранять загруженные файлы',
-	'440' => 'Если "Да", лаунчер будет сохранять файлы патчей, для того чтоб не загружать их в
+	'440' => 'Если \'Да\', лаунчер будет сохранять файлы патчей, для того чтоб не загружать их в
                                     будущем в случае если когда-то ранее Вы его уже загружали.<br>
                                     Данная опция может сократить время загрузки.',
 	'441' => 'Автозагрузка',
@@ -606,7 +606,7 @@ return [
 	'555' => 'Что это и как это работает',
 	'556' => 'Если у вас уже есть игровой аккаунт, зарегистрированный не через личный кабинет, и вы хотите его привязать к своему профилю, пожалуйста, укажите данные своих аккаунтов для синхронизации. Это позволит вам управлять своими аккаунтами.<br>
                     <hr>
-                    <span class="text-danger">Примечание: количество попыток синхронизации ограничено.<br>
+                    <span class=\'text-danger\'>Примечание: количество попыток синхронизации ограничено.<br>
                         Администрация сервера будет уведомлена в случае:<br>
                     <ol>
                         <li>При попытке подбора пароля к аккаунту.</li>
@@ -640,7 +640,7 @@ return [
 	'581' => 'Настройки сохранены',
 	'5451' => 'Выдал +%s SphereCoin на %s (%s)',
 	'5461' => 'Накопительный бонус за пожертвование: +%s',
-	'password_copied_clipboard' => 'Пароль скопирован в буфер обмена',
+	'issued_by_the_administration' => 'Выдано администрацией',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Доступ запрещен',
 	'account' => 'Аккаунт',
@@ -819,7 +819,7 @@ return [
 	'file comparison' => 'Сравнение файлов',
 	'files' => 'Файлы',
 	'first' => 'Первая',
-	'first_reg_then_own_items_wh' => 'Сначала <a href="/registration/user" class="alert-link">зарегистрируйтесь</a>, тогда сможете владеть предметами на складе',
+	'first_reg_then_own_items_wh' => 'Сначала <a href=\'/registration/user\' class=\'alert-link\'>зарегистрируйтесь</a>, тогда сможете владеть предметами на складе',
 	'forgot_pwd_recover_email' => 'Если вы забыли свой пароль, вы можете восстановить его с помощью электронной почты.',
 	'forum_connection_settings' => 'Настройки подключения к форуму',
 	'forum_db_connection' => 'Подключение к БД форума',
@@ -862,10 +862,10 @@ return [
                     Запрещено предоставлять платные услуги в данной CMS.<br/>
                     За исключением: Работа над веб-шаблонами.<br/>
                     За исключением: Принимающим участие в разработке Sphere-Web.<br/>
-                    Копии Sphere-Web должны содержать ссылки на оригинал <a target="_blank" href="https://github.com/Cannabytes/SphereWeb">github</a> проекта Sphere-Web.',
-	'install_rules_3' => '<p>Вы можете заказать разработку дополнительного функционала у разработчика CMS - мой <a href="https://t.me/white_hungry_rabbit" target="_blank" class=" m-1 text-success">Telegram</a>.</p>
-                  <p>Чат Sphere телеграмма - <a href="https://t.me/shpereweb" target="_blank" class=" m-1 text-success">Telegram</a>.</p>
-                  <footer class="blockquote-footer">Форумный раздел SphereWeb на сайте <a target="_blank" href="https://mmo-dev.info/forums/sphereweb-cms.166/" class="">mmo-dev.info</a></footer>',
+                    Копии Sphere-Web должны содержать ссылки на оригинал <a target=\'_blank\' href=\'https://github.com/Cannabytes/SphereWeb\'>github</a> проекта Sphere-Web.',
+	'install_rules_3' => '<p>Вы можете заказать разработку дополнительного функционала у разработчика CMS - мой <a href=\'https://t.me/white_hungry_rabbit\' target=\'_blank\' class=\' m-1 text-success\'>Telegram</a>.</p>
+                  <p>Чат Sphere телеграмма - <a href=\'https://t.me/shpereweb\' target=\'_blank\' class=\' m-1 text-success\'>Telegram</a>.</p>
+                  <footer class=\'blockquote-footer\'>Форумный раздел SphereWeb на сайте <a target=\'_blank\' href=\'https://mmo-dev.info/forums/sphereweb-cms.166/\' class=\'\'>mmo-dev.info</a></footer>',
 	'install_sphere' => 'Установка Sphere',
 	'invite_friends_get_bonus' => 'Привлекайте друзей, знакомых играть вместе с Вами, и получите бонус!
           <br>
@@ -1012,6 +1012,7 @@ return [
 	'palette' => 'Палитра',
 	'param' => 'Параметр',
 	'password' => 'Пароль',
+	'password_copied_clipboard' => 'Пароль скопирован в буфер обмена',
 	'password_reset' => 'Вы сбросили пароль',
 	'password_reset_email' => 'Это письмо будет отправлено при сбросе пароля пользователю.',
 	'pay' => 'Оплатить',
@@ -1102,12 +1103,12 @@ return [
 	'Sphere-Coin' => 'Sphere-Coin',
 	'sphere_api_connection_error' => 'Ошибка соединения с Sphere API',
 	'sphere_api_description' => 'Sphere API - это высокопроизводительная программа, которая является посредником, между сервером и сайтом.',
-	'sphere_footer' => 'Проект Sphere создан c <i class="fa fa-heart text-danger"></i> и для всех любителей <span class="text-danger">L2 ][</span>',
+	'sphere_footer' => 'Проект Sphere создан c <i class=\'fa fa-heart text-danger\'></i> и для всех любителей <span class=\'text-danger\'>L2 ][</span>',
 	'sphere_inventory' => 'Инвентарь',
 	'sphere_launcher_description' => 'Лаунчер Сферы - это самый быстрый и прогрессивное программное обеспечение для обновления игры.
                  Скорость вычисления файлов необходимых для обновления и скорость загрузки файлов игры, самая высокая из всех существующих лаунчеров.
                  Лаунчер Сферы универсальный, и игроку нет необходимости его устанавливать дважды.',
-	'sphere_project_name' => '<span class="fs-4 text-dual">Sphere</span><span class="fs-4 text-primary">Web</span>',
+	'sphere_project_name' => '<span class=\'fs-4 text-dual\'>Sphere</span><span class=\'fs-4 text-primary\'>Web</span>',
 	'sphere_web_db_connection_error' => 'Sphere Web не выводит данные подключения к базе данных.',
 	'sphereapi_unavailable' => 'К сожалению сервер SphereAPI не доступен. Попробуйте указать адрес сервера <a href=\'/admin/sphereapi\'>в настройках</a>. Пожалуйста, обратитесь в службу поддержки.',
 	'sphereweb_update_detected' => 'Обнаружено обновление SphereWeb.',
@@ -1124,9 +1125,9 @@ return [
 	'technical support' => 'Техническая поддержка',
 	'technical support_desc_1' => 'Если Вы столкнулись с проблемой, и Вам необходима помощь, есть несколько путей.',
 	'technical support_desc_10' => 'Поддержка Sphere на Вашем проекте, добавление новых наработок, фиксов и т.д.',
-	'technical support_desc_11' => 'Стоимость услуги обсуждается индивидуально, в зависимости от сложности задачи.<br>По всем вопросам писать в телеграмм - <a href="https://t.me/white_hungry_rabbit" target="_blank">Телеграмм разработчика</a>',
-	'technical support_desc_2' => 'На форуме <a href="https://mmo-dev.info" target="_blank">mmo-dev.info</a> в разделе <u>Sphere CMS</u> создать тему, в которой всё максимально объяснить и ждать ответа.',
-	'technical support_desc_3' => 'Есть чат в телеграмме - <a href="https://t.me/shpereweb" target="_blank">https://t.me/shpereweb.</a> Там можно задать вопрос и получить ответ.',
+	'technical support_desc_11' => 'Стоимость услуги обсуждается индивидуально, в зависимости от сложности задачи.<br>По всем вопросам писать в телеграмм - <a href=\'https://t.me/white_hungry_rabbit\' target=\'_blank\'>Телеграмм разработчика</a>',
+	'technical support_desc_2' => 'На форуме <a href=\'https://mmo-dev.info\' target=\'_blank\'>mmo-dev.info</a> в разделе <u>Sphere CMS</u> создать тему, в которой всё максимально объяснить и ждать ответа.',
+	'technical support_desc_3' => 'Есть чат в телеграмме - <a href=\'https://t.me/shpereweb\' target=\'_blank\'>https://t.me/shpereweb.</a> Там можно задать вопрос и получить ответ.',
 	'technical support_desc_4' => 'Связаться с разработчиком, только для решения коммерческих вопросов.<br> Занимаюсь решением коммерческих вопросов, доработкой, фиксами и т.д. по CMS.<br> Ориентировочная стоимость:',
 	'technical support_desc_5' => 'Реализовать коллекцию запросов (SQL) под Вашу сборку',
 	'technical support_desc_6' => 'Доработать/Разработать функционал под Ваш проект',
@@ -1173,6 +1174,7 @@ Password: %%password%%',
 	'user_nick' => 'Ник пользователя',
 	'user_referral' => 'Кто Вас пригласил',
 	'user_referral_desc' => 'Укажите ID или ник пользователя,<br>который вас позвал.',
+	'user_wrote_ticket' => 'Пользователь %s написал в тикет',
 	'username' => 'Имя пользователя',
 	'users' => 'Пользователи',
 	'verification_code' => 'Проверочный код',

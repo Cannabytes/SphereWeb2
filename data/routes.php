@@ -3,7 +3,7 @@
 return array (
   0 => 
   array (
-    'enable' => 1,
+    'enable' => true,
     'method' => 'GET',
     'pattern' => '/main',
     'func' => 'controller\\main\\main::index',
@@ -45,7 +45,7 @@ return array (
   ),
   3 => 
   array (
-    'enable' => 1,
+    'enable' => true,
     'method' => 'POST',
     'pattern' => '/admin/options/server/client/protocol',
     'func' => 'component\\chronicle\\client::get_base_collection_class',
@@ -387,7 +387,7 @@ return array (
   ),
   27 => 
   array (
-    'enable' => 1,
+    'enable' => true,
     'method' => 'GET',
     'pattern' => '/admin/route',
     'func' => 'controller\\route\\route::all',
@@ -401,7 +401,7 @@ return array (
   ),
   28 => 
   array (
-    'enable' => 1,
+    'enable' => true,
     'method' => 'GET',
     'pattern' => '/news',
     'func' => NULL,
@@ -444,7 +444,7 @@ return array (
   ),
   31 => 
   array (
-    'enable' => 1,
+    'enable' => true,
     'method' => 'GET',
     'pattern' => '/admin/setting',
     'func' => 'controller\\admin\\options::server_show',
@@ -944,7 +944,7 @@ return array (
   ),
   42 => 
   array (
-    'enable' => 1,
+    'enable' => false,
     'method' => 'GET',
     'pattern' => '/referral',
     'func' => 'controller\\referral\\referral::show',
@@ -1496,7 +1496,7 @@ return array (
   ),
   105 => 
   array (
-    'enable' => true,
+    'enable' => false,
     'method' => 'GET',
     'pattern' => '/logan22',
     'func' => 'component\\plugins\\set_http_referrer\\httpReferrerPlugin::addUserReferer',
@@ -1593,5 +1593,33 @@ return array (
     'weight' => 0,
     'page' => '',
     'comment' => 'Тестируемая функция автоматического старта обновлений',
+  ),
+  112 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/notification/get',
+    'func' => 'model\\notification\\notification::get_new_notification',
+    'access' => 
+    array (
+      0 => 'any',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  113 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/user/add/item/warehouse',
+    'func' => 'controller\\admin\\users::addItemUserToWarehouse',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Выдача пользователю предмета в warehouse',
   ),
 );
