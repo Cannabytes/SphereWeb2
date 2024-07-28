@@ -98,14 +98,12 @@
                     </form>
 
                     <div class="text-center">
-                        {% for lang in getAllowAll() %}
-                        {% if lang.isActive == false %}
+                        {% for lang in getAllowLang(false) %}
                         <a class="align-items-center" href="{{action('user_lang', [lang.lang])}}">
-                    <span class="avatar avatar-xs lh-1 me-0">
-                      <img src="/uploads/images/flags/{{lang.lang}}.png" alt="img">
-                    </span>
+                            <span class="avatar avatar-xs lh-1 me-0">
+                              <img src="/uploads/images/flags/{{lang.lang}}.png" alt="img">
+                            </span>
                         </a>
-                        {% endif %}
                         {% endfor %}
                     </div>
 

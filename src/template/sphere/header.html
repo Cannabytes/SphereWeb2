@@ -122,17 +122,14 @@
 
 
 
-
       {% if getCountLang() >= 2 %}
       <div class="header-element country-selector">
-        <!-- Start::header-link|dropdown-toggle -->
         <a href="javascript:void(0);" class="header-link dropdown-toggle" data-bs-auto-close="outside"
            data-bs-toggle="dropdown">
           <img src="/uploads/images/flags/{{lang_active().lang}}.png" alt="img">
         </a>
-        <!-- End::header-link|dropdown-toggle -->
         <ul class="main-header-dropdown dropdown-menu dropdown-menu-end" data-popper-placement="none">
-          {% for lang in getAllowAll() %}
+          {% for lang in getAllowLang(false) %}
           <li>
             <a class="dropdown-item d-flex align-items-center" href="{{action('user_lang', [lang.lang])}}">
               <span class="avatar avatar-xs lh-1 me-2">

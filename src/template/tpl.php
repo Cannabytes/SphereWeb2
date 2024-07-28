@@ -397,8 +397,8 @@ class tpl
             return \Ofey\Logan22\controller\config\config::load()->lang()->getLangList();
         }));
 
-        $twig->addFunction(new TwigFunction('getAllowAll', function () {
-            return \Ofey\Logan22\controller\config\config::load()->lang()->getAllowAll();
+        $twig->addFunction(new TwigFunction('getAllowLang', function ($isAll = true) {
+            return \Ofey\Logan22\controller\config\config::load()->lang()->getAllowLang($isAll);
         }));
 
         $twig->addFunction(new TwigFunction('isAllowLang', function ($lang) {
