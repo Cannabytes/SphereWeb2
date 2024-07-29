@@ -11,7 +11,7 @@
   <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Личный кабинет - {{ config().other().getAllTitlePage() }}</title>
+  <title>{% block title %}{% endblock %} {{ config().other().getAllTitlePage() }}</title>
   <meta name="Description" content="{{ config().other().getAllTitlePage() }}">
   <meta name="Author" content="SphereWeb CMS">
   <meta name="keywords" content="{{ config().other().getKeywords() }}">

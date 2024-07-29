@@ -94,6 +94,12 @@ class userModel
                 }
             }
 
+           if($_SESSION['id'] == $user['id']){
+               if (!password_verify($_SESSION['password'], $user['password'])) {
+                    session::clear();
+                }
+            }
+
             //TODO: Сделать разлогин, если пароль изменился
             //Нужно проверять  ещё isset, так как идет запрос из платежек сюда.
 //            if($_SESSION['id'] == $user['id']){

@@ -76,6 +76,7 @@ class change {
 
         if($isChange){
             user::self()->addLog(logTypes::LOG_USER_CHANGE_PROFILE, "LOG_USER_CHANGE_PROFILE", []);
+            $_SESSION['password'] = $newPassword;
             board::success("Сохранено");
         }else{
             board::error("Нечего сохранять");

@@ -169,9 +169,7 @@ class server
             if(isset($response['code'])){
                 self::$codeError = $response['code'];
             }
-            if (self::$showError or ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(
-                                                                                    $_SERVER['HTTP_X_REQUESTED_WITH']
-                                                                                  ) == 'xmlhttprequest') {
+            if (self::$showError) {
                 board::error($response['error']);
             }
         }

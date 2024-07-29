@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}qwe{% endblock %}
+{% block title %}{{ phrase(215) }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -310,7 +310,7 @@
       });
 
       updateAllShopCostBuy(totalCost);
-      $cardBody.find('.showSelectBuy').text('Купить за ' + totalCost.toFixed(0));
+      $cardBody.find('.showSelectBuy').text('{{phrase("buy_for")}} ' + totalCost.toFixed(0));
       $("#quantityModal").val(quantity);
 
       // Обновляем данные в модальном окне

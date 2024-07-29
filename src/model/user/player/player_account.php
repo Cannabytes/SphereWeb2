@@ -152,7 +152,7 @@ class player_account
           'login'            => $login,
           'password'         => $password,
           'is_password_hide' => $password_hide,
-        ])->getResponse();
+        ])->show(false)->getResponse();
         if (isset($sphere['error'])) {
             if (isset($sphere['errorCode']) and $sphere['errorCode'] === 0) {
                 board::error("Аккаунт занят");

@@ -16,8 +16,13 @@ use Ofey\Logan22\template\tpl;
 class ticket
 {
 
+    static private ?int $countTicketNoRead = null;
     public static function getCount(): int {
-        return sql::getRow("SELECT COUNT(*) AS count FROM tickets WHERE read = 0")['count'] ?? 0;
+        if (self::$countTicketNoRead !== null) {
+            return self::$countTicketNoRead;
+        }
+        self::$countTicketNoRead = sql::getRow("SELECT COUNT(*) AS count FROM tickets_message WHERE `read` = 0 AND user_id != ?", [user::self()->getId()])['count'] ?? 0;
+        return self::$countTicketNoRead;
     }
 
     //TODO в будущем удалить.

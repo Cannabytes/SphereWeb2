@@ -19,7 +19,15 @@ class session
         ini_set('session.cookie_lifetime', 86400 * 365);
         ini_set('session.gc_probability', 1);
         ini_set('session.gc_divisor', 100);
+
+        ini_set('session.cookie_secure', 1);
+        ini_set('session.cookie_httponly', 1);
+        ini_set('session.cookie_samesite', 'Strict');
+
+
         session_start();
+        session_regenerate_id(true);
+        
         if (!file_exists(fileSys::get_dir('/data/db.php'))) {
             return;
         }
