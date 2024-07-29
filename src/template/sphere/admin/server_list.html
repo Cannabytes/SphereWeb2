@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}qwe{% endblock %}
+{% block title %}Edit Server{% endblock %}
 
 {% block content %}
 
@@ -107,10 +107,10 @@
                       <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">Rate Spoil:</span><span> x{{server.getRateSpoil()}}</span>
                       </p>
 
-                      {% set status_server_release = server.getServerData('status_server_release').val ?? "none" %}
+                      {% set status_server_release = server.getServerData('date_start_server').val ?? "none" %}
 
                       <p class="text-muted ms-0 mb-2"><span
-                        class="font-weight-semibold me-2">{{phrase('server_start_date')}}:</span><span> {{ phrase(status_server_release) }}</span>
+                        class="font-weight-semibold me-2">{{phrase('server_start_date')}}:</span><span> {{ status_server_release }}</span>
                       </p>
                       <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">{{phrase('game_version')}} :</span><span> {{ server.getServerData('knowledge_base').val ?? "none" }}</span>
                       </p>
@@ -555,6 +555,28 @@
                       </div>
                     </li>
 
+
+                    <li class="list-group-item">
+                      <div class="d-sm-flex align-items-top">
+                        <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
+                          <p class="mb-0 lh-1">Часовой пояс сервера</p>
+                          <span class="fs-11 text-muted op-7">
+                            Может понадобится выводить какую-то информацию о сервере, и для синхронизации времени, необходимо указать часовой пояс сервера
+                          </span>
+                        </div>
+
+                        <div class="col-2">
+                          <select name="timezone_server" class="form-control" id="timezone_server">
+                            {% for timezone in timezone_list() %}
+                              <option {% if serverInfo.getServerData('timezone').val == timezone %}selected{% endif %} value="{{timezone}}">{{timezone}}</option>
+                            {% endfor %}
+                          </select>
+
+                        </div>
+
+                      </div>
+                    </li>
+
                     <li class="list-group-item">
                       <div class="d-sm-flex align-items-top">
                         <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
@@ -689,6 +711,7 @@
     var date_start_server = $('#date_start_server').val();
     var knowledge_base = $('#knowledge_base').val();
     var max_online = $('#max_online').val();
+    var timezone = $('#timezone_server').val();
     var resetHWID = $('#resetHWID').is(':checked');
     //Сделай чтоб resetHWID был true или false
     AjaxSend('/admin/server/edit/save/other', 'POST', {
@@ -696,6 +719,7 @@
       max_online: max_online,
       knowledge_base: knowledge_base,
       serverId: serverid,
+      timezone: timezone,
       resetHWID: resetHWID,
     }, false);
   });

@@ -49,8 +49,12 @@ class server
      */
     private null|array|bool $response = null;
 
-    static public function setUser(userModel $user): void
+    static public function setUser(?userModel $user): void
     {
+        if ($user === null) {
+            self::$user = null;
+            return;
+        }
         self::$user = $user;
     }
 
@@ -118,6 +122,7 @@ class server
             $headers[] = "User-Server-Id: " . self::$server_id;
             $headers[] = "IP: " . self::$user->getIp();
         } else {
+            $headers[] = "User-Id: " . 0;
             if (type::SPHERE_INSTALL != $type) {
                 $headers[] = "User-Server-Id: " . \Ofey\Logan22\model\server\server::getLastServer()->getId();
             }

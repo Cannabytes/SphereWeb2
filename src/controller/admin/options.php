@@ -279,6 +279,7 @@ class options
         $knowledge_base = $_POST['knowledge_base'] ?? board::error("Server knowlege_base is empty");
         $knowledge_base = fileSys::modifyString($knowledge_base);
         $resetHWID      = $_POST['resetHWID'] ?? false;
+        $timezone       = $_POST['timezone'] ?? board::error("Server timezone is empty");
 
         if (empty($start_time)) {
             $startDate = time::mysql();
@@ -303,6 +304,9 @@ class options
 
         sql::run("DELETE FROM `server_data` WHERE `key` = ? AND `server_id` = ?;", ['resetHWID', $server_id]);
         sql::run("INSERT INTO `server_data` (`key`, `val`, `server_id` ) VALUES (?, ?, ?);", ['resetHWID', $resetHWID, $server_id]);
+
+        sql::run("DELETE FROM `server_data` WHERE `key` = ? AND `server_id` = ?;", ['timezone', $server_id]);
+        sql::run("INSERT INTO `server_data` (`key`, `val`, `server_id` ) VALUES (?, ?, ?);", ['timezone', $timezone, $server_id]);
 
         board::success(lang::get_phrase(217));
     }

@@ -39,7 +39,7 @@ class userModel
      */
     private null|false|array $accounts = null;
 
-    private int $id;
+    private int $id = 0;
 
     private float|int $donate = 0;
 
