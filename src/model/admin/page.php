@@ -20,8 +20,8 @@ class page
     public static function create(): void
     {
         // Получение и фильтрация данных запроса
-        $title          = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING);
-        $content        = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_STRING);
+        $title          = $_POST['title'];
+        $content        = $_POST['content'];
         $is_news        = $_POST['type'] == 'news' ? 1 : 0;
         $enable_comment = 0;
         $lang           = $_POST['lang'];
@@ -41,7 +41,6 @@ class page
         if (isset($_FILES['file']['name']) && is_array($_FILES['file']) && count($_FILES) === 1) {
             $poster = self::processImage($_FILES['file']);
         }
-
         // Запись в базу
         $request = sql::run(
           'INSERT INTO `pages` (`is_news`, `name`, `description`, `comment`, `date_create`, `lang`, `poster`, `link`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
@@ -56,7 +55,7 @@ class page
             $link,
           ]
         );
-
+var_dump($_SESSION);exit;
         // Проверка результата вставки на ошибку исключения возвращает
         if (sql::isError()) {
             board::notice(false, "ERROR: " . $request->getMessage());

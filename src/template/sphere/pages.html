@@ -21,8 +21,8 @@
         <div class="row">
           <div class="col-xl-6 mt-xl-0 mt-5">
             <h2 class="fw-bold">{{short.name}}</h2>
-            <p class="lh-base fw-normal">{{short.description|raw|replace({'
-            <p>': '', '</p>': '', '<b>': '', '</b>': '', '<br>': ''})|raw}}</p>
+            <p class="lh-base fw-normal">{{strip_html_tags(short.description|raw|replace({'
+            <p>': '', '</p>': '', '<b>': '', '</b>': '', '<br>': ''}))}}</p>
           </div>
           <div class="col-xl-6 mt-xl-0 mt-5">
             <div class="text-center">

@@ -171,48 +171,31 @@
   $('#create').on('click', function (e) {
     e.preventDefault();
     let formData = new FormData();
+
+    // Собираем данные из формы
     $('#createpage input').each(function () {
       let id = $(this).attr('id');
-      let value;
-      if ($(this).attr('type') === 'checkbox') {
-        value = $(this).is(':checked');
-      } else {
-        value = $(this).val();
-      }
-      formData.append(id, value);
-    });
-    $('#createpage select').each(function () {
-      let id = $(this).attr('id');
-      let value = $(this).val();
+      let value = $(this).attr('type') === 'checkbox' ? $(this).is(':checked') : $(this).val();
       formData.append(id, value);
     });
 
-    // Добавляем содержимое Quill в FormData
+    $('#createpage select').each(function () {
+      let id = $(this).attr('id');
+      formData.append(id, $(this).val());
+    });
+
+    // Добавляем содержимое Quill
     let content = $('.ql-editor').html();
     formData.append('content', content);
 
-    // Получаем файл из input[type=file]
-    var input = $('#file')[0]; // Обращаемся к элементу по индексу, чтобы получить DOM элемент
+    // Добавляем файл, если выбран
+    var input = $('#file')[0];
     if (input.files && input.files[0]) {
-      var reader = new FileReader();
-      reader.onload = function (e) {
-        $('#profile-img').attr('src', e.target.result);
-      };
-      reader.readAsDataURL(input.files[0]);
-
-      // Добавляем изображение в объект FormData
       formData.append('file', input.files[0]);
-
-      // Выводим содержимое FormData в консоль
-      for (var pair of formData.entries()) {
-        console.log(pair[0] + ', ' + pair[1]);
-      }
     }
 
-    sendData(formData);
-  });
-
-  function sendData(formData) {
+    console.log(formData)
+    // Отправка данных на сервер
     $.ajax({
       url: '/admin/pages/create',
       type: 'POST',
@@ -226,7 +209,8 @@
         console.error('Ошибка при отправке данных:', error);
       }
     });
-  }
+  });
+
 
 
   $(document).ready(function () {
