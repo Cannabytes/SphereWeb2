@@ -35,7 +35,7 @@
         <select id="select_default_server" class="form-select form-select-sm " aria-label="Default select example">
           {% for server in getServerAll() %}
           <option {% if getUser().getServerId()== server.getId() %}selected{% endif %} value="{{server.getId()}}">
-           {{server.getName()}} | {{server.getChronicle()}} x{{server.getRateExp()}}
+           {{server.getName()}}
           </option>
           {% endfor %}
         </select>
