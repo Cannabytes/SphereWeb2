@@ -26,7 +26,7 @@ class session
 
 
         session_start();
-        session_regenerate_id(true);
+//        session_regenerate_id(true);
         
         if (!file_exists(fileSys::get_dir('/data/db.php'))) {
             return;

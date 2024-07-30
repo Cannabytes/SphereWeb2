@@ -18,8 +18,7 @@
               class="ri-star-s-fill text-success fs-8"></i></sup></label>
             <select name="timezone" class="form-control" id="change_u_timezone">
               {% for timezone in timezone_list() %}
-              <option {% if getUser().getTimezone()== timezone %}selected{% endif %} value="{{timezone}}">{{timezone}}
-              </option>
+              <option {% if getUser().getTimezone()== timezone %}selected{% endif %} value="{{timezone}}">{{timezone}}</option>
               {% endfor %}
             </select>
           </div>

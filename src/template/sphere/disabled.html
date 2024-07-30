@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="light" data-toggled="close">
+
+<head>
+
+  <!-- Meta Data -->
+  <meta charset="UTF-8">
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> {{ phrase('disabled') }} </title>
+  <meta name="Description" content="SphereWeb CMS">
+  <!-- Favicon -->
+  {{ config().logo().favicon()  }}
+
+  <!-- Main Theme Js -->
+  <script src="{{template}}/assets/js/authentication-main.js"></script>
+
+  <!-- Bootstrap Css -->
+  <link id="style" href="{{template}}/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" >
+
+  <!-- Style Css -->
+  <link href="{{template}}/assets/css/styles.min.css" rel="stylesheet" >
+
+  <!-- Icons Css -->
+  <link href="{{template}}/assets/css/icons.min.css" rel="stylesheet" >
+
+
+</head>
+
+<body class="bg-white">
+
+
+<div class="row authentication coming-soon mx-0 justify-content-center">
+
+  <div class="col-xxl-8 col-xl-8 col-lg-8 col-12">
+    <div class="authentication-cover">
+      <div class="aunthentication-cover-content text-center">
+        <div class="row justify-content-center align-items-center h-100">
+          <div class="col-xxl-6 col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
+            <div class="mb-2">
+                <img src="{{config().logo().getLogo()}}" alt="" class="authentication-brand">
+            </div>
+            <h1 class="fw-bold mb-3 text-fixed-white">{{ phrase('site_is_currently_down') }}</h1>
+            <p class="mb-4 text-fixed-white">
+                {{ config().other().getMessageTechnicalWork() }}
+            </p>
+
+            <p class="mb-4 text-fixed-white footer">
+              {{ phrase('site_disabled') }}
+            </p>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+</body>
+
+</html>

@@ -16,36 +16,49 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
     $isFileDB = true;
     config::load();
     date_default_timezone_set(config::load()->other()->getTimezone());
-    $userAccessLevel = user::self()->getAccessLevel();
     $route           = new Ofey\Logan22\route\Route();
-    $routes          = route::getRoutes($userAccessLevel);
 
-    foreach ($routes as $dbRoute) {
-        if(route::getDisabledRoutes($dbRoute['pattern'])) {
-            continue;
+    //Проверка что сайт отключен
+    if (config::load()->other()->getEnableTechnicalWork() AND ! user::self()->isAdmin()) {
+        $route->get("/admin", function () {
+            tpl::display('sign-in.html');
+        });
+        $route->get("/user/change/lang/{lang}", "Ofey\Logan22\controller\config\config::setLang");
+        $route->post("/auth", "Ofey\Logan22\controller\user\auth\auth::auth_request");
+        $route->post("/captcha", "Ofey\Logan22\component\captcha\captcha::defence");
+        $route->get("/(.*)", function (){
+            tpl::display('disabled.html');
+        });
+    } else {
+        $userAccessLevel = user::self()->getAccessLevel();
+        $routes = route::getRoutes($userAccessLevel);
+        foreach ($routes as $dbRoute) {
+            if (route::getDisabledRoutes($dbRoute['pattern'])) {
+                continue;
+            }
+
+            $access  = $dbRoute['access'];
+            $method  = $dbRoute['method'];
+            $pattern = $dbRoute['pattern'];
+            $func    = $dbRoute['func'];
+
+            if ( ! $func) {
+                $func = function (...$data) use ($dbRoute) {
+                    foreach ($data as $key => $value) {
+                        tpl::addVar("get_" . $key, $value);
+                    }
+                    tpl::display($dbRoute['page']);
+                };
+            } elseif ($func == 'debug') {
+                $func = function (...$data) {
+                    var_dump($_REQUEST, $data);
+                    exit;
+                };
+            } else {
+                $func = 'Ofey\\Logan22\\' . $func;
+            }
+            $route->$method($pattern, $func);
         }
-
-        $access  = $dbRoute['access'];
-        $method  = $dbRoute['method'];
-        $pattern = $dbRoute['pattern'];
-        $func    = $dbRoute['func'];
-
-        if ( ! $func) {
-            $func = function (...$data) use ($dbRoute) {
-                foreach ($data as $key => $value) {
-                    tpl::addVar("get_" . $key, $value);
-                }
-                tpl::display($dbRoute['page']);
-            };
-        } elseif ($func == 'debug') {
-            $func = function (...$data) {
-                var_dump($_REQUEST, $data);
-                exit;
-            };
-        } else {
-            $func = 'Ofey\\Logan22\\' . $func;
-        }
-        $route->$method($pattern, $func);
     }
 } else {
     $route = new Router();

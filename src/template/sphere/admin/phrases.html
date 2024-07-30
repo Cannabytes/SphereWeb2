@@ -77,7 +77,6 @@
               </thead>
 
               {% for key, phrases in all_phrase().phrases %}
-
               <tr>
                 <td>
                   <div class="dropdown">
@@ -94,7 +93,7 @@
                         class="fe fe-corner-up-left me-2"></i> Reply</a>
                       <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i
                         class="fe fe-flag me-2"></i> Report Abuse</a>
-                      <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i
+                      <a class="dropdown-item d-inline-flex align-items-center removePhrase" data-key="{{key}}" href="javascript:void(0)"><i
                         class="fe fe-trash-2 me-2"></i> Delete</a>
                     </div>
                   </div>
@@ -133,6 +132,20 @@
 <script>
 
   $(document).ready(function () {
+
+    $('.removePhrase').click(function() {
+      // Получаем ключ из атрибута data-key
+      var key = $(this).data('key');
+
+      // Удаляем строку таблицы, где в первом столбце содержится ключ
+      $('#phraseDataTable tr').each(function() {
+        var rowKey = $(this).find('td').eq(1).text().trim(); // Извлекаем ключ из второго столбца
+        if (rowKey === key) {
+          $(this).remove(); // Удаляем строку
+          return false; // Прерываем цикл, так как мы нашли нужную строку
+        }
+      });
+    });
 
       $('#addNewTableLang').on('click', function() {
         var newLang = $('#country').val();

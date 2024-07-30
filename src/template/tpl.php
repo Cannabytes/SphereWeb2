@@ -29,6 +29,7 @@ use Ofey\Logan22\controller\admin\startpack;
 use Ofey\Logan22\controller\ticket\ticket;
 use Ofey\Logan22\model\admin\launcher;
 use Ofey\Logan22\model\config\referralConfig;
+use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\enabled\enabled;
 use Ofey\Logan22\model\forum\forum;
@@ -247,6 +248,10 @@ class tpl
             return str_replace(["<Soul Crystal Enhancement>"], ["-=Soul Crystal Enhancement=-"], $text);
         }));
 
+        $twig->addFilter(new TwigFilter('json_decode', function ($json) {
+            return json_decode($json, true);
+        }));
+
         $twig->addFunction(new TwigFunction('template', function ($var = null) {
             return str_replace([
               "//",
@@ -342,17 +347,10 @@ class tpl
             return strcasecmp(\Ofey\Logan22\controller\config\config::load()->captcha()->getCaptcha(), $name) == 0;
         }));
 
-        $twig->addFunction(new TwigFunction('prefix_info', function () {
-            return __config__prefix;
-        }));
-
         $twig->addFunction(new TwigFunction('google_secret_key', function () {
             return google::get_client_key();
         }));
 
-        $twig->addFunction(new TwigFunction('get_account_players', function ($isPlayersData = false) {
-            return character::get_account_players($isPlayersData);
-        }));
 
         $twig->addFunction(new TwigFunction('get_shop_items', function () {
             return donate::get_shop_items();
@@ -449,11 +447,6 @@ class tpl
             return \Ofey\Logan22\controller\config\config::load()->other()->getKeywords();
         }));
 
-        //Возвращает полный список содержимого языкового пакета
-        $twig->addFunction(new TwigFunction('show_all_lang_package', function () {
-            //            return lang::show_all_lang_package();
-        }));
-
         //Обрезаем слово до N значения, если оно больше, то добавляем в конец троеточие
         $twig->addFunction(new TwigFunction('truncateWord', function ($word, $length = 16) {
             if (mb_strlen($word, 'utf-8') <= $length) {
@@ -463,9 +456,14 @@ class tpl
             }
         }));
 
-        $twig->addFunction(new TwigFunction("MODE_TEMPLATE", function () {
-            return MODE_TEMPLATE;
+        $twig->addFunction(new TwigFunction('get_db_count_request', function () {
+            return sql::getRequestCount();
         }));
+
+        $twig->addFunction(new TwigFunction('get_sphere_api_count_request', function () {
+            return \Ofey\Logan22\component\sphere\server::getCountRequest();
+        }));
+
 
         $twig->addFunction(new TwigFunction('user_info', function ($type) {
             if (method_exists(auth::class, $type)) {
@@ -489,19 +487,6 @@ class tpl
             return \Ofey\Logan22\controller\config\config::load()->lang()->getPhrase($phraseKey, ...$values);
         }));
 
-        //{{ is_enable("getEnableTicket") }}
-        $twig->addFunction(new TwigFunction('is_enable', function ($funcName) {
-            return config::$funcName();
-        }));
-
-        //Возвращает установленный конфиг config('ENABLE_SPHERECOIN_TRANSFER')
-        //        $twig->addFunction(new TwigFunction('config', function ($name) {
-        //            if (defined($name)) {
-        //                return constant($name);
-        //            } else {
-        //                return $name;
-        //            }
-        //        }));
 
         /**
          * Дебаг функция шаблона, которая отобразит содержимое объекта
@@ -719,9 +704,6 @@ class tpl
             return forum::forum_enable();
         }));
 
-        $twig->addFunction(new TwigFunction('show_image_sphere_coin', function () {
-            return config::show_image_sphere_coin();
-        }));
 
         $twig->addFunction(new TwigFunction('get_avatar', function ($img = "none.jpeg", $thumb = false) {
             if ($thumb) {
@@ -771,21 +753,6 @@ class tpl
             return fileSys::localdir(sprintf("/uploads/tickets/%s", $img));
         }));
 
-        $twig->addFunction(new TwigFunction('get_server_data', function ($key, $server_id = null) {
-            if ($server_id === null) {
-                $server_id = auth::get_default_server();
-            }
-            $data = server::get_server_info($server_id);
-
-            $keys  = array_column($data['data'], 'key');
-            $index = array_search($key, $keys, true);
-
-            if ($index !== false) {
-                return $data['data'][$index]['val'];
-            }
-
-            return null;
-        }));
 
         $twig->addFunction(new TwigFunction('forum', function () {
             return forum::get();
@@ -797,14 +764,6 @@ class tpl
 
         $twig->addFunction(new TwigFunction("forum_internal", function () {
             return internal::forum();
-        }));
-
-        $twig->addFunction(new TwigFunction('get_enable_game_chat', function () {
-            return server::get_server_info(auth::get_default_server())['chat_game_enabled'] ?? false;
-        }));
-
-        $twig->addFunction(new TwigFunction('get_screen_enable', function () {
-            return config::get_screen_enable();
         }));
 
         $twig->addFunction(new TwigFunction('grade_img', function ($crystal_type): string {
@@ -859,22 +818,9 @@ class tpl
             return generation::word();
         }));
 
-        //Последние скриншоты
-        $twig->addFunction(new TwigFunction('screenshots', function ($limit = 8) {
-            return screenshot::load($limit);
-        }));
-
         //Список аккаунтов пользователя
         $twig->addFunction(new TwigFunction('show_all_account_player', function () {
             return player_account::show_all_account_player();
-        }));
-
-        $twig->addFunction(new TwigFunction('is_screenshot', function ($file = null) {
-            if (file_exists('uploads/screenshots/' . $file)) {
-                return fileSys::get_dir('/uploads/screenshots/' . $file);
-            } else {
-                return fileSys::get_dir("/src/template/logan22/assets/images/not-found.png");
-            }
         }));
 
         /**
@@ -1092,23 +1038,6 @@ class tpl
             return client_icon::icon($fileIcon);
         }));
 
-        //Есть ли бонус для персонажа за привлеченного пользователя
-        $twig->addFunction(new TwigFunction('is_referral_bonus', function ($referrals) {
-            foreach ($referrals as $account) {
-                if ($account['done'] || ! isset($account['characters'])) {
-                    continue;
-                }
-                foreach ($account['characters'] as $character) {
-                    if ($character['level'] < LEVEL || $character['pvp'] < PVP || $character['pk'] < PK || $character['time_in_game'] < GAME_TIME) {
-                        continue;
-                    }
-
-                    return $character['player_name'];
-                }
-            }
-
-            return false;
-        }));
 
         //Кол-во завершенных и не завершенных рефералов
         $twig->addFunction(new TwigFunction('referral_count', function ($referrals) {
@@ -1221,26 +1150,6 @@ class tpl
             return $currentUrl;
         }));
 
-        $twig->addFunction(new TwigFunction('currency_exchange_info', function () {
-            return json_encode(__config__donate);
-        }));
-
-        $twig->addFunction(new TwigFunction('get_buffs_registry', function () {
-            if (self::$get_buffs_registry === false) {
-                self::$get_buffs_registry = include fileSys::get_dir("src/config/forum/buff.php");
-            }
-
-            return self::$get_buffs_registry;
-        }));
-
-        $twig->addFunction(new TwigFunction('random_skill_buff_registry', function () {
-            if (self::$get_buffs_registry === false) {
-                self::$get_buffs_registry = include fileSys::get_dir("src/config/forum/buff.php");
-            }
-            $buffs = self::$get_buffs_registry['buff'];
-
-            return $buffs[array_rand($buffs)];
-        }));
 
         $twig->addFunction(new TwigFunction('action', function ($name, array $params = []) {
             if ( ! empty($params)) {
@@ -1250,33 +1159,6 @@ class tpl
             }
         }));
 
-        $twig->addFunction(new TwigFunction('get_collection', function ($chronicle_name) {
-            function basename_php($str): string
-            {
-                $base = substr($str, strrpos($str, '\\') + 1);
-                if (strrpos($base, "\\") !== false) {
-                    $base = substr($base, 0, strrpos($base, "\\"));
-                }
-
-                return $base;
-            }
-
-            $protocols = client::get_protocol($chronicle_name);
-            if ( ! $protocols) {
-                return 'false';
-            }
-            $all_class_base_data = base::all_class_base_data();
-            $collection          = [];
-            foreach ($all_class_base_data as $class) {
-                $chronicle_protocols = ($class)::chronicle();
-                $diff                = array_intersect($protocols, $chronicle_protocols);
-                if ($diff) {
-                    $collection[basename_php($class)] = $class;
-                }
-            }
-
-            return $collection;
-        }));
 
         $twig->addFunction(new TwigFunction("ticket_get_count", function () {
             return ticket::getCount();

@@ -218,7 +218,7 @@
                             <div class="mb-3">
                               <label for="group" class="form-label">{{ phrase('group') }}</label>
                               <select name="group" id="group" class="form-select form-select-lg">
-                                <option {% if userInfo.getAccessLevel() == "user" %}selected{% endif %} value="user">{{ phrase('userModel') }}</option>
+                                <option {% if userInfo.getAccessLevel() == "user" %}selected{% endif %} value="user">{{ phrase('user') }}</option>
                                 <option {% if userInfo.getAccessLevel() == "admin" %}selected{% endif %} value="admin">{{ phrase('admin') }}</option>
                               </select>
                             </div>

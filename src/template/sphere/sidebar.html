@@ -155,6 +155,15 @@
       <div class="card custom-card border-top-card border-top-danger rounded-0">
         <div class="card-body">
           <div class="text-center">
+
+            {% if server.getServerData("sphere-launcher") %}
+            {% set jsonData = server.getServerData("sphere-launcher").val | raw %}
+            {% set data = jsonData|json_decode %}
+            <a href="/launcher/{{data.name}}" >
+              <div class="arrow-ribbone-right bg-danger">Launcher</div>
+            </a>
+            {% endif %}
+
             <p class="fs-14 fw-semibold mb-2">{{server.getChronicle()}} x<span class="mb-0 fw-semibold">{{server.getRateExp()}}</span>
             </p>
 

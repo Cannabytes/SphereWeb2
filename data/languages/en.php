@@ -47,7 +47,7 @@ return [
 	'44' => 'Server online status',
 	'45' => 'Active offers and promotions',
 	'46' => 'Recent messages from game chat',
-	'47' => 'Recent userModel screenshots',
+	'47' => 'Recent user screenshots',
 	'48' => 'Loaded in %s seconds',
 	'49' => 'Clans',
 	'50' => 'Castles',
@@ -267,11 +267,11 @@ return [
 	'264' => 'Description',
 	'265' => 'Missing',
 	'266' => 'Apply template',
-	'268' => 'HTML page that we will send to the userModel by email.<br>
+	'268' => 'HTML page that we will send to the user by email.<br>
             Variable <strong>%code%</strong> - contains the verification code.<br>
             The <strong>%link%</strong> variable is a link to the password reset page.</br>
             Template Location: <strong>src/template/logan22/email_request/forget.html</strong>',
-	'269' => 'HTML page that we will send to the userModel by email.<br>
+	'269' => 'HTML page that we will send to the user by email.<br>
             The variable <strong>%password%</strong> is the new password.<br>
             The <strong>%link%</strong> variable is a link to the login page.</br>
             Template Location: <strong>src/template/logan22/email_request/new_password.html</strong>',
@@ -284,7 +284,7 @@ return [
 	'276' => 'In order to combine the work of the site and your server, you need to register information about your server in the system.<br>
              Server registration is located in the menu <b><a href=\'/admin/options\'> Admin Panel -> Settings -> Add</a></b>.<br>
              <hr>
-             Server information is needed to inform the userModel which server he is interacting with.<br>',
+             Server information is needed to inform the user which server he is interacting with.<br>',
 	'277' => 'A new password will be generated and sent to your email.',
 	'278' => 'Send password',
 	'279' => 'Reset code',
@@ -447,7 +447,7 @@ return [
                                              tasks.<br>
                                              I wondered if it was possible to make one launcher that would
                                              integrated into SphereWeb (this system) and update the necessary
-                                             server userModel.</p>
+                                             server user.</p>
                                          <p>So the first sketches arose, after a while it was quite workable
                                              app I\'m developing.',
 	'429' => 'What can the SphereWeb launcher do?',
@@ -588,7 +588,7 @@ return [
 	'537' => 'Created a new topic on the forum: %s',
 	'538' => 'Liked a post on the forum',
 	'539' => 'Purchased item ID: %s (%s pcs.) for %s Donate Coin and sent it to the character %s',
-	'540' => 'Transferred %s SphereCoin to the userModel ID: %s',
+	'540' => 'Transferred %s SphereCoin to the user ID: %s',
 	'541' => 'Used Bonus Code: %s and received %s (%s)',
 	'542' => 'Sent ENCHANT item: +%s ID: %s (%s pcs.) to the character %s',
 	'543' => 'User created a ticket: <a target=\'_blank\' href=\'%s\'>Link</a>',
@@ -610,7 +610,7 @@ return [
                         The server administration will be notified in case of:<br>
                     <ol>
                         <li>Attempt to guess the password for the account.</li>
-                        <li>If you try to add an account that is linked to another userModel.</li>
+                        <li>If you try to add an account that is linked to another user.</li>
                     </ol>
                     </span>',
 	'557' => 'Put for sale',
@@ -640,7 +640,6 @@ return [
 	'581' => 'Save configuration',
 	'5451' => 'Issued +%s SphereCoin for %s (%s)',
 	'5461' => 'Cumulative bonus for donation: +%s',
-	'buy_for' => 'Buy for',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Access is denied',
 	'account' => 'Account',
@@ -699,6 +698,7 @@ return [
 	'bonus_percentage' => 'Bonus percentage',
 	'bonuses' => 'Bonuses',
 	'boosting' => 'Boosting',
+	'buy_for' => 'Buy for',
 	'buy_send_to_char' => 'Buy and send to character',
 	'buy_send_to_wh' => 'Buy and send to warehouse',
 	'by_messages' => 'By messages',
@@ -775,7 +775,7 @@ return [
 	'donate_coin_per_ref_donation' => '%d%% Donate Coin for each donation from referred player',
 	'donate_coin_to_dollar' => 'The cost of 1 Donate Coin in relation to 1 dollar',
 	'donate_coin_to_game' => 'Game <i class=\'fe fe-dollar-sign fs-16 me-1 text-danger\'></i> Balance Top-Up',
-	'donate_percent_referral' => 'The userModel received %s for donating referral %s (%s)',
+	'donate_percent_referral' => 'The user received %s for donating referral %s (%s)',
 	'donation_based_discount' => 'A discount on item purchases in the Store is provided based on the total amount of donations by the user over time. For example, if the user has donated N Donate Coins in total, then a discount of X%% will be given in the store for purchases.',
 	'donation_bonus' => 'Donation bonus',
 	'donation_bonus_items' => 'After the user donates more than N amount, we issue items to their warehouse as a bonus. Specify which items you want to give the user and for what donation range.',
@@ -1033,7 +1033,7 @@ I recommend keeping the software up to date.',
 	'race' => 'Race',
 	'read_more' => 'Read more',
 	'receive' => 'Receive',
-	'receiving_from_user' => 'Receiving from userModel',
+	'receiving_from_user' => 'Receiving from user',
 	'recent_donations_bonuses' => 'Recent donations and bonuses',
 	'rechanged_profile' => 'Profile data change',
 	'recovery_completed' => 'Recovery completed',
@@ -1080,7 +1080,7 @@ I recommend keeping the software up to date.',
 	'send_registration_notification_email' => 'Send registration notification via email',
 	'send_to_char' => 'Send to character',
 	'send_to_wh' => 'Send to warehouse',
-	'sent_to_user' => 'Sent to userModel',
+	'sent_to_user' => 'Sent to user',
 	'server' => 'Server',
 	'server_build' => 'Server build',
 	'server_build_info' => 'Server build information',
@@ -1164,11 +1164,11 @@ Password: %%password%%',
 	'used_languages' => 'Used languages',
 	'user' => 'User',
 	'user_balance' => 'On balance',
-	'user_group_only_read' => 'Silent userModel',
+	'user_group_only_read' => 'Silent user',
 	'user_log' => 'User log',
 	'user_nick' => 'User nickname',
 	'user_referral' => 'Who Invited You',
-	'user_referral_desc' => 'Specify the ID or username of the userModel<br>who invited you.',
+	'user_referral_desc' => 'Specify the ID or username of the user<br>who invited you.',
 	'user_wrote_ticket' => 'User %s wrote in a ticket',
 	'username' => 'Username',
 	'users' => 'Users',
@@ -1186,5 +1186,6 @@ Password: %%password%%',
  We are here to help you!</h6>',
 	'wrong_data' => 'Wrong data',
 	'you_blocked_user_from_write_message_ticket' => 'You blocked the user from writing messages to the ticket',
+	'you_have_no_servers' => 'You don\'t have any servers',
 	'your_link' => 'Your link',
 ];

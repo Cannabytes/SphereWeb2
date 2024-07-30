@@ -286,7 +286,16 @@ class client
           [
             'protocol' => [447],
             'name'     => "Shine Maker",
-            ],
+          ],
+          [
+            'protocol' => [464],
+            'name'     => "Path of a Rogue",
+          ],
+          [
+            'protocol' => [474],
+            'name'     => "Shield of The Kingdom",
+          ],
+
         ];
     }
 

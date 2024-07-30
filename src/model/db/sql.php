@@ -13,6 +13,8 @@ use PDOStatement;
 class sql
 {
 
+    private static int $countRequest = 0;
+
     public static bool $error = false;
 
     /**
@@ -76,6 +78,7 @@ class sql
 
     static public function exec($query): false|int
     {
+        self::$countRequest++;
         return self::$db->exec($query);
     }
 
@@ -133,6 +136,7 @@ class sql
      */
     public static function getRows($query, array $args = []): array
     {
+        self::$countRequest++;
         return self::run($query, $args)->fetchAll();
     }
 
@@ -154,6 +158,7 @@ class sql
             exit;
         }
         self::$exception = null;
+        self::$countRequest++;
         try {
             if ( ! $args) {
                 return self::query($query);
@@ -225,6 +230,7 @@ class sql
      * @param   array  $args
      *
      * @return array
+     * @throws \Exception
      */
     public static function getColumn($query, $args = []): array
     {
@@ -258,6 +264,14 @@ class sql
             self::run("ROLLBACK");
             throw $e;
         }
+    }
+
+    /**
+     * @return int
+     */
+    public static function getRequestCount(): int
+    {
+        return self::$countRequest;
     }
 
 }
