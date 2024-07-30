@@ -96,8 +96,9 @@ class userModel
 
            if($_SESSION['id'] == $user['id']){
                if (!password_verify($_SESSION['password'], $user['password'])) {
-                   var_dump("Пароли не совпали, удаляем сессию");exit;
+                    var_dump("Пароли не совпали, удаляем сессию");
                     session::clear();
+                    exit;
                 }
             }
 
