@@ -12,7 +12,8 @@
         {% endfor %}
     </select>
     <div class="st__content">
-        {% for server in server_online_status() %}
+        {% for server in getServerAll() %}
+        {% if server.getStatus().isEnable() %}
         <div class="rating-container" style="display: none" data-tab="server-{{server.id}}" data-tab-group="rating">
             <div class="rating">
                 <div class="rating__box">
@@ -165,7 +166,7 @@
             </div>
             <!-- END  rating  -->
         </div>
-        <!-- END  rating-container  -->
+        {% endif %}
         {% endfor %}
     </div>
     <!-- END tab__content -->

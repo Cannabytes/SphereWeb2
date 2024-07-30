@@ -834,8 +834,10 @@ class tpl
             if ($server_id < 0 || $limit < 0) {
                 throw new InvalidArgumentException('Server ID and limit must be non-negative integers');
             }
+            if($server_id == 0) {
+                $server_id = user::self()->getServerId();
+            }
             $pvpStats = statistic_model::get_pvp($server_id);
-
             return $pvpStats ? ($limit > 0 ? array_slice($pvpStats, 0, $limit) : $pvpStats) : null;
         }));
 
@@ -843,14 +845,19 @@ class tpl
             if ($server_id < 0 || $limit < 0) {
                 throw new InvalidArgumentException('Server ID and limit must be non-negative integers');
             }
+            if($server_id == 0) {
+                $server_id = user::self()->getServerId();
+            }
             $pkStats = statistic_model::get_pk($server_id);
-
             return $pkStats ? ($limit <= 0 ? $pkStats : array_slice($pkStats, 0, $limit)) : null;
         }));
 
         $twig->addFunction(new TwigFunction('statistic_players_online_time', function ($server_id = 0, $limit = 0) {
             if ($server_id < 0 || $limit < 0) {
                 throw new InvalidArgumentException('Server ID and limit must be non-negative integers');
+            }
+            if($server_id == 0) {
+                $server_id = user::self()->getServerId();
             }
             $onlinePlayers = statistic_model::get_players_online_time($server_id);
 
@@ -861,22 +868,21 @@ class tpl
             if ($server_id < 0 || $limit < 0) {
                 throw new InvalidArgumentException('Server ID and limit must be non-negative integers');
             }
+            if($server_id == 0) {
+                $server_id = user::self()->getServerId();
+            }
             $clanStats = statistic_model::get_clan($server_id);
 
             return $clanStats ? ($limit >= 1 ? array_slice($clanStats, 0, $limit) : $clanStats) : null;
         }));
 
         $twig->addFunction(new TwigFunction('statistic_get_castle', function ($server_id = 0) {
+            if($server_id == 0) {
+                $server_id = user::self()->getServerId();
+            }
             return statistic_model::get_castle($server_id);
         }));
 
-        $twig->addFunction(new TwigFunction('statistic_get_players_heroes', function ($server_id = 0) {
-            return statistic_model::get_players_heroes($server_id);
-        }));
-
-        $twig->addFunction(new TwigFunction('statistic_get_players_block', function ($server_id = 0) {
-            return statistic_model::get_players_block($server_id);
-        }));
 
         $twig->addFunction(new TwigFunction('clan_icon', function (string|array $data = null) {
             if ($data == null) {
