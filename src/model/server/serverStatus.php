@@ -3,6 +3,7 @@
 namespace Ofey\Logan22\model\server;
 
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
 
 class serverStatus
@@ -53,7 +54,7 @@ class serverStatus
 
     public function getOnline(): int
     {
-        return $this->online;
+        return config::load()->other()->getOnlineMul() * $this->online;
     }
 
     public function setOnline(int $online): void

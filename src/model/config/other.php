@@ -17,7 +17,7 @@ class other
 
     private string $allTitlePage = "";
 
-    private float $onlineMul = 0;
+    private float $onlineMul = 1.0;
 
     private int $timeoutSaveStatistic = 0;
 
@@ -64,7 +64,7 @@ class other
         $this->saveStatisticData    = filter_var($setting['saveStatisticData'], FILTER_VALIDATE_BOOLEAN);
         $this->isAuthShow           = filter_var($setting['isAuthShow'], FILTER_VALIDATE_BOOLEAN);
         $this->allTitlePage         = $setting['allTitlePage'];
-        $this->onlineMul            = (float)$setting['onlinemul'];
+        $this->onlineMul            = (float)$setting['onlinemul'] ?? 1.0;
         $this->timeoutSaveStatistic = (int)$setting['timeoutSaveStatistic'];
         $this->timezone             = $setting['timezone'];
         $this->messageTechnicalWork = $setting['messageTechnicalWork'];
@@ -106,6 +106,9 @@ class other
 
     public function getOnlineMul(): float
     {
+        if($this->onlineMul <= 0) {
+            $this->onlineMul = 1.0;
+        }
         return $this->onlineMul;
     }
 
