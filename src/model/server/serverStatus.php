@@ -27,7 +27,7 @@ class serverStatus
         sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = 'status'", [$this->getServerId()]);
 
         $data     = [
-          'online'                => $this->getOnline(),
+          'online'                => $this->online,
           'gameServer'            => $this->getGameServer(),
           'loginServer'           => $this->getLoginServer(),
           'licenseExpirationDate' => $this->licenseExpirationDate,
