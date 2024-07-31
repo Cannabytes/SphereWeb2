@@ -69,7 +69,7 @@ class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
         }
 
 
-        $order_amount = $_POST['count'] * ($donate['coefficient']['USD'] / $donate['quantity']);
+        $order_amount = $_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost());
 
         $response = $this->getResponse('https://api.cryptocloud.plus/v2/invoice/create', [
           'shop_id'  => self::getConfigValue('shopId'),
