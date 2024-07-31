@@ -85,6 +85,11 @@ class inventory
         $account = $_POST['account'] ?? board::error("Не передан аккаунт");
         $player  = $_POST['player'] ?? board::error("Не передано имя игрока");
         $coins   = $_POST['coin'] ?? board::error("Не переданы монеты");
+
+        if (!filter_var($coins, FILTER_VALIDATE_INT) ) {
+            echo "Введите целое число";
+        }
+
         /**
          * Проверка кол-ва монет
          */
