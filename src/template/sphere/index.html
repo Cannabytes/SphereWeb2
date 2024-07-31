@@ -149,7 +149,7 @@
                           <div class="input-group mb-3 ">
 
                             <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm ">
-                              Создание нового аккаунта
+                              {{ phrase(40) }}
                             </div>
 
                           </div>
@@ -238,7 +238,7 @@
                     <div class="card-body">
                       {% if getUser().isAuth() %}
                       <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm ">
-                        Мои игровые аккаунты
+                        {{ phrase(43) }}
                       </div>
                       {% if statusSphereServer() is same as(false) %}
                       <div class="alert alert-danger alert-dismissible fade show" role="alert">
