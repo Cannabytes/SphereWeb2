@@ -26,5 +26,14 @@ $routes = [
         },
     ],
 
+    [
+        "method"  => 'POST',
+        "pattern" => "/donate/webhook/cryptocloud",
+        "file"    => "pay.php",
+        "call"    => function() {
+            (new cryptocloud())->transfer();
+        },
+    ],
+
 ];
 

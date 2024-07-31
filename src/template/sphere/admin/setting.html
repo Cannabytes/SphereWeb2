@@ -63,6 +63,10 @@
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
                  href="#palette" aria-selected="true">{{ phrase('palette') }}</a>
             </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#addMenu" aria-selected="true">Меню</a>
+            </li>
           </ul>
         </div>
         <div class="card-body">
@@ -1945,7 +1949,6 @@
 
             </div>
             <div class="tab-pane p-0" id="palette" role="tabpanel">
-
               <div class="row">
                 <nav class="border-bottom border-block-end-dashed">
                   <div class="nav nav-tabs nav-justified" id="switcher-main-tab" role="tablist">
@@ -2118,13 +2121,70 @@
                   </div>
                 </div>
               </div>
-
               <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
                 <span id="savePalette" class="btn btn-success-light m-1 btn-sm">Сохранить<i
                   class="bi bi-sd-card ms-2"></i></span>
               </div>
+            </div>
+
+            <div class="tab-pane p-0" id="addMenu" role="tabpanel">
+              <div class="card-body " id="menuItems">
+
+                Вы можете добавить свои ссылки в меню.
+                <br>
+                phraseId - название фразы, а точнее её key из таблицы <a class="text-primary" href="admin/phrases" target="_blank">переводов</a>.<br>
+                При выборе иконки, нужно скопировать её стиль.<br>
+                  Стиль иконок можно выбрать тут<br>
+                  <div class="bd-example flex-container">
+                    <div class="d-flex flex-row mb-3">
+                      <div class="p-2"><a href="https://icons.getbootstrap.com/" target="_blank"> Link #1 </a></div>
+                      <div class="p-2"><a href="https://icons8.com/line-awesome" target="_blank"> Link #2 </a></div>
+                    </div>
+                  </div>
+
+                <div class="col-12 mt-3">
+                  <button type="button" id="addItemMenu" class="btn btn-success mt-3">Добавить</button>
+                </div>
+
+                {% for menu in config().menu().get() %}
+                <div class="menu-item mb-2">
+                  <div class="row row-cols-lg-auto mt-3 align-items-center">
+                    <div class="col-12">
+                      <div class="input-group">
+                        <span class="input-group-text">icon</span>
+                        <input value="{{menu.icon}}" type="text" class="form-control phraseMenuIcon" placeholder="bi bi-journal-text">
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <div class="input-group">
+                        <span class="input-group-text">Phrase ID</span>
+                        <input value="{{menu.phraseId}}" type="text" class="form-control phraseMenuID" placeholder="">
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <div class="input-group">
+                        <span class="input-group-text">Link</span>
+                        <input value="{{menu.phraseLink}}" type="text" class="form-control phraseLink" placeholder="">
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <button type="button" class="btn btn-danger btn-sm remove-item-menu">Удалить</button>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
 
 
+
+
+              </div>
+
+
+
+              <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
+                <span id="saveMenu" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                  class="bi bi-sd-card ms-2"></i></span>
+              </div>
             </div>
 
           </div>
@@ -2995,6 +3055,70 @@
 
     });
   });
+
+</script>
+
+<script>
+  function createMenuItem() {
+    var itemHtml = `
+                <div class="menu-item mb-3">
+                    <div class="row row-cols-lg-auto mt-3 align-items-center">
+                        <div class="col-12">
+                            <div class="input-group">
+                                <span class="input-group-text">icon</span>
+                                <input type="text" class="form-control phraseMenuIcon" placeholder="bi bi-journal-text">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group">
+                                <span class="input-group-text">Phrase ID</span>
+                                <input type="text" class="form-control phraseMenuID" placeholder="">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group">
+                                <span class="input-group-text">Link</span>
+                                <input type="text" class="form-control phraseLink" placeholder="">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button type="button" class="btn btn-danger btn-sm remove-item-menu">Удалить</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+    return itemHtml;
+  }
+
+  $("#addItemMenu").click(function() {
+    $("#menuItems").append(createMenuItem());
+  });
+
+  // Удаление элемента
+  $(document).on("click", ".remove-item-menu", function() {
+    $(this).closest(".menu-item").remove();
+  });
+
+  $("#saveMenu").click(function() {
+    var menuItems = []; // Изменено имя переменной для массива
+
+    $(".menu-item").each(function() {
+      var menuItem = {
+        icon: $(this).find('.phraseMenuIcon').val(),
+        phraseId: $(this).find('.phraseMenuID').val(),
+        phraseLink: $(this).find('.phraseLink').val(),
+      };
+      menuItems.push(menuItem); // Добавление элементов в массив menuItems
+    });
+
+    var menuData = {
+      __config_name__: '__config_menu__',
+      menulist: menuItems // Использование массива menuItems
+    };
+
+    AjaxSend('/admin/config/save', 'POST', menuData, false);
+  });
+
 
 </script>
 {% endblock %}

@@ -122,17 +122,19 @@
 
             </div>
 
+            {% if config().enabled().isEnableReferral() %}
             <div class="text-center">
-              <p id="add_referral" class="text-muted mt-3 text-info" role="button">{{ phrase('register_master_account') }}</p>
+              <p id="add_referral" class="text-muted mt-3 text-info" role="button">{{ phrase('user_referral') }}</p>
             </div>
+            {% endif %}
 
             <div class="text-center my-1 authentication-barrier">
               <span><i class="ti ti-lock"></i></span>
             </div>
 
               <div class="btn-list text-center">
-                <a href="/signup" aria-label="button" class="btn  btn-primary-transparent">
-                  {{ phrase('menu_registration') }}
+                <a href="/signin" aria-label="button" class="btn  btn-primary-transparent">
+                  {{ phrase('authorization') }}
                 </a>
 
                 <a href="/forget" class="btn  btn-primary-transparent">

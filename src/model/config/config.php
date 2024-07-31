@@ -44,6 +44,8 @@ class config
 
     private ?sphereApi $sphereApi = null;
 
+    private ?menu $menu = null;
+
     /**
      * Сохранения конфигурации
      */
@@ -243,6 +245,14 @@ class config
             $this->sphereApi = new sphereApi();
         }
         return $this->sphereApi;
+    }
+
+    public function menu(): ?menu
+    {
+        if ($this->menu == null) {
+            $this->menu = new menu();
+        }
+        return $this->menu;
     }
 
 }

@@ -114,13 +114,23 @@
 
         <li class="slide__category"><span class="category-name">{{phrase('other')}}</span></li>
 
+        {% for menu in config().menu().get() %}
+        <li class="slide">
+          <a href="{{menu.phraseLink}}" class="side-menu__item">
+            {% if menu.icon %}
+            <i class="{{menu.icon}} side-menu__icon"></i>
+            {% endif %}
+            <span class="side-menu__label">{{menu.phrase}}</span>
+          </a>
+        </li>
+        {% endfor %}
+
         <li class="slide">
           <a href="{{ config().other().getLinkMainPage() }}" class="side-menu__item">
             <i class="fe fe-corner-down-left side-menu__icon"></i>
             <span class="side-menu__label">{{phrase('return_demo_page')}}</span>
           </a>
         </li>
-
 
 
         {% for include_file in get_plugins_include("PLACE_IN_SPACE_HEADER_1") %}

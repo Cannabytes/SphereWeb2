@@ -29,12 +29,6 @@ class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
 
     protected string $currency_default = 'USD';
 
-    private string $apiKey = '';
-
-    private string $shopId = '';
-
-    private string $secretKey = '';
-
     private array $allowIP = [];
 
     /*
@@ -61,25 +55,24 @@ class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
     {
         user::self()->isAuth() ?: board::notice(false, lang::get_phrase(234));
         donate::isOnlyAdmin(self::class);
-        if (empty($this->shopId) or empty($this->apiKey) or empty($this->secretKey)) {
+        if (empty(self::getConfigValue('shopId')) or empty(self::getConfigValue('apiKey')) or empty(self::getConfigValue('secretKey'))) {
             board::error('No set token api');
         }
         filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT) ?: board::notice(false, "Введите сумму цифрой");
+        $donate = \Ofey\Logan22\controller\config\config::load()->donate();
 
-        $donate = __config__donate;
-
-        if ($_POST['count'] < $donate['min_donate_bonus_coin']) {
-            board::notice(false, "Минимальное пополнение: " . $donate['min_donate_bonus_coin']);
+        if ($_POST['count'] < $donate->getMinSummaPaySphereCoin()) {
+            board::notice(false, "Минимальное пополнение: " . $donate->getMinSummaPaySphereCoin());
+        }
+        if ($_POST['count'] > $donate->getMaxSummaPaySphereCoin()) {
+            board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        if ($_POST['count'] > $donate['max_donate_bonus_coin']) {
-            board::notice(false, "Максимальная пополнение: " . $donate['max_donate_bonus_coin']);
-        }
 
         $order_amount = $_POST['count'] * ($donate['coefficient']['USD'] / $donate['quantity']);
 
         $response = $this->getResponse('https://api.cryptocloud.plus/v2/invoice/create', [
-          'shop_id'  => $this->shopId,
+          'shop_id'  => self::getConfigValue('shopId'),
           'amount'   => $order_amount,
           'order_id' => user::self()->getId() . '@' . time(),
           'currency' => $this->currency_default,
@@ -107,7 +100,7 @@ class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
           CURLOPT_POST           => 1,
           CURLOPT_POSTFIELDS     => json_encode($postFields),
           CURLOPT_HTTPHEADER     => [
-            'Authorization: Token ' . $this->apiKey,
+            'Authorization: Token ' . self::getConfigValue('apiKey'),
             'Content-Type: application/json',
           ],
         ]);
@@ -120,15 +113,17 @@ class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
 
     function transfer()
     {
+        file_put_contents( __DIR__ . '/debug.log', '_REQUEST: ' . print_r( $_REQUEST, true ) . PHP_EOL, FILE_APPEND );
+
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
-        if (empty($this->shopId) or empty($this->apiKey) or empty($this->secretKey)) {
+        if (empty(self::getConfigValue('shopId')) or empty(self::getConfigValue('apiKey')) or empty(self::getConfigValue('secretKey'))) {
             board::error('No set token api');
         }
 
         $jwtParts  = explode('.', $_REQUEST['token'] ?? '..');
         $signature = $jwtParts[2];
 
-        $generatedSignature = hash_hmac('sha256', $jwtParts[0] . '.' . $jwtParts[1], $this->secretKey, true);
+        $generatedSignature = hash_hmac('sha256', $jwtParts[0] . '.' . $jwtParts[1], self::getConfigValue('secretKey'), true);
         $generatedSignature = strtr(rtrim(base64_encode($generatedSignature), '='), '+/', '-_');
 
         if ( ! hash_equals($signature, $generatedSignature)) {
@@ -156,11 +151,11 @@ class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
 
         $user_id = $orderId[0];
 
-        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $this->currency_default, 'cryptocloud']);
         $amount = donate::currency($amount, $this->currency_default);
+        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $this->currency_default, get_called_class()]);
+        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование Enot", get_called_class());
+        donate::addUserBonus($user_id, $amount);
 
-//        auth::change_donate_point($user_id, $amount, get_called_class());
-        donate::AddDonateItemBonus($user_id, $amount);
     }
 
 }
