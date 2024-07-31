@@ -99,9 +99,9 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
         }
         donate::control_uuid($_REQUEST['SIGN'] . "__" . mt_rand(0, 999999999), get_called_class());
 
-        $amount = donate::currency($_REQUEST['AMOUNT'], $_POST['currency']);
+        $amount = donate::currency($_REQUEST['AMOUNT'], $this->currency_default);
 
-        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['sum'], $_POST['currency'], get_called_class()]);
+        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['sum'], $this->currency_default, get_called_class()]);
         user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование Freekassa", get_called_class());
         donate::addUserBonus($user_id, $amount);
 
