@@ -26,15 +26,16 @@ class update
     // Тестируемая функция автоматического старта обновлений
     static function autoRemoteUpdate(): void
     {
-        if ($_SERVER['REMOTE_ADDR'] != config::load()->sphereApi()->getIp()) {
-            file_put_contents('updateError.txt', "AutoUpdate:-> IP: " . $_SERVER['REMOTE_ADDR'] . " != " . config::load()->sphereApi()->getIp());
-            return;
-        }
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $json = file_get_contents('php://input');
+            if($json === false){
+                return;
+            }
             $data = json_decode($json, true);
             if (server::getToken() == $data['token']) {
                 self::checkNewCommit();
+            }else{
+                echo 'token error';
             }
         }
     }
@@ -60,8 +61,6 @@ class update
                     $status = $data['status'];
                     $link = $data['link'];
                     $filePath = fileSys::get_dir($file);
-
-                    file_put_contents("updateLogError.log", "File: " . $file . " Status: " . $status . " Link: " . $link . "\n", FILE_APPEND);
 
                     if ($status == 'added' || $status == 'modified') {
                         self::ensureDirectoryExists($filePath);

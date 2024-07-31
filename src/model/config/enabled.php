@@ -21,18 +21,21 @@ class enabled
 
     private bool $enable_send_balance_game = true;
 
+    private bool $enable_bonus_code = true;
+
     public function __construct()
     {
         $configData = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_enabled__'");
         if($configData){
             $setting    = json_decode($configData['setting'], true);
-            $this->enable_news      = filter_var($setting['enable_news'], FILTER_VALIDATE_BOOLEAN);
-            $this->enable_shop      = filter_var($setting['enable_shop'], FILTER_VALIDATE_BOOLEAN);
-            $this->enable_balance   = filter_var($setting['enable_balance'], FILTER_VALIDATE_BOOLEAN);
-            $this->enable_statistic = filter_var($setting['enable_statistic'], FILTER_VALIDATE_BOOLEAN);
-            $this->enable_referral  = filter_var($setting['enable_referral'], FILTER_VALIDATE_BOOLEAN);
-            $this->enable_ticket    = filter_var($setting['enable_ticket'], FILTER_VALIDATE_BOOLEAN);
-            $this->enable_send_balance_game    = filter_var($setting['enable_send_balance_game'], FILTER_VALIDATE_BOOLEAN);
+            $this->enable_news      = (bool)filter_var($setting['enable_news'], FILTER_VALIDATE_BOOLEAN);
+            $this->enable_shop      = (bool)filter_var($setting['enable_shop'], FILTER_VALIDATE_BOOLEAN);
+            $this->enable_balance   = (bool)filter_var($setting['enable_balance'], FILTER_VALIDATE_BOOLEAN);
+            $this->enable_statistic = (bool)filter_var($setting['enable_statistic'], FILTER_VALIDATE_BOOLEAN);
+            $this->enable_referral  = (bool)filter_var($setting['enable_referral'], FILTER_VALIDATE_BOOLEAN);
+            $this->enable_ticket    = (bool)filter_var($setting['enable_ticket'], FILTER_VALIDATE_BOOLEAN);
+            $this->enable_send_balance_game    = (bool)filter_var($setting['enable_send_balance_game'], FILTER_VALIDATE_BOOLEAN);
+            $this->enable_bonus_code    = (bool)filter_var($setting['enable_bonus_code'], FILTER_VALIDATE_BOOLEAN);
         }
     }
 
@@ -69,6 +72,11 @@ class enabled
     public function isEnableSendBalanceGame(): bool
     {
         return $this->enable_send_balance_game;
+    }
+
+    public function isEnableBonusCode(): bool
+    {
+        return $this->enable_bonus_code;
     }
 
 }

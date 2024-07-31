@@ -11,7 +11,13 @@
           <div class="card-title">{{ phrase('create_bonus_codes') }}</div>
         </div>
 
+
         <div class="card-body">
+
+          {% if config().enabled().isEnableBonusCode() == false %}
+            <div class="alert alert-danger" role="alert"><a href="/admin/setting#functionsdata">Бонус коды отключены в настройках.</a></div>
+          {% endif %}
+
           <div class="row row-cols-lg-auto align-items-center">
             <span class="fw-semibold mb-1 text-muted">{{ phrase('number_of_codes') }}</span>
             <div class="col-4">

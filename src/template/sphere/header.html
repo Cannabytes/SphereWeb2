@@ -70,9 +70,9 @@
       </div>
 
 
-      <div class="header-element cart-dropdown">
+      <div class="header-element cart-dropdown enable_bonus_code"  {% if config().enabled().isEnableBonusCode()== false %}style="display: none;" {% endif %}>
         <!-- Start::header-link|dropdown-toggle -->
-        <a id="bonusCodePanel" href="javascript:void(0);" class="header-link dropdown-toggle bg-dark-transparent" data-bs-auto-close="outside" data-bs-toggle="dropdown">
+        <a id="bonusCodePanel" href="javascript:void(0);" class="header-link dropdown-toggle bg-dark-transparent " data-bs-auto-close="outside" data-bs-toggle="dropdown">
           <i class="fe fe-shopping-cart header-link-icon"></i>
           <span class="fs-14 fw-semibold text-info">{{phrase('code_bonus')}}</span>
         </a>

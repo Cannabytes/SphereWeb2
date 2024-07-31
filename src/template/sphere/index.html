@@ -139,10 +139,22 @@
                       {{phrase('or')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-new-user"
                              class="alert-link text-danger">{{phrase('reg_acc')}}</a>, {{phrase('ctrl_chars')}}.
                       {% else %}
+
+
                       <form action="/registration/account" method="POST">
 
 
-                        <div class="row mb-3">
+                        <div class="row mb-0">
+
+                          <div class="input-group mb-3 ">
+
+                            <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm ">
+                              Создание нового аккаунта
+                            </div>
+
+                          </div>
+
+
                           <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>
 
                           <div class="col-sm-4">
@@ -161,7 +173,9 @@
 
                         </div>
 
-                        <div class="row mb-3">
+                        <div class="row mb-0">
+
+
                           <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
                           <div class="col-sm-4">
                             <input type="password" class="form-control" name="password" id="passwordRegistration"
@@ -223,6 +237,9 @@
                 <div class="col-xl-6">
                     <div class="card-body">
                       {% if getUser().isAuth() %}
+                      <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm ">
+                        Мои игровые аккаунты
+                      </div>
                       {% if statusSphereServer() is same as(false) %}
                       <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <strong>{{phrase('fail_conn_sphereapi_srv')}}</strong>

@@ -16,9 +16,25 @@ class launcher
 
     public function show($launcher_name = null)
     {
-        $serverInfo = server::getServer(user::self()->getServerId());
-        tpl::addVar("id", $serverInfo->getId());
-        tpl::addVar("chronicle", $serverInfo->getChronicle());
+        if($launcher_name == null) {
+            $serverInfo = server::getServer(user::self()->getServerId());
+            $launcher = $serverInfo->getServerData("sphere-launcher")?->getVal();
+            if($launcher==null){
+                redirect::location("/main");
+            }
+            $launcher = json_decode($launcher, true);
+        }else{
+            foreach(server::getServerAll() as $server){
+                $launcherData = $server->getServerData("sphere-launcher")?->getVal();
+                if($launcherData == null) continue;
+                $launcherData = json_decode($launcherData, true);
+                if($launcherData['name'] == $launcher_name){
+                    $launcher = $launcherData;
+                    break;
+                }
+            }
+        }
+        tpl::addVar('launcher', $launcher);
         tpl::displayPlugin("/launcher/tpl/show.html");
     }
 
@@ -161,8 +177,8 @@ class launcher
             $data['autoload'] = false;
         }
 
-        if ($server = server::get_server_info($server_id)) {
-            $data['chronicle'] = $server['chronicle'];
+        if ($server = server::getServer($server_id)) {
+            $data['chronicle'] = $server->getChronicle();
         }
 
         if (empty($data['application'])) {
