@@ -31,8 +31,8 @@ class sphereapi
         $port = $_POST['port'] ?? "";
 
         //Проверка IP
-        if (!filter_var($ip, FILTER_VALIDATE_IP)) {
-            board::error("Вы указали неверный IP адрес");
+        if (empty($ip)) {
+            board::error("IP пуст");
         }
 
         //Проверка порта
