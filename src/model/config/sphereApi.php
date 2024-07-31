@@ -8,7 +8,7 @@ use Ofey\Logan22\model\db\sql;
 class sphereApi
 {
 
-    private string $ip = '167.235.239.166';
+    private string $ip = 'api.sphereweb.net';
 
     private int $port = 80;
 
