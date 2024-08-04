@@ -22,9 +22,14 @@ class stream
         if (self::$streams !== null) {
             return self::$streams;
         }
-        $streams = sql::getRows("SELECT * FROM `streams` WHERE confirmed = 1 AND `data` IS NOT NULL ORDER BY `dateUpdate` DESC", []);
+        $streams = sql::getRows("SELECT * FROM `streams` WHERE confirmed = 1 AND (`data` IS NOT NULL AND `data` != '') ORDER BY `dateUpdate` DESC;");
         foreach ($streams as &$stream) {
             $stream['data'] = json_decode($stream['data'], true);
+            if(!$stream['data']){
+                if ($stream['data']['title'] == null) {
+                    unset($stream);
+                }
+            }
         }
         self::$streams = $streams;
 
@@ -66,7 +71,7 @@ class stream
     {
         //Проверка что админ одобрил авто добавление стрима пользователем
         if (user::self()->getVar("auto_approval_stream")['val'] == 1) {
-            streamcheck::userUpdateSelfStream();
+            streamcheck::userUpdateStream();
         }
     }
 

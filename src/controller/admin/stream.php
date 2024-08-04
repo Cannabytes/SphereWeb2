@@ -6,6 +6,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\stream\streamcheck;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
@@ -22,40 +23,12 @@ class stream
         $streamId = $_POST['streamId'];
 
         $streamData = sql::getRow("SELECT * FROM `streams` WHERE `id` = ?", [$streamId]);
-
         if ( ! $streamData) {
             board::error("Нет данных о стриме");
         }
+        sql::run("UPDATE `streams` SET `confirmed` = 1 WHERE `id` = ?", [$streamId]);
+        streamcheck::userUpdateStream($streamData['user_id']);
 
-        $data = server::send(type::GET_STREAM_INFO, [
-          'link' => $streamData['channel'],
-        ])->show(false)->getResponse();
-        if ($data) {
-            if (isset($data['error'])) {
-                sql::run("UPDATE `streams` SET `confirmed` = 1 WHERE `id` = ?", [$streamId]);
-            } else {
-                $channel_id  = $data['info']['channel_id'];
-                $is_live     = $data['info']['is_live'];
-                $title       = $data['info']['title'];
-                $username    = $data['info']['username'];
-                $avatar_url  = $data['info']['avatar_url'];
-                $channel_url = $data['info']['channel_url'];
-                $video_url   = $data['info']['video_url'];
-                $video_id    = $data['info']['video_id'];
-                $arr         = json_encode([
-                  'username'    => $username,
-                  'title'       => $title,
-                  'avatar_url'  => $avatar_url,
-                  'channel_url' => $channel_url,
-                  'video_url'   => $video_url,
-                  'video_id'    => $video_id,
-                ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-                sql::run(
-                  "UPDATE `streams` SET `confirmed` = 1, `channel_id` = ?, `is_live` = ?, `data` = ? WHERE `id` = ?",
-                  [$channel_id, $is_live, $arr, $streamId]
-                );
-            }
-        }
         board::success("Стрим одобрен");
     }
 

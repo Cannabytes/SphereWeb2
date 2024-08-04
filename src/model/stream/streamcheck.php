@@ -12,7 +12,7 @@ class streamcheck
 {
 
     //Автоматически проверяем работает ли стрим
-    static function autoCheckLiveStream($channel = null): void
+    static function autoCheckLiveStream(): void
     {
         $currentTime = time::mysql();
         $rows        = sql::getRows("SELECT * FROM `streams` WHERE `confirmed` = 1 AND `auto_check_date` > ?", [$currentTime]);
@@ -46,10 +46,13 @@ class streamcheck
         }
     }
 
-    static function userUpdateSelfStream(): void
+    static function userUpdateStream($userId = null): void
     {
+        if($userId === null) {
+            $userId = user::self()->getId();
+        }
         //Проверка что у пользователя есть такой стрим
-        $row = sql::getRow("SELECT * FROM `streams` WHERE user_id = ?", [user::self()->getId()]);
+        $row = sql::getRow("SELECT * FROM `streams` WHERE user_id = ?", [$userId]);
         if ( ! $row) {
             board::error("Пользователь не имеет стрима");
 
