@@ -23,11 +23,11 @@ class stream
             return self::$streams;
         }
         $streams = sql::getRows("SELECT * FROM `streams` WHERE confirmed = 1 AND (`data` IS NOT NULL AND `data` != '') ORDER BY `dateUpdate` DESC;");
-        foreach ($streams as &$stream) {
+        foreach ($streams as $i=>&$stream) {
             $stream['data'] = json_decode($stream['data'], true);
-            if(!$stream['data']){
+            if($stream['data']){
                 if ($stream['data']['title'] == null) {
-                    unset($stream);
+                    unset($streams[$i]);
                 }
             }
         }
