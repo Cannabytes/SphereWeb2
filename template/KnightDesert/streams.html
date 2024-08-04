@@ -31,11 +31,14 @@ data-insertmedia='{"type" : "youtube", "src" : "https://www.youtube.com/embed/UW
 
 			<!-- example -->
 			<!-- start Youtube live_stream, указываем ид канала -->
-			<!-- <div class="swiper-slide">
-<div class="stream"
-data-insertmedia='{"type" : "youtube", "src" : "https://www.youtube.com/embed/live_stream?channel=UCwobzUc3z-0PrFpoRxNszXQ&autoplay=1&mute=1"}'>
-</div>
-</div> -->
+
+			{% for data in streams() %}
+			  <div class="swiper-slide">
+						<div class="stream"
+							data-insertmedia='{"type" : "youtube", "src" : "{{data.stream.link}}"}'>
+						</div>
+				</div>
+			{% endfor %}
 			<!-- end Stream -->
 
 			<!-- start Stream -->
@@ -43,7 +46,7 @@ data-insertmedia='{"type" : "youtube", "src" : "https://www.youtube.com/embed/li
 				<div class="stream">
 					<div class="stream__content">
 						{{phrase("stream_desc")}}<br />
-						<a href="#" class="stream__link">{{phrase("stream_add")}}</a>
+						<a href="/stream" class="stream__link">{{phrase("stream_add")}}</a>
 					</div>
 				</div>
 			</div>
@@ -54,7 +57,7 @@ data-insertmedia='{"type" : "youtube", "src" : "https://www.youtube.com/embed/li
 				<div class="stream">
 					<div class="stream__content">
 						{{phrase("stream_desc")}}<br />
-						<a href="#" class="stream__link">{{phrase("stream_add")}}</a>
+						<a href="/stream" class="stream__link">{{phrase("stream_add")}}</a>
 					</div>
 				</div>
 			</div>
@@ -65,7 +68,7 @@ data-insertmedia='{"type" : "youtube", "src" : "https://www.youtube.com/embed/li
 				<div class="stream">
 					<div class="stream__content">
 						{{phrase("stream_desc")}}<br />
-						<a href="#" class="stream__link">{{phrase("stream_add")}}</a>
+						<a href="/stream" class="stream__link">{{phrase("stream_add")}}</a>
 					</div>
 				</div>
 			</div>
@@ -76,7 +79,7 @@ data-insertmedia='{"type" : "youtube", "src" : "https://www.youtube.com/embed/li
 				<div class="stream">
 					<div class="stream__content">
 						{{phrase("stream_desc")}}<br />
-						<a href="#" class="stream__link">{{phrase("stream_add")}}</a>
+						<a href="/stream" class="stream__link">{{phrase("stream_add")}}</a>
 					</div>
 				</div>
 			</div>
@@ -87,14 +90,14 @@ data-insertmedia='{"type" : "youtube", "src" : "https://www.youtube.com/embed/li
 				<div class="stream">
 					<div class="stream__content">
 						{{phrase("stream_desc")}}<br />
-						<a href="#" class="stream__link">{{phrase("stream_add")}}</a>
+						<a href="/stream" class="stream__link">{{phrase("stream_add")}}</a>
 					</div>
 				</div>
 			</div>
 			<!-- end Stream -->
 		</div>
 		<div class="streams__grp">
-			<a href="#" class="streams__add lbtn lbtn_type_1">
+			<a href="/stream" class="streams__add lbtn lbtn_type_1">
 				<div class="lbtn__content">{{phrase("streams_add")}}</div>
 			</a>
 		</div>

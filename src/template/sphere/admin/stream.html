@@ -1,0 +1,196 @@
+{% extends 'struct.html' %}
+
+{% block title %}Стримы пользователей{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+  <div class="card">
+    <div class="card-body">
+      <h4 class="fw-normal"><a href="javascript:void(0)"> Как это работает?</a></h4>
+      <p class="card-text">Пользователи могут добавлять ссылки на свой канал, где ведется стрим.</p>
+      <p class="card-text">Администратор обязан подтвердить или отклонить заявку пользователя на стрим.</p>
+      <p class="card-text">Если администратор подтвердил заявку на стрим, тогда видео стрима будет доступно для
+        просмотра всем.</p>
+      <p class="card-text">Вы можете определить пользователей, какие могут добавлять свой стрим без подтверждения
+        администратора, через опцию - "Автоодобрение новых стримов"</p>
+      <p class="card-text">Имеется возможность проверки актуальности стрима (есть ли на канале стрим) до N даты, но не
+        более 31 дня. Проверка стрима на канале пользователя происходит с периодичностью раз в ~15 минут. Эта опция
+        полезна если Вы согласовали со стримером до какого дня он будет стримить Ваш сервер.</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header justify-content-between">
+          <div class="card-title">
+            Заявки на стримы
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table text-nowrap">
+              <thead>
+              <tr>
+                <th scope="col">Пользователь</th>
+                <th scope="col">Канал</th>
+                <th scope="col">Стрим / Запись</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+              </tr>
+              </thead>
+              <tbody class="table-group-divider">
+
+              {% for data in streams %}
+
+
+              {% set userInfo = getUser(data.user_id) %}
+
+              <tr id="tr_{{data.id}}">
+                <th scope="row">
+                  <a href="/admin/user/info/{{data.user_id}}" class="text-primary">{{ userInfo.getName() }} /
+                    {{userInfo.getEmail()}}</a>
+
+                  <div class="form-check">
+                    <input class="form-check-input auto_add_new_stream" data-user-id="{{userInfo.getId()}}"
+                           type="checkbox" value="" id="auto_add_new_stream_{{userInfo.getId()}}" {% if userInfo.getVar("auto_approval_stream").val
+                    %}checked=""{% endif %}>
+                    <label class="form-check-label" for="auto_add_new_stream_{{userInfo.getId()}}">
+                      Автоодобрение новых стримов
+                    </label>
+                  </div>
+
+
+                  <div class="form-group mb-0">
+                    <div class="input-group">
+                      <input value="{{data.auto_check_date}}" type="text" class="form-control datetime" id="auto_check_stream_{{data.id}}"
+                             placeholder="Автопроверка новых стримов">
+                      <div class="btn btn-success input-group-text setAutoCheckStream" data-stream-id="{{data.id}}">
+                        Применить
+                      </div>
+                      <div class="btn btn-info input-group-text removeAutoCheckStream" data-stream-id="{{data.id}}">
+                        <i class="ri-delete-bin-5-line"></i>
+                      </div>
+                    </div>
+                  </div>
+
+
+                </th>
+                <td><a href="{{data.channel}}" target="_blank" class="text-primary">{{data.channel}}</a>
+                </td>
+                <td>
+
+
+                  <div class="d-flex overflow-visible">
+                    <img class="avatar bradius avatar-xxl avatar-rounded me-3" src="{{data.data.avatar_url}}"
+                         alt="avatar-img">
+                    <div class="media-body valign-middle">
+                      <a href="{{data.video_url}}" target="_blank"
+                         class="fw-semibold text-dark">{{data.data.username}}</a>
+                      <p class="text-muted mb-0">{{data.data.title}}</p>
+                      <a href="{{stream.channel}}" target="_blank" class="text-primary">{{data.video_url}}</a>
+                      {% if data.is_live %}
+                      <span class="badge bg-danger-transparent">Прямая трансляция</span>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                </td>
+
+                <td>
+                  {% if data.confirmed == 0 %}
+                  <button data-stream-id="{{data.id}}"
+                          class="satisfy_the_request btn btn-sm btn-success btn-wave waves-effect waves-light">
+                    Добавить в список стримов
+                  </button>
+                  {% endif %}
+                </td>
+                <td>
+                  <a href="javascript:void(0);" class="text-danger fs-14 lh-1 removeStream" data-stream-id="{{data.id}}"><i class="ri-delete-bin-5-line"></i></a>
+                </td>
+              </tr>
+              {% endfor %}
+
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/flatpickr/flatpickr.min.css">
+{% endblock %}
+
+{% block js %}
+<script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>
+
+<script>
+
+  $(".setAutoCheckStream").on("click", function () {
+    let streamId = $(this).data("stream-id");
+    let date = $("#auto_check_stream_" + streamId).val();
+    AjaxSend("/admin/stream/set/auto/check", "POST", {
+      streamId: streamId,
+      date: date
+    });
+  })
+
+  $(".removeAutoCheckStream").on("click", function () {
+    let streamId = $(this).data("stream-id");
+    $("#auto_check_stream_" + streamId).val("");
+    AjaxSend("/admin/stream/remove/auto/check", "POST", {
+      streamId: streamId
+    });
+  })
+
+  $(".removeStream").on("click", function () {
+    let streamId = $(this).data("stream-id");
+    AjaxSend("/admin/stream/remove", "POST", {
+      streamId: streamId
+    }, true).then(function (response) {
+      responseAnalysis(response);
+      if(response.ok) {
+        $("#tr_" + streamId).remove();
+      }
+    });
+  })
+
+  $(".satisfy_the_request").on("click", function () {
+    let streamId = $(this).data("stream-id");
+    let self = $(this);
+    AjaxSend("/admin/stream/satisfy", "POST", {
+      streamId: streamId
+    });
+  })
+
+  $(".auto_add_new_stream").on("click", function () {
+    let userId = $(this).data("user-id");
+    let approval = $(this).prop("checked") ? 1 : 0;
+
+    let self = $(this);
+    AjaxSend("/admin/stream/autoapproval", "POST", {
+      userId: userId,
+      approval: approval
+    });
+  });
+
+  /* To choose date and time */
+  flatpickr(".datetime", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    maxDate: new Date().fp_incr(31)
+  });
+
+</script>
+
+{% endblock %}

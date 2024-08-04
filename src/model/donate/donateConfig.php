@@ -54,7 +54,7 @@ class donateConfig
 
     public function __construct()
     {
-        $sql                         = "SELECT * FROM `settings` WHERE serverId = ? AND `key` = '__config_donate__'";
+        $sql                         = "SELECT * FROM `settings` WHERE `key` = '__config_donate__'";
         $configData                  = sql::getRow($sql, [
           user::self()->getServerId(),
         ]);

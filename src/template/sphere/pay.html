@@ -459,8 +459,9 @@
                     if (redirectLink['ok'] === false) {
                         noticeError(redirectLink['message'])
                         return;
+                    }else{
+                        window.open(redirectLink, '_blank');
                     }
-                    window.open(redirectLink, '_blank');
                 }
             });
     });

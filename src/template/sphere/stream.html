@@ -1,0 +1,134 @@
+{% extends 'struct.html' %}
+
+{% block title %}Стримы{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="row">
+
+
+    <div class="col-xl-12">
+      <div class="card custom-card">
+
+        <div class="card-body">
+          <div class="row g-3">
+
+            <div class="col-sm-4">
+              <h6 class="fw-semibold mb-0">Вы стримите свою игру на нашем сервере?</h6>
+              <p class=" text-muted">Добавляйте ссылку на свой канал!</p>
+            </div>
+
+            <div class="col-sm">
+              <input value="{{my_stream.channel}}" id="channel" class="form-control me-auto" type="text"
+                     placeholder="https://www.youtube.com/@jawed"
+                     aria-label="">
+            </div>
+
+            {% if my_stream %}
+            <div class="col-auto">
+              <button id="start_stream_again" type="submit" class="btn btn-primary">Я запустил новый стрим</button>
+            </div>
+            {% else %}
+            <div class="col-auto">
+              <button id="add_new_stream" type="submit" class="btn btn-primary">Добавить</button>
+            </div>
+            {% endif %}
+
+            <div class="col-auto">
+              <div class="vr"></div>
+              <button id="delete_stream" data-object-id="{{my_stream.id}}" type="button" class="btn btn-outline-danger">
+                Удалить
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% for stream in streams() %}
+
+    <div id="stream_{{stream.id}}" class="col-xl-4">
+      <div class="card custom-card">
+
+        <div class="card-body ">
+          <div class="ratio ratio-16x9 mb-2">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/{{stream.data.video_id}}"
+                    title="YouTube video player" style="border:0px"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen=""></iframe>
+          </div>
+
+
+          <div class="">
+            <div class="d-sm-flex d-block align-items-top mb-0">
+              <div class="d-flex flex-fill align-items-center">
+                <div class="me-2">
+                  <span class="avatar avatar-lg avatar-rounded">
+                     <a href="{{stream.channel}}" target="_blank"> <img src="{{stream.data.avatar_url}}" alt=""> </a>
+                  </span>
+                </div>
+
+                <div class="lh-1 me-2">
+                  <p class="mb-1 fw-semibold fs-14"><a href="/stream/{{getUser(stream.user_id).getName()}}">{{stream.data.username}}
+                    {% if stream.is_live %}<span class="badge bg-danger-transparent">Прямая трансляция</span>{% endif %}</a>
+                  </p>
+                  <div class="mb-0 ">
+                  <span class="text-muted"><i class="ri-double-quotes-l"></i><a
+                    href="/stream/{{getUser(stream.user_id).getName()}}"> {{stream.data.title}} </a> <i
+                    class="ri-double-quotes-r"></i></span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+
+  </div>
+
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+
+  $("#delete_stream").on("click", function () {
+    let id = $(this).data("object-id");
+    AjaxSend("/stream/delete", "POST", {}, true).then(function (response) {
+      responseAnalysis(response);
+      if (response.ok) {
+        $("#stream_" + id).remove();
+      }
+    });
+  })
+
+  $("#add_new_stream").on("click", function () {
+    AjaxSend("/stream/add", "POST", {
+      channel: $("#channel").val()
+    });
+  })
+
+  $("#start_stream_again").on("click", function () {
+    let $this = $(this);
+    $this.addClass("disabled");
+    AjaxSend("/stream/streamagain", "POST", {
+      channel: $("#channel").val()
+    }, true).then(function (response) {
+      responseAnalysis(response);
+      $this.removeClass("disabled");
+    });
+  })
+</script>
+{% endblock %}

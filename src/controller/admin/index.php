@@ -16,7 +16,6 @@ class index {
         validation::user_protection("admin");
         $sphereAPIError = null;
         $info = server::send(type::SERVER_FULL_INFO)->show(false)->getResponse();
-
         if(isset($info['error']) OR $info===null){
             $sphereAPIError = true;
             $info['servers'] = [];
@@ -36,6 +35,7 @@ class index {
                   "rateSpoil" => 1,
                   "chronicle" => "NoSetChronicle",
                   "source"    => "",
+                  "disabled"  => $server['disabled'],
                 ];
                 sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
             }

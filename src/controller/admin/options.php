@@ -17,6 +17,7 @@ use Ofey\Logan22\component\servername\servername;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\patchlist;
 use Ofey\Logan22\model\admin\server;
 use Ofey\Logan22\model\admin\update_cache;
@@ -148,41 +149,46 @@ class options
     {
         validation::user_protection("admin");
 
-        $sphereAPIError = null;
+        $servers = \Ofey\Logan22\model\server\server::getServerAll();
+        if ( ! $servers) {
+            redirect::location("/admin/server/add/new");
+        }
 
         //Подгрузка списокв серверов с сервера сферы
-        $servers_id = \Ofey\Logan22\component\sphere\server::send(type::SERVER_LIST)->show(false)->getResponse();
-        if (isset($servers_id['error']) or $servers_id === null) {
-            $sphereAPIError        = true;
-            $servers_id['servers'] = [];
+        $serversFullInfo = \Ofey\Logan22\component\sphere\server::send(type::SERVER_FULL_INFO)->showErrorPageIsOffline()->getResponse();
+        if ($serversFullInfo['error']) {
+            redirect::location("/admin/server/list");
         }
+
+        $serversFullInfo = $serversFullInfo['servers'];
         if ($id) {
             $serverInfo = \Ofey\Logan22\model\server\server::getServer($id);
             if ($serverInfo->getId() != $id) {
                 redirect::location("/admin/server/list");
             }
-            foreach ($servers_id['ids'] as $server_id) {
-                if ($serverInfo->getId() == $server_id) {
+
+            foreach ($serversFullInfo as $serverInfoData) {
+                if ($serverInfo->getId() == $serverInfoData['id']) {
                     $serverInfo->setIsSphereServer(true);
+                    $serverInfo->getStatus()->setDisabled($serverInfoData['disabled']);
                 }
             }
             tpl::addVar([
               'serverInfo' => $serverInfo,
             ]);
         }
-        $servers = \Ofey\Logan22\model\server\server::getServerAll();
-        if ( ! $servers) {
-            redirect::location("/admin/server/add/new");
-        }
-        foreach ($servers as &$server) {
-            foreach ($servers_id['ids'] as $server_id) {
-                if ($server->getId() == $server_id) {
-                    $server->setIsSphereServer(true);
+
+        if ($serversFullInfo != null) {
+            foreach ($servers as &$server) {
+                foreach ($serversFullInfo as $serverInfoData) {
+                    if ($server->getId() == $serverInfoData['id']) {
+                        $server->setIsSphereServer(true);
+                        $server->getStatus()->setDisabled($serverInfoData['disabled']);
+                    }
                 }
             }
-        }
-        if ( ! $sphereAPIError) {
-            $arrayUniq = self::filterUniqueIds(\Ofey\Logan22\model\server\server::getServerAll(), $servers_id['ids']);
+
+            $arrayUniq = self::filterUniqueIds(\Ofey\Logan22\model\server\server::getServerAll(), $serversFullInfo);
             foreach ($arrayUniq as $id) {
                 $sm = new serverModel([
                   'id' => $id,
@@ -191,13 +197,9 @@ class options
                 $sphereServers = $sm;
                 $servers[]     = $sphereServers;
             }
-            tpl::addVar([
-              'sphereServers' => $servers,
-            ]);
         }
-
         tpl::addVar([
-          'sphereAPIError'        => $sphereAPIError,
+          'sphereServers'         => $servers,
           'client_list_default'   => client::all(),
           'timezone_list_default' => timezone::all(),
           "title"                 => lang::get_phrase(221),
@@ -205,13 +207,17 @@ class options
         tpl::display("/admin/server_list.html");
     }
 
-    static private function filterUniqueIds($objects, $ids): array
+    static private function filterUniqueIds($objects, $serversFullInfo): array
     {
         // Получаем все ID из первого массива
         $objectIds = array_map(function ($object) {
             return $object->getId(); // Предполагается, что в классе есть метод getId()
         }, $objects);
 
+        // Получаем массив только с ID из $serversFullInfo
+        $ids = array_map(function ($server) {
+            return $server['id'];
+        }, $serversFullInfo);
         // Фильтруем второй массив, исключая ID, которые есть в первом массиве
         $filteredIds = array_filter($ids, function ($id) use ($objectIds) {
             return ! in_array($id, $objectIds);
@@ -453,12 +459,6 @@ class options
         board::success("Настройки сохранены");
     }
 
-    public static function new_server_save()
-    {
-        validation::user_protection("admin");
-        server::save_server();
-    }
-
     public static function test_connect_db()
     {
         validation::user_protection("admin");
@@ -506,20 +506,6 @@ class options
     {
         validation::user_protection("admin");
         tpl::display("/admin/server/servers.html");
-    }
-
-    public static function description_create($id)
-    {
-        validation::user_protection("admin");
-        tpl::addVar([
-          'title'                  => "Описание сервера",
-          'all_page_name'          => \Ofey\Logan22\model\page\page::all_page_name(),
-          'server_id'              => $id,
-          'desc_server_list_short' => \Ofey\Logan22\model\page\page::desc_server_list_short($id),
-          'server_list'            => \Ofey\Logan22\model\server\server::get_server_info(),
-          'server_info'            => \Ofey\Logan22\model\server\server::get_server_info($id),
-        ]);
-        tpl::display("/admin/server/description.html");
     }
 
     public static function description_save()

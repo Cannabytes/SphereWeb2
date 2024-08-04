@@ -26,6 +26,7 @@ use Ofey\Logan22\component\time\microtime;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\controller\admin\startpack;
+use Ofey\Logan22\controller\stream\stream;
 use Ofey\Logan22\controller\ticket\ticket;
 use Ofey\Logan22\model\admin\launcher;
 use Ofey\Logan22\model\config\referralConfig;
@@ -823,11 +824,9 @@ class tpl
             return player_account::show_all_account_player();
         }));
 
-        /**
-         * Вывод статиститки сервера
-         */
-        $twig->addFunction(new TwigFunction('statistic_top_counter', function ($server_id = 0) {
-            return statistic_model::top_counter($server_id);
+
+        $twig->addFunction(new TwigFunction('streams', function (){
+            return stream::getStreams();
         }));
 
         $twig->addFunction(new TwigFunction('statistic_get_pvp', function ($server_id = 0, $limit = 0): ?array {

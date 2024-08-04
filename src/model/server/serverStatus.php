@@ -21,6 +21,8 @@ class serverStatus
 
     private bool $isEnableStatus = false;
 
+    private ?bool $disabled = null;
+
     public function save(): void
     {
         //Очищаем предыдущии записи
@@ -32,6 +34,7 @@ class serverStatus
           'loginServer'           => $this->getLoginServer(),
           'licenseExpirationDate' => $this->licenseExpirationDate,
           'isEnableStatus'        => $this->isEnableStatus,
+          'disabled'              => $this->disabled
         ];
         $jsonData = json_encode($data);
         sql::sql("INSERT INTO `server_cache` ( `server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
@@ -102,5 +105,17 @@ class serverStatus
     {
         $this->isEnableStatus = $isEnableStatus;
     }
+
+
+    public function isDisabled(): ?bool
+    {
+        return $this->disabled;
+    }
+
+    public function setDisabled(?bool $disabled): void
+    {
+        $this->disabled = $disabled;
+    }
+
 
 }

@@ -55,6 +55,10 @@ enum type
     case GET_COMMIT_LAST;
     case GET_COMMIT_FILES;
 
+    //Получение информации о стриме по ссылки
+    case GET_STREAM_INFO;
+    case SET_STREAM_AUTOCHECK;
+
 
     static function url(type $type): string
     {
@@ -96,6 +100,10 @@ enum type
 
               self::GET_COMMIT_LAST => '/api/github/last/commit',
               self::GET_COMMIT_FILES => '/api/github/commit/files',
+
+
+              self::GET_STREAM_INFO => '/api/stream/check',
+              self::SET_STREAM_AUTOCHECK => '/api/stream/setautocheck',
               default => null,
           };
     }

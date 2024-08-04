@@ -1,0 +1,135 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{stream.data.username}} - {{stream.data.title}}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- Start::row-1 -->
+  <div class="row">
+    <div class="col-xl-10">
+      <div class="card">
+
+        <div class="ratio ratio-16x9">
+          <iframe id="youtubePlayer" src="https://www.youtube.com/embed/{{stream.data.video_id}}?autoplay=1&controls=0 "
+                  title="YouTube video" allowfullscreen></iframe>
+        </div>
+
+        <div class="card-body border-bottom">
+          <div class="d-md-flex">
+
+            <div class="me-2">
+                  <span class="avatar avatar-lg avatar-rounded">
+                     <a href="{{stream.channel}}" target="_blank"> <img src="{{stream.data.avatar_url}}" alt=""> </a>
+                  </span>
+            </div>
+
+            <div class="lh-1 me-2">
+              <p class="mb-1 fw-semibold fs-14"> {{stream.data.username}}
+                {% if stream.is_live %}<span class="badge bg-danger-transparent">Прямая трансляция</span>{% endif %}
+              </p>
+              <div class="mb-0 ">
+                  <span class="text-muted"><i class="ri-double-quotes-l"></i>  {{stream.data.title}}  <i
+                    class="ri-double-quotes-r"></i></span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!--
+    <div class="col-xl-4">
+      <div class="mails-information">
+
+        <div class="mail-info-body p-4" id="mail-info-body" data-simplebar="init">
+          <div class="simplebar-wrapper" style="margin: -24px;">
+            <div class="simplebar-height-auto-observer-wrapper">
+              <div class="simplebar-height-auto-observer"></div>
+            </div>
+            <div class="simplebar-mask">
+              <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                <div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content"
+                     style="height: auto; overflow: hidden scroll;">
+                  <div class="simplebar-content" style="padding: 24px;">
+
+                    <div class="main-mail-content my-0">
+
+                      <p class="fs-14 fw-semibold mb-1">
+              <span class="avatar avatar-sm  me-1 avatar-rounded ">
+                                        <img src="{{getUser().getAvatar()}}" alt="">
+                                    </span> {{getUser().getName()}} 🖐
+                      </p>
+                      <p class="mb-2 fs-12 text-muted">Earth, our home, is the third planet from the sun. While
+                        scientists continue to hunt for clues of life beyond Earth,is the third planet from the sun.
+                        While scientists continue to hunt for clues of life beyond Earth, our home planet remains the
+                        only place in the universe where we've ever identified living organisms. .</p>
+                    </div>
+
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="simplebar-placeholder" style="width: auto; height: 830px;"></div>
+          </div>
+          <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+            <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+          </div>
+          <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+            <div class="simplebar-scrollbar"
+                 style="height: 566px; display: block; transform: translate3d(0px, 0px, 0px);"></div>
+          </div>
+        </div>
+        <div class="mail-info-footer d-xl-flex align-items-center justify-content-between">
+
+
+          <a aria-label="anchor" class="btn btn-icon me-2 btn-warning-light" href="javascript:void(0)"
+             data-bs-toggle="modal"
+             data-bs-target="#mail-Compose">
+            <i class="ri-emotion-line"></i>
+          </a>
+          <input class="form-control me-2" placeholder="Type your message here..." type="text">
+
+          <a class="btn btn-primary d-inline-flex" href="javascript:void(0)">
+            <i class="ri-send-plane-2-line me-2"></i>Send
+          </a>
+
+        </div>
+      </div>
+    </div>
+    <div class="modal modal-lg fade" id="mail-Compose" tabindex="-1" aria-labelledby="mail-ComposeLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body px-4">
+            <div class="row mb-0 display-5">
+
+              😀 😃 😄 😁 😆 😅 😂 🤣 😊 😊 😇 🙂 🙃 😉 😌 😍 🥰 😘 😗 😙 😚 😋 😛 😝 😜 🤪 🤨 🧐 🤓 😎 🤩 🥳 😏 😒 😞 😔 😟 😕 🙁 ☹️ 😣 😖 😫 😩 🥺 😢 😭 😤 😠 😡 🤬 🤯 😳 🥵
+              🥶 😱 😨 😰 😥 😓 🤗 🤔 🤭 🤫 🤥 😶 😐 😑 😬 🙄 😯 😦 😧 😮 😲 🥱 😴 🤤 😪 😵 🤐 🥴 🤢 🤮 🤧 😷 🤒 🤕 🤑 🤠 😈 👿 👹 👺 🤡 💩 👻 💀 ☠️ 👽 👾 🤖 🎃 😺 😸 😹 😻 😼
+              😽 🙀 😿 😾
+
+              👋 🤚 🖐 ✋ 🖖 👌 🤏 ✌️ 🤞 🤟 🤘 🤙 👈 👉 👆 🖕 👇 ☝️ 👍 👎 ✊ 👊 🤛 🤜 👏 🙌 👐 🤲 🤝 🙏 ✍️ 💅 🤳 💪 🦾 🦵 🦿 🦶 👣 👂 🦻 👃 🧠 🦷 🦴 👀 👁️ 👅 👄 💋 🩸
+
+              ❤️ 🧡 💛 💚 💙 💜 🖤 🤍 🤎 💔 ❣️ 💕 💞 💓 💗 💖 💘 💝
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+<!-->
+
+  </div>
+</div>
+
+
+
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

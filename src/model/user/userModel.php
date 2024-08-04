@@ -324,7 +324,8 @@ class userModel
 
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::ACCOUNT_PLAYERS, [
           'email' => $this->getEmail(),
-        ])->show(false)->getResponse();
+        ])->show((bool)$reload)->getResponse();
+
         if (isset($sphere['error']) or ! $sphere) {
             return [];
         }
@@ -1058,16 +1059,19 @@ class userModel
     }
 
     //Добавление переменной
-    public function addVar(string $name, mixed $data) {
+    public function addVar(string $name, mixed $data, $server = null) {
+        if ($server === null) {
+            $server = $this->getServerId();
+        }
 
         sql::run('DELETE FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?', [
-          $this->getServerId(),
+          $server,
           $this->getId(),
           $name,
         ]);
 
         return sql::run('INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)', [
-          $this->getServerId(),
+          $server,
           $this->getId(),
           $name,
           $data,

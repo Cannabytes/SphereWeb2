@@ -1622,4 +1622,175 @@ return array (
     'page' => '',
     'comment' => 'Выдача пользователю предмета в warehouse',
   ),
+  114 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/stream',
+    'func' => 'controller\\stream\\stream::show',
+    'access' => 
+    array (
+      0 => 'any',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Страница со списками стримов',
+  ),
+  115 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/stream/add',
+    'func' => 'controller\\stream\\stream::add',
+    'access' => 
+    array (
+      0 => 'user',
+      1 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Add new stream',
+  ),
+  116 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/stream',
+    'func' => 'controller\\admin\\stream::show',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  117 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/stream/satisfy',
+    'func' => 'controller\\admin\\stream::satisfy',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  118 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/stream/autoapproval',
+    'func' => 'controller\\admin\\stream::autoApproval',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Автоматическое одобрение обновления и добавления стримов',
+  ),
+  119 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/stream/streamagain',
+    'func' => 'controller\\stream\\stream::startStreamAgain',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Автоматическое одобрение обновления и добавления стримов пользователем (если одобрено админом)',
+  ),
+  120 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/stream/(.*)',
+    'func' => 'controller\\stream\\stream::getUserStream',
+    'access' => 
+    array (
+      0 => 'any',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  121 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/stream/delete',
+    'func' => 'controller\\stream\\stream::userDeleteStream',
+    'access' => 
+    array (
+      0 => 'user',
+      1 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Удаление записи о стриме пользователем',
+  ),
+  122 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/stream/set/auto/check',
+    'func' => 'controller\\admin\\stream::setAutoCheck',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  123 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/response/request',
+    'func' => 'component\\request\\response::get',
+    'access' => 
+    array (
+      0 => 'any',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Приемщик автозапросов, на случай если нужно выполнять какие-то действий.',
+  ),
+  124 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/stream/remove/auto/check',
+    'func' => 'controller\\admin\\stream::removeAutoCheck',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Удаление автообновления статуса трансляций из канала пользователя',
+  ),
+  125 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/stream/remove',
+    'func' => 'controller\\admin\\stream::removeStream',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Полное удаление информации о стриме',
+  ),
 );

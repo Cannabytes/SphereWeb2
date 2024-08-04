@@ -23,7 +23,8 @@
       <div class="card custom-card">
         <div class="p-4 border-bottom border-block-end-dashed">
           <p class="fw-semibold mb-2 text-danger">{{ phrase('sphereweb_update_detected') }}</p>
-          <a href="/admin/sphere/update" class="btn btn-light btn-wave btn-sm ms-auto">{{ phrase('proceed_to_update') }}</a>
+          <a href="/admin/sphere/update" class="btn btn-light btn-wave btn-sm ms-auto">{{ phrase('proceed_to_update')
+            }}</a>
         </div>
       </div>
       {% endif %}
@@ -44,19 +45,24 @@
         <div class="card-body border-bottom">
 
           {% if serverInfo == null %}
-           <div class="text-danger">Сервер не найден в Вашей внутренней БД, но существует в Sphere API.</div>
+          <div class="text-danger">Сервер не найден в Вашей внутренней БД, но существует в Sphere API.</div>
           {% endif %}
 
           <div class="d-sm-flex  main-profile-cover">
 
 
             <div class="flex-fill main-profile-info my-auto">
-              <h5 class="fw-semibold mb-1 ">{{serverInfo.getName()}} x{{serverInfo.getRateExp() ?? 0}} - {{serverInfo.getChronicle ?? 'N/A'}}</h5>
+              <h5 class="fw-semibold mb-1 ">{{serverInfo.getName()}} x{{serverInfo.getRateExp() ?? 0}} -
+                {{serverInfo.getChronicle ?? 'N/A'}}</h5>
               <div>
-                <p class="mb-1 text-muted">{{ phrase('activated_until') }} {{server.license_expiration_date|date('d.m.Y')}}</p>
-                <p class="mb-1 text-muted">{{ phrase('status') }}: Работает</p>
+                <p class="mb-1 text-muted">{{ phrase('activated_until') }}
+                  {{server.license_expiration_date|date('d.m.Y')}}</p>
+                <p class="mb-1 text-muted">{{ phrase('status') }}: {% if server.disabled %}<span
+                  class="badge bg-danger">{{ phrase('disabled') }}</span>{% else %}<span class="badge bg-success">{{ phrase('enabled') }}</span>{%
+                  endif %}</p> </p>
                 <p class="fs-12 op-7 mb-0">
-                  <span class="me-3 d-inline-flex align-items-center"><a href="/admin/server/statistic/{{server.id}}"><i class="ri-building-line me-1 align-middle"></i>{{ phrase('menu_statistics') }}</a></span>
+                  <span class="me-3 d-inline-flex align-items-center"><a href="/admin/server/statistic/{{server.id}}"><i
+                    class="ri-building-line me-1 align-middle"></i>{{ phrase('menu_statistics') }}</a></span>
                   <span class="d-inline-flex align-items-center"><i class="ri-map-pin-line me-1 align-middle"></i>{{ phrase('test_sphereapi_server') }}</span>
                 </p>
               </div>
@@ -81,15 +87,15 @@
 
       {% endif %}
 
-        <div class="card">
-          <div class="card-body">
-            <h4 class="mb-2 fw-semibold">Sphere Launcher</h4>
-            <p>
-              {{ phrase('sphere_launcher_description') }}
-            </p>
-            <a href="/admin/launcher" class="btn btn-light">{{ phrase('connect') }}</a>
-          </div>
+      <div class="card">
+        <div class="card-body">
+          <h4 class="mb-2 fw-semibold">Sphere Launcher</h4>
+          <p>
+            {{ phrase('sphere_launcher_description') }}
+          </p>
+          <a href="/admin/launcher" class="btn btn-light">{{ phrase('connect') }}</a>
         </div>
+      </div>
 
 
     </div>
@@ -105,7 +111,8 @@
                       <button class="nav-link active" id="followers-tab" data-bs-toggle="tab"
                               data-bs-target="#followers-tab-pane" type="button" role="tab"
                               aria-controls="followers-tab-pane" aria-selected="false"><i
-                        class="ri-money-dollar-box-line me-1 align-middle d-inline-block fs-16"></i>{{ phrase('settings') }}
+                        class="ri-money-dollar-box-line me-1 align-middle d-inline-block fs-16"></i>{{
+                        phrase('settings') }}
                       </button>
                     </li>
 
@@ -149,6 +156,7 @@
                   <div class="tab-pane show active fade p-0 border-0" id="followers-tab-pane"
                        role="tabpanel" aria-labelledby="followers-tab" tabindex="0">
                     <div class="row">
+
                       <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
                         <div class="card custom-card shadow-none border">
                           <div class="card-body p-4">
@@ -194,28 +202,8 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/news.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('translations') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/phrases" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+
+
                       <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
                         <div class="card custom-card shadow-none border">
                           <div class="card-body p-4">
@@ -233,11 +221,36 @@
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/server/list" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
+                              <a href="/admin/server/list" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                }}</a>
                             </div>
                           </div>
                         </div>
                       </div>
+
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/stream.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">Стримы</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/stream" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
                       <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
                         <div class="card custom-card shadow-none border">
                           <div class="card-body p-4">
@@ -260,6 +273,7 @@
                           </div>
                         </div>
                       </div>
+
                       <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
                         <div class="card custom-card shadow-none border">
                           <div class="card-body p-4">
@@ -277,11 +291,13 @@
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/shop/startpack" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
+                              <a href="/admin/shop/startpack" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                }}</a>
                             </div>
                           </div>
                         </div>
                       </div>
+
                       <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
                         <div class="card custom-card shadow-none border">
                           <div class="card-body p-4">
@@ -299,7 +315,8 @@
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/bonuscode/create" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
+                              <a href="/admin/bonuscode/create" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                }}</a>
                               <a href="/admin/bonuscode/list" class="btn btn-sm btn-light btn-wave">{{ phrase(56) }}</a>
                             </div>
                           </div>
@@ -351,28 +368,6 @@
                         </div>
                       </div>
 
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/routers.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('routers') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/route" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
 
                       <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
                         <div class="card custom-card shadow-none border">
@@ -397,28 +392,6 @@
                         </div>
                       </div>
 
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/updates.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('software_update') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/sphere/update" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
 
 
                       <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
@@ -461,11 +434,15 @@
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/extensions/paid" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
+                              <a href="/admin/extensions/paid" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                }}</a>
                             </div>
                           </div>
                         </div>
                       </div>
+
+
+                      <h5 class="mb-5 mt-3 fw-semibold text-center">Служебное</h5>
 
 
                       <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
@@ -486,6 +463,79 @@
                           <div class="card-footer text-center">
                             <div class="btn-list">
                               <a href="/admin/sphereapi" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {# переводы #}
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/news.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">{{ phrase('translations') }}</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/phrases" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {# Маршрутизаторы #}
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/routers.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">{{ phrase('routers') }}</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/route" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {# Обновления ПО #}
+                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <div class="card custom-card shadow-none border">
+                          <div class="card-body p-4">
+                            <div class="text-center">
+                                                                            <span
+                                                                              class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                  src="{{template}}/assets/images/admenu/updates.png"
+                                                                                  alt="">
+                                                                            </span>
+                              <div class="mt-2">
+                                <p class="mb-0 fw-semibold">{{ phrase('software_update') }}</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-footer text-center">
+                            <div class="btn-list">
+                              <a href="/admin/sphere/update" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                }}</a>
                             </div>
                           </div>
                         </div>

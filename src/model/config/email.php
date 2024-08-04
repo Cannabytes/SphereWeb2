@@ -28,7 +28,7 @@ class email
         );
         if ($configData) {
             $setting             = json_decode($configData['setting'], true);
-            $this->url = isset($setting['url']) && $setting['url'] !== null ? $setting['url'] : "";
+            $this->url = !empty($setting['url']) ? $setting['url'] : "";
             $this->emailHost     = $setting['emailHost'];
             $this->emailUsername = $setting['emailUsername'];
             $this->emailPassword = $setting['emailPassword'];

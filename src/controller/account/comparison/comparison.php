@@ -12,15 +12,17 @@ use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\user\user;
 
 class comparison {
 
     //Синхронизация внутренней БД аккаунтов, реестра аккаунтов АПИ Сферы и реестра аккаунтов игровой базы
     public static function synchronization(){
          //Получение списка аккаунтов
-        $accounts = sql::getRows("SELECT `login`,`password`, `email`, `server_id`,`password_hide` FROM `player_accounts` ");
+        $accounts = sql::getRows("SELECT `login`,`password`, `email`, `server_id`,`password_hide` FROM `player_accounts` WHERE email = ?", [user::self()->getEmail()]);
+
         $sphere = server::send(type::SYNCHRONIZATION, $accounts);
-        var_dump($sphere);
+        var_dump($sphere);exit();
 //        var_dump($accounts);
         die();
     }

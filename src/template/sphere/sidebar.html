@@ -86,9 +86,7 @@
             <span class="side-menu__label">{{phrase(306)}}</span>
           </a>
         </li>
-        {% endif %}
 
-        {% if getUser().isAuth() %}
         <li class="slide enable_ticket" {% if config().enabled().isEnableTicket() == false
             %}style="display: none;" {% endif %}>
           <a href="/ticket" class="side-menu__item">
@@ -99,6 +97,14 @@
              {% endif %}
           </a>
         </li>
+
+        <li class="slide enable_stream" >
+          <a href="/stream" class="side-menu__item">
+            <i class="bi bi-camera-reels side-menu__icon"></i>
+            <span class="side-menu__label">Стримы</span>
+          </a>
+        </li>
+
         {% endif %}
 
 

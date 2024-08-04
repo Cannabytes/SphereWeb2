@@ -236,6 +236,7 @@ class serverModel
             $serverStatus->setGameServer($sphere['gameServer']);
             $serverStatus->setOnline($sphere['online']);
             $serverStatus->licenseExpirationDate($sphere['licenseExpirationDate']);
+            $serverStatus->setDisabled(filter_var($sphere['isEnableStatus'], FILTER_VALIDATE_BOOLEAN));
             $serverStatus->save();
         }
         $this->serverStatus = $serverStatus;

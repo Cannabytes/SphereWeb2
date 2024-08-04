@@ -8,13 +8,14 @@ use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\userModel;
+use Ofey\Logan22\template\tpl;
 
 class server
 {
 
-    private static int $countRequest = 0;
-
     public static bool $showError = false;
+
+    private static int $countRequest = 0;
 
     private static ?string $token = null;
 
@@ -36,6 +37,8 @@ class server
     private static null|int|string $codeError = null;
 
     private static $installLink = null;
+
+    private static $showPageError = false;
 
     /**
      * Указываем аргументом которые отправятся запросом массив, для того чтоб указывать дополнительные данные, типо ID пользователя и т.д.
@@ -62,12 +65,12 @@ class server
         self::$user = $user;
     }
 
+    // Отключение отправки токена.
+
     public static function isError(): false|string
     {
         return self::$error;
     }
-
-    // Отключение отправки токена.
 
     public static function setShowError(bool $showError): void
     {
@@ -140,7 +143,7 @@ class server
         curl_setopt($ch, CURLOPT_POST, true); // Указываем, что это POST запрос
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json); // Передаем JSON данные
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Возвращаем результат в переменную
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 2);
         curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
         self::$countRequest++;
         $response = curl_exec($ch);
@@ -151,6 +154,7 @@ class server
 
             return $instance;
         }
+
         if (curl_errno($ch)) {
             sql::sql("DELETE FROM `server_cache` WHERE `type` = 'sphereServer'");
             sql::sql("INSERT INTO `server_cache` (`server_id`, `type`, `data`, `date_create`) VALUES (0, ?, ?, ?)", [
@@ -163,6 +167,7 @@ class server
             return $instance;
         }
         curl_close($ch);
+
         $response           = json_decode($response, true) ?? false;
         $instance->response = $response;
         if ($response === false) {
@@ -234,6 +239,11 @@ class server
         self::$server_id = $server_id;
     }
 
+    public static function getCountRequest(): int
+    {
+        return self::$countRequest;
+    }
+
     public function show($showError = true): self
     {
         if ($showError and self::$error !== false) {
@@ -243,13 +253,18 @@ class server
         return $this;
     }
 
+    public function showErrorPageIsOffline($showPageError = true): self
+    {
+        if (self::$isOfflineServer) {
+            tpl::display("/error/offlineSphereApi.html");
+            exit;
+        }
+        return $this;
+    }
+
     public function getResponse(): array|bool|null
     {
         return $this->response;
-    }
-
-    public static function getCountRequest(): int {
-        return self::$countRequest;
     }
 
 }

@@ -68,6 +68,9 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
 }
 
 $route->set404(function () {
+    if ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        \Ofey\Logan22\component\alert\board::error("Запрос отправлен на неизвестный адрес");
+    }
     \Ofey\Logan22\component\redirect::location("/main");
 });
 $route->run();

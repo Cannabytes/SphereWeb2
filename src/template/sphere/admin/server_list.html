@@ -4,6 +4,8 @@
 
 {% block content %}
 
+
+
 <div class="container-fluid">
   <div class="row">
     <div class="col-xl-12">
@@ -13,29 +15,19 @@
             {{ phrase('my_servers') }}
           </div>
 
-          {% if sphereAPIError == false %}
           <div class="prism-toggle">
             <a href="/admin/server/add/new" class="btn btn-sm btn-success">{{phrase('add_server')}}</a>
           </div>
-          {% endif %}
 
         </div>
         <div class="card-body d-flex align-items-start">
           <div class="col-md-2">
-
-            {% if sphereAPIError %}
-            <div class="alert alert-danger" role="alert">
-              {{phrase('sphere_api_connection_error')}}
-            </div>
-            {% endif %}
-
             <div class="nav flex-column nav-pills me-3 tab-style-7" id="v-pills-tab" role="tablist"
                  aria-orientation="vertical">
-
               {% if serverInfo %}
-              {% set active = false %}
+                  {% set active = false %}
               {% else %}
-              {% set active = true %}
+                  {% set active = true %}
               {% endif %}
 
               {% for i, server in sphereServers %}
@@ -71,6 +63,7 @@
               {% endif %}
 
               {% for i, server in sphereServers %}
+
               {% set serverName = server.getName()  %}
 
 
@@ -91,10 +84,16 @@
                       <span class="fs-5 text-danger">Данный сервер не зарегистрирован в Sphere API. Он не используемый. Можете его удалить.</span>
                       {% endif %}
 
+                      {% if server.getStatus().isDisabled() %}
+                      <span class="fs-12 text-danger">
+                        Сервер был отключен из-за отсутствия соединения с БД сервера.
+                        <br>
+                        Можете его удалить или переподключить, указав актуальные данные базы данных сервера.</span>
+                      {% endif %}
 
                       <h5 class="font-weight-semibold ms-0 mb-1 pb-0">{{serverName}}</h5>
 
-                      <p class="text-danger ms-0 mb-2"><span class="font-weight-semibold me-2">Server ID:</span><span> {{server.getId()}}</span>
+                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">Server ID:</span><span> {{server.getId()}}</span>
 
                       <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">Rate Exp:</span><span> x{{server.getRateExp()}}</span>
                       </p>
@@ -615,6 +614,7 @@
   {% endif %}
 
 </div>
+
 
 {% endblock %}
 

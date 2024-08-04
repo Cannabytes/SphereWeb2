@@ -1,0 +1,28 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="col-xl-6 col-md-6">
+    <div class="card ribbone-card  sold-out">
+      <div class="ribbone ribbone-top-right text-danger"><span class="bg-danger">Oooooops...</span></div>
+      <div class="card-body  p-6">
+        <h6 class="card-subtitle mb-2 text-dark fw-bold">{{ SphereApiError() }}</h6>
+        <p class="card-text">Сервер Sphere Api недоступен.</p>
+        Возможные причины:
+        <ul>
+          <li>Обновление программного обеспечения, тогда заработает через 5-10 секунд.</li>
+          <li>Нет доступа к серверу, указанный в настройках IP API сервера неверный.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

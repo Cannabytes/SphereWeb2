@@ -50,9 +50,9 @@ class donate
 
     public array $tableListOfItemsForDiscount = [];
 
-    public int $item_id_to_game_transfer = 0;
+    public int $item_id_to_game_transfer = 4037;
 
-    public int $count_items_to_game_transfer = 0;
+    public int $count_items_to_game_transfer = 1;
 
     /**
      * @var donateSystem[]|array
@@ -66,14 +66,14 @@ class donate
         ]);
         if ($configData) {
             $setting                                                           = json_decode($configData['setting'], true);
-            $this->paySystemDefault                                            = $setting['paySystemDefault'];
-            $this->minSummaPaySphereCoin                                       = $setting['minSummaPaySphereCoin'];
-            $this->maxSummaPaySphereCoin                                       = $setting['maxSummaPaySphereCoin'];
-            $this->sphereCoinCost                                              = $setting['sphereCoinCost'];
+            $this->paySystemDefault                                            = $setting['paySystemDefault'] ?? "freekassa";
+            $this->minSummaPaySphereCoin                                       = $setting['minSummaPaySphereCoin'] ?? 1;
+            $this->maxSummaPaySphereCoin                                       = $setting['maxSummaPaySphereCoin'] ?? 999999;
+            $this->sphereCoinCost                                              = $setting['sphereCoinCost'] ?? 1;
             $this->ratioUSD                                                    = 1;
-            $this->ratioEUR                                                    = $setting['ratioEUR'];
-            $this->ratioUAH                                                    = $setting['ratioUAH'];
-            $this->ratioRUB                                                    = $setting['ratioRUB'];
+            $this->ratioEUR                                                    = (int)$setting['ratioEUR'] ?? 1.09;
+            $this->ratioUAH                                                    = (int)$setting['ratioUAH'] ?? 40.54;
+            $this->ratioRUB                                                    = (int)$setting['ratioRUB'] ?? 90.44;
             $this->enableCumulativeDiscountSystem                              = filter_var(
               $setting['enableCumulativeDiscountSystem'],
               FILTER_VALIDATE_BOOLEAN
