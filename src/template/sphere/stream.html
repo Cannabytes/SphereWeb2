@@ -7,7 +7,7 @@
 
   <div class="row">
 
-
+    {% if getUser().isAuth() %}
     <div class="col-xl-12">
       <div class="card custom-card">
 
@@ -47,6 +47,7 @@
 
       </div>
     </div>
+    {% endif %}
 
     {% for stream in streams() %}
 
@@ -102,8 +103,9 @@
 {% endblock %}
 
 {% block js %}
-<script>
 
+{% if getUser().isAuth() %}
+<script>
   $("#delete_stream").on("click", function () {
     let id = $(this).data("object-id");
     AjaxSend("/stream/delete", "POST", {}, true).then(function (response) {
@@ -131,4 +133,6 @@
     });
   })
 </script>
+{% endif %}
+
 {% endblock %}
