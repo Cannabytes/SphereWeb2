@@ -484,7 +484,7 @@ class donate
             foreach ($shopItems as $item) {
                 $arrObjectItems[] = [
                   'objectID' => $item->getId(),
-                  'count'    => $item->getCount(),
+                  'count'    => $item->getCount() * $quantity,
                   'enchant'  => $item->getEnchant(),
                   'itemId'   => $item->getItemId(),
                 ];

@@ -223,7 +223,7 @@
       let account = $('#playerName').find('option:selected').data('account');
       console.log(account);
 
-      let quantity = parseInt($('#quantity').val()) || 1;
+      let quantity = parseInt($('#quantityModal').val()) || 1;
       AjaxSend('/shop/purchase', 'POST', {
         shopId: objectId,
         playerName: playerName,

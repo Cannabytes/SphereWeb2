@@ -11,9 +11,9 @@ class shop
 {
     private string $id;
 
-    public function getId(): string
+    public function getId(): int
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     public function setId(string $id): shop
