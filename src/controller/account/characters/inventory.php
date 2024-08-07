@@ -87,7 +87,8 @@ class inventory
         $coins   = $_POST['coin'] ?? board::error("Не переданы монеты");
 
         if (!filter_var($coins, FILTER_VALIDATE_INT) ) {
-            echo "Введите целое число";
+            board::error("Введите целое число.");
+            return;
         }
 
         /**
