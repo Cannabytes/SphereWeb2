@@ -71,9 +71,9 @@ class donate
             $this->maxSummaPaySphereCoin                                       = $setting['maxSummaPaySphereCoin'] ?? 999999;
             $this->sphereCoinCost                                              = $setting['sphereCoinCost'] ?? 1;
             $this->ratioUSD                                                    = 1;
-            $this->ratioEUR                                                    = (int)$setting['ratioEUR'] ?? 1.09;
-            $this->ratioUAH                                                    = (int)$setting['ratioUAH'] ?? 40.54;
-            $this->ratioRUB                                                    = (int)$setting['ratioRUB'] ?? 90.44;
+            $this->ratioEUR                                                    = (float)$setting['ratioEUR'] ?? 1.09;
+            $this->ratioUAH                                                    = (float)$setting['ratioUAH'] ?? 40.54;
+            $this->ratioRUB                                                    = (float)$setting['ratioRUB'] ?? 90.44;
             $this->enableCumulativeDiscountSystem                              = filter_var(
               $setting['enableCumulativeDiscountSystem'],
               FILTER_VALIDATE_BOOLEAN
