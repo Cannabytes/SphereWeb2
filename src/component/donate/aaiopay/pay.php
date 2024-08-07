@@ -71,7 +71,7 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
           'sign'        => $sign,
           'currency'    => $this->currency_default,
           'desc'        => 'Описание вашего заказа',
-          'email'       => auth::get_email(),
+          'email'       => user::self()->getEmail(),
         ];
         $url    = "https://aaio.so/merchant/pay?" . http_build_query($params);
         echo $url;
