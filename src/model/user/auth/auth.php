@@ -210,79 +210,6 @@ class auth
         self::$password = $password;
     }
 
-    public static function user_auth(): void
-    {
-        if (isset($_SESSION['password'])) {
-            $auth = self::exist_user($_SESSION['email']);
-            if ($auth) {
-                if (password_verify($_SESSION['password'], $auth['password'])) {
-                    self::set_is_auth(true);
-                    self::set_id($auth['id']);
-                    self::set_email($auth['email']);
-                    self::set_password($auth['password']);
-                    self::set_name($auth['name'] ?: "");
-                    self::set_signature($auth['signature']);
-                    self::set_ip_registration($auth['ip']);
-                    self::set_ip($_SERVER['REMOTE_ADDR']);
-                    self::set_date_create($auth['date_create'] ?: date("Y-m-d H:i:s"));
-                    self::set_date_update($auth['date_update']);
-                    self::set_access_level($auth['access_level']);
-                    self::set_donate_point($auth['donate_point']);
-                    self::set_avatar($auth['avatar']);
-                    self::set_avatar_background($auth['avatar_background']);
-                    self::set_timezone($auth['timezone'] ?? DEFAULT_TIMEZONE);
-                    //ban func
-                    self::set_ban_page($auth['ban_page']);
-                    self::set_ban_ticket($auth['ban_ticket']);
-                    self::set_ban_gallery($auth['ban_gallery']);
-
-                    self::setBonus();
-
-                    self::set_user_variables();
-
-                    if ($auth['access_level'] == "admin") {
-                        if (IS_ADMIN_CONFIRMATION_CODE) {
-                            if ( ! isset($_SESSION['admin_code']) || ! in_array($_SESSION['admin_code'], ADMIN_CODES_AUTH)) {
-                                if (isset($_POST)) {
-                                    $route = new Route();
-                                    $route->get("(.*)", function () {});
-                                    $route->post("/auth/admin/code", 'Ofey\Logan22\controller\user\auth\auth::auth_admin_code');
-                                    $route->run();
-                                }
-                                tpl::display("admin/auth/auth_code.html");
-                            }
-                        }
-                    }
-
-                    return;
-                }
-            } else {
-                session::clear();
-            }
-        }
-        self::set_is_auth(false);
-        self::set_id(0);
-        self::set_email("");
-        self::set_password("");
-        self::set_name("");
-        self::set_signature("");
-        self::set_ip_registration("");
-        self::set_ip($_SERVER['REMOTE_ADDR']);
-        self::set_date_create("");
-        self::set_date_update("");
-        self::set_access_level("guest");
-        self::set_donate_point(0);
-        self::set_avatar("none.jpeg");
-        self::set_avatar_background("none.jpeg");
-        self::set_timezone(DEFAULT_TIMEZONE);
-
-        self::set_ban_page(true);
-        self::set_ban_ticket(true);
-        self::set_ban_gallery(true);
-
-        self::set_user_variables();
-    }
-
     public static function exist_user($email, $nCheck = true)
     {
         if (self::$userInfo != null) {
@@ -481,11 +408,9 @@ class auth
             board::notice(false, lang::get_phrase(164));
         }
         if (password_verify($password, $user_info['password'])) {
-            self::log_add_user_auth();
             session::add('id', $user_info['id']);
             session::add('email', $email);
             session::add('password', $password);
-            \Ofey\Logan22\model\user\user::self()->addLog(logTypes::LOG_LOGIN, 'LOG_LOGIN' );
             board::response("notice", ["message" => lang::get_phrase(165), "ok" => true, "redirect" => fileSys::localdir("/main")]);
         }
         board::response(
@@ -493,8 +418,6 @@ class auth
           ["message" => lang::get_phrase(166), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]
         );
     }
-
-    //Зачисление пользователю денег
 
     public static function log_add_user_auth()
     {
