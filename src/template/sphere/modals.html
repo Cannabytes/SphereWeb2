@@ -136,12 +136,31 @@
 
 <script>
   $(document).ready(function() {
+    const maxValue = {{getUser().getDonate()}};
     $('#muchSphereCoin').on('keypress keydown input', function(event) {
       const key = event.which || event.keyCode;
-      if ( (key < 48 || key > 57) && key !== 8 &&   key !== 46 &&  (key < 37 || key > 40)   ) { event.preventDefault(); }
+      if (
+        (key < 48 || key > 57) &&
+        (key < 96 || key > 105) &&
+        key !== 8 &&
+        (key < 37 || key > 40)
+      ) {
+        event.preventDefault();
+      }
+      let currentValue = parseInt($(this).val());
+
+      if (currentValue > maxValue) {
+        currentValue = Math.floor(maxValue);
+        $(this).val(currentValue);
+      } else {
+        $(this).val(Math.floor(currentValue));
+      }
     });
   });
 </script>
+
+
+
 {% endif %}
 
 <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModal" aria-hidden="true">
@@ -214,15 +233,24 @@
 
 <script>
   function recalculateSphereCoinValue() {
+    const maxValue = {{getUser().getDonate()}};
     let muchSphereCoinVal = parseFloat($('#muchSphereCoin').val());
     let itemCountGameTransferCount = parseFloat($('#itemCountGameTransfer').data('count-items'));
     if (!isNaN(muchSphereCoinVal) && !isNaN(itemCountGameTransferCount)) {
-      $('#itemCountGameTransfer').text(muchSphereCoinVal * itemCountGameTransferCount);
+      let result = muchSphereCoinVal * itemCountGameTransferCount;
+      if (result > maxValue) {
+        result = maxValue;
+      }
+      $('#itemCountGameTransfer').text(Math.floor(result));
     }
   }
   $('#muchSphereCoin').on('input', recalculateSphereCoinValue);
   $(document).ready(recalculateSphereCoinValue);
 </script>
+
+
+
+
 
 {# Авторизация пользователя #}
 {% if getUser().isAuth() == false %}

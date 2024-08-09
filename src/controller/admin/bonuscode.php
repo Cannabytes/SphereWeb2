@@ -42,11 +42,6 @@ class bonuscode {
         WHERE server_id = ?";
         $codeTable = sql::getRows($sql, [user::self()->getServerId()]);
 
-        if (!is_array($codeTable)) {
-            $codeTable = [];
-            error_log("Error: codeTable is not an array in bonuscode.php");
-        }
-
         $sortedCodeTable = [];
         foreach($codeTable as $item) {
             if (!is_array($item) || !isset($item['code'])) {
