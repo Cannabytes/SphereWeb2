@@ -94,21 +94,23 @@ class logo
     public static function favicon()
     {
         if (isset($_FILES['filepond']) && $_FILES['filepond']['error'] == 0) {
-            $manager = ImageManager::gd();
-            $file    = $_FILES['filepond']['tmp_name'];
-            $image   = $manager->read($file);
 
-            $allowedMimeTypes = ['image/x-icon', 'image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+            $allowedMimeTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
             $fileMimeType     = mime_content_type($_FILES['filepond']['tmp_name']);
 
             // Проверка и просим пользователя загрузить изображение в формате ico, png, jpg, jpeg, webp
             if ( ! in_array($fileMimeType, $allowedMimeTypes)) {
                 echo json_encode([
                   'status'  => 'error',
-                  'message' => 'Файл должен быть в формате ico, png, jpg, jpeg, webp',
+                  'message' => 'Файл должен быть в формате png, jpg, jpeg, webp',
                 ]);
                 exit;
             }
+
+            $manager = ImageManager::gd();
+            $file    = $_FILES['filepond']['tmp_name'];
+            $image   = $manager->read($file);
+
             // Проверяем размер изображения и просим пользователя загрузить изображение не более 256x256
             if ($image->width() < 16 || $image->height() < 16) {
                 echo json_encode([
