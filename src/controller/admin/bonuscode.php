@@ -39,11 +39,7 @@ class bonuscode {
         server_id 
     FROM
         bonus_code 
-        WHERE server_id = ?
-    GROUP BY
-        start_date_code,
-        end_date_code,
-        item_id";
+        WHERE server_id = ?";
         $codeTable = sql::getRows($sql, [user::self()->getServerId()]);
 
         if (!is_array($codeTable)) {
