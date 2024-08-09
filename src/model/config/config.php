@@ -46,6 +46,8 @@ class config
 
     private ?menu $menu = null;
 
+    private ?background $background = null;
+
     /**
      * Сохранения конфигурации
      */
@@ -253,6 +255,14 @@ class config
             $this->menu = new menu();
         }
         return $this->menu;
+    }
+
+    public function background()
+    {
+        if ($this->background == null) {
+            $this->background = new background();
+        }
+        return $this->background;
     }
 
 }

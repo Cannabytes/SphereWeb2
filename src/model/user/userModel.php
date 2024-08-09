@@ -73,7 +73,6 @@ class userModel
           [$userId]
         );
         if ($user) {
-
             if ($user['server_id'] === null) {
                 $lastServer = server::getLastServer();
                 if ($lastServer !== null) {
@@ -94,8 +93,8 @@ class userModel
                 }
             }
 
-           if($_SESSION['id'] == $user['id']){
-               if (!password_verify($_SESSION['password'], $user['password'])) {
+            if ($_SESSION['id'] == $user['id']) {
+                if ( ! password_verify($_SESSION['password'], $user['password'])) {
                     var_dump("Пароли не совпали, удаляем сессию");
                     session::clear();
                     exit;
@@ -104,14 +103,13 @@ class userModel
 
             //TODO: Сделать разлогин, если пароль изменился
             //Нужно проверять  ещё isset, так как идет запрос из платежек сюда.
-//            if($_SESSION['id'] == $user['id']){
-//                if ($user['password'] != password_hash($user['password'], PASSWORD_BCRYPT)) {
-//                    $user['password'] = null;
-//                    session::clear();
-//                    return null;
-//                }
-//            }
-
+            //            if($_SESSION['id'] == $user['id']){
+            //                if ($user['password'] != password_hash($user['password'], PASSWORD_BCRYPT)) {
+            //                    $user['password'] = null;
+            //                    session::clear();
+            //                    return null;
+            //                }
+            //            }
 
             $this->setIsAuth(true);
             $this->id          = $user['id'];
@@ -267,7 +265,7 @@ class userModel
      *
      * @return array
      */
-    public function getLoadAccounts($reload = false): ?array
+    public function getLoadAccounts($need_reload = false): ?array
     {
         if ($this->getServerId() == null) {
             return null;
@@ -279,7 +277,7 @@ class userModel
             return $this->accounts;
         }
 
-        $accounts = sql::getRows(
+        $accounts    = sql::getRows(
           "SELECT `id`, `login`, `password`, `password_hide`, `email`, `ip`, `server_id`, `characters`, `date_update_characters` FROM `player_accounts` WHERE email = ? AND server_id = ?;",
           [
             $this->getEmail(),
@@ -288,6 +286,7 @@ class userModel
         );
         $currentTime = time();
         $needUpdate  = true;
+
         foreach ($accounts as $account) {
             if ($account['date_update_characters'] == null) {
                 $needUpdate = true;
@@ -298,6 +297,10 @@ class userModel
                 $needUpdate = false;
                 break;
             }
+        }
+
+        if ($need_reload) {
+            $needUpdate = true;
         }
 
         //Если обновление не требуется, выводим данные ранее сохраненные
@@ -323,8 +326,9 @@ class userModel
         }
 
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::ACCOUNT_PLAYERS, [
+          'forced' => $need_reload,
           'email' => $this->getEmail(),
-        ])->show((bool)$reload)->getResponse();
+        ])->show(false)->getResponse();
 
         if (isset($sphere['error']) or ! $sphere) {
             return [];
@@ -338,6 +342,7 @@ class userModel
             $this->account[] = $account;
         }
         $this->saveAccounts();
+
         return $this->account;
     }
 
@@ -423,7 +428,6 @@ class userModel
 
     function saveAccounts()
     {
-
         sql::run('DELETE FROM `player_accounts` WHERE `email` = ? AND `server_id` = ?;', [
           $this->getEmail(),
           $this->getServerId(),
@@ -479,13 +483,18 @@ class userModel
     /** Возвращает историю пожертвваний */
     public function getHistoryDonate($getPoint = false)
     {
-        if($getPoint){
-            $point = sql::getRow("SELECT SUM(donate_history_pay.point) AS `point` FROM donate_history_pay WHERE sphere = 0 AND user_id = ?;", [$this->getId()]);
-            if($point){
+        if ($getPoint) {
+            $point = sql::getRow(
+              "SELECT SUM(donate_history_pay.point) AS `point` FROM donate_history_pay WHERE sphere = 0 AND user_id = ?;",
+              [$this->getId()]
+            );
+            if ($point) {
                 return $point['point'];
             }
+
             return 0;
         }
+
         return sql::getRows("SELECT * FROM `donate_history_pay` WHERE user_id = ?", [$this->getId()]);
     }
 
@@ -851,10 +860,10 @@ class userModel
         return $allPlayerCount;
     }
 
-    public function addLog(logTypes $type, $phrase , $variables = []): void
+    public function addLog(logTypes $type, $phrase, $variables = []): void
     {
         $variables = json_encode($variables);
-        $request = $_REQUEST;
+        $request   = $_REQUEST;
 
         if (isset($_REQUEST['g-recaptcha-response'])) {
             $request['g-recaptcha-response'] = '_REMOVED_';
@@ -866,12 +875,12 @@ class userModel
             $request['password'] = '_REMOVED_';
         }
 
-        $request  = json_encode($_REQUEST);
-        $method    = $_SERVER['REQUEST_METHOD'];
-        $action    = $_SERVER['REQUEST_URI'];
-        $trace     = debug_backtrace()[0];
-        $file      = $trace['file'];
-        $line      = $trace['line'];
+        $request = json_encode($_REQUEST);
+        $method  = $_SERVER['REQUEST_METHOD'];
+        $action  = $_SERVER['REQUEST_URI'];
+        $trace   = debug_backtrace()[0];
+        $file    = $trace['file'];
+        $line    = $trace['line'];
         sql::run(
           "INSERT INTO `logs_all` (`user_id`, `time`, `type`, `phrase`, `variables`, `server_id`, `request`, `method`, `action`, `file`, `line`) VALUES
                         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -955,10 +964,10 @@ class userModel
         sql::transaction(function () use ($playerName, $objectItems, &$isSend) {
             foreach (user::self()->getWarehouse() as $warehouse) {
                 if (in_array($warehouse->getId(), $objectItems)) {
-                    $itemId           = $warehouse->getItemId();
-                    $count            = $warehouse->getCount();
-                    $enchant          = $warehouse->getEnchant();
-                    $serverId         = $warehouse->getServerId();
+                    $itemId   = $warehouse->getItemId();
+                    $count    = $warehouse->getCount();
+                    $enchant  = $warehouse->getEnchant();
+                    $serverId = $warehouse->getServerId();
                     userlog::add("inventory_to_game", 542, [$itemId, $count, $enchant, $playerName]);
                     $this->addToInventoryPlayer($serverId, $itemId, $count, $enchant, $playerName);
                     $this->removeWarehouseObjectId($warehouse->getId());
@@ -1059,7 +1068,8 @@ class userModel
     }
 
     //Добавление переменной
-    public function addVar(string $name, mixed $data, $server = null) {
+    public function addVar(string $name, mixed $data, $server = null)
+    {
         if ($server === null) {
             $server = $this->getServerId();
         }
@@ -1080,7 +1090,8 @@ class userModel
 
     // Получение переменной
     // Если $serverId null , тогда не обращаем внимание на сервер
-    public function getVar(string $name, $serverId = null) {
+    public function getVar(string $name, $serverId = null)
+    {
         if ($serverId !== null) {
             return sql::getRow('SELECT `val` FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?', [
               $serverId,
@@ -1088,6 +1099,7 @@ class userModel
               $name,
             ]);
         }
+
         return sql::getRow('SELECT `val` FROM `user_variables` WHERE `user_id` = ? AND `var` = ?', [
           $this->getId(),
           $name,
@@ -1134,13 +1146,14 @@ class userModel
 
     public function toArray(): array
     {
-        $obj = get_object_vars($this);
-        $obj['avatar'] = $this->getAvatar();
+        $obj             = get_object_vars($this);
+        $obj['avatar']   = $this->getAvatar();
         $obj['timezone'] = $this->getTimezone();
-        $obj['country'] = $this->getCountry();
-        $obj['city'] = $this->getCity();
+        $obj['country']  = $this->getCountry();
+        $obj['city']     = $this->getCity();
         $obj['serverId'] = $this->getServerId();
-        $obj['lang'] = $this->getLang();
+        $obj['lang']     = $this->getLang();
+
         return $obj;
     }
 

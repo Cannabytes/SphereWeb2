@@ -67,6 +67,10 @@
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
                  href="#addMenu" aria-selected="true">Меню</a>
             </li>
+            <li class="nav-item m-1">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#background" aria-selected="true">Фон</a>
+            </li>
           </ul>
         </div>
         <div class="card-body">
@@ -1485,7 +1489,6 @@
               </div>
 
             </div>
-
             <div class="tab-pane p-0" id="email" role="tabpanel">
               <div class="card-body">
 
@@ -1569,8 +1572,6 @@
                 <span id="saveEmail" class="btn btn-success-light m-1 btn-sm">Сохранить<i class="bi bi-sd-card ms-2"></i></span>
               </div>
             </div>
-
-
             <div class="tab-pane p-0" id="cache" role="tabpanel">
               <div class="card-body">
                 Указывайте в секундах время кэширования данных
@@ -2143,7 +2144,6 @@
                   class="bi bi-sd-card ms-2"></i></span>
               </div>
             </div>
-
             <div class="tab-pane p-0" id="addMenu" role="tabpanel">
               <div class="card-body " id="menuItems">
 
@@ -2160,7 +2160,7 @@
                   </div>
 
                 <div class="col-12 mt-3">
-                  <button type="button" id="addItemMenu" class="btn btn-success mt-3">Добавить</button>
+                  <button type="button" class="btn btn-success mt-3 addItemMenu">Добавить</button>
                 </div>
 
                 {% for menu in config().menu().get() %}
@@ -2203,7 +2203,50 @@
                   class="bi bi-sd-card ms-2"></i></span>
               </div>
             </div>
+            <div class="tab-pane p-0" id="background" role="tabpanel">
+              <div class="card-body" >
 
+                <div class="row">
+
+                  <div class="col-lg-4 col-md-4 col-sm-12 col-xxl-4">
+                    <div class="card overflow-hidden">
+                      <div class="card-body">
+                        <br> Изображение для фона страницы авторизации
+                        <input type="file" class="single-fileupload1 background_img" name="filepond" data-type="login"
+                               data-max-file-size="3MB" data-max-files="1">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-4 col-md-4 col-sm-12 col-xxl-4">
+                    <div class="card overflow-hidden">
+                      <div class="card-body">
+                        <br> Изображение для фона страницы регистрации
+                        <input type="file" class="single-fileupload1 background_img" name="filepond" data-type="registration"
+                               data-max-file-size="3MB" data-max-files="1">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-4 col-md-4 col-sm-12 col-xxl-4">
+                    <div class="card overflow-hidden">
+                      <div class="card-body">
+                        <br> Изображение для фона страницы восстановления пароля
+                        <input type="file" class="single-fileupload1 background_img" name="filepond" data-type="forget"
+                               data-max-file-size="3MB" data-max-files="1">
+                      </div>
+                    </div>
+                  </div>
+
+
+                </div>
+
+              </div>
+              <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
+                <span id="saveBackground" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                  class="bi bi-sd-card ms-2"></i></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2934,6 +2977,89 @@
 <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
 <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
 
+{# Загрузка бекграундов #}
+<script>
+  // Register the plugins
+  FilePond.registerPlugin(
+    FilePondPluginImagePreview,
+  );
+
+  // Set up FilePond instance
+  document.querySelectorAll('.background_img').forEach(inputElement => {
+    const pond = FilePond.create(inputElement, {
+      labelIdle: `Drag & Drop your picture or <span class="filepond--label-action">Browse</span>`,
+      imagePreviewHeight: 200,
+      imageCropAspectRatio: '2:1',
+      imageResizeTargetWidth: 400,
+      imageResizeTargetHeight: 200,
+      allowPaste: false,
+      stylePanelLayout: 'compact',
+      styleLoadIndicatorPosition: 'center bottom',
+      styleButtonRemoveItemPosition: 'center bottom',
+    });
+
+    const dataType = inputElement.getAttribute('data-type');
+
+    pond.setOptions({
+      server: {
+        process: (fieldName, file, metadata, load, error, progress, abort) => {
+          // Create a new FormData object
+          const formData = new FormData();
+          formData.append(fieldName, file, file.name);
+          // Добавить к formData тип файла
+          formData.append('type', dataType);
+
+          // Use jQuery AJAX to send the file
+          $.ajax({
+            url: "/admin/setting/background/save", // Use the dynamic URL
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            xhr: function () {
+              var myXhr = $.ajaxSettings.xhr();
+              if (myXhr.upload) {
+                myXhr.upload.addEventListener('progress', function (e) {
+                  if (e.lengthComputable) {
+                    progress(e.lengthComputable, e.loaded, e.total);
+                  }
+                }, false);
+              }
+              return myXhr;
+            },
+            success: function (response) {
+              if (response.status === 'error') {
+                noticeError(response.message);
+                error('oh no');
+              }
+              load(response);
+              if (response.status === 'success') {
+                if (dataType === 'logo') {
+                  $('.desktop-logo').attr('src', response.path);
+                }
+              }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              error('oh no');
+            },
+          });
+
+          // Return abort function
+          return {
+            abort: () => {
+              abort();
+            },
+          };
+        },
+      },
+    });
+  });
+
+
+</script>
+
+{# Загрузка лого #}
 <script>
   // Register the plugins
   FilePond.registerPlugin(
@@ -3107,7 +3233,7 @@
     return itemHtml;
   }
 
-  $("#addItemMenu").click(function() {
+  $(".addItemMenu").click(function() {
     $("#menuItems").append(createMenuItem());
   });
 

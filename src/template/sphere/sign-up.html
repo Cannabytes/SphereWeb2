@@ -45,7 +45,9 @@
 </div>
 <!-- Loader -->
 
-<div class="autentication-bg">
+<div {% if config().background().registration() %}
+     style="background-image: url('{{config().background().registration()}}'); background-size: cover; background-repeat: no-repeat; background-position: center center;"
+     {% else %}class="autentication-bg"{% endif %}>
   <div class="container-lg">
     <div class="row justify-content-center authentication authentication-basic align-items-center h-100">
       <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12">

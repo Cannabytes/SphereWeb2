@@ -243,7 +243,7 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#StartpackSendItemsToWarhouse" aria-selected="true">{{phrase('send_to_wh')}}</a>
+                 href="#StartpackSendItemsToWarehouse" aria-selected="true">{{phrase('send_to_wh')}}</a>
             </li>
           </ul>
         </div>
@@ -312,7 +312,7 @@
                   </div>
                 </div>
 
-                <div class="tab-pane text-muted" id="StartpackSendItemsToWarhouse"
+                <div class="tab-pane text-muted" id="StartpackSendItemsToWarehouse"
                      role="tabpanel">
                   <div class="card-body">
 
@@ -376,19 +376,21 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h6 class="modal-title" id="syncAccountLabel">Привязка аккаунта к профилю</h6>
+        <h6 class="modal-title" id="syncAccountLabel">{{phrase('link_account_to_profile')}}</h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body px-4">
         <div class="row">
 
+          {{phrase(556)|raw}}
+
           <div class="col-xl-6 mb-2">
-            <label for="syncLogin" class="form-label text-dark fw-semibold">Аккаунт</label>
+            <label for="syncLogin" class="form-label text-dark fw-semibold">{{ phrase('account') }}</label>
             <input type="text" class="form-control" id="syncLogin" autocomplete="off">
           </div>
 
           <div class="col-xl-6 mb-2">
-            <label for="syncPassword" class="form-label text-dark fw-semibold">Пароль</label>
+            <label for="syncPassword" class="form-label text-dark fw-semibold">{{ phrase('password') }}</label>
             <input type="password" name="syncPassword" class="form-control" id="syncPassword" autocomplete="new-password">
           </div>
 
@@ -396,8 +398,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-light"
-                data-bs-dismiss="modal">Закрыть</button>
-        <button id="syncUserAccount" type="button" class="btn btn-primary">Привязать</button>
+                data-bs-dismiss="modal">{{ phrase('close') }}</button>
+        <button id="syncUserAccount" type="button" class="btn btn-primary">{{ phrase(438) }}</button>
       </div>
     </div>
   </div>
@@ -411,7 +413,7 @@
     }, true).then(function (response) {
       if(response.ok == true) {
         $("#syncAccount").modal("hide");
-        noticeSuccess("Аккаунт успешно привязан к профилю!");
+        noticeSuccess("{{phrase('account_linked_success')}}");
         location.reload();
       }else{
         noticeError(response.message)

@@ -238,7 +238,9 @@
                     <div class="card-body">
                       {% if getUser().isAuth() %}
                       <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm ">
-                        {{ phrase(43) }}
+                        {{ phrase(43) }} <span data-bs-toggle="modal" data-bs-target="#syncAccount" >
+                          <i role="button" class="bi bi-person-plus text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}"></i>
+                        </span>
                       </div>
                       {% if statusSphereServer() is same as(false) %}
                       <div class="alert alert-danger alert-dismissible fade show" role="alert">

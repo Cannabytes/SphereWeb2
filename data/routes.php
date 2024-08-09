@@ -901,13 +901,14 @@ return array (
   ),
   66 => 
   array (
-    'enable' => 1,
-    'method' => 'GET',
+    'enable' => true,
+    'method' => 'POST',
     'pattern' => '/account/synchronization',
     'func' => 'controller\\account\\comparison\\comparison::synchronization',
     'access' => 
     array (
       0 => 'admin',
+      1 => 'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -1792,5 +1793,19 @@ return array (
     'weight' => 0,
     'page' => '',
     'comment' => 'Полное удаление информации о стриме',
+  ),
+  126 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/setting/background/save',
+    'func' => 'controller\\save\\background\\background::save',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
   ),
 );

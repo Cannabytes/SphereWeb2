@@ -640,6 +640,12 @@ return [
 	'581' => 'Настройки сохранены',
 	'5451' => 'Выдал +%s SphereCoin на %s (%s)',
 	'5461' => 'Накопительный бонус за пожертвование: +%s',
+	'found_issue_server_build_missing_idea_contact_sphere_chat' => 'Обнаружили баг, недоработку, проблему?<br>
+Вашей сборки сервера нет в списке при добавлении?<br>
+Если у Вас есть хорошая идея для расширения функционала.<br>
+Вы всегда можете написать <a class=\'text-info\' href=\'https://t.me/shpereweb\' target=\'_blank\'>телеграмм чатик проекта Sphere</a>.',
+	'found_bug_question' => 'Нашел баг?',
+	'account_linked_success' => 'Аккаунт успешно привязан к профилю',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Доступ запрещен',
 	'account' => 'Аккаунт',
@@ -903,6 +909,7 @@ return [
 	'leader_bonus' => 'Бонус для лидера',
 	'library' => 'Библиотека',
 	'link' => 'Ссылка',
+	'link_account_to_profile' => 'Привязка аккаунта к профилю',
 	'list_code' => 'Список сгенерированных Бонус кодов',
 	'LOG_ADD_DONATE_ITEM_BONUS' => 'Пользователь добавил бонус %s | ID: %d Count',
 	'log_bonus_donate' => 'Получил +%d ID: %d (%d) бонусом за донат',
@@ -1127,6 +1134,7 @@ return [
 	'stuck_crit_err' => 'Застрял или критует',
 	'submitting_an_item' => 'Отправка предмета',
 	'summa' => 'Сумма',
+	'sync_accounts_question_missing_account' => 'Синхронизация аккаунтов. У Вас есть аккаунт, которого нет в списке Ваших аккаунтов?',
 	'tab' => 'вкладку',
 	'technical support' => 'Техническая поддержка',
 	'technical support_desc_1' => 'Если Вы столкнулись с проблемой, и Вам необходима помощь, есть несколько путей.',

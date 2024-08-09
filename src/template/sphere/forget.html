@@ -38,7 +38,9 @@
 
 {% include 'notice_toast.html' %}
 
-<div class="autentication-bg">
+<div {% if config().background().forget() %}
+     style="background-image: url('{{config().background().forget()}}'); background-size: cover; background-repeat: no-repeat; background-position: center center;"
+     {% else %}class="autentication-bg"{% endif %}>
 
     <div class="container-lg">
         <div class="row justify-content-center authentication authentication-basic align-items-center h-100">
