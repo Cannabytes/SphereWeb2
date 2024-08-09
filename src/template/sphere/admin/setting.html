@@ -117,17 +117,19 @@
             </div>
             <div class="tab-pane" id="donateSystem"
                  role="tabpanel">
+
               <div class="row">
                 <div class="col-xl-6">
                   <div class="card custom-card shadow-none mb-0 border">
                     <div class="card-body">
 
-                      <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+
                         <div>
                           <p class="fs-14 mb-1 fw-semibold">{{ phrase('default_payment_system') }}</p>
                           <p class="fs-12 text-muted mb-0">{{ phrase('default_payment_system_for_users') }}</p>
                         </div>
-                        <div class="custom-toggle-switch ms-sm-2 ms-0">
+
+                        <div class="custom-toggle-switch ms-0">
                           <select class="form-control" data-trigger="" name="paySystemDefault" id="paySystemDefault">
                             {% for donate in donateSysNames %}
                             <option {% if config().donate().getPaySystemDefault()== donate.name %}selected{% endif %}
@@ -136,7 +138,10 @@
                             {% endfor %}
                           </select>
                         </div>
-                      </div>
+
+
+
+
 
                       <hr>
                       <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
@@ -480,12 +485,7 @@
                   </div>
                 </div>
 
-
-
-
                 <div class="col-xl-6">
-
-
 
                   <div class="card custom-card shadow-none mb-4 border">
                     <div class="card-header">
@@ -519,10 +519,6 @@
 
                     </div>
                   </div>
-
-
-
-
 
                   <div id="bonus_Item_donation"
                        class="card custom-card shadow-none mb-4 border">
@@ -762,6 +758,7 @@
                   </div>
                 </div>
               </div>
+
             </div>
             <div class="tab-pane p-0" id="referralSystem" role="tabpanel">
               <ul class="list-group list-group-flush rounded">
