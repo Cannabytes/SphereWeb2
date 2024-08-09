@@ -537,7 +537,7 @@ class userModel
     }
 
     /**
-     * @return mixed
+     * @return warehouse[]
      */
     public function getWarehouse($reload = false): mixed
     {

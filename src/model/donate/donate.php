@@ -329,7 +329,7 @@ class donate
                 if ( ! $items['items']) {
                     continue;
                 }
-                $objectID = $items['id'];
+                $objectID = (int)$items['id'];
                 $serverId = $items['serverId'];
                 foreach ($items['items'] as $item) {
                     $shopObj = new shop();
