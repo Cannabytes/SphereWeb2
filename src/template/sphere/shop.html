@@ -15,10 +15,11 @@
         {% for objectId, products in getShopItems() %}
         <div class="card-body" data-base-count="{{product.getCount()}}">
           <div class="table-responsive">
-            <table class="table table-sm table-bordered text-nowrap">
+            <table class="table table-sm table-bordered ">
               <thead>
               <tr>
-                <th scope="col">{{phrase('product')}}</th>
+                <th scope="col" style="width: 30%">{{phrase('product')}}</th>
+                <th scope="col"  style="width: 60%"></th>
                 <th scope="col">{{phrase('price')}}</th>
               </tr>
               </thead>
@@ -46,6 +47,9 @@
                       </div>
                     </div>
                   </div>
+                </td>
+                <td>
+                  {{product.getItemInfo().getDescription()}}
                 </td>
                 <td data-base-price="{{product.getCost()}}">
                   <div class="fw-semibold fs-14">
