@@ -15,8 +15,8 @@
           <div class="row g-3">
 
             <div class="col-sm-4">
-              <h6 class="fw-semibold mb-0">Вы стримите свою игру на нашем сервере?</h6>
-              <p class=" text-muted">Добавляйте ссылку на свой канал!</p>
+              <h6 class="fw-semibold mb-0">{{phrase('streaming_game_on_our_server')}}</h6>
+              <p class=" text-muted">{{phrase('add_channel_link')}}</p>
             </div>
 
             <div class="col-sm">
@@ -27,7 +27,7 @@
 
             {% if my_stream %}
             <div class="col-auto">
-              <button id="start_stream_again" type="submit" class="btn btn-primary">Я запустил новый стрим</button>
+              <button id="start_stream_again" type="submit" class="btn btn-primary">{{phrase('started_new_stream')}}</button>
             </div>
             {% else %}
             <div class="col-auto">
@@ -74,7 +74,7 @@
 
                 <div class="lh-1 me-2">
                   <p class="mb-1 fw-semibold fs-14"><a href="/stream/{{getUser(stream.user_id).getName()}}">{{stream.data.username}}
-                    {% if stream.is_live %}<span class="badge bg-danger-transparent">Прямая трансляция</span>{% endif %}</a>
+                    {% if stream.is_live %}<span class="badge bg-danger-transparent">{{phrase('live_stream')}}</span>{% endif %}</a>
                   </p>
                   <div class="mb-0 ">
                   <span class="text-muted"><i class="ri-double-quotes-l"></i><a

@@ -69,7 +69,7 @@
           {% else %}
 
           <div class="col-xl-6 mb-2">
-            <label for="send_player_name" class="form-label">Игрок</label>
+            <label for="send_player_name" class="form-label">{{ phrase('player') }}</label>
             <select {% if getUser().getCountPlayers()== 0 %}disabled{% endif %} class="form-control" data-trigger
                     name="player" id="send_player_name">
               {% if getUser().getCountPlayers() == 0 %}

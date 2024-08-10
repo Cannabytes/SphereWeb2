@@ -26,7 +26,7 @@
 
             <div class="lh-1 me-2">
               <p class="mb-1 fw-semibold fs-14"> {{stream.data.username}}
-                {% if stream.is_live %}<span class="badge bg-danger-transparent">Прямая трансляция</span>{% endif %}
+                {% if stream.is_live %}<span class="badge bg-danger-transparent">{{phrase('live_stream')}}</span>{% endif %}
               </p>
               <div class="mb-0 ">
                   <span class="text-muted"><i class="ri-double-quotes-l"></i>  {{stream.data.title}}  <i

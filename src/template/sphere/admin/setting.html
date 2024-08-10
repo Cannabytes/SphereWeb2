@@ -65,11 +65,11 @@
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#addMenu" aria-selected="true">Меню</a>
+                 href="#addMenu" aria-selected="true">{{ phrase('menu') }}</a>
             </li>
             <li class="nav-item m-1">
               <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#background" aria-selected="true">Фон</a>
+                 href="#background" aria-selected="true">{{phrase('background')}}</a>
             </li>
           </ul>
         </div>
@@ -765,21 +765,21 @@
                 <li class="list-group-item text-center">
                   <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
                     <div class="">
-                      <span class="fs-6 mb-0 badge bg-primary text-wrap">Требования для завершения реферальной системы привлеченному игроку</span>
+                      <span class="fs-6 mb-0 badge bg-primary text-wrap">{{phrase('referral_system_completion_requirements')}}</span>
                     </div>
                   </div>
                 </li>
                 <li class="list-group-item">
                   <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
                     <div class="col-xl-6">
-                      <span class="fs-14 mb-0">Минимальное время проведенное в игре</span>
+                      <span class="fs-14 mb-0">{{phrase('minimum_time_in_game')}}</span>
                     </div>
                     <div class="col-xl-2">
                       <div class="form-floating mb-3">
                         <input value="{{config().referral().getTimeGame()}}" type="number" step="60"
                                class="form-control"
                                id="game_time_referral" placeholder="3600">
-                        <label for="game_time_referral">Секунды</label>
+                        <label for="game_time_referral">{{ phrase('seconds') }}</label>
                       </div>
                     </div>
                   </div>
@@ -787,13 +787,13 @@
                 <li class="list-group-item">
                   <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
                     <div class="col-xl-6">
-                      <span class="fs-14 mb-0">Минимальный уровень :</span>
+                      <span class="fs-14 mb-0">{{phrase('minimum_level')}} :</span>
                     </div>
                     <div class="col-xl-2">
                       <div class="form-floating mb-3">
                         <input value="{{config().referral().getLevel()}}" type="number" step="1" class="form-control"
                                id="ref_level" placeholder="80">
-                        <label for="ref_level">Уровень</label>
+                        <label for="ref_level">{{ phrase(100) }}</label>
                       </div>
                     </div>
                   </div>
@@ -801,7 +801,7 @@
                 <li class="list-group-item">
                   <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
                     <div class="col-xl-6">
-                      <span class="fs-14 mb-0">Небходимые PvP / PK :</span>
+                      <span class="fs-14 mb-0">{{phrase('required_pvp_pk')}} :</span>
                     </div>
                     <div class="col-xl-3">
 
@@ -825,7 +825,7 @@
                 <li class="list-group-item text-center">
                   <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
                     <div class="">
-                      <span class="fs-6 mb-0 badge bg-primary text-wrap ">Выдача бонусов за выполнение требований (лидеру)</span>
+                      <span class="fs-6 mb-0 badge bg-primary text-wrap ">{{phrase('issue_bonuses_to_leader')}}</span>
                     </div>
                   </div>
                 </li>
@@ -833,7 +833,7 @@
                 <li class="list-group-item">
                   <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
                     <div class="col-xl-6">
-                      <span class="fs-14 mb-0">Кол-во бонусных Donate Coin, которые получит игрок за завершения реферала :</span>
+                      <span class="fs-14 mb-0">{{ phrase('bonus_donate_coins_for_referral_completion') }} :</span>
                     </div>
                     <div class="col-xl-2">
                       <div class="form-floating mb-3">
@@ -848,7 +848,7 @@
                 <li class="list-group-item">
                   <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
                     <div class="col-xl-6">
-                      <span class="fs-14 mb-0">Если приглашенный пользователь задонатит, давать ли бонус-вознаграждение привлекшему реферела?</span>
+                      <span class="fs-14 mb-0">{{phrase('bonus_for_referrer_on_donation')}}</span>
                     </div>
                     <div class="col-xl-5">
                       <div class="custom-toggle-switch float-sm-end">
@@ -863,13 +863,13 @@
                 <li class="list-group-item">
                   <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
                     <div class="col-xl-6">
-                      <span class="fs-14 mb-0">Установите процент вознаграждения от суммы пополнения Donate Coin?</span>
+                      <span class="fs-14 mb-0">{{phrase('reward_percentage_donate_coin_topup')}}</span>
                     </div>
                     <div class="col-xl-2">
                       <div class="form-floating mb-3">
                         <input value="{{config().referral().getProcentDonateBonus()}}" type="number" step="1"
                                class="form-control" id="ref_precent" placeholder="5" min="0" max="1000">
-                        <label for="ref_precent">Процент</label>
+                        <label for="ref_precent">{{phrase('percentage')}}</label>
                       </div>
                     </div>
                   </div>
@@ -878,7 +878,7 @@
                 <li class="list-group-item">
                   <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
                     <div class="col-xl-6">
-                      <span class="fs-14 mb-0">Какой предмет будет выдан бонусом пользователю </span>
+                      <span class="fs-14 mb-0">{{phrase('bonus_item_for_user')}} </span>
                     </div>
                     <div class="col-xl-3">
                       <div class="form-floating mb-3">
@@ -894,7 +894,7 @@
                           <div class="form-floating mb-3 ">
                             <input value="" type="number" step="1" class="form-control "
                                    id="count_ref_bonus_leader" placeholder="10">
-                            <label for="count_ref_bonus_leader">Кол-во</label>
+                            <label for="count_ref_bonus_leader">{{ phrase(71) }}</label>
                           </div>
 
                           <div class="form-floating mb-3 ">
@@ -959,7 +959,7 @@
                 <li class="list-group-item text-center">
                   <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
                     <div class="">
-                      <span class="fs-6 mb-0 badge bg-primary text-wrap">Выдача бонусов за выполнение требований (приглашенному игроку)</span>
+                      <span class="fs-6 mb-0 badge bg-primary text-wrap">{{phrase('issue_bonuses_to_referred_player')}}</span>
                     </div>
                   </div>
                 </li>
@@ -967,7 +967,7 @@
                 <li class="list-group-item">
                   <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
                     <div class="col-xl-6">
-                      <span class="fs-14 mb-0">Какой предмет будет выдан бонусом пользователю </span>
+                      <span class="fs-14 mb-0">{{phrase('bonus_item_for_user')}} </span>
                     </div>
                     <div class="col-xl-3">
                       <div class="form-floating mb-3">
@@ -983,7 +983,7 @@
                           <div class="form-floating mb-3 ">
                             <input value="" type="number" step="1" class="form-control "
                                    id="count_ref_bonus_slave" placeholder="10">
-                            <label for="count_ref_bonus_slave">Кол-во</label>
+                            <label for="count_ref_bonus_slave">{{ phrase(71) }}</label>
                           </div>
 
                           <div class="form-floating mb-3 ">
@@ -1048,7 +1048,7 @@
                 <li class="list-group-item">
                   <div class="float-end">
                     <button id="saveConfigReferral" type="button" class="btn btn-success">
-                      Сохранить
+                      {{ phrase(271) }}
                     </button>
                   </div>
                 </li>
@@ -1062,7 +1062,7 @@
                   <div class="card custom-card shadow-none border">
                     <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
                       <div class="">
-                        <span class="fw-semibold">Новости</span>
+                        <span class="fw-semibold">{{ phrase('news') }}</span>
                       </div>
                       <div>
                         <div class="custom-toggle-switch float-sm-end">
@@ -1079,7 +1079,7 @@
                   <div class="card custom-card shadow-none border">
                     <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
                       <div class="">
-                        <span class="fw-semibold">Магазин</span>
+                        <span class="fw-semibold">{{ phrase(215) }}</span>
                       </div>
                       <div>
                         <div class="custom-toggle-switch float-sm-end">
@@ -1096,7 +1096,7 @@
                   <div class="card custom-card shadow-none border">
                     <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
                       <div class="">
-                        <span class="fw-semibold">Баланс</span>
+                        <span class="fw-semibold">{{ phrase(486) }}</span>
                       </div>
                       <div>
                         <div class="custom-toggle-switch float-sm-end">
@@ -1112,7 +1112,7 @@
                   <div class="card custom-card shadow-none border">
                     <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
                       <div class="">
-                        <span class="fw-semibold">Статистика</span>
+                        <span class="fw-semibold">{{ phrase('menu_statistics') }}</span>
                       </div>
                       <div>
                         <div class="custom-toggle-switch float-sm-end">
@@ -1129,7 +1129,7 @@
                   <div class="card custom-card shadow-none border">
                     <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
                       <div class="">
-                        <span class="fw-semibold">Реферальная</span>
+                        <span class="fw-semibold">{{ phrase(306) }}</span>
                       </div>
                       <div>
                         <div class="custom-toggle-switch float-sm-end">
@@ -1147,7 +1147,7 @@
                   <div class="card custom-card shadow-none border">
                     <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
                       <div class="">
-                        <span class="fw-semibold">Тикет</span>
+                        <span class="fw-semibold">{{ phrase(355) }}</span>
                       </div>
                       <div>
                         <div class="custom-toggle-switch float-sm-end">
@@ -1164,7 +1164,7 @@
                   <div class="card custom-card shadow-none border">
                     <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
                       <div class="">
-                        <span class="fw-semibold">Перевод баланса в игру</span>
+                        <span class="fw-semibold">{{phrase('transfer_balance_to_game')}}</span>
                       </div>
                       <div>
                         <div class="custom-toggle-switch float-sm-end">
@@ -1182,7 +1182,7 @@
                   <div class="card custom-card shadow-none border">
                     <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
                       <div class="">
-                        <span class="fw-semibold">Бонус-Коды</span>
+                        <span class="fw-semibold">{{ phrase('code_bonus') }}</span>
                       </div>
                       <div>
                         <div class="custom-toggle-switch float-sm-end">
@@ -1199,7 +1199,7 @@
                   <div class="card custom-card shadow-none border">
                     <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
                       <div class="">
-                        <span class="fw-semibold">Стримы</span>
+                        <span class="fw-semibold">{{ phrase('stream') }}</span>
                       </div>
                       <div>
                         <div class="custom-toggle-switch float-sm-end">
@@ -1223,7 +1223,7 @@
                     <ul class="nav nav-tabs flex-column nav-style-4" role="tablist">
                       <li class="nav-item" role="presentation">
                         <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
-                           href="#home-vertical" aria-selected="true">Простая капча</a>
+                           href="#home-vertical" aria-selected="true">{{phrase('simple_captcha')}}</a>
                       </li>
                       <li class="nav-item" role="presentation">
                         <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page" href="#about-vertical"
@@ -1236,7 +1236,7 @@
                       <div class="tab-pane text-muted active show" id="home-vertical" role="tabpanel">
                         <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                           <div>
-                            <p class="fs-14 mb-1 fw-semibold">Включить обычную капчу</p>
+                            <p class="fs-14 mb-1 fw-semibold">{{phrase('enable_standard_captcha')}}</p>
                             <p class="fs-12 mb-0 text-muted"></p>
                           </div>
                           <div>
@@ -1251,7 +1251,7 @@
                       <div class="tab-pane text-muted" id="about-vertical" role="tabpanel">
                         <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                           <div>
-                            <p class="fs-14 mb-1 fw-semibold">Включить Google Captcha v2</p>
+                            <p class="fs-14 mb-1 fw-semibold">{{phrase('enable_google_recaptcha_v2')}}</p>
                             <p class="fs-12 mb-0 text-muted"></p>
                           </div>
                           <div>
@@ -1264,8 +1264,7 @@
                         </div>
                         <div class="card-body">
                           <div class="text-muted">
-                            Если Вы решите использовать Google reCAPTCHA V2<br>
-                            Ключи для капчи брать тут - <a href="https://www.google.com/recaptcha/admin/create">Регистрация на сайте Google</a>
+                            {{phrase('google_recaptcha_v2_keys_instructions')|raw}}
                           </div>
 
                           <div class="form-floating mb-3">
@@ -1282,7 +1281,7 @@
                           <hr class="mt-3">
                           <p>
                             <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                              Пример ввода ключей капчи
+                              {{phrase('captcha_keys_input_example')}}
                             </button>
                           </p>
                           <div class="collapse" id="collapseExample">
@@ -1310,7 +1309,7 @@
                 </div>
               </div>
               <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
-                <span id="saveCaptcha" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                <span id="saveCaptcha" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
                   class="bi bi-sd-card ms-2"></i></span>
               </div>
             </div>
@@ -1329,15 +1328,13 @@
                                config().onlineCheating().isEnabled() %}checked="" {%endif%}>
                         <label for="isEnableOnlineCheaters" class="label-success mb-1"></label>
                       </div>
-                      <p class="fs-14 mb-1 fw-semibold">Включить накрутку онлайна</p>
+                      <p class="fs-14 mb-1 fw-semibold">{{phrase('enable_online_boost')}}</p>
                       <p class="fs-12 mb-0 text-muted"></p>
                     </div>
 
                   </div>
 
-                  Сколько выводить (рандом) минимальное и максимальное кол-во онлайна (на случай если реальный онлайн
-                  0).<br>
-                  Если хотите чтоб онлайн был всегда 0 если онлайн действительно 0, то установите min и max 0
+                  {{phrase('min_max_online_display_if_zero')|raw}}
 
                   <div class="row">
                     <div class="col-xl-2">
@@ -1354,14 +1351,7 @@
                   </div>
 
                   <hr>
-                  Кол-во онлайна => [ время => коэффициент накрутки онлайна ]<br>
-                  <br>
-                  К примеру: Онлайн 37 человек, время сейчас 10:57<br>
-                  Тогда коэффициент накрутки онлайна будет 3.15<br>
-                  Примечание: 37 человек - это между 30 и 60, а время 10:57 - это между 10:00 и 12:00<br>
-                  Это соответствует коэффициенту накрутки онлайна 3.15<br>
-                  37*3.15 = 116.55 онлайна, результат будет округляем до большего числа, таким образом получим 117
-                  онлайна.<br>
+{{phrase('online_boost_coefficient_example')|raw}}
                   <br>
 
                   <div class="row">
@@ -1388,8 +1378,7 @@
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#flush-collapseOne_{{online}}" aria-expanded="false"
                                 aria-controls="flush-collapseOne">
-                          Настройки для онлайна от : {{online}} {% if next_online != null %}и до : {{next_online}}
-                          онлайна{% endif %}
+                          {{phrase('online_settings_from')}} : {{online}} {% if next_online != null %}и до : {{next_online}} {{ phrase('online') }} {% endif %}
                         </button>
                       </h2>
                       <div id="flush-collapseOne_{{online}}" class="accordion-collapse collapse"
@@ -1403,7 +1392,7 @@
                               <input value="{{time.getTime()}}" class="form-control time-format-2" placeholder="hh:mm">
                             </div>
                             <div class="col-xl-2">
-                              В это время умножить онлайн на:
+                              {{phrase('multiply_online_by')}}:
                             </div>
                             <div class="col-xl-2">
                               <input min="1" value="{{time.getMultiplier()}}" step="0.1" type="number"
@@ -1413,7 +1402,7 @@
                         </div>
                         {% endfor %}
                         <div class="col-md-12">
-                          <button type="button" class="btn btn-primary add-time">{{ phrase(438) }} время</button>
+                          <button type="button" class="btn btn-primary add-time">{{ phrase(438) }} {{ phrase(30) }}</button>
                         </div>
                       </div>
                     </div>
@@ -1424,7 +1413,7 @@
 
                 </div>
                 <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
-                  <span id="saveCheatingOnline" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                  <span id="saveCheatingOnline" class="btn btn-success-light m-1 btn-sm">{{ phrase(89) }}<i
                     class="bi bi-sd-card ms-2"></i></span>
                 </div>
               </div>
@@ -1438,16 +1427,16 @@
                   <div class="custom-toggle-switch d-flex align-items-center mb-4">
                     <input id="enablePrefix" name="enablePrefix" type="checkbox" {% if
                            config().registration().getEnablePrefix() %}checked="" {% endif %}>
-                    <label for="enablePrefix" class="label-success"></label><span class="ms-3">Включить префиксы</span>
+                    <label for="enablePrefix" class="label-success"></label><span class="ms-3">{{phrase('enable_prefixes')}}</span>
                   </div>
                 </div>
 
                 <div class="col-12">
                   <select class="form-select" id="prefixType">
                     <option {% if config().registration().getPrefixType()==
-                    "prefix" %}selected=""{% endif %} value="prefix" >Префикс</option>
+                    "prefix" %}selected=""{% endif %} value="prefix" >{{ phrase(478) }}</option>
                     <option {% if config().registration().getPrefixType()==
-                    "suffix" %}selected=""{% endif %} value="suffix">Суффикс</option>
+                    "suffix" %}selected=""{% endif %} value="suffix">{{ phrase('suffix') }}</option>
                   </select>
                 </div>
 
@@ -1455,7 +1444,7 @@
                   <div class="custom-toggle-switch d-flex align-items-center mb-4">
                     <input id="massRegistration" name="massRegistration" type="checkbox" {% if
                            config().registration().getMassRegistration() %}checked="" {% endif %}>
-                    <label for="massRegistration" class="label-success"></label><span class="ms-3">Включить регистрацию сразу на всех серверах</span>
+                    <label for="massRegistration" class="label-success"></label><span class="ms-3">{{phrase('enable_registration_on_all_servers')}}</span>
                   </div>
                 </div>
 
@@ -1464,15 +1453,14 @@
                   <div class="custom-toggle-switch d-flex align-items-center mb-4">
                     <input id="enableLoadFileRegistration" name="enableLoadFileRegistration" type="checkbox" {% if
                            config().registration().getEnableLoadFileRegistration() %}checked="" {% endif %}>
-                    <label for="enableLoadFileRegistration" class="label-success"></label><span class="ms-3">Загрузка файла информации о регистрации пользователем</span>
+                    <label for="enableLoadFileRegistration" class="label-success"></label><span class="ms-3">{{phrase('upload_user_registration_info_file')}}</span>
                   </div>
                 </div>
 
 
                 <div class="col-auto">
-                  <label class="" for="phraseRegistrationDownloadFile">Укажите ID фразы, которые будет получать
-                    пользователь.<br>
-                    Создать свою фразу можно <a href="/admin/phrases" target="_blank">тут</a>.
+                  <label class="" for="phraseRegistrationDownloadFile">{{phrase('phrase_id_for_user')}}<br>
+                    {{phrase('create_phrase_link')|raw}}
                   </label>
                   <input value="{{ config().registration().getPhraseRegistrationDownloadFile() }}" type="text"
                          class="form-control" id="phraseRegistrationDownloadFile" placeholder="Phrase ID">
@@ -1481,7 +1469,7 @@
               </div>
 
               <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
-                <span id="saveRegistration" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                <span id="saveRegistration" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
                   class="bi bi-sd-card ms-2"></i></span>
               </div>
 
@@ -1508,14 +1496,14 @@
                   <div class="col-md-6">
                     <div class="form-floating">
                       <input value="{{config().email().getUsername()}}" type="text" class="form-control" id="emailUsername" placeholder="Username">
-                      <label for="emailUsername">SMTP имя пользователя</label>
+                      <label for="emailUsername">{{phrase('smtp_username')}}</label>
                     </div>
                   </div>
 
                   <div class="col-md-6">
                     <div class="form-floating">
                       <input value="{{config().email().getPassword()}}" type="text" class="form-control" id="emailPassword" placeholder="Password">
-                      <label for="emailPassword">SMTP пароль</label>
+                      <label for="emailPassword">{{phrase('smtp_password')}}</label>
                     </div>
                   </div>
 
@@ -1528,35 +1516,35 @@
                         <option value="ssl" {% if config().email().getProtocol()=="ssl" %}selected{% endif %}>SSL</option>
                         <option value="tls" {% if config().email().getProtocol()=="tls" %}selected{% endif %}>TLS</option>
                       </select>
-                      <label for="emailProtocol">Протокол</label>
+                      <label for="emailProtocol">{{phrase('protocol')}}</label>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-check">
                       <input {% if config().email().isSmtpAuth() %}checked{% endif %} class="form-check-input" type="checkbox" id="emailSMTPAuth">
-                      <label class="form-check-label" for="emailSMTPAuth">SMTP Авторизация</label>
+                      <label class="form-check-label" for="emailSMTPAuth">{{phrase('smtp_authorization')}}</label>
                     </div>
                   </div>
                 </div>
 
                 <div class="col-12 mt-3">
-                  <label class="form-label">Конструктор HTML письма</label>
+                  <label class="form-label">{{phrase('html_email_builder')}}</label>
                   <div class="form-floating mb-3">
-                    <input value="Ура, удалось отправить письмо!" type="text" class="form-control nosave" id="emailHeader" placeholder="Username">
-                    <label for="emailHeader">Заголовок письма</label>
+                    <input value="{{phrase('email_sent_successfully')}}" type="text" class="form-control nosave" id="emailHeader" placeholder="Username">
+                    <label for="emailHeader">{{phrase('email_subject')}}</label>
                   </div>
-                  <div id="email-html">Вы большой <strong>молодец</strong>, Вам удалось настроить почту для отправки писем😀😀😀😀!</div>
+                  <div id="email-html">{{phrase('email_setup_success')|raw}}</div>
                 </div>
 
                 <div class="row g-3 align-items-center mt-3">
                   <div class="col-md-6">
                     <div class="form-floating">
                       <input value="" type="email" class="form-control nosave" id="emailTestFromAddress" placeholder="Email Address for test">
-                      <label for="emailTestFromAddress">Email для проверки получения письма</label>
+                      <label for="emailTestFromAddress">{{phrase('test_email_receipt')}}</label>
                     </div>
                   </div>
                   <div class="col-md-1">
-                    <button id="emailSendTest" type="submit" class="btn btn-success w-100">Отправить</button>
+                    <button id="emailSendTest" type="submit" class="btn btn-success w-100">{{ phrase(364) }}</button>
                   </div>
                   <div class="col-md-3">
                     <p class="fs-14 mb-0 fw-semibold" id="emailSendTestResponse">{{response.message}}</p>
@@ -1566,26 +1554,26 @@
               </div>
 
               <div class="border-top border-block-start-dashed d-flex justify-content-end mt-3 pt-2">
-                <span id="saveEmail" class="btn btn-success-light m-1 btn-sm">Сохранить<i class="bi bi-sd-card ms-2"></i></span>
+                <span id="saveEmail" class="btn btn-success-light m-1 btn-sm">{{ phrase(89) }} <i class="bi bi-sd-card ms-2"></i></span>
               </div>
             </div>
             <div class="tab-pane p-0" id="cache" role="tabpanel">
               <div class="card-body">
-                Указывайте в секундах время кэширования данных
+                {{phrase('cache_time_in_seconds')}}
                 <div class="row g-3 mt-0">
 
                   <div class="col-md-2">
-                    <label class="form-label">Форум</label>
+                    <label class="form-label">{{ phrase(62) }}</label>
                     <input id="forumCache" value="{{config().cache().getForum()}}" type="number" class="form-control"
                            placeholder="60"
                            aria-label="Форум">
                   </div>
 
                   <div class="col-md-2">
-                    <label class="form-label">Статус</label>
+                    <label class="form-label">{{ phrase(86) }}</label>
                     <input id="statusCache" value="{{config().cache().getStatus()}}" type="number" class="form-control"
                            placeholder="60"
-                           aria-label="Статус">
+                           aria-label="{{ phrase(86) }}">
                   </div>
 
                   <div class="col-md-2">
@@ -1601,24 +1589,24 @@
                   </div>
 
                   <div class="col-md-2">
-                    <label class="form-label">Кланы</label>
+                    <label class="form-label">{{ phrase(49) }}</label>
                     <input id="clanCache" value="{{config().cache().getClan()}}" type="number" class="form-control"
                            placeholder="60"
-                           aria-label="Clan">
+                           aria-label="{{ phrase(49) }}">
                   </div>
 
                   <div class="col-md-2">
-                    <label class="form-label">Замков</label>
+                    <label class="form-label">{{ phrase(50) }}</label>
                     <input id="castleCache" value="{{config().cache().getCastle()}}" type="number" class="form-control"
                            placeholder="60"
                            aria-label="Castle">
                   </div>
 
                   <div class="col-md-2">
-                    <label class="form-label">Рефералы</label>
+                    <label class="form-label">{{ phrase('menu_referrals') }}</label>
                     <input id="referralCache" value="{{config().cache().getReferral()}}" type="number"
                            class="form-control" placeholder="60"
-                           aria-label="Referral">
+                           aria-label="{{ phrase('menu_referrals') }}">
                   </div>
 
                 </div>
@@ -1626,7 +1614,7 @@
               </div>
 
               <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
-                <span id="saveCache" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                <span id="saveCache" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }} <i
                   class="bi bi-sd-card ms-2"></i></span>
               </div>
 
@@ -1637,10 +1625,8 @@
                 <li class="list-group-item">
                   <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                     <div>
-                      <p class="fs-14 mb-1 fw-semibold">Скрывать пароли игроков</p>
-                      <p class="fs-12 mb-0 text-muted">Функция необходима на случай если Вы используете лаунчер, с
-                        автовходом в игру на персонажа, без авторизации в игре. К примеру SphereLauncher обладает
-                        возможностью сделать автовход в игру (если клиент позволяет).</p>
+                      <p class="fs-14 mb-1 fw-semibold">{{phrase('hide_player_passwords')}}</p>
+                      <p class="fs-12 mb-0 text-muted">{{phrase('auto_login_launcher_feature')}}</p>
                     </div>
                     <div>
                       <div class="custom-toggle-switch float-sm-end">
@@ -1655,9 +1641,8 @@
                 <li class="list-group-item">
                   <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                     <div>
-                      <p class="fs-14 mb-1 fw-semibold">Технические работы</p>
-                      <p class="fs-12 mb-0 text-muted">Отключение сайта, вход и пользование доступно только для
-                        администраторов.</p>
+                      <p class="fs-14 mb-1 fw-semibold">{{phrase('maintenance')}}</p>
+                      <p class="fs-12 mb-0 text-muted">{{phrase('site_down_admin_only')}}</p>
                     </div>
                     <div>
                       <div class="custom-toggle-switch float-sm-end">
@@ -1672,7 +1657,7 @@
                 <li class="list-group-item">
                   <div class="d-sm-flex d-block align-items-top justify-content-between mt-3 row">
                     <div class="col-xl-12">
-                      <p class="fs-14 mb-1 fw-semibold">Сообщение о технической работе</p>
+                      <p class="fs-14 mb-1 fw-semibold">{{phrase('maintenance_message')}}</p>
                       <textarea class="form-control" id="messageTechnicalWork" rows="3">{{ config().other().getMessageTechnicalWork() }}</textarea>
                     </div>
                   </div>
@@ -1681,7 +1666,7 @@
                 <li class="list-group-item">
                   <div class="d-sm-flex d-block align-items-top justify-content-between mt-3 row">
                     <div class="col-xl-12">
-                      <p class="fs-14 mb-1 fw-semibold">Титул всех страниц</p>
+                      <p class="fs-14 mb-1 fw-semibold">{{phrase('page_title_all')}}</p>
                       <input value="{{ config().other().getAllTitlePage() }}" type="text" class="form-control"
                              id="allTitlePage" placeholder="SphereWeb">
                     </div>
@@ -1691,7 +1676,7 @@
                 <li class="list-group-item">
                   <div class="d-sm-flex d-block align-items-top justify-content-between mt-3 row">
                     <div class="col-xl-12">
-                      <p class="fs-14 mb-1 fw-semibold">Key words</p>
+                      <p class="fs-14 mb-1 fw-semibold">{{phrase('key_words')}}</p>
                       <textarea type="text" class="form-control" rows="6" id="keywords" placeholder="keywords">{{ config().other().getKeywords() }}</textarea>
                     </div>
                   </div>
@@ -1700,7 +1685,7 @@
                 <li class="list-group-item">
                   <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                     <div>
-                      <p class="fs-14 mb-1 fw-semibold">Сохранять ли данные статистики онлайн игроков</p>
+                      <p class="fs-14 mb-1 fw-semibold">{{phrase('save_online_player_stats')}}</p>
                       <p class="fs-12 mb-0 text-muted"></p>
                     </div>
                     <div>
@@ -1719,22 +1704,22 @@
                     <div class="col-xl-12">
                       <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                         <div>
-                          <p class="fs-14 mb-1 fw-semibold">Частота сохранения статистики онлайна</p>
+                          <p class="fs-14 mb-1 fw-semibold">{{phrase('online_stats_save_frequency')}}</p>
                         </div>
                         <div class="col-xl-2">
                           <select class="form-control" data-trigger name="timeoutSaveStatistic"
                                   id="timeoutSaveStatistic">
                             <option {% if config().other().getTimeoutSaveStatistic()== 300 %}selected{% endif %}
-                                    value="300" selected>5 мин
+                                    value="300" selected>5 {{ phrase('minutes') }}
                             </option>
                             <option {% if config().other().getTimeoutSaveStatistic()== 600 %}selected{% endif %}
-                                    value="600">10 мин
+                                    value="600">10 {{ phrase('minutes') }}
                             </option>
                             <option {% if config().other().getTimeoutSaveStatistic()== 1800 %}selected{% endif %}
-                                    value="1800">30 мин
+                                    value="1800">30 {{ phrase('minutes') }}
                             </option>
                             <option {% if config().other().getTimeoutSaveStatistic()== 3600 %}selected{% endif %}
-                                    value="3600">1 ч.
+                                    value="3600">60 {{ phrase('minutes') }}
                             </option>
                           </select>
                         </div>
@@ -1748,7 +1733,7 @@
                     <div class="col-xl-12">
                       <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                         <div>
-                          <p class="fs-14 mb-1 fw-semibold">Умножить выводимый онлайн</p>
+                          <p class="fs-14 mb-1 fw-semibold">{{phrase('multiply_displayed_online')}}</p>
                         </div>
                         <div class="col-xl-2">
                           <input value="{{ config().other().getOnlineMul() }}" min="1.0" step="0.1" type="number"
@@ -1763,7 +1748,7 @@
                 <li class="list-group-item">
                   <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                     <div>
-                      <p class="fs-14 mb-1 fw-semibold">Требовать авторизацию, чтоб зайти в ЛК</p>
+                      <p class="fs-14 mb-1 fw-semibold">{{phrase('require_authentication_for_account')}}</p>
                       <p class="fs-12 mb-0 text-muted"></p>
                     </div>
                     <div>
@@ -1781,8 +1766,8 @@
                     <div class="col-xl-12">
                       <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                         <div>
-                          <p class="fs-14 mb-1 fw-semibold">TimeZone по умолчанию</p>
-                          <p class="fs-12 mb-0 text-muted">Для синхронизации времени, необходимо указать TimeZone</p>
+                          <p class="fs-14 mb-1 fw-semibold">{{phrase('default_timezone')}}</p>
+                          <p class="fs-12 mb-0 text-muted">{{phrase('time_sync_timezone')}}</p>
                         </div>
                         <div class="col-xl-2">
                           <select class="form-control" data-trigger name="timezone"
@@ -1803,7 +1788,7 @@
                 <li class="list-group-item">
                   <div class="row gx-5 gy-3">
                     <div class="col-xl-12">
-                      <p class="fs-14 mb-1 fw-semibold">Ссылка на главную страницу</p>
+                      <p class="fs-14 mb-1 fw-semibold">{{phrase('homepage_link')}}</p>
                       <input value="{{ config().other().getLinkMainPage() }}" type="text" class="form-control"
                              id="linkMainPage" placeholder="/">
                     </div>
@@ -1815,7 +1800,7 @@
                   <div class="col-xl-12">
                     <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                       <div>
-                        <p class="fs-14 mb-1 fw-semibold">Кол-во регистрируемых аккаунтов</p>
+                        <p class="fs-14 mb-1 fw-semibold">{{phrase('number_of_registerable_accounts')}}</p>
                       </div>
                       <div class="col-xl-2">
                         <input value="{{ config().other().getMaxAccount() }}" type="number" step="1"
@@ -1828,10 +1813,10 @@
                 <li class="list-group-item">
                   <div class="d-sm-flex d-block align-items-top justify-content-between mt-3 row">
                     <div class="col-xl-12">
-                      <p class="fs-14 mb-1 fw-semibold">Связь с администратором проекта</p>
-                      <p class="fs-12 mb-0 text-muted">Используйте HTML-тег <code>&lt;br&gt;</code> для переноса строк и
-                        другие теги для отображения текста. Иконки можно <a href="https://icons.getbootstrap.com/"
-                                                                            target="_blank">найти тут</a></p>
+                      <p class="fs-14 mb-1 fw-semibold">{{phrase('contact_project_admin')}}</p>
+                      <p class="fs-12 mb-0 text-muted">
+                        {{phrase('html_tags_instructions_icons_link')|raw}}
+                      </p>
                       <textarea type="text" class="form-control" rows="6" id="contactAdmin" placeholder="">{{ config().other().getContactAdmin() }}</textarea>
                     </div>
                   </div>
@@ -1841,7 +1826,7 @@
 
 
               <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
-                <span id="saveOther" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                <span id="saveOther" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }} <i
                   class="bi bi-sd-card ms-2"></i></span>
               </div>
             </div>
@@ -1868,7 +1853,7 @@
                       <div class="card custom-card">
                         <div class="card-header justify-content-between">
                           <div class="card-title">
-                            Информация о шаблоне
+                            {{phrase('template_information')}}
                           </div>
                         </div>
                         <div class="card-body ">
@@ -1877,7 +1862,7 @@
                               <tbody class="top-selling">
                               <tr>
                                 <th class="">
-                                  <span class="fw-semibold fs-13">Template Name</span>
+                                  <span class="fw-semibold fs-13">{{ phrase(259) }}</span>
                                 </th>
                                 <td>
                                   <select id="templateSelect" class="form-select form-select-lg">
@@ -1891,28 +1876,28 @@
                               </tr>
                               <tr>
                                 <th class="">
-                                  <span class="fw-semibold fs-13">Author</span>
+                                  <span class="fw-semibold fs-13">{{ phrase(263) }}</span>
                                 </th>
                                 <td><span id="templateAuthor" class="text-muted fs-13 fw-normal">{{config().template().getAuthor()|raw}}</span>
                                 </td>
                               </tr>
                               <tr>
                                 <th class="">
-                                  <span class="fw-semibold fs-13">Date</span>
+                                  <span class="fw-semibold fs-13">{{ phrase(29) }}</span>
                                 </th>
                                 <td><span id="templateDate" class="text-muted fs-13 fw-normal">{{ config().template().getDate()|date("d.m.Y") }}</span>
                                 </td>
                               </tr>
                               <tr>
                                 <th class="">
-                                  <span class="fw-semibold fs-13">Version</span>
+                                  <span class="fw-semibold fs-13">{{ phrase(261) }}</span>
                                 </th>
                                 <td><span id="templateVersion" class="text-muted fs-13 fw-normal">{{config().template().getVersion()}}</span>
                                 </td>
                               </tr>
                               <tr>
                                 <th class="">
-                                  <span class="fw-semibold fs-13">Desc</span>
+                                  <span class="fw-semibold fs-13">{{ phrase(264) }}</span>
                                 </th>
                                 <td><span id="templateDescription" class="text-muted fs-13 fw-normal">{{config().template().getDescription()|raw}}</span>
                                 </td>
@@ -1930,10 +1915,11 @@
               </div>
 
               <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
-                <span id="saveTemplate" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                <span id="saveTemplate" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }} <i
                   class="bi bi-sd-card ms-2"></i></span>
               </div>
             </div>
+
             <div class="tab-pane p-0" id="logoImg" role="tabpanel">
 
               <div class="row">
@@ -1941,8 +1927,7 @@
                 <div class="col-lg-6 col-md-6 col-sm-12 col-xxl-6">
                   <div class="card overflow-hidden">
                     <div class="card-body">
-                      Изображение (лого) Вашего проекта. Лого выводится в верхней части страницы, над меню.
-                      <br> Рекомендуемое соотношение сторон: 3.5:1 или 4:1 (280px:80px, или 240px:60px)
+                      {{phrase('project_logo_image_aspect_ratio')|raw}}
                       <input type="file" class="single-fileupload1 sphereLogo" name="filepond" data-type="logo"
                              data-max-file-size="3MB" data-max-files="1">
                     </div>
@@ -1952,8 +1937,7 @@
                 <div class="col-lg-6 col-md-6 col-sm-12 col-xxl-3">
                   <div class="card overflow-hidden">
                     <div class="card-body">
-                      Изображение иконки страницы (favicon).
-                      Формат изображений: png, jpg, webp.
+                      {{phrase('favicon_image_formats')|raw}}
                       <input type="file" class="single-fileupload1 sphereLogo" name="filepond" data-type="favicon"
                              data-max-file-size="3MB" data-max-files="1">
                     </div>
@@ -1970,7 +1954,7 @@
                   <div class="nav nav-tabs nav-justified" id="switcher-main-tab" role="tablist">
                     <button class="nav-link active" id="switcher-profile-tab" data-bs-toggle="tab"
                             data-bs-target="#switcher-profile"
-                            type="button" role="tab" aria-controls="switcher-profile" aria-selected="false">Theme Colors
+                            type="button" role="tab" aria-controls="switcher-profile" aria-selected="false">{{phrase('theme_colors')}}
                     </button>
                   </div>
                 </nav>
@@ -1979,7 +1963,7 @@
                        aria-labelledby="switcher-profile-tab" tabindex="0">
                     <div>
                       <div class="theme-colors">
-                        <p class="switcher-style-head">Menu Colors:</p>
+                        <p class="switcher-style-head">{{phrase('menu_colors')}}:</p>
                         <div class="d-flex switcher-style pb-2">
                           <div class="form-check switch-select me-3">
                             <input class="form-check-input color-input color-white" data-bs-toggle="tooltip"
@@ -2007,12 +1991,9 @@
                                    type="radio" name="menu-colors" id="switcher-menu-transparent">
                           </div>
                         </div>
-                        <div class="px-4 pb-3 text-muted fs-11">Note:If you want to change color Menu dynamically change
-                          from below Theme Primary color picker
-                        </div>
                       </div>
                       <div class="theme-colors">
-                        <p class="switcher-style-head">Header Colors:</p>
+                        <p class="switcher-style-head">{{phrase('header_colors')}}:</p>
                         <div class="d-flex switcher-style pb-2">
                           <div class="form-check switch-select me-3">
                             <input class="form-check-input color-input color-white" data-bs-toggle="tooltip"
@@ -2040,12 +2021,9 @@
                                    id="switcher-header-transparent">
                           </div>
                         </div>
-                        <div class="px-4 pb-3 text-muted fs-11">Note:If you want to change color Header dynamically
-                          change from below Theme Primary color picker
-                        </div>
                       </div>
                       <div class="theme-colors">
-                        <p class="switcher-style-head">Theme Primary:</p>
+                        <p class="switcher-style-head">{{phrase('theme_primary')}}:</p>
                         <div class="d-flex flex-wrap align-items-center switcher-style">
                           <div class="form-check switch-select me-3">
                             <input class="form-check-input color-input color-primary-1" type="radio"
@@ -2077,7 +2055,7 @@
                         </div>
                       </div>
                       <div class="theme-colors">
-                        <p class="switcher-style-head">Theme Background:</p>
+                        <p class="switcher-style-head">{{phrase('theme_background')}}:</p>
                         <div class="d-flex flex-wrap align-items-center switcher-style">
                           <div class="form-check switch-select me-3">
                             <input class="form-check-input color-input color-bg-1" type="radio"
@@ -2106,7 +2084,7 @@
                         </div>
                       </div>
                       <div class="menu-image mb-3">
-                        <p class="switcher-style-head">Menu With Background Image:</p>
+                        <p class="switcher-style-head">{{phrase('menu_with_background_image')}}:</p>
                         <div class="d-flex flex-wrap align-items-center switcher-style">
                           <div class="form-check switch-select m-2">
                             <input class="form-check-input bgimage-input bg-img1" type="radio"
@@ -2133,32 +2111,22 @@
                     </div>
                   </div>
                   <div class="d-flex justify-content-center canvas-footer flex-wrap px-0 px-sm-5">
-                    <a href="javascript:void(0);" id="reset-all" class="btn btn-danger m-1">Reset</a>
+                    <a href="javascript:void(0);" id="reset-all" class="btn btn-danger m-1">{{phrase('reset')}}</a>
                   </div>
                 </div>
               </div>
               <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
-                <span id="savePalette" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                <span id="savePalette" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
                   class="bi bi-sd-card ms-2"></i></span>
               </div>
             </div>
             <div class="tab-pane p-0" id="addMenu" role="tabpanel">
               <div class="card-body " id="menuItems">
 
-                Вы можете добавить свои ссылки в меню.
-                <br>
-                phraseId - название фразы, а точнее её key из таблицы <a class="text-primary" href="/admin/phrases" target="_blank">переводов</a>.<br>
-                При выборе иконки, нужно скопировать её стиль.<br>
-                  Стиль иконок можно выбрать тут<br>
-                  <div class="bd-example flex-container">
-                    <div class="d-flex flex-row mb-3">
-                      <div class="p-2"><a href="https://icons.getbootstrap.com/" target="_blank"> Link #1 </a></div>
-                      <div class="p-2"><a href="https://icons8.com/line-awesome" target="_blank"> Link #2 </a></div>
-                    </div>
-                  </div>
+                {{phrase('menu_links_instructions')|raw}}
 
                 <div class="col-12 mt-3">
-                  <button type="button" class="btn btn-success mt-3 addItemMenu">Добавить</button>
+                  <button type="button" class="btn btn-success mt-3 addItemMenu">{{ phrase(438) }}</button>
                 </div>
 
                 {% for menu in config().menu().get() %}
@@ -2183,7 +2151,7 @@
                       </div>
                     </div>
                     <div class="col-12">
-                      <button type="button" class="btn btn-danger btn-sm remove-item-menu">Удалить</button>
+                      <button type="button" class="btn btn-danger btn-sm remove-item-menu">{{ phrase('delete') }}</button>
                     </div>
                   </div>
                 </div>
@@ -2197,7 +2165,7 @@
 
 
               <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
-                <span id="saveMenu" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                <span id="saveMenu" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
                   class="bi bi-sd-card ms-2"></i></span>
               </div>
             </div>
@@ -2209,7 +2177,7 @@
                   <div class="col-lg-4 col-md-4 col-sm-12 col-xxl-4">
                     <div class="card overflow-hidden">
                       <div class="card-body">
-                        <br> Изображение для фона страницы авторизации
+                        <br> {{phrase('login_page_background_image')}}
                         <input type="file" class="single-fileupload1 background_img" name="filepond" data-type="login"
                                data-max-file-size="3MB" data-max-files="1">
                       </div>
@@ -2219,7 +2187,7 @@
                   <div class="col-lg-4 col-md-4 col-sm-12 col-xxl-4">
                     <div class="card overflow-hidden">
                       <div class="card-body">
-                        <br> Изображение для фона страницы регистрации
+                        <br> {{phrase('registration_page_background_image')}}
                         <input type="file" class="single-fileupload1 background_img" name="filepond" data-type="registration"
                                data-max-file-size="3MB" data-max-files="1">
                       </div>
@@ -2229,7 +2197,7 @@
                   <div class="col-lg-4 col-md-4 col-sm-12 col-xxl-4">
                     <div class="card overflow-hidden">
                       <div class="card-body">
-                        <br> Изображение для фона страницы восстановления пароля
+                        <br> {{phrase('password_recovery_page_background_image')}}
                         <input type="file" class="single-fileupload1 background_img" name="filepond" data-type="forget"
                                data-max-file-size="3MB" data-max-files="1">
                       </div>
@@ -2241,7 +2209,7 @@
 
               </div>
               <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
-                <span id="saveBackground" class="btn btn-success-light m-1 btn-sm">Сохранить<i
+                <span id="saveBackground" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
                   class="bi bi-sd-card ms-2"></i></span>
               </div>
             </div>
