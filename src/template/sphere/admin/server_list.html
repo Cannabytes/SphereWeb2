@@ -88,7 +88,9 @@
                       <span class="fs-12 text-danger">
                         Сервер был отключен из-за отсутствия соединения с БД сервера.
                         <br>
-                        Можете его удалить или переподключить, указав актуальные данные базы данных сервера.</span>
+                        Можете удалить, переподключить сервер, или актуальные данные базы данных сервера.</span>
+                      <br>
+                      <br>
                       {% endif %}
 
                       <h5 class="font-weight-semibold ms-0 mb-1 pb-0">{{serverName}}</h5>
@@ -126,6 +128,10 @@
 
                       <button class="btn btn-danger btn-sm shadow-success btn-wave waves-effect waves-light removeServer"
                               data-server-id="{{server.getId()}}">{{ phrase('delete') }}</button>
+
+                      {% if server.getStatus().isDisabled() %}
+                      <button data-server-id="{{server.getId()}}" class="btn btn-info btn-sm shadow-info btn-wave waves-effect waves-light server_reconnect" >Переподключить</button>
+                      {% endif %}
 
                     </div>
                   </div>
@@ -851,8 +857,18 @@
 {% endif %}
 
 <script>
-  $(document).on("click", ".removeServer", function (event){
+  $(document).on("click", ".removeServer", function (){
     AjaxSend("/admin/server/delete", "POST", {
+      serverId: $(this).data('server-id')
+    }, false).then(function (data) {
+      console.log(data)
+    })
+  });
+</script>
+
+<script>
+  $(document).on("click", ".server_reconnect", function (){
+    AjaxSend("/admin/server/reconnect", "POST", {
       serverId: $(this).data('server-id')
     }, false).then(function (data) {
       console.log(data)

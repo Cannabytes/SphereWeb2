@@ -60,6 +60,8 @@ enum type
     case SET_STREAM_AUTOCHECK;
 
 
+    case SERVER_RECONNECT;
+
     static function url(type $type): string
     {
 
@@ -88,6 +90,7 @@ enum type
 
               self::SYNCHRONIZATION => '/api/user/accounts/synchronization',
               self::SERVER_STATISTIC_ONLINE => '/api/server/statistic/online',
+              self::SERVER_RECONNECT => '/api/server/reconnect',
 
               self::GAME_WHEEL_SAVE => '/api/game/wheel/save',
               self::GAME_WHEEL => '/api/game/wheel/start',

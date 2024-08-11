@@ -1822,4 +1822,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  129 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/server/reconnect',
+    'func' => 'controller\\admin\\server::server_reconnect',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );
