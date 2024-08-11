@@ -399,6 +399,7 @@ class auth
             board::notice(false, lang::get_phrase(161));
         }
         $email    = request::setting('email', new request_config(isEmail: true));
+        $email = trim($email);
         $password = request::setting('password', new request_config(max: 32));
 
         config::load()->captcha()->validator();

@@ -51,20 +51,17 @@ class ticketModel
         return $lastTicketsList;
     }
 
-    static public function getTicketInfo($id){
-        return sql::getRow("SELECT * FROM `tickets` WHERE id = ?", [$id]);
-    }
-
-    static public function saveFile($ticketId){
-
+    static public function saveFile($ticketId)
+    {
         //Проверяем что тикет пренадлежит пользователю
         $ticketData = ticketModel::getTicketInfo($ticketId);
-        if(!$ticketData){
+        if ( ! $ticketData) {
             return;
         }
 
-        if($ticketData['user_id'] != user::self()->getId() AND !user::self()->isAdmin()){
+        if ($ticketData['user_id'] != user::self()->getId() and ! user::self()->isAdmin()) {
             board::error(lang::get_phrase("access_is_denied"));
+
             return;
         }
 
@@ -117,7 +114,7 @@ class ticketModel
                   'name'    => user::self()->getName(),
                   'path'    => $imageTicket,
                 ]);
-            }else{
+            } else {
                 echo json_encode([
                   'status'  => 'error',
                   'message' => 'Error uploading image',
@@ -126,20 +123,34 @@ class ticketModel
         }
     }
 
-    static public function AddMessage(){
+    static public function getTicketInfo($id)
+    {
+        return sql::getRow("SELECT * FROM `tickets` WHERE id = ?", [$id]);
+    }
 
+    static public function AddMessage(): false|string
+    {
         $message         = $_POST['message'] ?? board::error("Empty message");
         $ticketId        = $_POST['id'];
         $last_element_id = $_POST['last_element_id'];
 
-        $ticket = null;
         if ($ticketId != 0) {
             $ticket = sql::getRow("SELECT * FROM tickets WHERE id = ?", [$ticketId]);
             if ($ticket['is_closed'] and ! user::self()->isAdmin()) {
                 board::error(lang::get_phrase("block_write_to_ticket"));
             }
+        }else{
+            $ticket = sql::getRow("SELECT * FROM tickets WHERE user_id = ?", [user::self()->getId()]);
+            if ($ticket) {
+                $ticket = sql::getRow("SELECT * FROM tickets WHERE id = ?", [$ticket['id']]);
+                if ($ticket['is_closed'] and ! user::self()->isAdmin()) {
+                    board::error(lang::get_phrase("block_write_to_ticket"));
+                }
+                $ticketId = $ticket['id'];
+            }
         }
-        if ($ticket === null) {
+
+        if(!$ticket){
             sql::run(
               "INSERT INTO tickets (user_id, last_user_id) VALUES (?, ?)",
               [user::self()->getId(), user::self()->getId()]
@@ -157,7 +168,7 @@ class ticketModel
           [$newLastElementId, user::self()->getId(), $ticketId]
         );
 
-        if(!user::self()->isAdmin()){
+        if ( ! user::self()->isAdmin()) {
             notification::toAdmin("user_wrote_ticket", "/ticket/" . $ticketId);
         }
 
