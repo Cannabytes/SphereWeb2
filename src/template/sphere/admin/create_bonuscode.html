@@ -19,6 +19,16 @@
           {% endif %}
 
           <div class="row row-cols-lg-auto align-items-center">
+            <span class="fw-semibold mb-1 text-muted">Префикс</span>
+            <div class="col-4">
+              <div class="col-sm">
+                <input type="text" class="form-control" id="prefix" value="" placeholder="bonus_"
+                       aria-label="State">
+              </div>
+            </div>
+          </div>
+
+          <div class="row row-cols-lg-auto align-items-center">
             <span class="fw-semibold mb-1 text-muted">{{ phrase('number_of_codes') }}</span>
             <div class="col-4">
               <div class="col-sm">
@@ -147,6 +157,7 @@
       items: items,
       start_date_code: startDate,
       end_date_code: endDate,
+      prefix: $("#prefix").val(),
     }, true).then(function (response) {
       if (Array.isArray(response)) {
         $('#bonus_codes').val(response.join('\n'));

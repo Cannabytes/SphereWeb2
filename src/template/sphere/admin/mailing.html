@@ -42,7 +42,7 @@
                   {{phrase('registration_notification_email')}}
 
                   <div class="form-floating">
-                    <input value="{{ phrase(177) }}" type="text" class="form-control"
+                    <input value="{{get_email_template()['notice_reg_subject']|raw}}" type="text" class="form-control"
                            id="notice_reg_subject" placeholder="{{ phrase(177) }}">
                     <label for="notice_reg_subject">{{phrase('email_subject')}}</label>
                   </div>

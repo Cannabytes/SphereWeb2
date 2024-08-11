@@ -4,44 +4,44 @@
 
 {% block content %}
 
-    <div class="container-fluid">
+<div class="container-fluid">
 
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="card custom-card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            {{ phrase(444) }}
-                        </div>
-                    </div>
-                    <div class="card-body">
-
-                        <div class="">
-                            <div class="tab-pane text-muted active show" id="home1" role="tabpanel">
-                                <p class="card-text">{{phrase('experimental_update_function')|raw}}</p>
-
-                                <div class="text-success" id="messagedata"></div>
-                                <button id="startUpdate" class="btn btn-success">{{phrase('check_update_software')}}</button>
-                                <div class="d-none" id="loading">
-                                    {{phrase('please_wait')}}<br>
-                                    <span id="progressText" class=""></span>
-                                </div>
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">
+            {{ phrase(444) }}
+          </div>
         </div>
+        <div class="card-body">
 
+          <div class="">
+            <div class="tab-pane text-muted active show" id="home1" role="tabpanel">
+              <p class="card-text">{{phrase('experimental_update_function')|raw}}</p>
 
+              <div class="text-success" id="messagedata"></div>
+              <button id="startUpdate" class="btn btn-success">{{phrase('check_update_software')}}</button>
+              <div class="d-none" id="loading">
+                {{phrase('please_wait')}}<br>
+                <span id="progressText" class=""></span>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+
+
+  <div id="table"></div>
+
+
+</div>
 
 {% endblock %}
-
-
-
 
 
 {% block css %}
@@ -53,54 +53,70 @@
 
 <script>
 
-    $('#startUpdate').on('click', function (e) {
-        e.preventDefault();
-        $(this).attr('disabled', 'disabled');
-        checkProgress();
+  $('#startUpdate').on('click', function (e) {
+    e.preventDefault();
+    $(this).attr('disabled', 'disabled');
 
-        $.ajax({
-            url: '/github/update',
-            method: 'POST',
-            success: function (response) {
-                if(response.ok){
-                    $("#messagedata").text("{{ phrase(463) }}")
-                }
+    $.ajax({
+      url: '/github/update',
+      method: 'POST',
+      success: function (response) {
+        if (response.ok) {
+
+          // Создание таблицы
+          var tableHtml = `
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table text-nowrap table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" style="width: 1%">Status</th>
+                                                <th scope="col">File</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>`;
+
+          // Заполнение таблицы данными из ответа
+          response.files.forEach(function (file) {
+            var statusBadge = '';
+            switch (file.status) {
+              case 'added':
+                statusBadge = '<span class="badge bg-success-transparent">Added</span>';
+                break;
+              case 'modified':
+                statusBadge = '<span class="badge bg-light text-remove">Modified</span>';
+                break;
+              case 'removed':
+                statusBadge = '<span class="badge bg-danger-transparent">Removed</span>';
+                break;
+              default:
+                statusBadge = '<span class="badge bg-secondary">Unknown</span>';
+                break;
             }
-        });
 
+            tableHtml += `
+                        <tr>
+                            <td>${statusBadge}</td>
+                            <td><div class="d-flex align-items-center">${file.file}</div></td>
+                        </tr>`;
+          });
+
+          tableHtml += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>`;
+
+          // Вставка таблицы в div с id "table"
+          $('#table').html(tableHtml);
+        }
+      }
     });
-
-
-    function checkProgress() {
-        $.ajax({
-            url: '/github/update/progress',
-            dataType: 'json',
-            method: 'POST',
-            success: function (response) {
-                if(response.status){
-                    $("#loading").removeClass('d-none');
-                } else if(response.status === false){
-                    // Остановить setTimeout, если статус false
-                    return;
-                }
-
-                var progress = response.progress;
-                $('#progressText').text("{{ phrase('progress') }} : " + progress + '%');
-
-                if (progress < 100) {
-                    setTimeout(checkProgress, 100);
-                } else {
-                    $('#startUpdate').removeAttr('disabled');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Ошибка при обновлении прогресса: ", error);
-            }
-        });
-    }
-
-
-
+  });
 
 
 </script>

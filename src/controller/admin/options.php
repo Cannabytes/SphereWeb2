@@ -17,7 +17,6 @@ use Ofey\Logan22\component\servername\servername;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
-use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\patchlist;
 use Ofey\Logan22\model\admin\server;
 use Ofey\Logan22\model\admin\update_cache;
@@ -198,7 +197,15 @@ class options
                 $servers[]     = $sphereServers;
             }
         }
+
+        $mysql_data_connect = sql::getRow(
+          "SELECT * FROM `server_cache` WHERE server_id = ? and `type`='mysql_data_connect';",
+          [$server->getId()]
+        );
+        $mysql_data_connect = json_decode($mysql_data_connect['data'], true);
+
         tpl::addVar([
+          'mysql_data_connect'    => $mysql_data_connect,
           'sphereServers'         => $servers,
           'client_list_default'   => client::all(),
           'timezone_list_default' => timezone::all(),
@@ -333,8 +340,7 @@ class options
         $game_password = $_POST['game_password'] ?? "";
         $game_name     = $_POST['game_name'] ?? board::error("No select game name");
 
-        $data = \Ofey\Logan22\component\sphere\server::send(type::CONNECT_DB_UPDATE, [
-
+        $arr = [
           "login_host"     => $login_host,
           "login_port"     => $login_port,
           "login_user"     => $login_user,
@@ -348,8 +354,21 @@ class options
           "game_name"     => $game_name,
 
           "serverId" => $server_id,
+        ];
 
-        ])->show()->getResponse();
+        $data = \Ofey\Logan22\component\sphere\server::send(type::CONNECT_DB_UPDATE, $arr)->show()->getResponse();
+
+        $save_data_MySQL = filter_var($_POST['save_data_MySQL'], FILTER_VALIDATE_BOOL);
+        sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = 'mysql_data_connect'", [$server_id]);
+        if ($save_data_MySQL) {
+            $jsonData = json_encode($arr);
+            sql::sql("INSERT INTO `server_cache` ( `server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
+              $server_id,
+              'mysql_data_connect',
+              $jsonData,
+              time::mysql(),
+            ]);
+        }
 
         board::success(lang::get_phrase(217));
     }

@@ -8,7 +8,6 @@ use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
-use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\config\github;
 use Ofey\Logan22\model\db\sql;
 
@@ -28,13 +27,13 @@ class update
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $json = file_get_contents('php://input');
-            if($json === false){
+            if ($json === false) {
                 return;
             }
             $data = json_decode($json, true);
             if (server::getToken() == $data['token']) {
                 self::checkNewCommit();
-            }else{
+            } else {
                 echo 'token error';
             }
         }
@@ -49,25 +48,30 @@ class update
 
             if ($sphere['last_commit'] == self::getLastCommit()) {
                 board::success("Обновление не требуется");
+
                 return;
             }
 
-            if (!$sphere['status']) {
+            if ( ! $sphere['status']) {
                 set_time_limit(600);
                 $last_commit_now = $sphere['last_commit_now'];
-                $totalFiles = count($sphere['data']);
+                $totalFiles      = count($sphere['data']);
+                $filesStatus           = [];
                 foreach ($sphere['data'] as $data) {
-                    $file = $data['file'];
-                    $status = $data['status'];
-                    $link = $data['link'];
+                    $file     = $data['file'];
+                    $status   = $data['status'];
+                    $link     = $data['link'];
+                    $filesStatus[]    = [
+                      'file'   => $file,
+                      'status' => $status,
+                    ];
                     $filePath = fileSys::get_dir($file);
 
                     if ($status == 'added' || $status == 'modified') {
                         self::ensureDirectoryExists($filePath);
 
                         $curlResponse = self::getContentUsingCurl($link);
-                        if (!$curlResponse['success']) {
-                            file_put_contents("updateLogError.log", "Ошибка при получении контента по ссылке: " . $link . "\n" . "Error: " . $curlResponse['error'] . "\n", FILE_APPEND);
+                        if ( ! $curlResponse['success']) {
                             throw new Exception("Не удалось получить контент по ссылке: " . $link);
                         }
 
@@ -75,33 +79,48 @@ class update
 
                         $writeResult = file_put_contents($filePath, $content);
                         if ($writeResult === false) {
-                            file_put_contents("updateLogError.log", "Ошибка при записи в файл: " . $filePath . "\n", FILE_APPEND);
                             throw new Exception("Не удалось записать контент в файл: " . $filePath);
                         }
 
                         $writtenContent = file_get_contents($filePath);
                         if ($writtenContent === false || $writtenContent !== $content) {
-                            file_put_contents("updateLogError.log", "Ошибка: содержимое файла " . $filePath . " не совпадает с ожидаемым\n", FILE_APPEND);
                             throw new Exception("Содержимое файла не совпадает с ожидаемым: " . $filePath);
                         }
                     } elseif ($status == 'removed') {
                         if ($file == 'data/db.php') {
                             continue;
                         }
-                        if (!unlink($filePath)) {
-                            file_put_contents("updateLogError.log", "Ошибка при удалении файла: " . $filePath . "\n", FILE_APPEND);
-                            throw new Exception("Не удалось удалить файл: " . $filePath);
-                        }
+                        unlink($filePath);
                     }
                 }
                 self::addLastCommit($last_commit_now);
-                board::success("Обновлено " . $totalFiles . " файл(ов)");
+                board::alert([
+                    'type'    => 'notice',
+                    'ok'      => true,
+                    'message' => "Обновлено " . $totalFiles . " файл(ов)",
+                    'files' => ($filesStatus),
+                ]);
             } else {
                 board::success("Обновление не требуется");
             }
         } catch (Exception $e) {
-            file_put_contents("updateLogError.log", "Ошибка: " . $e->getMessage() . "\n", FILE_APPEND);
             board::error("Произошла ошибка во время обновления: " . $e->getMessage());
+        }
+    }
+
+    static function getLastCommit(): string|null
+    {
+        $github              = sql::getRow("SELECT * FROM `github_updates` WHERE sha != '' ORDER BY `id` DESC LIMIT 1");
+        self::$shaLastCommit = $github['sha'] ?? '';
+
+        return self::$shaLastCommit;
+    }
+
+    private static function ensureDirectoryExists($filePath)
+    {
+        $directory = dirname($filePath);
+        if ( ! is_dir($directory)) {
+            mkdir($directory, 0777, true);
         }
     }
 
@@ -119,27 +138,13 @@ class update
         if (curl_errno($ch)) {
             $error_msg = curl_error($ch);
             curl_close($ch);
+
             return ['success' => false, 'error' => $error_msg];
         }
 
         curl_close($ch);
+
         return ['success' => true, 'data' => $response];
-    }
-
-
-    static function getLastCommit(): string|null
-    {
-        $github              = sql::getRow("SELECT * FROM `github_updates` WHERE sha != '' ORDER BY `id` DESC LIMIT 1");
-        self::$shaLastCommit = $github['sha'] ?? '';
-        return self::$shaLastCommit;
-    }
-
-    private static function ensureDirectoryExists($filePath)
-    {
-        $directory = dirname($filePath);
-        if ( ! is_dir($directory)) {
-            mkdir($directory, 0777, true);
-        }
     }
 
     static function addLastCommit($last_commit_now): void

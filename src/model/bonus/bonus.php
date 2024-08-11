@@ -27,6 +27,7 @@ class bonus
         $maxCodeSymbols    = 12;
         $countGenBonusCode = $_POST["count_codes"] ?? 100;
         $items             = $_POST['items'];
+        $prefix            = $_POST['prefix'] ?? '';
         if ($items == null || count($items) == 0) {
             board::notice(false, "Не указаны предметы");
         }
@@ -43,7 +44,7 @@ class bonus
         $codesReg  = [];
 
         for ($i = 0; $i < $countGenBonusCode; $i++) {
-            $code       = self::generateRandomStrings($minCodeSymbols, $maxCodeSymbols);
+            $code       = $prefix . self::generateRandomStrings($minCodeSymbols, $maxCodeSymbols);
             $codesReg[] = $code;
             foreach ($items as $item) {
                 $itemid  = $item['itemId'];

@@ -20,11 +20,12 @@
               <th scope="col">Items</th>
               <th scope="col">Start Date</th>
               <th scope="col">End Date</th>
+              <th scope="col"></th>
             </tr>
             </thead>
             <tbody>
               {% for key, data in codeTable %}
-            <tr>
+            <tr id="{{key}}">
               <th scope="row">{{ key }}
                 <i data-code="{{ key }}" class="ri-file-copy-2-line copy" role="button"></i>
               </th>
@@ -55,6 +56,9 @@
               <td>
                  {{ data[0].end_date_code }}
               </td>
+              <td>
+                <i data-object-key="{{key}}" role="button" class="fe fe-trash-2 text-danger deleteBonusCode"></i>
+              </td>
             </tr>
             {% endfor %}
 
@@ -70,6 +74,16 @@
 
 {% block js %}
 <script>
+
+    $('.deleteBonusCode').on('click', function() {
+      var key = $(this).data('object-key');
+      AjaxSend("/admin/bonuscode/delete", "POST", {key:key}, true).then(function (response) {
+        responseAnalysis(response);
+        $('#' + key).remove();
+      });
+
+  });
+
 
   $('.copy').click(function () {
     let code = $(this).data('code')

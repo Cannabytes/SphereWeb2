@@ -354,6 +354,12 @@
 
                     <p class="mb-1 fw-semibold text-warning op-5 ">{{phrase('sphere_web_db_connection_error')}}</p>
 
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="saveDataMySQL" checked="">
+                      <label class="form-check-label" for="saveDataMySQL">
+                        Сохранить данные подключения к БД
+                      </label>
+                    </div>
 
                     <div class="row">
                       <div class="col-lg-6 col-xl-6 border-end border-inline-end-dashed">
@@ -363,14 +369,14 @@
                           <div class="col-6">
                             <div class="form-floating mb-4">
                               <input type="text" class="form-control" name="login_host" id="login_host"
-                                     value="127.0.0.1">
+                                     value="{{ mysql_data_connect.login_host ?: '127.0.0.1' }}">
                               <label class="form-label" for="login_host">IP</label>
                             </div>
                           </div>
 
                           <div class="col-6">
                             <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="login_port" id="login_port" value="3306">
+                              <input type="text" class="form-control" name="login_port" id="login_port" value="{{ mysql_data_connect.login_port ?: '3306' }}">
                               <label class="form-label" for="login_port">Port</label>
                             </div>
                           </div>
@@ -379,7 +385,7 @@
                         <div class="row">
                           <div class="col-6">
                             <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="login_user" value="root" id="login_user">
+                              <input type="text" class="form-control" name="login_user" value="{{ mysql_data_connect.login_user ?: 'root' }}" id="login_user">
                               <label class="form-label" for="login_user">User name</label>
                             </div>
                           </div>
@@ -387,7 +393,7 @@
                           <div class="col-6">
                             <div class="form-floating mb-4">
                               <input type="text" class="form-control" name="login_password" id="login_password"
-                                     value="">
+                                     value="{{ mysql_data_connect.login_password ?: '' }}">
                               <label class="form-label" for="login_password">Password</label>
                             </div>
                           </div>
@@ -403,7 +409,11 @@
 
                         <div class="form-floating mb-4 col-6">
                           <select class="form-select" id="login_name" name="login_name">
-                            <option selected="" disabled="">Не выбрано</option>
+                            {% if mysql_data_connect.login_name %}
+                            <option selected="{{mysql_data_connect.login_name}}">{{mysql_data_connect.login_name}}</option>
+                            {% else %}
+                            <option selected="" disabled="">{{ phrase('no_select') }}</option>
+                            {% endif %}
                           </select>
                           <label class="form-label" for="login_name">База Данных LoginServer</label>
                         </div>
@@ -416,14 +426,14 @@
                         <div class="row">
                           <div class="col-6">
                             <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="game_host" id="game_host" value="127.0.0.1">
+                              <input type="text" class="form-control" name="game_host" id="game_host" value="{{ mysql_data_connect.game_host ?: '127.0.0.1' }}">
                               <label class="form-label" for="game_host">IP</label>
                             </div>
                           </div>
 
                           <div class="col-6">
                             <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="game_port" id="game_port" value="3306">
+                              <input type="text" class="form-control" name="game_port" id="game_port" value="{{ mysql_data_connect.game_port ?: '3306' }}">
                               <label class="form-label" for="game_port">Port</label>
                             </div>
                           </div>
@@ -432,14 +442,14 @@
                         <div class="row">
                           <div class="col-6">
                             <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="game_user" id="game_user" value="root">
+                              <input type="text" class="form-control" name="game_user" id="game_user" value="{{ mysql_data_connect.game_user ?: 'root' }}">
                               <label class="form-label" for="game_user">User name</label>
                             </div>
                           </div>
 
                           <div class="col-6">
                             <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="game_password" id="game_password" value="">
+                              <input type="text" class="form-control" name="game_password" id="game_password" value="{{ mysql_data_connect.game_password ?: '' }}">
                               <label class="form-label" for="game_password">Password</label>
                             </div>
                           </div>
@@ -456,7 +466,11 @@
                         <div class="row">
                           <div class="form-floating mb-4 col-6">
                             <select class="form-select" id="game_name" name="game_name">
+                              {% if mysql_data_connect.game_name %}
+                              <option selected="{{mysql_data_connect.game_name}}">{{mysql_data_connect.game_name}}</option>
+                              {% else %}
                               <option selected="" disabled="">{{ phrase('no_select') }}</option>
+                              {% endif %}
                             </select>
                             <label class="form-label" for="game_name">{{ phrase('db_game') }}</label>
                           </div>
@@ -690,6 +704,7 @@
     var game_user = $('#game_user').val();
     var game_password = $('#game_password').val();
     var game_name = $('#game_name').val();
+    var saveDataMySQL = $('#saveDataMySQL').prop('checked');
     AjaxSend('/admin/server/edit/save/mysql', 'POST', {
       login_host: login_host,
       login_port: login_port,
@@ -701,6 +716,7 @@
       game_user: game_user,
       game_password: game_password,
       game_name: game_name,
+      save_data_MySQL: saveDataMySQL,
       serverId: serverid,
     }, false);
 

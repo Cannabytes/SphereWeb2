@@ -31,6 +31,7 @@ class bonuscode {
     public static function show_code(){
         validation::user_protection("admin");
         $sql = "SELECT 
+        id,
         code,
         item_id,
         count,
@@ -39,7 +40,10 @@ class bonuscode {
         server_id 
     FROM
         bonus_code 
-        WHERE server_id = ?";
+    WHERE 
+        server_id = ?
+    ORDER BY 
+        id DESC";
         $codeTable = sql::getRows($sql, [user::self()->getServerId()]);
 
         $sortedCodeTable = [];
@@ -66,6 +70,13 @@ class bonuscode {
         }
         tpl::addVar('codeTable', $sortedCodeTable);
         tpl::display("/admin/bonuscode_list.html");
+    }
+
+    static public function delete()
+    {
+        $key = $_POST['key'] ?? board::error("Not id key");
+        sql::run("DELETE FROM `bonus_code` WHERE `code` = ?", [$key]);
+        board::success("Удалено");
     }
 
 
