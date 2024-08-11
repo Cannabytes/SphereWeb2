@@ -949,9 +949,7 @@ return [
                   <p>Чат Sphere телеграмма - <a href=\'https://t.me/shpereweb\' target=\'_blank\' class=\' m-1 text-success\'>Telegram</a>.</p>
                   <footer class=\'blockquote-footer\'>Форумный раздел SphereWeb на сайте <a target=\'_blank\' href=\'https://mmo-dev.info/forums/sphereweb-cms.166/\' class=\'\'>mmo-dev.info</a></footer>',
 	'install_sphere' => 'Установка Sphere',
-	'invite_friends_get_bonus' => 'Привлекайте друзей, знакомых играть вместе с Вами, и получите бонус!
-          <br>
-          Распространите ссылку на Ваш профиль регистрации, среди жильцов нашего ЖЭКа, среди друзей и пронизанных сплошь и рядом, опиумным дурманом молодых лиц.',
+	'invite_friends_get_bonus' => 'Привлекайте друзей, знакомых играть вместе с Вами, и получите бонус!',
 	'invite_meet_req_bonus' => 'Если привлеченные Вами игроки, выполнят одним из персонажей необходимые требования, Вы получите бонус.',
 	'is_close' => 'Закрыто',
 	'is_open' => 'Открыто',

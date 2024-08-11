@@ -945,7 +945,7 @@ You can get the CAPTCHA keys here - <a href=\'https://www.google.com/recaptcha/a
                   <p>Sphere Telegram chat - <a href=\'https://t.me/shpereweb\' target=\'_blank\' class=\' m-1 text-success\'>Telegram</a>.</p>
                   <footer class=\'blockquote-footer\'>SphereWeb forum section on <a target=\'_blank\' href=\'https://mmo-dev.info/forums/sphereweb-cms.166/\' class=\'\'>mmo-dev.info</a></footer>',
 	'install_sphere' => 'Install Sphere',
-	'invite_friends_get_bonus' => 'Invite friends and acquaintances to play with you and get a bonus! Share the link to your registration profile among the residents of our housing office, among friends.',
+	'invite_friends_get_bonus' => 'Invite friends and acquaintances to play with you and get a bonus!',
 	'invite_meet_req_bonus' => 'If the players you invited meet the necessary requirements with one of their characters, you will receive a bonus.',
 	'is_close' => 'Is close',
 	'is_open' => 'Is open',
