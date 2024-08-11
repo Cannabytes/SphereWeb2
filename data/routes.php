@@ -1808,4 +1808,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  127 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/bonuscode/delete',
+    'func' => 'controller\\admin\\bonuscode::delete',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );
