@@ -43,7 +43,8 @@
               </div>
               <div class="mt-0 text-start">
                 <p class="fs-14 text-muted mb-0">{{phrase('no_registration_servers')}}<br>
-                  <a href="/admin/server/add/new" class=" text-primary d-inline-flex">{{phrase('register_server')}}</a></p>
+                  <a href="/admin/server/add/new" class=" text-primary d-inline-flex">{{phrase('register_server')}}</a>
+                </p>
               </div>
             </div>
           </div>
@@ -132,159 +133,171 @@
 
               <div class="row">
                 <div class="col-xl-6">
-                    <div class="card-body">
+                  <div class="card-body">
+                    {% if getUser().isAuth() == false %}
+                    {{phrase('you_need')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-auth-user"
+                                              class="alert-link text-danger">{{phrase('log_in')}}</a>,
+                    {{phrase('or')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-new-user"
+                                        class="alert-link text-danger">{{phrase('reg_acc')}}</a>,
+                    {{phrase('ctrl_chars')}}.
+                    {% else %}
+
+
+                    <form action="/registration/account" method="POST">
+
+
+                      <div class="row mb-0">
+
+                        <div class="input-group mb-3 ">
+
+                          <div
+                            class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm ">
+                            {{ phrase(40) }}
+                          </div>
+
+                        </div>
+
+
+                        <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>
+
+                        <div class="col-sm-4">
+                          <div class="input-group mb-3">
+
+                            {% if config().registration().getEnablePrefix() and config().registration().getPrefixType()
+                            == 'prefix' %}
+                            <button class="btn btn-light account_prefix" type="button">
+                              {{config().registration().genPrefix()}}
+                            </button>
+                            {% endif %}
+                            <input minlength="3" maxlength="16" type="text" class="form-control" name="login"
+                                   id="accountRegistration" placeholder="" aria-label="Example text with button addon"
+                                   aria-describedby="button-addon1">
+                            {% if config().registration().getEnablePrefix() and config().registration().getPrefixType()
+                            == 'suffix' %}
+                            <button class="btn btn-light account_prefix" type="button">
+                              {{config().registration().genPrefix()}}
+                            </button>
+                            {% endif %}
+
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <div class="row mb-0">
+
+
+                        <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
+                        <div class="col-sm-4">
+                          <input type="password" class="form-control" name="password" id="passwordRegistration"
+                                 autocomplete="off">
+                        </div>
+                      </div>
+                      <fieldset class="row mb-3">
+                        <legend class="col-form-label col-sm-2 pt-0"></legend>
+                        <div class="col-sm-10">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="password_hide" name="password_hide">
+                            <label class="form-check-label" for="password_hide">
+                              {{phrase('lv_pwd_vis')}}
+                            </label>
+                          </div>
+                        </div>
+                      </fieldset>
+
                       {% if getUser().isAuth() == false %}
-                      {{phrase('you_need')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-auth-user"
-                                        class="alert-link text-danger">{{phrase('log_in')}}</a>,
-                      {{phrase('or')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-new-user"
-                             class="alert-link text-danger">{{phrase('reg_acc')}}</a>, {{phrase('ctrl_chars')}}.
+
+                      {% if config().isGoogleCaptcha() %}
+                      <input class="captchaToken" type="hidden" name="captcha">
                       {% else %}
-
-
-                      <form action="/registration/account" method="POST">
-
-
-                        <div class="row mb-0">
-
-                          <div class="input-group mb-3 ">
-
-                            <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm ">
-                              {{ phrase(40) }}
-                            </div>
-
-                          </div>
-
-
-                          <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>
-
-                          <div class="col-sm-4">
-                            <div class="input-group mb-3">
-
-                              {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() == 'prefix' %}
-                                <button class="btn btn-light account_prefix" type="button">{{config().registration().genPrefix()}}</button>
-                              {% endif %}
-                              <input minlength="3" maxlength="16" type="text" class="form-control"  name="login" id="accountRegistration" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
-                              {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() == 'suffix' %}
-                              <button class="btn btn-light account_prefix" type="button" >{{config().registration().genPrefix()}}</button>
-                              {% endif %}
-
-                            </div>
-                          </div>
-
-                        </div>
-
-                        <div class="row mb-0">
-
-
-                          <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
-                          <div class="col-sm-4">
-                            <input type="password" class="form-control" name="password" id="passwordRegistration"
-                                   autocomplete="off">
+                      <div class="row mb-4">
+                        <div class="col-6">
+                          <div class="form-floating" style="">
+                            <img src="" class="lightbox-thumb img-thumb captcha_img"/>
                           </div>
                         </div>
-                        <fieldset class="row mb-3">
-                          <legend class="col-form-label col-sm-2 pt-0"></legend>
-                          <div class="col-sm-10">
-                            <div class="form-check">
-                              <input class="form-check-input" type="checkbox" id="password_hide" name="password_hide">
-                              <label class="form-check-label" for="password_hide">
-                                {{phrase('lv_pwd_vis')}}
-                              </label>
-                            </div>
-                          </div>
-                        </fieldset>
-
-                        {% if getUser().isAuth() == false %}
-
-                        {% if config().isGoogleCaptcha() %}
-                        <input class="captchaToken" type="hidden" name="captcha">
-                        {% else %}
-                        <div class="row mb-4">
-                          <div class="col-6">
-                            <div class="form-floating" style="">
-                              <img src="" class="lightbox-thumb img-thumb captcha_img"/>
-                            </div>
-                          </div>
-                          <div class="col-6">
-                            <div class="form-floating">
-                              <input type="text" class="form-control" id="auth_captcha" name="captcha"
-                                     placeholder="Captcha">
-                              <label class="form-label" for="auth_captcha">Captcha</label>
-                            </div>
+                        <div class="col-6">
+                          <div class="form-floating">
+                            <input type="text" class="form-control" id="auth_captcha" name="captcha"
+                                   placeholder="Captcha">
+                            <label class="form-label" for="auth_captcha">Captcha</label>
                           </div>
                         </div>
-                        {% endif %}
-
-                        {% endif %}
-
-                        <div class="container px-0 mb-0">
-                          <div class="row ">
-                            <div class="col-sm-6">
-                              <button type="submit"
-                                      class="btn btn-success shadow-success btn-wave waves-effect waves-light">
-                                {{phrase('reg_new_acc')}}
-                              </button>
-                            </div>
-
-                          </div>
-                        </div>
-
-                      </form>
+                      </div>
                       {% endif %}
-                    </div>
+
+                      {% endif %}
+
+                      <div class="container px-0 mb-0">
+                        <div class="row ">
+                          <div class="col-sm-6">
+                            <button type="submit"
+                                    class="btn btn-success shadow-success btn-wave waves-effect waves-light">
+                              {{phrase('reg_new_acc')}}
+                            </button>
+                          </div>
+
+                        </div>
+                      </div>
+
+                    </form>
+                    {% endif %}
+                  </div>
                 </div>
 
                 <div class="col-xl-6">
-                    <div class="card-body">
-                      {% if getUser().isAuth() %}
-                      <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm ">
-                        {{ phrase(43) }} <span data-bs-toggle="modal" data-bs-target="#syncAccount" >
-                          <i role="button" class="bi bi-person-plus text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}"></i>
+                  <div class="card-body">
+                    {% if getUser().isAuth() %}
+                    <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm ">
+                      {{ phrase(43) }} <span data-bs-toggle="modal" data-bs-target="#syncAccount">
+                          <i role="button" class="bi bi-person-plus text-success" data-bs-toggle="tooltip"
+                             data-bs-placement="top"
+                             data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}"></i>
                         </span>
-                      </div>
-                      {% if statusSphereServer() is same as(false) %}
-                      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>{{phrase('fail_conn_sphereapi_srv')}}</strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div>
-                      {% else %}
-                      <div class="table-responsive">
-                        <table class="table text-nowrap table-bordered table-sm">
-                          <thead>
-                          <tr>
-                            <th>{{phrase('account')}}</th>
-                            <th>{{phrase('password')}}</th>
-                            <th></th>
-                          </tr>
-                          </thead>
-                          <tbody id="player_account_list">
-                          {% for account in getUser().getAccounts() %}
-                          <tr>
-                            <td>{{ account.getAccount() }}</td>
-                            <td>
-                              {% if account.isPasswordHide() %}
-                              * * * * * *
-                              {% else %}
-                              {{ account.getPassword() }}
-                              {% endif %}
-                            </td>
-                            <td>
-
-                              <i role="button" class="fe fe-settings btn-change-password"
-                                 data-account="{{account.getAccount()}}"
-                                 data-bs-toggle="modal"
-                                 data-bs-effect="effect-slide-in-right"
-                                 data-bs-target="#changepassword"></i>
-                            </td>
-                          </tr>
-                          {% endfor %}
-                          </tbody>
-                        </table>
-                      </div>
-                      {% endif %}
-                      {% endif %}
-
                     </div>
+                    {% if statusSphereServer() is same as(false) %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                      <strong>{{phrase('fail_conn_sphereapi_srv')}}</strong>
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% else %}
+                    <div class="table-responsive">
+                      <table class="table text-nowrap table-bordered table-sm">
+                        <thead>
+                        <tr>
+                          <th>{{phrase('account')}}</th>
+                          <th>{{phrase('password')}}</th>
+                          <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="player_account_list">
+                        {% for account in getUser().getAccounts() %}
+                        <tr>
+                          <td>{{ account.getAccount() }}</td>
+                          <td>
+                            {% if account.isPasswordHide() %}
+                            * * * * * *
+                            {% else %}
+                            {{ account.getPassword() }}
+                            {% endif %}
+                          </td>
+                          <td>
+
+                            <i role="button" class="fe fe-settings btn-change-password"
+                               data-account="{{account.getAccount()}}"
+                               data-bs-toggle="modal"
+                               data-bs-effect="effect-slide-in-right"
+                               data-bs-target="#changepassword"></i>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+
+                  </div>
                 </div>
 
 
@@ -399,13 +412,10 @@
                                 class="card-body alert-light text-center border-top-card border-top-danger rounded-0   ">
 
                                 <div class="d-sm-flex  main-profile-cover">
-                                                                                          <span
-                                                                                            class="avatar avatar-xxl {% if character.getOnline() %}online{% else %}offline{% endif %} me-3">
-                                                                                              <img
-                                                                                                src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
-                                                                                                alt=""
-                                                                                                class="avatar avatar-xxl img-thumbnail ">
-                                                                                          </span>
+                                  <img
+                                    src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
+                                    alt=""
+                                    class="avatar avatar-xxl img-thumbnail {% if character.getOnline() %}online{% else %}offline{% endif %}">
                                   <div class="flex-fill main-profile-info my-auto">
                                     <span class="fs-6 badge bg-dark text-white">{{character.getPlayerName()}}</span>
                                     <div>
@@ -441,7 +451,8 @@
                                           <div class="mb-3 form-check">
                                             <input name="account" type="hidden" value="{{account.getAccount()}}">
                                             <input name="player" type="hidden" value="{{character.getPlayerName()}}">
-                                            <input checked name="itemsToWarehouse" type="checkbox" class="form-check-input"
+                                            <input checked name="itemsToWarehouse" type="checkbox"
+                                                   class="form-check-input"
                                                    id="check_{{character.getPlayerId()}}">
                                             <label class="form-check-label" for="check_{{character.getPlayerId()}}">{{phrase('send_items_wh')}}</label>
                                           </div>
@@ -550,7 +561,8 @@
 
                 <div class="col-xl-4">
                   <button {% if isPlayers== false %}disabled{% endif %} id="warehouseSendItemsToPlayer"
-                          type="button" class="btn btn-dark btn-wave text-white waves-effect waves-light">{{phrase('send_items')}}
+                          type="button" class="btn btn-dark btn-wave text-white waves-effect waves-light">
+                    {{phrase('send_items')}}
                   </button>
                 </div>
 
@@ -990,11 +1002,11 @@
 </script>
 
 <script>
-    $(document).on('click', '.account_prefix', function () {
-        AjaxSend('/registration/account/prefix', 'POST', {}, true).then(function (prefix) {
-            $('.account_prefix').text(prefix);
-        });
+  $(document).on('click', '.account_prefix', function () {
+    AjaxSend('/registration/account/prefix', 'POST', {}, true).then(function (prefix) {
+      $('.account_prefix').text(prefix);
     });
-  </script>
+  });
+</script>
 
 {% endblock %}
