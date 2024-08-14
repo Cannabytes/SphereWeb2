@@ -203,7 +203,7 @@
                                 <div class="tab-pane text-muted {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false %}active{% endif %}" id="services-vertical"
                                      role="tabpanel">
 
-                                    {{phrase('accum_sys_bonus', count_all_donate_bonus, count_all_donate_bonus_percent)}}
+                                    {{phrase('accum_sys_bonus', count_all_donate_bonus, count_all_donate_bonus_percent)|raw}}
 
                                     <br>
                                     <div class="table-responsive mt-4">
