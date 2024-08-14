@@ -919,8 +919,8 @@
                         <tbody>
 
                         {% for item in config().referral().getLeaderBonusItems() %}
-                        <tr data-item-id="{{ item.item_id }}" data-count="{{ item.count }}"
-                            data-enchant="{{ item.enchant }}">
+                        <tr data-item-id="{{ item.getItemId() }}" data-count="{{ item.getCount() }}"
+                            data-enchant="{{ item.getEnchant() }}">
                           {% set icon = item.getIcon() %}
                           {% set name = item.getItemName() %}
 
@@ -1008,8 +1008,9 @@
                         <tbody>
 
                         {% for item in config().referral().getSlaveBonusItems() %}
-                        <tr data-item-id="{{ item.item_id }}" data-count="{{ item.count }}"
-                            data-enchant="{{ item.enchant }}">
+
+                        <tr data-item-id="{{ item.getItemId() }}" data-count="{{ item.getCount() }}"
+                            data-enchant="{{ item.getEnchant() }}">
                           {% set icon = item.getIcon() %}
                           {% set name = item.getItemName() %}
 
