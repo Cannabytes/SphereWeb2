@@ -44,11 +44,18 @@ class index {
         \Ofey\Logan22\model\server\server::clearServerInfo();
         \Ofey\Logan22\model\server\server::getServer();
 
+        if(!$sphereAPIError){
+            tpl::addVar([
+              "launcher" => $info['launcher'] ?? null,
+              "balance" => (float)$info['balance'] ?? 0,
+              "servers" => $info['servers'],
+              "sphere_last_commit" => $info['last_commit'],
+            ]);
+        }
+
         tpl::addVar([
           "sphereAPIError" => $sphereAPIError,
           "title" => lang::get_phrase("admin_panel"),
-          "servers" => $info['servers'],
-          "sphere_last_commit" => $info['last_commit'],
           "self_last_commit" => update::getLastCommit(),
         ]);
         tpl::display("admin/index.html");

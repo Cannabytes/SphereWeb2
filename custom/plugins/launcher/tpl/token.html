@@ -1,0 +1,58 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- Start:: row-1 -->
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header justify-content-between">
+          <div class="card-title">
+            Создание токена для лаунчера
+          </div>
+
+        </div>
+        <div class="card-body">
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="list"
+                   placeholder="https://example.com/updater/client.csv">
+            <label for="list">Ссылка на файл client.csv</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="storage"
+                   placeholder="https://example.com/updater/">
+            <label for="storage">Ссылка на месторасположение файлов патча</label>
+          </div>
+
+          <button class="btn btn-primary mb-5" type="submit" id="generationToken">Сгенерировать</button>
+
+          <div class="mb-3">
+            <label for="token" class="form-label fs-14 text-dark">Ваш токен</label>
+            <input type="text" class="form-control" id="token" placeholder="">
+          </div>
+
+        </div>
+
+
+
+      </div>
+    </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  $("#generationToken").on("click", function () {
+      AjaxSend("/admin/launcher/create/token/generation", "POST", {
+          "list": $("#list").val(),
+          "storage": $("#storage").val(),
+      }, true).then(function (response){
+          $("#token").val(response.token);
+      });
+  })
+</script>
+{% endblock %}

@@ -5,31 +5,33 @@
  * Date: 26.03.2023 / 6:53:39
  */
 
-
 namespace Ofey\Logan22\controller\admin;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\model\admin\validation;
-use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\template\tpl;
 
-class launcher {
+class launcher
+{
 
-    public static function add($serverLauncher): void {
+    public static function add($serverLauncher): void
+    {
         validation::user_protection("admin");
         tpl::addVar([
-            'serverLauncher' => $serverLauncher,
+          'serverLauncher' => $serverLauncher,
         ]);
         tpl::display("admin/launcher/add.html");
     }
 
-    public static function addNewServer(): void {
+    public static function addNewServer(): void
+    {
         validation::user_protection("admin");
         self::validateInput();
-        $appication = trim($_POST['l2app']);
+        $appication   = trim($_POST['l2app']);
         $buttonphrase = trim($_POST['buttonphrase']) ?: "launch_game";
-        $args = trim($_POST['args']);
-        if(isset($_POST['serverId']) && filter_var($_POST['serverId'], FILTER_VALIDATE_INT)) {
+        $args         = trim($_POST['args']);
+        if (isset($_POST['serverId']) && filter_var($_POST['serverId'], FILTER_VALIDATE_INT)) {
             $serverId = (int)$_POST['serverId'];
         } else {
             board::notice(false, "Нет передан ID сервера");
@@ -42,7 +44,20 @@ class launcher {
         }
     }
 
-    public static function removeLauncher(){
+    private static function validateInput(): void
+    {
+        self::validateField($_POST['l2app'] ?? "", "Необходимо указать приложение для запуска игры. Обычно это /system/l2.exe");
+    }
+
+    private static function validateField(string $field, string $errorMsg): void
+    {
+        if (trim($field) == "") {
+            board::notice(false, $errorMsg);
+        }
+    }
+
+    public static function removeLauncher()
+    {
         validation::user_protection("admin");
         self::validateField($_POST['launcherId'] ?? "", "Не передан индификатор удаляемого лаунчера");
         $ok = \Ofey\Logan22\model\admin\launcher::remove($_POST['launcherId']);
@@ -53,14 +68,15 @@ class launcher {
         }
     }
 
-    private static function validateInput(): void {
-        self::validateField($_POST['l2app'] ?? "", "Необходимо указать приложение для запуска игры. Обычно это /system/l2.exe");
-    }
-
-    private static function validateField(string $field, string $errorMsg): void {
-        if (trim($field) == "") {
-            board::notice(false, $errorMsg);
-        }
+    public static function updateTime(): void
+    {
+        $month        = $_POST['month'] ?? board::error("Не указано на сколько месяцев");
+        $data         = \Ofey\Logan22\component\sphere\server::send(type::LAUNCHER_UPDATE_TIME, [
+          'month' => (int)$month,
+        ])->show()->getResponse();
+        $data['type'] = 'notice';
+        $data['ok']   = true;
+        echo json_encode($data);
     }
 
 }

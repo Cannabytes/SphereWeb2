@@ -111,13 +111,21 @@ class page {
 
     public static function show_news_short($max_desc_len = 300, $limit = 10, $trash = false) {
         $lang = config::load()->lang()->lang_user_default();
-        if($trash) {
-            return sql::run("SELECT `id`, `name`, LEFT(description, $max_desc_len) AS `description`, `trash`, `date_create`, `poster`, `link` FROM `pages` WHERE trash = 1 AND is_news = 1 ORDER BY `id` DESC LIMIT ?;", [$limit])->fetchAll();
+
+        if ($trash) {
+            $news = sql::run("SELECT `id`, `name`, LEFT(description, $max_desc_len) AS `description`, `trash`, `date_create`, `poster`, `link` FROM `pages` WHERE trash = 1 AND is_news = 1 ORDER BY `id` DESC LIMIT ?;", [$limit])->fetchAll();
+        } else {
+            $news = sql::run("SELECT `id`, `name`, LEFT(description, $max_desc_len) AS `description`, `trash`, `date_create`, `poster`, `link` FROM `pages` WHERE lang=? AND is_news = 1 ORDER BY `id` DESC LIMIT ?;", [
+              $lang,
+              $limit,
+            ])->fetchAll();
         }
-        return sql::run("SELECT `id`, `name`, LEFT(description, $max_desc_len) AS `description`, `trash`, `date_create`, `poster`, `link` FROM `pages` WHERE lang=? AND is_news = 1 ORDER BY `id` DESC LIMIT ?;", [
-            $lang,
-            $limit,
-        ])->fetchAll();
+
+        foreach ($news as &$item) {
+            $item['description'] = strip_tags($item['description'], '<br>');
+        }
+
+        return $news;
     }
 
     //Удаление комментария

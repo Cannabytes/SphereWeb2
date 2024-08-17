@@ -4,6 +4,7 @@ namespace launcher;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\server\server;
@@ -14,31 +15,7 @@ use trash\sdb;
 class launcher
 {
 
-    public function show($launcher_name = null)
-    {
-        if($launcher_name == null) {
-            $serverInfo = server::getServer(user::self()->getServerId());
-            $launcher = $serverInfo->getServerData("sphere-launcher")?->getVal();
-            if($launcher==null){
-                redirect::location("/main");
-            }
-            $launcher = json_decode($launcher, true);
-        }else{
-            foreach(server::getServerAll() as $server){
-                $launcherData = $server->getServerData("sphere-launcher")?->getVal();
-                if($launcherData == null) continue;
-                $launcherData = json_decode($launcherData, true);
-                if($launcherData['name'] == $launcher_name){
-                    $launcher = $launcherData;
-                    break;
-                }
-            }
-        }
-        tpl::addVar('launcher', $launcher);
-        tpl::displayPlugin("/launcher/tpl/show.html");
-    }
-
-    public function admin()
+    public function admin(): void
     {
         validation::user_protection("admin");
         tpl::addVar('userLang', user::self()->getLang());
@@ -48,7 +25,7 @@ class launcher
         tpl::displayPlugin("/launcher/tpl/patch_create.html");
     }
 
-    public function add()
+    public function add(): void
     {
         validation::user_protection("admin");
         $setting = include_once __DIR__ . "/settings.php";
@@ -56,7 +33,7 @@ class launcher
         tpl::displayPlugin("/launcher/tpl/add.html");
     }
 
-    public function saveConfig()
+    public function saveConfig(): void
     {
         validation::user_protection("admin");
 
@@ -100,7 +77,7 @@ class launcher
         ]);
     }
 
-    private function l2application(&$data)
+    private function l2application(&$data): void
     {
         $countL2exe = count($data['application']['l2exe']);
         $arr        = [];
@@ -119,7 +96,7 @@ class launcher
         $data['application'] = $arr;
     }
 
-    public function desc()
+    public function desc(): void
     {
         validation::user_protection("admin");
         $launchers = sql::getRows("SELECT * FROM `server_data` WHERE `key` = ?", ['sphere-launcher']);
@@ -148,7 +125,7 @@ class launcher
         tpl::displayPlugin("/launcher/tpl/desc.html");
     }
 
-    public function edit($id)
+    public function edit($id): void
     {
         validation::user_protection("admin");
         $launcherInfo = sql::getRow("SELECT * FROM `server_data` WHERE id = ?", [$id]);
@@ -161,7 +138,7 @@ class launcher
         tpl::displayPlugin("/launcher/tpl/edit.html");
     }
 
-    public function editSave()
+    public function editSave(): void
     {
         validation::user_protection("admin");
         $data      = $_POST;
@@ -198,7 +175,7 @@ class launcher
         ]);
     }
 
-    public function setServerDefault()
+    public function setServerDefault(): void
     {
         validation::user_protection("admin");
         $serverId  = $_POST['serverId'] ?? board::error("ID server is not set");
@@ -215,7 +192,7 @@ class launcher
         board::success("Установлен лаунчер по умолчанию");
     }
 
-    public function removeLauncher()
+    public function removeLauncher(): void
     {
         validation::user_protection("admin");
         $id        = $_POST['remove'];
@@ -233,5 +210,52 @@ class launcher
         ]);
     }
 
+    public function token(): void
+    {
+        validation::user_protection("admin");
+        tpl::displayPlugin("/launcher/tpl/token.html");
+    }
+
+    public function tokenCreate(): void
+    {
+        validation::user_protection("admin");
+        $list   = $_POST['list'] ?? board::error("No csv file");
+        $storage = $_POST['storage'] ?? board::error("No URL to patch");
+
+        $launcher = \Ofey\Logan22\component\sphere\server::send(type::LAUNCHER_CREATE_TOKEN, [
+          'list'   => $list,
+          'storage' => $storage,
+        ])->show()->getResponse();
+        if(isset($launcher['token'])){
+            echo json_encode($launcher, JSON_UNESCAPED_SLASHES);
+        }
+    }
+
+    public function show($launcher_name = null): void
+    {
+        if ($launcher_name == null) {
+            $serverInfo = server::getServer(user::self()->getServerId());
+            $launcher   = $serverInfo->getServerData("sphere-launcher")?->getVal();
+            if ($launcher == null) {
+                redirect::location("/main");
+            }
+            $launcher = json_decode($launcher, true);
+        } else {
+            foreach (server::getServerAll() as $server) {
+                $launcherData = $server->getServerData("sphere-launcher")?->getVal();
+                if ($launcherData == null) {
+                    continue;
+                }
+                $launcherData = json_decode($launcherData, true);
+                if ($launcherData['name'] == $launcher_name) {
+                    $launcher = $launcherData;
+                    break;
+                }
+            }
+        }
+//        var_dump($launcher);exit();
+        tpl::addVar('launcher', $launcher);
+        tpl::displayPlugin("/launcher/tpl/show.html");
+    }
 
 }

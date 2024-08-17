@@ -131,15 +131,34 @@ class options
     // Обновление коллекции
     static public function updateCollection(): void
     {
-        $response = \Ofey\Logan22\component\sphere\server::send(type::UPDATE_COLLECTION, [
-          "id"   => (int)$_POST['serverId'],
-          "name" => $_POST['collection'],
+        $platform       = $_POST['platform'];
+        $version_client = $_POST['version_client'];
+        $serverId       = (int)$_POST['serverId'];
+        $collection     = $_POST['collection'];
+        $response       = \Ofey\Logan22\component\sphere\server::send(type::UPDATE_COLLECTION, [
+          "id"   => $serverId,
+          "name" => $collection,
         ])->show(true)->getResponse();
         if ($response['success']) {
             $server = \Ofey\Logan22\model\server\server::getServer((int)$_POST['serverId']);
             $server->setChronicle($_POST['version_client']);
             $server->setCollection($_POST['collection']);
             $server->save();
+
+            //Сохраним во внутренней бд
+            $post = json_encode([
+              'platform'       => $platform,
+              'version_client' => $version_client,
+              'collection'     => $collection,
+            ], JSON_UNESCAPED_UNICODE);
+            sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = 'collection_data'", [$serverId]);
+            sql::sql("INSERT INTO `server_cache` ( `server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
+              $serverId,
+              'collection_data',
+              $post,
+              time::mysql(),
+            ]);
+
             board::success("Коллекция обновлена");
         }
     }
@@ -204,7 +223,14 @@ class options
         );
         $mysql_data_connect = json_decode($mysql_data_connect['data'], true);
 
+        $collection_data = sql::getRow(
+          "SELECT * FROM `server_cache` WHERE server_id = ? and `type`='collection_data';",
+          [$server->getId()]
+        );
+        $collection_data = json_decode($collection_data['data'], true);
+
         tpl::addVar([
+          'collection_data'       => $collection_data,
           'mysql_data_connect'    => $mysql_data_connect,
           'sphereServers'         => $servers,
           'client_list_default'   => client::all(),
@@ -546,16 +572,3 @@ class options
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

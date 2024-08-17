@@ -44,12 +44,23 @@ class sql
                     redirect::location("/install");
                 }
                 include_once 'data/db.php';
-                self::$db = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASSWORD, [
-                  PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                  PDO::ATTR_EMULATE_PREPARES   => false,
-                  PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                  PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
-                ]);
+
+                // Определяем порт, если константа DB_PORT не существует
+                $port = defined('DB_PORT') ? DB_PORT : '3306';
+
+                // Создаем подключение к базе данных с указанием порта
+                self::$db = new PDO(
+                  'mysql:host=' . DB_HOST . ';port=' . $port . ';dbname=' . DB_NAME,
+                  DB_USER,
+                  DB_PASSWORD,
+                  [
+                    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_EMULATE_PREPARES   => false,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
+                  ]
+                );
+
             } catch (PDOException $e) {
                 tpl::addVar("error_message", $e->getMessage());
                 tpl::display("error/connect.html");

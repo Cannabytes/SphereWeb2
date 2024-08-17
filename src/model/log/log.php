@@ -16,7 +16,9 @@ class log
         } else {
             $logs = sql::getRows("SELECT * FROM `logs_all` ORDER BY `id` DESC LIMIT ?", [$limit]);
         }
-
+        if(empty($logs)){
+            return [];
+        }
         return self::getLog($logs, $userJson = false);
     }
 
@@ -45,7 +47,7 @@ class log
                 $user = $user->toArray();
             }
             $log['user']    = $user;
-            $log['date']    = date("d.m.Y H:i:s", $log['date']);
+            $log['date']    = date("d.m.Y H:i:s", $log['time']);
             $s              = json_decode($log['variables']);
             $values         = is_array($s) ? array_values($s) : [$s];
             $log['message'] = lang::get_phrase($log['phrase'], ...$values);

@@ -38,6 +38,60 @@
       </div>
       {% endif %}
 
+        <div class="card custom-card">
+          <div class="card-body">
+            <div class="d-flex align-items-top justify-content-between mb-2">
+
+              <div class="flex-fill d-flex align-items-top">
+                <div class="me-2">
+                  <span class="avatar avatar-md text-primary border bg-light"><i class="ti ti-currency-dollar fs-18"></i></span>
+                </div>
+                <div class="flex-fill">
+                  <p class="fw-semibold fs-14 mb-0"><a href="/admin/balance">Обслуживание SphereWeb</a></p>
+                  <p class="mb-0 text-muted fs-12 op-7">На Вашем балансе <span class="text-primary h4">${{balance|number_format(2)}}</span></p>
+                </div>
+              </div>
+
+              <div>
+                <a href="javascript:void(0);" data-bs-toggle="dropdown" class="btn btn-icon btn-sm btn-light" aria-expanded="false"><i class="ti ti-dots"></i></a>
+                <ul class="dropdown-menu" style="">
+                  <li><a href="javascript:void(0);" class="dropdown-item">Частые вопросы</a></li>
+                  <li><a href="javascript:void(0);" class="dropdown-item">Пополнить баланс</a></li>
+                </ul>
+              </div>
+
+            </div>
+
+            <div class="d-flex align-items-center border-bottom border-block-end-dashed mb-3">
+              <div class="flex-fill">
+                <div class="progress progress-xs">
+                  <div class="progress-bar bg-primary" role="progressbar" style="width: 14%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+              <div class="ms-3">
+                <span class="fs-12 text-muted">23.12.2024</span>
+              </div>
+            </div>
+
+            <div class="mb-3 ">
+              <div class="text-muted">
+
+                <p class="mb-1">
+                  {% if launcher.isActive %}
+                    Sphere Launcher до {{launcher.dateTimeout|date('d.m.Y H:s')}}
+                  {% else %}
+                    Sphere Launcher не активен. <a href="/admin/balance">Подключить?</a>
+                  {% endif %}
+                </p>
+
+              </div>
+            </div>
+
+
+          </div>
+
+        </div>
+
       {% for server in servers %}
       {% set serverInfo = getServer(server.id) %}
       <div class="card custom-card overflow-hidden">
@@ -55,15 +109,12 @@
               <h5 class="fw-semibold mb-1 ">{{serverInfo.getName()}} x{{serverInfo.getRateExp() ?? 0}} -
                 {{serverInfo.getChronicle ?? 'N/A'}}</h5>
               <div>
-                <p class="mb-1 text-muted">{{ phrase('activated_until') }}
-                  {{server.license_expiration_date|date('d.m.Y')}}</p>
                 <p class="mb-1 text-muted">{{ phrase('status') }}: {% if server.disabled %}<span
                   class="badge bg-danger">{{ phrase('disabled') }}</span>{% else %}<span class="badge bg-success">{{ phrase('enabled') }}</span>{%
                   endif %}</p> </p>
                 <p class="fs-12 op-7 mb-0">
                   <span class="me-3 d-inline-flex align-items-center"><a href="/admin/server/statistic/{{server.id}}"><i
                     class="ri-building-line me-1 align-middle"></i>{{ phrase('menu_statistics') }}</a></span>
-                  <span class="d-inline-flex align-items-center"><i class="ri-map-pin-line me-1 align-middle"></i>{{ phrase('test_sphereapi_server') }}</span>
                 </p>
               </div>
             </div>
@@ -135,30 +186,6 @@
               </div>
               <div class="py-4">
                 <div class="tab-content" id="myTabContent">
-                  <div class="tab-pane  fade p-0 border-0 bg-white p-4 rounded-3" id="activity-tab-pane"
-                       role="tabpanel" aria-labelledby="activity-tab" tabindex="0">
-                    <ul class="list-unstyled profile-timeline">
-
-                      {% for i, log in logsAll() %}
-                      <li>
-                        <div>
-                          <span class="fs-12 text-muted fw-semibold text-end profile-timeline-time">{{ProhloVremya(log.time, true)}}</span>
-                          <span class="avatar avatar-sm avatar-rounded profile-timeline-avatar">
-                                                                        <img
-                                                                          src="{{log.user.avatar}}"
-                                                                          alt="">
-                                                                    </span>
-                          <p class="text-muted mb-1">
-                            <span class="text-default"><b>{{log.user.email}}</b> ({{log.user.name}})</span>.
-                          </p>
-                          <p class="text-muted mb-0">{{log.message|raw}}</p>
-                        </div>
-                      </li>
-                      {% endfor %}
-
-
-                    </ul>
-                  </div>
 
                   <div class="tab-pane show active fade p-0 border-0" id="followers-tab-pane"
                        role="tabpanel" aria-labelledby="followers-tab" tabindex="0">
@@ -573,5 +600,4 @@
 
 
 {% block js %}
-
 {% endblock %}

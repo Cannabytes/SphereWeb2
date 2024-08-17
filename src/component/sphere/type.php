@@ -2,8 +2,6 @@
 
 namespace Ofey\Logan22\component\sphere;
 
-use Ofey\Logan22\controller\config\config;
-
 enum type
 {
 
@@ -59,56 +57,66 @@ enum type
     case GET_STREAM_INFO;
     case SET_STREAM_AUTOCHECK;
 
-
+    // Реконнект для отключенного сервера
     case SERVER_RECONNECT;
+
+    // Создание токена для лаунчера
+    case LAUNCHER_CREATE_TOKEN;
+    case LAUNCHER_UPDATE_TIME;
+
+    // Сохранить выбранные сервисы
+    case SAVE_SERVICE;
 
     static function url(type $type): string
     {
+        return match ($type) {
+            self::SPHERE_INSTALL => '/api/admin/install',
+            self::REGISTRATION => '/api/user/registration',
+            self::STATISTIC => '/api/statistic',
+            self::ACCOUNT_PLAYERS => '/api/user/player/account',
+            self::ACCOUNT_PLAYER_CHANGE_PASSWORD => '/api/user/player/account/change/password',
+            self::INVENTORY_TO_GAME => '/api/user/player/item/add',
+            self::STARTPACK_TO_GAME => '/api/user/player/startpack/add',
+            self::RELOCATION => '/api/user/player/relocation',
 
+            self::SERVER_COLLECTIONS => '/api/server/collections',
+            self::CONNECT_DB => '/api/server/mysql/connection',
+            self::CONNECT_DB_UPDATE => '/api/server/update/mysql',
+            self::ADD_NEW_SERVER => '/api/server/add',
+            self::UPDATE_STATUS_SERVER => '/api/server/update/status',
+            self::GET_STATUS_SERVER => '/api/server/status',
+            self::UPDATE_COLLECTION => '/api/server/update/collection',
+            self::DELETE_SERVER => '/api/server/delete',
+            self::SERVER_LIST => '/api/server/list',
+            self::SERVER_FULL_INFO => '/api/server/full/info',
+            self::GAME_SERVER_REQUEST => '/api/server/request/mysql',
 
-        return  match ($type) {
-              self::SPHERE_INSTALL => '/api/admin/install',
-              self::REGISTRATION => '/api/user/registration',
-              self::STATISTIC => '/api/statistic',
-              self::ACCOUNT_PLAYERS => '/api/user/player/account',
-              self::ACCOUNT_PLAYER_CHANGE_PASSWORD => '/api/user/player/account/change/password',
-              self::INVENTORY_TO_GAME => '/api/user/player/item/add',
-              self::STARTPACK_TO_GAME => '/api/user/player/startpack/add',
-              self::RELOCATION => '/api/user/player/relocation',
+            self::SYNCHRONIZATION => '/api/user/accounts/synchronization',
+            self::SERVER_STATISTIC_ONLINE => '/api/server/statistic/online',
+            self::SERVER_RECONNECT => '/api/server/reconnect',
 
-              self::SERVER_COLLECTIONS => '/api/server/collections',
-              self::CONNECT_DB => '/api/server/mysql/connection',
-              self::CONNECT_DB_UPDATE => '/api/server/update/mysql',
-              self::ADD_NEW_SERVER => '/api/server/add',
-              self::UPDATE_STATUS_SERVER => '/api/server/update/status',
-              self::GET_STATUS_SERVER => '/api/server/status',
-              self::UPDATE_COLLECTION => '/api/server/update/collection',
-              self::DELETE_SERVER => '/api/server/delete',
-              self::SERVER_LIST => '/api/server/list',
-              self::SERVER_FULL_INFO => '/api/server/full/info',
-              self::GAME_SERVER_REQUEST => '/api/server/request/mysql',
+            self::GAME_WHEEL_SAVE => '/api/game/wheel/save',
+            self::GAME_WHEEL => '/api/game/wheel/start',
+            self::GET_WHEEL_ITEMS => '/api/game/wheel/items',
+            self::GET_WHEELS => '/api/game/wheel/list',
+            self::GAME_WHEEL_EDIT_NAME => '/api/game/wheel/edit/name',
+            self::GAME_WHEEL_REMOVE => '/api/game/wheel/remove',
 
-              self::SYNCHRONIZATION => '/api/user/accounts/synchronization',
-              self::SERVER_STATISTIC_ONLINE => '/api/server/statistic/online',
-              self::SERVER_RECONNECT => '/api/server/reconnect',
+            self::RESET_HWID => '/api/user/player/reset/hwid',
 
-              self::GAME_WHEEL_SAVE => '/api/game/wheel/save',
-              self::GAME_WHEEL => '/api/game/wheel/start',
-              self::GET_WHEEL_ITEMS => '/api/game/wheel/items',
-              self::GET_WHEELS => '/api/game/wheel/list',
-              self::GAME_WHEEL_EDIT_NAME => '/api/game/wheel/edit/name',
-              self::GAME_WHEEL_REMOVE => '/api/game/wheel/remove',
+            self::GET_COMMIT_LAST => '/api/github/last/commit',
+            self::GET_COMMIT_FILES => '/api/github/commit/files',
 
-              self::RESET_HWID => '/api/user/player/reset/hwid',
+            self::GET_STREAM_INFO => '/api/stream/check',
+            self::SET_STREAM_AUTOCHECK => '/api/stream/setautocheck',
 
-              self::GET_COMMIT_LAST => '/api/github/last/commit',
-              self::GET_COMMIT_FILES => '/api/github/commit/files',
+            self::LAUNCHER_CREATE_TOKEN => '/api/launcher/create/token',
+            self::LAUNCHER_UPDATE_TIME => '/api/launcher/update/time',
 
+            self::SAVE_SERVICE => "/api/server/service/save",
 
-              self::GET_STREAM_INFO => '/api/stream/check',
-              self::SET_STREAM_AUTOCHECK => '/api/stream/setautocheck',
-              default => null,
-          };
+            default => null,
+        };
     }
 
 }

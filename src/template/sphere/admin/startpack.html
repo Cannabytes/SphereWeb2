@@ -138,8 +138,12 @@
               </thead>
               <tbody>
               {% for item in data.items %}
+              {% set itemInfo = get_item_info(item.itemId) %}
               <tr>
-                <th scope="row">{{ item.itemName }}</th>
+                <th scope="row">
+                  <img class="avatar avatar-md" src="{{itemInfo.getIcon()}}">
+                  {{itemInfo.getItemName()}}
+                </th>
                 <th scope="row">{{ item.itemId }}</th>
                 <td>{{ item.count }}</td>
                 <td>{{ item.enchant }}</td>
@@ -149,6 +153,12 @@
               </tbody>
             </table>
           </div>
+
+          <button class="btn btn-danger label-btn label-end mt-1 removePack" data-object-id="{{data.id}}">
+            Удалить пак
+            <i class="ri-delete-bin-line label-btn-icon ms-2 rounded-pill"></i>
+          </button>
+
         </div>
       </div>
     </div>
@@ -169,6 +179,13 @@
 
 {% block js %}
 <script>
+
+  //Удаляем пак
+  $(".removePack").on("click", function () {
+      let packId = $(this).data('object-id');
+      AjaxSend("/admin/shop/startpack/remove/pack", "POST", {packId:packId});
+  })
+
 
   $(document).ready(function () {
     $('#AddToProductsPack').click(function () {

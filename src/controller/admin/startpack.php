@@ -13,6 +13,18 @@ use Ofey\Logan22\template\tpl;
 class startpack
 {
 
+    static public function removePack(): void
+    {
+        $packId = $_POST['packId'] ?? board::error("Не передан ID пака");
+        $row         = sql::getRow('SELECT * FROM `startpacks` WHERE `id` = ?', [$packId]);
+        if ( ! $row) {
+            board::error('Набор не найден');
+        }
+        sql::run("DELETE FROM `startpacks` WHERE `id` = ?", [$packId]);
+        board::reload();
+        board::success("Удалено");
+    }
+
     private static ?array $startpacks = null;
 
     static public function purchase(): void

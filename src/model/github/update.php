@@ -33,8 +33,6 @@ class update
             $data = json_decode($json, true);
             if (server::getToken() == $data['token']) {
                 self::checkNewCommit();
-            } else {
-                echo 'token error';
             }
         }
     }

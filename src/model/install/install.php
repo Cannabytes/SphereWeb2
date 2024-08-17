@@ -38,9 +38,10 @@ const DB_HOST = '{$host}';
 const DB_USER = '{$user}';
 const DB_PASSWORD = '{$password}';
 const DB_NAME = '{$name}';
+const DB_PORT = '{$port}';
 const CHARSET = 'utf8';
 ";
-        file_put_contents(fileSys::get_dir("/data/db.php"), $phpText);
+       file_put_contents(fileSys::get_dir("/data/db.php"), $phpText);
     }
 
     public static function add_user_admin() {

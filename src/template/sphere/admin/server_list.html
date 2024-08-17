@@ -5,7 +5,6 @@
 {% block content %}
 
 
-
 <div class="container-fluid">
   <div class="row">
     <div class="col-xl-12">
@@ -25,9 +24,9 @@
             <div class="nav flex-column nav-pills me-3 tab-style-7" id="v-pills-tab" role="tablist"
                  aria-orientation="vertical">
               {% if serverInfo %}
-                  {% set active = false %}
+              {% set active = false %}
               {% else %}
-                  {% set active = true %}
+              {% set active = true %}
               {% endif %}
 
               {% for i, server in sphereServers %}
@@ -64,7 +63,7 @@
 
               {% for i, server in sphereServers %}
 
-              {% set serverName = server.getName()  %}
+              {% set serverName = server.getName() %}
 
 
               {% if serverInfo %}
@@ -108,14 +107,14 @@
                       <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">Rate Spoil:</span><span> x{{server.getRateSpoil()}}</span>
                       </p>
 
-                      {% set status_server_release = server.getServerData('date_start_server').val ?? "none" %}
+                      {% set status_server_release = server.getServerData('date_start_server').val ?? "Не указано" %}
 
                       <p class="text-muted ms-0 mb-2"><span
                         class="font-weight-semibold me-2">{{phrase('server_start_date')}}:</span><span> {{ status_server_release }}</span>
                       </p>
-                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">{{phrase('game_version')}} :</span><span> {{ server.getServerData('knowledge_base').val ?? "none" }}</span>
+                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">{{phrase('game_version')}} :</span><span> {{ server.getServerData('knowledge_base').val ?? "Не указано" }}</span>
                       </p>
-                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">{{phrase('max_expected_online')}} :</span><span> {{ server.getServerData('max_online').val ?? "none" }}</span>
+                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">{{phrase('max_expected_online')}} :</span><span> {{ server.getServerData('max_online').val ?? "Не указано" }}</span>
                       </p>
 
                       {% if server.getIsSphereServer() %}
@@ -126,11 +125,16 @@
                          href="/admin/server/statistic/{{server.getId()}}">{{ phrase('menu_statistics') }}</a>
                       {% endif %}
 
-                      <button class="btn btn-danger btn-sm shadow-success btn-wave waves-effect waves-light removeServer"
-                              data-server-id="{{server.getId()}}">{{ phrase('delete') }}</button>
+                      <button
+                        class="btn btn-danger btn-sm shadow-success btn-wave waves-effect waves-light removeServer"
+                        data-server-id="{{server.getId()}}">{{ phrase('delete') }}
+                      </button>
 
                       {% if server.getStatus().isDisabled() %}
-                      <button data-server-id="{{server.getId()}}" class="btn btn-info btn-sm shadow-info btn-wave waves-effect waves-light server_reconnect" >Переподключить</button>
+                      <button data-server-id="{{server.getId()}}"
+                              class="btn btn-info btn-sm shadow-info btn-wave waves-effect waves-light server_reconnect">
+                        Переподключить
+                      </button>
                       {% endif %}
 
                     </div>
@@ -228,7 +232,8 @@
 
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" role="switch" id="enableStatusServer" checked="">
-                      <label class="form-check-label" for="enableStatusServer">{{ phrase('enable_server_status_display') }}</label>
+                      <label class="form-check-label" for="enableStatusServer">{{ phrase('enable_server_status_display')
+                        }}</label>
                     </div>
                     {{phrase('if_enable_and_not_set_ip_and_port_status_server')}}
                     <div class="row">
@@ -242,7 +247,8 @@
 
                       <div class="col-xl-2">
                         <div class="form-floating">
-                          <input type="number" class="form-control" name="statusLoginServerPort" id="statusLoginServerPort"
+                          <input type="number" class="form-control" name="statusLoginServerPort"
+                                 id="statusLoginServerPort"
                                  placeholder="7777">
                           <label for="statusLoginServerPort">Port Login Server</label>
                         </div>
@@ -261,7 +267,8 @@
 
                       <div class="col-xl-2">
                         <div class="form-floating">
-                          <input type="number" class="form-control" name="statusGameServerPort" id="statusGameServerPort"
+                          <input type="number" class="form-control" name="statusGameServerPort"
+                                 id="statusGameServerPort"
                                  placeholder="7777">
                           <label for="statusGameServerPort">Port Game Server</label>
                         </div>
@@ -304,7 +311,8 @@
                       <div class="col-xxl-4">
                         <label for="platform" class="form-label">{{phrase('platform')}}</label>
                         <select disabled class="form-control" data-trigger name="choices-single-default" id="platform">
-                          <option selected value="java">Java</option>
+                          <option {% if collection_data.platform==
+                          "java" %}selected{%endif%} value="java">Java</option>
                           <option disabled value="pts">PTS</option>
                         </select>
                       </div>
@@ -313,18 +321,21 @@
                         <label for="version_client" class="form-label">{{ phrase('game_version') }}</label>
                         <select name="version_client" class="form-control" data-trigger id="version_client">
                           {% for client in client_list_default %}
-                          <option {% if client.name== serverInfo.getChronicle() %}selected{% endif %}>{{ client.name
+                          <option {% if collection_data.version_client== client.name %}selected{%endif%}>{{ client.name
                             }}
                           </option>
                           {% endfor %}
                         </select>
                       </div>
 
+
                       <div class="col-xxl-4">
                         <label for="sql_base_source" class="form-label">{{ phrase(34) }}</label>
                         <select class="form-control" data-trigger id="sql_base_source" name="sql_base_source">
                           {% for basename in collections %}
-                          <option value="{{ basename }}">{{ basename }}</option>
+                          <option {% if collection_data.collection== basename %}selected{%endif%}
+                                  value="{{ basename }}">{{ basename }}
+                          </option>
                           {% endfor %}
                         </select>
                       </div>
@@ -335,7 +346,8 @@
                 </div>
                 <div class="card-footer">
                   <div class="float-end">
-                    <button data-serverid="{{serverInfo.getId()}}" id="saveCollection" type="button" class="btn btn-sm btn-success m-1">
+                    <button data-serverid="{{serverInfo.getId()}}" id="saveCollection" type="button"
+                            class="btn btn-sm btn-success m-1">
                       {{ phrase(89) }}
                     </button>
                   </div>
@@ -382,7 +394,8 @@
 
                           <div class="col-6">
                             <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="login_port" id="login_port" value="{{ mysql_data_connect.login_port ?: '3306' }}">
+                              <input type="text" class="form-control" name="login_port" id="login_port"
+                                     value="{{ mysql_data_connect.login_port ?: '3306' }}">
                               <label class="form-label" for="login_port">Port</label>
                             </div>
                           </div>
@@ -391,7 +404,8 @@
                         <div class="row">
                           <div class="col-6">
                             <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="login_user" value="{{ mysql_data_connect.login_user ?: 'root' }}" id="login_user">
+                              <input type="text" class="form-control" name="login_user"
+                                     value="{{ mysql_data_connect.login_user ?: 'root' }}" id="login_user">
                               <label class="form-label" for="login_user">User name</label>
                             </div>
                           </div>
@@ -416,7 +430,8 @@
                         <div class="form-floating mb-4 col-6">
                           <select class="form-select" id="login_name" name="login_name">
                             {% if mysql_data_connect.login_name %}
-                            <option selected="{{mysql_data_connect.login_name}}">{{mysql_data_connect.login_name}}</option>
+                            <option selected="{{mysql_data_connect.login_name}}">{{mysql_data_connect.login_name}}
+                            </option>
                             {% else %}
                             <option selected="" disabled="">{{ phrase('no_select') }}</option>
                             {% endif %}
@@ -432,14 +447,16 @@
                         <div class="row">
                           <div class="col-6">
                             <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="game_host" id="game_host" value="{{ mysql_data_connect.game_host ?: '127.0.0.1' }}">
+                              <input type="text" class="form-control" name="game_host" id="game_host"
+                                     value="{{ mysql_data_connect.game_host ?: '127.0.0.1' }}">
                               <label class="form-label" for="game_host">IP</label>
                             </div>
                           </div>
 
                           <div class="col-6">
                             <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="game_port" id="game_port" value="{{ mysql_data_connect.game_port ?: '3306' }}">
+                              <input type="text" class="form-control" name="game_port" id="game_port"
+                                     value="{{ mysql_data_connect.game_port ?: '3306' }}">
                               <label class="form-label" for="game_port">Port</label>
                             </div>
                           </div>
@@ -448,14 +465,16 @@
                         <div class="row">
                           <div class="col-6">
                             <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="game_user" id="game_user" value="{{ mysql_data_connect.game_user ?: 'root' }}">
+                              <input type="text" class="form-control" name="game_user" id="game_user"
+                                     value="{{ mysql_data_connect.game_user ?: 'root' }}">
                               <label class="form-label" for="game_user">User name</label>
                             </div>
                           </div>
 
                           <div class="col-6">
                             <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="game_password" id="game_password" value="{{ mysql_data_connect.game_password ?: '' }}">
+                              <input type="text" class="form-control" name="game_password" id="game_password"
+                                     value="{{ mysql_data_connect.game_password ?: '' }}">
                               <label class="form-label" for="game_password">Password</label>
                             </div>
                           </div>
@@ -473,7 +492,8 @@
                           <div class="form-floating mb-4 col-6">
                             <select class="form-select" id="game_name" name="game_name">
                               {% if mysql_data_connect.game_name %}
-                              <option selected="{{mysql_data_connect.game_name}}">{{mysql_data_connect.game_name}}</option>
+                              <option selected="{{mysql_data_connect.game_name}}">{{mysql_data_connect.game_name}}
+                              </option>
                               {% else %}
                               <option selected="" disabled="">{{ phrase('no_select') }}</option>
                               {% endif %}
@@ -587,7 +607,8 @@
                         <div class="col-2">
                           <select name="timezone_server" class="form-control" id="timezone_server">
                             {% for timezone in timezone_list() %}
-                              <option {% if serverInfo.getServerData('timezone').val == timezone %}selected{% endif %} value="{{timezone}}">{{timezone}}</option>
+                            <option {% if serverInfo.getServerData(
+                            'timezone').val == timezone %}selected{% endif %} value="{{timezone}}">{{timezone}}</option>
                             {% endfor %}
                           </select>
 
@@ -603,7 +624,8 @@
                           <span class="fs-11 text-muted op-7">{{phrase('enable_hwid_reset_function')}}</span>
                         </div>
                         <div class="col-2 form-check form-check-lg form-switch">
-                          <input {% if serverInfo.getServerData('resetHWID').getVal() %}checked{% endif %} class="form-check-input" type="checkbox" id="resetHWID">
+                          <input {% if serverInfo.getServerData('resetHWID').getVal() %}checked{% endif %}
+                          class="form-check-input" type="checkbox" id="resetHWID">
                         </div>
                       </div>
                     </li>
@@ -666,7 +688,6 @@
     var statusGameServerIP = $('#statusGameServerIP').val();
     var statusGameServerPort = $('#statusGameServerPort').val();
 
-
     AjaxSend('/admin/server/edit/save/general', 'POST', {
       name: name,
       rateExp: rateExp,
@@ -688,10 +709,12 @@
   });
 
   $(document).on('click', '#saveCollection', function () {
+    var platform = $('#platform').val();
     var version_client = $('#version_client').val();
     var serverid = $(this).data('serverid');
     var collection = $('#sql_base_source').val();
     AjaxSend('/admin/server/edit/collection', 'POST', {
+      platform: platform,
       version_client: version_client,
       collection: collection,
       serverId: serverid,
@@ -757,6 +780,7 @@
   });
 
   function get_collection() {
+    let collection_data = "{{collection_data.collection }}"
     let chronicle_name = $('#version_client').val();
     let base_source = $('#sql_base_source').data('base_source');
     $.ajax({
@@ -775,13 +799,12 @@
             return;
           }
           result.collections.forEach(function (collection, index) {
-            collection_class = collection.replace('\\\\', '\\');
             collection = basename(collection);
-            console.log(collection_class);
-            if (base_source == collection_class) {
-              $('#sql_base_source').append(`<option selected value="${collection_class}">${collection}</option>`);
+            console.log(base_source, collection_data);
+            if (collection === collection_data) {
+              $('#sql_base_source').append(`<option selected value="${collection}">${collection}</option>`);
             } else {
-              $('#sql_base_source').append(`<option value="${collection_class}">${collection}</option>`);
+              $('#sql_base_source').append(`<option value="${collection}">${collection}</option>`);
             }
           });
         } else {
@@ -857,7 +880,7 @@
 {% endif %}
 
 <script>
-  $(document).on("click", ".removeServer", function (){
+  $(document).on("click", ".removeServer", function () {
     AjaxSend("/admin/server/delete", "POST", {
       serverId: $(this).data('server-id')
     }, false).then(function (data) {
@@ -867,7 +890,7 @@
 </script>
 
 <script>
-  $(document).on("click", ".server_reconnect", function (){
+  $(document).on("click", ".server_reconnect", function () {
     AjaxSend("/admin/server/reconnect", "POST", {
       serverId: $(this).data('server-id')
     }, false).then(function (data) {

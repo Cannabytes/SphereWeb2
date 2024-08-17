@@ -1836,4 +1836,60 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  130 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/balance',
+    'func' => 'controller\\admin\\swbalance::get',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  131 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/launcher/update/time',
+    'func' => 'controller\\admin\\launcher::updateTime',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  132 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/balance/service/save',
+    'func' => 'controller\\admin\\swbalance::saveService',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  133 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/shop/startpack/remove/pack',
+    'func' => 'controller\\admin\\startpack::removePack',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

@@ -13,15 +13,15 @@ class referral
 
     private $enable;
 
-    private $time_game;
+    private int $time_game = 0;
 
-    private $level;
+    private int $level = 0;
 
-    private $pvp;
+    private int $pvp = 0;
 
-    private $pk;
+    private int $pk = 0;
 
-    private $bonus_amount;
+    private float|int $bonus_amount = 0;
 
     private $enable_referral_donate_bonus;
 
@@ -105,7 +105,7 @@ class referral
     /**
      * @return mixed
      */
-    public function getTimeGame()
+    public function getTimeGame(): int
     {
         return $this->time_game;
     }
@@ -134,10 +134,8 @@ class referral
         return $this->pk;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getBonusAmount()
+
+    public function getBonusAmount(): int|float
     {
         return $this->bonus_amount;
     }
