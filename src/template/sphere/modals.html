@@ -96,7 +96,7 @@
 
           <div class="col-xl-6 mb-2">
             <label for="muchSphereCoin" class="form-label text-dark fw-semibold">{{phrase(71)}}</label>
-            <input min="1" max="{{getUser().getDonate()}}" value="{{getUser().getDonate()|round(0, 'floor')}}" name="coin"
+            <input min="1" max="{{getUser().getDonate()|round(0, 'floor')}}" value="{{getUser().getDonate()|round(0, 'floor')}}" name="coin"
                    type="number" class="form-control" id="muchSphereCoin">
           </div>
 
@@ -121,7 +121,7 @@
 
         {% if getUser().isAuth() %}
         <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase('close')}}</button>
-        {% if getUser().getDonate() > 0 and item != null %}
+        {% if getUser().getDonate()|round(0, 'floor') > 0 and item != null %}
         <button id="sendToPlayerBtn" type="submit" class="btn btn-primary">{{phrase(364)}}</button>
         {% endif %}
         {% else %}
@@ -136,7 +136,7 @@
 
 <script>
   $(document).ready(function() {
-    const maxValue = {{getUser().getDonate()}};
+    const maxValue = {{getUser().getDonate()|round(0, 'floor')}};
     $('#muchSphereCoin').on('keypress keydown input', function(event) {
       const key = event.which || event.keyCode;
       if (
@@ -233,20 +233,27 @@
 
 <script>
   function recalculateSphereCoinValue() {
-    const maxValue = {{getUser().getDonate()}};
-    let muchSphereCoinVal = parseFloat($('#muchSphereCoin').val());
-    let itemCountGameTransferCount = parseFloat($('#itemCountGameTransfer').data('count-items'));
-    if (!isNaN(muchSphereCoinVal) && !isNaN(itemCountGameTransferCount)) {
+    const maxValue = {{getUser().getDonate()|round(0, 'floor')}};
+    let muchSphereCoinVal = parseInt($('#muchSphereCoin').val());
+    if (muchSphereCoinVal > maxValue) {
+      muchSphereCoinVal = maxValue;
+      $('#muchSphereCoin').val(muchSphereCoinVal);
+    }
+    let itemCountGameTransferCount = parseInt($('#itemCountGameTransfer').data('count-items'));
+    if (!isNaN(muchSphereCoinVal) && !isNaN(itemCountGameTransferCount) && itemCountGameTransferCount > 0) {
       let result = muchSphereCoinVal * itemCountGameTransferCount;
-      if (result > maxValue) {
-        result = maxValue;
-      }
       $('#itemCountGameTransfer').text(Math.floor(result));
     }
   }
+
   $('#muchSphereCoin').on('input', recalculateSphereCoinValue);
   $(document).ready(recalculateSphereCoinValue);
 </script>
+
+
+
+
+
 
 
 
