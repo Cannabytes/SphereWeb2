@@ -57,9 +57,9 @@ class referral
                 // Сначала лидеру
                 $leaderDonateItems = config::load()->referral()->getLeaderBonusItems();
                 foreach ($leaderDonateItems as $item) {
-                    $item_id = (int)$item->getItemId();
-                    $count   = (int)$item->getCount() ?? 1;
-                    $enchant = (int)$item->getEnchant() ?? 0;
+                    $item_id = $item->getItemId();
+                    $count   = $item->getCount() ?? 1;
+                    $enchant = $item->getEnchant() ?? 0;
                     user::self()->addToWarehouse(user::self()->getServerId(), $item_id, $count, $enchant, "add_item_donate_bonus_referral_master");
                 }
 

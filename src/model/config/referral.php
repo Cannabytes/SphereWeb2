@@ -21,7 +21,7 @@ class referral
 
     private string|int $pk = 0;
 
-    private float|int $bonus_amount = 0;
+    private float|int|string $bonus_amount = 0;
 
     private $enable_referral_donate_bonus;
 
@@ -137,6 +137,14 @@ class referral
 
     public function getBonusAmount(): int|float
     {
+        if (is_string($this->bonus_amount)) {
+            if (ctype_digit($this->bonus_amount)) {
+                return (int)$this->bonus_amount;
+            }
+            if (is_numeric($this->bonus_amount)) {
+                return (float)$this->bonus_amount;
+            }
+        }
         return $this->bonus_amount;
     }
 
@@ -166,11 +174,11 @@ class referral
             return $this->itemsSlave;
         }
         foreach ($this->slave_bonus_items as $item) {
-            $enchant  = $item->enchant ?? 0;
-            $count    = $item->count ?? 0;
+            $enchant  = (int)$item->enchant ?? 0;
+            $count    = (int)$item->count ?? 0;
             $itemData = item::getItem($item->item_id);
-            $itemData->setCount((int)$count);
-            $itemData->setEnchant((int)$enchant);
+            $itemData->setCount($count);
+            $itemData->setEnchant($enchant);
             $this->itemsSlave[] = $itemData;
         }
 
@@ -191,11 +199,14 @@ class referral
         }
 
         foreach ($this->leader_bonus_items as $item) {
-            $enchant  = $item->enchant ?? 0;
-            $count    = $item->count ?? 0;
+            $enchant  = (int)$item->enchant ?? 0;
+            $count    = (int)$item->count ?? 0;
             $itemData = item::getItem($item->item_id);
-            $itemData->setCount((int)$count);
-            $itemData->setEnchant((int)$enchant);
+            if($itemData==null){
+                $itemData = item::getItem(17);
+            }
+            $itemData->setCount($count);
+            $itemData->setEnchant($enchant);
             $this->itemsLeader[] = $itemData;
         }
 
