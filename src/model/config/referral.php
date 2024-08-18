@@ -13,13 +13,13 @@ class referral
 
     private $enable;
 
-    private int $time_game = 0;
+    private string|int $time_game = 0;
 
-    private int $level = 0;
+    private string|int $level = 0;
 
-    private int $pvp = 0;
+    private string|int $pvp = 0;
 
-    private int $pk = 0;
+    private string|int $pk = 0;
 
     private float|int $bonus_amount = 0;
 
@@ -107,13 +107,13 @@ class referral
      */
     public function getTimeGame(): int
     {
-        return $this->time_game;
+        return (int)$this->time_game;
     }
 
     /**
      * @return mixed
      */
-    public function getLevel()
+    public function getLevel(): int
     {
         return $this->level;
     }
@@ -121,9 +121,9 @@ class referral
     /**
      * @return mixed
      */
-    public function getPvp()
+    public function getPvp(): int
     {
-        return $this->pvp;
+        return (int)$this->pvp;
     }
 
     /**
@@ -131,7 +131,7 @@ class referral
      */
     public function getPk()
     {
-        return $this->pk;
+        return (int)$this->pk;
     }
 
 
