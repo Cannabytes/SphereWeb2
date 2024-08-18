@@ -18,7 +18,7 @@
                     <label class="form-label" for="server">Сервер<label class="text-danger">*</label></label>
                     <select class="form-select" id="server" name="server">
                         {% for server in getServerAll() %}
-                        <option value="{{server.id}}">{{server.name}} x{{server.rate_exp}} - {{server.chronicle}}
+                        <option value="{{server.id}}">{{server.getName()}} x{{server.getRateExp()}} - {{server.getChronicle()}}
                         </option>
                         {% endfor %}
                     </select>
