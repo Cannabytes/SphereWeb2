@@ -210,7 +210,6 @@ class serverModel
                     $serverStatus->setGameServer($serverCache['gameServer']);
                     $serverStatus->setOnline($serverCache['online']);
                     $serverStatus->setEnable(filter_var($serverCache['isEnableStatus'], FILTER_VALIDATE_BOOLEAN));
-                    $serverStatus->licenseExpirationDate($serverCache['licenseExpirationDate']);
                     $this->serverStatus = $serverStatus;
 
                     return $serverStatus;
@@ -228,14 +227,12 @@ class serverModel
             $serverStatus->setLoginServer(false);
             $serverStatus->setGameServer(false);
             $serverStatus->setOnline(0);
-            $serverStatus->licenseExpirationDate(null);
             $serverStatus->save();
         } else {
             $serverStatus->setEnable(filter_var($sphere['isEnableStatus'], FILTER_VALIDATE_BOOLEAN));
             $serverStatus->setLoginServer($sphere['loginServer']);
             $serverStatus->setGameServer($sphere['gameServer']);
             $serverStatus->setOnline($sphere['online']);
-            $serverStatus->licenseExpirationDate($sphere['licenseExpirationDate']);
             $serverStatus->setDisabled(filter_var($sphere['isEnableStatus'], FILTER_VALIDATE_BOOLEAN));
             $serverStatus->save();
         }

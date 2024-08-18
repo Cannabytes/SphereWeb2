@@ -182,9 +182,14 @@ class referral
      */
     public function getLeaderBonusItems(): ?array
     {
-        if ($this->itemsLeader != null) {
+        if ($this->itemsLeader !== null) {
             return $this->itemsLeader;
         }
+
+        if (!is_array($this->leader_bonus_items)) {
+            return null;
+        }
+
         foreach ($this->leader_bonus_items as $item) {
             $enchant  = $item->enchant ?? 0;
             $count    = $item->count ?? 0;
@@ -196,5 +201,6 @@ class referral
 
         return $this->itemsLeader;
     }
+
 
 }

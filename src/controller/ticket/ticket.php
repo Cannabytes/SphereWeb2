@@ -25,63 +25,11 @@ class ticket
         return self::$countTicketNoRead;
     }
 
-    //TODO в будущем удалить.
-    // Сделано для тех у кого нет этих таблиц.
-    public static function install() {
-
-        $queryCreateTickets = "
-                CREATE TABLE `tickets`  (
-                  `id` int NOT NULL AUTO_INCREMENT,
-                  `user_id` int NULL DEFAULT NULL,
-                  `last_message_id` int NULL DEFAULT NULL,
-                  `last_user_id` int NULL DEFAULT NULL,
-                  `is_closed` int NULL DEFAULT 0,
-                  `created_at` timestamp NULL DEFAULT NULL,
-                  `updated_at` timestamp NULL DEFAULT NULL,
-                  PRIMARY KEY (`id`) USING BTREE
-                ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-                ";
-      $sqlCreateTicketMessage = "
-                CREATE TABLE `tickets_message`  (
-                  `id` int NOT NULL AUTO_INCREMENT,
-                  `ticket_id` int NULL DEFAULT NULL,
-                  `user_id` int NULL DEFAULT NULL,
-                  `is_file` int NULL DEFAULT 0,
-                  `message` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-                  `read` int NULL DEFAULT 0,
-                  `date` datetime NULL DEFAULT NULL,
-                  PRIMARY KEY (`id`) USING BTREE
-                ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-                ";
-
-      $sqlCreateTicketFiles = "
-                CREATE TABLE `tickets_file`  (
-                  `id` int NOT NULL AUTO_INCREMENT,
-                  `ticket_id` int NULL DEFAULT NULL,
-                  `message_id` int NULL DEFAULT NULL,
-                  `filename` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-                  `user_id` int NULL DEFAULT NULL,
-                  PRIMARY KEY (`id`) USING BTREE
-                ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-                ";
-
-        $data = sql::getRow("SHOW TABLES LIKE 'tickets';");
-        if(!$data){
-            sql::run($queryCreateTickets);
-            sql::run($sqlCreateTicketMessage);
-            sql::run($sqlCreateTicketFiles);
-        }
-    }
-
     public static function all(): void
     {
         if ( ! \Ofey\Logan22\controller\config\config::load()->enabled()->isEnableTicket()) {
             redirect::location("/main");
         }
-
-        //TODO: Удалить в будущем
-        //Проверка существования таблицы tickets
-        self::install();
 
         if (user::self()->isAdmin()) {
             tpl::addVar('lastTicketsList', ticketModel::lastTicketsList());
@@ -208,9 +156,25 @@ class ticket
             redirect::location("/main");
         }
 
-        $id              = $_POST['id'];
+        $id              = (int)$_POST['id'];
         $last_element_id = $_POST['last_element_id'];
+        if($id==0){
+            board::alert([
+              "new_message" => false,
+              "error" => "Chat not found."
+            ]);
+            return;
+        }
         $chat            = sql::getRow("SELECT * FROM `tickets` WHERE id = ?", [$id]);
+
+        if ($chat === false) {
+            board::alert([
+              "new_message" => false,
+              "error" => "Chat not found."
+            ]);
+            return;
+        }
+
         if ($chat['last_message_id'] == $last_element_id) {
             board::alert([
               "new_message" => false,

@@ -11,7 +11,7 @@ use Ofey\Logan22\template\tpl;
 class statistic
 {
 
-    static public function getStatistic($serverId)
+    static public function getStatistic($serverId): void
     {
         $response = server::send(type::SERVER_STATISTIC_ONLINE)->show()->getResponse();
         if ($response === false) {
@@ -26,8 +26,8 @@ ORDER BY day DESC;");
         tpl::addVar("dataStatisticDonate", $dataStatisticDonate);
 
         $data        = $response['data'];
-        $server_time = $data['server_time'];
-        $timeZone    = $data['time_zone'];
+        $server_time = $data['server_time'] ?? "No set";
+        $timeZone    = $data['time_zone'] ?? "No set";
         tpl::addVar([
           'serverId'    => $serverId,
           'server_time' => $server_time,

@@ -17,8 +17,6 @@ class serverStatus
 
     private int $serverId;
 
-    private mixed $licenseExpirationDate = null;
-
     private bool $isEnableStatus = false;
 
     private ?bool $disabled = null;
@@ -32,7 +30,6 @@ class serverStatus
           'online'                => $this->online,
           'gameServer'            => $this->getGameServer(),
           'loginServer'           => $this->getLoginServer(),
-          'licenseExpirationDate' => $this->licenseExpirationDate,
           'isEnableStatus'        => $this->isEnableStatus,
           'disabled'              => $this->disabled
         ];
@@ -89,11 +86,6 @@ class serverStatus
     public function setLoginServer(bool $status): bool
     {
         return $this->loginServer = $status;
-    }
-
-    public function licenseExpirationDate(mixed $licenseExpirationDate)
-    {
-        $this->licenseExpirationDate = $licenseExpirationDate;
     }
 
     public function isEnable(): bool

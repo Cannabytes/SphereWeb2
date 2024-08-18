@@ -196,17 +196,23 @@ class statistic
 
     private static function getStatistic($server_id = null)
     {
-        if(self::$statistic === false){
+        if (self::$statistic === false) {
             return false;
         }
-        if(self::$statistic[$server_id] !== null){
+
+        if (is_array(self::$statistic) && isset(self::$statistic[$server_id])) {
             return self::$statistic[$server_id];
         }
-        if($server_id == null){
+
+        if ($server_id === null) {
             $server_id = user::self()->getServerId();
         }
+
         \Ofey\Logan22\component\sphere\server::setUser(user::self());
-        self::$statistic[$server_id] = \Ofey\Logan22\component\sphere\server::send(type::STATISTIC, ['id'=>$server_id])->getResponse() ?? false;
+        self::$statistic[$server_id] = \Ofey\Logan22\component\sphere\server::send(type::STATISTIC, ['id' => $server_id])->getResponse() ?? false;
+
+        return self::$statistic[$server_id];
     }
+
 
 }
