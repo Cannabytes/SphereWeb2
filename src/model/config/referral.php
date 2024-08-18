@@ -138,6 +138,10 @@ class referral
     public function getBonusAmount(): int|float
     {
         if (is_string($this->bonus_amount)) {
+            if ($this->bonus_amount==""){
+                $this->bonus_amount = 0;
+                return $this->bonus_amount;
+            }
             if (ctype_digit($this->bonus_amount)) {
                 return (int)$this->bonus_amount;
             }
