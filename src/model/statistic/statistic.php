@@ -73,27 +73,20 @@ class statistic
         return self::$statistic[$server_id]['online'];
     }
 
+
+    public static function get_exp($server_id = 0)
+    {
+        self::getStatistic($server_id);
+        return self::$statistic[$server_id]['exp'];
+    }
+
     public static function get_clan($server_id = 0)
     {
         self::getStatistic($server_id);
         return self::$statistic[$server_id]['clan'];
     }
 
-    public static function get_heroes($server_id = 0)
-    {
-        if (isset(self::$heroes[$server_id]) && self::$heroes[$server_id]) {
-            return self::$heroes[$server_id];
-        }
-        try {
-            return self::$heroes[$server_id] = self::get_data_statistic(
-              dir::statistic_heroes,
-              'statistic_top_heroes',
-              $server_id,
-              second: timeout::statistic_heroes->time()
-            );
-        } catch (Error $e) {
-        }
-    }
+
 
     public static function get_castle($server_id = 0)
     {
@@ -101,63 +94,6 @@ class statistic
         return self::$statistic[$server_id]['castle'];
     }
 
-
-    public static function get_player_info($player_name, $server_id = 0)
-    {
-        if (isset(self::$get_player_info[$server_id]) && self::$get_player_info[$server_id]) {
-            return self::$get_player_info[$server_id];
-        }
-        try {
-            return self::$get_player_info[$server_id] = self::get_data_statistic_player(
-              dir::statistic_player_info,
-              'statistic_player_info',
-              player_name: $player_name,
-              server_id: $server_id,
-              acrossAll: false,
-              prepare: [$player_name],
-              second: timeout::statistic_player_info->time()
-            );
-        } catch (Error $e) {
-        }
-    }
-
-    private static function get_data_statistic_player(
-      dir $dir,
-      string $collection_sql_name,
-      string $player_name = null,
-      int $server_id = 0,
-      bool $acrossAll = true,
-      bool $crest_convert = true,
-      $prepare = [],
-      $second = 60
-    ) {
-        [
-          $server_info,
-          $json,
-        ] = server::preAcross($dir, $server_id, $player_name);
-        if ($server_info == null) {
-            return null;
-        }
-        if ($json) {
-            return $json;
-        }
-        if ($acrossAll) {
-            $data = server::acrossAll($collection_sql_name, $server_info, $prepare);
-        } else {
-            $data = server::across($collection_sql_name, $server_info, $prepare);
-        }
-        if ($data === false) {
-            return null;
-        }
-        if ($data) {
-            if ($crest_convert) {
-                crest::conversion($data, rest_api_enable: $server_info['rest_api_enable']);
-            }
-            cache::save($dir->show_dynamic($server_info['id'], $player_name), $data);
-        }
-
-        return $data;
-    }
 
     public static function timeHasPassed($seconds, $reduce = false): string
     {

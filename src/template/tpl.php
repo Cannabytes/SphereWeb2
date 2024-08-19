@@ -863,6 +863,18 @@ class tpl
             return $onlinePlayers ? ($limit <= 0 ? $onlinePlayers : array_slice($onlinePlayers, 0, $limit)) : null;
         }));
 
+
+        $twig->addFunction(new TwigFunction('statistic_get_exp', function ($server_id = 0, $limit = 0): ?array {
+            if ($server_id < 0 || $limit < 0) {
+                throw new InvalidArgumentException('Server ID and limit must be non-negative integers');
+            }
+            if($server_id == 0) {
+                $server_id = user::self()->getServerId();
+            }
+            $expStats = statistic_model::get_exp($server_id);
+            return $expStats ? ($limit <= 0 ? $expStats : array_slice($expStats, 0, $limit)) : null;
+        }));
+
         $twig->addFunction(new TwigFunction('statistic_get_clans', function ($server_id = 0, $limit = 0) {
             if ($server_id < 0 || $limit < 0) {
                 throw new InvalidArgumentException('Server ID and limit must be non-negative integers');

@@ -151,7 +151,53 @@
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="card-title">
-                         {{phrase(126)}}
+                        {{phrase('top_exp')}}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm text-nowrap table-bordered">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">{{phrase('player')}}</th>
+                                <th scope="col">{{phrase(52)}}</th>
+                                <th scope="col">{{phrase(94)}}</th>
+                                <th scope="col">{{phrase(109)}}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for i, player in statistic_get_exp(0, 10) %}
+                            <tr>
+                                <th scope="row" style="width: 1px;">{{i+1}}</th>
+                                <th>
+                                    <div class="d-flex align-items-center">
+                                       <span style="width: 20px;height: 19px" class="avatar me-2 {% if player.online %}online{% else %}offline{% endif %} avatar-rounded ">
+                                        <img src="{{ template('/assets/images/race/' ~ sex(player.sex) ~ '/' ~ get_class_race(player.class_id)) ~ '.jpg' }}" alt="img">
+                                       </span>
+                                        {{player.player_name}}
+                                        <span class="badge bg-light text-dark">{{ player.level }}</span>
+                                    </div>
+                                </th>
+                                <td>{{ timeHasPassed(player.time_in_game, true) }}</td>
+                                <td>{{clan_icon(player)|raw}} {{player.clan_name}}</td>
+                                <td>{{get_class(player.class_id)}}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="card-title">
+                        {{phrase(126)}}
                     </div>
                 </div>
                 <div class="card-body">
@@ -180,10 +226,8 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-xl-12">
+        <div class="col-xl-6">
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="card-title">
@@ -243,10 +287,5 @@
 <!-- Prism JS -->
 <script src="{{template}}/assets/libs/prismjs/prism.js"></script>
 <script src="{{template}}/assets/js/prism-custom.js"></script>
-
-
-<!-- Apex Charts JS -->
-<script src="{{template}}/assets/libs/apexcharts/apexcharts.min.js"></script>
-
 
 {% endblock %}
