@@ -115,7 +115,7 @@ class referral
      */
     public function getLevel(): int
     {
-        return $this->level;
+        return (int)$this->level;
     }
 
     /**
