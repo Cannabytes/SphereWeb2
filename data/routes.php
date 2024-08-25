@@ -1892,4 +1892,74 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  134 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/phrases/custom',
+    'func' => '',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '/admin/phrases_custom.html',
+    'comment' => '',
+  ),
+  135 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/phrases/custom',
+    'func' => 'model\\phrases\\phrases::saveCustom',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  136 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/balance/pay',
+    'func' => 'controller\\admin\\swbalance::pay',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  137 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/balance/pay/invoice',
+    'func' => 'controller\\admin\\swbalance::payInvoice',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  138 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/balance/pay/history',
+    'func' => 'controller\\admin\\swbalance::historyPay',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );
