@@ -107,14 +107,14 @@
                       <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">Rate Spoil:</span><span> x{{server.getRateSpoil()}}</span>
                       </p>
 
-                      {% set status_server_release = server.getServerData('date_start_server').val ?? "Не указано" %}
+                      {% set status_server_release = server.getServerData('date_start_server').val ??  phrase('not_specified')  %}
 
                       <p class="text-muted ms-0 mb-2"><span
                         class="font-weight-semibold me-2">{{phrase('server_start_date')}}:</span><span> {{ status_server_release }}</span>
                       </p>
-                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">{{phrase('game_version')}} :</span><span> {{ server.getServerData('knowledge_base').val ?? "Не указано" }}</span>
+                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">{{phrase('game_version')}} :</span><span> {{ server.getServerData('knowledge_base').val ?? phrase('not_specified') }}</span>
                       </p>
-                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">{{phrase('max_expected_online')}} :</span><span> {{ server.getServerData('max_online').val ?? "Не указано" }}</span>
+                      <p class="text-muted ms-0 mb-2"><span class="font-weight-semibold me-2">{{phrase('max_expected_online')}} :</span><span> {{ server.getServerData('max_online').val ?? phrase('not_specified') }}</span>
                       </p>
 
                       {% if server.getIsSphereServer() %}
@@ -180,7 +180,7 @@
                       <div class="form-floating">
                         <input type="text" name="name" class="form-control" id="name" value="{{serverInfo.getName()}}"
                                placeholder="name">
-                        <label for="name">Название сервера</label>
+                        <label for="name">{{ phrase('server_name') }}</label>
                       </div>
                     </div>
 
@@ -375,7 +375,7 @@
                     <div class="form-check">
                       <input class="form-check-input" type="checkbox" value="" id="saveDataMySQL" checked="">
                       <label class="form-check-label" for="saveDataMySQL">
-                        Сохранить данные подключения к БД
+                        {{ phrase('save_db_connection_details') }}
                       </label>
                     </div>
 
@@ -383,60 +383,81 @@
                       <div class="col-lg-6 col-xl-6 border-end border-inline-end-dashed">
                         {{ phrase(32) }}
 
-                        <div class="row">
-                          <div class="col-6">
-                            <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="login_host" id="login_host"
-                                     value="{{ mysql_data_connect.login_host ?: '127.0.0.1' }}">
-                              <label class="form-label" for="login_host">IP</label>
-                            </div>
+                        <ul class="nav nav-pills nav-fill mb-3" role="tablist">
+                          <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
+                               href="#fill-pill-home" aria-selected="true">Использовать существующий loginServer</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                               href="#fill-pill-about" aria-selected="false">Новый логин сервер</a>
+                          </li>
+                        </ul>
+                        <div class="tab-content">
+                          <div class="tab-pane show active text-muted" id="fill-pill-home" role="tabpanel">
+                            <p class="fw-semibold mb-2">Выберите к какому логин-сервер будет использован для гейм-сервера</p>
+
+                            <select class="form-control" data-trigger name="loginserver_id" id="loginserver_id">
+                              <option value="0">Не выбран</option>
+                              {% for login in loginServersData.loginServers %}
+                              <option {% if login.id == loginServersData.defaultLoginServerId %}selected{%endif%} value="{{login.id}}">HOST: {{login.host}} | User: {{login.user}} | Name: {{login.name}}</option>
+                              {% endfor %}
+                            </select>
+
                           </div>
 
-                          <div class="col-6">
-                            <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="login_port" id="login_port"
-                                     value="{{ mysql_data_connect.login_port ?: '3306' }}">
-                              <label class="form-label" for="login_port">Port</label>
-                            </div>
-                          </div>
-                        </div>
+                          <div class="tab-pane text-muted" id="fill-pill-about" role="tabpanel">
 
-                        <div class="row">
-                          <div class="col-6">
-                            <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="login_user"
-                                     value="{{ mysql_data_connect.login_user ?: 'root' }}" id="login_user">
-                              <label class="form-label" for="login_user">User name</label>
-                            </div>
-                          </div>
+                            {{ phrase(32) }}
 
-                          <div class="col-6">
-                            <div class="form-floating mb-4">
-                              <input type="text" class="form-control" name="login_password" id="login_password"
-                                     value="{{ mysql_data_connect.login_password ?: '' }}">
-                              <label class="form-label" for="login_password">Password</label>
-                            </div>
-                          </div>
-                        </div>
+                            <div class="row">
+                              <div class="col-6">
+                                <div class="form-floating mb-4">
+                                  <input type="text" class="form-control" name="login_host" id="login_host" value="127.0.0.1">
+                                  <label class="form-label" for="login_host">IP</label>
+                                </div>
+                              </div>
 
-                        <div class="row mb-4">
-                          <div class="col-lg-6 ">
-                            <div id="getDBNameLogin" type="submit" class="btn btn-primary mb-2">
-                              <i class="fa fa-arrow-right opacity-50 me-1"></i> Проверка и выбрать базу данных
+                              <div class="col-6">
+                                <div class="form-floating mb-4">
+                                  <input type="text" class="form-control" name="login_port" id="login_port" value="3306">
+                                  <label class="form-label" for="login_port">Port</label>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
 
-                        <div class="form-floating mb-4 col-6">
-                          <select class="form-select" id="login_name" name="login_name">
-                            {% if mysql_data_connect.login_name %}
-                            <option selected="{{mysql_data_connect.login_name}}">{{mysql_data_connect.login_name}}
-                            </option>
-                            {% else %}
-                            <option selected="" disabled="">{{ phrase('no_select') }}</option>
-                            {% endif %}
-                          </select>
-                          <label class="form-label" for="login_name">База Данных LoginServer</label>
+                            <div class="row">
+                              <div class="col-6">
+                                <div class="form-floating mb-4">
+                                  <input type="text" class="form-control" name="login_user" value="root" id="login_user">
+                                  <label class="form-label" for="login_user">User</label>
+                                </div>
+                              </div>
+
+                              <div class="col-6">
+                                <div class="form-floating mb-4">
+                                  <input type="text" class="form-control" name="login_password" id="login_password" value="">
+                                  <label class="form-label" for="login_password">Password</label>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="row mb-4">
+                              <div class="col-lg-6 ">
+                                <div id="getDBNameLogin" type="submit" class="btn btn-primary mb-2">
+                                  <i class="fa fa-arrow-right opacity-50 me-1"></i> {{ phrase('check_and_select_db') }}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="form-floating mb-4 col-6">
+                              <select class="form-select" id="login_name" name="login_name">
+                                <option selected="" disabled="">{{ phrase('no_select') }}</option>
+                              </select>
+                              <label class="form-label" for="login_name">{{ phrase('db_login') }}</label>
+                            </div>
+
+                          </div>
                         </div>
 
                       </div>
@@ -598,9 +619,9 @@
                     <li class="list-group-item">
                       <div class="d-sm-flex align-items-top">
                         <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
-                          <p class="mb-0 lh-1">Часовой пояс сервера</p>
+                          <p class="mb-0 lh-1">{{ phrase('server_time_zone') }}</p>
                           <span class="fs-11 text-muted op-7">
-                            Может понадобится выводить какую-то информацию о сервере, и для синхронизации времени, необходимо указать часовой пояс сервера
+                            {{ phrase('necessary_to_specify_server_time_zone') }}
                           </span>
                         </div>
 
@@ -723,6 +744,7 @@
 
   $(document).on('click', '#saveMySQL', function () {
     var serverid = $(this).data('serverid');
+    var loginserver_id = $('#loginserver_id').val();
     var login_host = $('#login_host').val();
     var login_port = $('#login_port').val();
     var login_user = $('#login_user').val();
@@ -735,6 +757,7 @@
     var game_name = $('#game_name').val();
     var saveDataMySQL = $('#saveDataMySQL').prop('checked');
     AjaxSend('/admin/server/edit/save/mysql', 'POST', {
+      loginserver_id: loginserver_id,
       login_host: login_host,
       login_port: login_port,
       login_user: login_user,

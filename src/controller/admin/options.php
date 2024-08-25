@@ -68,6 +68,8 @@ class options
     //POST - Регистрация сервера
     public static function create_server(): void
     {
+        $loginArr = [];
+
         $name            = $_POST['name'] ?? "Bartz_" . random_int(1, 999);
         $rateExp         = $_POST['rateExp'] ?? 1;
         $rateSp          = $_POST['rateSp'] ?? 1;
@@ -77,11 +79,23 @@ class options
         $version_client  = $_POST['version_client'] ?? board::error("No select  client");
         $sql_base_source = $_POST['sql_base_source'] ?? board::error("No select L2j SQL base");
 
-        $login_host     = $_POST['login_host'] ?? board::error("No select login host");
-        $login_port     = $_POST['login_port'] ?? 3306;
-        $login_user     = $_POST['login_user'] ?? board::error("No select login user");
-        $login_password = $_POST['login_password'] ?? board::error("No select login password");
-        $login_name     = $_POST['login_name'] ?? board::error("No select login name");
+        $loginserver_id = (int)$_POST['loginserver_id'] ?? 0;
+
+        if ($loginserver_id == 0) {
+            $login_host     = $_POST['login_host'] ?? board::error("No select login host");
+            $login_port     = $_POST['login_port'] ?? 3306;
+            $login_user     = $_POST['login_user'] ?? board::error("No select login user");
+            $login_password = $_POST['login_password'] ?? board::error("No select login password");
+            $login_name     = $_POST['login_name'] ?? board::error("No select login name");
+
+            $loginArr = [
+              "login_host"     => $login_host,
+              "login_port"     => $login_port,
+              "login_user"     => $login_user,
+              "login_password" => $login_password,
+              "login_name"     => $login_name,
+            ];
+        }
 
         $game_host     = $_POST['game_host'] ?? board::error("No select game host");
         $game_port     = $_POST['game_port'] ?? 3306;
@@ -89,13 +103,8 @@ class options
         $game_password = $_POST['game_password'] ?? board::error("No select game password");
         $game_name     = $_POST['game_name'] ?? board::error("No select game name");
 
-        $data = \Ofey\Logan22\component\sphere\server::send(type::ADD_NEW_SERVER, [
-
-          "login_host"     => $login_host,
-          "login_port"     => $login_port,
-          "login_user"     => $login_user,
-          "login_password" => $login_password,
-          "login_name"     => $login_name,
+        $data = \Ofey\Logan22\component\sphere\server::send(type::ADD_NEW_SERVER, array_merge([
+          "loginserver_id" => $loginserver_id,
 
           "game_host"     => $game_host,
           "game_port"     => $game_port,
@@ -105,7 +114,7 @@ class options
 
           "collection" => $sql_base_source,
 
-        ])->show()->getResponse();
+        ], $loginArr))->show()->getResponse();
 
         if (isset($data['id'])) {
             $id   = $data['id'];
@@ -229,7 +238,11 @@ class options
         );
         $collection_data = json_decode($collection_data['data'], true);
 
+        $loginServersData = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS_DATA, ['id' => $server->getId()])
+                                                                 ->show()
+                                                                 ->getResponse();
         tpl::addVar([
+          'loginServersData'      => $loginServersData,
           'collection_data'       => $collection_data,
           'mysql_data_connect'    => $mysql_data_connect,
           'sphereServers'         => $servers,
@@ -354,6 +367,7 @@ class options
     static public function saveMySQL(): void
     {
         $server_id      = $_POST['serverId'];
+        $loginserver_id = $_POST['loginserver_id'] ?? 0;
         $login_host     = $_POST['login_host'] ?? board::error("No select login host");
         $login_port     = $_POST['login_port'] ?? 3306;
         $login_user     = $_POST['login_user'] ?? board::error("No select login user");
@@ -367,6 +381,7 @@ class options
         $game_name     = $_POST['game_name'] ?? board::error("No select game name");
 
         $arr = [
+          "loginserver_id" => (int)$loginserver_id,
           "login_host"     => $login_host,
           "login_port"     => $login_port,
           "login_user"     => $login_user,
@@ -402,7 +417,9 @@ class options
     static public function new_server(): void
     {
         validation::user_protection("admin");
+        $loginServers = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS)->show()->getResponse();
         tpl::addVar([
+          'loginservers'            => $loginServers,
           'servername_list_default' => servername::all(),
           'client_list_default'     => client::all(),
           'timezone_list_default'   => timezone::all(),

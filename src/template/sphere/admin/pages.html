@@ -45,7 +45,7 @@
         </div>
         <div class="card-footer d-flex justify-content-between">
           <span class="card-text">{{ phrase('lang') }}: {{short.lang}}</span>
-          <span class="card-text">{{ phrase('page_type') }}: {% if short.is_news == 1 %}Новость{% else %}Страница{% endif %}</span>
+          <span class="card-text">{{ phrase('page_type') }}: {% if short.is_news == 1 %}{{ phrase('news') }}{% else %}{{ phrase('page') }}{% endif %}</span>
           <span class="card-text">{{short.date_create|date("F d, Y")}}</span>
         </div>
 

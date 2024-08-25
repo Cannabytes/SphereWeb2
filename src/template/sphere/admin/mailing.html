@@ -42,24 +42,24 @@
                   {{phrase('registration_notification_email')}}
 
                   <div class="form-floating">
-                    <input value="{{get_email_template()['notice_reg_subject']|raw}}" type="text" class="form-control"
+                    <input value="{{ ( get_email_template()['notice_reg_subject'] ?? phrase('successful_registration_wish_successful_game') ) | raw}}" type="text" class="form-control"
                            id="notice_reg_subject" placeholder="{{ phrase(177) }}">
                     <label for="notice_reg_subject">{{phrase('email_subject')}}</label>
                   </div>
-                  <div id="notice-registration-html">{{get_email_template()['notice_registration_html']|raw}}</div>
+                  <div id="notice-registration-html">{{ (get_email_template()['notice_registration_html'] ?? phrase(177)) |raw}}</div>
 
                 </div>
                 <div class="tab-pane" id="forget-password" role="tabpanel" aria-labelledby="forget-password-tab"
                      tabindex="0">
                   {{phrase('password_reset_email')}}
                   <div class="form-floating">
-                    <input value="{{get_email_template()['forget_reg_subject']}}" type="text" class="form-control" id="forget_reg_subject"
+                    <input value="{{(get_email_template()['forget_reg_subject'] ?? phrase(67) )|raw}}" type="text" class="form-control" id="forget_reg_subject"
                            placeholder="Восстановление пароля">
                     <label for="forget_reg_subject">{{phrase('email_subject')}}</label>
                   </div>
-                  <div id="forget-password-quill">{{get_email_template()['forget_password_html']|raw}}</div>
+                  <div id="forget-password-quill">{{ (get_email_template()['forget_password_html'] ?? phrase('reset_password_link_and_expire_time') )|raw}}</div>
 
-                </div>
+                 </div>
               </div>
             </div>
             <div class="border-top border-block-start-dashed d-flex justify-content-end mt-3 pt-2">

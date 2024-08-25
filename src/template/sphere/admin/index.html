@@ -47,8 +47,8 @@
                   <span class="avatar avatar-md text-primary border bg-light"><i class="ti ti-currency-dollar fs-18"></i></span>
                 </div>
                 <div class="flex-fill">
-                  <p class="fw-semibold fs-14 mb-0"><a href="/admin/balance">Обслуживание SphereWeb</a></p>
-                  <p class="mb-0 text-muted fs-12 op-7">На Вашем балансе <span class="text-primary h4">${{balance|number_format(2)}}</span></p>
+                  <p class="fw-semibold fs-14 mb-0"><a href="/admin/balance">{{ phrase('sphereweb_maintenance') }}</a></p>
+                  <p class="mb-0 text-muted fs-12 op-7">{{ phrase('on_your_balance') }} <span class="text-primary h4">${{balance|number_format(2)}}</span></p>
                 </div>
               </div>
 
@@ -520,7 +520,8 @@
                           </div>
                           <div class="card-footer text-center">
                             <div class="btn-list">
-                              <a href="/admin/phrases" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
+                              <a href="/admin/phrases" class="btn btn-sm btn-light btn-wave">{{ phrase('system_phrase') }}</a>
+                              <a href="/admin/phrases/custom" class="btn btn-sm btn-light btn-wave">{{ phrase('custom_phrase') }}</a>
                             </div>
                           </div>
                         </div>

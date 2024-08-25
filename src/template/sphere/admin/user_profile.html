@@ -247,13 +247,13 @@
                       <div class="col-xl-12 col-12 my-2">
                         <div class="text-center">
                           <p class="mb-0 text-muted">
-                            <a class="text-success" href="#" data-bs-toggle="modal" data-bs-target="#mail-Compose">Добавить пользователю предмет на склад</a>
+                            <a class="text-success" href="#" data-bs-toggle="modal" data-bs-target="#mail-Compose">{{ phrase('add_item_to_user_inventory') }}</a>
 
                           <div class="modal modal-lg fade" id="mail-Compose" tabindex="-1" aria-labelledby="mail-ComposeLabel" aria-hidden="true">
                             <div class="modal-dialog">
                               <form method="post" action="/admin/user/add/item/warehouse" class="modal-content">
                                 <div class="modal-header">
-                                  <h6 class="modal-title" id="mail-ComposeLabel">Добавление предмета</h6>
+                                  <h6 class="modal-title" id="mail-ComposeLabel">{{ phrase(216) }}</h6>
                                   <button type="button" class="btn-close" data-bs-dismiss="modal"
                                           aria-label="Close"></button>
                                 </div>
@@ -264,7 +264,7 @@
                                     <input type="hidden" id="userId" name="userId" value="{{userInfo.getId()}}">
 
                                     <div class="col-xl-3 mb-2">
-                                      <label for="itemId" class="form-label text-dark fw-semibold">Сервер</label>
+                                      <label for="itemId" class="form-label text-dark fw-semibold">{{ phrase('server') }}</label>
                                       <select name="serverId" class="form-select" aria-label="Default select example">
                                         {% for server in getServerAll() %}
                                           <option value="{{server.getId()}}">{{server.getName()}} x{{server.getRateExp()}}</option>
@@ -292,8 +292,8 @@
                                 </div>
                                 <div class="modal-footer">
                                   <button type="button" class="btn btn-light"
-                                          data-bs-dismiss="modal">Cancel</button>
-                                  <button type="submit" class="btn btn-primary">Send</button>
+                                          data-bs-dismiss="modal">{{ phrase('cancel') }}</button>
+                                  <button type="submit" class="btn btn-primary">{{ phrase('send_items_wh') }}</button>
                                 </div>
                               </form>
                             </div>
@@ -309,7 +309,7 @@
                       <div class="col-xl-12 col-12 my-2">
                         <div class="text-center">
                           <p class="mb-0 text-muted">
-                            У пользователя отсутствуют предметы на складе
+                            {{ phrase('user_has_no_items_in_inventory') }}
                           </p>
                         </div>
                       </div>

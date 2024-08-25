@@ -67,6 +67,12 @@ enum type
     // Сохранить выбранные сервисы
     case SAVE_SERVICE;
 
+    // Данные для оплаты SphereWeb
+    case SPHERE_DONATE;
+
+    case GET_LOGIN_SERVERS;
+    case GET_LOGIN_SERVERS_DATA;
+
     static function url(type $type): string
     {
         return match ($type) {
@@ -90,6 +96,8 @@ enum type
             self::SERVER_LIST => '/api/server/list',
             self::SERVER_FULL_INFO => '/api/server/full/info',
             self::GAME_SERVER_REQUEST => '/api/server/request/mysql',
+            self::GET_LOGIN_SERVERS => '/api/server/get/loginservers',
+            self::GET_LOGIN_SERVERS_DATA => '/api/server/get/loginservers/data',
 
             self::SYNCHRONIZATION => '/api/user/accounts/synchronization',
             self::SERVER_STATISTIC_ONLINE => '/api/server/statistic/online',
@@ -114,6 +122,7 @@ enum type
             self::LAUNCHER_UPDATE_TIME => '/api/launcher/update/time',
 
             self::SAVE_SERVICE => "/api/server/service/save",
+            self::SPHERE_DONATE => "/api/donate",
 
             default => null,
         };

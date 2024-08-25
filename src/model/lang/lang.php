@@ -6,6 +6,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
+use Throwable;
 
 class lang
 {
@@ -62,16 +63,23 @@ class lang
             return $this->langList;
         }
         $lngs      = fileSys::get_dir_files("data/languages/", [
-          'basename' => false,
-          'suffix'   => '.php',
+          'basename' => true,
           'fetchAll' => true,
         ]);
+
+        $lngs = array_map(function($item) {
+            return preg_replace('/\.php$/', '', $item);
+        }, array_filter($lngs, function($item) {
+            return substr($item, -4) === '.php';
+        }));
+
         $lang_name = $this->lang_user_default();
         $langs     = [];
         foreach ($lngs as $lng) {
             $isActive = ($lng == $lang_name);
             $langs[]  = new langStruct($lng, $this->name($lng), $isActive);
         }
+
         usort($langs, function ($a, $b) {
             return $b->getIsActive() <=> $a->getIsActive();
         });
@@ -101,7 +109,6 @@ class lang
         $filename = fileSys::get_dir("/data/languages/{$lang}.php");
         if ( ! empty($filename) && file_exists($filename)) {
             $lang_array = include $filename;
-
             return $lang_array['lang_name'] ?? null;
         }
         error_log("File $filename not found");
@@ -119,15 +126,25 @@ class lang
     public function package(): void
     {
         $lang = $_SESSION['lang'] ?? $this->default;
-        // Проверка что файл существует
-        $filename = fileSys::get_dir("/data/languages/{$lang}.php");
-        if (file_exists($filename)) {
-            $this->phrasesData = require fileSys::get_dir("/data/languages/{$lang}.php");
-
-            return;
+        $langFile = fileSys::get_dir("/data/languages/{$lang}.php");
+        $defaultLangFile = fileSys::get_dir("/data/languages/en.php");
+        try {
+            if (file_exists($langFile)) {
+                $this->phrasesData = require $langFile;
+                $customLangFile = fileSys::get_dir("/data/languages/custom/{$lang}.php");
+                if (file_exists($customLangFile)) {
+                    $customData = require $customLangFile;
+                    $this->phrasesData = array_replace($this->phrasesData, $customData);
+                }
+            } else {
+                $this->phrasesData = require $defaultLangFile;
+            }
+        } catch (Throwable $e) {
+            error_log("Failed to load language file: " . $e->getMessage());
+            $this->phrasesData = require $defaultLangFile;
         }
-        $this->phrasesData = require fileSys::get_dir("/data/languages/en.php");
     }
+
 
     public function save()
     {

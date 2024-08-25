@@ -10,6 +10,38 @@ use Ofey\Logan22\template\tpl;
 class swbalance
 {
 
+    static public function pay()
+    {
+        tpl::display("admin/balance_pay.html");
+    }
+
+    //Пользователь хочет пополнить баланс
+    static public function payInvoice(): void
+    {
+        $amount = $_POST['amount'] ?? board::error("Укажите сумму");
+        // Проверяем, что это число, и приводим его к float
+        if (is_numeric($amount)) {
+            $amount = (float)$amount;
+        } else {
+            board::error("Указанная сумма должна быть числом");
+        }
+
+
+
+        $donate = server::send(type::SPHERE_DONATE, [
+            'amount' => $amount,
+        ])->show()->getResponse();
+        if(isset($donate['success'])){
+            if($donate['success']){
+                board::redirect($donate['link']);
+                board::success("Переход по ссылке на оплату");
+            } else {
+                board::error($donate['message']);
+            }
+        }
+
+    }
+
     static public function get()
     {
         $sphereAPIError = null;
@@ -49,6 +81,10 @@ class swbalance
                 board::error('Случилась непредвиденная проблема');
             }
         }
+    }
+
+    public static function historyPay() {
+        tpl::display("/admin/balance_history.html");
     }
 
 

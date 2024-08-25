@@ -86,7 +86,7 @@ function showButtonStartGame() {
                 <div class="avatar avatar-lg me-3">
                   <img src="/uploads/images/l2.png" alt="img">
                 </div>
-                <div class="outlined-text text-white fs-16">${name}  ${desc}</div>
+                <div class="  btn btn-dark btn-wave text-white waves-effect waves-light ">${name}  ${desc}</div>
               </div>
             </div>`
       $("#buttonStartGame").append(htmlButton)

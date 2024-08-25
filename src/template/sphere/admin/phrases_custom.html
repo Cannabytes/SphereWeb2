@@ -69,14 +69,14 @@
               <tr>
                 <th data-save="false" style="width: 1px;"></th>
                 <th data-save="false">{{phrase('key')}}</th>
-                {% for lang in all_phrase().lang_list %}
+                {% for lang in all_phrase_custom().lang_list %}
                 <th data-save="true">{{lang|upper}}</th>
                 {% endfor %}
               </tr>
 
               </thead>
 
-              {% for key, phrases in all_phrase().phrases %}
+              {% for key, phrases in all_phrase_custom().phrases %}
               <tr>
                 <td>
                   <div class="dropdown">
@@ -84,9 +84,17 @@
                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
                       class="fe fe-more-vertical"></i></a>
                     <div class="dropdown-menu dropdown-menu-end" style="">
+
+
                       <a class="dropdown-item d-inline-flex align-items-center copy" href="javascript:void(0)"><i
                         class="fe fe-copy me-2"></i>{% verbatim %}{{ phrase({% endverbatim %}{% if is_numeric(key) %}{{
                         key }}{% else %}'{{ key }}'{% endif %}{% verbatim %}) }}{% endverbatim %}</a></a>
+                      <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i
+                        class="fe fe-corner-up-left me-2"></i> Reply</a>
+                      <a class="dropdown-item d-inline-flex align-items-center" href="javascript:void(0)"><i
+                        class="fe fe-flag me-2"></i> Report Abuse</a>
+                      <a class="dropdown-item d-inline-flex align-items-center removePhrase" data-key="{{key}}" href="javascript:void(0)"><i
+                        class="fe fe-trash-2 me-2"></i> Delete</a>
                     </div>
                   </div>
                 </td>
@@ -140,29 +148,29 @@
     });
 
     $('#addNewTableLang').on('click', function() {
-        var newLang = $('#country').val();
-        var newLangName = $('#country option:selected').text();
-        // Проверяем, не существует ли уже колонка для этого языка
-        if ($('#phraseDataTable th[data-save="true"]').filter(function() {
-          return $(this).text().trim().toUpperCase() === newLang.toUpperCase();
-        }).length > 0) {
-          alert('Этот язык уже существует в таблице!');
-          return;
+      var newLang = $('#country').val();
+      var newLangName = $('#country option:selected').text();
+      // Проверяем, не существует ли уже колонка для этого языка
+      if ($('#phraseDataTable th[data-save="true"]').filter(function() {
+        return $(this).text().trim().toUpperCase() === newLang.toUpperCase();
+      }).length > 0) {
+        alert('Этот язык уже существует в таблице!');
+        return;
+      }
+      $('#phraseDataTable thead tr').append(
+        $('<th>').attr('data-save', 'true').text(newLang.toUpperCase())
+      );
+      $('#phraseDataTable tbody tr').each(function() {
+        var key = $(this).find('td:eq(1)').text().trim();
+        var newCell = $('<td>').attr('data-lang', newLang);
+        if (key === 'lang_name') {
+          newCell.text(newLangName);
         }
-        $('#phraseDataTable thead tr').append(
-          $('<th>').attr('data-save', 'true').text(newLang.toUpperCase())
-        );
-        $('#phraseDataTable tbody tr').each(function() {
-          var key = $(this).find('td:eq(1)').text().trim();
-          var newCell = $('<td>').attr('data-lang', newLang);
-          if (key === 'lang_name') {
-            newCell.text(newLangName);
-          }
 
-          $(this).append(newCell);
-        });
-        $('#country option[value="' + newLang + '"]').remove();
+        $(this).append(newCell);
       });
+      $('#country option[value="' + newLang + '"]').remove();
+    });
 
     $(document).on('click','.copy',  function () {
       var textToCopy = $(this).text().trim();
@@ -222,7 +230,7 @@
                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                    <i class="fe fe-more-vertical"></i>
                 </a>
-                <div class="dropdown-menu dropdown-menu-end">
+                <div class="dropdown-menu dropdown-menu-end" style="">
                     <a class="dropdown-item d-inline-flex align-items-center copy" href="javascript:void(0)">
                         <i class="fe fe-copy me-2"></i><span class="dropdown-key"></span>
                     </a>
@@ -244,24 +252,16 @@
       // Фокусировка на textarea первой колонки
       newRow.find('textarea:first').focus();
 
-      // Обработка ввода текста в первой колонке
-      newRow.find('textarea').eq(0).on('input', function() {
-        var keyValue = $(this).val().trim();
+      // Обработка ввода текста в любом textarea в строке
+      newRow.find('textarea').on('input', function() {
+        var keyValue = newRow.find('textarea:first').val().trim(); // Получаем значение из первого textarea в строке
 
         // Обновляем текст кнопки и меню
-        var updatedText = `{\{ phrase('${keyValue}') }\}`;
+        var updatedText = `{{ phrase('${keyValue}') }}`;
         newRow.find('.dropdown-key').text(updatedText);
         newRow.find('a').attr('aria-label', updatedText); // Обновляем текст в атрибуте aria-label
       });
-
-      // Обработка клика на элемент dropdown-item
-      newRow.find('.dropdown-item').click(function () {
-        var secondColumnText = newRow.find('td').eq(1).text().trim();
-        var formattedText = `{\{ phrase('${secondColumnText}') }\}`;
-        $(this).find('.dropdown-key').text(formattedText);
-      });
     });
-
 
 
 
@@ -305,7 +305,6 @@
       e.stopPropagation(); // Останавливаем всплывание события
     });
   });
-
 
 </script>
 {% endblock %}

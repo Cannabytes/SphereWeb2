@@ -1,0 +1,105 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+
+        <div class="main-mail-container gap-4 d-flex mb-5">
+            <div class="mail-navigation  d-none d-md-block">
+                <div>
+                    <ul class="list-unstyled mail-main-nav" id="mail-main-nav">
+                        <li class="px-0 pt-0 mail-nav-heading">
+                            <span class="fs-11 text-muted op-7 fw-semibold">Пополнение баланса</span>
+                        </li>
+
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="d-flex align-items-center">
+                                            <span class="me-2 lh-1">
+                                                <i class="ri-send-plane-2-line align-middle fs-14"></i>
+                                            </span>
+                                    <span class="flex-fill text-nowrap">
+                                                Пополнение
+                                            </span>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li class="px-0 mail-nav-heading">
+                            <span class="fs-11 text-muted op-7 fw-semibold">История</span>
+                        </li>
+                        <li>
+                            <a href="/admin/balance/pay/history">
+                                <div class="d-flex align-items-center">
+                                            <span class="me-2 lh-1">
+                                                <i class="ri-settings-3-line align-middle fs-14"></i>
+                                            </span>
+                                    <span class="flex-fill text-nowrap">
+                                                История пожертвований
+                                            </span>
+                                </div>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            <div class="mails-information">
+                <div class="mail-info-header d-xxl-flex align-items-center">
+                    <div class="card-title d-flex align-items-center">
+                        <div class="mail-option-read me-2">
+                            <a aria-label="anchor" href="/admin/balance" class="vertical-phone" data-bs-toggle="tooltip" data-bs-original-title="Назад">
+                                <i class="bx bx-left-arrow-alt"></i>
+                            </a>
+                        </div>
+                        <div>
+                            История покупок
+                        </div>
+                    </div>
+
+                </div>
+                <div class="mail-info-body p-4" id="mail-info-body">
+
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="amount" class="form-label fs-14 text-dark">Сумма пополнения</label>
+                                    <input type="text" class="form-control" id="amount" placeholder="20.0">
+                                </div>
+                                <button class="btn btn-primary"  id="pay" type="submit">Перейти к пополнению</button>
+                            </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+{% endblock %}
+
+
+
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block js %}
+<script>
+    $(document).on(  "click", "#pay",  function(){
+        AjaxSend("/admin/balance/pay/invoice", "POST", {
+            amount: $("#amount").val()
+        }, true).then(function (response) {
+            responseAnalysis(response);
+            console.log(response)
+        })
+    })
+</script>
+
+{% endblock %}

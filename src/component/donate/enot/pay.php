@@ -24,7 +24,7 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
         ];
     }
 
-    private $allowIP = [
+    private array $allowIP = [
       '5.187.7.207',
       '149.202.68.3 ',
       '51.210.114.114',
@@ -106,11 +106,24 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
 
         $user_id = $order !== null ? (int) $order : null;
 
-        // $signature = $_SERVER['HTTP_X_API_SHA256_SIGNATURE'];
-        // if(!self::checkSignature($jsonTxt, $signature, $secret_word)) {
-        // echo 'SIGNATURE ERROR';
-        // exit;
-        // }
+         $signature = $_SERVER['HTTP_X_API_SHA256_SIGNATURE'];
+
+        // Получаем сигнатуру из заголовка 'x-api-sha256-signature'
+        $signature = $_SERVER['HTTP_X_API_SHA256_SIGNATURE'] ?? '';
+
+        // Генерируем сигнатуру на основе тела запроса и секретного ключа
+        $generatedSignature = hash_hmac('sha256', $jsonTxt, $secret_word);
+
+        // Сравниваем сигнатуры
+        if (hash_equals($generatedSignature, $signature)) {
+            // Сигнатуры совпадают, продолжаем обработку webhook
+            http_response_code(200);
+            echo 'OK';
+        } else {
+            // Сигнатуры не совпадают, возможна попытка подделки
+            http_response_code(403);
+            echo 'Forbidden';
+        }
 
 
         if ($status == "success") {

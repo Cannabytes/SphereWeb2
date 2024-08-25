@@ -963,10 +963,16 @@ class tpl
         $twig->addFunction(new TwigFunction('all_phrase', function () {
             $languages     = fileSys::get_dir_files("/data/languages", [
               'basename' => true,
-              'suffix'   => '.php',
               'sort'     => false,
               'fetchAll' => true,
             ]);
+
+            $languages = array_map(function($item) {
+                return preg_replace('/\.php$/', '', $item);
+            }, array_filter($languages, function($item) {
+                return substr($item, -4) === '.php';
+            }));
+
             $combinedArray = [];
             foreach ($languages as $language) {
                 $language_phrases = include fileSys::get_dir("/data/languages/" . $language . ".php");
@@ -988,6 +994,36 @@ class tpl
                 ksort($phrases);
             }
 
+            return ['lang_list' => $languages, 'phrases' => $combinedArray];
+        }));
+
+        $twig->addFunction(new TwigFunction('all_phrase_custom', function () {
+            $languages     = fileSys::get_dir_files("/data/languages/custom", [
+              'basename' => true,
+              'suffix'   => '.php',
+              'sort'     => false,
+              'fetchAll' => true,
+            ]);
+            $combinedArray = [];
+            foreach ($languages as $language) {
+                $language_phrases = include fileSys::get_dir("/data/languages/custom/" . $language . ".php");
+                foreach ($language_phrases as $key => $phrase) {
+                    $combinedArray[$key][$language] = $phrase;
+                }
+            }
+
+            // Добавляем пустые строки для отсутствующих языковых значений
+            foreach ($combinedArray as $key => $phrases) {
+                foreach ($languages as $language) {
+                    if ( ! array_key_exists($language, $phrases)) {
+                        $combinedArray[$key][$language] = ""; // Добавляем пустую строку
+                    }
+                }
+            }
+            // Сортировка фраз в каждом языке
+            foreach ($combinedArray as $key => &$phrases) {
+                ksort($phrases);
+            }
             return ['lang_list' => $languages, 'phrases' => $combinedArray];
         }));
 

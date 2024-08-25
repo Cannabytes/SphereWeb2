@@ -19,12 +19,12 @@
           <div class="form-floating mb-3">
             <input type="text" class="form-control" id="list"
                    placeholder="https://example.com/updater/client.csv">
-            <label for="list">Ссылка на файл client.csv</label>
+            <label for="list">Ссылка на файл client.csv (Пример: https://example.com/updater/client.csv)</label>
           </div>
           <div class="form-floating mb-3">
             <input type="text" class="form-control" id="storage"
                    placeholder="https://example.com/updater/">
-            <label for="storage">Ссылка на месторасположение файлов патча</label>
+            <label for="storage">Ссылка на месторасположение файлов патча (Пример: https://example.com/updater)</label>
           </div>
 
           <button class="btn btn-primary mb-5" type="submit" id="generationToken">Сгенерировать</button>
@@ -47,12 +47,20 @@
 {% block js %}
 <script>
   $("#generationToken").on("click", function () {
-      AjaxSend("/admin/launcher/create/token/generation", "POST", {
-          "list": $("#list").val(),
-          "storage": $("#storage").val(),
-      }, true).then(function (response){
-          $("#token").val(response.token);
-      });
-  })
+    const listValue = $("#list").val();
+
+    if (!/\.csv$/.test(listValue)) {
+      noticeError("Укажите ссылку на файл client.csv")
+      return;
+    }
+
+    AjaxSend("/admin/launcher/create/token/generation", "POST", {
+      "list": listValue,
+      "storage": $("#storage").val(),
+    }, true).then(function (response){
+      $("#token").val(response.token);
+    });
+  });
+
 </script>
 {% endblock %}

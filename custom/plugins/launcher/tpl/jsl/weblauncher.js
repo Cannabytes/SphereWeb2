@@ -246,14 +246,13 @@ function ResponseStatus(response) {
             percent = ((response.loaded / response.filesTotal) * 100).toFixed(1)
             $("#domainLauncher").text(response.domain)
             $("#statusLauncher").text(getPhrase("StatusDownload")).addClass("bg-gd-sea");
-            console.log(getPhrase("StatusDownload"), userLang);
+
             $("#loadedFiles").text(response.loaded)
             $("#filesTotal").text(response.filesTotal)
             $('#processName').text(getPhrase("file_upload"));
             $('#processRunLevel').text( percent + "%");
 
             updateChart(percent, "Загрузка");
-
 
             $('title').text("Launcher" + " " + chronicle + " (" + percent + "%)");
 
@@ -280,6 +279,7 @@ function ResponseStatus(response) {
         if(isDebug){
             console.log("Загрузка завершена")
         }
+        updateChart(100, "Завершено");
         $('#processRunLevel').text("100%");
         $("#loadedFiles").text(response.loaded)
         $("#filesTotal").text(response.filesTotal)

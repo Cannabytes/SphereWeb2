@@ -1,0 +1,78 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+
+                        <div class="card-title d-flex align-items-center">
+                            <div class="mail-option-read me-2">
+                                <a aria-label="anchor" href="/admin/balance/pay" class="vertical-phone" data-bs-toggle="tooltip" data-bs-original-title="Назад">
+                                    <i class="bx bx-left-arrow-alt"></i>
+                                </a>
+                            </div>
+                            <div>
+                                История покупок
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table text-nowrap">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Color</th>
+                                    <th scope="col">Client</th>
+                                    <th scope="col">State</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Total Price</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th scope="row">Default</th>
+                                    <td>Rita Book</td>
+                                    <td><span class="badge bg-primary-transparent">Processed</span></td>
+                                    <td>22</td>
+                                    <td>$2,012</td>
+                                </tr>
+
+                                <tr class="table-primary">
+                                    <th scope="row">Primary</th>
+                                    <td>Rhoda Report</td>
+                                    <td><span class="badge bg-primary">Processed</span></td>
+                                    <td>22</td>
+                                    <td>$4,254</td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+
+
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block js %}
+
+{% endblock %}

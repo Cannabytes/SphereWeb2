@@ -78,7 +78,7 @@ function showButtonStartGame() {
                   <div class="startL2 col-sm-6 col-xl-${col}" data-exe="${element.l2exe}" data-args="${element.args}">
                     <a class="block block-rounded block-transparent bg-image d-flex align-items-stretch h-100 mb-0" href="javascript:void(0)" style="background-image: url('/${element.background}');">
                       <div class="block-content block-sticky-options pt-3 bg-black-50">
-                        <h2 class="h3 fw-bold text-white mb-1">${name}</h2>
+                         <h2 class="h3 fw-bold text-white mb-1">${name}</h2>
                         <h3 class="fs-base fw-medium text-white-75">${desc}</h3>
                       </div>
                     </a>
@@ -182,7 +182,7 @@ function statusLoad(status) {
                 break;
             case 4:
                 $("#statusLauncher").text(getPhrase('StatusCompleted')).addClass("bg-success");
-                break;
+                 break;
             case 5:
                 $("#statusLauncher").text(getPhrase('StatusStopped')).addClass("bg-earth");
                 $('.percent').text(0);

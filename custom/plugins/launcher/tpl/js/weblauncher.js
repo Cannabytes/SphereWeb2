@@ -273,6 +273,8 @@ function ResponseStatus(response) {
         if(isDebug){
             console.log("Загрузка завершена")
         }
+        updateChart(100, "Завершено");
+        updateGauge(0);
         $('#processRunLevel').text("100%");
         $("#loadedFiles").text(response.loaded)
         $("#filesTotal").text(response.filesTotal)
