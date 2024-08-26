@@ -237,9 +237,8 @@ class options
           [$server->getId()]
         );
         $collection_data = json_decode($collection_data['data'], true);
-
         $loginServersData = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS_DATA, ['id' => $server->getId()])
-                                                                 ->show()
+                                                                 ->show(true)
                                                                  ->getResponse();
         tpl::addVar([
           'loginServersData'      => $loginServersData,

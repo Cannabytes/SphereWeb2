@@ -216,7 +216,7 @@
       });
 
       var jsonData = JSON.stringify(data);
-      AjaxSend("/admin/phrases", "POST", {phrases: jsonData}, false)
+      AjaxSend("/admin/phrases/custom", "POST", {phrases: jsonData}, false)
     });
 
     $('#add_new_phrase').click(function () {

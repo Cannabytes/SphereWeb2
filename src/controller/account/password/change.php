@@ -23,11 +23,16 @@ class change
     {
         validation::user_protection();
         $login         = $_POST['login'] ?? board::notice(false, "Не получен login");
-        $password      = $_POST['password'];
+        $password      = $_POST['password'] ?? board::notice(false, "Введите пароль");
         $password_hide = false;
         if(!isset($_POST['password_hide'])){
             $password_hide = true;
         }
+
+        if(mb_strlen($password) < 4){
+            board::notice(false, "Пароль слишком короткий");
+        }
+
         $response      = \Ofey\Logan22\component\sphere\server::send(type::ACCOUNT_PLAYER_CHANGE_PASSWORD, [
           'login'         => $login,
           'password'      => $password,
