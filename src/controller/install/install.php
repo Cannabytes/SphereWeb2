@@ -6,6 +6,7 @@
 namespace Ofey\Logan22\controller\install;
 
 use Exception;
+use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\server;
@@ -273,8 +274,14 @@ const __TOKEN__ = \"$token\";\n"
                 );
                 unlink($filenameCheck);
             }
+        }else{
+            echo json_encode([
+              "type"    => "notice",
+              "ok"      => false,
+              "message" => 'Error create file',
+            ]);
+            exit;
         }
-
         \Ofey\Logan22\model\install\install::saveConfig($host, $port, $user, $password, $name);
 
         $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
@@ -308,19 +315,22 @@ const __TOKEN__ = \"$token\";\n"
           $ip,
           'admin',
         ])) {
-            echo json_encode([
-              "type"     => "notice",
-              "ok"       => true,
-              "message"  => "Gooooood job!",
-              "redirect" => "/main",
-            ]);
-            exit;
+            board::redirect("/main");
+            board::success("Установлено");
+//            echo json_encode([
+//              "type"     => "notice",
+//              "ok"       => true,
+//              "message"  => "Gooooood job!",
+//              "redirect" => "/main",
+//            ]);
+//            exit;
         }
-        echo json_encode([
-          "type"    => "notice",
-          "ok"      => false,
-          "message" => "Не удалось создать администратора",
-        ]);
+        board::success("Произошла ошибка установки");
+        //        echo json_encode([
+//          "type"    => "notice",
+//          "ok"      => false,
+//          "message" => "Не удалось создать администратора",
+//        ]);
         exit;
     }
 

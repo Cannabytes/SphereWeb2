@@ -558,6 +558,7 @@
 
 
   $("#install").click(function () {
+    $(this).prop("disabled", true);
      AjaxSend("/install", "POST", {
        email: $('#email').val(),
        nickname: $('#nickname').val(),
@@ -569,6 +570,7 @@
        password: $('#password').val(),
        port: $('#port').val(),
      }, true).then(function (data) {
+       console.log(data)
        ResponseNotice(data);
      })
   });
