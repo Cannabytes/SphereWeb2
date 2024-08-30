@@ -2,6 +2,8 @@
 
 namespace Ofey\Logan22\model\server;
 
+use DateInterval;
+use DateTime;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
@@ -54,7 +56,28 @@ class serverStatus
 
     public function getOnline(): int
     {
-        return config::load()->other()->getOnlineMul() * $this->online;
+        $online = $this->online;
+
+        if (config::load()->onlineCheating()->isEnabled()) {
+            $cheatingDetails = config::load()->onlineCheating()->getCheatingDetails();
+            $currentTime = new DateTime();
+            foreach ($cheatingDetails as $key => $details) {
+                foreach ($details as $index => $detail) {
+                    $startTime = DateTime::createFromFormat('H:i', $detail->getTime());
+                    $nextIndex = $index + 1;
+                    if ($nextIndex < count($details)) {
+                        $endTime = DateTime::createFromFormat('H:i', $details[$nextIndex]->getTime());
+                    } else {
+                        $endTime = (clone $startTime)->add(new DateInterval('PT30M'));
+                    }
+                    if ($currentTime >= $startTime && $currentTime < $endTime) {
+                        $online *= (float)$detail->getMultiplier();
+                        break 2;
+                    }
+                }
+            }
+        }
+        return (int)config::load()->other()->getOnlineMul() * $online;
     }
 
     public function setOnline(int $online): void

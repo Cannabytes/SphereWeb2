@@ -1386,25 +1386,28 @@
                            aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample_{{online}}"
                            style="">
 
-                        {% for time in data %}
                         <div class="accordion-body">
-                          <div class="row">
-                            <div class="col-xl-2">
-                              <input value="{{time.getTime()}}" class="form-control time-format-2" placeholder="hh:mm">
+                          <div class="row-container">
+                            {% for time in data %}
+                            <div class="row">
+                              <div class="col-xl-2">
+                                <input value="{{time.getTime()}}" class="form-control time-format-2" placeholder="hh:mm">
+                              </div>
+                              <div class="col-xl-2">
+                                {{phrase('multiply_online_by')}}:
+                              </div>
+                              <div class="col-xl-2">
+                                <input min="1" value="{{time.getMultiplier()}}" step="0.1" type="number"
+                                       class="form-control" placeholder="1">
+                              </div>
                             </div>
-                            <div class="col-xl-2">
-                              {{phrase('multiply_online_by')}}:
-                            </div>
-                            <div class="col-xl-2">
-                              <input min="1" value="{{time.getMultiplier()}}" step="0.1" type="number"
-                                     class="form-control" placeholder="1">
-                            </div>
+                            {% endfor %}
+                          </div>
+                          <div class="col-md-12">
+                            <button type="button" class="btn btn-primary add-time">{{ phrase(438) }} {{ phrase(30) }}</button>
                           </div>
                         </div>
-                        {% endfor %}
-                        <div class="col-md-12">
-                          <button type="button" class="btn btn-primary add-time">{{ phrase(438) }} {{ phrase(30) }}</button>
-                        </div>
+
                       </div>
                     </div>
                   </div>
@@ -2761,9 +2764,16 @@
     });
 
     $('.add-time').click(function () {
-      var newRow = $('.accordion-body .row:first').clone();
+      // Определяем контейнер для текущего аккордеона, где была нажата кнопка
+      var accordionBody = $(this).closest('.accordion-body');
+      var rowContainer = accordionBody.find('.row-container');
+
+      // Клонируем первую строку
+      var newRow = rowContainer.find('.row:first').clone();
       newRow.find('input').val(''); // Очищаем значения input-ов в новой строке
-      $('.accordion-body').append(newRow); // Добавляем новую строку в accordion-body
+
+      // Добавляем новую строку в соответствующий контейнер
+      rowContainer.append(newRow);
 
       // Применяем Cleave.js к только что добавленному элементу input
       newRow.find('.time-format-2').each(function () {
@@ -2773,6 +2783,8 @@
         });
       });
     });
+
+
 
     $('.add-accordion-item').click(function () {
       var numItems = $('#players_online_cheating').val();
