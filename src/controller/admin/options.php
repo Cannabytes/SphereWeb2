@@ -186,7 +186,6 @@ class options
         if ($serversFullInfo['error']) {
             redirect::location("/admin/server/list");
         }
-
         $serversFullInfo = $serversFullInfo['servers'];
         if ($id) {
             $serverInfo = \Ofey\Logan22\model\server\server::getServer($id);
@@ -232,11 +231,11 @@ class options
         );
         $mysql_data_connect = json_decode($mysql_data_connect['data'], true);
 
-        $collection_data = sql::getRow(
+        $collection_data  = sql::getRow(
           "SELECT * FROM `server_cache` WHERE server_id = ? and `type`='collection_data';",
           [$server->getId()]
         );
-        $collection_data = json_decode($collection_data['data'], true);
+        $collection_data  = json_decode($collection_data['data'], true);
         $loginServersData = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS_DATA, ['id' => $server->getId()])
                                                                  ->show(true)
                                                                  ->getResponse();
@@ -533,6 +532,20 @@ class options
             board::notice(true, lang::get_phrase(222));
         } else {
             board::notice(false, lang::get_phrase(223));
+        }
+    }
+
+    public static function removeLoginserver(): void
+    {
+        validation::user_protection("admin");
+        $data = \Ofey\Logan22\component\sphere\server::send(type::DELETE_LOGINSERVER, [
+          "loginId" => (int)$_POST['loginId'],
+        ])->show()->getResponse();
+        if (isset($data["success"])) {
+            board::alert([
+              'message' => "Удалено",
+              'ok'      => true,
+            ]);
         }
     }
 

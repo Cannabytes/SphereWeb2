@@ -106,25 +106,23 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
 
         $user_id = $order !== null ? (int) $order : null;
 
-         $signature = $_SERVER['HTTP_X_API_SHA256_SIGNATURE'];
-
         // Получаем сигнатуру из заголовка 'x-api-sha256-signature'
         $signature = $_SERVER['HTTP_X_API_SHA256_SIGNATURE'] ?? '';
 
-        // Генерируем сигнатуру на основе тела запроса и секретного ключа
-        $generatedSignature = hash_hmac('sha256', $jsonTxt, $secret_word);
+        ksort($requestData);
+        $hookJsonSorted = json_encode($requestData);
+        $generatedSignature = hash_hmac('sha256', $hookJsonSorted, $secret_word);
 
         // Сравниваем сигнатуры
         if (hash_equals($generatedSignature, $signature)) {
-            // Сигнатуры совпадают, продолжаем обработку webhook
             http_response_code(200);
-            echo 'OK';
         } else {
-            // Сигнатуры не совпадают, возможна попытка подделки
             http_response_code(403);
-            echo 'Forbidden';
+            $rnd = mt_rand(0,9999);
+            echo "#{$rnd} |Ошибка сигнатуры платежа";
+            \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['sum'], $_POST['currency'], get_called_class()]);
+            die();
         }
-
 
         if ($status == "success") {
             $amount = donate::currency($amount, $currency);

@@ -4,17 +4,35 @@
 
 {% block content %}
 <div class="container-fluid">
+
+
+  <div class="row">
+
+    <div class="col-xl-12 col-md-6">
+      <div class="card ribbone-card  sold-out">
+        <div class="card-body  p-6">
+          <h6 class="card-subtitle mb-2 text-dark fw-bold">{{ phrase('how_to_use') }}</h6>
+          <p class="card-text">
+            {{ phrase('download_launcher_and_create_patch_token')|raw }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
   <div class="row">
     <div class="col-xl-12">
       <div class="card custom-card">
         <div class="card-header justify-content-between">
           <div class="card-title">
-            Мои лаунчера
+            {{ phrase('my_launchers') }}
           </div>
           <div class="prism-toggle">
-            <a href="/admin/launcher/create/token" class="btn btn-sm btn-primary-light">Создать токен</a>
-            <a href="/admin/launcher/create/patch" class="btn btn-sm btn-primary-light">Создать патч</a>
-            <a href="/admin/launcher/add" class="btn btn-sm btn-primary-light">Добавить лаунчер</a>
+            <a href="/admin/launcher/create/token" class="btn btn-sm btn-primary-light">{{ phrase('create_token') }}</a>
+            <a href="/admin/launcher/create/patch" class="btn btn-sm btn-primary-light">{{ phrase('create_patch') }}</a>
+            <a href="/admin/launcher/add" class="btn btn-sm btn-primary-light">{{ phrase('add_launcher') }}</a>
           </div>
         </div>
         <div class="card-body">
@@ -100,6 +118,15 @@
 
 
 <script>
+
+  $(document).ready(function () {
+    var encodedLink = "aHR0cHM6Ly9naXRodWIuY29tL0Nhbm5hYnl0ZXMvY2FubmFieXRlcy5naXRodWIuaW8vcmF3L21haW4vdXBkYXRlci9TcGhlcmUgTGF1bmNoZXIuZXhl";
+    $(".launcherLink").on("click", function () {
+      var decodedLink = atob(encodedLink);
+      window.location.href = decodedLink;
+    });
+  });
+
     var userLang = `{{lang_user_default()}}`;
     $(document).on("click", ".launcher_is_default", function () {
         var formData = {};

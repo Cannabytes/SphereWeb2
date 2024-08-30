@@ -116,7 +116,7 @@
 
         <div class="card-header">
             <div class="card-title">
-                Создание патча
+                {{ phrase('patch_creation') }}
             </div>
         </div>
         <div id="msgUpdLauncher" class="alert alert-danger d-none" role="alert">
@@ -136,12 +136,12 @@
                 <!-- Default Lock -->
                 <div class="card-body h-100 mb-0">
                             <div class="mb-4">
-                                <label class="form-label" for="clientDirectory">Папка с патчем игры</label>
+                                <label class="form-label" for="clientDirectory">{{ phrase('game_patch_folder') }}</label>
                                 <input type="text" class="form-control" id="clientDirectory" name="lock1-password" placeholder="C:/games/mypatch">
                             </div>
                             <div class="mb-4">
                                 <button id="buttonOpenDirPath" type="submit" class="btn btn-primary" role="button" data-bs-toggle="modal" data-bs-target="#selectDirClient">
-                                    <i class="fa fa-folder-open opacity-50 me-1"></i> Указать
+                                    <i class="fa fa-folder-open opacity-50 me-1"></i> {{ phrase('specify_folder') }}
                                 </button>
                     </div>
                 </div>
@@ -156,7 +156,7 @@
                             </div>
                             <div class="mb-4">
                                 <button id="buttonOpenDirSavePath" type="submit" class="btn btn-primary" role="button" data-bs-toggle="modal" data-bs-target="#selectDirClient">
-                                    <i class="fa fa-folder-open opacity-50 me-1"></i> Указать
+                                    <i class="fa fa-folder-open opacity-50 me-1"></i> {{ phrase('specify_folder') }}
                                 </button>
                             </div>
                 </div>
@@ -174,9 +174,11 @@
                 <div class="py-3 text-center">
 
                     <h2 class="fs-sm fw-medium text-muted mb-0">
-                        <button id="startCreatePatch" type="button" class="btn btn-secondary js-click-ripple-enabled" data-toggle="click-ripple" style="overflow: hidden; position: relative; z-index: 1;">Начать</button>
-                        <button id="stopGenerationArchive" type="button" class="btn btn-secondary js-click-ripple-enabled d-none" data-toggle="click-ripple" style="overflow: hidden; position: relative; z-index: 1;">Прервать</button>
+                        <button id="startCreatePatch" type="button" class="btn btn-secondary js-click-ripple-enabled" data-toggle="click-ripple" style="overflow: hidden; position: relative; z-index: 1;">{{ phrase(410) }}</button>
+                        <button id="stopGenerationArchive" type="button" class="btn btn-secondary js-click-ripple-enabled d-none" data-toggle="click-ripple" style="overflow: hidden; position: relative; z-index: 1;">{{ phrase(411) }}</button>
                     </h2>
+
+                    <br>
 
                     <div class="progress push" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                         <div id="styleLoad" class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 0%;">
@@ -184,39 +186,6 @@
                         </div>
                     </div>
 
-                </div>
-            </div>
-        </div>
-
-        <hr>
-        <div class="col-xl-12">
-            <div class="block fs-lg p-4 block-rounded">
-                <div class="block-content">
-                    <h3>Инструкция создания патча</h3>
-                    <p>Для создания патча, необходимо запустить лаунчер.<br>
-                        Указать папку с клиентом или патчем игры.<br>
-                        Указать папку сохранения архивации.<br>
-                        После нажатия на кнопку "Начать" будет запущен процесс архивации и вычисления хэшэй файлов.<br>
-                        После завершения, в папке с патчем будет файл <label class="text-success">client.csv</label> и архивы в папках.<br>
-                        Загрузите всё содержимое себе на сайт, например по такому адресу <label class="text-success">https://example.com/updater/patch/</label>.<br>
-
-                    <p class="fw-semibold">Далее передайте в телеграмм <a target="_blank" href="https://t.me/Cannabytes">@Cannabytes</a> ссылки на патч лист и клиент.</p>
-                    <ul class="fa-ul list list-simple-mini push">
-                        <li>
-                            <i class="fa fa-check fa-li text-success"></i>
-                            Ссылку на патч лист: <label class="text-success">https://example.com/updater/patch/client.csv</label>
-                        </li>
-                        <li>
-                            <i class="fa fa-check fa-li text-success"></i>
-                            Ссылку на местохранение патча: <label class="text-success">https://example.com/updater/patch/</label>.
-                        </li>
-                    </ul>
-
-                    <p>Это необходимо для безопастности и активации в системе.</p>
-
-                    <p class="alert alert-success fw-semibold text-center">
-                        <i class="fa fa-thumbs-up"></i> Congratulations! Ура, если всё получилось.
-                    </p>
                 </div>
             </div>
         </div>

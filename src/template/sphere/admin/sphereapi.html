@@ -20,12 +20,12 @@
                         </div>
 
                         <div class="form-floating mb-3">
-                            <input name="ip" type="text" class="form-control" id="floatingInput" placeholder="IP" value="{{config().SphereApi().getIP()}}">
-                            <label for="floatingInput">IP</label>
+                            <input name="ip" type="text" class="form-control" id="sphereApiIP" placeholder="IP" value="{{config().SphereApi().getIP()}}">
+                            <label for="sphereApiIP">IP</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input name="port" type="text" class="form-control" id="floatingPassword" placeholder="PORT" value="{{config().SphereApi().getPort()}}">
-                            <label for="floatingPassword">PORT</label>
+                            <input name="port" type="text" class="form-control" id="sphereApiPort" placeholder="PORT" value="{{config().SphereApi().getPort()}}">
+                            <label for="sphereApiPort">PORT</label>
                         </div>
 
 
@@ -55,7 +55,10 @@
 
 <script>
     $("#checkConnectToServerApi").on("click", function () {
-        AjaxSend("/admin/sphereapi/check", "POST", {}, false).then(function (data) {
+        AjaxSend("/admin/sphereapi/check", "POST", {
+            "ip" : $("#sphereApiIP").val(),
+            "port" : $("#sphereApiPort").val(),
+        }, false, 3).then(function (data) {
             console.log(data)
         })
     });

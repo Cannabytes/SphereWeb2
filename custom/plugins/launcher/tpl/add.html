@@ -8,14 +8,14 @@
 
 
     <div class="card-header  ">
-        <h3 class="card-title">Лаунчера данные</h3>
+        <h3 class="card-title">{{ phrase('launcher_data') }}</h3>
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-lg-6 col-xl-6">
                 <!-- Form Labels on top - Default Style -->
                 <div class="mb-4">
-                    <label class="form-label" for="server">Сервер<label class="text-danger">*</label></label>
+                    <label class="form-label" for="server">{{ phrase('server') }}<label class="text-danger">*</label></label>
                     <select class="form-select" id="server" name="server">
                         {% for server in getServerAll() %}
                         <option value="{{server.id}}">{{server.getName()}} x{{server.getRateExp()}} - {{server.getChronicle()}}
@@ -24,23 +24,22 @@
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label class="form-label" for="autoload">Показывать аккаунты для автозагрузки?</label>
+                    <label class="form-label" for="autoload">{{ phrase('show_accounts_for_autoload') }}</label>
                     <div class="fs-sm fw-medium text-muted mb-0">
-                        Настройка актуальная только если игровой клиент поддерживает функцию автовхода в игру (без
-                        авторизации).
+                        {{ phrase('setting_applicable_if_auto_login_supported') }}
                     </div>
 
                     <div class="col-2">
                         <select class="form-select mb-4" id="autoload" name="autoload">
-                            <option value="off">Нет</option>
-                            <option value="on">Да</option>
+                            <option value="off">{{ phrase(426) }}</option>
+                            <option value="on">{{ phrase('yes') }}</option>
                         </select>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6 col-xl-6">
                 <div class="mb-4">
-                    <label class="form-label" for="server">Название<label class="text-danger">*</label></label>
+                    <label class="form-label" for="server">{{ phrase(27) }}<label class="text-danger">*</label></label>
                     <div class="input-group">
                         <span class="input-group-text">
                           https://site.com/launcher/
@@ -51,9 +50,9 @@
 
 
                 <div class="mb-4">
-                    <label class="form-label" for="server">Заметка о лаунчере</label>
+                    <label class="form-label" for="server">{{ phrase('launcher_note') }}</label>
                     <div class="fs-sm fw-medium text-muted mb-0">
-                        Для чего хотите использовать этот лаунчер? - Это напоминание только для Вас.
+                        {{ phrase('what_use_launcher_for_reminder') }}
                     </div>
                     <input type="text" class="form-control" id="note" name="note" placeholder="">
                 </div>
@@ -62,9 +61,9 @@
             <div class="mb-4">
                 <label class="form-label" for="tokenApi">Token API<label class="text-danger">*</label></label>
                 <div class="fs-sm fw-medium text-muted mb-0">
-                    Token API необходим для безопастности. Его можно получить после генерации патча.
+                    {{ phrase('api_token_for_security_after_patch_generation') }}
                     <br>
-                    <a href="/admin/launcher/create/token" target="_blank">Создать токен на этой странице.</a>
+                    <a href="/admin/launcher/create/token" target="_blank">{{ phrase('create_token_on_this_page') }}</a>
                 </div>
                 <input type="text" class="form-control" id="tokenApi" name="tokenApi" placeholder="Key">
             </div>
@@ -78,7 +77,7 @@
             <div class="col-6">
                 <div class="card custom-card">
                     <div class="card-header">
-                        <h3 class="card-title">Кнопка запуска игры #1</h3>
+                        <h3 class="card-title">{{ phrase('game_launch_button') }} #1</h3>
                     </div>
                     <div class="card-body">
                         <div class="mb-4">
@@ -92,7 +91,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label" for="background_1">Изображение кнопки</label>
+                            <label class="form-label" for="background_1">{{ phrase('button_image') }}</label>
                             <input type="text" class="form-control"
                                    value="custom/plugins/launcher/tpl/img/l2_button.jpg" id="background_1"
                                    name="application[background][]" placeholder="background">
@@ -100,13 +99,12 @@
 
                         <hr>
                         <div class="mb-4">
-                            <label class="form-label" for="button_start_ru_1">Название кнопки запуска на русском</label>
+                            <label class="form-label" for="button_start_ru_1">{{ phrase('button_name_for_launch_in_russian') }}</label>
                             <input type="text" class="form-control" id="button_start_ru_1" name="application[button_start_ru][]"
                                    value="Запустить игру" placeholder="Запустить игру">
                         </div>
                         <div class="mb-4">
-                            <label class="form-label" for="button_start_en_1">Название кнопки запуска на
-                                английском</label>
+                            <label class="form-label" for="button_start_en_1">{{ phrase('button_name_for_launch_in_english') }}</label>
                             <input type="text" class="form-control" id="button_start_en_1" name="application[button_start_en][]"
                                    value="Start Play" placeholder="Start Play">
                         </div>
@@ -117,7 +115,7 @@
             <div class="col-6">
                 <div class="card custom-card">
                     <div class="card-header">
-                        <h3 class="card-title">Кнопка запуска игры #2 - (Если не нужна, оставьте пустым)</h3>
+                        <h3 class="card-title">{{ phrase('game_launch_button') }} #2 - ({{ phrase('if_not_needed_leave_blank') }})</h3>
                     </div>
                     <div class="card-body">
                         <div class="mb-4">
@@ -131,18 +129,17 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label" for="background">Изображение кнопки</label>
+                            <label class="form-label" for="background">{{ phrase('button_image') }}</label>
                             <input type="text" class="form-control" id="background" value="custom/plugins/launcher/tpl/img/l2_button.jpg" name="application[background][]" placeholder="background">
                         </div>
                         <hr>
 
                         <div class="mb-4">
-                            <label class="form-label" for="button_start_ru">Название кнопки запуска на русском</label>
+                            <label class="form-label" for="button_start_ru">{{ phrase('button_name_for_launch_in_russian') }}</label>
                             <input type="text" class="form-control" id="button_start_ru" name="application[button_start_ru][]" value="Запустить игру" placeholder="Запустить игру">
                         </div>
                         <div class="mb-4">
-                            <label class="form-label" for="button_start_en">Название кнопки запуска на
-                                английском</label>
+                            <label class="form-label" for="button_start_en">{{ phrase('button_name_for_launch_in_english') }}</label>
                             <input type="text" class="form-control" id="button_start_en" name="application[button_start_en][]"
                                    value="Start Play" placeholder="Start Play">
                         </div>
@@ -155,7 +152,7 @@
     <div class="row text-center">
         <div class="row mb-4">
             <div class="col-sm-12 ms-auto">
-                <button type="submit" id="set_config" class="btn btn-primary">Сохранить</button>
+                <button type="submit" id="set_config" class="btn btn-primary">{{ phrase(89) }}</button>
             </div>
         </div>
     </div>

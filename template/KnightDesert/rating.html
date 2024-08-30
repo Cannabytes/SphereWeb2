@@ -7,7 +7,7 @@
     <select autocomplete="off" class="st__select" data-tab-select data-tab-select-server>
         {% for server in server_online_status() %}
         <option data-open-tab-select="server-{{server.id}}" data-open-tab-group-select="rating">
-            {{server.name}} x{{server.rate_exp}}
+            {{server.getName()}} x{{server.getRateExp()}}
         </option>
         {% endfor %}
     </select>

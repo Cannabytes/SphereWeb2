@@ -72,6 +72,7 @@ enum type
 
     case GET_LOGIN_SERVERS;
     case GET_LOGIN_SERVERS_DATA;
+    case DELETE_LOGINSERVER;
 
     static function url(type $type): string
     {
@@ -96,8 +97,11 @@ enum type
             self::SERVER_LIST => '/api/server/list',
             self::SERVER_FULL_INFO => '/api/server/full/info',
             self::GAME_SERVER_REQUEST => '/api/server/request/mysql',
+
             self::GET_LOGIN_SERVERS => '/api/server/get/loginservers',
             self::GET_LOGIN_SERVERS_DATA => '/api/server/get/loginservers/data',
+
+            self::DELETE_LOGINSERVER => '/api/server/delete/loginservers',
 
             self::SYNCHRONIZATION => '/api/user/accounts/synchronization',
             self::SERVER_STATISTIC_ONLINE => '/api/server/statistic/online',

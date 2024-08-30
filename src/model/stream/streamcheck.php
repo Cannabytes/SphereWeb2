@@ -51,6 +51,9 @@ class streamcheck
         if($userId === null) {
             $userId = user::self()->getId();
         }
+
+
+
         //Проверка что у пользователя есть такой стрим
         $row = sql::getRow("SELECT * FROM `streams` WHERE user_id = ?", [$userId]);
         if ( ! $row) {

@@ -6,6 +6,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\template\tpl;
 
@@ -18,6 +19,9 @@ class sphereapi
 
     static function check()
     {
+        config::load()->sphereApi()->setIp($_POST['ip']);
+        config::load()->sphereApi()->setPort($_POST['port']);
+
         $lastCommit = server::send(type::GET_COMMIT_LAST)->show(false)->getResponse();
         if(isset($lastCommit['last_commit'])){
             board::success("Проверка подключения удалась");

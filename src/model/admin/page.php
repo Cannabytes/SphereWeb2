@@ -55,7 +55,6 @@ class page
             $link,
           ]
         );
-var_dump($_SESSION);exit;
         // Проверка результата вставки на ошибку исключения возвращает
         if (sql::isError()) {
             board::notice(false, "ERROR: " . $request->getMessage());
