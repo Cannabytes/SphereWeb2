@@ -42,7 +42,7 @@ class template
         if ( ! $this->isLoadedTemplateInfo) {
             $template   = $this->template;
             $readmeJson = "template/{$template}/readme.json";
-            $img        = "/src/template/logan22/assets/images/none.png";
+            $img        = "/src/template/sphere/assets/images/none.png";
             $this->name        = $template;
             if (file_exists($readmeJson)) {
                 $jsonContents      = file_get_contents($readmeJson);

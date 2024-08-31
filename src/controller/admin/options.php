@@ -600,4 +600,15 @@ class options
         update_cache::save();
     }
 
+    //Show info about template
+    public static function getTemplateInfo()
+    {
+            $template   = $_POST['template'] ?? board::error("No select template");
+            $readmeJson = "template/{$template}/readme.json";
+            $img        = "/src/template/sphere/assets/images/none.png";
+            if (file_exists($readmeJson)) {
+                $jsonContents      = file_get_contents($readmeJson);
+                echo $jsonContents;
+            }
+    }
 }
