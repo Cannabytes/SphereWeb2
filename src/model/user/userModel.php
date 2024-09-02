@@ -799,7 +799,7 @@ class userModel
         if ($amount < 0) {
             board::error("Сумма должна быть положительным числом.");
         }
-        $this->donate += ceil(round($amount, 1));
+        $this->donate += round($amount, 1);
         $this->donateUpdate();
 
         return $this;
