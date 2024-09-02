@@ -307,19 +307,23 @@
             // Удаляем все символы, кроме цифр
             this.value = this.value.replace(/[^0-9]/g, '');
 
-            var value = parseInt(this.value);
+            var value = this.value === '' ? '' : parseInt(this.value);
             var min = parseInt(this.getAttribute('min'));
             var max = parseInt(this.getAttribute('max'));
 
+            // Проверяем, если значение пустое, оставляем его пустым
+            if (value === '') {
+                this.value = '';
+            }
             // Проверяем на минимальное значение или если значение не число
-            if (value < min || isNaN(value)) {
+            else if (value < min || isNaN(value)) {
                 this.value = min;
             }
             // Проверяем на максимальное значение
             else if (value > max) {
                 this.value = max;
             }
-            updateCurrencyValues()
+            updateCurrencyValues();
             selectBonusPanel();
         });
 
@@ -373,7 +377,7 @@
                     $('#numberOfCoinsPurchased').val('1');
                 }
                 selectBonusPanel();
-                updateCurrencyValues(); // Обновление значений валюты
+                updateCurrencyValues();
             }, 4);
         }).on("mouseup mouseleave", function () {
             clearInterval(incrementTimer);
@@ -387,14 +391,18 @@
     function updateCurrencyValues() {
         var numberOfCoins = parseInt($('#numberOfCoinsPurchased').val());
 
-        if (!isNaN(numberOfCoins)) {
-            $('[data-count]').each(function () {
-                var cost = parseFloat($(this).data('cost'));
-                var newValue = (numberOfCoins * cost).toFixed(1);
-                $(this).text(newValue);
-            });
+        // Если значение пустое или не число, считаем, что там 1
+        if (isNaN(numberOfCoins) || numberOfCoins === '') {
+            numberOfCoins = 1;
         }
+
+        $('[data-count]').each(function () {
+            var cost = parseFloat($(this).data('cost'));
+            var newValue = (numberOfCoins * cost).toFixed(1);
+            $(this).text(newValue);
+        });
     }
+
 
 
     selectTablePanel();
@@ -418,8 +426,14 @@
         }
     }
 
-    function selectBonusPanel(){
+    function selectBonusPanel() {
         let enteredValue = parseInt($('#numberOfCoinsPurchased').val(), 10);
+
+        // Если значение пустое или не число, считаем, что там 1
+        if (isNaN(enteredValue) || enteredValue === '') {
+            enteredValue = 1;
+        }
+
         let maxCost = 0;
         let $maxCostElement = null;
 
@@ -440,6 +454,7 @@
             $maxCostElement.addClass('alert alert-success');
         }
     }
+
 
 
     $(document).on("click", "#paynext", function () {
