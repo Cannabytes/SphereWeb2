@@ -713,7 +713,7 @@ class donate
     // Реализация выдачи бонусов
     public static function addUserBonus($user_id, $sphereCoin)
     {
-        $sphereCoin = ceil($sphereCoin);
+        $sphereCoin = ceil(round($sphereCoin, 1));
         // Проверка на выдачу предметов за донат
         if (config::load()->donate()->isRewardForDonatingItems()) {
             self::addDonateItemBonus($user_id, $sphereCoin);
