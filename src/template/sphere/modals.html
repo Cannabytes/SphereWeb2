@@ -7,10 +7,11 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"
                 aria-label="Close"></button>
       </div>
-      <div class="modal-body px-4ву">
+      <div class="modal-body px-4">
         <div class="row">
           <div class="col-xl-6 mb-2">
-            <label for="change_u_name" class="form-label">{{ phrase(27) }}<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
+            <label for="change_u_name" class="form-label">{{ phrase(27) }}<sup><i
+              class="ri-star-s-fill text-success fs-8"></i></sup></label>
             <input name="name" type="text" class="form-control" id="change_u_name" value="{{getUser().getName()}}">
           </div>
           <div class="col-xl-6 mb-2">
@@ -18,7 +19,8 @@
               class="ri-star-s-fill text-success fs-8"></i></sup></label>
             <select name="timezone" class="form-control" id="change_u_timezone">
               {% for timezone in timezone_list() %}
-              <option {% if getUser().getTimezone()== timezone %}selected{% endif %} value="{{timezone}}">{{timezone}}</option>
+              <option {% if getUser().getTimezone()== timezone %}selected{% endif %} value="{{timezone}}">{{timezone}}
+              </option>
               {% endfor %}
             </select>
           </div>
@@ -34,10 +36,21 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ phrase('cancel') }}</button>
-        <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">{{ phrase('apply') }}</button>
+
+      <div class="modal-footer d-flex justify-content-between">
+
+        <div class="alert alert-success d-flex align-items-center download_auth_file" role="button">
+          <i class="ri-download-cloud-line"></i>
+          <div>Загрузить авторизационный файл</div>
+        </div>
+
+        <div>
+          <button type="button" class="btn btn-light me-2" data-bs-dismiss="modal">{{ phrase('cancel') }}</button>
+          <button type="submit" data-bs-dismiss="modal" class="btn btn-success">{{ phrase('apply') }}</button>
+        </div>
       </div>
+
+
     </form>
   </div>
 </div>
@@ -65,7 +78,7 @@
           {% set item = get_item_info(config().donate().getItemIdToGameTransfer()) %}
 
           {% if item == null %}
-            {{ phrase('no_item_to_send') }}
+          {{ phrase('no_item_to_send') }}
           {% else %}
 
           <div class="col-xl-6 mb-2">
@@ -93,17 +106,17 @@
           </div>
 
 
-
           <div class="col-xl-6 mb-2">
             <label for="muchSphereCoin" class="form-label text-dark fw-semibold">{{phrase(71)}}</label>
-            <input min="1" max="{{getUser().getDonate()|round(0, 'floor')}}" value="{{getUser().getDonate()|round(0, 'floor')}}" name="coin"
+            <input min="1" max="{{getUser().getDonate()|round(0, 'floor')}}"
+                   value="{{getUser().getDonate()|round(0, 'floor')}}" name="coin"
                    type="number" class="form-control" id="muchSphereCoin">
           </div>
 
           <label class="mb-0 fs-12 text-muted text-truncate max-w-150 mx-auto ">{{phrase('char_will_be_sent')}}
             <img class="avatar avatar-sm rounded" src="{{item.getIcon()}}"> <span class="text-success">{{ item.itemName }}</span>
-            x<span class="text-success" id="itemCountGameTransfer" data-count-items="{{ config().donate().getCountItemsToGameTransfer() }}">{{ config().donate().getCountItemsToGameTransfer() }}</span></label>
-
+            x<span class="text-success" id="itemCountGameTransfer"
+                   data-count-items="{{ config().donate().getCountItemsToGameTransfer() }}">{{ config().donate().getCountItemsToGameTransfer() }}</span></label>
 
 
           {% endif %}
@@ -135,9 +148,12 @@
 </div>
 
 <script>
-  $(document).ready(function() {
-    const maxValue = {{getUser().getDonate()|round(0, 'floor')}};
-    $('#muchSphereCoin').on('keypress keydown input', function(event) {
+  $(document).ready(function () {
+    const maxValue = {
+    {getUser().getDonate() | round(0, 'floor')}
+  }
+    ;
+    $('#muchSphereCoin').on('keypress keydown input', function (event) {
       const key = event.which || event.keyCode;
       if (
         (key < 48 || key > 57) &&
@@ -158,7 +174,6 @@
     });
   });
 </script>
-
 
 
 {% endif %}
@@ -233,7 +248,10 @@
 
 <script>
   function recalculateSphereCoinValue() {
-    const maxValue = {{getUser().getDonate()|round(0, 'floor')}};
+    const maxValue = {
+    {getUser().getDonate() | round(0, 'floor')}
+  }
+    ;
     let muchSphereCoinVal = parseInt($('#muchSphereCoin').val());
     if (muchSphereCoinVal > maxValue) {
       muchSphereCoinVal = maxValue;
@@ -249,14 +267,6 @@
   $('#muchSphereCoin').on('input', recalculateSphereCoinValue);
   $(document).ready(recalculateSphereCoinValue);
 </script>
-
-
-
-
-
-
-
-
 
 
 {# Авторизация пользователя #}
@@ -426,14 +436,16 @@
 
           <div class="col-xl-6 mb-2">
             <label for="syncPassword" class="form-label text-dark fw-semibold">{{ phrase('password') }}</label>
-            <input type="password" name="syncPassword" class="form-control" id="syncPassword" autocomplete="new-password">
+            <input type="password" name="syncPassword" class="form-control" id="syncPassword"
+                   autocomplete="new-password">
           </div>
 
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-light"
-                data-bs-dismiss="modal">{{ phrase('close') }}</button>
+                data-bs-dismiss="modal">{{ phrase('close') }}
+        </button>
         <button id="syncUserAccount" type="button" class="btn btn-primary">{{ phrase(438) }}</button>
       </div>
     </div>
@@ -446,16 +458,19 @@
       login: $("#syncLogin").val(),
       password: $("#syncPassword").val(),
     }, true).then(function (response) {
-      if(response.ok == true) {
+      if (response.ok == true) {
         $("#syncAccount").modal("hide");
         noticeSuccess("{{phrase('account_linked_success')}}");
         location.reload();
-      }else{
+      } else {
         noticeError(response.message)
       }
     })
   });
 
-
+  $('.download_auth_file').on('click', function () {
+    $(this).prop('disabled', true);
+    AjaxSend('/api/user/global/add/email/check', 'POST', {}, false);
+  });
 </script>
 {% endif %}

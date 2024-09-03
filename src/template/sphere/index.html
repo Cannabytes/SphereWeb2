@@ -5,7 +5,10 @@
 {% block content %}
 
 
+
+
 <div class="container-fluid">
+
 
   {% if SphereApiError() %}
   <div class="col-xl-12">
@@ -23,6 +26,41 @@
     </div>
   </div>
   {% endif %}
+
+
+  {% if get_session('super-user') %}
+  <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+    <div class="card bg-white border-0">
+      <div class="alert custom-alert1 alert-secondary">
+        <button type="button" class="btn-close ms-auto close_download_auth_panel" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
+        <div class="text-center px-0 pb-0">
+          <svg class="custom-alert-icon svg-secondary" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <h5>Файл для авторизации</h5>
+          <p class="">Вы успешно всё сделали, теперь можете загрузить файл, сохраните его, и на сайтах движка SphereWeb можете использовать для быстрой регистрации и авторизации, просто перенесите на странице авторизации данный файл.</p>
+          <div class="">
+            <button class="btn btn-sm btn-success m-0 download_file_auth">Нажмите чтоб загрузить файл</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $('.download_file_auth').on('click', function () {
+      var link = document.createElement('a');
+      link.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent("{{get_session('super-user')}}");
+      link.download = '{{getUser().getEmail()}} Auto Login.txt';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    {{ delete_session('super-user') }}
+
+  </script>
+
+  {% endif %}
+
 
   {# Если нет серверов, то показываем сообщение, что нужно зарегистрировать сервер #}
   {% if getUser().isAdmin() and getServerCount() == 0 %}

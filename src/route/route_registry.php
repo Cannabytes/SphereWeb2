@@ -5,12 +5,12 @@ use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\route\route;
+use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
 \Ofey\Logan22\component\error\error::initDefault();
 session::init();
-
 $isFileDB = false;
 if (file_exists(fileSys::get_dir('/data/db.php'))) {
     $isFileDB = true;

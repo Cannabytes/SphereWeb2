@@ -22,12 +22,10 @@ class session
 
         ini_set('session.cookie_secure', 1);
         ini_set('session.cookie_httponly', 1);
-        ini_set('session.cookie_samesite', 'Strict');
-
+        ini_set('session.cookie_samesite', 'Lax');
 
         session_start();
-//        session_regenerate_id(true);
-        
+
         if (!file_exists(fileSys::get_dir('/data/db.php'))) {
             return;
         }

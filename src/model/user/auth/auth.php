@@ -409,7 +409,7 @@ class auth
             board::notice(false, lang::get_phrase(164));
         }
         if (password_verify($password, $user_info['password'])) {
-            session::add('id', $user_info['id']);
+            session::add('id', (int)$user_info['id']);
             session::add('email', $email);
             session::add('password', $password);
             board::response("notice", ["message" => lang::get_phrase(165), "ok" => true, "redirect" => fileSys::localdir("/main")]);

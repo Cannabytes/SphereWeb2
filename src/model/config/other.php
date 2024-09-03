@@ -19,7 +19,7 @@ class other
 
     private float $onlineMul = 1.0;
 
-    private int $timeoutSaveStatistic = 0;
+    private int $timeoutSaveStatistic = 60*5;
 
     private string $timezone = "";
 
@@ -46,7 +46,7 @@ class other
                 'isAuthShow'           => false,
                 'allTitlePage'         => '',
                 'onlinemul'            => 1.0,
-                'timeoutSaveStatistic' => 60,
+                'timeoutSaveStatistic' => 60*5,
                 'timezone'             => 'UTC',
                 'messageTechnicalWork' => '',
                 'keywords'             => '',

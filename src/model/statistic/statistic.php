@@ -17,6 +17,8 @@ use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\image\crest;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\type;
+use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\lang\lang;
 use Ofey\Logan22\model\server\server;
@@ -144,8 +146,27 @@ class statistic
             $server_id = user::self()->getServerId();
         }
 
+        // Проверка кэша
+        $data = sql::getRow("SELECT * FROM `server_cache` WHERE `server_id` = ? AND `type` = 'statistic' ORDER BY id DESC LIMIT 1 ", [$server_id]);
+        if($data){
+            if($data['data'] != ""){
+                // Проверка актуальности кэша по времени
+                if (time::diff($data['date_create'], time::mysql()) < config::load()->other()->getTimeoutSaveStatistic()) {
+                    self::$statistic[$server_id] = json_decode($data['data'], true);
+                    return self::$statistic[$server_id];
+                }
+            }
+        }
+
         \Ofey\Logan22\component\sphere\server::setUser(user::self());
         self::$statistic[$server_id] = \Ofey\Logan22\component\sphere\server::send(type::STATISTIC, ['id' => $server_id])->getResponse() ?? false;
+        sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = 'statistic' ", [$server_id]);
+        sql::sql("INSERT INTO `server_cache` (`server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
+          $server_id,
+          "statistic",
+          json_encode(self::$statistic[$server_id], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE ),
+          time::mysql(),
+        ]);
 
         return self::$statistic[$server_id];
     }

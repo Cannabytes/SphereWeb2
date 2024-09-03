@@ -1976,4 +1976,62 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  140 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/template/readme',
+    'func' => 'controller\\admin\\options::getTemplateInfo',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  141 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/api/user/global/add/email/check',
+    'func' => 'component\\sphere\\superuser::create',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  142 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/auth/global',
+    'func' => 'component\\sphere\\superuser::auth',
+    'access' => 
+    array (
+      0 => 'any',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  143 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/user/global/confirm/email/hash/(.*)',
+    'func' => 'component\\sphere\\superuser::checkHashEmail',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

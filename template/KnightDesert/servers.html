@@ -4,7 +4,6 @@
     </div>
     <div class="servers__list">
         {% for server in getServerAll() %}
-        {% if server.getStatus().isEnable() %}
         <a class="servers__server server" data-gw-server>
             <div class="server__container">
                 <div class="server__row">
@@ -31,7 +30,6 @@
                 </div>
             </div>
         </a>
-        {% endif %}
         {% endfor %}
     </div>
 </div>

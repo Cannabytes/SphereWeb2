@@ -74,6 +74,12 @@ enum type
     case GET_LOGIN_SERVERS_DATA;
     case DELETE_LOGINSERVER;
 
+    // Супер пользователь
+    case CREATE_SUPER_USER_EMAIL_CHECK;
+    case AUTH_SUPER_USER;
+    case CHECK_SUPER_USER_EMAIL_CONFIRM;
+
+
     static function url(type $type): string
     {
         return match ($type) {
@@ -127,6 +133,10 @@ enum type
 
             self::SAVE_SERVICE => "/api/server/service/save",
             self::SPHERE_DONATE => "/api/donate",
+
+            self::CREATE_SUPER_USER_EMAIL_CHECK => "/api/user/global/add/email/check",
+            self::AUTH_SUPER_USER => "/api/user/global/auth",
+            self::CHECK_SUPER_USER_EMAIL_CONFIRM => '/api/user/global/add/get/check',
 
             default => null,
         };

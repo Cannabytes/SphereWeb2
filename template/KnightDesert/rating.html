@@ -5,7 +5,7 @@
         </h3>
     </div>
     <select autocomplete="off" class="st__select" data-tab-select data-tab-select-server>
-        {% for server in server_online_status() %}
+        {% for server in getServerAll() %}
         <option data-open-tab-select="server-{{server.id}}" data-open-tab-group-select="rating">
             {{server.getName()}} x{{server.getRateExp()}}
         </option>
@@ -13,11 +13,10 @@
     </select>
     <div class="st__content">
         {% for server in getServerAll() %}
-        {% if server.getStatus().isEnable() %}
-        <div class="rating-container" style="display: none" data-tab="server-{{server.id}}" data-tab-group="rating">
+        <div class="rating-container" style="display: none" data-tab="server-{{server.getId()}}" data-tab-group="rating">
             <div class="rating">
                 <div class="rating__box">
-                    <div class="rating__type" style="display: none" data-tab="server-{{server.id}}-clan" data-tab-group="server-{{server.id}}-type">
+                    <div class="rating__type" style="display: none" data-tab="server-{{server.getId()}}-clan" data-tab-group="server-{{server.getId()}}-type">
                         <div class="rating__item">
                             <div class="rating__col">
                                 <div class="top">
@@ -61,7 +60,7 @@
                         </div>
                     </div>
 
-                    <div class="rating__type" style="display: none" data-tab="server-{{server.id}}-pvp" data-tab-group="server-{{server.id}}-type">
+                    <div class="rating__type" style="display: none" data-tab="server-{{server.getId()}}-pvp" data-tab-group="server-{{server.getId()}}-type">
                         <div class="rating__item">
                             <div class="rating__col">
                                 <div class="top">
@@ -79,7 +78,7 @@
                                         </div>
                                     </div>
                                     <div class="top__body" data-top-scroll>
-                                        {% for i, player in statistic_get_pvp(server.id, 10) %}
+                                        {% for i, player in statistic_get_pvp(server.getId(), 10) %}
                                         <div class="top__rw">
                                             <div class="top__num">
                                                 <div class="top__content">{{i+1}}</div>
@@ -106,7 +105,7 @@
                         <!-- END  rating__item  -->
                     </div>
 
-                    <div class="rating__type" style="display: none" data-tab="server-{{server.id}}-pk" data-tab-group="server-{{server.id}}-type">
+                    <div class="rating__type" style="display: none" data-tab="server-{{server.getId()}}-pk" data-tab-group="server-{{server.getId()}}-type">
                         <div class="rating__item">
                             <div class="rating__col">
                                 <div class="top">
@@ -124,7 +123,7 @@
                                         </div>
                                     </div>
                                     <div class="top__body" data-top-scroll>
-                                        {% for i, player in statistic_get_pk(server.id, 10) %}
+                                        {% for i, player in statistic_get_pk(server.getId(), 10) %}
                                         <div class="top__rw">
                                             <div class="top__num">
                                                 <div class="top__content">{{i+1}}</div>
@@ -152,13 +151,13 @@
                 </div>
 
                 <div class="rating__btns">
-                    <div class="rating__btn" data-rating-select data-open-tab="server-{{server.id}}-clan" data-open-tab-group="server-{{server.id}}-type">
+                    <div class="rating__btn" data-rating-select data-open-tab="server-{{server.getId()}}-clan" data-open-tab-group="server-{{server.getId()}}-type">
                         {{phrase("rating_clan")}}
                     </div>
-                    <div class="rating__btn" data-rating-select data-open-tab="server-{{server.id}}-pvp" data-open-tab-group="server-{{server.id}}-type">
+                    <div class="rating__btn" data-rating-select data-open-tab="server-{{server.getId()}}-pvp" data-open-tab-group="server-{{server.getId()}}-type">
                         {{phrase("rating_pvp")}}
                     </div>
-                    <div class="rating__btn" data-rating-select data-open-tab="server-{{server.id}}-pk" data-open-tab-group="server-{{server.id}}-type">
+                    <div class="rating__btn" data-rating-select data-open-tab="server-{{server.getId()}}-pk" data-open-tab-group="server-{{server.getId()}}-type">
                         {{phrase("rating_pk")}}
                     </div>
                 </div>
@@ -166,7 +165,6 @@
             </div>
             <!-- END  rating  -->
         </div>
-        {% endif %}
         {% endfor %}
     </div>
     <!-- END tab__content -->

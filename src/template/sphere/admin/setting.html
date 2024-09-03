@@ -10,6 +10,14 @@
     <div class="col-xl-12">
       <div class="card custom-card">
         <div class="card-header d-sm-flex d-block">
+
+
+
+          <a href="/admin" class="avatar border text-muted">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
+          </a>
+
+
           <ul class="nav nav-tabs nav-tabs-header mb-0 d-sm-flex d-block" role="tablist">
             <li class="nav-item m-1">
               <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
@@ -1682,22 +1690,6 @@
                     <div class="col-xl-12">
                       <p class="fs-14 mb-1 fw-semibold">{{phrase('key_words')}}</p>
                       <textarea type="text" class="form-control" rows="6" id="keywords" placeholder="keywords">{{ config().other().getKeywords() }}</textarea>
-                    </div>
-                  </div>
-                </li>
-
-                <li class="list-group-item">
-                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
-                    <div>
-                      <p class="fs-14 mb-1 fw-semibold">{{phrase('save_online_player_stats')}}</p>
-                      <p class="fs-12 mb-0 text-muted"></p>
-                    </div>
-                    <div>
-                      <div class="custom-toggle-switch float-sm-end">
-                        <input id="saveStatisticData" name="saveStatisticData" type="checkbox" {% if
-                               config().other().getSaveStatisticData() %}checked="" {% endif %}>
-                        <label for="saveStatisticData" class="label-success mb-1"></label>
-                      </div>
                     </div>
                   </div>
                 </li>

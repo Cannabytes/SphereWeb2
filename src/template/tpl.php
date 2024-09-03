@@ -22,6 +22,7 @@ use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\links\action;
 use Ofey\Logan22\component\request\url;
+use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\component\time\microtime;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
@@ -273,6 +274,14 @@ class tpl
 
         $twig->addFunction(new TwigFunction('getUsers', function () {
             return user::getUsers();
+        }));
+
+        $twig->addFunction(new TwigFunction('get_session' , function ($key = null) {
+            return session::get($key);
+        }));
+
+        $twig->addFunction(new TwigFunction('delete_session', function ($key = null) {
+            session::remove($key);
         }));
 
         $twig->registerUndefinedFunctionCallback(function ($name) {

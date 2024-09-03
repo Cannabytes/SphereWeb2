@@ -10,7 +10,8 @@
   <title> {{ phrase(10) }} </title>
   <meta name="Description" content="Bootstrap Responsive Admin Web Dashboard HTML5 Template">
   <meta name="Author" content="Spruko Technologies Private Limited">
-  <meta name="keywords" content="admin dashboard,dashboard design htmlbootstrap admin template,html admin panel,admin dashboard html,admin panel html template,bootstrap dashboard,html admin template,html dashboard,html admin dashboard template,bootstrap dashboard template,dashboard html template,bootstrap admin panel,dashboard admin bootstrap,bootstrap admin dashboard">
+  <meta name="keywords"
+        content="admin dashboard,dashboard design htmlbootstrap admin template,html admin panel,admin dashboard html,admin panel html template,bootstrap dashboard,html admin template,html dashboard,html admin dashboard template,bootstrap dashboard template,dashboard html template,bootstrap admin panel,dashboard admin bootstrap,bootstrap admin dashboard">
 
   <!-- Favicon -->
   {{ config().logo().favicon() }}
@@ -26,6 +27,19 @@
 
   <!-- Icons Css -->
   <link href="{{template}}/assets/css/icons.min.css" rel="stylesheet">
+
+
+
+  <style>
+    .fileauth {
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+    .fileauth.dragging {
+      background-color: #448a1a;
+      opacity: 0.3;
+    }
+  </style>
 </head>
 
 <body>
@@ -34,7 +48,7 @@
 
 <div {% if config().background().login() is not null %}
      style="background-image: url('{{config().background().login()}}'); background-size: cover; background-repeat: no-repeat; background-position: center center;"
-     {% else %}class="autentication-bg"{% endif %}>
+     {% else %}class="autentication-bg" {% endif %}>
 
   <div class="container-lg">
     <div class="row justify-content-center authentication authentication-basic align-items-center h-100">
@@ -51,13 +65,16 @@
             <div class="row gy-3">
               <div class="col-xl-12">
                 <label for="email" class="form-label text-default">{{ phrase(9) }}</label>
-                <input required name="email" type="text" class="form-control form-control-lg" id="email" placeholder="example@example.com">
+                <input required name="email" type="text" class="form-control form-control-lg" id="email"
+                       placeholder="example@example.com">
               </div>
               <div class="col-xl-12 mb-2">
                 <label for="signin-password" class="form-label text-default d-block">{{ phrase('password') }}</label>
                 <div class="input-group">
-                  <input required name="password" type="password" class="form-control form-control-lg" id="signin-password" placeholder="{{ phrase('password') }}">
-                  <button class="btn btn-light" type="button" onclick="createpassword('signin-password',this)" id="button-addon2"><i class="ri-eye-off-line align-middle"></i></button>
+                  <input required name="password" type="password" class="form-control form-control-lg"
+                         id="signin-password" placeholder="{{ phrase('password') }}">
+                  <button class="btn btn-light" type="button" onclick="createpassword('signin-password',this)"
+                          id="button-addon2"><i class="ri-eye-off-line align-middle"></i></button>
                 </div>
               </div>
 
@@ -67,10 +84,12 @@
               <div class="col-xl-12 ">
                 <div class="row">
                   <div class="col-xl-7">
-                    <img src="" class="lightbox-thumb img-thumb captchaToken captcha_img" style="width: 100%; height: 100%;"/>
+                    <img src="" class="lightbox-thumb img-thumb captchaToken captcha_img"
+                         style="width: 100%; height: 100%;"/>
                   </div>
                   <div class="col-xl-5">
-                    <label for="register_captcha" class="form-label captchaToken">{{ phrase('verification_code') }}</label>
+                    <label for="register_captcha" class="form-label captchaToken">{{ phrase('verification_code')
+                      }}</label>
                     <input type="text" class="form-control" id="register_captcha" name="captcha" placeholder="Captcha">
                   </div>
                 </div>
@@ -78,7 +97,8 @@
               {% endif %}
 
               <div class="col-xl-12 d-grid mt-2">
-                <button type="submit" aria-label="button" class="btn btn-lg btn-success enter">{{ phrase('enter') }}</button>
+                <button type="submit" aria-label="button" class="btn btn-lg btn-success enter">{{ phrase('enter') }}
+                </button>
               </div>
             </div>
 
@@ -111,6 +131,20 @@
         </div>
 
 
+        <div class="card custom-card fileauth">
+          <div class="card-body">
+            <div class="fs-14 text-muted text-center"><span class="text-default fw-semibold ">{{ phrase('drag and drop the authorization file') }}
+
+            <a data-bs-content="{{ phrase('auto_file_desc') }}" class="me-4" href="javascript:void(0)" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="top" data-bs-custom-class="only-body" >
+                <svg xmlns="http://www.w3.org/2000/svg" class="svg-primary" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"></path><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>
+            </a>
+
+            </span>
+            </div>
+          </div>
+        </div>
+
+
       </div>
     </div>
   </div>
@@ -130,7 +164,7 @@
 {% if config().captcha().isGoogleCaptcha() %}
 <script src="https://www.google.com/recaptcha/api.js"></script>
 <script>
-  window.onload = function() {
+  window.onload = function () {
     if (typeof grecaptcha !== 'undefined') {
       grecaptcha.render('g-recaptcha', {
         'sitekey': '{{ google_secret_key() }}'
@@ -141,6 +175,8 @@
   };
 </script>
 {% else %}
+
+
 <script>
   get_captcha();
 
@@ -166,6 +202,60 @@
   }
 </script>
 {% endif %}
+
+
+<script>
+  // JavaScript to handle drag events and show modal
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropArea = document.querySelector('.fileauth');
+
+    dropArea.addEventListener('dragover', function(event) {
+      event.preventDefault();
+      dropArea.classList.add('dragging');
+    });
+
+    dropArea.addEventListener('dragleave', function() {
+      dropArea.classList.remove('dragging');
+    });
+
+    dropArea.addEventListener('drop', function(event) {
+      event.preventDefault();
+      dropArea.classList.remove('dragging');
+
+      const files = event.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+
+        // Check if the file is a text file
+        if (file.type === 'text/plain') {
+          const reader = new FileReader();
+
+          reader.onload = function(e) {
+            const fileContent = e.target.result;
+
+            AjaxSend('/auth/global', 'POST', { text: fileContent }, false);
+
+          };
+
+          reader.readAsText(file);
+        } else {
+          alert('Пожалуйста, загрузите текстовый файл.');
+        }
+      }
+
+    });
+  });
+
+
+
+  var popoverTriggerList = $('[data-bs-toggle="popover"]');
+  popoverTriggerList.each(function () {
+    new bootstrap.Popover(this);
+  });
+
+
+</script>
+
 
 </body>
 </html>
