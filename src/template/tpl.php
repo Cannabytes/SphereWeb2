@@ -366,25 +366,12 @@ class tpl
             return donate::get_shop_items();
         }));
 
-        $twig->addFunction(new TwigFunction('donate_bonus_list', function () {
-            //            return donateConfig::get()->getTableItemsBonus();
-            //           return __config__donate['donate_bonus_list'];
-        }));
-
         $twig->addFunction(new TwigFunction('getShopItems', function () {
             return donate::getShopItems();
         }));
 
         $twig->addFunction(new TwigFunction('sumGetValue', function ($array, $methodName) {
             return donate::sumGetValue($array, $methodName);
-        }));
-
-        $twig->addFunction(new TwigFunction('get_statistic_online_week', function ($server_id = 0) {
-            return statistic_model::get_online_last_week($server_id = 0);
-        }));
-
-        $twig->addFunction(new TwigFunction('get_statistic_online_month', function ($server_id = 0) {
-            return statistic_model::get_statistic_online_month($server_id = 0);
         }));
 
         //TODO: Проверить, так как появились уже функции statistic_get_pvp
@@ -443,7 +430,6 @@ class tpl
             return $langs;
         }));
 
-        //Возвращает полный список содержимого языкового пакета
         $twig->addFunction(new TwigFunction('title_start_page', function () {
             return \Ofey\Logan22\controller\config\config::load()->other()->getAllTitlePage();
         }));
@@ -945,6 +931,14 @@ class tpl
         //Список последних новостей
         $twig->addFunction(new TwigFunction('last_news', function ($last_thread = 10) {
             return page::show_news_short(300, $last_thread, false);
+        }));
+
+        $twig->addFunction(new TwigFunction('getPageLink', function ($news) {
+            if($news['link'] == '') {
+                return "/read/{$news['id']}";
+            } else {
+                return $news['link'];
+            }
         }));
 
         $twig->addFunction(new TwigFunction('show_all_pages_short', function () {

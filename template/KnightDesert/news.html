@@ -1,7 +1,6 @@
 <section class="content__news news">
 	{% for news in last_news() %}
-	<a href="/read/{{news.id}}" class="news__post post">
-		<!-- Картинка к новости любого размера -->
+	<a href="{{getPageLink(news)}}" class="news__post post">
 		<div
 			class="post__img"
 			style="background-image: url({{news_poster(news.poster)}});"
@@ -12,4 +11,3 @@
 	</a>
 	{% endfor %}
 </section>
-<!-- END news -->
