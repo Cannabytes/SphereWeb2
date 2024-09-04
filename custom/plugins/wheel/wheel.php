@@ -11,13 +11,13 @@ use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\log\logTypes;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
 class wheel
 {
 
-    private static $COOLDOWN_SECONDS = 5; // Время задержки в секундах
 
     public function saveWheel()
     {
@@ -173,8 +173,18 @@ class wheel
         tpl::displayPlugin("/wheel/tpl/wheel.html");
     }
 
+    private static int $COOLDOWN_SECONDS = 5;
+
     public function callback()
     {
+        if (isset($_SESSION['last_wheel_spin'])) {
+            $timeSinceLastSpin = time() - $_SESSION['last_wheel_spin'];
+            if ($timeSinceLastSpin < self::$COOLDOWN_SECONDS) {
+                $remainingTime = self::$COOLDOWN_SECONDS - $timeSinceLastSpin;
+                board::error("Подождите {$remainingTime} секунд перед следующим использованием.");
+            }
+        }
+
         $name     = $_POST['name'] ?? board::error("Не удалось получить данные рулетки");
         $data     = [
           'name' => $name,
@@ -197,15 +207,19 @@ class wheel
 
             //Если не удалось уменьшить деньги, то выводим ошибку
             if(!user::self()->donateDeduct($cost)){
-                board::error("Произошла ошибка");
+                board::error("У Вас нехватает денег");
             }
 
+            user::self()->addLog(logTypes::LOG_BONUS_CODE, '_LOG_User_Win_Wheel', [$item['item_id'], $item['enchant'], $item['name'], $item['count']]);
+            user::self()->addToWarehouse(0, $item['item_id'], $item['count'], $item['enchant'], 'lucky_wheel');
 
-            user::self()->addLog("wheel_win", '_LOG_User_Win_Wheel', [$item['item_id'], $item['enchant'], $item['name'], $item['count']]);
+            $_SESSION['last_wheel_spin'] = time();
+
             board::alert([
                 'success' => true,
                 'wheel' => $response['wheel'],
             ]);
+
         }
     }
 
@@ -294,14 +308,6 @@ class wheel
     public function create()
     {
         validation::user_protection("admin");
-        //
-        //        $__config_fun_wheel__ = sql::getRow("SELECT * FROM `settings` WHERE serverId = ? AND `key` = '__config_fun_wheel__'", [
-        //          user::self()->getServerId(),
-        //        ]);
-        //        if ($__config_fun_wheel__) {
-        //            tpl::addVar('items', json_decode($__config_fun_wheel__['setting'], true));
-        //        }
-
         tpl::addVar('title', 'Добавление рулетки');
         tpl::displayPlugin('/wheel/tpl/create.html');
     }
@@ -310,14 +316,14 @@ class wheel
     {
         $old_name   = $_POST['old_name'] ?? '';
         $new_name   = $_POST['new_name'] ?? '';
-        $wheel_cost = $_POST['wheel_cost'] ?? 1;
-        if ($old_name == $new_name) {
-            board::error("Новое название не может быть равным старому");
-        }
-        if (strlen($new_name) > 20) {
+        $wheel_cost = (float)$_POST['wheel_cost'] ?? 1;
+//        if ($old_name == $new_name) {
+//            board::error("Новое название не может быть равным старому");
+//        }
+        if (mb_strlen($new_name) > 20) {
             board::error("Длина нового названия не может быть больше 20 символов");
         }
-        if (strlen($new_name) < 3) {
+        if (mb_strlen($new_name) < 3) {
             board::error("Длина нового названия должна быть больше 3 символов");
         }
         //Цена прокрутки, может быть float 0.01, но больше нуля
@@ -355,6 +361,7 @@ class wheel
         $data = [
           'old_name' => $old_name,
           'new_name' => $new_name,
+          'cost' => $wheel_cost,
         ];
 
         server::send(type::GAME_WHEEL_EDIT_NAME, $data);

@@ -149,10 +149,8 @@
 
 <script>
   $(document).ready(function () {
-    const maxValue = {
-    {getUser().getDonate() | round(0, 'floor')}
-  }
-    ;
+    let maxValue = {{getUser().getDonate() | round(0, 'floor')}};
+
     $('#muchSphereCoin').on('keypress keydown input', function (event) {
       const key = event.which || event.keyCode;
       if (
@@ -248,10 +246,8 @@
 
 <script>
   function recalculateSphereCoinValue() {
-    const maxValue = {
-    {getUser().getDonate() | round(0, 'floor')}
-  }
-    ;
+    const maxValue = {{getUser().getDonate() | round(0, 'floor')}};
+
     let muchSphereCoinVal = parseInt($('#muchSphereCoin').val());
     if (muchSphereCoinVal > maxValue) {
       muchSphereCoinVal = maxValue;

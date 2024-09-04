@@ -900,12 +900,15 @@ class userModel
      * @throws \Exception
      */
     public function addToWarehouse(
-      int|string $server_id,
+      int|string $server_id = 0,
       int|string $item_id,
       int|string $count,
       int|string $enchant,
       string|int $phrase
     ): array {
+        if ($server_id === 0) {
+            $server_id = $this->serverId();
+        }
         $stmt = sql::run(
           "INSERT INTO `warehouse` (`user_id`, `server_id`, `item_id`, `count`, `enchant`, `phrase`) VALUES (?, ?, ?, ?, ?, ?)", [
             $this->getId(),
