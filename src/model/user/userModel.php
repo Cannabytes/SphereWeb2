@@ -901,12 +901,12 @@ class userModel
      */
     public function addToWarehouse(
       int|string $server_id = 0,
-      int|string $item_id,
-      int|string $count,
-      int|string $enchant,
-      string|int $phrase
+      int|string $item_id = 0,
+      int|string $count = 0,
+      int|string $enchant = 0,
+      string|int $phrase = 'none'
     ): array {
-        if ($server_id === 0) {
+        if ($server_id == 0) {
             $server_id = $this->serverId();
         }
         $stmt = sql::run(

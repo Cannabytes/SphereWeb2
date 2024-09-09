@@ -201,11 +201,16 @@ function ResponseNotice(response) {
         }, 1000);
     }
 
-    if (response.redirect !== undefined){
+    if (response.redirect !== undefined) {
         setTimeout(function() {
-            window.location.href = response.redirect;
+            if (response.redirect === "refresh") {
+                window.location.reload();
+            } else {
+                window.location.href = response.redirect;
+            }
         }, 1000);
     }
+
     return response.ok;
 }
 

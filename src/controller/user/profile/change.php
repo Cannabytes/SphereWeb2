@@ -30,13 +30,14 @@ class change {
 
     public static function save() {
         $isChange = false;
+        $isChangePassword = false;
         $name = $_POST['name'] ?? board::error("Некорректное имя");
         $timezone = $_POST['timezone'] ?? board::error("Некорректное время");
         $password = $_POST['password'] ?? "";
         $newPassword = $_POST['new_password'] ?? "";
 
         if (user::self()->getName() != $name) {
-            if (\Ofey\Logan22\model\user\profile\change::valid_name($name)) {
+            if (self::valid_name($name)) {
                 if (mb_substr($name, 0, 4) == "user") {
                     board::error("Имя не может начинаться с user");
                 }
@@ -58,6 +59,7 @@ class change {
             if (password_verify($password, user::self()->getPassword())) {
                 user::self()->setPassword($newPassword);
                 $isChange = true;
+                $isChangePassword = true;
             } else {
                 board::error("Старый пароль неправильный");
             }
@@ -73,16 +75,16 @@ class change {
             }
         }
 
-
         if($isChange){
             user::self()->addLog(logTypes::LOG_USER_CHANGE_PROFILE, "LOG_USER_CHANGE_PROFILE", []);
-            $_SESSION['password'] = $newPassword;
+            if($isChangePassword){
+                $_SESSION['password'] = $newPassword;
+            }
+            board::redirect();
             board::success("Сохранено");
         }else{
             board::error("Нечего сохранять");
         }
-
-        //        \Ofey\Logan22\model\user\profile\change::set();
     }
 
     public static function show_avatar_page(): void {
@@ -212,6 +214,43 @@ class change {
           'message' => lang::get_phrase(197),
           'src' => fileSys::localdir("/uploads/avatar/" . $avatar),
         ]);
+    }
+
+
+    private static function valid_name($name): bool {
+        $error = [];
+        $ok = true;
+        if (2 > mb_strlen($name)) {
+            $error[] = lang::get_phrase(188);
+            $ok = false;
+        }
+        if (16 < mb_strlen($name)) {
+            $error[] = lang::get_phrase(189);
+            $ok = false;
+        }
+        if (!preg_match("/^[a-zA-Z0-9_\-]+$/u", $name)) {
+            $error[] = lang::get_phrase(190);
+            $ok = false;
+        }
+        if ($ok) {
+            if (!ctype_alpha($name[0])) {
+                $error[] = "Имя должно начинаться с буквы";
+                $ok = false;
+            }
+        }
+
+        //Проверка существования пользователя с таким ником
+        if(sql::run("SELECT `id` FROM `users` WHERE `name` = ?", [$name])->rowCount() > 0){
+            $error[] = "Пользователь с таким ником уже существует";
+            $ok = false;
+        }
+
+        if (!$ok) {
+            $error = implode("\n", $error);
+            board::error($error);
+        }
+
+        return $ok;
     }
 
 

@@ -78,7 +78,7 @@ class board
         return self::notice(false, $message, $flags, $next);
     }
 
-    public static function redirect(string $url): self
+    public static function redirect(string $url = "refresh"): self
     {
         self::$redirectUrl = $url;
 

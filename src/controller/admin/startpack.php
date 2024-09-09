@@ -132,7 +132,7 @@ class startpack
         }
 
         $totalPrice = $row['cost'];
-        $serverId   = $row['server_id'];
+        $serverId   = (int)$row['server_id'];
 
         if (user::self()->getServerId() != $serverId) {
             board::error('Вы не можете купить наборы на другого сервера');
