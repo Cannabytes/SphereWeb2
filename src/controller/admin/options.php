@@ -444,7 +444,6 @@ class options
           'basename' => true,
           'fetchAll' => true,
         ]);
-
         $donateSysNames = [];
         foreach ($all_donate_system as $system) {
             if ( ! $system::isEnable()) {

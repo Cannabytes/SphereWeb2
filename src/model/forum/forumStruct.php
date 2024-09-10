@@ -20,6 +20,12 @@ class forumStruct {
 
     public function __construct($json)
     {
+        if(\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableEmulation()){
+            $this->url = "https://";
+            $this->engine = 'xenforo';
+            $this->enabled = true;
+            return;
+        }
         $config = json_decode($json, true);
         $this->showForumSphereMainPage = filter_var($config['showForumSphereMainPage'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
         $this->host = $config['host'];
@@ -62,8 +68,12 @@ class forumStruct {
         return $this->elements;
     }
 
-    public function lastMessage()
+    public function lastMessage($n = 10)
     {
+        if (\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableEmulation()){
+            $data = include "src/component/emulation/data/forumLastMessage.php";
+            return array_slice($data, -$n);
+        }
         return $this->getXenforo();
     }
 

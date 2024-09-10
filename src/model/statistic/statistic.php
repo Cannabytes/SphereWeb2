@@ -146,8 +146,14 @@ class statistic
             $server_id = user::self()->getServerId();
         }
 
+        if (\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableEmulation()){
+           $data = include "src/component/emulation/data/data.php";
+           return self::$statistic[$server_id] = $data[$server_id]['statistic'];
+        }
+
         // Проверка кэша
         $data = sql::getRow("SELECT * FROM `server_cache` WHERE `server_id` = ? AND `type` = 'statistic' ORDER BY id DESC LIMIT 1 ", [$server_id]);
+
         if($data){
             if($data['data'] != ""){
                 // Проверка актуальности кэша по времени

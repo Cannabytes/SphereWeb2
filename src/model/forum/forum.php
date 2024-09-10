@@ -23,6 +23,9 @@ class forum {
 
     public static function get()
     {
+        if(\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableEmulation()){
+            return self::$instance = new forumStruct("{}");
+        }
         if (self::$instance === null) {
             $configData = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_forum__'");
             if(!$configData){

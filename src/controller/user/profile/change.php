@@ -200,6 +200,8 @@ class change {
 
     public static function save_avatar(): void {
         validation::user_protection();
+        echo 10 / 0;
+        return;
         $avatar = $_POST['avatar'] ?? null;
         if ($avatar == null) {
             board::notice(false, lang::get_phrase(194));

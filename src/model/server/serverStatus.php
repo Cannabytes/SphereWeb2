@@ -63,6 +63,9 @@ class serverStatus
             $currentTime = new DateTime();
             foreach ($cheatingDetails as $key => $details) {
                 foreach ($details as $index => $detail) {
+                    if($detail->getTime() == "" OR $detail->getMultiplier() == ""){
+                        continue;
+                    }
                     $startTime = DateTime::createFromFormat('H:i', $detail->getTime());
                     $nextIndex = $index + 1;
                     if ($nextIndex < count($details)) {

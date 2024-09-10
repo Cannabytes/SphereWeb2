@@ -25,6 +25,8 @@ class enabled
 
     private bool $enable_stream = true;
 
+    private bool $enable_emulation = false;
+
     public function __construct()
     {
         $configData = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_enabled__'");
@@ -39,6 +41,7 @@ class enabled
             $this->enable_send_balance_game    = (bool)filter_var($setting['enable_send_balance_game'], FILTER_VALIDATE_BOOLEAN);
             $this->enable_bonus_code    = (bool)filter_var($setting['enable_bonus_code'], FILTER_VALIDATE_BOOLEAN);
             $this->enable_stream    = (bool)filter_var($setting['enable_stream'], FILTER_VALIDATE_BOOLEAN);
+            $this->enable_emulation    = (bool)filter_var($setting['enable_emulation'], FILTER_VALIDATE_BOOLEAN);
         }
     }
 
@@ -85,6 +88,11 @@ class enabled
     public function isEnableStream(): bool
     {
         return $this->enable_stream;
+    }
+
+    public function isEnableEmulation(): bool
+    {
+        return $this->enable_emulation;
     }
 
 }

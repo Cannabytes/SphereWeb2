@@ -11,6 +11,14 @@
   <div class="row">
     <div class="col-xxl-3">
 
+      {% if config().enabled().isEnableEmulation() %}
+
+      <div class="alert alert-dark" role="alert">
+        {{ phrase('func_emulation_server_desc_enable')|raw }}
+      </div>
+
+      {% endif %}
+
       {% if sphereAPIError %}
       <div class="card custom-card">
         <div class="p-4 border-bottom border-block-end-dashed">
@@ -92,6 +100,8 @@
 
         </div>
 
+      {% if config().enabled().isEnableEmulation() == false %}
+
       {% for server in servers %}
       {% set serverInfo = getServer(server.id) %}
       <div class="card custom-card overflow-hidden">
@@ -137,6 +147,10 @@
       {% endfor %}
 
       {% endif %}
+
+      {% endif %}
+
+
 
       <div class="card">
         <div class="card-body">
@@ -254,10 +268,14 @@
                             </div>
                           </div>
                           <div class="card-footer text-center">
+                            {% if config().enabled().isEnableEmulation() %}
+                              {{ phrase('available after disabling emulation') }}
+                            {% else %}
                             <div class="btn-list">
                               <a href="/admin/server/list" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
                                 }}</a>
                             </div>
+                            {% endif %}
                           </div>
                         </div>
                       </div>
@@ -301,9 +319,13 @@
                             </div>
                           </div>
                           <div class="card-footer text-center">
+                            {% if config().enabled().isEnableEmulation() %}
+                            {{ phrase('available after disabling emulation') }}
+                            {% else %}
                             <div class="btn-list">
                               <a href="/admin/shop" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
                             </div>
+                            {% endif %}
                           </div>
                         </div>
                       </div>
@@ -324,10 +346,14 @@
                             </div>
                           </div>
                           <div class="card-footer text-center">
+                            {% if config().enabled().isEnableEmulation() %}
+                            {{ phrase('available after disabling emulation') }}
+                            {% else %}
                             <div class="btn-list">
                               <a href="/admin/shop/startpack" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
                                 }}</a>
                             </div>
+                            {% endif %}
                           </div>
                         </div>
                       </div>
@@ -348,11 +374,15 @@
                             </div>
                           </div>
                           <div class="card-footer text-center">
+                            {% if config().enabled().isEnableEmulation() %}
+                            {{ phrase('available after disabling emulation') }}
+                            {% else %}
                             <div class="btn-list">
                               <a href="/admin/bonuscode/create" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
                                 }}</a>
                               <a href="/admin/bonuscode/list" class="btn btn-sm btn-light btn-wave">{{ phrase(56) }}</a>
                             </div>
+                            {% endif %}
                           </div>
                         </div>
                       </div>

@@ -19,19 +19,6 @@ use Ofey\Logan22\template\tpl;
 class account
 {
 
-    public static function newAccount($server_id = null)
-    {
-        if ( ! server::get_server_info()) {
-            tpl::addVar("title", lang::get_phrase(131));
-            tpl::addVar("message", "Not Server");
-            tpl::display("page/error.html");
-        }
-        tpl::addVar([
-          'server_id' => $server_id,
-        ]);
-        tpl::display("/account/registration.html");
-    }
-
     // POST: /registration/account
     public static function requestNewAccount()
     {
@@ -114,16 +101,5 @@ class account
         }
     }
 
-    public static function sync_add()
-    {
-        validation::user_protection();
-        comparison::sync();
-    }
-
-    public static function sync($server_id = null)
-    {
-        validation::user_protection();
-        tpl::display("account/sync.html");
-    }
 
 }

@@ -86,14 +86,23 @@ class server
             return $server instanceof serverModel ? $server : null;
         }
 
-        // Получаем все серверы из базы данных
-        $servers = sql::getRows("SELECT * FROM `servers`");
-        foreach ($servers as $server) {
-            $server = json_decode($server['data'], true);
-            $serverId = $server['id'];
-            $server_data = sql::getRows("SELECT * FROM `server_data` WHERE `server_id` = ?", [$serverId]);
-            $page = self::get_default_desc_page_id($serverId);
-            self::$server_info[$serverId] = new serverModel($server, $server_data, $page);
+        if (\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableEmulation()){
+            $data = include_once "src/component/emulation/data/data.php";
+            foreach($data AS $server){
+                $serverId = $server['id'];
+                $page = self::get_default_desc_page_id($serverId);
+                self::$server_info[$serverId] = new serverModel($server, [], $page);
+            }
+        }else{
+            // Получаем все серверы из базы данных
+            $servers = sql::getRows("SELECT * FROM `servers`");
+            foreach ($servers as $server) {
+                $server = json_decode($server['data'], true);
+                $serverId = $server['id'];
+                $server_data = sql::getRows("SELECT * FROM `server_data` WHERE `server_id` = ?", [$serverId]);
+                $page = self::get_default_desc_page_id($serverId);
+                self::$server_info[$serverId] = new serverModel($server, $server_data, $page);
+            }
         }
 
         // Если запрашиваемый ID передан, возвращаем соответствующий сервер или последний сервер из массива

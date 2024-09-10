@@ -24,12 +24,34 @@ class comparison
           'email'=>user::self()->getEmail(),
           'login'=>$login,
           'password'=>$password,
-        ])->show()->getResponse();
+        ])->show(false)->getResponse();
         if($response['success']){
             user::self()->getLoadAccounts(true);
             board::success("Аккаунт добавлен");
         }else{
-            board::error($response['message']);
+            //error type
+            switch ($response['error']){
+                case 1:
+                    board::error("Неизвестная ошибка");
+                    break;
+                case 2:
+                    board::error("Аккаунт не найден");
+                    break;
+                case 3:
+                    board::error("Этот аккаунт у Вас уже есть");
+                    break;
+                case 4:
+                    board::error("Этот аккаунт привязан к другому профилю");
+                    break;
+                case 5:
+                    board::error("Случилась неожиданная ошибка");
+                    break;
+                case 6:
+                    board::error("Неверный пароль");
+                    break;
+                default:
+                    board::error("Неизвестная ошибка");
+            }
         }
     }
 

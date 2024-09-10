@@ -92,7 +92,6 @@ class serverModel
         $this->isSphereServer = $isSphereServer;
     }
 
-
     public function getCollection(): ?string
     {
         return $this->collection;
@@ -217,12 +216,9 @@ class serverModel
             }
         }
 
-
-
         $serverStatus = new serverStatus();
         $serverStatus->setServerId($this->getId());
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::GET_STATUS_SERVER, ['id' => $this->getId()])->getResponse();
-//        var_dump($sphere);exit;
         if (isset($sphere['error']) or $sphere == null) {
             $serverStatus->setEnable(false);
             $serverStatus->setLoginServer(false);
@@ -230,10 +226,19 @@ class serverModel
             $serverStatus->setOnline(0);
             $serverStatus->save();
         } else {
+            $online = $sphere['online'] ?? 0;
+            if (config::load()->onlineCheating()->isEnabled()) {
+                if ($online == 0) {
+                    $online = mt_rand(
+                      config::load()->onlineCheating()->getMinOnlineShow(),
+                      config::load()->onlineCheating()->getMaxOnlineShow()
+                    );
+                }
+            }
             $serverStatus->setEnable(filter_var($sphere['isEnableStatus'], FILTER_VALIDATE_BOOLEAN));
             $serverStatus->setLoginServer($sphere['loginServer']);
             $serverStatus->setGameServer($sphere['gameServer']);
-            $serverStatus->setOnline($sphere['online']);
+            $serverStatus->setOnline($online);
             $serverStatus->setDisabled(filter_var($sphere['isEnableStatus'], FILTER_VALIDATE_BOOLEAN));
             $serverStatus->save();
         }

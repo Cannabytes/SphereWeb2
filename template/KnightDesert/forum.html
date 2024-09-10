@@ -1,10 +1,10 @@
+{% if forum().isEnabled() %}
 <div class="sidebar__forum forum">
     <div class="heading">
         <h3 class="title mt mb">{{phrase("forum_title")|raw}}</h3>
     </div>
     <div class="forum__themes">
-        {% if forum().isEnabled() %}
-        {% for forum in forum().lastMessage() %}
+        {% for forum in forum().lastMessage(5) %}
         <div class="theme">
             <a href="{{get_forum_link(forum)}}" class="theme__link"></a>
             <div class="theme__img"></div>
@@ -20,9 +20,8 @@
             </div>
         </div>
         {% endfor %}
-
-        {% else %}
-            {{ forum().getMessageError() }}
-        {% endif %}
     </div>
 </div>
+{% else %}
+{{ forum().getMessageError() }}
+{% endif %}
