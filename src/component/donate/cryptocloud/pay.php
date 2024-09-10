@@ -143,17 +143,18 @@ class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
             header('HTTP/1.1 400 Bad Request', true, 400);
             die('Not paid!');
         }
+        file_put_contents( __DIR__ . '/debug_merch_info.log', '_REQUEST: ' . print_r( $response, true ) . PHP_EOL, FILE_APPEND );
 
         donate::control_uuid($_REQUEST['invoice_id'], get_called_class());
 
         $orderId = explode('@', $response['result'][0]['order_id']);
-        $amount  = $response['result'][0]['amount_in_fiat'] ?? 0;
+        $amount  = $response['result'][0]['amount'] ?? 0;
 
         $user_id = $orderId[0];
 
         $amount = donate::currency($amount, $this->currency_default);
         \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $this->currency_default, get_called_class()]);
-        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование Enot", get_called_class());
+        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование Cryptocloud", get_called_class());
         donate::addUserBonus($user_id, $amount);
 
     }
