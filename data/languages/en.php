@@ -640,8 +640,7 @@ return [
 	'581' => 'Save configuration',
 	'5451' => 'Issued +%s SphereCoin for %s (%s)',
 	'5461' => 'Cumulative bonus for donation: +%s',
-	'auto_file_desc' => 'After registration, you will be able to create a global account that can be used on all sites running on the SphereWeb platform. To do this, you need to use a file for automatic registration and authorization. After successful authorization, go to settings and click on the \'Download authorization file\' button. This file will be sent to your email.',
-	'drag and drop the authorization file' => 'Drag and drop the authorization file',
+	'available after disabling emulation' => 'Available after disabling emulation',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Access is denied',
 	'account' => 'Account',
@@ -688,6 +687,7 @@ return [
 	'auto update' => 'Auto update',
 	'auto_approval_of_new_streams' => 'Auto-approval of new streams',
 	'auto_check_of_new_streams' => 'Auto-check of new streams',
+	'auto_file_desc' => 'After registration, you will be able to create a global account that can be used on all sites running on the SphereWeb platform. To do this, you need to use a file for automatic registration and authorization. After successful authorization, go to settings and click on the \'Download authorization file\' button. This file will be sent to your email.',
 	'auto_login_launcher_feature' => 'This feature is necessary in case you use a launcher with automatic login to a character without in-game authorization. For example, SphereLauncher has the ability to perform automatic login (if the client allows it).',
 	'auto_update_time' => 'Auto-update time',
 	'autoload' => 'Autoload',
@@ -820,6 +820,7 @@ To create a launcher, you need to have the patch itself, go to the <a class=\'te
 Upload the patch archives to your hosting or FTP.<br>
 Next, you need to <a class=\'text-success\' href=\'/admin/launcher/create/token\'>create a token</a> with information about the patch location. Copy the token, you will need it on the next page.<br>
 Then you need to <a class=\'text-success\' href=\'/admin/launcher/add\'>add information about the launcher</a>.',
+	'drag and drop the authorization file' => 'Drag and drop the authorization file',
 	'during_all' => 'During all this time you have purchased',
 	'edit' => 'Edit',
 	'edit_server_info' => 'Edit server information',
@@ -880,6 +881,7 @@ If you have a good idea for extending functionality,<br>
 you can always write to the <a class=\'text-info\' href=\'https://t.me/shpereweb\' target=\'_blank\'>Telegram chat of the Sphere project</a>.',
 	'friend_nickname_bonus' => 'Enter friend\'s nickname (referral) and receive bonuses',
 	'from' => 'From',
+	'func_emulation_server_desc_enable' => 'Включен режим эмуляции данных.<br> В этом режиме вы последовательно снижаете статистику и данные серверов.<br> Режим эмуляции подходит для настройки шаблонов.<br> Выключить эмуляцию можно в разделе «<a href=\'/admin/setting#functiondata\'>Функции</a>».',
 	'functions' => 'Functions',
 	'funds_accum' => 'Funds accumulation',
 	'gallery' => 'Gallery',
