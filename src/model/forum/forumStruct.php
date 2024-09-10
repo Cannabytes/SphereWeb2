@@ -21,6 +21,7 @@ class forumStruct {
     public function __construct($json)
     {
         if(\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableEmulation()){
+            $this->showForumSphereMainPage = true;
             $this->url = "https://";
             $this->engine = 'xenforo';
             $this->enabled = true;
