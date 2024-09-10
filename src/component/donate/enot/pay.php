@@ -98,9 +98,6 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
         $status = $requestData['status'] ?? null;
-        $amount = $requestData['amount'] ?? null;
-        $currency = $requestData['currency'] ?? "RUB";
-        $secret_word = self::getConfigValue('secret_key');
 
         $order = $requestData['custom_fields']['order'] ?? null;
 
@@ -109,24 +106,19 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
         // Получаем сигнатуру из заголовка 'x-api-sha256-signature'
         $signature = $_SERVER['HTTP_X_API_SHA256_SIGNATURE'] ?? '';
 
-        ksort($requestData);
-        $hookJsonSorted = json_encode($requestData);
-        $generatedSignature = hash_hmac('sha256', $hookJsonSorted, $secret_word);
-
-        // Сравниваем сигнатуры
-        if (hash_equals($generatedSignature, $signature)) {
-            http_response_code(200);
-        } else {
-            http_response_code(403);
-            $rnd = mt_rand(0,9999);
-            echo "#{$rnd} |Ошибка сигнатуры платежа";
-            \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['sum'], $_POST['currency'], get_called_class()]);
-            die();
-        }
-
         if ($status == "success") {
+
+            $invoice = $this->getInvoiceInfo(self::getConfigValue('secret_key'), $requestData['invoice_id'], self::getConfigValue('shop_id'));
+            file_put_contents( __DIR__ . '/debug_invoice.log', '_REQUEST: ' . print_r( $invoice, true ) . PHP_EOL, FILE_APPEND );
+
+            if($status!="success"){
+                echo 'Платеж не принят!';
+                die();
+            }
+            $amount = $invoice['invoice_amount'];
+            $currency = $invoice['currency'];
             $amount = donate::currency($amount, $currency);
-            \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['sum'], $_POST['currency'], get_called_class()]);
+            \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
             user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование Enot", get_called_class());
             donate::addUserBonus($user_id, $amount);
             echo 'YES';
@@ -135,13 +127,20 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
         }
     }
 
-    static function checkSignature(string $hookJson, string $headerSignature, string $secretKey): bool
+    function getInvoiceInfo(string $apiKey, string $invoiceId, string $shopId): array
     {
-        $hookArr = json_decode($hookJson, true);
-        ksort($hookArr);
-        $sortedHookJson = json_encode($hookArr, JSON_UNESCAPED_UNICODE);
-        $calculatedSignature = hash_hmac('sha256', $sortedHookJson, $secretKey);
-        return hash_equals($headerSignature, $calculatedSignature);
+        $url = "https://api.enot.io/invoice/info";
+        $headers = [
+          "accept: application/json",
+          "x-api-key: {$apiKey}"
+        ];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "$url?invoice_id={$invoiceId}&shop_id={$shopId}");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        return json_decode($response, true);
     }
 
 }
