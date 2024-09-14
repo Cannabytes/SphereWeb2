@@ -3,8 +3,6 @@
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\model\donate\donate;
-use Ofey\Logan22\model\log\logTypes;
-use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\user;
 
 class enot extends \Ofey\Logan22\model\donate\pay_abstract
@@ -16,14 +14,6 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
     //Включить только для true
     protected static bool $forAdmin = false;
 
-    public static function inputs(): array
-    {
-        return [
-          'shop_id' => '',
-          'secret_key'   => '',
-        ];
-    }
-
     private array $allowIP = [
       '5.187.7.207',
       '149.202.68.3 ',
@@ -34,6 +24,13 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
       '23.88.5.156',
     ];
 
+    public static function inputs(): array
+    {
+        return [
+          'shop_id'    => '',
+          'secret_key' => '',
+        ];
+    }
 
     /**
      * @return void
@@ -52,26 +49,26 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
         $order_amount = $_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost());
-        $shop_id = self::getConfigValue('shop_id');
-        $email = user::self()->getEmail();
-        $secret_word = self::getConfigValue('secret_key');
-        $currency = "RUB";
-        $order_id = uniqid();
-        $sign = md5($shop_id . ':' . $order_amount . ':' . $secret_word . ':' . $currency . ':' . $order_id);
-        $params = [
-          'amount' => $order_amount,
-          'order_id' => $order_id,
-          'email' => $email,
-          'currency' => $currency,
-          'shop_id' => $shop_id,
+        $shop_id      = self::getConfigValue('shop_id');
+        $email        = user::self()->getEmail();
+        $secret_word  = self::getConfigValue('secret_key');
+        $currency     = "RUB";
+        $order_id     = uniqid();
+        $sign         = md5($shop_id . ':' . $order_amount . ':' . $secret_word . ':' . $currency . ':' . $order_id);
+        $params       = [
+          'amount'        => $order_amount,
+          'order_id'      => $order_id,
+          'email'         => $email,
+          'currency'      => $currency,
+          'shop_id'       => $shop_id,
           "custom_fields" => ["order" => user::self()->getId()],
         ];
-        $headers = [
+        $headers      = [
           'Accept: application/json',
           'Content-Type: application/json',
-          'x-api-key: ' . self::getConfigValue('secret_key')
+          'x-api-key: ' . self::getConfigValue('secret_key'),
         ];
-        $ch = curl_init();
+        $ch           = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://api.enot.io/invoice/create');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
@@ -86,14 +83,13 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
         } else {
             echo "Request failed: " . $response_object->error;
         }
-
     }
 
     function transfer(): void
     {
-        $jsonTxt = file_get_contents('php://input');
+        $jsonTxt     = file_get_contents('php://input');
         $requestData = json_decode($jsonTxt, true);
-        file_put_contents( __DIR__ . '/debug.log', '_REQUEST: ' . print_r( $requestData, true ) . PHP_EOL, FILE_APPEND );
+        file_put_contents(__DIR__ . '/debug.log', '_REQUEST: ' . print_r($requestData, true) . PHP_EOL, FILE_APPEND);
 
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
@@ -101,45 +97,49 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
 
         $order = $requestData['custom_fields']['order'] ?? null;
 
-        $user_id = $order !== null ? (int) $order : null;
+        $user_id = $order !== null ? (int)$order : null;
 
         // Получаем сигнатуру из заголовка 'x-api-sha256-signature'
         $signature = $_SERVER['HTTP_X_API_SHA256_SIGNATURE'] ?? '';
 
         if ($status == "success") {
+            $invoice = $this->getInvoiceInfo(
+              self::getConfigValue('secret_key'),
+              $requestData['invoice_id'],
+              self::getConfigValue('shop_id')
+            );
+            file_put_contents(__DIR__ . '/debug_invoice.log', '_REQUEST: ' . print_r($invoice, true) . PHP_EOL, FILE_APPEND);
 
-            $invoice = $this->getInvoiceInfo(self::getConfigValue('secret_key'), $requestData['invoice_id'], self::getConfigValue('shop_id'));
-            file_put_contents( __DIR__ . '/debug_invoice.log', '_REQUEST: ' . print_r( $invoice, true ) . PHP_EOL, FILE_APPEND );
-
-            if($status!="success"){
+            if ($status != "success") {
                 echo 'Платеж не принят!';
                 die();
             }
-            $amount = $invoice['invoice_amount'];
+            $amount   = $invoice['invoice_amount'];
             $currency = $invoice['currency'];
-            $amount = donate::currency($amount, $currency);
+            $amount   = donate::currency($amount, $currency);
             \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
             user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование Enot", get_called_class());
             donate::addUserBonus($user_id, $amount);
             echo 'YES';
-        }else{
+        } else {
             echo 'Платеж не принят';
         }
     }
 
     function getInvoiceInfo(string $apiKey, string $invoiceId, string $shopId): array
     {
-        $url = "https://api.enot.io/invoice/info";
+        $url     = "https://api.enot.io/invoice/info";
         $headers = [
           "accept: application/json",
-          "x-api-key: {$apiKey}"
+          "x-api-key: {$apiKey}",
         ];
-        $ch = curl_init();
+        $ch      = curl_init();
         curl_setopt($ch, CURLOPT_URL, "$url?invoice_id={$invoiceId}&shop_id={$shopId}");
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $response = curl_exec($ch);
         curl_close($ch);
+
         return json_decode($response, true);
     }
 

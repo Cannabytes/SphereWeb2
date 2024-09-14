@@ -168,7 +168,7 @@ class wheel
 
         tpl::addVar('stories', $stories);
         tpl::addVar('name', $name);
-        tpl::addVar('cost', $response['cost']);
+        tpl::addVar('cost', (int)$response['cost']);
         tpl::addVar('items', json_encode($response['items']));
         tpl::displayPlugin("/wheel/tpl/wheel.html");
     }
@@ -297,7 +297,7 @@ class wheel
                 }
                 tpl::addVar('object_id', (int)$response['object_id']);
                 tpl::addVar('name', $name);
-                tpl::addVar('cost', (int)$cost);
+                tpl::addVar('cost', (float)$cost);
                 tpl::addVar('wheelsItems', $items ?? []);
             }
         }

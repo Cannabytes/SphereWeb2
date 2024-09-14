@@ -98,9 +98,13 @@ function ItemWinModal(item, heading, mod) {
   let count = item.count > 1 ? '<span class="color-accent-2">x' + item.count + '</span>' : '';
   let add_name = item.add_name ? '<span class="color-brown">(' + item.add_name + ')</span>' : '';
 
+  name = `${enchant} ${add_name} ${item.name} ${count}`;
+
+  let winphrase = __win_message.replace(/\^1\^/g, name)
+
   Swal.fire({
-    title: 'Поздравляем',
-    html: `Вы выиграли <span class="text-success color-accent-2">${enchant} ${add_name} ${item.name} ${count}</span><br><br>Выигрыш отправлен Вам на склад`,
+    title: __win_congratulations,
+    html: winphrase,
     imageUrl: item.icon,
     imageWidth: 64,
     imageHeight: 64,

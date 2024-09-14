@@ -7,7 +7,7 @@
     <div class=" custom-card">
       <div class="card-header justify-content-between">
         <button data-wheel-start class="btn btn-lg d-grid gap-2 col-4 mx-auto btn-danger label-btn label-end">
-          Крутить рулетку «{{name}}» за {{cost}} Donate Coin
+          {{ phrase('spin_wheel', name, cost)|raw }}
           <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
         </button>
       </div>
@@ -42,7 +42,7 @@
     <div class="card custom-card">
       <div class="card-header justify-content-between">
         <div class="card-title">
-          История моих побед
+          {{ phrase('the story of my victories') }}
         </div>
       </div>
       <div class="card-body">
@@ -272,6 +272,12 @@
 {% endblock %}
 
 {% block js %}
+<script>
+  const __win_congratulations = `{{phrase('wheel_congratulations')|raw}}`;
+  const __win_message = `{{phrase('you_win_message')|raw}}`;
+
+</script>
+
 <script src="/custom/plugins/wheel/tpl/js/custom.js?v{{ 'now'|date('U') }}"></script>
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
@@ -312,7 +318,7 @@
   };
 
 
-
+  6673
   const data = JSON.parse(`{{items|raw}}`);
 
   data.forEach((item) => {
