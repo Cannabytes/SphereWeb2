@@ -276,13 +276,19 @@
                       <div class="container px-0 mb-0">
                         <div class="row ">
                           <div class="col-sm-6">
-                            <button type="submit"
+                            <button type="submit" data-func="messageRegistrationAccount"
                                     class="btn btn-success shadow-success btn-wave waves-effect waves-light">
                               {{phrase('reg_new_acc')}}
                             </button>
                           </div>
 
                         </div>
+                      </div>
+
+                      <div id="registrationDataMessage" class="ps-0 mt-3 mb-0 d-none">
+                        <span id="registrationMessage" class="badge border bg-danger-transparent rounded-1">
+                         Увы, аккаунт занят.
+                        </span>
                       </div>
 
                     </form>
@@ -1054,4 +1060,22 @@
   });
 </script>
 
+<script>
+  function messageRegistrationAccount(response) {
+    if (response.ok) {
+      $("#registrationDataMessage").removeClass("d-none");
+      $("#registrationMessage").removeClass("bg-success-transparent");
+      $("#registrationMessage").removeClass("bg-danger-transparent");
+      $("#registrationMessage").addClass("bg-success-transparent");
+      $("#registrationMessage").text(response.message);
+    } else {
+      $("#registrationDataMessage").removeClass("d-none");
+      $("#registrationMessage").removeClass("bg-danger-transparent");
+      $("#registrationMessage").removeClass("bg-success-transparent");
+      $("#registrationMessage").addClass("bg-danger-transparent");
+      $("#registrationMessage").text(response.message);
+    }
+
+  }
+</script>
 {% endblock %}

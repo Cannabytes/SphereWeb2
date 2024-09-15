@@ -13,7 +13,7 @@ function basename(str) {
     return base;
 }
 
-function AjaxSend(url, method, data, isReturn = false, timeout = 2) {
+function AjaxSend(url, method, data, isReturn = false, timeout = 2, funcName = null) {
     return new Promise(function(resolve, reject) {
         $.ajax({
             url: url,
@@ -31,6 +31,10 @@ function AjaxSend(url, method, data, isReturn = false, timeout = 2) {
                         if (response.ok === false) {
                             grecaptcha.reset();
                         }
+                    }
+
+                    if (funcName) {
+                        window[funcName](response);
                     }
 
                     responseAnalysis(response);
@@ -96,7 +100,8 @@ $(document).on('submit', 'form', function (event) {
     let url = $(this).attr('action');
     let method = $(this).attr('method');
     let data = $(this).serialize();
-    AjaxSend(url, method, data);
+    let funcName = $(this).find('button[data-func]').attr('data-func');
+    AjaxSend(url, method, data, false, 2, funcName);
 });
 
 
