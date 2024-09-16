@@ -235,7 +235,7 @@
                         <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
                         <div class="col-sm-4">
                           <input type="password" class="form-control" name="password" id="passwordRegistration"
-                                 autocomplete="off">
+                                 autocomplete="new-password">
                         </div>
                       </div>
                       <fieldset class="row mb-3">
@@ -709,6 +709,9 @@
   </div>
   {% endif %}
 
+  {% for include_file in get_plugins_include("PLACE_IN_SPACE_MAIN_1") %}
+  {% include include_file %}
+  {% endfor %}
 
   {% if forum().isEnabled() and forum().showForumSphereMainPage() %}
   <div class="row">
