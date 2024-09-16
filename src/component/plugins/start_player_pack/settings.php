@@ -7,13 +7,10 @@ return [
     "PLUGIN_AUTHOR" => "Logan22",
     "PLUGIN_GITHUB" => "",
     "PLUGIN_DESCRIPTION" => "Плагин для продажи паков",
-    "PLUGIN_ADMIN_PAGE" => "/startpack",
+    "PLUGIN_ADMIN_PAGE" => "/admin/shop/startpack",
     "PLUGIN_ADMIN_PAGE_NAME" => "Pack Plugin",
     "PLUGIN_ADMIN_PAGE_ICON" => "fa fa-users",
 
-    "INCLUDES" => [
-        "PLACE_IN_SPACE_MAIN_1" => "start_player_pack/tpl/select_pack.html",
-    ],
 ];
 
 
