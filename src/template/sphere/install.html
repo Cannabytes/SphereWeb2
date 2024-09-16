@@ -569,7 +569,7 @@
        user: $('#user').val(),
        password: $('#password').val(),
        port: $('#port').val(),
-     }, true).then(function (data) {
+     }, true, 10).then(function (data) {
        console.log(data)
        ResponseNotice(data);
      })
