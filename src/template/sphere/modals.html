@@ -69,13 +69,14 @@
       <div class="modal-body px-4">
         <div class="row">
 
+          {% set item = get_item_info(config().donate().getItemIdToGameTransfer()) %}
+
           {% if getUser().isAuth() %}
 
           {% if getUser().getDonate() == 0 %}
           <label class="form-label text-dark fw-semibold">{{phrase('no_donate_coin_transfer')}}</label>
           {% else %}
 
-          {% set item = get_item_info(config().donate().getItemIdToGameTransfer()) %}
 
           {% if item == null %}
           {{ phrase('no_item_to_send') }}
