@@ -50,7 +50,6 @@ class pay
             }
         }
 
-
         tpl::addVar("donate_history_pay_self", donate::donate_history_pay_self());
         tpl::addVar("title", lang::get_phrase(233));
 
@@ -68,7 +67,6 @@ class pay
                 break;
             }
         }
-
         $donate_history_pay = sql::getRows("SELECT * FROM `donate_history_pay` WHERE user_id = ? ORDER BY id DESC", [user::self()->getId()]);
 
         tpl::addVar("donate_history_pay", $donate_history_pay);

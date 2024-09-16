@@ -516,6 +516,16 @@
 
                       <div class="col-xxl-4 col-xl-6 mb-1">
                         <div class="input-group">
+                          <div class="input-group-text">Donate Item</div>
+                          <input name="donate_item_to_game_transfer" min="1" type="number" class="form-control form-control-sm"
+                                 id="donate_item_to_game_transfer"
+                                 placeholder="1"
+                                 value="{{config().donate().getDonateItemToGameTransfer()}}">
+                        </div>
+                      </div>
+
+                      <div class="col-xxl-4 col-xl-6 mb-1">
+                        <div class="input-group">
                           <div class="input-group-text">Count</div>
                           <input name="count_items_to_game_transfer" min="1" type="number" class="form-control form-control-sm"
                                  id="count_items_to_game_transfer"
@@ -2506,6 +2516,7 @@
         donateSystems: collectPaymentSystemsData(),
         item_id_to_game_transfer: $('#item_id_to_game_transfer').val(),
         count_items_to_game_transfer: $('#count_items_to_game_transfer').val(),
+        donate_item_to_game_transfer: $('#donate_item_to_game_transfer').val(),
 
       }, false);
     });

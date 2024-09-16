@@ -640,7 +640,7 @@ return [
 	'581' => 'Настройки сохранены',
 	'5451' => 'Выдал +%s SphereCoin на %s (%s)',
 	'5461' => 'Накопительный бонус за пожертвование: +%s',
-	'available after disabling emulation' => 'Доступно после выключения эмуляции',
+	'exchange' => 'Обмен',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Доступ запрещен',
 	'account' => 'Аккаунт',
@@ -694,6 +694,7 @@ return [
 автовходом в игру на персонажа, без авторизации в игре. К примеру SphereLauncher обладает возможностью сделать автовход в игру (если клиент позволяет).',
 	'auto_update_time' => 'Время автообновления',
 	'autoload' => 'Автозагрузка',
+	'available after disabling emulation' => 'Доступно после выключения эмуляции',
 	'back' => 'назад',
 	'background' => 'Фон',
 	'balance_topup' => 'Пополнение баланса',
@@ -881,6 +882,7 @@ return [
 Вашей сборки сервера нет в списке при добавлении?<br>
 Если у Вас есть хорошая идея для расширения функционала.<br>
 Вы всегда можете написать <a class=\'text-info\' href=\'https://t.me/shpereweb\' target=\'_blank\'>телеграмм чатик проекта Sphere</a>.',
+	'free' => 'Бесплатно',
 	'friend_nickname_bonus' => 'Укажи ник друга (реферала) и получайте бонусы',
 	'from' => 'от',
 	'func_emulation_server_desc_enable' => 'Включен режим эмуляции данных.<br>

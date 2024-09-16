@@ -108,14 +108,22 @@ class inventory
         if ( ! is_numeric($coins)) {
             board::error("Не переданы монеты");
         }
+
         if ( ! user::self()->canAffordPurchase($coins)) {
             board::error("Недостаточно монет");
         }
+
+
+        $countItemsToGameTransfer = config::load()->donate()->getCountItemsToGameTransfer()*$coins / config::load()->donate()->getDonateItemToGameTransfer();
+
+        if (fmod($countItemsToGameTransfer, 1) !== 0.0) {
+            board::error("Введите кратное значение. К примеру " . (int)$countItemsToGameTransfer * config::load()->donate()->getDonateItemToGameTransfer());
+        }
+
         if ( ! user::self()->donateDeduct($coins)) {
             board::error("Произошла ошибка списания");
         }
 
-        $countItemsToGameTransfer = config::load()->donate()->getCountItemsToGameTransfer()*$coins;
         $items[] = [
           'objectId' => 0,
           'itemId'   => config::load()->donate()->getItemIdToGameTransfer(),

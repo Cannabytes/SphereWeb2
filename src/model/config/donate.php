@@ -52,6 +52,8 @@ class donate
 
     public int $item_id_to_game_transfer = 4037;
 
+    public int $donate_item_to_game_transfer = 1;
+
     public int $count_items_to_game_transfer = 1;
 
     /**
@@ -111,7 +113,8 @@ class donate
             }
             $this->donateSystems = $this->parseDonateSystem();
             $this->item_id_to_game_transfer = filter_var($setting['item_id_to_game_transfer'], FILTER_VALIDATE_INT) ?? 0;
-            $this->count_items_to_game_transfer = filter_var($setting['count_items_to_game_transfer'], FILTER_VALIDATE_INT) ?? 0;
+            $this->donate_item_to_game_transfer = filter_var($setting['donate_item_to_game_transfer'] ?? 1, FILTER_VALIDATE_INT);
+            $this->count_items_to_game_transfer = filter_var($setting['count_items_to_game_transfer'] ?? 1, FILTER_VALIDATE_INT);
         } else {
             $all_donate_system = fileSys::get_dir_files("src/component/donate", [
               'basename' => true,
@@ -162,6 +165,11 @@ class donate
     public function getItemIdToGameTransfer(): int
     {
         return $this->item_id_to_game_transfer;
+    }
+
+    public function getDonateItemToGameTransfer(): int
+    {
+        return $this->donate_item_to_game_transfer;
     }
 
     public function getCountItemsToGameTransfer(): int

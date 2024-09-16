@@ -640,7 +640,7 @@ return [
 	'581' => 'Save configuration',
 	'5451' => 'Issued +%s SphereCoin for %s (%s)',
 	'5461' => 'Cumulative bonus for donation: +%s',
-	'available after disabling emulation' => 'Available after disabling emulation',
+	'exchange' => 'Exchange',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Access is denied',
 	'account' => 'Account',
@@ -691,6 +691,7 @@ return [
 	'auto_login_launcher_feature' => 'This feature is necessary in case you use a launcher with automatic login to a character without in-game authorization. For example, SphereLauncher has the ability to perform automatic login (if the client allows it).',
 	'auto_update_time' => 'Auto-update time',
 	'autoload' => 'Autoload',
+	'available after disabling emulation' => 'Available after disabling emulation',
 	'back' => 'Back',
 	'background' => 'Background',
 	'balance_topup' => 'Balance top-up',
@@ -879,6 +880,7 @@ It will not be possible to connect to servers that are set up in a local network
 Is your server build not listed when adding?<br>
 If you have a good idea for extending functionality,<br>
 you can always write to the <a class=\'text-info\' href=\'https://t.me/shpereweb\' target=\'_blank\'>Telegram chat of the Sphere project</a>.',
+	'free' => 'Free',
 	'friend_nickname_bonus' => 'Enter friend\'s nickname (referral) and receive bonuses',
 	'from' => 'From',
 	'func_emulation_server_desc_enable' => 'Включен режим эмуляции данных.<br> В этом режиме вы последовательно снижаете статистику и данные серверов.<br> Режим эмуляции подходит для настройки шаблонов.<br> Выключить эмуляцию можно в разделе «<a href=\'/admin/setting#functiondata\'>Функции</a>».',

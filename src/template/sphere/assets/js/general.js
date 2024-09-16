@@ -271,19 +271,15 @@ $('#select_default_server').on('change', function() {
 $(document).on('click', '#sendToPlayerBtn', function () {
     let playerName = $('#send_player_name').val();
     let coin = $('#muchSphereCoin').val();
-    let account = $('#send_player_name option:selected').data('account'); // Получаем значение data-account выбранного элемента
-
+    let account = $('#send_player_name option:selected').data('account');
     AjaxSend('/send/to/player', 'POST', {
         player: playerName,
         coin: coin,
         account: account // Добавляем поле account
-    }).then(function (response) {
+    }, true).then(function (response) {
+        responseAnalysis(response);
         if (response.ok) {
-            noticeSuccess(response.message);
-        } else {
-            noticeError(response.message);
+            $('#sendToPlayerModal').modal('hide');
         }
-    }).catch(function (error) {
-        console.error('Произошла ошибка:', error);
     });
 });
