@@ -109,11 +109,7 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
               self::getConfigValue('shop_id')
             );
             file_put_contents(__DIR__ . '/debug_invoice.log', '_REQUEST: ' . print_r($invoice, true) . PHP_EOL, FILE_APPEND);
-
-            if ($status != "success") {
-                echo 'Платеж не принят!';
-                die();
-            }
+            $invoice = $invoice['data'];
             $amount   = $invoice['invoice_amount'];
             $currency = $invoice['currency'];
             $amount   = donate::currency($amount, $currency);
