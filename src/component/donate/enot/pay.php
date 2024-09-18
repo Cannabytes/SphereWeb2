@@ -91,7 +91,7 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
         $requestData = json_decode($jsonTxt, true);
         file_put_contents(__DIR__ . '/debug.log', '_REQUEST: ' . print_r($requestData, true) . PHP_EOL, FILE_APPEND);
 
-        \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
+//        \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
         $status = $requestData['status'] ?? null;
 
