@@ -2062,4 +2062,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  146 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/plugin/save/config',
+    'func' => 'model\\plugin\\plugin::saveSetting',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );
