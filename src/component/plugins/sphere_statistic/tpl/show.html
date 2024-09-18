@@ -1,90 +1,131 @@
-{% extends 'basic/base.html' %}
+{% extends 'struct.html' %}
 
-{% block title %}{{phrase(238)}}{% endblock %}
+{% block title %}{% endblock %}
 
 {% block content %}
-<div class="block-content">
+<div class="container-fluid">
 
-        {% include "/sphere_statistic/tpl/menu.html" %}
-
-        <div class="row">
-        <div class="">
-
-                    <div class="block block-rounded">
-                        <div class="block-header block-header-default">
-                            <h3 class="block-title">Диаграмма регистраций пользователей</h3>
-                            <div class="block-options">
-                                <button type="button" class="btn-block-option" data-toggle="block-option" data-action="state_toggle" data-action-mode="demo">
-                                    <i class="si si-refresh"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="block-content block-content-full text-center">
-                            <canvas id="js-chartjs-lines" style="width: 50%;"></canvas>
-                        </div>
-                    </div>
-
-    </div>
+  <div class="row">
+  <div class="col-xl-126">
+    <div class="card custom-card">
+      <div class="card-header d-flex">
+        <div class="card-title">Area Chart-Datetime X-Axis Chart</div>
+        <div class="btn-group ms-auto">
+          <button class="btn btn-primary btn-sm" id="one_month">1M</button>
+          <button class="btn btn-primary btn-sm" id="six_months">6M</button>
+          <button class="btn btn-primary btn-sm" id="one_year">1Y</button>
+          <button class="btn btn-primary btn-sm" id="all">ALL</button>
         </div>
-</div>
+      </div>
+      <div class="card-body">
+        <div id="mixed-linearea"></div>
+      </div>
+    </div>
+  </div>
 
+</div>
+</div>
 {% endblock %}
 
-{% block js %}
+{% block css %} 
+<link rel="stylesheet" href="{{template}}/assets/libs/choices.js/public/assets/styles/choices.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/apexcharts/apexcharts.css">
+{% endblock %}
+
+{% block js %}  
+<!-- Custom-Switcher JS -->
+<script src="{{template}}/assets/js/custom-switcher.min.js"></script>
+
+<!-- Apex Charts JS -->
+<script src="{{template}}/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+<!---Used In Basic Area Chart-->
+<script src="{{template}}/assets/js/apexcharts-stock-prices.js"></script>
+
+<!-- Used For Secection-Github Style Chart -->
+<script src="{{template}}/assets/js/apex-github-data.js"></script>
+
+<!-- Used For Irregular Time Series Chart -->
+<script src="{{template}}/assets/js/apexcharts-irregulardata.js"></script>
+<script src="{{template}}/assets/libs/moment/moment.js"></script>
+
+<!-- Internal Apex Area Charts JS -->
+
 <script>
 
-    !(function () {
-        class t {
-            static initChartsChartJS() {
-                (Chart.defaults.color = "#818d96"),
-                    (Chart.defaults.scale.grid.color = "rgba(0,0,0,.04)"),
-                    (Chart.defaults.scale.grid.zeroLineColor = "rgba(0,0,0,.1)"),
-                    (Chart.defaults.scale.beginAtZero = !0),
-                    (Chart.defaults.elements.line.borderWidth = 2),
-                    (Chart.defaults.elements.point.radius = 5),
-                    (Chart.defaults.elements.point.hoverRadius = 7),
-                    (Chart.defaults.plugins.tooltip.radius = 3),
-                    (Chart.defaults.plugins.legend.labels.boxWidth = 12);
-                let i = document.getElementById("js-chartjs-lines"),
-                    u = {
-                        labels: [{% for data in registrations_count %}"{{ data.registration_date }}",{% endfor %}],
-                        datasets: [
-                            {
-                                label: "Users",
-                                fill: !0,
-                                backgroundColor: "rgba(2, 132, 199, .75)",
-                                borderColor: "rgba(2, 132, 199, 1)",
-                                pointBackgroundColor: "rgba(2, 132, 199, 1)",
-                                pointBorderColor: "#fff",
-                                pointHoverBackgroundColor: "#fff",
-                                pointHoverBorderColor: "rgba(2, 132, 199, 1)",
-                                data: [{% for data in registrations_count %}"{{ data.registrations_count }}",{% endfor %}],
-                            },
-                        ],
-                    };
-                null !== i && (t = new Chart(i, { type: "line", data: u, options: { responsive: !0, maintainAspectRatio: !1, tension: 0.4 } }));
-            }
-            static initRandomEasyPieChart() {
-                document.querySelectorAll(".js-pie-randomize").forEach((t) => {
-                    t.addEventListener("click", (a) => {
-                        t.closest(".block")
-                            .querySelectorAll(".pie-chart")
-                            .forEach((t) => {
-                                jQuery(t)
-                                    .data("easyPieChart")
-                                    .update(Math.floor(100 * Math.random() + 1));
-                            });
-                    });
-                });
-            }
-            static init() {
-                this.initRandomEasyPieChart(), this.initChartsChartJS();
-            }
+
+  /* line and area chart */
+  var options = {
+    series: [{
+      name: 'Users',
+      type: 'area',
+      data: [{% for data in registrations_count %}'{{data.registrations_count}}',{% endfor %}]
+    }],
+    chart: {
+      height: 320,
+      type: 'line',
+    },
+    stroke: {
+      curve: 'smooth'
+    },
+    colors: ["#6c5ffc", "#05c3fb"],
+    grid: {
+      borderColor: '#f2f5f7',
+    },
+    fill: {
+      type: 'solid',
+      opacity: [0.35, 1],
+    },
+    labels: [ {% for data in registrations_count %}'{{data.registration_date}}',{% endfor %}],
+    markers: {
+      size: 0
+    },
+    xaxis: {
+      labels: {
+        show: true,
+        style: {
+          colors: "#8c9097",
+          fontSize: '11px',
+          fontWeight: 600,
+          cssClass: 'apexcharts-xaxis-label',
+        },
+      }
+    },
+    yaxis: [
+      {
+        title: {
+          text: 'Series A',
+          style: {
+            color: "#8c9097",
+          }
+        },
+        labels: {
+          show: true,
+          style: {
+            colors: "#8c9097",
+            fontSize: '11px',
+            fontWeight: 600,
+            cssClass: 'apexcharts-yaxis-label',
+          },
         }
-        Codebase.onLoad(() => t.init());
-    })();
+      },
+    ],
+    tooltip: {
+      shared: true,
+      intersect: false,
+      y: {
+        formatter: function (y) {
+          if (typeof y !== "undefined") {
+            return y.toFixed(0) + " registration";
+          }
+          return y;
+        }
+      }
+    }
+  };
+  var chart = new ApexCharts(document.querySelector("#mixed-linearea"), options);
+  chart.render();
+
 </script>
 
-<!-- Page JS Helpers (Easy Pie Chart + jQuery Sparkline Plugins) -->
-<script>Codebase.helpersOnLoad(['jq-easy-pie-chart', 'jq-sparkline']);</script>
 {% endblock %}

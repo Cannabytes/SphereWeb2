@@ -1,0 +1,68 @@
+{% extends 'struct.html' %}
+
+{% block title %}qwe{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+  <div class="row justify-content-center">
+    <div class="col-xl-12">
+      <div class="card custom-card overflow-hidden">
+        <div class="card-body p-0">
+          <div class="p-3 terms-heading-cover text-center  align-items-center text-fixed-white bg-primary h5 fw-semibold mb-0">
+                                        <span class="avatar-md me-3 ">
+                                            <img src="/src/template/sphere/assets/images/default.webp" alt="">
+                                        </span>
+
+          </div>
+          <div class="p-4 text-muted terms-conditions" id="terms-scroll" data-simplebar="init"><div class="simplebar-wrapper" style="margin: -24px;"><div class="simplebar-height-auto-observer-wrapper"><div class="simplebar-height-auto-observer"></div></div><div class="simplebar-mask"><div class="simplebar-offset" style="right: 0px; bottom: 0px;"><div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: auto; overflow: hidden scroll;"><div class="simplebar-content" style="padding: 24px;">
+
+            <h6 class="fw-bold pb-3 text-default op-7"><span class="terms-heading">Описание :</span></h6>
+            <div class="mb-4">
+              <p class="fw-semibold text-muted mb-2 fs-14">Какие ограничения будут при отсутствии оплаты?</p>
+              <p class="op-7 mb-0">
+                Если на Вашем счёту будет отсутствие денег, тогда будут применимы следующие ограничения:
+                <ol>
+                    <li>
+                      Частота обновления статистики - раз в 6 часов.
+                    </li>
+                    <li>
+                      Частота обновления статуса сервера - раз в 20 минут.
+                    </li>
+                    <li>
+                      Ограничение на кол-во регистраций игровых аккаунтов в месяц - 300.
+                    </li>
+                </ol>
+              </p>
+            </div>
+            <div class="mb-4">
+              <p class="fw-semibold text-muted mb-2 fs-14">Как пополнить баланс?</p>
+              <p class="op-7 mb-2">
+                На данный момент доступно через платежную систему CryptoCloud.<br>
+                Вы можете <a href="/admin/balance">оплатить любую сумму</a>, эта сумму отобразиться у Вас на балансе и будет уменьшаться каждый час.
+              </p>
+            </div>
+
+          </div></div></div></div>
+            <div class="simplebar-placeholder" style="width: auto; height: 922px;"></div></div><div class="simplebar-track simplebar-horizontal" style="visibility: hidden;"><div class="simplebar-scrollbar" style="width: 0px; display: none;"></div></div><div class="simplebar-track simplebar-vertical" style="visibility: visible;"><div class="simplebar-scrollbar" style="height: 556px; transform: translate3d(0px, 0px, 0px); display: block;"></div></div></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+{% endblock %}
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block js %}
+<script src="{{template}}/assets/js/terms_conditions.js"></script>
+{% endblock %}

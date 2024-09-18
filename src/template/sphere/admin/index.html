@@ -46,6 +46,7 @@
       </div>
       {% endif %}
 
+
         <div class="card custom-card">
           <div class="card-body">
             <div class="d-flex align-items-top justify-content-between mb-2">
@@ -63,11 +64,16 @@
               <div>
                 <a href="javascript:void(0);" data-bs-toggle="dropdown" class="btn btn-icon btn-sm btn-light" aria-expanded="false"><i class="ti ti-dots"></i></a>
                 <ul class="dropdown-menu" style="">
-                  <li><a href="javascript:void(0);" class="dropdown-item">Частые вопросы</a></li>
-                  <li><a href="javascript:void(0);" class="dropdown-item">Пополнить баланс</a></li>
+                  <li><a href="/admin/balance/faq" class="dropdown-item">Частые вопросы</a></li>
+                  <li><a href="/admin/balance" class="dropdown-item">Пополнить баланс</a></li>
                 </ul>
               </div>
 
+            </div>
+
+            <div class="alert alert-info" role="alert">
+              У Вас закончились деньги на балансе, мы предлагаем Вам пополнить баланс.<br>
+              Для снижения нагрузки на SphereWeb были введени ограничения.
             </div>
 
             <div class="d-flex align-items-center border-bottom border-block-end-dashed mb-3">
@@ -83,10 +89,13 @@
 
             <div class="mb-3 ">
               <div class="text-muted">
-
                 <p class="mb-1">
                   {% if launcher.isActive %}
-                    Sphere Launcher до {{launcher.dateTimeout|date('d.m.Y H:s')}}
+                    Sphere Launcher до <span class="text-primary">{{launcher.dateTimeout|date('d.m.Y H:s')}}</span>.
+                      {% if launcher.TimeIsUp == false %}
+                        <br>
+                        <a class="text-danger" href="/admin/balance">Время использования лаунчера вышло, рекомендуем продлить использование лаунчера.</a>
+                      {% endif %}
                   {% else %}
                     Sphere Launcher не активен. <a href="/admin/balance">Подключить?</a>
                   {% endif %}

@@ -10,7 +10,6 @@ use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
-use trash\sdb;
 
 class launcher
 {

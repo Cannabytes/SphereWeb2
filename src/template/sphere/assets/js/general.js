@@ -26,6 +26,10 @@ function AjaxSend(url, method, data, isReturn = false, timeout = 2, funcName = n
                     resolve(response);
                 } else {
 
+                    if(response===null){
+                        return;
+                    }
+
                     // Проверка существования поля g-recaptcha
                     if (response.hasOwnProperty('g-recaptcha-response')) {
                         if (response.ok === false) {

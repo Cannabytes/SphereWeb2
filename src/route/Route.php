@@ -14,6 +14,7 @@ namespace Ofey\Logan22\route;
 
 use Bramus\Router\Router;
 use Ofey\Logan22\component\fileSys\fileSys;
+use Ofey\Logan22\model\plugin\plugin;
 use Ofey\Logan22\template\tpl;
 
 class Route extends Router {
@@ -67,7 +68,7 @@ class Route extends Router {
             if($data==null){
                 continue;
             }
-            list($route, $method) = $data;
+            [$route, $method] = $data;
         }
 
         $dir = fileSys::get_dir("custom/plugins/");
@@ -77,7 +78,7 @@ class Route extends Router {
             if($data==null){
                 continue;
             }
-            list($route, $method) = $data;
+            [$route, $method] = $data;
         }
     }
 

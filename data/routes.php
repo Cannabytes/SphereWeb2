@@ -2034,4 +2034,32 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  144 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/balance/faq',
+    'func' => '',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '/admin/balance_faq.html',
+    'comment' => '',
+  ),
+  145 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/plugin/save/activator',
+    'func' => 'model\\plugin\\plugin::__save_activator_plugin',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

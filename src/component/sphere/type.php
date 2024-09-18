@@ -79,6 +79,8 @@ enum type
     case AUTH_SUPER_USER;
     case CHECK_SUPER_USER_EMAIL_CONFIRM;
 
+    CASE ERROR_REPORT;
+
 
     static function url(type $type): string
     {
@@ -137,6 +139,8 @@ enum type
             self::CREATE_SUPER_USER_EMAIL_CHECK => "/api/user/global/add/email/check",
             self::AUTH_SUPER_USER => "/api/user/global/auth",
             self::CHECK_SUPER_USER_EMAIL_CONFIRM => '/api/user/global/add/get/check',
+
+            self::ERROR_REPORT => '/api/error/report',
 
             default => null,
         };

@@ -2,40 +2,17 @@
 
 namespace Ofey\Logan22\component\error;
 
-use Ofey\Logan22\component\time\time;
-use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\component\sphere\server;
+use Ofey\Logan22\component\sphere\type;
+use Ofey\Logan22\model\user\user;
 
 class error
 {
 
-    public static function initDefault(): void
+    public static function log_exception(\Throwable $exception): void
     {
-
-        set_error_handler( function ($errno, $errstr, $errfile, $errline) {
-            $filename = "error.log";
-            $dateTime = date('Y-m-d H:i:s');
-            $logMessage = "[$dateTime] Error: $errstr in $errfile on line $errline" . PHP_EOL;
-            $logMessage .= "Stack trace:" . PHP_EOL;
-            $backtrace = debug_backtrace();
-            foreach ($backtrace as $i => $trace) {
-                if (isset($trace['file']) && isset($trace['line'])) {
-                    $logMessage .= "#$i {$trace['file']}({$trace['line']}): ";
-                    if (isset($trace['class'])) {
-                        $logMessage .= "{$trace['class']}{$trace['type']}";
-                    }
-                    $logMessage .= "{$trace['function']}(";
-                    if (isset($trace['args']) && count($trace['args']) > 0) {
-                        $args = array_map('gettype', $trace['args']);
-                        $logMessage .= implode(', ', $args);
-                    }
-                    $logMessage .= ")" . PHP_EOL;
-                }
-            }
-            file_put_contents($filename, $logMessage, FILE_APPEND);
-        });
+        self::log_error(E_ERROR, $exception->getMessage(), $exception->getFile(), $exception->getLine());
     }
-
-
 
     public static function log_error($errno, $errstr, $errfile, $errline): void
     {
@@ -49,13 +26,30 @@ class error
             E_DEPRECATED, E_USER_DEPRECATED => 'Deprecated',
             default => 'Unknown error type'
         };
+        try {
+//            server::send(type::ERROR_REPORT, [
+//              'URL'     => $_SERVER['REQUEST_URI'] ?? 'Unknown',
+//              'GET'     => $_GET,
+//              'POST'    => $_POST,
+//              'REFERER' => $_SERVER['HTTP_REFERER'] ?? '',
+//              'SESSION' => $_SESSION,
+//              'USER'    => user::self()->toArray(),
+//              'TYPE'    => $type,
+//              'TRACE'   => debug_backtrace(),
+//            ]);
+        } catch (\Exception $e) {
+            error_log('Failed to log error to the database: ' . $e->getMessage());
+        }
+    }
 
-        $trace = debug_backtrace();
+    private static function get_trace_as_string(): string
+    {
+        $trace       = debug_backtrace();
         $traceString = "";
         foreach ($trace as $entry) {
-            $file = $entry['file'] ?? 'Анонимная функция или внешний вызов';
-            $line = $entry['line'] ?? 'Неизвестно';
-            $function = $entry['function'] ?? 'Неопределенная функция';
+            $file        = $entry['file'] ?? 'Анонимная функция или внешний вызов';
+            $line        = $entry['line'] ?? 'Неизвестно';
+            $function    = $entry['function'] ?? 'Неопределенная функция';
             $traceString .= "File: " . $file . "\n";
             $traceString .= "Line: " . $line . "\n";
             $traceString .= "Function: " . $function . "\n";
@@ -64,30 +58,26 @@ class error
                       return is_object($arg) ? get_class($arg) : (is_array($arg) ? 'Array' : var_export($arg, true));
                   }, $entry['args'])) . "\n";
             }
-            $traceString .= "----------------\n";
+            $data[]       = $entry['object'] ?? null;
+            $traceString .= "\n";
         }
 
-        $user_id = $_SESSION['id'] ?? -1;
+        return $traceString;
+    }
 
-        $request_data = [
-          'URL' => $_SERVER['REQUEST_URI'] ?? 'Unknown',
-          'GET' => $_GET,
-          'POST' => $_POST,
-          'REFERER' => $_SERVER['HTTP_REFERER'] ?? '',
-          'SESSION' => $_SESSION,
-        ];
-
-        $request = json_encode($request_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-        try {
-            sql::run('INSERT INTO `errors` (type, message, request, trace, user_id, date) VALUES (?, ?, ?, ?, ?, ?)', [$type, $errstr, $request, $traceString, $user_id, time::mysql()]);
-        } catch (\Exception $e) {
-            error_log('Failed to log error to the database: ' . $e->getMessage());
+    public static function handle_fatal_error(): void
+    {
+        $error = error_get_last();
+        if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+            self::log_error($error['type'], $error['message'], $error['file'], $error['line']);
         }
     }
 
     public static function init(): void
     {
         set_error_handler([self::class, 'log_error']);
+        set_exception_handler([self::class, 'log_exception']);
+        register_shutdown_function([self::class, 'handle_fatal_error']);
     }
+
 }

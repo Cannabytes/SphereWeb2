@@ -7,9 +7,10 @@ return [
 "PLUGIN_AUTHOR" => "Logan22",
 "PLUGIN_GITHUB" => "",
 "PLUGIN_DESCRIPTION" => "Розыгрыш предметов",
-"PLUGIN_ADMIN_PAGE" => "/fun/wheel",
+"PLUGIN_ADMIN_PAGE" => "/fun/wheel/admin",
 "PLUGIN_ADMIN_PAGE_NAME" => "Розыгрыш",
 "PLUGIN_ADMIN_PAGE_ICON" => "fa fa-users",
+"PLUGIN_COST" => 8,
 
 "PLUGIN_USER_PAGE" => "/fun/wheel",
 "PLUGIN_USER_PAGE_NAME" => "Колесо Удачи",

@@ -16,6 +16,7 @@
         </div>
       </div>
       <div class="card-body">
+
         <div class="table-responsive">
           <table class="table  table-bordered">
             <thead>
@@ -26,23 +27,17 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
 
-              <td><a href="/fun/wheel/admin" class="btn btn-sm btn-light">{{phrase('lucky_wheel')}}</a></td>
+            {% for plugin in show_plugins() %}
+            <tr>
+              <td><a href="{{plugin.PLUGIN_ADMIN_PAGE}}" class="btn btn-sm btn-light">{{plugin.PLUGIN_NAME}}</a></td>
               <td>
-                 {{phrase('lucky_wheel_description')}}
+                 {{plugin.PLUGIN_DESCRIPTION}}
               </td>
-              <td>10$/{{ phrase('month') }}.</td>
+              <td>{% if plugin.PLUGIN_COST %} {{plugin.PLUGIN_COST ?? 0 }}$/{{ phrase('month') }} {% else %}{{ phrase('free') }} {% endif %}</td>
 
             </tr>
-            <tr>
-
-              <td><a href="/admin/launcher" class="btn btn-sm btn-light">{{ phrase('menu_launcher') }}</a></td>
-              <td>
-                 {{phrase('sphere_launcher_description')}}
-              </td>
-              <td>10$/{{ phrase('month') }}.</td>
-            </tr>
+            {% endfor %}
 
             </tbody>
           </table>

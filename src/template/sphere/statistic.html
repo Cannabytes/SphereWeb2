@@ -250,7 +250,7 @@
                             {% for i, castle in statistic_get_castle() %}
                             <tr>
                                 <th scope="row">{{ get_castle(castle.castle_id) }}</th>
-                                <td>{{clan_icon(castle.clan_crest)|raw}} {{castle.clan_name}} <span class="badge bg-light text-dark">{{ castle.clan_level }}</span> </td>
+                                <td>{{clan_icon(castle.clan_crest)|raw}} {{castle.clan_name }} <span class="badge bg-light text-dark">{{ castle.clan_level }}</span> </td>
                                 <td>{{ castle.player_name }}</td>
                                 <td>{{ castle.tax??0 }}%</td>
                                 <td>{{ unitToDate(castle.siege_date) }}</td>

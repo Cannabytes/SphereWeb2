@@ -3,12 +3,12 @@
 namespace Ofey\Logan22\model\item;
 
 use DateTime;
+use JsonSerializable;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\image\client_icon;
-use Ofey\Logan22\component\time\time;
 
-class item
-{
+class item implements JsonSerializable {
+
     private int $id = 0;
 
     private int $enchant = 0;
@@ -295,6 +295,11 @@ class item
             return $this->date->format('Y-m-d H:i:s');
         }
         return $this->date;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
     }
 
 }

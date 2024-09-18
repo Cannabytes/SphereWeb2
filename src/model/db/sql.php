@@ -66,7 +66,6 @@ class sql
                 tpl::display("error/connect.html");
                 exit;
             }
-            \Ofey\Logan22\component\error\error::init();
         }
 
         return self::$db;

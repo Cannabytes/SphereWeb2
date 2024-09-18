@@ -321,7 +321,6 @@ class userModel
 
                 $this->accounts[] = $account;
             }
-
             return $this->accounts;
         }
 

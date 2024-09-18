@@ -2,6 +2,7 @@
 
 namespace Ofey\Logan22\controller\config;
 
+use Ofey\Logan22\model\plugin\plugin;
 use Ofey\Logan22\model\user\user;
 
 class config

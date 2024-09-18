@@ -41,6 +41,7 @@ use Ofey\Logan22\model\log\log;
 use Ofey\Logan22\model\log\logTypes;
 use Ofey\Logan22\model\notification\notification;
 use Ofey\Logan22\model\page\page;
+use Ofey\Logan22\model\plugin\plugin;
 use Ofey\Logan22\model\server\online;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\statistic\statistic as statistic_model;
@@ -89,7 +90,7 @@ class tpl
 
     private static string|bool $isDebugVar = false;
 
-    private static $pluginsAllCustomAndComponents = [];
+    private static array $pluginsAllCustomAndComponents = [];
 
     public static function template_design_route(): ?array
     {
@@ -1215,6 +1216,14 @@ class tpl
             }
         }));
 
+        $twig->addFunction(new TwigFunction("getPluginActive", function ($name = null){
+            return plugin::getPluginActive($name);
+        }));
+
+        $twig->addFunction(new TwigFunction("getPluginSetting", function ($name){
+            return plugin::getSetting($name);
+        }));
+
 
         $twig->addFunction(new TwigFunction("ticket_get_count", function () {
             return ticket::getCount();
@@ -1273,6 +1282,7 @@ class tpl
                 unset($pluginsDir[$key]);
                 continue;
             }
+            $setting['PLUGIN_DIR_NAME'] = $value;
             if ($isCustom) {
                 $setting['isCustom'] = true;
             } else {
@@ -1285,7 +1295,7 @@ class tpl
         return $pluginsAll;
     }
 
-    public static function pluginsAll()
+    public static function pluginsAll(): array
     {
         if (empty(self::$pluginsAllCustomAndComponents)) {
             $pluginsAllCustom                    = self::processPluginsDir("custom/plugins/");
