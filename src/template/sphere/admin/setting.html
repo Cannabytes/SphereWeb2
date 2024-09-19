@@ -613,7 +613,7 @@
                                 <th scope="row">
                                                                                 <span class="avatar avatar-sm">
                                                                                     <img
-                                                                                      src="{{template}}/assets/images/ecommerce/orders/6.jpg"
+                                                                                      src="{{data.item.getIcon()}}"
                                                                                       alt="img">
                                                                                 </span>
                                 </th>
@@ -633,7 +633,8 @@
                         {% endfor %}
                       </div>
 
-
+                      <br>
+Какие предметы добавить
                       <div class="row gy-2 gx-3 align-items-center mb-4">
                         <div class="col-xxl-2 col-xl-3 mb-2">
                           <div class="input-group">
@@ -2485,6 +2486,10 @@
       $row.replaceWith(updatedRow);
     });
 
+    $(document).on('click', '.removeTableItemsBonus', function() {
+      $(this).closest('tr').remove();
+    });
+
     $(document).on('click', '#saveDonateConfig', function () {
       let tableItemsBonus = {}; // Инициализация результирующего объекта
       // Перебор всех вкладок и сбор данных
@@ -2564,13 +2569,14 @@
 
       let icon = '';
       AjaxSend('/admin/client/item/info', 'POST', { 'itemID': itemId }, true).then(function (response) {
-          icon = response.icon;
+          icon = response.item.icon;
           let table = activeTabPane.find('table');
           let newRow = '<tr>' +
             '<th scope="row"><span class="avatar avatar-sm"><img src="' + icon + '" alt="img"></span></th>' +
             '<td>' + itemId + '</td>' +
             '<td>' + count + '</td>' +
             '<td>' + enchant + '</td>' +
+            '<td><a href="javascript:void(0);" class="text-danger fs-14 lh-1 removeTableItemsBonus"><i class="ri-delete-bin-5-line"></i></a></td>' +
             '</tr>';
           table.find('tbody').append(newRow);
         },
