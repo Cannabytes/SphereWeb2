@@ -32,7 +32,7 @@
       <!-- End::header-element -->
       <div class="main-header-center  d-none d-lg-block header-link">
 
-        <select id="select_default_server" class="form-select form-select-sm  bg-success-transparent text-success" aria-label="Default select example">
+        <select class="form-select form-select-sm  bg-success-transparent text-success select_default_server" aria-label="Default select example">
           {% for server in getServerAll() %}
           <option {% if getUser().getServerId()== server.getId() %}selected{% endif %} value="{{server.getId()}}">
            {{server.getName()}}

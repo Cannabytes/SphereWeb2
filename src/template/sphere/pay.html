@@ -147,7 +147,7 @@
                                         <table class="table table-sm text-nowrap table-bordered border-primary">
                                             <thead>
                                             <tr>
-                                                <th colspan="4" scope="col">От {{cost}}</th>
+                                                <th colspan="4" scope="col">От {{cost}} {{ phrase('donate_coin') }}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -157,7 +157,7 @@
                                                     <img class="avatar avatar-sm me-2" src="{{item.item.getIcon()}}">
                                                 </th>
                                                 <td>
-                                                    <span class="">{{item.item.getAddName()}} {{item.item.itemName()}}</span>
+                                                    <span class="">{{item.item.getAddName()}} {{item.item.itemName()}} {% if item.item.getDescription() %} - {{ item.item.getDescription() }} {% endif %}</span>
                                                 </td>
                                                 <td><span class="">{{item.count}}</span></td>
                                             </tr>

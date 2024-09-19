@@ -261,7 +261,7 @@ function ResponseNoticeRegistration(response) {
 }
 
 // При изменении выбора в выпадающем списке
-$('#select_default_server').on('change', function() {
+$('.select_default_server').on('change', function() {
     AjaxSend('/user/change/server', 'POST', {
         id: $(this).val()
     }).then(function (response) {
