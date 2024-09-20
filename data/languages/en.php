@@ -640,7 +640,9 @@ return [
 	'581' => 'Save configuration',
 	'5451' => 'Issued +%s SphereCoin for %s (%s)',
 	'5461' => 'Cumulative bonus for donation: +%s',
-	'exchange' => 'Exchange',
+	'download_link_launcher_panel' => 'Download the launcher and run it.<br>
+The launcher will be installed automatically.<br>
+After running the launcher, you can update.<br><br>',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Access is denied',
 	'account' => 'Account',
@@ -760,6 +762,7 @@ return [
 	'contact_admin' => 'Contact administrator',
 	'contact_project_admin' => 'Contact the project administrator',
 	'continue' => 'Continue',
+	'copied' => 'Copied',
 	'copy_password' => 'Copy password',
 	'count_codes' => 'Number of codes',
 	'count_symbols' => 'Number of symbols',
@@ -855,6 +858,7 @@ Then you need to <a class=\'text-success\' href=\'/admin/launcher/add\'>add info
 	'error_not_page' => 'Page not found',
 	'errors' => 'Errors',
 	'estimated_cost' => 'Estimated cost',
+	'exchange' => 'Exchange',
 	'experimental_update_function' => 'Experimental function for updating SphereWeb software.<br>
 I recommend keeping the software up to date.',
 	'extensions' => 'Extensions',
@@ -972,6 +976,7 @@ You can get the CAPTCHA keys here - <a href=\'https://www.google.com/recaptcha/a
 	'last_message_topic' => 'Last message in topic',
 	'last_post' => 'Last post',
 	'launch_game' => 'Launch game',
+	'Launcher Launcher Panel' => 'Launcher Launcher Panel',
 	'launcher_data' => 'Launcher data',
 	'launcher_download' => 'Download Launcher',
 	'launcher_info' => 'Download the launcher and you no longer have to have a launcher for each server.',
@@ -1133,6 +1138,19 @@ This corresponds to an online boost coefficient of 3.15.<br>
 	'page_type' => 'Page type',
 	'pages' => 'Pages',
 	'palette' => 'Palette',
+	'panel_download_end_start_launcher' => '<p>Download the launcher and you no longer have to have a launcher for each server.</p>
+
+          <p>If you previously downloaded the launcher, then simply launch it.
+            <button id=\'startLauncher\' type=\'button\' class=\'btn btn-sm btn-success me-1 mb-1 \'>
+              Start launcher
+            </button>
+          </p>
+          <p>If you don&#039;t have a launcher, download it.
+            <br>
+            <button type=\'button\' class=\'btn btn-success me-1 mb-1  launcherLink\'>
+              Download Launcher
+            </button>
+          </p>',
 	'param' => 'Parameter',
 	'password' => 'Password',
 	'password_copied_clipboard' => 'Password copied to clipboard',

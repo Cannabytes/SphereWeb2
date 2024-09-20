@@ -252,8 +252,9 @@ class launcher
                 }
             }
         }
-//        var_dump($launcher);exit();
+
         tpl::addVar('launcher', $launcher);
+        tpl::addVar('application', json_encode($launcher['application'], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) );
         tpl::displayPlugin("/launcher/tpl/show.html");
     }
 

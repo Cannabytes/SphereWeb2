@@ -640,7 +640,9 @@ return [
 	'581' => 'Настройки сохранены',
 	'5451' => 'Выдал +%s SphereCoin на %s (%s)',
 	'5461' => 'Накопительный бонус за пожертвование: +%s',
-	'exchange' => 'Обмен',
+	'download_link_launcher_panel' => 'Загрузите лаунчер и запустите его.<br>
+          Лаунчер установится автоматически.<br>
+          После запуска лаунчера можете обновляться.<br><br>',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Доступ запрещен',
 	'account' => 'Аккаунт',
@@ -763,6 +765,7 @@ return [
 	'contact_admin' => 'Связь с администратором',
 	'contact_project_admin' => 'Связь с администратором проекта',
 	'continue' => 'Продолжить',
+	'copied' => 'Скопировано',
 	'copy_password' => 'Копировать пароль',
 	'count_codes' => 'Кол-во кодов',
 	'count_symbols' => 'Кол-во символов',
@@ -858,6 +861,7 @@ return [
 	'error_not_page' => 'Страница не найдена',
 	'errors' => 'Ошибки',
 	'estimated_cost' => 'Предполагаемая стоимость',
+	'exchange' => 'Обмен',
 	'experimental_update_function' => 'Экспериментальная функция для обновления программного обеспечения SphereWeb.<br>Рекомендую иметь актуальный код программного обеспечения.',
 	'extensions' => 'Расширения',
 	'external_access_to_db_must_be_enabled' => 'Для соединения с БД сервера, необходимо чтоб был открыт внешний доступ к БД, для подключения и установления постоянного соединения.<br>
@@ -982,6 +986,7 @@ return [
 	'last_message_topic' => 'Последнее сообщение в теме',
 	'last_post' => 'Последнее сообщение',
 	'launch_game' => 'Запустить игру',
+	'Launcher Launcher Panel' => 'Панель запуска лаунчера',
 	'launcher_data' => 'Лаунчера данные',
 	'launcher_download' => 'Скачать лаунчер',
 	'launcher_info' => 'Скачайте лаунчер и больше Вам не придется иметь под каждый сервер лаунчер.',
@@ -1144,6 +1149,19 @@ return [
 	'page_type' => 'Тип страницы',
 	'pages' => 'Страницы',
 	'palette' => 'Палитра',
+	'panel_download_end_start_launcher' => '<p>Загрузите лаунчер, и вам больше не придется иметь лаунчер для каждого сервера.</p>
+
+<p>Если вы уже загрузили лаунчер, просто запустите его.
+<button id=\'startLauncher\' type=\'button\' class=\'btn btn-sm btn-success me-1 mb-1 \'>
+Запустить лаунчер
+</button>
+</p>
+<p>Если у вас нет лаунчера, загрузите его.
+<br>
+<button type=\'button\' class=\'btn btn-success me-1 mb-1 launcherLink\'>
+Загрузить лаунчер
+</button>
+</p>',
 	'param' => 'Параметр',
 	'password' => 'Пароль',
 	'password_copied_clipboard' => 'Пароль скопирован в буфер обмена',

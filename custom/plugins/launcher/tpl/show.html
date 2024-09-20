@@ -100,7 +100,7 @@
               <button class="nav-link fs-sm text-md-start rounded-0 " id="btabs-vertical-startgame-tab"
                       data-bs-toggle="tab" data-bs-target="#btabs-vertical-startgame" role="tab"
                       aria-controls="btabs-vertical-startgame" aria-selected="false">
-                Время игры
+                {{phrase('game time')}}
               </button>
             </li>
           </ul>
@@ -112,14 +112,11 @@
                 <div class="form-check form-switch">
                   <input class="form-check-input" type="checkbox" value="" id="isClientFilesArchive"
                          name="isClientFilesArchive" checked>
-                  <label class="form-check-label " data-phrase="is_save_loading_file" for="isClientFilesArchive">Сохранять
-                    загруженные файлы</label>
+                  <label class="form-check-label " data-phrase="is_save_loading_file" for="isClientFilesArchive">{{phrase('save download files')}}</label>
                 </div>
               </h4>
               <p class="fs-sm " data-phrase="is_save_loading_file_desc">
-                Если "Да", лаунчер будет сохранять файлы патчей, для того чтоб не загружать их в будущем в случае если
-                когда-то ранее Вы его уже загружали.
-                Данная опция может сократить время загрузки.
+                {{phrase('save download files desc')}}
               </p>
             </div>
             <div class="block-content tab-pane" id="btabs-vertical-profile" role="tabpanel"
@@ -128,7 +125,7 @@
                 <div class="form-check form-switch">
                   <input class="form-check-input" type="checkbox" value="" id="autoStartLauncher"
                          name="autoStartLauncher">
-                  <label class="form-check-label" for="autoStartLauncher" data-phrase="autoload">Автозагрузка</label>
+                  <label class="form-check-label" for="autoStartLauncher" data-phrase="autoload">{{phrase('autoload')}}</label>
                 </div>
 
               </h4>
@@ -220,13 +217,12 @@
                 <div class="form-check form-switch">
                   <input class="form-check-input" type="checkbox" value="" id="gameTitleInfo"
                          name="gameTitleInfo">
-                  <label class="form-check-label" for="gameTitleInfo" >Время работы игры</label>
+                  <label class="form-check-label" for="gameTitleInfo" >{{phrase('time work game')}}</label>
                 </div>
 
               </h4>
               <p class="fs-sm" >
-                Если Вы хотите, мы можем выводить в титуле приложения игры время работы.<br>
-                Эта функция требует запуска лаунчера от прав администратора.
+               {{ phrase('time work game desc')|raw }}
               </p>
             </div>
 
@@ -249,13 +245,13 @@
         <div>
           <button data-bs-toggle="modal" data-bs-target="#modal-start-launcher" type="button"
                   class="btn btn-success btn-wave waves-effect waves-light">
-            Start Launcher
+            {{ phrase('start_launcher') }}
           </button>
         </div>
         <div>
-          <a href="#" data-bs-toggle="modal" data-bs-target="#launcherAbout">Don't have a launcher?</a>
-          <a type="button" class="btn btn-danger me-1 mb-1  launcherLink">
-            Download Launcher
+          <a href="#" data-bs-toggle="modal" data-bs-target="#launcherAbout">{{ phrase('dont have a launcher?') }}</a>
+          <a type="button" class="btn btn-danger me-1 mb-1 launcherLink">
+            {{ phrase(420) }}
           </a>
         </div>
       </div>
@@ -279,28 +275,41 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h6 class="modal-title" id="exampleModalLabel1">Панель запуска лаунчера</h6>
+          <h6 class="modal-title" id="exampleModalLabel1">{{ phrase('Launcher Launcher Panel') }}</h6>
           <button type="button" class="btn-close" data-bs-dismiss="modal"
                   aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>Download the launcher and you no longer have to have a launcher for each server.</p>
+          {{ phrase('panel_download_end_start_launcher')|raw }}        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-outline-light "
+                  data-bs-dismiss="modal">{{ phrase('close') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-          <p>If you previously downloaded the launcher, then simply launch it.
-            <button id="startLauncher" type="button" class="btn btn-sm btn-success me-1 mb-1 ">
-              Start launcher
-            </button>
-          </p>
-          <p>If you don&#039;t have a launcher, download it.
-            <br>
-            <button type="button" class="btn btn-success me-1 mb-1  launcherLink">
-              Download Launcher
-            </button>
-          </p>
+  <div class="modal fade" id="launcherAbout" tabindex="-1"
+       aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title"  >{{ phrase('Launcher Launcher Panel') }}</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {{ phrase('download_link_launcher_panel')|raw }}
+          <div class="col-xl-12 text-center">
+            <button class="btn btn-sm btn-success-light" id="copyLinkDownloadLauncher"><i class="ri-file-copy-2-fill"></i>{{ phrase(314) }}</button>
+            <input type="text" class="form-control form-control-light" id="inputlink" placeholder="" value="">
+          </div>
+
         </div>
         <div class="modal-footer justify-content-center">
           <button type="button" class="btn btn-outline-light "
-                  data-bs-dismiss="modal">Close
+                  data-bs-dismiss="modal">{{ phrase('close') }}
           </button>
         </div>
       </div>
@@ -322,7 +331,7 @@
                 <div role="button"
                      class="input-group-text cursor-pointer" data-bs-effect="effect-flip-vertical"
                      data-bs-toggle="modal" href="#settingsLauncher">
-                  <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Настройки лаунчера">
+                  <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('launcher settings')}}">
                     <i class="fe fe-settings"></i>
                   </div>
                 </div>
@@ -330,17 +339,17 @@
                 <div role="button"
                      class="input-group-text cursor-pointer" data-bs-effect="effect-flip-vertical"
                      data-bs-toggle="modal" href="#selectDirClient">
-                  <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Указать путь к игре">
+                  <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('set path to game')}}">
                     <i class="fe fe-folder"></i>
                   </div>
                 </div>
 
 
-                <select class="form-select" id="selectClient" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Месторасположение игровой папки. В неё будет загружаться патч или обновления"></select>
+                <select class="form-select" id="selectClient" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('location folder desc')}}"></select>
 
                 <button type="button" class="btn btn-success js-click-ripple-enabled" data-phrase="start_update"
                         data-toggle="click-ripple" id="startUpdateGame"
-                        style="overflow: hidden; position: relative; z-index: 1;">Start Update
+                        style="overflow: hidden; position: relative; z-index: 1;">{{ phrase(474) }}
                 </button>
               </div>
             </div>
@@ -371,12 +380,12 @@
                   <div class="d-flex mt-0">
 
                     <a class="btn btn-sm btn-teal-light btn-wave waves-effect waves-light">
-                      <i class="ri ri-folder-2-fill"></i> Создать папку
+                      <i class="ri ri-folder-2-fill"></i> {{ phrase('create folder') }}
                     </a>
 
 
                     <div class="ms-auto">
-                      <button data-bs-dismiss="modal" class="btn btn-sm btn-success saveDirClient ">Применить</button>
+                      <button data-bs-dismiss="modal" class="btn btn-sm btn-success saveDirClient ">{{ phrase('apply') }}</button>
                     </div>
 
                   </div>
@@ -418,7 +427,7 @@
 
   <footer class="footer card custom-card mt-auto py-3 text-center">
     <div class="container">
-                <span class="">Вы используете <span class="badge bg-dark text-white">Sphere Launcher</span> версию <span
+                <span class="">{{phrase('launcher_version')|raw}} <span
                   class="badge bg-dark text-white launcherVersion">?</span>
                 </span>
     </div>
@@ -434,16 +443,26 @@
 
   $(document).ready(function () {
     var encodedLink = "aHR0cHM6Ly9naXRodWIuY29tL0Nhbm5hYnl0ZXMvY2FubmFieXRlcy5naXRodWIuaW8vcmF3L21haW4vdXBkYXRlci9TcGhlcmUgTGF1bmNoZXIuZXhl";
+    var decodedLink = atob(encodedLink);
+    $("#inputlink").val(decodedLink)
+
     $(".launcherLink").on("click", function () {
-      var decodedLink = atob(encodedLink);
       window.location.href = decodedLink;
     });
   });
 
+  $(document).on("click", "#copyLinkDownloadLauncher", function () {
+    var inputElement = $('#inputlink').val();
+    navigator.clipboard.writeText(inputElement).then(function() {
+      noticeSuccess("{{ phrase('copied') }}");
+    });
+  })
+
   var tokenApi = `{{launcher.tokenApi}}`;
   var serverID = {{launcher.server}};
   var chronicle = `{{chronicle}}`;
-  var application = JSON.parse(`[{"l2exe":"\/system\/l2.exe","args":"","background":"custom\/plugins\/launcher\/tpl\/img\/l2_button.jpg","name":"Start Play"}]`);
+  var button_start = `{{ phrase('launch_game') }}`;
+  var application = JSON.parse(`{{application|raw}}`);
   var userLang = `{{getUser().getLang()}}`;
 
 
@@ -479,7 +498,7 @@
           },
           total: {
             show: true,
-            label: "Ожидание",
+            label: "{{phrase('expectation')}}",
             formatter: function (w) {
               // Возвращаем значение totalLoaded для отображения
               return '';

@@ -79,14 +79,13 @@ function showButtonStartGame() {
   }
   if (Array.isArray(application)) {
     application.forEach((element) => {
-      const name = element.name ?? "None";
       const desc = element.description ? " - " + element.description : "";
       const htmlButton = `<div class="startL2 col-sm-6 col-xl-${col}" data-exe="${element.l2exe}" data-args="${element.args}">
               <div style="background-image: url('/${element.background}');" class="alert alert-img alert-info alert-dismissible fase show flex-wrap" role="button">
                 <div class="avatar avatar-lg me-3">
                   <img src="/uploads/images/l2.png" alt="img">
                 </div>
-                <div class="  btn btn-dark btn-wave text-white waves-effect waves-light ">${name}  ${desc}</div>
+                <div class="  btn btn-dark btn-wave text-white waves-effect waves-light ">${button_start}  ${desc}</div>
               </div>
             </div>`
       $("#buttonStartGame").append(htmlButton)
