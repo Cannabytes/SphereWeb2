@@ -6,6 +6,7 @@ use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\item\item;
 use Ofey\Logan22\model\plugin\plugin;
@@ -232,6 +233,7 @@ class lucera_traders
 
     public function setting()
     {
+        validation::user_protection("admin");
         tpl::displayPlugin("lucera_traders/tpl/setting.html");
     }
 
