@@ -1,0 +1,94 @@
+{% extends 'struct.html' %}
+
+{% block title %}Редактор предметов{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="main-mail-container gap-4 mb-5 d-lg-flex">
+    <div class="mail-navigation">
+      <div class="d-grid align-items-top p-3 border-bottom">
+
+        <div class="row">
+
+          <div class="col-md-2 mb-1">
+            <a href="/admin/modify/item" class="avatar border text-muted me-1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
+            </a>
+          </div>
+
+          <div class="col-md-10 mb-1">
+            <a href="/admin/modify/item/get/{{chronicle}}/add" type="button" class="btn btn-primary d-flex align-items-center justify-content-center" >
+              <i class="ri-add-circle-line fs-16 align-middle me-1"></i>Добавить предмет
+            </a>
+          </div>
+
+        </div>
+
+
+      </div>
+      <div>
+        <ul class="list-unstyled mail-main-nav" id="mail-main-nav">
+          <li class="px-0 pt-0 mail-nav-heading">
+            <span class="fs-11 text-muted op-7 fw-semibold">Версия игры</span>
+          </li>
+
+          {% for chronicleName in chronicleList %}
+          <li {% if chronicle == chronicleName %}class="active"{% endif %}>
+            <a href="/admin/modify/item/get/{{chronicleName}}">
+              <div class="d-flex align-items-center">
+                                            <span class="me-2 lh-1">
+                                                <i class="ri-inbox-archive-line align-middle fs-14"></i>
+                                            </span>
+                <span class="flex-fill text-nowrap">{{chronicleName}}</span>
+               </div>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="total-mails mt-5 mt-lg-0">
+      <div class="p-3 d-flex align-items-center border-bottom">
+        Кастомные предметы | {{chronicle}}
+      </div>
+      <div class="mail-messages" id="mail-messages">
+        <ul class="list-unstyled mb-0">
+
+          {% for item in items %}
+          {% set itemInfo = get_item_info(item.id) %}
+          <li>
+            <div class="d-flex align-items-top">
+              <div class="me-1 mt-1">
+                   <span class="avatar">
+                      <img src="{{itemInfo.getIcon()}}" alt="" data-bs-toggle="tooltip" data-bs-placement="left"
+                           data-bs-title="{{itemInfo.getItemName()}}">
+                   </span>
+              </div>
+
+              <div class="flex-fill ms-2 subject-container">
+                <a aria-label="anchor" href="/admin/modify/item/edit/{{chronicle}}/id/{{itemInfo.getItemId()}}" class="stretched-link"></a>
+                <p class="mb-0  main-mail-subject">
+                  <span class="d-block mb-0 fw-semibold fs-14">ID: {{itemInfo.getItemId()}} | NAME: {{itemInfo.getItemName()}} | ADD NAME : {{itemInfo.getAddName()}} | GRADE: {{itemInfo.getCrystalType()}} | TYPE: {{itemInfo.getType()}} </span>
+                  <span class="fs-12 text-muted text-truncate">
+                  <span class="badge bg-danger rounded-1">{{grade_img(itemInfo.getItemType())}}</span>
+                   Description: {{itemInfo.getDescription()}}
+                  </span>
+                </p>
+              </div>
+
+
+            </div>
+          </li>
+          {% endfor %}
+
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

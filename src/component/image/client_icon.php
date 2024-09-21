@@ -104,7 +104,7 @@ class client_icon {
         return file_exists(fileSys::get_dir("/uploads/images/{$object}/" . $fileIcon . ".webp")) && $fileIcon != null ? fileSys::localdir("/uploads/images/{$object}/" . $fileIcon . ".webp") : fileSys::localdir("/uploads/images/icon/NOIMAGE.webp");
     }
 
-    public static function includeFileByRange($number, $object = "items"): string|false {
+    public static function includeFileByRange($itemId, $object = "items"): string|false {
         if($object == "items"){
             $object = "items/highFive";
             if(server::getServer()){
@@ -114,17 +114,18 @@ class client_icon {
                 }
             }
         }
-        $range = floor(($number ) / 100) * 100;
+        $range = floor(($itemId ) / 100) * 100;
         if ($range < 0) {
             $range = 0;
         }
-        $file = "{$range}-" . ($range + 99) . ".php";
 
         //If custom item is found
-        $custom_file = fileSys::get_dir("/custom/{$object}/{$file}");
+        $custom_file = fileSys::get_dir("/custom/{$object}/{$itemId}.php");
         if(file_exists($custom_file)){
             return $custom_file;
         }
+
+        $file = "{$range}-" . ($range + 99) . ".php";
         $file = fileSys::get_dir("/src/component/image/icon/{$object}/{$file}");
         if (file_exists($file)) {
             return $file;

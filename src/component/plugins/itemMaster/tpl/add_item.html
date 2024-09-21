@@ -1,0 +1,179 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="col-xl-12">
+    <div class="card custom-card">
+      <div class="card-header justify-content-between">
+        <div class="card-title">
+          <a href="/admin/modify/item/get/{{chronicle}}" class="avatar border text-muted me-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
+          </a>
+          Добавление нового предмета на хроники {{chronicle}}
+        </div>
+      </div>
+      <div class="card-body">
+        <form method="post" action="/admin/modify/item/new/save" class="row g-3 mt-0">
+          <input name="chronicle" type="hidden" value="{{chronicle}}">
+          <div class="col-md-2">
+            <label for="itemId" class="form-label">ID предмета</label>
+            <input name="itemId" id="itemId" type="number" class="form-control" placeholder="ID item"
+                   aria-label="ID item">
+          </div>
+          <div class="col-md-2">
+            <label for="inputState" class="form-label">Тип предмета</label>
+            <select name="type" id="inputState" class="form-select form-select-lg">
+              <option value="etcitem" >etcitem</option>
+              <option value="armor" >armor</option>
+              <option value="weapon" >weapon</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="grade" class="form-label">Грейд</label>
+            <select name="grade" id="grade" class="form-select form-select-lg">
+              <option value="none" >No-Grade</option>
+              <option value="d" >D</option>
+              <option value="c" >C</option>
+              <option value="b" >B</option>
+              <option value="a" >A</option>
+              <option value="s" >S</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="itemname" class="form-label">Название</label>
+            <input name="itemname" type="text" class="form-control" id="itemname" placeholder="Arcana Mace">
+          </div>
+          <div class="col-md-3">
+            <label for="itemaddname" class="form-label">Доп. название</label>
+            <input name="itemaddname" type="text" class="form-control" id="itemaddname" placeholder="Acumen">
+          </div>
+          <div class="col-md-6">
+            <label for="desc" class="form-label">Описание</label>
+            <input name="desc" type="text" class="form-control" id="desc">
+          </div>
+          <div class="col-12">
+            <label for="icon" class="form-label">Иконка</label>
+            - Изображение должно быть в формате .webp
+            <input id="icon" type="file" class="single-fileupload1 itemicon" name="filepond" data-type="favicon"
+                   data-max-file-size="1MB" data-max-files="1">
+          </div>
+          <div class="col-12">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="stack">
+              <label class="form-check-label" for="stack">
+                Предмет стаковый (is_stackable)
+              </label>
+            </div>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block css %}
+
+<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
+
+<link rel="stylesheet" href="{{template}}/template/sphere//assets/libs/dropzone/dropzone.css">
+{% endblock %}
+
+{% block js %}
+
+<script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+<link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+
+<script>
+  // Register the plugins
+  FilePond.registerPlugin(
+    FilePondPluginImagePreview,
+  );
+
+  // Set up FilePond instance
+  document.querySelectorAll('.itemicon').forEach(inputElement => {
+    const pond = FilePond.create(inputElement, {
+      labelIdle: `Перетащите изображение или <span class="filepond--label-action">Выберите</span>`,
+      acceptedFileTypes: ['image/webp'],
+      allowFileSizeValidation: true,
+      maxFileSize: '3MB',
+      imagePreviewHeight: 200,
+      imageCropAspectRatio: '1:1',
+      imageResizeTargetWidth: 400,
+      imageResizeTargetHeight: 400,
+      allowPaste: false,
+      stylePanelLayout: 'compact',
+      styleLoadIndicatorPosition: 'center bottom',
+      styleButtonRemoveItemPosition: 'center bottom',
+    });
+
+
+
+    pond.setOptions({
+      server: {
+        process: (fieldName, file, metadata, load, error, progress, abort) => {
+          if ($("#itemId").val() === ""){
+            noticeError("Введите ID предмета");
+            abort();
+            return;
+          }
+          // Создаем новый объект FormData
+          const formData = new FormData();
+          formData.append(fieldName, file, file.name);
+          // Добавляем тип файла к formData
+          formData.append('itemId', $("#itemId").val());
+
+          // Используем Fetch API для отправки файла
+          const request = new XMLHttpRequest();
+          request.open('POST', '/admin/modify/item/load/icon'); // Обновленный URL
+
+          // Событие прогресса
+          request.upload.addEventListener('progress', (e) => {
+            progress(e.lengthComputable, e.loaded, e.total);
+          });
+
+          // Событие загрузки
+          request.onload = () => {
+            if (request.status >= 200 && request.status < 300) {
+              const response = JSON.parse(request.responseText);
+              if (response.status === 'success') {
+                load(response.path);
+                window.location.href = "/admin/modify/item/get/{{chronicle}}"
+              } else {
+                noticeError(response.message || 'Ошибка загрузки')
+              }
+            } else {
+              error('Ошибка загрузки');
+            }
+          };
+
+          // Событие ошибки
+          request.onerror = () => {
+            error('Ошибка загрузки');
+          };
+
+          // Отправляем запрос
+          request.send(formData);
+
+          // Возвращаем функцию прерывания
+          return {
+            abort: () => {
+              request.abort();
+              abort();
+            },
+          };
+        },
+      },
+    });
+  });
+</script>
+
+
+{% endblock %}
