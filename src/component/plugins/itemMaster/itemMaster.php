@@ -164,7 +164,7 @@ class itemMaster
           ],
         ];
 
-        if ($grade !== "" && $grade !== "ng") {
+        if ($grade !== "" && $grade !== "ng" && $grade !== "none") {
             $data[$itemId]['crystal_type'] = $grade;
         }
 

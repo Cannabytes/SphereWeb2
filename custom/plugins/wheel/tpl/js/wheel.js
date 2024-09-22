@@ -124,13 +124,22 @@ function wheelItemsBuilder(items) {
     let crystal_type;
     for (let i = 0; i < items.length; i++) {
         let crystal_type = '';
-        if (items[i].crystal_type) {
+
+        if (items[i].crystal_type && items[i].crystal_type !== 'none') {
+            console.log(items[i].crystal_type);
             crystal_type = '[' + items[i].crystal_type.toUpperCase() + ']';
         }
 
+
         let enchant = items[i].enchant > 0 ? '+' + items[i].enchant : '';
         let description = items[i].description ? '<br>' + items[i].description : '';
+
         let count = items[i].count > 1 ? 'x' + items[i].count : '';
+
+        if (items[i].count_type===2){
+           count = '[ ' + items[i].count_min + ' - ' + items[i].count_max + ' ]';
+        }
+
         html += `<div class="wheel__el">
                     <img
                         src="${items[i].icon}"
