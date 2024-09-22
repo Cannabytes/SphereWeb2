@@ -461,7 +461,6 @@ function setUpdateClient(loadupdate) {
         isUpdateClient = false;
         $("#startUpdateGame").text(getPhrase("start_update"))
     }
-
     for (let index = 0; index <= countStream-1; index++) {
         $("#download_status_filename_size_" + (index)).text("0 MB")
         $("#download_status_filename_" + (index)).attr('data-original-title', formatBytes(0));
