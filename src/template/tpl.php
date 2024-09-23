@@ -951,7 +951,7 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('news_poster', function ($image, $full = false) {
-            $uploadsPath = "/uploads/images/news/";
+            $uploadsPath = "uploads/images/news/";
             if ( ! $full) {
                 $image = "thumb_" . $image;
             }
