@@ -19,7 +19,8 @@ class httpReferrerPlugin
 
         foreach ($getReferrers as &$getReferrer) {
             $getReferrer['count'] = count($getReferrer['count']);
-         }
+            $getReferrer['user_count']    = sql::getRow("SELECT COUNT(*) AS count FROM `user_variables` WHERE `val` = ?", [$getReferrer['referer']])['count'] ?: 0;
+        }
 
         $getViews     = $this->getView();
         foreach ($getReferrers as &$getReferrer) {
