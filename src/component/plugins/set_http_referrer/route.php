@@ -44,7 +44,7 @@ $routes = [
     "pattern" => "/l2oops",
     "file"    => "httpReferrerPlugin.php",
     "call"    => function () {
-        $_SESSION['referer'] = "l2oops";
+        $_SESSION['HTTP_REFERER'] = "l2oops";
         \Ofey\Logan22\component\redirect::location("/");
     },
   ],
@@ -53,7 +53,7 @@ $routes = [
     "pattern" => "/l2pick",
     "file"    => "httpReferrerPlugin.php",
     "call"    => function () {
-        $_SESSION['referer'] = "l2pick";
+        $_SESSION['HTTP_REFERER'] = "l2pick";
         \Ofey\Logan22\component\redirect::location("/");
     },
   ],
@@ -62,16 +62,7 @@ $routes = [
     "pattern" => "/l2op",
     "file"    => "httpReferrerPlugin.php",
     "call"    => function () {
-        $_SESSION['referer'] = "l2op";
-        \Ofey\Logan22\component\redirect::location("/");
-    },
-  ],
-  [
-    "method"  => "GET",
-    "pattern" => "/l2hop",
-    "file"    => "httpReferrerPlugin.php",
-    "call"    => function () {
-        $_SESSION['referer'] = "l2op";
+        $_SESSION['HTTP_REFERER'] = "l2op";
         \Ofey\Logan22\component\redirect::location("/");
     },
   ],
@@ -80,49 +71,10 @@ $routes = [
     "pattern" => "/l2hub",
     "file"    => "httpReferrerPlugin.php",
     "call"    => function () {
-        $_SESSION['referer'] = "l2op";
+        $_SESSION['HTTP_REFERER'] = "l2hub";
         \Ofey\Logan22\component\redirect::location("/");
     },
   ],
-
-  [
-    "method"  => "GET",
-    "pattern" => "/l2gop",
-    "file"    => "httpReferrerPlugin.php",
-    "call"    => function () {
-        $_SESSION['referer'] = "l2op";
-        \Ofey\Logan22\component\redirect::location("/");
-    },
-  ],
-  [
-    "method"  => "GET",
-    "pattern" => "/l2ask",
-    "file"    => "httpReferrerPlugin.php",
-    "call"    => function () {
-        $_SESSION['referer'] = "l2op";
-        \Ofey\Logan22\component\redirect::location("/");
-    },
-  ],
-  [
-    "method"  => "GET",
-    "pattern" => "/l2top",
-    "file"    => "httpReferrerPlugin.php",
-    "call"    => function () {
-        $_SESSION['referer'] = "l2op";
-        \Ofey\Logan22\component\redirect::location("/");
-    },
-  ],
-
-  [
-    "method"  => "GET",
-    "pattern" => "/l2noo",
-    "file"    => "httpReferrerPlugin.php",
-    "call"    => function () {
-        $_SESSION['referer'] = "l2op";
-        \Ofey\Logan22\component\redirect::location("/");
-    },
-  ],
-
 
 
 

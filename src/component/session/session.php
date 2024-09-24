@@ -26,19 +26,20 @@ class session
 
         session_start();
 
-        if (!file_exists(fileSys::get_dir('/data/db.php'))) {
+        if ( ! file_exists(fileSys::get_dir('/data/db.php'))) {
             return;
         }
         if ( ! isset($_SESSION['id'])) {
-            if ( ! isset($_SESSION['HTTP_REFERER'])) {
+            if($_SESSION['HTTP_REFERER_SET']){
+                return;
+            }
+            if (isset($_SESSION['HTTP_REFERER'])) {
+                $_SESSION['HTTP_REFERER'] = self::domainViewsCounter($_SESSION['HTTP_REFERER']);
+                $_SESSION['HTTP_REFERER_SET'] = true;
+            } else {
                 if (isset($_SERVER['HTTP_REFERER'])) {
                     $_SESSION['HTTP_REFERER'] = self::domainViewsCounter($_SERVER['HTTP_REFERER']);
-                } else {
-                    $_SESSION['HTTP_REFERER'] = false;
-                }
-            } elseif ($_SESSION['HTTP_REFERER'] === false) {
-                if (isset($_SERVER['HTTP_REFERER'])) {
-                    $_SESSION['HTTP_REFERER'] = self::domainViewsCounter($_SERVER['HTTP_REFERER']);
+                    $_SESSION['HTTP_REFERER_SET'] = true;
                 }
             }
         }
@@ -46,14 +47,12 @@ class session
 
     public static function domainViewsCounter($url)
     {
-
         if (filter_var($url, FILTER_VALIDATE_URL)) {
             $parsedUrl = parse_url($url);
-            $host = $parsedUrl['host'];
-        }else{
+            $host      = $parsedUrl['host'];
+        } else {
             $host = $url;
         }
-
         $date = date("Y-m-d");
         $data = sql::getRow("SELECT `data` FROM server_cache WHERE `type` = 'HTTP_REFERER_VIEWS';");
         if ($data) {

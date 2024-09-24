@@ -13,7 +13,14 @@ class httpReferrerPlugin
     public function show()
     {
         validation::user_protection("admin");
-        $getReferrers = $this->getReferrers();
+
+        $row = sql::getRow("SELECT `data` FROM server_cache WHERE `type` = 'HTTP_REFERER_VIEWS';");
+        $getReferrers = json_decode($row["data"], true);
+
+        foreach ($getReferrers as &$getReferrer) {
+            $getReferrer['count'] = count($getReferrer['count']);
+         }
+
         $getViews     = $this->getView();
         foreach ($getReferrers as &$getReferrer) {
             foreach ($getViews as $getView) {
@@ -27,38 +34,6 @@ class httpReferrerPlugin
           "getReferrers" => $getReferrers,
         ]);
         tpl::displayPlugin("/set_http_referrer/tpl/httpreferrer.html");
-    }
-
-    function getReferrers(): array
-    {
-        return sql::getRows(
-          "WITH referer_counts AS (
-    SELECT 
-        val AS referer, 
-        COUNT(DISTINCT user_id) AS user_count
-    FROM user_variables
-    WHERE var = 'HTTP_REFERER'
-    GROUP BY val
-),
-
-donation_sums AS (
-    SELECT 
-        uvar.val AS referer, 
-        SUM(donate.point) AS total_donations
-    FROM donate_history_pay donate
-    INNER JOIN user_variables uvar ON donate.user_id = uvar.user_id
-    WHERE uvar.var = 'HTTP_REFERER' AND donate.sphere = 0
-    GROUP BY uvar.val
-)
-
-SELECT 
-    referer_counts.referer,
-    referer_counts.user_count,
-    COALESCE(donation_sums.total_donations, 0) AS total_donations
-FROM referer_counts
-LEFT JOIN donation_sums ON referer_counts.referer = donation_sums.referer
-ORDER BY total_donations DESC;"
-        );
     }
 
     public function getView()
