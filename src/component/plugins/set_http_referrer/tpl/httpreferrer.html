@@ -30,7 +30,7 @@
                                 <td><a href="/admin/statistic/http/referral/{{ referrer.referer }}">{{ referrer.referer }}</a></td>
                                 <td>{{ referrer.views }}</td>
                                 <td>{{ referrer.user_count }}</td>
-                                <td>{{ referrer.total_donations }}</td>
+                                <td>{{ referrer.total_donations ?? "-" }}</td>
                             </tr>
                             {% endfor %}
 
