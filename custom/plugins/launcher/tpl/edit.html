@@ -69,6 +69,15 @@
                     <input value="{{launcherInfo.data.tokenApi}}" type="text" class="form-control" id="tokenApi"
                            name="tokenApi" placeholder="Key">
                 </div>
+
+                <div class="mb-4">
+                    <label class="form-label" for="server">Дополнительное описание на странице лаунчера (необязательно)</label>
+                    <div class="fs-sm fw-medium text-muted mb-0">
+                     Вы можете указать запасные ссылки на патч, клиент, лаунчер или любую другую информацию. Разрешены HTML теги.
+                    </div>
+                    <textarea class="form-control" id="notice" name="notice" placeholder="">{{launcherInfo.data.notice}}</textarea>
+                </div>
+
             </div>
         </div>
     </div>
@@ -144,6 +153,6 @@
             $(this).val(trimmedValue);
         });
 </script>
-<script type="application/javascript" src="{{template_plugin}}/tpl/js/lang.js?v={{PLUGIN['PLUGIN_VERSION']}}"></script>
+<script type="application/javascript" src="{{template_plugin}}/tpl/jsl/lang.js?v={{PLUGIN['PLUGIN_VERSION']}}"></script>
 
 {% endblock %}

@@ -163,6 +163,11 @@ class launcher
 
         $this->l2application($data);
 
+        $notice = $_POST['notice'] ?? null;
+        if ($notice) {
+            $data['notice'] = $notice;
+        }
+
         $_json = json_encode($data, JSON_UNESCAPED_UNICODE);
         sql::run("UPDATE `server_data` SET `val` = ? WHERE `id` = ?", [$_json, $id]);
 

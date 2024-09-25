@@ -26,8 +26,6 @@ class swbalance
             board::error("Указанная сумма должна быть числом");
         }
 
-
-
         $donate = server::send(type::SPHERE_DONATE, [
             'amount' => $amount,
         ])->show()->getResponse();

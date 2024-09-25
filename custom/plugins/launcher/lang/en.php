@@ -11,4 +11,7 @@ return [
   'time work game' => 'Game running time',
   'time work game desc' => 'If you want, we can display the game\'s running time in the title of the application.<br>This function requires the launcher to be run with administrator rights.',
   'expectation' => 'Expectation',
+  'notice_s' => 'Additional description on the launcher page (optional)',
+  'notice_sd' => 'You can specify backup links to the patch, client, launcher or any other information. HTML tags are allowed.',
+
   ];

@@ -13,7 +13,6 @@
     <div class="card-body">
         <div class="row">
             <div class="col-lg-6 col-xl-6">
-                <!-- Form Labels on top - Default Style -->
                 <div class="mb-4">
                     <label class="form-label" for="server">{{ phrase('server') }}<label class="text-danger">*</label></label>
                     <select class="form-select" id="server" name="server">
@@ -67,6 +66,15 @@
                 </div>
                 <input type="text" class="form-control" id="tokenApi" name="tokenApi" placeholder="Key">
             </div>
+
+            <div class="mb-4">
+                <label class="form-label" for="server">{{ phrase('notice_s') }}</label>
+                <div class="fs-sm fw-medium text-muted mb-0">
+                    {{ phrase('notice_sd') }}
+                </div>
+                <textarea class="form-control" id="notice" name="notice" placeholder=""></textarea>
+            </div>
+
         </div>
     </div>
 </div>

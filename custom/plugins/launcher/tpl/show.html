@@ -411,6 +411,19 @@
     </div>
 
     <div class="col-xl-3">
+
+      {% if launcher.notice %}
+      <div class="col-xl-12">
+        <div class="card custom-card">
+          <div class="card-body">
+            <blockquote class="blockquote mb-0 text-center">
+              <h6 class="">{{launcher.notice}}</h6>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
       <div class="card custom-card">
 
         <div class="card-body">
@@ -460,7 +473,7 @@
 
   var tokenApi = `{{launcher.tokenApi}}`;
   var serverID = {{launcher.server}};
-  var chronicle = `{{chronicle}}`;
+  var chronicle = `{{launcher.chronicle}}`;
   var button_start = `{{ phrase('launch_game') }}`;
   var application = JSON.parse(`{{application|raw}}`);
   var userLang = `{{getUser().getLang()}}`;
