@@ -640,9 +640,6 @@ return [
 	'581' => 'Save configuration',
 	'5451' => 'Issued +%s SphereCoin for %s (%s)',
 	'5461' => 'Cumulative bonus for donation: +%s',
-	'download_link_launcher_panel' => 'Download the launcher and run it.<br>
-The launcher will be installed automatically.<br>
-After running the launcher, you can update.<br><br>',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Access is denied',
 	'account' => 'Account',
@@ -654,7 +651,7 @@ After running the launcher, you can update.<br><br>',
 	'activated_until' => 'Activated: until',
 	'active' => 'Active',
 	'add_category' => 'Add category',
-	'add_channel_link' => 'Add a link to your channel!',
+	'add_channel_link' => 'Add a link to your stream!',
 	'add_donate_coins' => 'How many Donate Coins to add to the balance?',
 	'add_field' => 'Add field',
 	'add_item' => 'Add item',
@@ -688,7 +685,7 @@ After running the launcher, you can update.<br><br>',
 	'authorization' => 'Authorization',
 	'auto update' => 'Auto update',
 	'auto_approval_of_new_streams' => 'Auto-approval of new streams',
-	'auto_check_of_new_streams' => 'Auto-check of new streams',
+	'until_when_to_stream' => 'Until when to stream',
 	'auto_file_desc' => 'After registration, you will be able to create a global account that can be used on all sites running on the SphereWeb platform. To do this, you need to use a file for automatic registration and authorization. After successful authorization, go to settings and click on the \'Download authorization file\' button. This file will be sent to your email.',
 	'auto_login_launcher_feature' => 'This feature is necessary in case you use a launcher with automatic login to a character without in-game authorization. For example, SphereLauncher has the ability to perform automatic login (if the client allows it).',
 	'auto_update_time' => 'Auto-update time',
@@ -824,6 +821,9 @@ To create a launcher, you need to have the patch itself, go to the <a class=\'te
 Upload the patch archives to your hosting or FTP.<br>
 Next, you need to <a class=\'text-success\' href=\'/admin/launcher/create/token\'>create a token</a> with information about the patch location. Copy the token, you will need it on the next page.<br>
 Then you need to <a class=\'text-success\' href=\'/admin/launcher/add\'>add information about the launcher</a>.',
+	'download_link_launcher_panel' => 'Download the launcher and run it.<br>
+The launcher will be installed automatically.<br>
+After running the launcher, you can update.<br><br>',
 	'drag and drop the authorization file' => 'Drag and drop the authorization file',
 	'during_all' => 'During all this time you have purchased',
 	'edit' => 'Edit',

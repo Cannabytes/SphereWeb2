@@ -3,11 +3,7 @@
 namespace Ofey\Logan22\controller\admin;
 
 use Ofey\Logan22\component\alert\board;
-use Ofey\Logan22\component\sphere\server;
-use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\model\db\sql;
-use Ofey\Logan22\model\stream\streamcheck;
-use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
 class stream
@@ -27,8 +23,6 @@ class stream
             board::error("Нет данных о стриме");
         }
         sql::run("UPDATE `streams` SET `confirmed` = 1 WHERE `id` = ?", [$streamId]);
-        streamcheck::userUpdateStream($streamData['user_id']);
-
         board::success("Стрим одобрен");
     }
 
@@ -43,15 +37,6 @@ class stream
         }
         tpl::addVar(['streams' => $streams]);
         tpl::display("/admin/stream.html");
-    }
-
-    // Разрешение/Запрет на авто одобрение стримов
-
-    static function autoApproval(): void
-    {
-        $userId   = $_POST['userId'];
-        $approval = filter_var($_POST['approval'], FILTER_VALIDATE_INT) ? 1 : 0;
-        user::getUserId($userId)->addVar("auto_approval_stream", $approval, 0);
     }
 
     //Установка автопроверки

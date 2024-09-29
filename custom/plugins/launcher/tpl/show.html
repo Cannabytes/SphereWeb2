@@ -347,6 +347,7 @@
 
                 <select class="form-select" id="selectClient" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('location folder desc')}}"></select>
 
+
                 <button type="button" class="btn btn-success js-click-ripple-enabled"
                         data-toggle="click-ripple" id="startUpdateGame"
                         style="overflow: hidden; position: relative; z-index: 1;">{{ phrase(474) }}
@@ -379,10 +380,16 @@
                 <div class="card-footer">
                   <div class="d-flex mt-0">
 
-                    <a class="btn btn-sm btn-teal-light btn-wave waves-effect waves-light">
+                    <a class="btn btn-sm btn-teal-light btn-wave waves-effect waves-light" id="showInputFolder">
                       <i class="ri ri-folder-2-fill"></i> {{ phrase('create folder') }}
                     </a>
 
+                    <div id="panelCreateDir" class="ps-3 flex-column d-none">
+                      <div class="input-group">
+                        <input type="text" class="form-control form-control-sm" id="input">
+                        <button aria-label="button" type="button" class="btn btn-sm btn-primary" id="button-addon2">{{ phrase('apply') }}</button>
+                      </div>
+                    </div>
 
                     <div class="ms-auto">
                       <button data-bs-dismiss="modal" class="btn btn-sm btn-success saveDirClient ">{{ phrase('apply') }}</button>
@@ -632,6 +639,13 @@
     });
   }
 
+
+</script>
+
+<script>
+  $("#showInputFolder").click(function () {
+    $("#panelCreateDir").toggleClass("d-none");
+  });
 
 </script>
 {% endblock %}

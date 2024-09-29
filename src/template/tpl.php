@@ -9,11 +9,8 @@ use InvalidArgumentException;
 use Ofey\Logan22\component\account\generation;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\alert\logs;
-use Ofey\Logan22\component\base\base;
 use Ofey\Logan22\component\captcha\google;
-use Ofey\Logan22\component\chronicle\client;
 use Ofey\Logan22\component\chronicle\race_class;
-use Ofey\Logan22\component\config\config;
 use Ofey\Logan22\component\estate\castle;
 use Ofey\Logan22\component\estate\clanhall;
 use Ofey\Logan22\component\estate\fort;
@@ -30,13 +27,10 @@ use Ofey\Logan22\controller\admin\startpack;
 use Ofey\Logan22\controller\stream\stream;
 use Ofey\Logan22\controller\ticket\ticket;
 use Ofey\Logan22\model\admin\launcher;
-use Ofey\Logan22\model\config\referralConfig;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
-use Ofey\Logan22\model\enabled\enabled;
 use Ofey\Logan22\model\forum\forum;
 use Ofey\Logan22\model\forum\internal;
-use Ofey\Logan22\model\gallery\screenshot;
 use Ofey\Logan22\model\log\log;
 use Ofey\Logan22\model\log\logTypes;
 use Ofey\Logan22\model\notification\notification;
@@ -46,10 +40,7 @@ use Ofey\Logan22\model\server\online;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\statistic\statistic as statistic_model;
 use Ofey\Logan22\model\template\async;
-use Ofey\Logan22\model\ticket\ticket_model;
-use Ofey\Logan22\model\ticket\ticketModel;
 use Ofey\Logan22\model\user\auth\auth;
-use Ofey\Logan22\model\user\player\character;
 use Ofey\Logan22\model\user\player\player_account;
 use Ofey\Logan22\model\user\profile\other;
 use Ofey\Logan22\model\user\user;
@@ -188,7 +179,6 @@ class tpl
                     }
                 }
             }
-
         }
 
         $all_plugins_dir = fileSys::get_dir_files("/custom/plugins", [
@@ -277,7 +267,7 @@ class tpl
             return user::getUsers();
         }));
 
-        $twig->addFunction(new TwigFunction('get_session' , function ($key = null) {
+        $twig->addFunction(new TwigFunction('get_session', function ($key = null) {
             return session::get($key);
         }));
 
@@ -361,7 +351,6 @@ class tpl
         $twig->addFunction(new TwigFunction('google_secret_key', function () {
             return google::get_client_key();
         }));
-
 
         $twig->addFunction(new TwigFunction('get_shop_items', function () {
             return donate::get_shop_items();
@@ -461,7 +450,6 @@ class tpl
             return \Ofey\Logan22\component\sphere\server::getCountRequest();
         }));
 
-
         $twig->addFunction(new TwigFunction('user_info', function ($type) {
             if (method_exists(auth::class, $type)) {
                 return auth::$type();
@@ -483,7 +471,6 @@ class tpl
         $twig->addFunction(new TwigFunction('phrase', function ($phraseKey, ...$values) {
             return \Ofey\Logan22\controller\config\config::load()->lang()->getPhrase($phraseKey, ...$values);
         }));
-
 
         /**
          * Дебаг функция шаблона, которая отобразит содержимое объекта
@@ -701,7 +688,6 @@ class tpl
             return forum::forum_enable();
         }));
 
-
         $twig->addFunction(new TwigFunction('get_avatar', function ($img = "none.jpeg", $thumb = false) {
             if ($thumb) {
                 if (mb_substr($img, 0, 5) == "user_") {
@@ -749,7 +735,6 @@ class tpl
 
             return fileSys::localdir(sprintf("/uploads/tickets/%s", $img));
         }));
-
 
         $twig->addFunction(new TwigFunction('forum', function () {
             return forum::get();
@@ -820,19 +805,58 @@ class tpl
             return player_account::show_all_account_player();
         }));
 
-
-        $twig->addFunction(new TwigFunction('streams', function (){
+        $twig->addFunction(new TwigFunction('streams', function () {
             return stream::getStreams();
         }));
+
+        $twig->addFunction(new TwigFunction('stream_link_rev', function ($link){
+            $embedUrl = $link;
+
+            // Check if the link is a YouTube URL
+            if (str_contains($link, 'youtube.com') || strpos($link, 'youtu.be') !== false) {
+                // Extract YouTube video ID
+                $videoId = '';
+                if (preg_match('/youtu\.be\/([^\?\/]+)/', $link, $matches)) {
+                    $videoId = $matches[1];
+                } elseif (preg_match('/v=([^&]+)/', $link, $matches)) {
+                    $videoId = $matches[1];
+                } elseif (preg_match('/embed\/([^\/\?&]+)/', $link, $matches)) {
+                    $videoId = $matches[1];
+                }
+                if ($videoId !== '') {
+                    $embedUrl = 'https://www.youtube.com/embed/' . $videoId;
+                }
+            }
+            // Check if the link is a Twitch URL
+            elseif (strpos($link, 'twitch.tv') !== false) {
+                $parsedUrl = parse_url($link);
+                $path = trim($parsedUrl['path'], '/');
+                $pathParts = explode('/', $path);
+
+                if ($pathParts[0] === 'videos' && isset($pathParts[1])) {
+                    // It's a Twitch video
+                    $videoId = $pathParts[1];
+                    $embedUrl = 'https://player.twitch.tv/?video=' . $videoId;
+                } else {
+                    // It's a Twitch channel
+                    $channelName = $pathParts[0];
+                    $embedUrl = 'https://player.twitch.tv/?channel=' . $channelName;
+                }
+            }
+
+            return $embedUrl;
+        }));
+
 
         $twig->addFunction(new TwigFunction('statistic_get_pvp', function ($server_id = 0, $limit = 0): ?array {
             if ($server_id < 0 || $limit < 0) {
                 throw new InvalidArgumentException('Server ID and limit must be non-negative integers');
             }
-            if($server_id == 0) {
+            if ($server_id == 0) {
                 $server_id = user::self()->getServerId();
             }
             $pvpStats = statistic_model::get_pvp($server_id);
+
             return $pvpStats ? ($limit > 0 ? array_slice($pvpStats, 0, $limit) : $pvpStats) : null;
         }));
 
@@ -840,10 +864,11 @@ class tpl
             if ($server_id < 0 || $limit < 0) {
                 throw new InvalidArgumentException('Server ID and limit must be non-negative integers');
             }
-            if($server_id == 0) {
+            if ($server_id == 0) {
                 $server_id = user::self()->getServerId();
             }
             $pkStats = statistic_model::get_pk($server_id);
+
             return $pkStats ? ($limit <= 0 ? $pkStats : array_slice($pkStats, 0, $limit)) : null;
         }));
 
@@ -851,7 +876,7 @@ class tpl
             if ($server_id < 0 || $limit < 0) {
                 throw new InvalidArgumentException('Server ID and limit must be non-negative integers');
             }
-            if($server_id == 0) {
+            if ($server_id == 0) {
                 $server_id = user::self()->getServerId();
             }
             $onlinePlayers = statistic_model::get_players_online_time($server_id);
@@ -859,15 +884,15 @@ class tpl
             return $onlinePlayers ? ($limit <= 0 ? $onlinePlayers : array_slice($onlinePlayers, 0, $limit)) : null;
         }));
 
-
         $twig->addFunction(new TwigFunction('statistic_get_exp', function ($server_id = 0, $limit = 0): ?array {
             if ($server_id < 0 || $limit < 0) {
                 throw new InvalidArgumentException('Server ID and limit must be non-negative integers');
             }
-            if($server_id == 0) {
+            if ($server_id == 0) {
                 $server_id = user::self()->getServerId();
             }
             $expStats = statistic_model::get_exp($server_id);
+
             return $expStats ? ($limit <= 0 ? $expStats : array_slice($expStats, 0, $limit)) : null;
         }));
 
@@ -875,7 +900,7 @@ class tpl
             if ($server_id < 0 || $limit < 0) {
                 throw new InvalidArgumentException('Server ID and limit must be non-negative integers');
             }
-            if($server_id == 0) {
+            if ($server_id == 0) {
                 $server_id = user::self()->getServerId();
             }
             $clanStats = statistic_model::get_clan($server_id);
@@ -884,12 +909,12 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('statistic_get_castle', function ($server_id = 0) {
-            if($server_id == 0) {
+            if ($server_id == 0) {
                 $server_id = user::self()->getServerId();
             }
+
             return statistic_model::get_castle($server_id);
         }));
-
 
         $twig->addFunction(new TwigFunction('clan_icon', function (string|array $data = null) {
             if ($data == null) {
@@ -918,11 +943,11 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('SphereApiError', function () {
-           return \Ofey\Logan22\component\sphere\server::isError();
+            return \Ofey\Logan22\component\sphere\server::isError();
         }));
 
         $twig->addFunction(new TwigFunction('SphereApiCodeError', function () {
-           return \Ofey\Logan22\component\sphere\server::getCodeError();
+            return \Ofey\Logan22\component\sphere\server::getCodeError();
         }));
 
         $twig->addFunction(new TwigFunction('statusSphereServer', function () {
@@ -935,7 +960,7 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('getPageLink', function ($news) {
-            if($news['link'] == '') {
+            if ($news['link'] == '') {
                 return "/read/{$news['id']}";
             } else {
                 return $news['link'];
@@ -961,21 +986,22 @@ class tpl
                 return fileSys::localdir("/src/template/sphere/assets/images/logo_news_d.jpg");
             }
 
-            return "/".$fullImagePath;
+            return "/" . $fullImagePath;
         }));
 
         $twig->addFunction(new TwigFunction('all_phrase', function () {
-            $languages     = fileSys::get_dir_files("/data/languages", [
+            $languages = fileSys::get_dir_files("/data/languages", [
               'basename' => true,
               'sort'     => false,
               'fetchAll' => true,
             ]);
 
-            $languages = array_map(function($item) {
+            $languages = array_map(function ($item) {
                 return preg_replace('/\.php$/', '', $item);
-            }, array_filter($languages, function($item) {
-                return substr($item, -4) === '.php';
-            }));
+            },
+              array_filter($languages, function ($item) {
+                  return substr($item, -4) === '.php';
+              }));
 
             $combinedArray = [];
             foreach ($languages as $language) {
@@ -1028,6 +1054,7 @@ class tpl
             foreach ($combinedArray as $key => &$phrases) {
                 ksort($phrases);
             }
+
             return ['lang_list' => $languages, 'phrases' => $combinedArray];
         }));
 
@@ -1094,7 +1121,6 @@ class tpl
         $twig->addFunction(new TwigFunction('icon', function ($fileIcon = null) {
             return client_icon::icon($fileIcon);
         }));
-
 
         //Кол-во завершенных и не завершенных рефералов
         $twig->addFunction(new TwigFunction('referral_count', function ($referrals) {
@@ -1207,7 +1233,6 @@ class tpl
             return $currentUrl;
         }));
 
-
         $twig->addFunction(new TwigFunction('action', function ($name, array $params = []) {
             if ( ! empty($params)) {
                 return action::get($name, ...$params);
@@ -1216,14 +1241,13 @@ class tpl
             }
         }));
 
-        $twig->addFunction(new TwigFunction("getPluginActive", function ($name = null){
+        $twig->addFunction(new TwigFunction("getPluginActive", function ($name = null) {
             return plugin::getPluginActive($name);
         }));
 
-        $twig->addFunction(new TwigFunction("getPluginSetting", function ($name){
+        $twig->addFunction(new TwigFunction("getPluginSetting", function ($name) {
             return plugin::getSetting($name);
         }));
-
 
         $twig->addFunction(new TwigFunction("ticket_get_count", function () {
             return ticket::getCount();

@@ -27,8 +27,7 @@
               <thead>
               <tr>
                 <th scope="col">{{ phrase('user') }}</th>
-                <th scope="col">{{ phrase('channel') }}</th>
-                <th scope="col">{{ phrase('stream_recording') }}</th>
+                <th scope="col">{{ phrase('link') }}</th>
                 <th scope="col"></th>
                 <th scope="col"></th>
               </tr>
@@ -45,20 +44,10 @@
                   <a href="/admin/user/info/{{data.user_id}}" class="text-primary">{{ userInfo.getName() }} /
                     {{userInfo.getEmail()}}</a>
 
-                  <div class="form-check">
-                    <input class="form-check-input auto_add_new_stream" data-user-id="{{userInfo.getId()}}"
-                           type="checkbox" value="" id="auto_add_new_stream_{{userInfo.getId()}}" {% if userInfo.getVar("auto_approval_stream").val
-                    %}checked=""{% endif %}>
-                    <label class="form-check-label" for="auto_add_new_stream_{{userInfo.getId()}}">
-                      {{ phrase('auto_approval_of_new_streams') }}
-                    </label>
-                  </div>
-
-
                   <div class="form-group mb-0">
                     <div class="input-group">
                       <input value="{{data.auto_check_date}}" type="text" class="form-control datetime" id="auto_check_stream_{{data.id}}"
-                             placeholder="{{ phrase('auto_check_of_new_streams') }}">
+                             placeholder="{{ phrase('until_when_to_stream') }}">
                       <div class="btn btn-success input-group-text setAutoCheckStream" data-stream-id="{{data.id}}">
                         {{ phrase('apply') }}
                       </div>
@@ -71,24 +60,6 @@
 
                 </th>
                 <td><a href="{{data.channel}}" target="_blank" class="text-primary">{{data.channel}}</a>
-                </td>
-                <td>
-
-
-                  <div class="d-flex overflow-visible">
-                    <img class="avatar bradius avatar-xxl avatar-rounded me-3" src="{{data.data.avatar_url}}"
-                         alt="avatar-img">
-                    <div class="media-body valign-middle">
-                      <a href="{{data.video_url}}" target="_blank"
-                         class="fw-semibold text-dark">{{data.data.username}}</a>
-                      <p class="text-muted mb-0">{{data.data.title}}</p>
-                      <a href="{{stream.channel}}" target="_blank" class="text-primary">{{data.video_url}}</a>
-                      {% if data.is_live %}
-                      <span class="badge bg-danger-transparent">{{ phrase('live_stream') }}</span>
-                      {% endif %}
-                    </div>
-                  </div>
-
                 </td>
 
                 <td>
@@ -165,16 +136,6 @@
     });
   })
 
-  $(".auto_add_new_stream").on("click", function () {
-    let userId = $(this).data("user-id");
-    let approval = $(this).prop("checked") ? 1 : 0;
-
-    let self = $(this);
-    AjaxSend("/admin/stream/autoapproval", "POST", {
-      userId: userId,
-      approval: approval
-    });
-  });
 
   /* To choose date and time */
   flatpickr(".datetime", {

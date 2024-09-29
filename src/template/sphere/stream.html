@@ -21,19 +21,14 @@
 
             <div class="col-sm">
               <input value="{{my_stream.channel}}" id="channel" class="form-control me-auto" type="text"
-                     placeholder="https://www.youtube.com/@jawed"
+                     placeholder="https://www.youtube.com/watch?v=jNQXAC9IVRw"
                      aria-label="">
             </div>
 
-            {% if my_stream %}
+
             <div class="col-auto">
-              <button id="start_stream_again" type="submit" class="btn btn-primary">{{phrase('started_new_stream')}}</button>
+              <button id="add_new_stream" type="submit" class="btn btn-primary">Добавить ссылку</button>
             </div>
-            {% else %}
-            <div class="col-auto">
-              <button id="add_new_stream" type="submit" class="btn btn-primary">Добавить</button>
-            </div>
-            {% endif %}
 
             <div class="col-auto">
               <div class="vr"></div>
@@ -55,40 +50,13 @@
       <div class="card custom-card">
 
         <div class="card-body ">
+
           <div class="ratio ratio-16x9 mb-2">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/{{stream.data.video_id}}"
+            <iframe width="560" height="315" src="{{ stream_link_rev(stream.channel) }}"
                     title="YouTube video player" style="border:0px"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen=""></iframe>
           </div>
-
-
-          <div class="">
-            <div class="d-sm-flex d-block align-items-top mb-0">
-              <div class="d-flex flex-fill align-items-center">
-                <div class="me-2">
-                  <span class="avatar avatar-lg avatar-rounded">
-                     <a href="{{stream.channel}}" target="_blank"> <img src="{{stream.data.avatar_url}}" alt=""> </a>
-                  </span>
-                </div>
-
-                <div class="lh-1 me-2">
-                  <p class="mb-1 fw-semibold fs-14"><a href="/stream/{{getUser(stream.user_id).getName()}}">{{stream.data.username}}
-                    {% if stream.is_live %}<span class="badge bg-danger-transparent">{{phrase('live_stream')}}</span>{% endif %}</a>
-                  </p>
-                  <div class="mb-0 ">
-                  <span class="text-muted"><i class="ri-double-quotes-l"></i><a
-                    href="/stream/{{getUser(stream.user_id).getName()}}"> {{stream.data.title}} </a> <i
-                    class="ri-double-quotes-r"></i></span>
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
 
         </div>
       </div>
@@ -122,16 +90,7 @@
     });
   })
 
-  $("#start_stream_again").on("click", function () {
-    let $this = $(this);
-    $this.addClass("disabled");
-    AjaxSend("/stream/streamagain", "POST", {
-      channel: $("#channel").val()
-    }, true).then(function (response) {
-      responseAnalysis(response);
-      $this.removeClass("disabled");
-    });
-  })
+
 </script>
 {% endif %}
 

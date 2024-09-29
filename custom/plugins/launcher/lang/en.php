@@ -13,5 +13,6 @@ return [
   'expectation' => 'Expectation',
   'notice_s' => 'Additional description on the launcher page (optional)',
   'notice_sd' => 'You can specify backup links to the patch, client, launcher or any other information. HTML tags are allowed.',
+  'create folder' => 'Create folder',
 
   ];

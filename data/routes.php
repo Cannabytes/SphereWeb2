@@ -1680,35 +1680,6 @@ return array (
     'page' => '',
     'comment' => '',
   ),
-  118 => 
-  array (
-    'enable' => true,
-    'method' => 'POST',
-    'pattern' => '/admin/stream/autoapproval',
-    'func' => 'controller\\admin\\stream::autoApproval',
-    'access' => 
-    array (
-      0 => 'admin',
-    ),
-    'weight' => 0,
-    'page' => '',
-    'comment' => 'Автоматическое одобрение обновления и добавления стримов',
-  ),
-  119 => 
-  array (
-    'enable' => true,
-    'method' => 'POST',
-    'pattern' => '/stream/streamagain',
-    'func' => 'controller\\stream\\stream::startStreamAgain',
-    'access' => 
-    array (
-      0 => 'admin',
-      1 => 'user',
-    ),
-    'weight' => 0,
-    'page' => '',
-    'comment' => 'Автоматическое одобрение обновления и добавления стримов пользователем (если одобрено админом)',
-  ),
   120 => 
   array (
     'enable' => true,
