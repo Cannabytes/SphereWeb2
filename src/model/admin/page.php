@@ -128,6 +128,7 @@ class page
         $enable_comment = 0;
         $id             = $_POST['id'];
         $lang           = $_POST['lang'];
+        $link           = $_POST['link'] ?? null;
 
         // Проверка данных
         self::check_data($title, $content);
@@ -146,12 +147,13 @@ class page
         }
 
         // Запись в базу
-        $request = sql::run('UPDATE `pages` SET `is_news` = ?, `name` = ?, `description` = ?, `comment` = ?, `lang` = ?  WHERE `id` = ?', [
+        $request = sql::run('UPDATE `pages` SET `is_news` = ?, `name` = ?, `description` = ?, `comment` = ?, `lang` = ?, `link` = ? WHERE `id` = ?', [
           $is_news,
           $title,
           $content,
           $enable_comment,
           $lang,
+          $link,
           $id,
         ]);
 
