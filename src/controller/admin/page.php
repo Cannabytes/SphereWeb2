@@ -62,15 +62,6 @@ class page {
         \Ofey\Logan22\model\admin\page::create();
     }
 
-    public static function create() {
-        validation::user_protection("admin");
-        tpl::addVar('server_list', server::get_server_info());
-        tpl::addVar([
-            "title" => lang::get_phrase("create"),
-        ]);
-        tpl::display("admin/page/create.html");
-    }
-
     public static function edit_news($id) {
         validation::user_protection("admin");
         $data = \Ofey\Logan22\model\page\page::get_news($id);
