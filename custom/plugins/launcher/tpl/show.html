@@ -362,6 +362,7 @@
                aria-hidden="true">
             <div class="modal-dialog modal-xl ">
               <div class="modal-content">
+
                 <div class="modal-header">
 
                   <span id="dirstartpath" data-bs-toggle="tooltip" data-bs-placement="bottom"
@@ -369,8 +370,18 @@
                                                                   class="fe fe-monitor linkdir"></i> </span> &nbsp;
 
                   <h6 class="modal-title" id="dirfullpath"></h6>
+
+                  <div class="text-center flex-grow-1">
+                    {% if launcher.loadType == 'patch' %}
+                      {{phrase('dir_for_download_patch')}}
+                    {% elseif launcher.loadType == 'client' %}
+                      {{phrase('dir_for_download_client')}}
+                    {% endif %}
+                  </div>
+
                   <button type="button" class="btn-close" data-bs-dismiss="modal"
                           aria-label="Close"></button>
+
                 </div>
 
                 <div class="modal-body">

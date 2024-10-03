@@ -25,8 +25,18 @@ class swbalance
         } else {
             board::error("Указанная сумма должна быть числом");
         }
+        // Проверка, сумма должна быть положительной
+        if($amount <= 0){
+            board::error("Сумма должна быть положительной");
+        }
+
+        $systemPayName = $_POST['systemPayName'] ?? null;
+        if ($systemPayName == null){
+            board::error("Не определена платежная система");
+        }
 
         $donate = server::send(type::SPHERE_DONATE, [
+            'systemPayName' => $systemPayName,
             'amount' => $amount,
         ])->show()->getResponse();
         if(isset($donate['success'])){

@@ -102,7 +102,7 @@ class donate
               FILTER_VALIDATE_BOOLEAN
             );
             $this->tableItemsBonus                                             = $setting['tableItemsBonus'] ?? [];
-            $this->donateSystems                                               = $setting['donateSystems'];
+            $this->donateSystems                                               = $setting['donateSystems'] ?? [];
 
             foreach ($this->tableItemsBonus as &$itemsBonus) {
                 foreach ($itemsBonus as &$itemBonus) {

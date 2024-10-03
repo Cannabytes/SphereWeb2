@@ -3,6 +3,7 @@
 {% block title %}Редактор предметов{% endblock %}
 
 {% block content %}
+
 <div class="container-fluid">
   <div class="main-mail-container gap-4 mb-5 d-lg-flex">
     <div class="mail-navigation">
@@ -47,43 +48,56 @@
         </ul>
       </div>
     </div>
-    <div class="total-mails mt-5 mt-lg-0">
-      <div class="p-3 d-flex align-items-center border-bottom">
-        Кастомные предметы | {{chronicle}}
-      </div>
-      <div class="mail-messages" id="mail-messages">
-        <ul class="list-unstyled mb-0">
-
-          {% for item in items %}
-          {% set itemInfo = get_item_info(item.id) %}
-          <li>
-            <div class="d-flex align-items-top">
-              <div class="me-1 mt-1">
-                   <span class="avatar">
-                      <img src="{{itemInfo.getIcon()}}" alt="" data-bs-toggle="tooltip" data-bs-placement="left"
-                           data-bs-title="{{itemInfo.getItemName()}}">
-                   </span>
-              </div>
-
-              <div class="flex-fill ms-2 subject-container">
-                <a aria-label="anchor" href="/admin/modify/item/edit/{{chronicle}}/id/{{itemInfo.getItemId()}}" class="stretched-link"></a>
-                <p class="mb-0  main-mail-subject">
-                  <span class="d-block mb-0 fw-semibold fs-14">ID: {{itemInfo.getItemId()}} | NAME: {{itemInfo.getItemName()}} | ADD NAME : {{itemInfo.getAddName()}} | GRADE: {{itemInfo.getCrystalType()}} | TYPE: {{itemInfo.getType()}} </span>
-                  <span class="fs-12 text-muted text-truncate">
-                  <span class="badge bg-danger rounded-1">{{grade_img(itemInfo.getItemType())}}</span>
-                   Description: {{itemInfo.getDescription()}}
-                  </span>
-                </p>
-              </div>
 
 
-            </div>
-          </li>
-          {% endfor %}
 
-        </ul>
-      </div>
+
+
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header justify-content-between">
+          <div class="card-title">
+            Кастомные предметы | {{chronicle}}
+
+          </div>
+          <div class="prism-toggle">
+            <button class="btn btn-sm btn-primary-light">Show Code<i class="ri-code-line ms-2 d-inline-block align-middle"></i></button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table text-nowrap table-secondary p-2 bg-light border ">
+              <tbody>
+
+              {% for item in items %}
+              {% set itemInfo = get_item_info(item.id) %}
+
+              <tr class="">
+                <td><img class="avatar avatar-sm" src="{{itemInfo.getIcon()}}" alt="" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="{{itemInfo.getItemName()}}">  </td>
+                <td>
+
+                  <a aria-label="anchor" href="/admin/modify/item/edit/{{chronicle}}/id/{{itemInfo.getItemId()}}" >
+                      <span class="d-block mb-0 fw-semibold fs-14">ID: {{itemInfo.getItemId()}} | NAME: {{itemInfo.getItemName()}} | ADD NAME : {{itemInfo.getAddName()}} | GRADE: {{itemInfo.getCrystalType()}} | TYPE: {{itemInfo.getType()}} </span>
+                      <span class="fs-12 text-muted text-truncate">
+                      <span class="badge bg-danger rounded-1">{{grade_img(itemInfo.getItemType())}}</span>
+                        <span class="text-wrap">Description: {{itemInfo.getDescription()}}</span>
+                      </span>
+                  </a>
+
+                </td>
+              </tr>
+
+
+              {% endfor %}
+
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+       </div>
     </div>
+
   </div>
 
 </div>

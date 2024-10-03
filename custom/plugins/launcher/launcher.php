@@ -5,14 +5,21 @@ namespace launcher;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\type;
+use Ofey\Logan22\controller\page\error;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\page\page;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
 class launcher
 {
+    public function __construct() {
+        if (\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableEmulation()){
+            error::error404('С включенным режимом эмуляции нельзя пользоваться лаунчером');
+        }
+    }
 
     public function admin(): void
     {
@@ -257,6 +264,7 @@ class launcher
                 }
             }
         }
+
 
         tpl::addVar('launcher', $launcher);
         tpl::addVar('application', json_encode($launcher['application'], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) );

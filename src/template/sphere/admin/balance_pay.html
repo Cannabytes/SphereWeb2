@@ -1,88 +1,144 @@
 {% extends 'struct.html' %}
 
-{% block title %}qwe{% endblock %}
+{% block title %}Пополнение баланса{% endblock %}
 
 {% block content %}
 
-    <div class="container-fluid">
+<div class="container-fluid">
 
-        <div class="main-mail-container gap-4 d-flex mb-5">
-            <div class="mail-navigation  d-none d-md-block">
-                <div>
-                    <ul class="list-unstyled mail-main-nav" id="mail-main-nav">
-                        <li class="px-0 pt-0 mail-nav-heading">
-                            <span class="fs-11 text-muted op-7 fw-semibold">Пополнение баланса</span>
-                        </li>
-
-                        <li>
-                            <a href="javascript:void(0);">
-                                <div class="d-flex align-items-center">
-                                            <span class="me-2 lh-1">
-                                                <i class="ri-send-plane-2-line align-middle fs-14"></i>
-                                            </span>
-                                    <span class="flex-fill text-nowrap">
-                                                Пополнение
-                                            </span>
-                                </div>
-                            </a>
-                        </li>
-
-                        <li class="px-0 mail-nav-heading">
-                            <span class="fs-11 text-muted op-7 fw-semibold">История</span>
-                        </li>
-                        <li>
-                            <a href="/admin/balance/pay/history">
-                                <div class="d-flex align-items-center">
-                                            <span class="me-2 lh-1">
-                                                <i class="ri-settings-3-line align-middle fs-14"></i>
-                                            </span>
-                                    <span class="flex-fill text-nowrap">
-                                                История пожертвований
-                                            </span>
-                                </div>
-                            </a>
-                        </li>
-
-                    </ul>
-                </div>
-            </div>
-            <div class="mails-information">
-                <div class="mail-info-header d-xxl-flex align-items-center">
-                    <div class="card-title d-flex align-items-center">
-                        <div class="mail-option-read me-2">
-                            <a aria-label="anchor" href="/admin/balance" class="vertical-phone" data-bs-toggle="tooltip" data-bs-original-title="Назад">
-                                <i class="bx bx-left-arrow-alt"></i>
-                            </a>
-                        </div>
-                        <div>
-                            История покупок
-                        </div>
-                    </div>
-
-                </div>
-                <div class="mail-info-body p-4" id="mail-info-body">
-
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label for="amount" class="form-label fs-14 text-dark">Сумма пополнения</label>
-                                    <input type="text" class="form-control" id="amount" placeholder="20.0">
-                                </div>
-                                <button class="btn btn-primary"  id="pay" type="submit">Перейти к пополнению</button>
-                            </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
+  <div class="card custom-card">
+    <div class="card-body">
+      <h6 class="card-title fw-semibold mb-2">Это полезно знать</h6>
+      <p class="card-subtitle mb-3 text-muted">Стоимость SphereWeb CMS - <span class="text-success ">12.50$</span> в
+        месяц.</p>
+      <p class="card-text">
+        От разработчика: Оплата не обязательная, Вы предоставляете финансовую помощь в развитии проекта на любую сумму,
+        и я буду очень благодарен так как я один выполняю такой огромный пласт работы. Если у Вас не будет средств на
+        балансе, SphereWeb продолжит работать, однако для минимилизации нагрузки на сервера будут введены ограничения,
+        до тех пор пока Ваш баланс положительный, у Вас не будет ограничений.
+        <br>
+        Сумма на балансе уменьшается каждый час, пока Ваш баланс положительный, и за месяц эта сумма будет $12.5.<br>
+        Если Вы подключили дополнительные модули, к примеру «Рулетка (Wheel)», стоит 8$, эта сумма так же будет
+        распределена на месяц и ежечастно отниматься, в результате сумма за месяц составит 8$.
+      </p>
     </div>
 
+  </div>
+
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">
+            Пополнение баланса
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="nav nav-pills justify-content-center nav-style-2 mb-3" role="tablist">
+            <li class="nav-item" role="presentation">
+              <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page" href="#home-center"
+                 aria-selected="true">FreeKassa</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page" href="#about-center"
+                 aria-selected="false" tabindex="-1">About</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page" href="#services-center"
+                 aria-selected="false" tabindex="-1">Services</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page" href="#contacts-center"
+                 aria-selected="false" tabindex="-1">Contacts</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane text-muted active show" id="home-center" role="tabpanel">
+
+              <div class="card-body">
+
+                <div class="mb-3">
+                  <label for="freekassa_amount" class="form-label fs-14 text-dark">Введите сумму пополнения</label>
+                  <input type="number" min="5" class="form-control" id="freekassa_amount" placeholder="" value="5">
+                </div>
+
+                <button data-name="freekassa" class="btn btn-primary donateSphereWeb" type="submit">Перейти к оплате
+                </button>
+              </div>
+              <script>
+                $(document).on("click", ".donateSphereWeb", function () {
+                  let systemPayName = $(this).data('name');
+                  let amount = -1;
+                  if (systemPayName === 'freekassa') {
+                    amount = $('#freekassa_amount').val();
+                  }
+                  AjaxSend("/admin/balance/pay/invoice", "POST", {
+                    systemPayName,
+                    amount
+                  }, true).then(function (response) {
+
+                    if(response.type!=="notice"){
+                      return false;
+                    }
+
+                    if(response.ok){
+                      noticeSuccess(response.message)
+                    }else {
+                      noticeError(response.message)
+                    }
+
+                    if (response.redirect !== undefined) {
+                      setTimeout(function() {
+                        if (response.redirect === "refresh") {
+                          window.location.reload();
+                        } else {
+                          window.open(response.redirect, '_blank'); // Открыть в новой вкладке
+                        }
+                      }, 1000);
+                    }
+
+
+                  });
+                });
+              </script>
+
+
+            </div>
+            <div class="tab-pane text-muted" id="about-center" role="tabpanel">
+              How hotel deals can help you live a better life. <b>How celebrity cruises</b>
+              aren't as bad as you think. How cultural solutions can help you predict the
+              future. How to cheat at dog friendly hotels and get away with it. 17 problems
+              with summer activities. How to cheat at travel agents and get away with it. How
+              not knowing family trip ideas makes you a rookie. What everyone is saying about
+              daily deals. How twitter can teach you about carnival cruises. How to start
+              using cultural solutions.
+            </div>
+            <div class="tab-pane text-muted" id="services-center" role="tabpanel">
+              Unbelievable healthy snack success stories. 12 facts about safe food handling
+              tips that will impress your friends. Restaurant weeks by the numbers. Will
+              mexican food ever rule the world? The 10 best thai restaurant youtube videos.
+              How restaurant weeks can make you sick. The complete beginner's guide to cooking
+              healthy food. Unbelievable food stamp success stories. How whole foods markets
+              are making the world a better place. 16 things that won't happen in dish
+              reviews.
+            </div>
+            <div class="tab-pane text-muted" id="contacts-center" role="tabpanel">
+              Why delicious magazines are killing you. Why our world would end if restaurants
+              disappeared. Why restaurants are on crack about restaurants. How restaurants are
+              making the world a better place. 8 great articles about minute meals. Why our
+              world would end if healthy snacks disappeared. Why the world would end without
+              mexican food. The evolution of chef uniforms. How not knowing food processors
+              makes you a rookie. Why whole foods markets beat peanut butter on pancakes.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
 {% endblock %}
-
-
-
 
 
 {% block css %}
@@ -92,14 +148,14 @@
 
 {% block js %}
 <script>
-    $(document).on(  "click", "#pay",  function(){
-        AjaxSend("/admin/balance/pay/invoice", "POST", {
-            amount: $("#amount").val()
-        }, true).then(function (response) {
-            responseAnalysis(response);
-            console.log(response)
-        })
+  $(document).on("click", "#pay", function () {
+    AjaxSend("/admin/balance/pay/invoice", "POST", {
+      amount: $("#amount").val()
+    }, true).then(function (response) {
+      responseAnalysis(response);
+      console.log(response)
     })
+  })
 </script>
 
 {% endblock %}

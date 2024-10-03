@@ -3,95 +3,120 @@
 {% block title %}Forum{% endblock %}
 
 {% block content %}
+
 <div class="container-fluid">
 
-  <div class="row" id="createpage">
+  {% set page = get_page(get_0) %}
+
+  {% if page %}
+
+  {% set pathImg = path("/uploads/images/news/" ~ page.poster) %}
+  {% if page.poster == null %}
+  {% set pathImg = template ~ "/assets/images/logo_news_d.jpg" %}
+  {% endif %}
+
+  <div class="row" id="updatepage">
     <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
       <div class="card custom-card">
         <div class="card-header">
-          <a href="/admin" class="avatar border text-muted me-2">
-            <!-- Ваш SVG код -->
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
-                 fill="currentColor"><path
-              d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
-          </a>
-          <div class="card-title">Создание страницы</div>
+          <div class="card-title">
+            <a href="/admin" class="avatar border text-muted me-2">
+              <!-- Ваш SVG код -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                   fill="currentColor"><path
+                d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
+            </a>
+            {{ phrase('page_editing') }}
+          </div>
         </div>
         <div class="card-body">
           <div class="gy-3">
 
+            <input type="hidden" id="id" name="id" value="{{page.id}}">
+
             <div class="col-xl-12">
-              <label for="type" class="form-label">Тип страницы</label>
+              <label for="type" class="form-label">{{ phrase('page_type') }}</label>
               <select class="form-control" data-trigger name="type" id="type">
-                <option value="news">Новость</option>
-                <option value="page">Страница</option>
+                <option {% if page.is_news == 1 %}selected{% endif %} value="news">{{ phrase('news') }}</option>
+                <option {% if page.is_news == 0 %}selected{% endif %} value="page">{{ phrase('page') }}</option>
               </select>
             </div>
 
             <div class="col-xl-12">
-              <label for="title" class="form-label">Название</label>
-              <input type="text" class="form-control" id="title" placeholder="title">
+              <label for="title" class="form-label">{{ phrase(27) }}</label>
+              <input value="{{page.name}}" type="text" class="form-control" id="title" placeholder="title">
             </div>
 
             <div class="col-xl-12">
-              <label for="link" class="form-label">Ссылка</label>
-              <input type="text" class="form-control" id="link" placeholder="link">
+              <label for="link" class="form-label">{{ phrase('link') }}</label>
+              <input value="{{page.link}}" type="text" class="form-control" id="link" placeholder="link">
             </div>
 
             <div class="col-xl-6">
-              <label for="lang" class="form-label">Язык новости (новость будет выводится для пользователей выбранного языка)</label>
+              <label for="lang" class="form-label">{{ phrase('news_language') }}</label>
               <select class="form-control" data-trigger name="lang" id="lang">
                 {% for lang in config().lang().getLangList() %}
-                <option value="{{lang.getLang()}}">{{lang.getName()}}</option>
+                <option {% if page.lang == lang.getLang() %}selected{% endif %} value="{{lang.getLang()}}">{{lang.getName()}}</option>
                 {% endfor %}
               </select>
             </div>
-
             <div class="col-xl-12 ">
-              <label class="form-label">Изображение новости</label>
+              <label class="form-label">{{ phrase('news_image') }}</label>
 
               <div class="mb-4 d-sm-flex align-items-center">
                 <div class="mb-0 me-5">
                   <span class="avatar avatar-xxl about-img img-fluid rounded shadow">
-                    <img src="{{template ~ '/assets/images/logo_news_d.jpg'}}" alt="" id="profile-img">
-                    <a aria-label="anchor" href="javascript:void(0);" class="badge rounded-pill bg-primary avatar-badge">
-                      <input type="file" name="file" class="position-absolute w-100 h-100 op-0" id="file">
+                    <img src="{{pathImg}}"
+                         alt="" id="profile-img" data-image="{{pathImg}}">
+                    <a aria-label="anchor" href="javascript:void(0);"
+                       class="badge rounded-pill bg-primary avatar-badge">
+                      <input type="file" name="file"
+                             class="position-absolute w-100 h-100 op-0"
+                             id="file">
                       <i class="fe fe-camera"></i>
                     </a>
                   </span>
                 </div>
                 <div class="btn-group">
-                  <button id="addImg" type="button" class="btn btn-primary">Change</button>
-                  <button id="removeImgSrc" type="button" class="btn btn-light">Remove</button>
+                  <button id="addImg" type="button" class="btn btn-primary">{{ phrase('change') }}</button>
+                  <button id="removeImgSrc" type="button" class="btn btn-light">{{ phrase('delete') }}</button>
                 </div>
               </div>
 
             </div>
 
             <div class="col-xl-12">
-              <label class="form-label">Содержимое новости</label>
+              <label class="form-label">{{ phrase('news_content') }}</label>
               <!-- Контейнер редактора -->
-              <div id="content"></div>
+              <div id="content">{{page.description|raw}}</div>
               <!-- Контейнер HTML-редактора -->
               <div id="html-editor-container" style="display: none;">
                 <textarea id="html-editor" class="form-control" rows="15"></textarea>
               </div>
             </div>
 
+
           </div>
         </div>
         <div class="card-footer">
           <div class="btn-list text-end">
-            <button id="create" type="button" class="btn btn-success">Создать</button>
+            <button id="remove" type="button" class="btn btn-danger">{{ phrase('delete') }}</button>
+            <button id="saveEdit" type="button" class="btn btn-success">{{ phrase(271) }}</button>
           </div>
+
         </div>
       </div>
     </div>
   </div>
-  <!--End::row-1 -->
+
+  {% else %}
+  Страницы не существует
+  {% endif %}
+
 
 </div>
 {% endblock %}
+
 
 {% block css %}
 <link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.snow.css">
@@ -107,15 +132,11 @@
 <!-- Date & Time Picker CSS -->
 <link rel="stylesheet" href="{{template}}/assets/libs/flatpickr/flatpickr.min.css">
 
-<!-- Подключение Font Awesome для иконок (если требуется) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-
 {% endblock %}
+
 
 {% block js %}
 
-<!-- Custom-Switcher JS -->
-<script src="{{template}}/assets/js/custom-switcher.min.js"></script>
 
 <!-- Date & Time Picker JS -->
 <script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>
@@ -137,6 +158,9 @@
 <script src="{{template}}/assets/libs/filepond-plugin-image-crop/filepond-plugin-image-crop.min.js"></script>
 <script src="{{template}}/assets/libs/filepond-plugin-image-resize/filepond-plugin-image-resize.min.js"></script>
 <script src="{{template}}/assets/libs/filepond-plugin-image-transform/filepond-plugin-image-transform.min.js"></script>
+
+<!-- Подключение Font Awesome для иконок (если требуется) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
 <script>
   // Объявляем переменную 'quill' в глобальной области видимости
@@ -181,7 +205,7 @@
     // Добавляем иконку для кнопки 'html' на панель инструментов
     var customButton = document.querySelector('.ql-html');
     if (customButton) {
-      customButton.innerHTML = '<i class="fas fa-code text-success"></i>';
+      customButton.innerHTML = '<i class="fas fa-code"></i>';
     }
 
     // Функция переключения режима
@@ -206,21 +230,24 @@
 
   })();
 
-  // Обработчик создания страницы
-  $('#create').on('click', function (e) {
+  // Обработчик сохранения
+  $('#saveEdit').on('click', function (e) {
     e.preventDefault();
     let formData = new FormData();
-
-    // Собираем данные из формы
-    $('#createpage input').each(function () {
+    $('#updatepage input').each(function () {
       let id = $(this).attr('id');
-      let value = $(this).attr('type') === 'checkbox' ? $(this).is(':checked') : $(this).val();
+      let value;
+      if ($(this).attr('type') === 'checkbox') {
+        value = $(this).is(':checked');
+      } else {
+        value = $(this).val();
+      }
       formData.append(id, value);
     });
-
-    $('#createpage select').each(function () {
+    $('#updatepage select').each(function () {
       let id = $(this).attr('id');
-      formData.append(id, $(this).val());
+      let value = $(this).val();
+      formData.append(id, value);
     });
 
     // Получение контента из текущего режима
@@ -232,35 +259,45 @@
     }
     formData.append('content', content);
 
-    // Добавляем файл, если выбран
+    // Получение файла из input[type=file]
     var input = $('#file')[0];
     if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $('#profile-img').attr('src', e.target.result);
+      };
+      reader.readAsDataURL(input.files[0]);
+
+      // Добавляем изображение в объект FormData
       formData.append('file', input.files[0]);
     }
 
-    // Отправка данных на сервер
+    sendData(formData);
+  });
+
+  function sendData(formData) {
     $.ajax({
-      url: '/admin/pages/create',
+      url: '/admin/pages/edit',
       type: 'POST',
       data: formData,
       processData: false,
       contentType: false,
-      success: function(response) {
+      success: function (response) {
         ResponseNotice(response);
       },
-      error: function(xhr, status, error) {
+      error: function (xhr, status, error) {
         console.error('Ошибка при отправке данных:', error);
       }
     });
-  });
+  }
 
   $(document).ready(function () {
-    // При нажатии на кнопку Change открывается диалоговое окно для выбора файла
+    // Открытие диалога выбора файла при нажатии на кнопку
     $('#addImg').click(function () {
       $('#file').click();
     });
 
-    // При изменении файла обновляется изображение
+    // Обновление изображения при выборе файла
     $('#file').change(function () {
       var input = this;
       if (input.files && input.files[0]) {
@@ -272,11 +309,17 @@
       }
     });
 
-    // При нажатии на кнопку Remove удаляется содержимое
+    // Восстановление исходного изображения при нажатии на кнопку удаления
     $('#removeImgSrc').click(function () {
-      $('#profile-img').attr('src', '{{template ~ "/assets/images/logo_news_d.jpg"}}');
+      $('#profile-img').attr('src', $("#profile-img").data('image'));
     });
   });
 
+  // Обработчик удаления страницы
+  $("#remove").on("click", function () {
+    AjaxSend("/admin/pages/trash", "POST", { id: $("#id").val() });
+  });
+
 </script>
+
 {% endblock %}

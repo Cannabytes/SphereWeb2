@@ -103,22 +103,34 @@ class page
         $manager = ImageManager::gd();
         $file    = $file['tmp_name'];
         $image   = $manager->read($file);
-
+        $maxWidth = 750;
         $filename = md5(mt_rand(1, 100000) + time());
 
         // Сохранение оригинала в формате WebP
         $originalWebpPath = 'uploads/images/news/' . $filename . '.webp';
         $image->toWebp(95)->save($originalWebpPath);
 
-        // Создание уменьшенной копии 450x450
-        $thumbnailPath = 'uploads/images/news/thumb_' . $filename . '.webp';
-        $image->resize(450, 450, function ($constraint) {
-            $constraint->aspectRatio();
-            $constraint->upsize();
-        })->toWebp(95)->save($thumbnailPath);
+        // Проверяем текущие размеры изображения
+        $originalWidth = $image->width();
+        $originalHeight = $image->height();
+
+        if ($originalWidth > $maxWidth) {
+            $newHeight = intval(($originalHeight / $originalWidth) * $maxWidth);
+            $thumbnailPath = 'uploads/images/news/thumb_' . $filename . '.webp';
+            $image->resize($maxWidth, $newHeight)->toWebp(95)->save($thumbnailPath);
+        } else {
+            $thumbnailPath = 'uploads/images/news/thumb_' . $filename . '.webp';
+            $image->toWebp(95)->save($thumbnailPath);
+        }
 
         return $filename . '.webp';
     }
+
+
+
+
+
+
 
     public static function update()
     {

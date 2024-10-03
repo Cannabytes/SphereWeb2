@@ -35,6 +35,23 @@
                         </select>
                     </div>
                 </div>
+
+                <div class="mb-4">
+                    <label class="form-label" for="autoload">Тип загрузки</label>
+                    <div class="col-2">
+                        <select class="form-select mb-1" id="loadType" name="loadType">
+                            <option value="patch">Патч</option>
+                            <option value="client">Полностью игра</option>
+                        </select>
+                    </div>
+
+                    <div class="fs-sm fw-medium text-muted mb-0">
+                       <span class="text-success">Патч</span> - только часть файлов игрового клиента. У игрока должна быть игра, файлы которые будут заменены на Ваш патч.
+                        <br>
+                        <span class="text-success">Полностью игра</span> - полный набор всех необходимых файлов для запуска игры. Игроку не обязательно иметь игру.
+                    </div>
+                </div>
+
             </div>
             <div class="col-lg-6 col-xl-6">
                 <div class="mb-4">
@@ -74,6 +91,7 @@
                 </div>
                 <textarea class="form-control" id="notice" name="notice" placeholder=""></textarea>
             </div>
+
 
         </div>
     </div>

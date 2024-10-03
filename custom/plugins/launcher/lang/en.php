@@ -14,5 +14,6 @@ return [
   'notice_s' => 'Additional description on the launcher page (optional)',
   'notice_sd' => 'You can specify backup links to the patch, client, launcher or any other information. HTML tags are allowed.',
   'create folder' => 'Create folder',
-
+  'dir_for_download_patch' => 'Select folder to download patch',
+  'dir_for_download_client' => 'Select folder to download client',
   ];

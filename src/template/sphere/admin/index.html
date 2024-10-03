@@ -71,20 +71,20 @@
 
             </div>
 
+            {% if balance > 0.01 and balance <= 2 %}
+            <div class="alert alert-info" role="alert">
+              У Вас есть крайней маленький баланс, если закончится баланс и будут ведены ограничнения. <a href="/admin/balance">Предлагаю Вам пополнить баланс</a>.<br>
+            </div>
+            {% endif %}
+
+            {% if balance <= 0 %}
             <div class="alert alert-info" role="alert">
               У Вас закончились деньги на балансе, мы предлагаем Вам пополнить баланс.<br>
               Для снижения нагрузки на SphereWeb были введени ограничения.
             </div>
+            {% endif %}
 
-            <div class="d-flex align-items-center border-bottom border-block-end-dashed mb-3">
-              <div class="flex-fill">
-                <div class="progress progress-xs">
-                  <div class="progress-bar bg-primary" role="progressbar" style="width: 14%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </div>
-              <div class="ms-3">
-                <span class="fs-12 text-muted">23.12.2024</span>
-              </div>
+            <div class=" border-bottom border-block-end-dashed mb-3">
             </div>
 
             <div class="mb-3 ">
