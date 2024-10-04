@@ -125,9 +125,10 @@ class server
         } else {
             $headers[] = "User-Id: " . 0;
             if (type::SPHERE_INSTALL != $type) {
-                $headers[] = "User-Server-Id: " . \Ofey\Logan22\model\server\server::getLastServer()->getId();
+                $headers[] = "User-Server-Id: " . \Ofey\Logan22\model\server\server::getLastServer()?->getId();
             }
         }
+
         $headers[] = "Token: " . self::getToken();
         $host      = $_SERVER['HTTP_HOST'];
         if (empty($host) || ! self::is_valid_domain(parse_url($host, PHP_URL_HOST))) {
