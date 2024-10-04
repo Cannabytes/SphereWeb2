@@ -92,6 +92,10 @@ class server
                 $serverId = $server['id'];
                 $page = self::get_default_desc_page_id($serverId);
                 self::$server_info[$serverId] = new serverModel($server, [], $page);
+                self::$server_info[$serverId]->getStatus()->setLoginServer($server['serverStatus']['loginserver']);
+                self::$server_info[$serverId]->getStatus()->setGameServer($server['serverStatus']['loginserver']);
+                self::$server_info[$serverId]->getStatus()->setOnline($server['serverStatus']['online']);
+                self::$server_info[$serverId]->getStatus()->setEnable($server['serverStatus']['isEnableStatus']);
             }
         }else{
             // Получаем все серверы из базы данных
