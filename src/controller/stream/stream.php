@@ -19,11 +19,17 @@ class stream
         if (self::$streams !== null) {
             return self::$streams;
         }
-        $currentDate = date('Y-m-d H:i:s'); // Получаем текущую дату и время
+        $currentDate = date('Y-m-d H:i:s');
         $streams = sql::getRows("SELECT * FROM `streams` 
                              WHERE confirmed = 1 
                              AND (auto_check_date IS NULL OR auto_check_date >= '$currentDate')
                              ORDER BY `dateUpdate` DESC;");
+
+        foreach($streams AS &$stream){
+            $stream['platform'] = self::stream_get_platform($stream['channel']);
+            $stream['src'] = self::getSrc($stream['channel']);
+        }
+
         self::$streams = $streams;
         return self::$streams;
     }
@@ -37,10 +43,18 @@ class stream
         } elseif ( ! filter_var($_POST['channel'], FILTER_VALIDATE_URL)) {
             board::error("Канал должен быть корректным URL адресом");
         }
-        $row = sql::getRow("SELECT `confirmed` FROM `streams` WHERE `user_id` = ?", [user::self()->getId()]);
-        if ($row) {
-            if ($row['confirmed'] == 0) {
-                board::error("Ваш стрим ещё не был одобрен, по этому нельзя добавлять новую ссылку. Ожидайте одобрение администратора.");
+
+        $link = self::stream_get_platform($_POST['channel']);
+        if($link == 'unknown'){
+            board::error("Поддерживается только стримы сайтов Youtube и Twitch");
+        }
+
+        $rows = sql::getRows("SELECT * FROM `streams` WHERE `user_id` = ?", [user::self()->getId()]);
+        if ($rows) {
+            foreach($rows as $row) {
+                if ($row['confirmed'] == 0) {
+                    board::error("Ваш стрим ещё не был одобрен, по этому нельзя добавлять новую ссылку. Ожидайте одобрение администратора.");
+                }
             }
         }
         sql::run(
@@ -79,6 +93,49 @@ class stream
         tpl::addVar('user', $user);
         tpl::addVar('stream', $userStream);
         tpl::display("userStream.html");
+    }
+
+    public static function getSrc($link)
+    {
+        $embedUrl = $link;
+
+        if (str_contains($link, 'youtube.com') || str_contains($link, 'youtu.be')) {
+            $videoId = '';
+            if (preg_match('/youtu\.be\/([^\?\/]+)/', $link, $matches)) {
+                $videoId = $matches[1];
+            } elseif (preg_match('/v=([^&]+)/', $link, $matches)) {
+                $videoId = $matches[1];
+            } elseif (preg_match('/embed\/([^\/\?&]+)/', $link, $matches)) {
+                $videoId = $matches[1];
+            }
+            if ($videoId !== '') {
+                $embedUrl = 'https://www.youtube.com/embed/' . $videoId;
+            }
+        } elseif (str_contains($link, 'twitch.tv')) {
+            $parsedUrl = parse_url($link);
+            $path      = trim($parsedUrl['path'], '/');
+            $pathParts = explode('/', $path);
+            if ($pathParts[0] === 'videos' && isset($pathParts[1])) {
+                $videoId  = $pathParts[1];
+                $embedUrl = 'https://player.twitch.tv/?video=' . $videoId;
+            } else {
+                $channelName = $pathParts[0];
+                $embedUrl    = 'https://player.twitch.tv/?channel=' . $channelName . '&parent=' . $_SERVER['HTTP_HOST'];
+            }
+        }
+
+        return $embedUrl;
+    }
+
+    public static function stream_get_platform($link)
+    {
+        if (str_contains($link, 'youtube.com') || str_contains($link, 'youtu.be')) {
+            return 'youtube';
+        }
+        if (str_contains($link, 'twitch.tv')) {
+            return 'twitch';
+        }
+        return 'unknown';
     }
 
 }

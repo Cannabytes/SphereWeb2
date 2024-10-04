@@ -9,32 +9,10 @@
   </div>
   <div class="streams__list" data-slider-streams="true">
     <div class="swiper-wrapper">
-      <!-- example -->
-      <!-- start Stream -->
-      <!-- Twitch example: указываем ид канала -->
-      <!-- <div class="swiper-slide">
-<div class="stream" data-insertmedia='{"type" : "twitch" , "src"
-    : "https://player.twitch.tv/?channel=doublefine" , "setting"
-    : "autoplay=true&muted=true&parent=l2banners.ru" }'>
-</div>
-</div> -->
-      <!-- end Stream -->
-
-      <!-- example -->
-      <!-- start Youtube embed video, указываем ид видео  -->
-      <!-- <div class="swiper-slide">
-<div class="stream"
-data-insertmedia='{"type" : "youtube", "src" : "https://www.youtube.com/embed/UWDXdRwLZ4E", "setting" : "autoplay=1&mute=1" }'>
-</div>
-</div> -->
-      <!-- end Stream -->
-
-      <!-- example -->
-      <!-- start Youtube live_stream, указываем ид канала -->
 
       {% for stream in streams() %}
       <div class="swiper-slide">
-        <div class="stream" data-insertmedia='{"type": "youtube", "src": "https://www.youtube.com/embed/{{stream.data.video_id}}", "setting": "?autoplay=1&mute=1"}'></div>
+          <iframe class="stream" src="{{stream.src}}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"  ></iframe>
       </div>
       {% endfor %}
 

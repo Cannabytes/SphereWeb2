@@ -809,44 +809,14 @@ class tpl
             return stream::getStreams();
         }));
 
-        $twig->addFunction(new TwigFunction('stream_link_rev', function ($link){
-            $embedUrl = $link;
-
-            // Check if the link is a YouTube URL
-            if (str_contains($link, 'youtube.com') || strpos($link, 'youtu.be') !== false) {
-                // Extract YouTube video ID
-                $videoId = '';
-                if (preg_match('/youtu\.be\/([^\?\/]+)/', $link, $matches)) {
-                    $videoId = $matches[1];
-                } elseif (preg_match('/v=([^&]+)/', $link, $matches)) {
-                    $videoId = $matches[1];
-                } elseif (preg_match('/embed\/([^\/\?&]+)/', $link, $matches)) {
-                    $videoId = $matches[1];
-                }
-                if ($videoId !== '') {
-                    $embedUrl = 'https://www.youtube.com/embed/' . $videoId;
-                }
-            }
-            // Check if the link is a Twitch URL
-            elseif (strpos($link, 'twitch.tv') !== false) {
-                $parsedUrl = parse_url($link);
-                $path = trim($parsedUrl['path'], '/');
-                $pathParts = explode('/', $path);
-
-                if ($pathParts[0] === 'videos' && isset($pathParts[1])) {
-                    // It's a Twitch video
-                    $videoId = $pathParts[1];
-                    $embedUrl = 'https://player.twitch.tv/?video=' . $videoId;
-                } else {
-                    // It's a Twitch channel
-                    $channelName = $pathParts[0];
-                    $embedUrl = 'https://player.twitch.tv/?channel=' . $channelName;
-                }
-            }
-
-            return $embedUrl;
+        $twig->addFunction(new TwigFunction('stream_get_platform' , function ($link) {
+            return stream::stream_get_platform($link);
         }));
 
+        //Deprecated 04.10.2024
+        $twig->addFunction(new TwigFunction('stream_link_rev', function ($link){
+           return stream::getSrc($link);
+        }));
 
         $twig->addFunction(new TwigFunction('statistic_get_pvp', function ($server_id = 0, $limit = 0): ?array {
             if ($server_id < 0 || $limit < 0) {
