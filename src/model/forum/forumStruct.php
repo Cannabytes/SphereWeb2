@@ -7,16 +7,16 @@ use Ofey\Logan22\model\db\fdb;
 class forumStruct {
 
     private bool $showForumSphereMainPage;
-    private bool $enabled;
-    private string $engine;
-    private string $sort;
+    private bool $enabled = false;
+    private string $engine = 'xenforo';
+    private string $sort = 'desc' ;
     private int $elements = 20;
-    private string $host;
-    private string $port;
-    private string $user;
-    private string $password;
-    private string $name;
-    private string $url;
+    private string $host = '127.0.0.1';
+    private string $port = '80';
+    private string $user = 'xenforo';
+    private string $password = '';
+    private string $name = 'xenforo';
+    private string $url = "https://";
 
     public function __construct($json)
     {
