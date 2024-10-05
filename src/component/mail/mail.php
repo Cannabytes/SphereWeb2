@@ -8,8 +8,11 @@
 namespace Ofey\Logan22\component\mail;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\controller\config\config;
+use Ofey\Logan22\controller\user\forget\forget;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\user\user;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -18,11 +21,18 @@ class mail
 
     public static function getTemplates()
     {
-        $emailTpl = sql::getRow("SELECT * FROM  `settings` WHERE `key` = '__config_template_email__'");
+        $lang = user::self()->getLang();
+        $emailTpl = sql::getRow("SELECT * FROM  `settings` WHERE `key` = '__config_template_email_{$lang}_'");
         if ($emailTpl) {
             return json_decode($emailTpl['setting'], true);
         }
-        return null;
+        return [
+            'send_notice_for_registration' => false,
+            'notice_reg_subject' => lang::get_phrase('successful_registration_wish_successful_game'),
+            'notice_success_registration_html' => forget::notice_success_registration_html(),
+            'notice_registration_html' => forget::notice_registration_html(),
+            'forget_password_html'   => forget::forget_password_html_default(),
+        ];
     }
 
     /**

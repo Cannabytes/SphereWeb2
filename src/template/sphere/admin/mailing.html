@@ -6,143 +6,119 @@
 <div class="container-fluid">
 
   <div class="row">
-    <div class="col-xl-12">
-      <div class="card custom-card">
-        <div class="card-header">
-          <div class="card-title">
-            <a href="/admin" class="avatar border text-muted me-2">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
-            </a>
-            {{phrase('email_content')}}
-          </div>
+    <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+    <div class="card custom-card">
+      <div class="card-header">
+        <div class="card-title">
+          <a href="/admin" class="avatar border text-muted ">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+            </svg>
+          </a>
+          {{phrase('email_content')}}
         </div>
-        <div class="card-body d-flex align-items-start">
-          <div class="row">
-            <div class="col-md-2">
-              <div class="nav  nav-pills me-3 tab-style-7" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                <button class="nav-link text-start active" id="notice-registration-tab" data-bs-toggle="pill"
-                        data-bs-target="#notice-registration" type="button" role="tab"
-                        aria-controls="notice-registration" aria-selected="false" tabindex="-1"><i
-                  class="ri-u-disk-line me-1 align-middle d-inline-block"></i>{{phrase('registration_notification')}}
-                </button>
-                <button class="nav-link text-start " id="forget-password-tab" data-bs-toggle="pill"
-                        data-bs-target="#forget-password" type="button" role="tab" aria-controls="forget-password"
-                        aria-selected="true"><i class="ri-group-line me-1 align-middle d-inline-block"></i>{{ phrase(67) }}
-                </button>
+      </div>
 
-              </div>
+      <div class="card-body d-flex align-items-start">
+        <div class="row w-100">
+          <div class="col-md-2">
+            <div class="nav nav-pills me-3 tab-style-7" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+              <button class="nav-link text-start active" id="notice-registration-tab" data-bs-toggle="pill"
+                      data-bs-target="#notice-registration" type="button" role="tab"
+                      aria-controls="notice-registration" aria-selected="false" tabindex="-1">
+                <i class="ri-u-disk-line me-1 align-middle d-inline-block"></i>{{phrase('registration_notification')}}
+              </button>
+              <button class="nav-link text-start" id="forget-password-tab" data-bs-toggle="pill"
+                      data-bs-target="#forget-password" type="button" role="tab" aria-controls="forget-password"
+                      aria-selected="true">
+                <i class="ri-group-line me-1 align-middle d-inline-block"></i>{{ phrase(67) }}
+              </button>
             </div>
-            <div class="col-md-10">
-              <div class="tab-content" id="v-pills-tabContent">
-                <div class="tab-pane active show" id="notice-registration" role="tabpanel" tabindex="0"
-                     aria-labelledby="notice-registration-tab">
-                  <div class="form-check form-switch mb-2">
-                    <input value="{{get_email_template()['notice_reg_subject']}}" class="form-check-input" type="checkbox" role="switch"
-                           id="switch-primary" checked="">
-                    <label class="form-check-label" for="switch-primary">{{phrase('send_registration_notification_email')}}</label>
-                  </div>
+          </div>
 
-                  {{phrase('registration_notification_email')}}
+          <div class="col-md-10 d-flex flex-column">
+            <div class="tab-content flex-grow-1" id="v-pills-tabContent">
+              <div class="tab-pane fade show active h-100" id="notice-registration" role="tabpanel"
+                   aria-labelledby="notice-registration-tab">
 
-                  <div class="form-floating">
-                    <input value="{{ ( get_email_template()['notice_reg_subject'] ?? phrase('successful_registration_wish_successful_game') ) | raw}}" type="text" class="form-control"
-                           id="notice_reg_subject" placeholder="{{ phrase(177) }}">
-                    <label for="notice_reg_subject">{{phrase('email_subject')}}</label>
-                  </div>
-                  <div id="notice-registration-html">{{ (get_email_template()['notice_registration_html'] ?? phrase(177)) |raw}}</div>
-
+                <div class="form-check form-switch mb-2">
+                  <input class="form-check-input" type="checkbox" role="switch"
+                         id="send_notice_for_registration" {% if get_email_template()['send_notice_for_registration'] == 'true' %}checked=""{% endif %}>
+                  <label class="form-check-label" for="send_notice_for_registration">{{phrase('send_registration_notification_email')}}</label>
                 </div>
-                <div class="tab-pane" id="forget-password" role="tabpanel" aria-labelledby="forget-password-tab"
-                     tabindex="0">
-                  {{phrase('password_reset_email')}}
-                  <div class="form-floating">
-                    <input value="{{(get_email_template()['forget_reg_subject'] ?? phrase(67) )|raw}}" type="text" class="form-control" id="forget_reg_subject"
-                           placeholder="Восстановление пароля">
-                    <label for="forget_reg_subject">{{phrase('email_subject')}}</label>
-                  </div>
-                  <div id="forget-password-quill">{{ (get_email_template()['forget_password_html'] ?? phrase('reset_password_link_and_expire_time') )|raw}}</div>
 
-                 </div>
+
+                {{phrase('registration_notification_email')}}
+
+                <div class="form-floating">
+                  <input value="{{ ( get_email_template()['notice_reg_subject']) | raw}}" type="text" class="form-control"
+                         id="notice_reg_subject" placeholder="{{ phrase(177) }}">
+                  <label for="notice_reg_subject">{{phrase('email_subject')}}</label>
+                </div>
+
+
+                <div id="html-editor" class="editor h-100">
+                  <textarea class="form-control w-100 " id="notice_success_registration_html" cols="30" rows="20">{{ get_email_template()['notice_success_registration_html'] |raw}}</textarea>
+                </div>
+              </div>
+
+              <div class="tab-pane fade h-100" id="forget-password" role="tabpanel" aria-labelledby="forget-password-tab">
+
+                {{phrase('password_reset_email')}}
+                <div class="form-floating">
+                  <input value="{{(get_email_template()['forget_reg_subject'] ?? phrase(67) )|raw}}" type="text" class="form-control" id="forget_reg_subject"
+                         placeholder="Восстановление пароля">
+                  <label for="forget_reg_subject">{{phrase('email_subject')}}</label>
+                </div>
+
+                <div id="forget-password-html-editor" class="editor h-100">
+                  <textarea class="form-control w-100 " id="forget_password_html" cols="30" rows="20">{{ (get_email_template()['forget_password_html'])|raw}}</textarea>
+                </div>
               </div>
             </div>
-            <div class="border-top border-block-start-dashed d-flex justify-content-end mt-3 pt-2">
-              <span id="saveEmailTemplate" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
-                class="bi bi-sd-card ms-2"></i></span>
-            </div>
+          </div>
+
+          <div class="border-top border-block-start-dashed d-flex justify-content-end mt-3 pt-2">
+            <span id="saveEmailTemplate" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
+              class="bi bi-sd-card ms-2"></i></span>
           </div>
         </div>
       </div>
     </div>
   </div>
+  </div>
 
 </div>
 {% endblock %}
 
+
 {% block css %}
 <link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.snow.css">
 <link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.bubble.css">
-
 {% endblock %}
 
 {% block js %}
-<script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>
-<script src="{{template}}/assets/libs/quill/quill.min.js"></script>
-
-
 <script>
-  var toolbarOptions = [
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-    [{ 'font': [] }],
-    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-    ['blockquote', 'code-block'],
+  $(document).ready(function () {
+    // Сохранение шаблонов
+    $(document).on('click', '#saveEmailTemplate', function () {
+      let send_notice_for_registration = $('#send_notice_for_registration').prop('checked');
+      let notice_reg_subject = $('#notice_reg_subject').val();
+      let notice_success_registration_html = $('#notice_success_registration_html').val();
+      let forget_reg_subject = $('#forget_reg_subject').val();
+      let forget_password_html = $('#forget_password_html').val();
 
-    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      var formData = {
+        __config_name__: '__config_template_email_{{getUser().getLang()}}_',
+        send_notice_for_registration: send_notice_for_registration,
+        notice_reg_subject: notice_reg_subject,
+        notice_success_registration_html: notice_success_registration_html,
+        forget_reg_subject: forget_reg_subject,
+        forget_password_html: forget_password_html,
+      };
 
-    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-    [{ 'align': [] }],
-
-    ['image', 'video'],
-    ['clean'],                                         // remove formatting button
-  ];
-  var reg_notice_quill = new Quill('#notice-registration-html', {
-    modules: {
-      toolbar: toolbarOptions,
-    },
-    theme: 'snow',
+      AjaxSend('/admin/config/save', 'POST', formData, false);
+    });
   });
-  var forget_password_quill = new Quill('#forget-password-quill', {
-    modules: {
-      toolbar: toolbarOptions,
-    },
-    theme: 'snow',
-  });
-  var new_password_quill = new Quill('#new-password-quill', {
-    modules: {
-      toolbar: toolbarOptions,
-    },
-    theme: 'snow',
-  });
-
-  $(document).on('click', '#saveEmailTemplate', function () {
-    let notice_reg_subject = $('#notice_reg_subject').val();
-    let forget_reg_subject = $('#forget_reg_subject').val();
-
-    let notice_registration_html = reg_notice_quill.root.innerHTML;
-    let forget_password_html = forget_password_quill.root.innerHTML;
-
-    var formData = {
-      __config_name__: '__config_template_email__',
-      notice_reg_subject: notice_reg_subject,
-      forget_reg_subject: forget_reg_subject,
-      notice_registration_html: notice_registration_html,
-      forget_password_html: forget_password_html,
-    };
-
-    AjaxSend('/admin/config/save', 'POST', formData, false);
-
-  });
-
-
 </script>
 {% endblock %}

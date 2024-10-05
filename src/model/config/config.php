@@ -74,7 +74,7 @@ class config
           "INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES (?, ?, ?, ?)",
           [
             $configName,
-            $post,
+            html_entity_decode($post),
             0,
             time::mysql(),
           ]
