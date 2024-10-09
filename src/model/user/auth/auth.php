@@ -412,7 +412,7 @@ class auth
             session::add('id', (int)$user_info['id']);
             session::add('email', $email);
             session::add('password', $password);
-            board::response("notice", ["message" => lang::get_phrase(165), "ok" => true, "redirect" => fileSys::localdir("/main")]);
+            board::response("notice", ["message" => lang::get_phrase(165), "ok" => true, "redirect" => "/main"]);
         }
         board::response(
           "notice",

@@ -12,9 +12,6 @@ use Ofey\Logan22\component\fileSys\fileSys;
 class redirect {
 
     public static function location($url, $self = true){
-        if($self){
-            $url = fileSys::getSubDir() . $url;
-        }
         header("Location: ". ($url));
         die();
     }
