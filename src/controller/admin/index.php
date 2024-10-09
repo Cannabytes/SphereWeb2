@@ -46,7 +46,6 @@ class index
 
         \Ofey\Logan22\model\server\server::clearServerInfo();
         \Ofey\Logan22\model\server\server::getServer();
-        //var_dump($info);exit();
         if ( ! $sphereAPIError) {
             tpl::addVar([
               "launcher"           => $info['launcher'] ?? null,

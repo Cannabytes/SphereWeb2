@@ -55,7 +55,7 @@
                 <div class="flex-fill">
                   <h5 class="fw-semibold mb-1">Лаунчер</h5>
                   {% if launcher.isActive %}
-                  <p class="text-muted mb-0 fs-12">Активирован до <span class="launcherDate">{{launcher.dateTimeout|date('d.m.Y H:s')}}</span>
+                  <p class="text-muted mb-0 fs-12">Активирован до <span class="launcherDate">{{launcher.dateTimeout|date('d.m.Y')}}</span>
                   </p>
                   {% else %}
                   <p class="text-muted mb-0 fs-12">Не активирован</p>
@@ -76,7 +76,6 @@
   <!-- Start::row-1 -->
   <div class="row">
 
-
     <div class="col-xl-4">
       <div class="card custom-card">
         <div class="card-header justify-content-between">
@@ -87,7 +86,7 @@
             <div class="ms-auto prism-toggle">
               <span class="text-{% if info.licenseActive %}success{% else %}danger{% endif %}">
                 {% if info.licenseActive == false %}<i class="bi bi-x-circle"></i> {% endif %}
-                {{info.License|date('d.m.Y H:s')}}
+                {{info.License.date|date('d.m.Y')}}
               </span>
             </div>
           </div>
@@ -125,6 +124,7 @@
       </div>
     </div>
 
+
     <div class="col-xl-4">
       <div class="card custom-card">
       <div class="card-header justify-content-between">
@@ -134,7 +134,7 @@
           </div>
           <div class="ms-auto prism-toggle">
             {% if launcher.isActive %}
-             <span class="text-success">{{launcher.dateTimeout|date('d.m.Y H:s')}}</span>
+             <span class="text-success">{{launcher.dateTimeout|date('d.m.Y')}}</span>
             {% else %}
               <span class="text-danger">Не активен</span>
             {% endif %}
@@ -215,7 +215,7 @@
           </div>
           <div class="ms-auto prism-toggle">
             {% if info.rouletteActive %}
-              <span class="text-success">{{roulette|date('d.m.Y H:s')}}</span>
+              <span class="text-success">{{roulette|date('d.m.Y')}}</span>
             {% else %}
               <span class="text-danger">Не активен</span>
             {% endif %}

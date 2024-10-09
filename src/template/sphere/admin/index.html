@@ -71,21 +71,6 @@
 
             </div>
 
-            {% if balance > 0.01 and balance <= 2 %}
-            <div class="alert alert-info" role="alert">
-              У Вас есть крайней маленький баланс, если закончится баланс и будут ведены ограничнения. <a href="/admin/balance">Предлагаю Вам пополнить баланс</a>.<br>
-            </div>
-            {% endif %}
-
-            {% if balance <= 0 %}
-            <div class="alert alert-info" role="alert">
-              У Вас закончились деньги на балансе, мы предлагаем Вам пополнить баланс.<br>
-              Для снижения нагрузки на SphereWeb были введени ограничения.
-            </div>
-            {% endif %}
-
-            <div class=" border-bottom border-block-end-dashed mb-1">
-            </div>
 
             <div class="mb-3 ">
               <div class="text-muted">
