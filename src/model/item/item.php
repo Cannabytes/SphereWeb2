@@ -212,11 +212,25 @@ class item implements JsonSerializable {
 
     public static function icon($fileIcon = null, $object = "icon")
     {
-        if ($fileIcon != null && pathinfo($fileIcon, PATHINFO_EXTENSION) === 'webp') {
+        // Проверяем, задан ли файл и имеет ли он расширение 'webp'
+        if ($fileIcon !== null && pathinfo($fileIcon, PATHINFO_EXTENSION) === 'webp') {
+            // Извлекаем имя файла без расширения, если это формат 'webp'
             $fileIcon = pathinfo($fileIcon, PATHINFO_FILENAME);
         }
-        return file_exists(fileSys::get_dir("/uploads/images/{$object}/" . $fileIcon . ".webp")) && $fileIcon != null ? fileSys::localdir("/uploads/images/{$object}/" . $fileIcon . ".webp") : fileSys::localdir("/uploads/images/icon/NOIMAGE.webp");
+
+        // Формируем путь к иконке (без начального слеша)
+        $iconPath = "uploads/images/{$object}/" . $fileIcon . ".webp";
+
+        // Проверяем, существует ли файл и задано ли имя файла
+        if ($fileIcon !== null && file_exists($iconPath)) {
+            return "/" . $iconPath; // Добавляем начальный слеш при возврате URL
+        }
+
+        // Возвращаем путь к изображению по умолчанию
+        return "/uploads/images/icon/NOIMAGE.webp";
     }
+
+
 
     private static array $arrItems = [];
 

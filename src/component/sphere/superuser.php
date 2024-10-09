@@ -75,7 +75,7 @@ class superuser
                     board::response("notice", ["message" => lang::get_phrase(166), "ok" => false, "reloadCaptcha" => true]);
                 }
             }
-            board::response("notice", ["message" => lang::get_phrase(165), "ok" => true, "redirect" => fileSys::localdir("/main")]);
+            board::response("notice", ["message" => lang::get_phrase(165), "ok" => true, "redirect" => ("/main")]);
         }
     }
 

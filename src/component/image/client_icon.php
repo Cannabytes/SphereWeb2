@@ -84,7 +84,7 @@ class client_icon {
                     "ok" => false,
                     "itemId" => $item_id,
                     "name" => "The item does not exist!",
-                    "icon" => fileSys::localdir("/uploads/images/icon/NOIMAGE.webp"),
+                    "icon" => ("/uploads/images/icon/NOIMAGE.webp"),
                 ]);
             } else {
                 return false;

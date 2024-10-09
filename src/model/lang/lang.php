@@ -272,35 +272,48 @@ class lang
 
     public function get_phrase_plugin($key)
     {
-        if ( ! empty($this->pluginCache)) {
-            if (array_key_exists($key, $this->pluginCache)) {
-                return $this->pluginCache[$key];
-            }
+        // Проверяем наличие кэша плагинов
+        if (!empty($this->pluginCache) && array_key_exists($key, $this->pluginCache)) {
+            return $this->pluginCache[$key];
         }
+
+        // Обработка пользовательских плагинов
         $customs = fileSys::dir_list("custom/plugins");
         foreach ($customs as $custom) {
-            $file = fileSys::localdir("custom/plugins/" . $custom . "/lang/" . $this->lang_user_default() . ".php");
+            $file = ("custom/plugins/{$custom}/lang/{$this->lang_user_default()}.php");
+
+            // Проверяем наличие файла
             if (file_exists($file)) {
-                $langArray         = include $file;
-                $this->pluginCache = array_merge($this->pluginCache, $langArray);
-            }
-        }
-        $components = fileSys::dir_list("src/component/plugins");
-        foreach ($components as $component) {
-            $file = fileSys::localdir("data/languages/" . $component . "/lang/" . $this->lang_user_default() . ".php");
-            if (file_exists($file)) {
-                $langArray         = include $file;
-                $this->pluginCache = array_merge($this->pluginCache, $langArray);
-            }
-        }
-        if ( ! empty($this->pluginCache)) {
-            if (array_key_exists($key, $this->pluginCache)) {
-                return $this->pluginCache[$key];
+                $langArray = include $file;
+                if (is_array($langArray)) {
+                    $this->pluginCache = array_merge($this->pluginCache, $langArray);
+                }
             }
         }
 
+        // Обработка компонентов плагинов
+        $components = fileSys::dir_list("src/component/plugins");
+        foreach ($components as $component) {
+            $file = ("data/languages/{$component}/lang/{$this->lang_user_default()}.php");
+
+            // Проверяем наличие файла
+            if (file_exists($file)) {
+                $langArray = include $file;
+                if (is_array($langArray)) {
+                    $this->pluginCache = array_merge($this->pluginCache, $langArray);
+                }
+            }
+        }
+
+        // Проверяем кэш плагинов на наличие ключа после обновления
+        if (!empty($this->pluginCache) && array_key_exists($key, $this->pluginCache)) {
+            return $this->pluginCache[$key];
+        }
+
+        // Возвращаем false, если ключ не найден
         return false;
     }
+
 
     public function load_template_lang_packet($tpl)
     {

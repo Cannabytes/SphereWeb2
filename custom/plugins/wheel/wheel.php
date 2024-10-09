@@ -9,6 +9,7 @@ use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\page\error;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\log\logTypes;
@@ -127,7 +128,6 @@ class wheel
     public function show($name)
     {
         validation::user_protection();
-
         $stories = sql::getRows(
           "SELECT `id`, `time`, `variables` FROM `logs_all` WHERE type='wheel_win' AND user_id = ? AND server_id = ? ORDER BY id DESC",
           [
