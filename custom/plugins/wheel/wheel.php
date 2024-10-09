@@ -10,6 +10,7 @@ use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\page\error;
+use Ofey\Logan22\controller\page\page;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\log\logTypes;

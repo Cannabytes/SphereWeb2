@@ -212,7 +212,7 @@ class change {
         board::alert([
           'ok' => true,
           'message' => lang::get_phrase(197),
-          'src' => fileSys::localdir("/uploads/avatar/" . $avatar),
+          'src' => ("/uploads/avatar/" . $avatar),
         ]);
     }
 

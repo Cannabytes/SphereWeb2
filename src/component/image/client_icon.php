@@ -44,7 +44,7 @@ class client_icon {
             return [
                 "skill_id" => $skill_id,
                 "name" => "NoSkillName",
-                "icon" => fileSys::localdir("/uploads/images/icon/NOIMAGE.webp"),
+                "icon" => ("/uploads/images/icon/NOIMAGE.webp"),
             ];
         }
         $itemArr = require $file;
@@ -57,7 +57,7 @@ class client_icon {
             return [
                 "skill_id" => $skill_id,
                 "name" => "NoSkillName",
-                "icon" => fileSys::localdir("/uploads/images/icon/NOIMAGE.webp"),
+                "icon" => ("/uploads/images/icon/NOIMAGE.webp"),
             ];
         }
     }
@@ -101,7 +101,7 @@ class client_icon {
         if ($fileIcon != null && pathinfo($fileIcon, PATHINFO_EXTENSION) === 'webp') {
             $fileIcon = pathinfo($fileIcon, PATHINFO_FILENAME);
         }
-        return file_exists(fileSys::get_dir("/uploads/images/{$object}/" . $fileIcon . ".webp")) && $fileIcon != null ? fileSys::localdir("/uploads/images/{$object}/" . $fileIcon . ".webp") : fileSys::localdir("/uploads/images/icon/NOIMAGE.webp");
+        return file_exists(fileSys::get_dir("/uploads/images/{$object}/" . $fileIcon . ".webp")) && $fileIcon != null ? ("/uploads/images/{$object}/" . $fileIcon . ".webp") : ("/uploads/images/icon/NOIMAGE.webp");
     }
 
     public static function includeFileByRange($itemId, $object = "items"): string|false {

@@ -179,7 +179,7 @@ class auth
 
             return;
         }
-        self::$avatar = fileSys::localdir("/uploads/avatar/" . $avatar);
+        self::$avatar = ("/uploads/avatar/" . $avatar);
     }
 
     public static function get_avatar_background(): string

@@ -148,7 +148,7 @@ class donate
                 if ( ! $item_info) {
                     $item_info['item_id'] = $item['id'];
                     $item_info['name']    = "No Item Name";
-                    $item_info['icon']    = fileSys::localdir("/uploads/images/icon/NOIMAGE.webp");
+                    $item_info['icon']    = ("/uploads/images/icon/NOIMAGE.webp");
                 }
                 $item = array_merge($item, $item_info);
             }

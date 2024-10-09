@@ -695,15 +695,15 @@ class tpl
                 }
             }
 
-            return fileSys::localdir(sprintf("/uploads/avatar/%s", $img));
+            return (sprintf("/uploads/avatar/%s", $img));
         }));
 
         $twig->addFunction(new TwigFunction('get_skill', function ($img = "none.jpeg") {
-            return fileSys::localdir(sprintf("/uploads/images/skills/%s", $img));
+            return (sprintf("/uploads/images/skills/%s", $img));
         }));
 
         $twig->addFunction(new TwigFunction('get_icon', function ($img = "none.jpeg") {
-            return fileSys::localdir(sprintf("/uploads/images/icon/%s", $img));
+            return (sprintf("/uploads/images/icon/%s", $img));
         }));
 
         $twig->addFunction(new TwigFunction('get_item_info', function ($item_id) {
@@ -725,7 +725,7 @@ class tpl
                 }
             }
 
-            return fileSys::localdir(sprintf("/uploads/images/forum/%s", $img));
+            return (sprintf("/uploads/images/forum/%s", $img));
         }));
 
         $twig->addFunction(new TwigFunction('get_ticket_img', function ($img = "none.jpeg", $thumb = false) {
@@ -733,7 +733,7 @@ class tpl
                 $img = "thumb_" . $img;
             }
 
-            return fileSys::localdir(sprintf("/uploads/tickets/%s", $img));
+            return (sprintf("/uploads/tickets/%s", $img));
         }));
 
         $twig->addFunction(new TwigFunction('forum', function () {
@@ -750,7 +750,7 @@ class tpl
 
         $twig->addFunction(new TwigFunction('grade_img', function ($crystal_type): string {
             $grade_img = '';
-            $dirGrade  = fileSys::localdir("/uploads/images/grade");
+            $dirGrade  = ("/uploads/images/grade");
             switch ($crystal_type) {
                 case 'd':
                     $grade_img = "<img src='{$dirGrade}/d.png' style='width:20px'>";
@@ -951,9 +951,9 @@ class tpl
                 $image = "thumb_" . $image;
             }
             $imagePath     = $uploadsPath . $image;
-            $fullImagePath = fileSys::localdir($imagePath);
+            $fullImagePath = ($imagePath);
             if ( ! file_exists(fileSys::getSubDir() . $fullImagePath)) {
-                return fileSys::localdir("/src/template/sphere/assets/images/logo_news_d.jpg");
+                return ("/src/template/sphere/assets/images/logo_news_d.jpg");
             }
 
             return "/" . $fullImagePath;
@@ -1165,7 +1165,7 @@ class tpl
             $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https://' : 'http://';
             $name   = user::self()->getName() ?: user::self()->getId();
 
-            return $scheme . $_SERVER['HTTP_HOST'] . fileSys::localdir() . "/signup/" . mb_strtolower($name);
+            return $scheme . $_SERVER['HTTP_HOST'] . "/signup/" . mb_strtolower($name);
         }));
 
         $twig->addFunction(new TwigFunction('get_email_template', function () {
@@ -1246,7 +1246,7 @@ class tpl
             $pluginPath = "{$pluginsPath}/{$plugin_name}/{$config}";
             $plugins    = fileSys::dir_list($pluginsPath);
             if (in_array($plugin_name, $plugins)) {
-                $configFile = fileSys::localdir($pluginPath);
+                $configFile = ($pluginPath);
                 if (file_exists($configFile)) {
                     return require $configFile;
                 }
@@ -1313,9 +1313,9 @@ class tpl
     {
         self::$categoryCabinet = true;
         if (file_exists(
-          fileSys::localdir("template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/object.php")
+          ("template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/object.php")
         )) {
-            $additionalVars = require fileSys::localdir(
+            $additionalVars = require (
               "template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/object.php"
             );
             if (is_array($additionalVars)) {
@@ -1372,9 +1372,9 @@ class tpl
         $pluginDirName = basename(dirname(dirname($tplName)));
         $plugin_type   = Route::get_plugin_type($pluginDirName);
         if ($plugin_type == "component") {
-            self::addVar("template_plugin", fileSys::localdir("/src/component/plugins/{$pluginDirName}"));
+            self::addVar("template_plugin", ("/src/component/plugins/{$pluginDirName}"));
         } elseif ("custom") {
-            self::addVar("template_plugin", fileSys::localdir("/custom/plugins/{$pluginDirName}"));
+            self::addVar("template_plugin", ("/custom/plugins/{$pluginDirName}"));
         }
         $twig = self::preload($tplName);
         if (self::$ajaxLoad) {

@@ -613,7 +613,7 @@ class userModel
      */
     public function getAvatar(): ?string
     {
-        return fileSys::localdir("/uploads/avatar/{$this->avatar}");
+        return ("/uploads/avatar/{$this->avatar}");
     }
 
     /**
@@ -1024,6 +1024,10 @@ class userModel
     public function isAdmin(): bool
     {
         return (bool)$this->getAccessLevel("admin");
+    }
+
+    public function isGuest(): bool {
+        return (bool)$this->getAccessLevel("guest");
     }
 
     /**
