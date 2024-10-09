@@ -522,7 +522,7 @@
     return new Promise(function(resolve, reject) {
       $.ajax({
         type: 'POST',
-        url: '{{action("install_connect_test_db")}}',
+        url: '/install/db/connect/test',
         data: {
           host: $('#host').val(),
           name: $('#name').val(),

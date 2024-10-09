@@ -4,6 +4,15 @@ use Ofey\Logan22\component\plugins\wheel;
 
 $routes = [
   [
+    "method"  => "POST",
+    "pattern" => "/admin/balance/pay/roulette",
+    "file"    => "wheel.php",
+    "call"    => function () {
+        (new wheel\wheel())->payRoulette();
+    },
+  ],
+
+  [
     "method"  => "GET",
     "pattern" => "/fun/wheel/create",
     "file"    => "wheel.php",

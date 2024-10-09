@@ -220,6 +220,8 @@ class wheel
                 'wheel' => $response['wheel'],
             ]);
 
+        }else{
+            board::error($response['message']);
         }
     }
 
@@ -393,6 +395,22 @@ class wheel
                 }
 
                 board::success("Удаление");
+            } else {
+                board::error($response['error']);
+            }
+        }
+    }
+
+    public function payRoulette() {
+        $months	= $_POST['months'] ?? board::error("Не удалось получить данные рулетки");
+        $months = filter_var($months, FILTER_VALIDATE_INT);
+        $data = [
+          'months' => (int)$months,
+        ];
+        $response = server::send(type::GAME_WHEEL_PAY_ROULETTE, $data)->show()->getResponse();
+        if (isset($response['success'])) {
+            if ($response['success']) {
+                board::success("Оплата прошла успешно");
             } else {
                 board::error($response['error']);
             }

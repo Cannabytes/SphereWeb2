@@ -22,7 +22,6 @@ class index
             $sphereAPIError  = true;
             $info['servers'] = [];
         }
-
         foreach ($info['servers'] as $server) {
             $id        = $server['id'];
             $getServer = \Ofey\Logan22\model\server\server::getServer($id);
@@ -47,10 +46,14 @@ class index
 
         \Ofey\Logan22\model\server\server::clearServerInfo();
         \Ofey\Logan22\model\server\server::getServer();
-
+        //var_dump($info);exit();
         if ( ! $sphereAPIError) {
             tpl::addVar([
               "launcher"           => $info['launcher'] ?? null,
+              "licenseDate"        => $info['license']['date'] ?? null,
+              "licenseActive"      => $info['licenseActive'] ?? null,
+              "roulette"           => $info['roulette'] ?? null,
+              "rouletteActive"     => $info['rouletteActive'] ?? false,
               "balance"            => (float)$info['balance'] ?? 0,
               "servers"            => $info['servers'],
               "sphere_last_commit" => $info['last_commit'],

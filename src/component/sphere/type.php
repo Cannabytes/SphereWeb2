@@ -45,6 +45,7 @@ enum type
     case GET_WHEELS;
     case GAME_WHEEL_EDIT_NAME;
     case GAME_WHEEL_REMOVE;
+    case GAME_WHEEL_PAY_ROULETTE;
 
     //Дополнительные настройки
     // Сброс HWID
@@ -60,9 +61,6 @@ enum type
     case LAUNCHER_CREATE_TOKEN;
     case LAUNCHER_UPDATE_TIME;
 
-    // Сохранить выбранные сервисы
-    case SAVE_SERVICE;
-
     // Данные для оплаты SphereWeb
     case SPHERE_DONATE;
 
@@ -76,6 +74,8 @@ enum type
     case CHECK_SUPER_USER_EMAIL_CONFIRM;
 
     CASE ERROR_REPORT;
+
+    CASE RENEW_LICENSE;
 
 
     static function url(type $type): string
@@ -117,6 +117,7 @@ enum type
             self::GET_WHEELS => '/api/game/wheel/list',
             self::GAME_WHEEL_EDIT_NAME => '/api/game/wheel/edit/name',
             self::GAME_WHEEL_REMOVE => '/api/game/wheel/remove',
+            self::GAME_WHEEL_PAY_ROULETTE => '/api/game/wheel/pay',
 
             self::RESET_HWID => '/api/user/player/reset/hwid',
 
@@ -126,7 +127,6 @@ enum type
             self::LAUNCHER_CREATE_TOKEN => '/api/launcher/create/token',
             self::LAUNCHER_UPDATE_TIME => '/api/launcher/update/time',
 
-            self::SAVE_SERVICE => "/api/server/service/save",
             self::SPHERE_DONATE => "/api/donate",
 
             self::CREATE_SUPER_USER_EMAIL_CHECK => "/api/user/global/add/email/check",
@@ -134,6 +134,8 @@ enum type
             self::CHECK_SUPER_USER_EMAIL_CONFIRM => '/api/user/global/add/get/check',
 
             self::ERROR_REPORT => '/api/error/report',
+
+            self::RENEW_LICENSE => '/api/license/renew',
 
             default => null,
         };

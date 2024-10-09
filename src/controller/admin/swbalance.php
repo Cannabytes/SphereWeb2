@@ -10,6 +10,21 @@ use Ofey\Logan22\template\tpl;
 class swbalance
 {
 
+    //Продление лицензии
+    static public function renewLicense(): void
+    {
+        $months = filter_var($_POST['months'], FILTER_VALIDATE_INT);
+        $data = server::send(type::RENEW_LICENSE, [
+            'months' => (int)$months
+        ])->show()->getResponse();
+        if(isset($data['success']) AND $data['success']){
+            board::reload();
+            board::success('Лицензия продлена на '.$months.' месяцев');
+        }else{
+            board::error('Случилась непредвиденная проблема');
+        }
+    }
+
     static public function pay()
     {
         tpl::display("admin/balance_pay.html");
@@ -62,6 +77,7 @@ class swbalance
 
         if(!$sphereAPIError){
             tpl::addVar([
+              "info" => $info,
               "services" => $info['services'] ?? null,
               "launcher" => $info['launcher'] ?? null,
               "balance" => (float)$info['balance'] ?? 0,
@@ -71,24 +87,6 @@ class swbalance
         }
 
         tpl::display("/admin/balance.html");
-    }
-
-
-    public static function saveService(): void
-    {
-        $stream = filter_var($_POST['serviceStream'], FILTER_VALIDATE_BOOL);
-        $roulette = filter_var($_POST['serviceRoulette'], FILTER_VALIDATE_BOOL);
-        $data = server::send(type::SAVE_SERVICE, [
-          'stream' => $stream,
-          'roulette' => $roulette,
-        ])->show()->getResponse();
-        if(isset($data['success'])){
-            if($data['success']){
-                board::success('Сохранено');
-            }else{
-                board::error('Случилась непредвиденная проблема');
-            }
-        }
     }
 
     public static function historyPay() {

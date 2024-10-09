@@ -4,296 +4,264 @@
 
 {% block content %}
 
-    <div class="container-fluid">
+<div class="container-fluid">
 
-        <div class="row">
-            <div class="col-xl-9">
-                <div class="card custom-card">
-                    <div class="card-body p-0">
-                        <div class="row">
-                            <div class="col-xl-6 border-end border-inline-end-dashed">
-                                <div class="d-flex flex-wrap align-items-top p-4">
-                                    <div class="me-3 lh-1">
-                                                <span class="avatar avatar-md avatar-rounded bg-primary shadow-sm">
-                                                    <i class="ti ti-currency-dollar fs-18"></i>
-                                                </span>
-                                    </div>
-                                    <div class="flex-fill">
-                                        <h5 class="fw-semibold mb-1 sphereBalance">${{balance}}</h5>
-                                        <p class="text-muted mb-0 fs-12">На счёту</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-6 border-end border-inline-end-dashed">
-                                <div class="d-flex flex-wrap align-items-top p-4">
-                                    <div class="me-3 lh-1">
-                                                <span class="avatar avatar-md avatar-rounded bg-secondary shadow-sm">
-                                                    <i class="ti ti-rocket fs-18"></i>
-                                                </span>
-                                    </div>
-                                    <div class="flex-fill">
-                                        <h5 class="fw-semibold mb-1">Лаунчер</h5>
-                                        {% if launcher.isActive %}
-                                            <p class="text-muted mb-0 fs-12">Активирован до <span class="launcherDate">{{launcher.dateTimeout|date('d.m.Y H:s')}}</span> </p>
-                                        {% else %}
-                                            <p class="text-muted mb-0 fs-12">Не активирован</p>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
+  <div class="row">
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xl-3">
-                <div class="card custom-card  text-fixed-white">
-                    <div class="card-body p-0">
-                        <div class="d-flex align-items-top p-4 flex-wrap">
-                            <div class="me-3 lh-1">
+    <div class="col-xl-3">
+      <div class="card custom-card  text-fixed-white">
+        <div class="card-body p-0">
+          <div class="d-flex align-items-top p-4 flex-wrap">
+            <div class="me-3 lh-1">
                                         <span class="avatar avatar-md avatar-rounded bg-white text-primary shadow-sm">
                                             <i class="ti ti-coin fs-18"></i>
                                         </span>
-                            </div>
-                            <div class="flex-fill">
-                                <a href="/admin/balance/pay"><h5 class="fw-semibold mb-1 text-danger">Пополнение</h5></a>
-                                <p class="op-7 mb-0 fs-12">Повысить баланс</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
+            <div class="flex-fill">
+              <a href="/admin/balance/pay"><h5 class="fw-semibold mb-1 text-danger">Пополнение</h5></a>
+              <p class="op-7 mb-0 fs-12">Повысить баланс</p>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
 
 
+    <div class="col-xl-9">
+      <div class="card custom-card">
+        <div class="card-body p-0">
+          <div class="row">
 
-        <div class="modal fade" id="exampleModalXl" tabindex="-1"
-             aria-labelledby="exampleModalXlLabel" style="display: none;" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h6 class="modal-title" id="exampleModalXlLabel">Инструкция</h6>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-
-
-
-
-                                    <div class="card-body p-0">
-                                        <div class="p-1  terms-conditions" id="terms-scroll">
-                                            <div class="mb-5">
-                                                <p class="mb-3 ">
-Для оплаты услуг необходимы средства на балансе. Пополнить баланс можно через страницу «<a class="text-primary" href="/admin/balance/pay"><u>Пополнение</u></a>».
-                                                </p>
-                                                <p class="mb-0 ">
-                                                    Общая стоимость всех подключенных услуг распределяется равномерно на месяц, с пропорциональным списанием средств с вашего баланса в течение этого периода. Подключение или отключение услуг может изменить скорость списания средств.
-                                                    <br><br>
-                                                    Пример: Если услуга SphereWeb стоит 12.5 USD в месяц, то с вашего баланса будет списываться 0.016 USD каждый час.                                              </p>
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-
-
-
-
-
-                    </div>
+            <div class="col-xl-4 border-end border-inline-end-dashed">
+              <div class="d-flex flex-wrap align-items-top p-4">
+                <div class="me-3 lh-1">
+                                                <span class="avatar avatar-md avatar-rounded bg-primary shadow-sm">
+                                                    <i class="ti ti-currency-dollar fs-18"></i>
+                                                </span>
                 </div>
+                <div class="flex-fill">
+                  <h5 class="fw-semibold mb-1 sphereBalance">${{balance}}</h5>
+                  <p class="text-muted mb-0 fs-12">На счёту</p>
+                </div>
+              </div>
             </div>
+            <div class="col-xl-4 border-end border-inline-end-dashed">
+              <div class="d-flex flex-wrap align-items-top p-4">
+                <div class="me-3 lh-1">
+                                                <span class="avatar avatar-md avatar-rounded bg-secondary shadow-sm">
+                                                    <i class="ti ti-rocket fs-18"></i>
+                                                </span>
+                </div>
+                <div class="flex-fill">
+                  <h5 class="fw-semibold mb-1">Лаунчер</h5>
+                  {% if launcher.isActive %}
+                  <p class="text-muted mb-0 fs-12">Активирован до <span class="launcherDate">{{launcher.dateTimeout|date('d.m.Y H:s')}}</span>
+                  </p>
+                  {% else %}
+                  <p class="text-muted mb-0 fs-12">Не активирован</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
+      </div>
+    </div>
 
-            <!-- Start::row-1 -->
-            <div class="row">
-                <div class="col-xl-12">
-                    <div class="card custom-card">
-                        <div class="card-header">
-                            <a href="/admin" class="avatar border text-muted me-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
-                            </a>
-                            <div class="card-title">
-                                Выбор услуг Sphere Web <i role="button" data-bs-toggle="modal" data-bs-target="#exampleModalXl" class="ri-questionnaire-line text-teal"></i>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive mb-4">
-                                <table class="table text-nowrap table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">
-                                        </th>
-                                        <th scope="col">Услуга</th>
-                                        <th scope="col">Описание</th>
-                                        <th scope="col">Стоимость</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr class="product-list">
-                                        <td class="product-checkbox"><input checked data-cost="12.5" class="form-check-input price" type="checkbox" id="spherePrice" value="" aria-label="..."></td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="fw-semibold">
-                                                    Sphere Web
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>Использование ПО SphereWeb.</td>
-                                        <td>$12.5 / мес</td>
-                                    </tr>
-
-                                    <tr class="product-list">
-                                        <td class="product-checkbox"><input {% if services.roulette %}checked{%endif %} data-cost="7.5" class="form-check-input price" type="checkbox" id="roulettePrice" value="" aria-label="..."></td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="fw-semibold">
-                                                    Рулетка
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>Рулетка - возможность выиграть пользователю 1 из 20 предметов.</td>
-                                        <td>$8 / мес</td>
-                                    </tr>
-
-                                    </tbody>
-                                </table>
-                            </div>
-                            Общая стоимость: <span class="text-success total-cost"></span> в месяц.
-
-                            <div class="col-12 mt-2">
-                                <button id="saveService" class="btn btn-primary" type="submit">Сохранить</button>
-                            </div>
+  </div>
 
 
-                        </div>
 
-                        <div class="px-1 py-1 border-top border-block-start-dashed d-sm-flex">
-                            <label class="form-label op-5 ">В любой момент можете изменить необходимые Вам услуги, подключить или отказаться.</label>
-                        </div>
+  <!-- Start::row-1 -->
+  <div class="row">
 
-                    </div>
-                </div>
+
+    <div class="col-xl-4">
+      <div class="card custom-card">
+        <div class="card-header justify-content-between">
+          <div class="d-flex align-items-center w-100">
+            <div class="card-title">
+              <div class="fs-15 fw-semibold">SphereWeb</div>
             </div>
+            <div class="ms-auto prism-toggle">
+              <span class="text-{% if info.licenseActive %}success{% else %}danger{% endif %}">
+                {% if info.licenseActive == false %}<i class="bi bi-x-circle"></i> {% endif %}
+                {{info.License|date('d.m.Y H:s')}}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          Вы можете помочь оказать благодарность и поддержку разработчику за SphereWeb, просто пополните себе баланс.
 
+          <div class="col-xl-12 mt-2">
+            <label for="renewmonths" class="form-label">На сколько месяцев продлить SphereWeb</label>
+            <select class="form-control" name="renewmonths" id="renewmonths">
+              <option value="1">1 месяц - $12.5</option>
+              <option value="2">2 месяца - $24</option>
+              <option value="3">3 месяца - $35</option>
+              <option value="6">6 месяцев - $70</option>
+              <option value="12">12 месяцев - $140</option>
+            </select>
+          </div>
 
+        </div>
+        <div class="card-footer">
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-success label-btn label-end" id="renewLicense">
+               Продлить использование
+              <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
+            </button>
+            <script>
+              $("#renewLicense").on("click", function () {
+                  AjaxSend("/admin/balance/pay/renewlicense", "POST", {
+                    months: $("#renewmonths").val()
+                  }, false);
+              });
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="card custom-card overflow-hidden">
-                    <div class="card-header">
-                        <div class="card-title">
-                            Услуга Лаунчера
-                        </div>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="p-3">
+    <div class="col-xl-4">
+      <div class="card custom-card">
+      <div class="card-header justify-content-between">
+        <div class="d-flex align-items-center w-100">
+          <div class="card-title">
+            <div class="fs-15 fw-semibold">Sphere Launcher</div>
+          </div>
+          <div class="ms-auto prism-toggle">
+            {% if launcher.isActive %}
+             <span class="text-success">{{launcher.dateTimeout|date('d.m.Y H:s')}}</span>
+            {% else %}
+              <span class="text-danger">Не активен</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+        <div class="card-body">
 
-                            <p>
-                                <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapseWidthExample" aria-expanded="false"
-                                        aria-controls="collapseWidthExample">
-                                    Описание Sphere Launcher
-                                </button>
-                            </p>
-                            <div>
-                                <div class="collapse collapse-horizontal" id="collapseWidthExample">
-                                    <div class="card card-body" >
-                                        <div class="fs-14 text-muted">
-                                            Sphere Launcher — это лучшее и передовое решение для загрузки файлов. Launcher предоставляет пользователям уникальную возможность загружать множество файлов одновременно, что значительно экономит время и повышает производительность.
-                                            <br>
-                                            Основные преимущества:<br>
-                                            <br>
-                                            Высокая скорость и производительность: Лаунчер разработан с учётом всех лучших практик Go, что обеспечивает молниеносную обработку данных и оптимальную работу даже с большим количеством файлов.<br>
-                                            Одновременная загрузка: Благодаря параллельной обработке задач, лаунчер может загружать множество файлов одновременно, что делает его незаменимым инструментом для пользователей, работающих с большим объёмом данных.<br>
-                                            Безопасность и надёжность: Встроенные механизмы языка Go гарантируют защиту данных и стабильность работы лаунчера, минимизируя вероятность ошибок и сбоев.<br>
-                                            Масштабируемость: Лаунчер легко адаптируется под любые задачи, будь то загрузка небольших файлов или работа с большими объемами данных, обеспечивая стабильную производительность в любой ситуации.<br>
-                                            Простота использования: Лаконичный и понятный интерфейс делает работу с лаунчером доступной даже для начинающих пользователей, а встроенные функции облегчают настройку и управление загрузками.<br>
-                                            Кэширование повторно загружаемых файлов пользователем.
-                                            <br>
-                                            Попробуйте наш лаунчер и ощутите все преимущества быстрого и надёжного инструмента, созданного на основе самых современных технологий!<br>
+              <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#collapseWidthExample" aria-expanded="false"
+                      aria-controls="collapseWidthExample">
+                Описание Sphere Launcher
+              </button>
+              <div class="collapse collapse-horizontal" id="collapseWidthExample">
+                  <div class="fs-14 text-muted">
+                    Sphere Launcher — это лучшее и передовое решение для загрузки файлов. Launcher предоставляет
+                    пользователям уникальную возможность загружать множество файлов одновременно, что значительно
+                    экономит время и повышает производительность.
+                    <br>
+                    Основные преимущества:<br>
+                    <br>
+                    Высокая скорость и производительность: Лаунчер разработан с учётом всех лучших практик Go, что
+                    обеспечивает молниеносную обработку данных и оптимальную работу даже с большим количеством
+                    файлов.<br>
+                    Одновременная загрузка: Благодаря параллельной обработке задач, лаунчер может загружать множество
+                    файлов одновременно, что делает его незаменимым инструментом для пользователей, работающих с большим
+                    объёмом данных.<br>
+                    Безопасность и надёжность: Встроенные механизмы языка Go гарантируют защиту данных и стабильность
+                    работы лаунчера, минимизируя вероятность ошибок и сбоев.<br>
+                    Масштабируемость: Лаунчер легко адаптируется под любые задачи, будь то загрузка небольших файлов или
+                    работа с большими объемами данных, обеспечивая стабильную производительность в любой ситуации.<br>
+                    Простота использования: Лаконичный и понятный интерфейс делает работу с лаунчером доступной даже для
+                    начинающих пользователей, а встроенные функции облегчают настройку и управление загрузками.<br>
+                    Кэширование повторно загружаемых файлов пользователем.
+                    <br>
+                    Попробуйте наш лаунчер и ощутите все преимущества быстрого и надёжного инструмента, созданного на
+                    основе самых современных технологий!<br>
 
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                  </div>
+                </div>
 
-                            <ul class="list-unstyled order-details-list">
-                                <li>
+            <ul class="list-unstyled order-details-list">
 
-                                    {% if launcher.isActive %}
-                                       {% if launcher.timeIsUp %}
-                                        <div class="fs-14 text-muted">
-                                            <span class="me-2 text-default fw-semibold">Активирован до <span class="launcherDate">{{launcher.dateTimeout|date('d.m.Y H:s')}}</span></span>
-                                        </div>
-                                        {% else %}
-                                        <div class="fs-14 text-muted">
-                                            <span class="me-2 text-default fw-semibold">Лаунчер был активирован до <span class="launcherDate">{{launcher.dateTimeout|date('d.m.Y H:s')}}</span>.</span>
-                                            <br>
-                                            <span class="me-2 text-danger fw-semibold">Время использования лаунчера вышло, пожалуйста, продлите срок использования лаунчера.</span>
-                                        </div>
-                                        {% endif %}
+              <li>
+                <div class="fs-14 text-muted">
+                  <a href="/admin/launcher">Перейти настройки лаунчеров</a>
+                </div>
+              </li>
 
-                                    {% else %}
-                                    <p class="text-muted mb-0 fs-12">Ваш лаунчер не активирован. Вы можете активировать, и с Вашего счета будет списаны деньги.</p>
-                                    {% endif %}
+            </ul>
 
-                                </li>
-                                <li>
-                                    <div class="fs-14 text-muted"><span class="me-2 text-default fw-semibold">Стоимость использования лаунчера : </span> $5/мес.</div>
-                                </li>
-                                <li>
-                                    <div class="fs-14 text-muted">
-                                        <a href="/admin/launcher">Перейти настройки лаунчеров</a>
-
-                                    </div>
-                                </li>
-
-
-                            </ul>
-
-
-                                <div class="d-md-flex">
-
-                                        <span class="my-auto  text-muted fw-semibold">На сколько месяцев продлить использование лаунчера ?</span>
-
-                                        <span class="my-auto  text-muted fw-semibold">
-
-                                            <select class="form-control ms-2" name="launcherMonth" id="launcherMonth">
+              <span class="my-auto  text-muted fw-semibold">
+                                            <select class="form-control " name="launcherMonth" id="launcherMonth">
                                                   <option value="1">1 мес./ $5 </option>
                                                   <option value="2">2 мес./ $9 </option>
                                                   <option value="3">3 мес./ $13 </option>
                                                   <option value="6">6 мес./ $25 </option>
                                                   <option value="12">12 мес./ 45$</option>
                                               </select>
-
-
                                         </span>
 
-                                    <button type="button" id="updateTime" class="btn btn-light ms-3">Продлить Лаунчер</button>
-
-
-                                </div>
-
-
-
-
-                        </div>
-                        <div id="successPayLauncher"></div>
-                    </div>
-                </div>
-            </div>
-
         </div>
-
+        <div class="card-footer">
+          <div class="d-flex justify-content-between">
+            <button type="button" id="updateTime" class="btn btn-success ms-2 ">Продлить Лаунчер</button>
+          </div>
+        </div>
+        <div id="successPayLauncher"></div>
+      </div>
     </div>
 
+    <div class="col-xl-4">
+      <div class="card custom-card">
+      <div class="card-header justify-content-between">
+        <div class="d-flex align-items-center w-100">
+          <div class="card-title">
+            <div class="fs-15 fw-semibold">Рулетка</div>
+          </div>
+          <div class="ms-auto prism-toggle">
+            {% if info.rouletteActive %}
+              <span class="text-success">{{roulette|date('d.m.Y H:s')}}</span>
+            {% else %}
+              <span class="text-danger">Не активен</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+        <div class="card-body">
+          Возможность пользователям крутить рулетку за Донат Коины и выиграть 1 из 20 предметов.
+
+          <div class="col-xl-12 mt-2">
+            <label for="rouletteMonths" class="form-label">На сколько месяцев продлить SphereWeb</label>
+            <select class="form-control" name="rouletteMonths" id="rouletteMonths">
+                <option value="1">1 мес./ $5 </option>
+                <option value="2">2 мес./ $9 </option>
+                <option value="3">3 мес./ $13 </option>
+                <option value="6">6 мес./ $25 </option>
+                <option value="12">12 мес./ $45 </option>
+            </select>
+          </div>
+
+
+        </div>
+        <div class="card-footer">
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-success label-btn label-end" id="clickRouletteMonths">
+              Продлить использование
+              <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
+            </button>
+            <script>
+              $("#clickRouletteMonths").on("click", function () {
+                AjaxSend("/admin/balance/pay/roulette", "POST", {
+                  months: $("#rouletteMonths").val()
+                }, false);
+              });
+            </script>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+
+
+</div>
+
 {% endblock %}
-
-
-
 
 
 {% block css %}
@@ -302,78 +270,89 @@
 
 
 {% block js %}
-<script>
-    $("#saveService").on("click", function (){
-        let serviceStream  = $("#streamPrice").prop("checked");
-        let serviceRoulette  = $("#roulettePrice").prop("checked");
-        AjaxSend("/admin/balance/service/save", "POST", {
-            serviceStream: serviceStream,
-            serviceRoulette: serviceRoulette,
-        });
-    });
-</script>
+
 
 <script>
-    $(document).ready(function(){
-        // Функция для пересчета суммы
-        function calculateTotal() {
-            let total = 0;
-            $(".price:checked").each(function(){
-                total += parseFloat($(this).data('cost'));
-            });
-            $(".total-cost").text("$" + total.toFixed(2));
-        }
+  $(document).ready(function () {
+    // Функция для пересчета суммы
+    function calculateTotal() {
+      let total = 0;
+      $(".price:checked").each(function () {
+        total += parseFloat($(this).data('cost'));
+      });
+      $(".total-cost").text("$" + total.toFixed(2));
+    }
 
-        // Запретить снятие галочки с #spherePrice
-        $("#spherePrice").on("click", function(e) {
-            if (!$(this).prop("checked")) {
-                e.preventDefault();
-            }
-        });
-
-        // Пересчитывать сумму при изменении состояния чекбоксов
-        $(".price").on("change", function(){
-            calculateTotal();
-        });
-
-        // Инициализация подсчета суммы при загрузке страницы
-        calculateTotal();
+    // Запретить снятие галочки с #spherePrice
+    $("#spherePrice").on("click", function (e) {
+      if (!$(this).prop("checked")) {
+        e.preventDefault();
+      }
     });
+
+    // Пересчитывать сумму при изменении состояния чекбоксов
+    $(".price").on("change", function () {
+      calculateTotal();
+    });
+
+    // Инициализация подсчета суммы при загрузке страницы
+    calculateTotal();
+  });
 </script>
 
 
-
 <script>
 
-    $("#updateTime").on("click", function (){
-        $('#updateTime').prop('disabled', true);
-        AjaxSend("/admin/launcher/update/time", "POST", {
-            month: $("#launcherMonth").val()
-        }, true).then(function (response){
-            $('#updateTime').prop('disabled', false);
-            responseAnalysis(response);
-            if(response.date){
-                $(".sphereBalance").text("$" + response.balance)
-                $(".launcherDate").text(response.date)
-                $("#successPayLauncher").html("                        <div class=\"alert alert-success d-flex align-items-center rounded-0 shadow-none\" role=\"alert\">\n" +
-                  "                            <svg class=\"flex-shrink-0 me-2 svg-success\" xmlns=\"http://www.w3.org/2000/svg\" height=\"1.5rem\" viewBox=\"0 0 24 24\" width=\"1.5rem\" fill=\"#000000\"><path d=\"M0 0h24v24H0V0zm0 0h24v24H0V0z\" fill=\"none\"></path><path d=\"M16.59 7.58L10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"></path></svg>\n" +
-                  "                            <div>\n" +
-                  "                                <strong>Вы успешно пополнили использование лаунчера до "+response.date+" \n" +
-                  "                            </div>\n" +
-                  "                        </div>")
-            }
-        })
+  $("#updateTime").on("click", function () {
+    $('#updateTime').prop('disabled', true);
+    AjaxSend("/admin/launcher/update/time", "POST", {
+      month: $("#launcherMonth").val()
+    }, true).then(function (response) {
+      $('#updateTime').prop('disabled', false);
+      responseAnalysis(response);
+      if (response.date) {
+        $(".sphereBalance").text("$" + response.balance)
+        $(".launcherDate").text(response.date)
+        $("#successPayLauncher").html("                        <div class=\"alert alert-success d-flex align-items-center rounded-0 shadow-none\" role=\"alert\">\n" +
+          "                            <svg class=\"flex-shrink-0 me-2 svg-success\" xmlns=\"http://www.w3.org/2000/svg\" height=\"1.5rem\" viewBox=\"0 0 24 24\" width=\"1.5rem\" fill=\"#000000\"><path d=\"M0 0h24v24H0V0zm0 0h24v24H0V0z\" fill=\"none\"></path><path d=\"M16.59 7.58L10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"></path></svg>\n" +
+          "                            <div>\n" +
+          "                                <strong>Вы успешно пополнили использование лаунчера до " + response.date + " \n" +
+          "                            </div>\n" +
+          "                        </div>")
+      }
     })
+  })
 
 </script>
 
 <script>
-    (function() {
-        'use strict';
+  (function () {
+    'use strict';
 
-        var termsScroll = document.getElementById('terms-scroll');
-        new SimpleBar(termsScroll, { autoHide: true });
+    var termsScroll = document.getElementById('terms-scroll');
+    new SimpleBar(termsScroll, {autoHide: true});
 
-    })()
+    new Choices('#renewmonths', {
+      allowHTML: true,
+      searchEnabled: false,
+      removeItemButton: false,
+      choices: [],
+    });
+
+    var launcherMonth = new Choices('#launcherMonth', {
+      allowHTML: true,
+      searchEnabled: false,
+      removeItemButton: false,
+      choices: [],
+    });
+
+    new Choices('#clickRouletteMonths', {
+      allowHTML: true,
+      searchEnabled: false,
+      removeItemButton: false,
+      choices: [],
+    });
+
+  })()
 </script>
 {% endblock %}

@@ -1835,20 +1835,6 @@ return array (
     'page' => '',
     'comment' => '',
   ),
-  132 => 
-  array (
-    'enable' => true,
-    'method' => 'POST',
-    'pattern' => '/admin/balance/service/save',
-    'func' => 'controller\\admin\\swbalance::saveService',
-    'access' => 
-    array (
-      0 => 'admin',
-    ),
-    'weight' => 0,
-    'page' => '',
-    'comment' => '',
-  ),
   133 => 
   array (
     'enable' => true,
@@ -2039,6 +2025,20 @@ return array (
     'method' => 'POST',
     'pattern' => '/admin/plugin/save/config',
     'func' => 'model\\plugin\\plugin::saveSetting',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  147 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/balance/pay/renewlicense',
+    'func' => 'controller\\admin\\swbalance::renewLicense',
     'access' => 
     array (
       0 => 'admin',

@@ -42,7 +42,7 @@
           {% if short.link %}
           <a target="_blank" class="btn btn-primary" href="{{short.link}}">{{phrase('follow_the_link')}}</a>
           {% else %}
-          <a class="btn btn-primary" href="{{action('get_page', [short.id])}}">{{ phrase('open') }}</a>
+          <a class="btn btn-primary" href="/page/{{short.id}}">{{ phrase('open') }}</a>
           {% endif %}
           <a href="/admin/pages/edit/{{short.id}}" class="btn btn-primary">{{ phrase('change') }}</a>
         </div>

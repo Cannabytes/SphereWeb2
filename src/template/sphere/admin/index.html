@@ -84,24 +84,61 @@
             </div>
             {% endif %}
 
-            <div class=" border-bottom border-block-end-dashed mb-3">
+            <div class=" border-bottom border-block-end-dashed mb-1">
             </div>
 
             <div class="mb-3 ">
               <div class="text-muted">
-                <p class="mb-1">
-                  {% if launcher.isActive %}
-                    Sphere Launcher до <span class="text-primary">{{launcher.dateTimeout|date('d.m.Y H:s')}}</span>.
-                      {% if launcher.TimeIsUp == false %}
-                        <br>
-                        <a class="text-danger" href="/admin/balance">Время использования лаунчера вышло, рекомендуем продлить использование лаунчера.</a>
-                      {% endif %}
-                  {% else %}
-                    Sphere Launcher не активен. <a href="/admin/balance">Подключить?</a>
-                  {% endif %}
-                </p>
+
+                <div class="table-responsive">
+                  <table class="table text-nowrap">
+                    <thead>
+                    <tr>
+                      <th scope="col">Услуга</th>
+                      <th scope="col">Дата окончания</th>
+                    </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+
+                    <tr>
+                      <th scope="row">Sphere Web</th>
+                      <td><span class="text-{% if licenseActive %}success{% else %}danger{% endif %}">{% if licenseActive == false %}<i class="bi bi-x-circle"></i> {% endif %}{{licenseDate|date('d.m.Y H:s')}}</span></td>
+                    </tr>
+
+                    <tr>
+                      <th scope="row">Sphere Launcher</th>
+                      <td>
+                        {% if launcher.dateTimeout == false %}
+                          <span class="text-danger">Не активен</span>
+                        {% else %}
+                        <span class="text-success">{{launcher.dateTimeout|date('d.m.Y H:s')}}</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <th scope="row">Рулетка</th>
+                      <td>
+                        {% if rouletteActive == false %}
+                          <span class="text-danger">Не активен</span>
+                        {% else %}
+                        <span class="text-success">{{roulette|date('d.m.Y H:s')}}</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+
+
 
               </div>
+
+
+            </div>
+            <div class="d-grid gap-2 ">
+              <a class="btn btn-teal me-md-2 btn-wave waves-effect waves-light" href="/admin/balance">Управление балансом</a>
             </div>
 
 
