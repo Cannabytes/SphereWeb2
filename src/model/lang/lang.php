@@ -181,7 +181,7 @@ class lang
         return false;
     }
 
-    public function getAllowLang($isAll = true)
+    public function getAllowLang($isAll = true): array
     {
         $langs        = [];
         $allLanguages = $this->getLangList();

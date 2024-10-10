@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light"
+      data-menu-styles="light" data-toggled="close">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>  Install Sphere Web CMS </title>
+  <meta name="Description" content=" Install Sphere Web CMS">
+  <meta name="Author" content="SphereWeb CMS">
+  <meta name="keywords" content="Lineage 2, L2, Lineage II, Lineage 2 server, MMORPG, PvP, PvE, Lineage 2 quests, Lineage 2 chronicles, L2j server, L2 server, L2j, L2off, custom Lineage 2 server, free Lineage 2 server, Lineage 2 installation, Lineage 2 client, download Lineage 2, Lineage 2 updates, Lineage 2 Interlude, Lineage 2 Gracia, Lineage 2 High Five, Lineage 2 Interlude chronicles, Lineage 2 Gracia chronicles, Lineage 2 High Five chronicles, Lineage 2 clans, Lineage 2 castle sieges, Lineage 2 pets, Lineage 2 fishing, Lineage 2 professions, Lineage 2 classes, Lineage 2 Aden, Lineage 2 arenas, Lineage 2 RB, Lineage 2 raid bosses, L2 servers, Interlude servers, Gracia servers, High Five servers, Lineage 2 Epilogue chronicles, PvP servers, Lineage 2 high rate servers, Lineage 2 low rate servers, Lineage 2 mid rate servers, Lineage 2 crafting, Lineage 2 clan halls, Lineage 2 epic bosses, Lineage 2 armor, Lineage 2 weapons, Lineage 2 crafting system, Lineage 2 economy, Lineage 2 players, Lineage 2 forum, best Lineage 2 servers, download Lineage 2 for free, Lineage 2 admin panel, Lineage 2 quests, rates, Lineage 2 grind, mass PvP battles, Lineage 2 scrolls, Lineage 2 magic, Lineage 2 healers, Lineage 2 tanks, Lineage 2 damage, Lineage 2 attack, Lineage 2 gear, Lineage 2 armor, Lineage 2 instances, clans, alliances, Lineage 2 news, Lineage 2 tournaments, custom mods Lineage 2 servers, Lineage 2 mages, healers, support classes, Lineage 2 buffers, debuffers, Lineage 2 buffs, Lineage 2 Classic chronicles, Lineage 2 Essence chronicles, Lineage 2 updates, unique Lineage 2 systems, GM team, GM events, Lineage 2 arenas, Lineage 2 clan wars, PvP arenas, L2JMobius, Lineage 2 scripts, Lineage 2 NPCs, Lineage 2 crafting, Lineage 2 races, humans, elves, dark elves, orcs, dwarves, kamael, Lineage 2 factions, Lineage 2 castles, castle sieges, no donation Lineage 2 servers, donation systems, top Lineage 2 servers, Lineage 2 bot programs, donation systems, server economy, GMs, Lineage 2 events, sieges, battles, L2 chronicles, Lineage 2 top servers, mods, Lineage 2 servers with mods, no wipe servers, server rates, Lineage 2 gameplay, Lineage 2 cheats, PvP servers, High Five chronicles, Gracia chronicles, Epilogue chronicles, Freya chronicles, Awakening chronicles, x100 rates, x10 rates, Lineage 2 leveling, auto-buff, Lineage 2 monster hunting, Lineage 2 server catalogs, Lineage 2 world map, Lineage 2 skills, Lineage 2 Essence chronicles, clan halls, buff systems, L2 gameplay, Lineage 2 servers 2024, Lineage 2 for beginners, Lineage 2 guides, Lineage 2 tips, Lineage 2 server rankings, starter guides, Lineage 2 characters, Lineage 2 tips and tricks, Lineage 2 monster maps, Lineage 2 raid boss guides, raid boss locations, in-game tasks, Lineage 2 features, class system, Lineage 2 events, character leveling, Lineage 2 bosses, Lineage 2 inventory, Lineage 2 fishing, profession guides, L2 top servers, Lineage 2 nobless, Lineage 2 olympiad, Lineage 2 olympiad games, Lineage 2 events, PvP events, Lineage 2 pets, pet leveling, Lineage 2 guilds, Lineage 2 alliance, Lineage 2 politics, Lineage 2 sieges, Lineage 2 strategy, Lineage 2 territorial wars, Lineage 2 content, game economy, Lineage 2 training, rare items, Lineage 2 sets, armor, weapons, PvP, PvE, Lineage 2 RPG, L2 world, Lineage" />
+
+  <link rel="icon" href="{{template}}/assets/images/brand-logos/favicon.ico" type="image/x-icon">
+  <script src="{{template}}/assets/js/authentication-main.js"></script>
+  <link id="style" href="{{template}}/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{template}}/assets/css/styles.min.css" rel="stylesheet">
+  <link href="{{template}}/assets/libs/simplebar/simplebar.min.css" rel="stylesheet">
+  <link href="{{template}}/assets/css/icons.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div id="loader">
+  <img src="{{template}}/assets/images/media/loader.svg" alt="">
+</div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div id="successToast" class="toast colored-toast bg-success-transparent" role="alert" aria-live="assertive"
+       aria-atomic="true">
+    <div class="toast-header bg-success text-fixed-white">
+      <img class="bd-placeholder-img rounded me-2" src="{{template}}/assets/images/brand-logos/toggle-white.png"
+           alt="...">
+      <strong class="me-auto" id="successTitleMessageNotice"></strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"
+              aria-label="Close"></button>
+    </div>
+    <div class="toast-body" id="successContentMessageNotice"></div>
+  </div>
+
+  <div id="dangerToast" class="toast colored-toast bg-danger-transparent" role="alert" aria-live="assertive"
+       aria-atomic="true">
+    <div class="toast-header bg-danger text-fixed-white">
+      <img class="bd-placeholder-img rounded me-2" src="{{template}}/assets/images/brand-logos/toggle-white.png"
+           alt="...">
+      <strong class="me-auto" id="dangerTitleMessageNotice"></strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"
+              aria-label="Close"></button>
+    </div>
+    <div class="toast-body" id="dangerContentMessageNotice"></div>
+  </div>
+</div>
+
+<div class="bg-dark-gradient ">
+
+  <div class="container-lg">
+    <div class="row justify-content-center authentication authentication-basic align-items-center h-100">
+      <div class="row">
+        <div class="col-xl-12">
+          <div class="card custom-card">
+            <div class="card-body p-0 product-checkout">
+              <ul
+                class="nav nav-tabs tab-style-2 d-sm-flex d-block border-bottom border-block-end-dashed justify-content-between"
+                id="myTab1" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="order-tab" data-bs-toggle="tab"
+                          data-bs-target="#order-tab-pane" type="button" role="tab"
+                          aria-controls="order-tab" aria-selected="true"><i
+                    class="ri-truck-line me-2 align-middle"></i>License Agreement
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button disabled class="nav-link" id="minimum-requirements" data-bs-toggle="tab"
+                          data-bs-target="#minimum-requirements-tab-pane" type="button" role="tab"
+                          aria-controls="minimum-requirements" aria-selected="false"><i
+                    class="ri-bank-card-line me-2 align-middle"></i>Minimum Requirements
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button disabled class="nav-link" id="mysql-tab" data-bs-toggle="tab"
+                          data-bs-target="#mysql-tab-pane" type="button" role="tab"
+                          aria-controls="mysql-tab" aria-selected="false"><i
+                    class="ri-user-3-line me-2 align-middle"></i>Database Connection
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button disabled class="nav-link" id="admin-tab" data-bs-toggle="tab"
+                          data-bs-target="#admin-tab-pane" type="button" role="tab"
+                          aria-controls="admin-tab" aria-selected="false"><i
+                    class="ri-user-3-line me-2 align-middle"></i>Administrator
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button disabled class="nav-link" id="install-tab" data-bs-toggle="tab"
+                          data-bs-target="#install-tab-pane" type="button" role="tab"
+                          aria-controls="install-tab" aria-selected="false"><i
+                    class="ri-checkbox-circle-line me-2 align-middle"></i>Confirmation
+                  </button>
+                </li>
+              </ul>
+              <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active border-0 p-0" id="order-tab-pane" role="tabpanel"
+                     aria-labelledby="order-tab-pane" tabindex="0">
+
+
+                  <div class="row justify-content-center">
+                    <div class="col-xl-12">
+                      <div class="card custom-card overflow-hidden">
+                        <div class="card-body p-0 ">
+                          <div class="p-4 text-muted terms-conditions" id="terms-scroll">
+                            <h6 class="fw-bold pb-3 text-default ">License Agreement</h6>
+
+                            <p class="mb-0 pb-3">
+
+                            <p class="mb-3 ">
+                              <span
+                                class="fw-bold text-default">1. License for Use of Software</span><br>
+                              1.1. The Licensor grants you a non-exclusive, non-transferable license to use the Software in accordance with the terms of this Agreement.<br>
+                              1.2. Under this license, you are allowed to use the Software only for non-commercial purposes.<br>
+                              1.3. You are not allowed to sell, rent, license, modify, adapt, distribute, translate, decompile, reverse engineer, or create derivative works based on the Software without the express written consent of the Licensor.<br>
+                            </p>
+
+                            <p class="mb-0  pb-3">
+                              <span class="fw-bold text-default">2. Limited Warranty</span><br>
+                              2.1. The Software is provided "as is", without any express or implied warranties, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, or non-infringement.<br>
+                            </p>
+
+                            <p class="mb-0 pb-3">
+                              <span class="fw-bold text-default">3. Limitation of Liability</span><br>
+                              3.1. In case of any claims, damages, or other liabilities arising from the use of the Software, the Licensor is not liable to you or third parties.<br>
+                            </p>
+
+                            <p class="mb-0 pb-3">
+                              <span class="fw-bold text-default">4. Prohibition of Sale or Modification</span><br>
+                              4.1. You are not allowed to sell, rent, license, modify, adapt, distribute, translate, decompile, reverse engineer, or create derivative works based on the Software without the express written consent of the Licensor.<br>
+                            </p>
+
+                            <p class="mb-0 pb-3">
+                              <span class="fw-bold text-default">5. Studying the Source Code</span><br>
+                              5.1. You have the right to study the source code of the Software for personal knowledge and learning.<br>
+                            </p>
+
+                            <p class="mb-0 pb-3">
+                              <span class="fw-bold text-default">6. Requesting Modifications</span><br>
+                              6.1. If modifications or improvements to the Software are required, you agree to contact the Licensor for permission and approval.<br>
+                            </p>
+
+
+                            <p class="mb-0 pb-3">
+                              <span class="fw-bold text-default">7. Dispute Resolution</span><br>
+                              7.1. In case of disputes related to this Agreement, the parties agree to attempt to resolve them through negotiations.<br>
+                              7.2. If the disputes cannot be resolved through negotiations, they are subject to resolution in accordance with applicable laws.<br>
+                            </p>
+
+                            <p class="mb-0 pb-3">
+                              <span class="fw-bold text-default">8. Other Provisions</span><br>
+                              8.1. This Agreement constitutes the entire agreement between you and the Licensor regarding the Software and supersedes all prior or contemporaneous agreements, promises, express or implied, regarding this subject.<br>
+                              8.2. This Agreement is governed by and shall be interpreted in accordance with applicable laws.<br>
+                              8.3. This Agreement takes effect upon your initial use of the Software and remains in effect until its termination.<br>
+                            </p>
+
+                            <footer class="mt-5">
+                              <p>Signed and agreed: Sphere Project Developer</p>
+                              <p>Date: 04 May 2024.</p>
+                            </footer>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-between">
+                    <div>
+                      <a href="/en" class="text-success ms-2">English</a>
+                      <a href="/ru" class="text-success ms-2">Russian</a>
+                    </div>
+                    <div>
+                      <button type="button" class="btn btn-success-light" id="termsApply">I Accept the Terms</button>
+                    </div>
+                  </div>
+
+
+
+                </div>
+
+
+                <div class="tab-pane fade border-0 p-0" id="minimum-requirements-tab-pane" role="tabpanel"
+
+                     aria-labelledby="minimum-requirements-tab-pane" tabindex="0">
+                  <div class="p-4">
+
+                    <div class="row">
+                      <div class="col-xl-12">
+                        <div class="card custom-card">
+
+                          <div class="table-responsive table-sm">
+                            <table class="table text-nowrap">
+                              <thead>
+                              <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Minimum</th>
+                                <th scope="col">Current</th>
+                                <th scope="col">Status</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+
+
+                              {% for info in php_informations %}
+                              <tr>
+                                <th scope="row">{{info.name}}</th>
+                                <th>{{info.min}}</th>
+                                <th>{{info.get}}</th>
+                                <th>{{info.allow ? '<i class="fe fe-check text-success"></i>' : '<i aria-hidden="true"
+                                                                                                    class="fe fe-alert-circle text-danger"></i>'
+                                  }}
+                                </th>
+                              </tr>
+                              {% endfor %}
+
+
+                              {% for ext in extensions %}
+                              <tr>
+                                <th scope="row">PHP Module: {{ext.name}}</th>
+                                <td></td>
+                                <td></td>
+                                <th>{{ext.allow ? '<i class="fe fe-check text-success"></i>' : '<i aria-hidden="true"
+                                                                                                   class="fe fe-alert-circle text-danger"></i>'
+                                  }}
+                                </th>
+                              </tr>
+                              {% endfor %}
+
+                              {% for dir in dir_permissions %}
+                              <tr>
+                                <th scope="row">{{ dir.path }}</th>
+                                <td></td>
+                                <td></td>
+                                <td>{{ dir.per ? '<i aria-hidden="true" class="fe fe-check text-success"></i>' : '<i
+                                  aria-hidden="true" class="fe fe-alert-circle text-danger"></i>' }}
+                                </td>
+                              </tr>
+                              {% endfor %}
+
+                              <tr>
+                                <th scope="row">Is not localhost</th>
+                                <td>SphereWeb will not work on localhost</td>
+                                <td></td>
+                                <td>{{ isLocalhost == false ? '<i aria-hidden="true" class="fe fe-check text-success"></i>' : '<i
+                                  aria-hidden="true" class="fe fe-alert-circle text-danger"></i>' }}
+                                </td>
+                              </tr>
+
+                              <tr>
+                                <th scope="row">File: <a target="_blank"
+                                                         href="https://github.com/Cannabytes/SphereWeb/blob/master/.htaccess">.htaccess</a>
+                                </th>
+                                <td></td>
+                                <td></td>
+                                <th>{{htaccess ? '<i aria-hidden="true" class="fe fe-check text-success"></i>' : '<i
+                                  aria-hidden="true" class="fe fe-alert-circle text-danger"></i>' }}
+                                </th>
+                              </tr>
+
+                              <tr>
+                                <th scope="row">Apache</th>
+                                <td>2.4</td>
+                                <td></td>
+                                <td></td>
+                              </tr>
+                              <tr>
+                                <th scope="row">MySQL (MariaDB)</th>
+                                <td>5.8</td>
+                                <td></td>
+                                <td></td>
+                              </tr>
+                              <tr>
+                                <th scope="row">RAM</th>
+                                <td>1 GB</td>
+                                <td></td>
+                                <td></td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Available Disk Space</th>
+                                <td>3 GB</td>
+                                <td></td>
+                                <td></td>
+                              </tr>
+
+                              </tbody>
+                            </table>
+                          </div>
+
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+                  <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-end">
+                    <button type="button" class="btn btn-success-light" id="nextToConnectDB">Next</button>
+                  </div>
+
+                </div>
+
+                <div class="tab-pane fade border-0 p-0" id="mysql-tab-pane"
+                     role="tabpanel" aria-labelledby="mysql-tab-pane" tabindex="0">
+                  <div class="p-4">
+                    <div class="fs-15 fw-semibold d-sm-flex d-block align-items-center justify-content-between mb-3">
+                      <div>Connecting to MySQL / MariaDB</div>
+                    </div>
+                    <div class="row gy-4">
+
+                      <div class="col-xl-2">
+                        <label for="host" class="form-label">Host</label>
+                        <input type="text" class="form-control" id="host" placeholder="127.0.0.1" value="127.0.0.1">
+                      </div>
+
+                      <div class="col-xl-2">
+                        <label for="port" class="form-label">Port</label>
+                        <input type="text" class="form-control" id="port" placeholder="3306" value="3306">
+                      </div>
+
+                      <div class="col-xl-2">
+                        <label for="user" class="form-label">User</label>
+                        <input type="text" class="form-control" id="user" placeholder="root" value="root">
+                      </div>
+
+                      <div class="col-xl-2">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="text" class="form-control" id="password" placeholder="" value="">
+                      </div>
+
+                      <div class="col-xl-2">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="sphere" value="sphere">
+                      </div>
+
+                      <div class="col-xl-2">
+                        <label for="mysqlConnect" class="form-label">Test mysql Connection</label>
+                        <button type="button" class="btn btn-primary" id="mysqlConnect" value="">Connect</button>
+                      </div>
+
+                    </div>
+                  </div>
+
+
+                  <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-end">
+                    <button type="button" class="btn btn-success-light m-1" id="nextToCreateAdmin">Next</button>
+                  </div>
+                </div>
+
+                <div class="tab-pane fade border-0 p-0" id="admin-tab-pane"
+                     role="tabpanel" aria-labelledby="mysql-tab-pane" tabindex="0">
+                  <div class="p-4">
+                    <div class="fs-15 fw-semibold d-sm-flex d-block align-items-center justify-content-between mb-3">
+                      <div>Create Administrator Account</div>
+                    </div>
+                    <div class="row gy-4">
+
+                      <div class="col-xl-2">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" placeholder="" value="">
+                      </div>
+
+                      <div class="col-xl-2">
+                        <label for="nickname" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="nickname" placeholder="">
+                      </div>
+
+                      <div class="col-xl-2">
+                        <label for="adminPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="adminPassword" placeholder="" value="">
+                      </div>
+
+                    </div>
+                  </div>
+
+
+                  <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-end">
+                    <button type="button" class="btn btn-success-light" id="nextToInstall">Next</button>
+                  </div>
+                </div>
+
+                <div class="tab-pane fade border-0 p-0" id="install-tab-pane" role="tabpanel"
+                     aria-labelledby="install-tab-pane" tabindex="0">
+                  <div class="p-5 checkout-payment-success my-3">
+                    <div class="mb-5">
+                      <h5 class="text-success fw-semibold">Ready to Install SphereWeb &#129309;</h5>
+                    </div>
+
+                    <div class="mb-4">
+                    </div>
+
+                    <button type="button" id="install" class="btn btn-success">Start Installation</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script src="{{template}}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+<script src="{{template}}/assets/libs/simplebar/simplebar.min.js"></script>
+
+<script src="{{template}}/assets/js/terms_conditions.js"></script>
+
+<script src="{{template}}/assets/js/Toasts.js"></script>
+<script src="{{template}}/assets/js/general.js"></script>
+
+<script>
+  $('#termsApply').click(function () {
+    $('#minimum-requirements').tab('show');
+    $('#minimum-requirements').removeAttr('disabled');
+  });
+
+  $('#nextToConnectDB').click(function () {
+    $('#mysql-tab').tab('show');
+    $('#mysql-tab').removeAttr('disabled');
+  });
+
+  $('#nextToCreateAdmin').click(function () {
+    checkConnectDB().then(function(response) {
+      if(MySQLVersionOK) {
+        $('#admin-tab').tab('show');
+        $('#admin-tab').removeAttr('disabled');
+      } else {
+        noticeError("MySQL connection is required");
+      }
+    });
+  });
+
+  $('#nextToInstall').click(function () {
+
+    let email = $('#email').val();
+    let nickname = $('#nickname').val();
+    let password = $('#adminPassword').val();
+
+    if (!email || !nickname || !password) {
+      noticeError("Please fill all required fields");
+      return;
+    }
+    // Проверяем валидность email адреса
+    if (!isEmail(email)) {
+      noticeError("Invalid email address");
+      return;
+    }
+
+    // Проверяем длину пароля
+    if (password.length < 6) {
+      noticeError("Password must be at least 6 characters long");
+      return;
+    }
+
+    // Проверяем длину никнейма
+    if (nickname.length < 3) {
+      noticeError("Nickname must be at least 3 characters long");
+      return;
+    }
+
+    $('#install-tab').tab('show');
+    $('#install-tab').removeAttr('disabled');
+  });
+
+
+  function isEmail(email) {
+    let regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    return regex.test(email);
+  }
+
+  var MySQLVersion = 0;
+  var MySQLVersionOK = false;
+
+  $('#mysqlConnect').click(function () {
+    $(this).addClass('loading');
+    checkConnectDB(function () {
+      $('#mysqlConnect').removeClass('loading');
+      if (MySQLVersionOK) {
+        $('#admin-tab').tab('show');
+        $('#admin-tab').removeAttr('disabled');
+      }
+    });
+  });
+
+  function checkConnectDB() {
+    return new Promise(function(resolve, reject) {
+      $.ajax({
+        type: 'POST',
+        url: '/install/db/connect/test',
+        data: {
+          host: $('#host').val(),
+          name: $('#name').val(),
+          user: $('#user').val(),
+          password: $('#password').val(),
+          port: $('#port').val(),
+        },
+        dataType: 'json',
+        encode: true,
+      }).done(function (data) {
+        console.log(data)
+        var needMinMySQLVer = parseFloat('{{need_mysql_version}}');
+        if (data.ok) {
+          MySQLVersion = parseFloat(data.mysqlVersion);
+          if(MySQLVersion >= needMinMySQLVer) {
+            resolve("MySQL connection was successful");
+          } else {
+            reject("MySQL version must be at least " + needMinMySQLVer);
+          }
+        }else{
+          reject("MySQL connection failed");
+        }
+      });
+    }).then(function(message) {
+      console.log(message);
+      noticeSuccess(message);
+      MySQLVersionOK = true;
+    }).catch(function(message) {
+      console.log(message);
+      noticeError(message);
+    });
+  }
+
+  $("#install").click(function () {
+    $(this).prop("disabled", true);
+    AjaxSend("/install", "POST", {
+      email: $('#email').val(),
+      nickname: $('#nickname').val(),
+      adminPassword: $('#adminPassword').val(),
+
+      host: $('#host').val(),
+      name: $('#name').val(),
+      user: $('#user').val(),
+      password: $('#password').val(),
+      port: $('#port').val(),
+    }, false, 10).then(function (data) {
+      console.log(data)
+      ResponseNotice(data);
+    })
+  });
+
+</script>
+
+</body>
+
+</html>

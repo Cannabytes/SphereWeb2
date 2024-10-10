@@ -670,6 +670,7 @@ CREATE TABLE `tickets_file`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
+DROP TABLE IF EXISTS `streams`;
 CREATE TABLE `streams`  (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NULL DEFAULT NULL,

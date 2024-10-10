@@ -13,11 +13,12 @@ use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\version\version;
-use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\config\sphereApi;
 use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 use PDO;
+use PDOException;
 
 class install
 {
@@ -27,7 +28,7 @@ class install
     /**
      * Установка, вывод правил, соглашения
      */
-    public static function rules(): void
+    public static function rules($lang = null): void
     {
         if (file_exists(fileSys::get_dir('/data/db.php'))) {
             redirect::location("/");
@@ -43,6 +44,7 @@ class install
           "dir_permissions"      => self::checkFolderPermissions(["/data", "/uploads",]),
           "htaccess"             => $isHtaccess,
           "isLinux"              => "Linux" == php_uname('s'),
+          "isLocalhost"          => self::is_local_environment(),
           "php_informations"     => [
             [
               "name"  => "PHP_VERSION",
@@ -75,14 +77,17 @@ class install
               "name"  => "mbstring",
               "allow" => self::isExtension(extension_loaded('mbstring')),
             ],
-
-              //                                      ["name" => "fileinfo",
-              //                                       "allow" => self::isExtension(extension_loaded('fileinfo')),
-              //                                      ],
           ],
           "allow_install"        => self::$allow_install,
         ]);
-        tpl::display("install.html");
+
+        if ($lang == null || $lang == "") {
+            $lang = user::self()->getLang();
+        }
+        if ( ! file_exists("src/template/sphere/install/install_{$lang}.html")) {
+            $lang = "en";
+        }
+        tpl::display("install/install_{$lang}.html");
     }
 
     private static function checkFolderPermissions($dir = []): array
@@ -125,6 +130,25 @@ class install
         if ( ! $b) {
             self::$allow_install = false;
         }
+    }
+
+    private static function is_local_environment(): bool
+    {
+        $client_ip = $_SERVER['REMOTE_ADDR'];
+        $local_ips = [
+          '127.0.0.1',        // localhost
+          '::1',              // IPv6 localhost
+          '192.168.',         // локальная сеть
+          '10.',              // локальная сеть
+          '172.',              // локальная сеть
+        ];
+        foreach ($local_ips as $local_ip) {
+            if (str_starts_with($client_ip, $local_ip)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static function compareUploadSizes($size1, $size2): bool
@@ -234,17 +258,23 @@ class install
         tpl::display("install/install_admin.html");
     }
 
-    public static function add_admin()
-    {
-        \Ofey\Logan22\model\install\install::add_user_admin();
-    }
-
     public static function startInstall(): void
     {
         header('Content-Type: application/json; charset=utf-8');
 
-        $email         = $_POST['email'];
-        $nickname      = $_POST['nickname'];
+        // Проверяем, что все необходимые данные переданы
+        if (empty($_POST['email']) || empty($_POST['nickname']) || empty($_POST['adminPassword']) ||
+            empty($_POST['host']) || empty($_POST['user']) || empty($_POST['password']) || empty($_POST['name'])) {
+            echo json_encode([
+              "type"    => "notice",
+              "ok"      => false,
+              "message" => 'Missing required parameters',
+            ]);
+            exit;
+        }
+
+        $email         = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+        $nickname      = htmlspecialchars($_POST['nickname']);
         $adminPassword = password_hash($_POST['adminPassword'], PASSWORD_BCRYPT);
 
         $host     = $_POST['host'];
@@ -253,85 +283,103 @@ class install
         $password = $_POST['password'];
         $name     = $_POST['name'];
 
-        /**
-         * Создаем проверочный файл
-         */
-        $filenameCheck = substr(bin2hex(random_bytes(10)), 0, (10)) . ".txt";
-        $file          = file_put_contents($filenameCheck, "OK");
-        if ($file) {
-            $link = new sphereApi();
-            server::setInstallLink( "{$link->getIp()}:{$link->getPort()}");
-            server::tokenDisable(true);
-            $response = server::send(type::SPHERE_INSTALL, [
-              'filename' => $filenameCheck,
-            ])->show()->getResponse();
-            if ($response['success']) {
-                $token = $response['token'];
-                file_put_contents(
-                  fileSys::get_dir("/data/token.php"),
-                  "<?php
-const __TOKEN__ = \"$token\";\n"
-                );
-                unlink($filenameCheck);
-            }
-        }else{
+        if ( ! $email) {
             echo json_encode([
               "type"    => "notice",
               "ok"      => false,
-              "message" => 'Error create file',
+              "message" => 'Invalid email format',
             ]);
             exit;
         }
+
+        /**
+         * Создаем проверочный файл
+         */
+        $filenameCheck = substr(bin2hex(random_bytes(10)), 0, 10) . ".txt";
+        try {
+            $file = file_put_contents($filenameCheck, "OK");
+            if ($file === false) {
+                throw new Exception("Failed to create check file");
+            }
+
+            $link = new sphereApi();
+            server::setInstallLink("{$link->getIp()}:{$link->getPort()}");
+            server::tokenDisable(true);
+
+            $response = server::send(type::SPHERE_INSTALL, [
+              'filename' => $filenameCheck,
+            ])->show()->getResponse();
+            if ( ! $response['success']) {
+                throw new Exception("Failed to install sphere");
+            }
+            $token = $response['token'];
+            file_put_contents("data/token.php", "<?php const __TOKEN__ = \"$token\";\n");
+            unlink($filenameCheck);
+        } catch (Exception $e) {
+            echo json_encode([
+              "type"    => "notice",
+              "ok"      => false,
+              "message" => "Installation error: " . $e->getMessage(),
+            ]);
+            exit();
+        }
+
         \Ofey\Logan22\model\install\install::saveConfig($host, $port, $user, $password, $name);
 
-        $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
-        $pdo = new PDO($dsn, $user, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        try {
+            $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
+            $pdo = new PDO($dsn, $user, $password);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        self::install_sql_struct($pdo, fileSys::get_dir("/uploads/sql/struct/*.sql"));
+            // Устанавливаем структуру базы данных
+            self::install_sql_struct($pdo, fileSys::get_dir("/uploads/sql/struct/*.sql"));
+            $lastCommitData = self::getLastCommitData();
+            if ($lastCommitData) {
+                $query = $pdo->prepare(
+                  "INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) 
+                 VALUES (?, ?, ?, ?, ?, ?)"
+                );
+                $query->execute([
+                  $lastCommitData['hash'],
+                  $lastCommitData['author'],
+                  $lastCommitData['url'],
+                  $lastCommitData['message'],
+                  time::mysql(),
+                  time::mysql(),
+                ]);
+            }
 
-        $lastCommitData = self::getLastCommitData();
-        if ($lastCommitData) {
-            $query = $pdo->prepare(
-              "INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)"
+            // Вставляем данные администратора
+            $ip  = $_SERVER['REMOTE_ADDR'];
+            $smt = $pdo->prepare(
+              "INSERT INTO `users` (`name`, `password`, `email`, `ip`, `access_level`)
+             VALUES (?, ?, ?, ?, ?)"
             );
-            $query->execute([
-              $lastCommitData['hash'],
-              $lastCommitData['author'],
-              $lastCommitData['url'],
-              $lastCommitData['message'],
-              time::mysql(),
-              time::mysql(),
+
+            $smt->execute([
+              $nickname,
+              $adminPassword,
+              $email,
+              $ip,
+              'admin',
             ]);
+
+            echo json_encode([
+              "type"    => "notice",
+              'redirect' => "/main",
+              'ok'  => true,
+              'message'  => 'Установлено',
+            ]);
+            exit();
+        } catch (PDOException|Exception $e) {
+            echo json_encode([
+              "type"    => "notice",
+              "ok"      => false,
+              "message" => "Installation error: " . $e->getMessage(),
+            ]);
+            exit();
         }
 
-        $ip = $_SERVER['REMOTE_ADDR'];
-
-        $smt = $pdo->prepare("INSERT INTO `users` (`name`, `password`, `email`, `ip`, `access_level`) VALUES (?, ?, ?, ?, ?)",);
-        if ($smt->execute([
-          $nickname,
-          $adminPassword,
-          $email,
-          $ip,
-          'admin',
-        ])) {
-            board::redirect("/main");
-            board::success("Установлено");
-//            echo json_encode([
-//              "type"     => "notice",
-//              "ok"       => true,
-//              "message"  => "Gooooood job!",
-//              "redirect" => "/main",
-//            ]);
-//            exit;
-        }
-        board::success("Произошла ошибка установки");
-        //        echo json_encode([
-//          "type"    => "notice",
-//          "ok"      => false,
-//          "message" => "Не удалось создать администратора",
-//        ]);
-        exit;
     }
 
     private static function install_sql_struct($pdo, $dir): void
@@ -455,7 +503,7 @@ const __TOKEN__ = \"$token\";\n"
             $commit = $commits[0];
 
             return [
-              'hash'     => $commit['sha'],
+              'hash'    => $commit['sha'],
               'author'  => $commit['commit']['author']['name'],
               'url'     => $commit['html_url'],
               'message' => $commit['commit']['message'],
