@@ -18,8 +18,8 @@
                                         </span>
             </div>
             <div class="flex-fill">
-              <a href="/admin/balance/pay"><h5 class="fw-semibold mb-1 text-danger">Пополнение</h5></a>
-              <p class="op-7 mb-0 fs-12">Повысить баланс</p>
+              <a href="/admin/balance/pay"><h5 class="fw-semibold mb-1 text-danger">{{ phrase(69) }}</h5></a>
+              <p class="op-7 mb-0 fs-12">{{ phrase('increase balance') }}</p>
             </div>
           </div>
         </div>
@@ -41,7 +41,7 @@
                 </div>
                 <div class="flex-fill">
                   <h5 class="fw-semibold mb-1 sphereBalance">${{balance}}</h5>
-                  <p class="text-muted mb-0 fs-12">На счёту</p>
+                  <p class="text-muted mb-0 fs-12">{{ phrase('on account') }}</p>
                 </div>
               </div>
             </div>
@@ -53,12 +53,12 @@
                                                 </span>
                 </div>
                 <div class="flex-fill">
-                  <h5 class="fw-semibold mb-1">Лаунчер</h5>
+                  <h5 class="fw-semibold mb-1">{{ phrase('menu_launcher') }}</h5>
                   {% if launcher.isActive %}
-                  <p class="text-muted mb-0 fs-12">Активирован до <span class="launcherDate">{{launcher.dateTimeout|date('d.m.Y')}}</span>
+                  <p class="text-muted mb-0 fs-12">{{ phrase('activated until') }} <span class="launcherDate">{{launcher.dateTimeout|date('d.m.Y H:i', getUser().getTimezone())}}</span>
                   </p>
                   {% else %}
-                  <p class="text-muted mb-0 fs-12">Не активирован</p>
+                  <p class="text-muted mb-0 fs-12">{{ phrase('not_active') }}</p>
                   {% endif %}
                 </div>
               </div>
@@ -82,26 +82,26 @@
           <div class="d-flex align-items-center w-100">
             <div class="card-title">
               <div class="fs-15 fw-semibold">SphereWeb</div>
+
             </div>
             <div class="ms-auto prism-toggle">
               <span class="text-{% if info.licenseActive %}success{% else %}danger{% endif %}">
                 {% if info.licenseActive == false %}<i class="bi bi-x-circle"></i> {% endif %}
-                {{info.License.date|date('d.m.Y')}}
+                {{info.license|date('d.m.Y H:i', getUser().getTimezone())}}
               </span>
             </div>
           </div>
         </div>
         <div class="card-body">
-          Вы можете помочь оказать благодарность и поддержку разработчику за SphereWeb, просто пополните себе баланс.
-
+          {{ phrase('you can help show gratitude and support to the developer for SphereWeb, just top up your balance.') }}
           <div class="col-xl-12 mt-2">
-            <label for="renewmonths" class="form-label">На сколько месяцев продлить SphereWeb</label>
+            <label for="renewmonths" class="form-label">{{ phrase('for how many months should I renew SphereWeb?') }}</label>
             <select class="form-control" name="renewmonths" id="renewmonths">
-              <option value="1">1 месяц - $12.5</option>
-              <option value="2">2 месяца - $24</option>
-              <option value="3">3 месяца - $35</option>
-              <option value="6">6 месяцев - $70</option>
-              <option value="12">12 месяцев - $140</option>
+              <option value="1">1 {{ phrase('month') }} - $12.5</option>
+              <option value="2">2 {{ phrase('months') }} - $24</option>
+              <option value="3">3 {{ phrase('months') }} - $35</option>
+              <option value="6">6 {{ phrase('months') }} - $70</option>
+              <option value="12">12 {{ phrase('months') }} - $140</option>
             </select>
           </div>
 
@@ -109,7 +109,7 @@
         <div class="card-footer">
           <div class="d-flex justify-content-between">
             <button class="btn btn-success label-btn label-end" id="renewLicense">
-               Продлить использование
+              {{ phrase('extend use') }}
               <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
             </button>
             <script>
@@ -134,9 +134,9 @@
           </div>
           <div class="ms-auto prism-toggle">
             {% if launcher.isActive %}
-             <span class="text-success">{{launcher.dateTimeout|date('d.m.Y')}}</span>
+             <span class="text-success">{{launcher.dateTimeout|date('d.m.Y H:i', getUser().getTimezone())}}</span>
             {% else %}
-              <span class="text-danger">Не активен</span>
+              <span class="text-danger">{{ phrase('not_active') }}</span>
             {% endif %}
           </div>
         </div>
@@ -146,33 +146,11 @@
               <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                       data-bs-target="#collapseWidthExample" aria-expanded="false"
                       aria-controls="collapseWidthExample">
-                Описание Sphere Launcher
+                {{ phrase('description of Sphere Launcher') }}
               </button>
               <div class="collapse collapse-horizontal" id="collapseWidthExample">
                   <div class="fs-14 text-muted">
-                    Sphere Launcher — это лучшее и передовое решение для загрузки файлов. Launcher предоставляет
-                    пользователям уникальную возможность загружать множество файлов одновременно, что значительно
-                    экономит время и повышает производительность.
-                    <br>
-                    Основные преимущества:<br>
-                    <br>
-                    Высокая скорость и производительность: Лаунчер разработан с учётом всех лучших практик Go, что
-                    обеспечивает молниеносную обработку данных и оптимальную работу даже с большим количеством
-                    файлов.<br>
-                    Одновременная загрузка: Благодаря параллельной обработке задач, лаунчер может загружать множество
-                    файлов одновременно, что делает его незаменимым инструментом для пользователей, работающих с большим
-                    объёмом данных.<br>
-                    Безопасность и надёжность: Встроенные механизмы языка Go гарантируют защиту данных и стабильность
-                    работы лаунчера, минимизируя вероятность ошибок и сбоев.<br>
-                    Масштабируемость: Лаунчер легко адаптируется под любые задачи, будь то загрузка небольших файлов или
-                    работа с большими объемами данных, обеспечивая стабильную производительность в любой ситуации.<br>
-                    Простота использования: Лаконичный и понятный интерфейс делает работу с лаунчером доступной даже для
-                    начинающих пользователей, а встроенные функции облегчают настройку и управление загрузками.<br>
-                    Кэширование повторно загружаемых файлов пользователем.
-                    <br>
-                    Попробуйте наш лаунчер и ощутите все преимущества быстрого и надёжного инструмента, созданного на
-                    основе самых современных технологий!<br>
-
+                    {{ phrase('launcher_full_desc')|raw }}
                   </div>
                 </div>
 
@@ -180,7 +158,7 @@
 
               <li>
                 <div class="fs-14 text-muted">
-                  <a href="/admin/launcher">Перейти настройки лаунчеров</a>
+                  <a href="/admin/launcher">{{ phrase('go to launcher settings') }}</a>
                 </div>
               </li>
 
@@ -188,18 +166,18 @@
 
               <span class="my-auto  text-muted fw-semibold">
                                             <select class="form-control " name="launcherMonth" id="launcherMonth">
-                                                  <option value="1">1 мес./ $5 </option>
-                                                  <option value="2">2 мес./ $9 </option>
-                                                  <option value="3">3 мес./ $13 </option>
-                                                  <option value="6">6 мес./ $25 </option>
-                                                  <option value="12">12 мес./ 45$</option>
+                                                  <option value="1">1 {{ phrase('month') }} / $5 </option>
+                                                  <option value="2">2 {{ phrase('months') }} / $9 </option>
+                                                  <option value="3">3 {{ phrase('months') }} / $13 </option>
+                                                  <option value="6">6 {{ phrase('months') }} / $25 </option>
+                                                  <option value="12">12 {{ phrase('months') }} / 45$</option>
                                               </select>
                                         </span>
 
         </div>
         <div class="card-footer">
           <div class="d-flex justify-content-between">
-            <button type="button" id="updateTime" class="btn btn-success ms-2 ">Продлить Лаунчер</button>
+            <button type="button" id="updateTime" class="btn btn-success">{{ phrase('extend Launcher') }}</button>
           </div>
         </div>
         <div id="successPayLauncher"></div>
@@ -211,28 +189,28 @@
       <div class="card-header justify-content-between">
         <div class="d-flex align-items-center w-100">
           <div class="card-title">
-            <div class="fs-15 fw-semibold">Рулетка</div>
+            <div class="fs-15 fw-semibold">{{ phrase('lucky_wheel') }}</div>
           </div>
           <div class="ms-auto prism-toggle">
             {% if info.rouletteActive %}
-              <span class="text-success">{{roulette|date('d.m.Y')}}</span>
+              <span class="text-success">{{info.roulette|date('d.m.Y H:i', getUser().getTimezone())}}</span>
             {% else %}
-              <span class="text-danger">Не активен</span>
+              <span class="text-danger">{{ phrase('not_active') }}</span>
             {% endif %}
           </div>
         </div>
       </div>
         <div class="card-body">
-          Возможность пользователям крутить рулетку за Донат Коины и выиграть 1 из 20 предметов.
+          {{ phrase('description spin the roulette of luck') }}
 
           <div class="col-xl-12 mt-2">
-            <label for="rouletteMonths" class="form-label">На сколько месяцев продлить SphereWeb</label>
+            <label for="rouletteMonths" class="form-label">{{ phrase('extend the Roulette of Luck') }}</label>
             <select class="form-control" name="rouletteMonths" id="rouletteMonths">
-                <option value="1">1 мес./ $5 </option>
-                <option value="2">2 мес./ $9 </option>
-                <option value="3">3 мес./ $13 </option>
-                <option value="6">6 мес./ $25 </option>
-                <option value="12">12 мес./ $45 </option>
+              <option value="1">1 {{ phrase('month') }} / $5 </option>
+              <option value="2">2 {{ phrase('months') }} / $9 </option>
+              <option value="3">3 {{ phrase('months') }} / $13 </option>
+              <option value="6">6 {{ phrase('months') }} / $25 </option>
+              <option value="12">12 {{ phrase('months') }} / 45$</option>
             </select>
           </div>
 
@@ -241,7 +219,7 @@
         <div class="card-footer">
           <div class="d-flex justify-content-between">
             <button class="btn btn-success label-btn label-end" id="clickRouletteMonths">
-              Продлить использование
+              {{ phrase('extend use') }}
               <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
             </button>
             <script>

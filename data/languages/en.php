@@ -640,6 +640,41 @@ return [
 	'581' => 'Save configuration',
 	'5451' => 'Issued +%s SphereCoin for %s (%s)',
 	'5461' => 'Cumulative bonus for donation: +%s',
+	'extend the Roulette of Luck' => 'For how many months should I extend the Roulette of Fortune?',
+	'description spin the roulette of luck' => 'The opportunity for users to spin the Roulette of Fortune for Donate Coins and win 1 of 20 items.',
+	'extend Launcher' => 'Extend Launcher',
+	'go to launcher settings' => 'Go to launcher settings',
+	'launcher_full_desc' => 'Sphere Launcher is the best and most advanced solution for file downloading. Launcher provides users with a unique ability to download multiple files at once, which significantly saves time and increases productivity. <br>
+Main advantages:<br>
+<br>
+High speed and performance: The launcher is designed taking into account all the best Go practices, which
+ensures lightning-fast data processing and optimal work even with a large number of
+files.<br>
+Simultaneous download: Thanks to parallel processing of tasks, the launcher can download many
+files at the same time, which makes it an indispensable tool for users working with a large
+volume of data.<br>
+Security and reliability: Built-in Go language mechanisms guarantee data protection and stability of
+the launcher, minimizing the likelihood of errors and failures.<br>
+Scalability: The launcher easily adapts to any task, whether it is downloading small files or
+working with large amounts of data, ensuring stable performance in any situation.<br>
+Ease of use: A laconic and clear interface makes working with the launcher accessible even for novice
+users, and built-in functions make it easier to set up and manage downloads.<br>
+Caching of re-downloaded files by the user.
+<br>
+Try our launcher and experience all the benefits of a fast and reliable tool created on the basis of the most modern technologies!<br>',
+	'description of Sphere Launcher' => 'Description of Sphere Launcher',
+	'extend use' => 'Extend use',
+	'months' => 'months',
+	'for how many months should I renew SphereWeb?' => 'For how many months should I renew SphereWeb?',
+	'you can help show gratitude and support to the developer for SphereWeb, just top up your balance.' => 'You can help show gratitude and support to the developer for SphereWeb, just top up your balance.',
+	'activated until' => 'Activated until',
+	'on account' => 'On account',
+	'increase balance' => 'Increase balance',
+	'server_not_found_and_is_sphere_api' => 'The server was not found in your internal DB, but exists in the Sphere API',
+	'frequently asked questions' => 'Frequently asked questions',
+	'end date' => 'End date',
+	'service' => 'Service',
+	'balance management' => 'Balance management',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Access is denied',
 	'account' => 'Account',
@@ -685,7 +720,6 @@ return [
 	'authorization' => 'Authorization',
 	'auto update' => 'Auto update',
 	'auto_approval_of_new_streams' => 'Auto-approval of new streams',
-	'until_when_to_stream' => 'Until when to stream',
 	'auto_file_desc' => 'After registration, you will be able to create a global account that can be used on all sites running on the SphereWeb platform. To do this, you need to use a file for automatic registration and authorization. After successful authorization, go to settings and click on the \'Download authorization file\' button. This file will be sent to your email.',
 	'auto_login_launcher_feature' => 'This feature is necessary in case you use a launcher with automatic login to a character without in-game authorization. For example, SphereLauncher has the ability to perform automatic login (if the client allows it).',
 	'auto_update_time' => 'Auto-update time',
@@ -1354,6 +1388,7 @@ Password: %%password%%',
 	'two_password' => 'Repeat Password',
 	'type_your_message_here' => 'Type your message here...',
 	'unblock' => 'Unblock',
+	'until_when_to_stream' => 'Until when to stream',
 	'upload_user_registration_info_file' => 'Upload file with user registration information',
 	'used_languages' => 'Used languages',
 	'user' => 'User',

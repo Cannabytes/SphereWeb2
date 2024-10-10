@@ -64,50 +64,48 @@
               <div>
                 <a href="javascript:void(0);" data-bs-toggle="dropdown" class="btn btn-icon btn-sm btn-light" aria-expanded="false"><i class="ti ti-dots"></i></a>
                 <ul class="dropdown-menu" style="">
-                  <li><a href="/admin/balance/faq" class="dropdown-item">Частые вопросы</a></li>
-                  <li><a href="/admin/balance" class="dropdown-item">Пополнить баланс</a></li>
+                  <li><a href="/admin/balance/faq" class="dropdown-item">{{ phrase('frequently asked questions') }}</a></li>
+                  <li><a href="/admin/balance" class="dropdown-item">{{ phrase('refill') }}</a></li>
                 </ul>
               </div>
 
             </div>
 
-
             <div class="mb-3 ">
               <div class="text-muted">
-
                 <div class="table-responsive">
                   <table class="table text-nowrap">
                     <thead>
                     <tr>
-                      <th scope="col">Услуга</th>
-                      <th scope="col">Дата окончания</th>
+                      <th scope="col">{{ phrase('service') }}</th>
+                      <th scope="col">{{ phrase('end date') }}</th>
                     </tr>
                     </thead>
                     <tbody class="table-group-divider">
 
                     <tr>
                       <th scope="row">Sphere Web</th>
-                      <td><span class="text-{% if licenseActive %}success{% else %}danger{% endif %}">{% if licenseActive == false %}<i class="bi bi-x-circle"></i> {% endif %}{{licenseDate|date('d.m.Y H:s')}}</span></td>
+                      <td><span class="text-{% if licenseActive %}success{% else %}danger{% endif %}">{% if licenseActive == false %}<i class="bi bi-x-circle"></i> {% endif %}{{ licenseDate|date('d.m.Y H:i', getUser().getTimezone()) }}</span></td>
                     </tr>
 
                     <tr>
                       <th scope="row">Sphere Launcher</th>
                       <td>
                         {% if launcher.dateTimeout == false %}
-                          <span class="text-danger">Не активен</span>
+                          <span class="text-danger">{{ phrase('not_active') }}</span>
                         {% else %}
-                        <span class="text-success">{{launcher.dateTimeout|date('d.m.Y H:s')}}</span>
+                        <span class="text-success">{{launcher.dateTimeout|date('d.m.Y H:i', getUser().getTimezone())}}</span>
                         {% endif %}
                       </td>
                     </tr>
 
                     <tr>
-                      <th scope="row">Рулетка</th>
+                      <th scope="row">{{ phrase('lucky_wheel') }}</th>
                       <td>
                         {% if rouletteActive == false %}
-                          <span class="text-danger">Не активен</span>
+                          <span class="text-danger">{{ phrase('not_active') }}</span>
                         {% else %}
-                        <span class="text-success">{{roulette|date('d.m.Y H:s')}}</span>
+                        <span class="text-success">{{roulette|date('d.m.Y H:i', getUser().getTimezone())}}</span>
                         {% endif %}
                       </td>
                     </tr>
@@ -123,7 +121,7 @@
 
             </div>
             <div class="d-grid gap-2 ">
-              <a class="btn btn-teal me-md-2 btn-wave waves-effect waves-light" href="/admin/balance">Управление балансом</a>
+              <a class="btn btn-teal me-md-2 btn-wave waves-effect waves-light" href="/admin/balance">{{ phrase('balance management') }}</a>
             </div>
 
 
@@ -140,7 +138,7 @@
         <div class="card-body border-bottom">
 
           {% if serverInfo == null %}
-          <div class="text-danger">Сервер не найден в Вашей внутренней БД, но существует в Sphere API.</div>
+          <div class="text-danger">{{ phrase('server_not_found_and_is_sphere_api') }}.</div>
           {% endif %}
 
           <div class="d-sm-flex  main-profile-cover">
