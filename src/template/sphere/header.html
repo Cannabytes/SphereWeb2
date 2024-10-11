@@ -20,16 +20,10 @@
       </div>
 
       <div class="header-element">
-        <!-- Start::header-link -->
         <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle" data-bs-toggle="sidebar" href="javascript:void(0);"><span></span></a>
-        <!-- End::header-link -->
       </div>
 
-      <!-- End::header-element -->
-
       {% if getServerAll()|length > 1 %}
-
-      <!-- End::header-element -->
       <div class="main-header-center  d-none d-lg-block header-link">
         <select class="form-select form-select-sm  bg-success-transparent text-success select_default_server" aria-label="Default select example">
           {% for server in getServerAll() %}
@@ -42,9 +36,7 @@
       {% endif %}
 
     </div>
-    <!-- End::header-content-left -->
 
-    <!-- Start::header-content-right -->
     <div class="header-content-right">
 
 

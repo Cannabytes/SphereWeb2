@@ -351,8 +351,14 @@ class userModel
             if (isset($_SESSION['server_id']) && ! $this->isAuth) {
                 return $_SESSION['server_id'];
             }
+            //Если у пользователя не выбран server_id по умолчанию, тогда проверим выставлен какой-то сервер по дефолту
+            foreach (server::getServerAll() as $server) {
+                if($server->isDefault()){
+                    return $server->getId();
+                }
+            }
+            //Если нет выбранного сервера по умолчанию, тогда вернем последний
             $lastServer = server::getLastServer();
-
             return $lastServer ? $lastServer->getId() : null;
         }
 

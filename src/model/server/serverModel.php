@@ -53,6 +53,8 @@ class serverModel
 
     private ?string $collection = null;
 
+    private ?bool $default = null;
+
     // Есть ли данный сервер на сервере сферы
     private ?bool $isSphereServer = null;
 
@@ -70,6 +72,7 @@ class serverModel
         $this->launcherEnabled = $server['launcher_enabled'] ?? 0;
         $this->timezone        = $server['timezone'] ?? '';
         $this->collection      = $server['collection'] ?? null;
+        $this->default         = $server['isDefault'] ?? null;
         if ($server_data) {
             foreach ($server_data as $data) {
                 $this->server_data[] = new serverDataModel($data);
@@ -80,6 +83,17 @@ class serverModel
         }
 
         return $this;
+    }
+
+    //Сервер по умолчанию
+    public function isDefault(): ?bool
+    {
+        return $this->default;
+    }
+
+    public function setIsDefault(bool $isDefault): void
+    {
+        $this->default = $isDefault;
     }
 
     public function getIsSphereServer(): ?bool
@@ -283,6 +297,7 @@ class serverModel
           'launcherEnabled' => $this->launcherEnabled,
           'timezone'        => $this->timezone,
           'collection'      => $this->collection,
+          'default'         => $this->default,
         ];
         sql::run(
           "UPDATE `servers` SET `data` = ? WHERE `id` = ?",
@@ -301,7 +316,7 @@ class serverModel
           'rateExp'                       => $this->getRateExp(),
           'rateSp'                        => $this->getRateSp(),
           'rate_adena'                    => $this->getRateAdena(),
-          'rate_drop_item'                => $this->getrateDrop(),
+          'rate_drop_item'                => $this->getRateDrop(),
           'rateSpoil'                     => $this->getRateSpoil(),
           'date_start_server'             => $this->getDateStartServer(),
           'chronicle'                     => $this->getChronicle(),
@@ -403,7 +418,7 @@ class serverModel
     /**
      * @return int
      */
-    public function getrateDrop(): int
+    public function getRateDrop(): int
     {
         return $this->rateDrop;
     }
@@ -413,7 +428,7 @@ class serverModel
      *
      * @return server
      */
-    public function setrateDrop(
+    public function setRateDrop(
       int $rateDrop
     ): serverModel {
         $this->rateDrop = $rateDrop;

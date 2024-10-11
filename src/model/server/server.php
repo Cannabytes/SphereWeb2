@@ -85,7 +85,6 @@ class server
             $server = current(self::$server_info);
             return $server instanceof serverModel ? $server : null;
         }
-
         if (\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableEmulation()){
             $data = include_once "src/component/emulation/data/data.php";
             foreach($data AS $server){

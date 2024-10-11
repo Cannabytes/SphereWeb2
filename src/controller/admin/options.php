@@ -273,8 +273,17 @@ class options
     public static function saveGeneral(): void
     {
         $server_id = $_POST['serverId'] ?? board::error("Server id is empty");
+        $isDefault = (bool)$_POST['isDefault'] ?? false;
+
+        //Отменяем дефолтные сервера у других
+        foreach(\Ofey\Logan22\model\server\server::getServerAll() as $server){
+           $server->setIsDefault(false);
+           $server->save();
+        }
+
         $data      = json_encode([
           "id"        => $server_id,
+          "isDefault" => $isDefault,
           "name"      => $_POST['name'] ?? board::error("Server name is empty"),
           "rateExp"   => $_POST['rateExp'] ?? board::error("Server rateExp is empty"),
           "rateSp"    => $_POST['rateSp'] ?? board::error("Server rateSp is empty"),

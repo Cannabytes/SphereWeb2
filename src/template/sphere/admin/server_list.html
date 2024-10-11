@@ -180,6 +180,17 @@
                   <p class="mb-1 fw-semibold text-muted op-5 fs-20">{{ phrase('general_server_info') }}</p>
 
                   <div class="row gy-4 mb-4">
+
+                    <div class="col-xl-4">
+                      <div class="form-check form-switch">
+                        <input {% if serverInfo.isDefault() %}checked="" {% endif %} class="form-check-input" type="checkbox" role="switch" name="serverIsDefault" id="serverIsDefault" >
+                        <label class="form-check-label" for="serverIsDefault">Сервер по-умолчанию</label>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="row gy-4 mb-4">
                     <div class="col-xl-4">
                       <div class="form-floating">
                         <input type="text" name="name" class="form-control" id="name" value="{{serverInfo.getName()}}"
@@ -187,6 +198,8 @@
                         <label for="name">{{ phrase('server_name') }}</label>
                       </div>
                     </div>
+
+
 
                     <div class="col-xl-12">
                       <div class="row gy-2">
@@ -719,6 +732,7 @@
 <script>
   $(document).on('click', '#saveGeneral', function () {
     var serverid = $(this).data('serverid');
+    var isDefault = $('#serverIsDefault').is(':checked');
     var name = $('#name').val();
     var rateExp = $('#rateExp').val();
     var rateSp = $('#rateSp').val();
@@ -736,6 +750,7 @@
 
     AjaxSend('/admin/server/edit/save/general', 'POST', {
       name: name,
+      isDefault: isDefault,
       rateExp: rateExp,
       rateSp: rateSp,
       rateAdena: rateAdena,
