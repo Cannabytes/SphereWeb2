@@ -49,7 +49,7 @@ class index
         if ( ! $sphereAPIError) {
             tpl::addVar([
               "launcher"           => $info['launcher'] ?? null,
-              "licenseDate"        => $info['license']['date'] ?? null,
+              "license"            => $info['license'] ?? null,
               "licenseActive"      => $info['licenseActive'] ?? null,
               "roulette"           => $info['roulette'] ?? null,
               "rouletteActive"     => $info['rouletteActive'] ?? false,

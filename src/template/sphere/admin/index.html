@@ -85,7 +85,7 @@
 
                     <tr>
                       <th scope="row">Sphere Web</th>
-                      <td><span class="text-{% if licenseActive %}success{% else %}danger{% endif %}">{% if licenseActive == false %}<i class="bi bi-x-circle"></i> {% endif %}{{ licenseDate|date('d.m.Y H:i', getUser().getTimezone()) }}</span></td>
+                      <td><span class="text-{% if licenseActive %}success{% else %}danger{% endif %}">{% if licenseActive == false %}<i class="bi bi-x-circle"></i> {% endif %}{{ license|date('d.m.Y H:i', getUser().getTimezone()) }}</span></td>
                     </tr>
 
                     <tr>
