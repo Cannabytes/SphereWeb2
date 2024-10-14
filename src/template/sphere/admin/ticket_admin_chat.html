@@ -76,7 +76,6 @@
                         <a href="/admin/user/info/{{getTicket.user_id}}" class="chatnameperson responsive-userinfo-open"    >{{getUser(getTicket.user_id).getName()}} - {{getUser(getTicket.user_id).getEmail()}}</a>
                         <p class="text-muted mb-0 chatpersonstatus">online</p>
                     </div>
-
                     {% if id != 0 %}
                     <div class="d-flex">
 
@@ -95,8 +94,6 @@
                         </button>
                     </div>
                     {%endif%}
-
-
                 </div>
 
                 <div class="chat-content" id="main-chat-content">
@@ -263,6 +260,9 @@
 <script>
     (function () {
         "use strict";
+
+        var myElement1 = document.getElementById('chat-msg-scroll');
+        new SimpleBar(myElement1, { autoHide: true });
 
         var myElement4 = document.getElementById('main-chat-content');
         new SimpleBar(myElement4, {autoHide: true});
@@ -476,9 +476,10 @@
 
       // Добавляем новые тикеты
       tickets.forEach(ticket => {
-        const listItem = document.createElement('li');
-        listItem.className = 'chat-inactive checkforactive';
-        listItem.innerHTML = `
+        // const listItem = document.createElement('li');
+        // listItem.className = 'chat-inactive checkforactive';
+        listItem = `
+        <li class="chat-inactive checkforactive" >
     <a href="/ticket/${ticket.id}">
         <div class="d-flex align-items-top ${ticket.id === ticketId ? 'p-2 bg-success-transparent mb-1 rounded' : ''}">
             <div class="me-1 lh-1">
@@ -510,6 +511,7 @@
             </div>
         </div>
     </a>
+    </li>
 `;
         ticketList.appendChild(listItem);
       });

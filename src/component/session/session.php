@@ -30,7 +30,7 @@ class session
             return;
         }
         if ( ! isset($_SESSION['id'])) {
-            if($_SESSION['HTTP_REFERER_SET']){
+            if(isset($_SESSION['HTTP_REFERER_SET'])){
                 return;
             }
             if (isset($_SESSION['HTTP_REFERER'])) {

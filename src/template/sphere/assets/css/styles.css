@@ -15774,7 +15774,7 @@ code[class*=language-] {
   [data-vertical-style=doublemenu] .app-sidebar .main-sidebar-header {
     width: 5rem;
     -webkit-backdrop-filter: blur(30px);
-            /* backdrop-filter: blur(30px); */
+            backdrop-filter: blur(30px);
   }
   [data-vertical-style=doublemenu] .app-sidebar .main-sidebar-header .header-logo .toggle-logo {
     display: block !important;
@@ -17235,7 +17235,7 @@ code[class*=language-] {
 .main-chart-wrapper .chat-info,
 .main-chart-wrapper .main-chat-area {
   background-color: var(--custom-white);
-  height: calc(100vh - 17.5rem);
+  height: calc(100vh - 10rem);
   border-radius: 7px;
 }
 .main-chart-wrapper .chat-user-details {
@@ -17246,10 +17246,10 @@ code[class*=language-] {
 .main-chart-wrapper .chat-users-tab,
 .main-chart-wrapper .chat-groups-tab,
 .main-chart-wrapper .chat-calls-tab {
-  max-height: calc(100vh - 27rem);
+  max-height: calc(100vh - 10rem);
 }
 .main-chart-wrapper .chat-content {
-  max-height: calc(100vh - 28.5rem);
+  max-height: calc(100vh - 10rem);
 }
 .main-chart-wrapper .chat-content .simplebar-content-wrapper .simplebar-content {
   margin-top: auto;
