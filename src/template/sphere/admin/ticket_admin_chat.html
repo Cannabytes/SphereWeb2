@@ -66,37 +66,8 @@
 
             </div>
             <div class="main-chat-area border">
-                <div class="d-flex align-items-center p-3 border-bottom">
-                    <div class="me-2 lh-1">
-                                <span class="avatar avatar-lg online me-2 avatar-rounded chatstatusperson">
-                                    <img class="chatimageperson" src="{{getUser(getTicket.user_id).getAvatar()}}" alt="img">
-                                </span>
-                    </div>
-                    <div class="flex-fill">
-                        <a href="/admin/user/info/{{getTicket.user_id}}" class="chatnameperson responsive-userinfo-open"    >{{getUser(getTicket.user_id).getName()}} - {{getUser(getTicket.user_id).getEmail()}}</a>
-                        <p class="text-muted mb-0 chatpersonstatus">online</p>
-                    </div>
-                    {% if id != 0 %}
-                    <div class="d-flex">
 
-                        <div class="dropdown ms-2">
-                            <button aria-label="button" type="button" class="btn btn-icon btn-light btn-wave waves-light"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="ti ti-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><button data-status-block="{{getTicket.is_closed}}" id="blockUserTicket" class="dropdown-item" >{% if getTicket.is_closed %}{{phrase('unblock')}}{% else %}{{phrase('block')}}{% endif %}</button></li>
-                                <li><button id="clearDialog" class="dropdown-item" >{{phrase('clear_dialog')}}</button></li>
-                            </ul>
-                        </div>
-                        <button aria-label="button" type="button" class="btn btn-icon btn-outline-light ms-2 responsive-chat-close">
-                            <i class="ri-close-line"></i>
-                        </button>
-                    </div>
-                    {%endif%}
-                </div>
-
-                <div class="chat-content" id="main-chat-content">
+                <div class="chat-content" id="main-chat-content"  style="padding-bottom: 4.0rem;">
                     <ul class="list-unstyled" id="messageList">
 
                         {% if id == 0 %}
