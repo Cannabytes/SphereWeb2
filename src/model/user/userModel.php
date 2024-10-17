@@ -5,7 +5,6 @@ namespace Ofey\Logan22\model\user;
 use DateTime;
 use Exception;
 use Ofey\Logan22\component\alert\board;
-use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\component\sphere\type;
@@ -57,11 +56,6 @@ class userModel
     private array $account = [];
 
     private ?string $lang = 'en';
-
-    public function getInstance(): userModel
-    {
-        return $this;
-    }
 
     public function __construct(?int $userId = null)
     {
@@ -230,11 +224,16 @@ class userModel
         return $warehouseArray;
     }
 
-    //Кол-во предметов на складе
-
     private function serverId()
     {
         return $this->serverId;
+    }
+
+    //Кол-во предметов на складе
+
+    public function getInstance(): userModel
+    {
+        return $this;
     }
 
     /**
@@ -267,6 +266,9 @@ class userModel
      */
     public function getLoadAccounts($need_reload = false): ?array
     {
+        $currentTime = time();
+        $needUpdate  = true;
+
         if ($this->getServerId() == null) {
             return null;
         }
@@ -284,18 +286,18 @@ class userModel
             $this->getServerId(),
           ]
         );
-        $currentTime = time();
-        $needUpdate  = true;
 
-        foreach ($accounts as $account) {
-            if ($account['date_update_characters'] == null) {
-                $needUpdate = true;
-                break;
-            }
-            $accountUpdateTime = strtotime($account['date_update_characters']);
-            if (($currentTime - $accountUpdateTime) < 60) {
-                $needUpdate = false;
-                break;
+        if ($accounts) {
+            foreach ($accounts as $account) {
+                if ($account['date_update_characters'] == null) {
+                    $needUpdate = true;
+                    break;
+                }
+                $accountUpdateTime = strtotime($account['date_update_characters']);
+                if (($currentTime - $accountUpdateTime) < 60) {
+                    $needUpdate = false;
+                    break;
+                }
             }
         }
 
@@ -321,15 +323,22 @@ class userModel
 
                 $this->accounts[] = $account;
             }
+            $_SESSION['last_update_accounts_list'] = $currentTime;
             return $this->accounts;
+        }
+
+        if (($currentTime - $_SESSION['last_update_accounts_list'] <= 20) && !$need_reload) {
+            $this->accounts = [];
+            return null;
         }
 
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::ACCOUNT_PLAYERS, [
           'forced' => $need_reload,
-          'email' => $this->getEmail(),
+          'email'  => $this->getEmail(),
         ])->show(false)->getResponse();
-
         if (isset($sphere['error']) or ! $sphere) {
+            $_SESSION['last_update_accounts_list'] = $currentTime;
+            $this->accounts[] = [];
             return [];
         }
         foreach ($sphere as $player) {
@@ -342,6 +351,7 @@ class userModel
         }
         $this->saveAccounts();
 
+        $_SESSION['last_update_accounts_list'] = $currentTime;
         return $this->account;
     }
 
@@ -353,13 +363,14 @@ class userModel
             }
             //Если у пользователя не выбран server_id по умолчанию, тогда проверим выставлен какой-то сервер по дефолту
             foreach (server::getServerAll() as $server) {
-                if($server->isDefault()){
+                if ($server->isDefault()) {
                     return $server->getId();
                 }
             }
             //Если нет выбранного сервера по умолчанию, тогда вернем последний
             $lastServer = server::getLastServer();
-            return $lastServer ? $lastServer->getId() : null;
+
+            return $lastServer?->getId();
         }
 
         return $this->serverId ?? null;
@@ -615,14 +626,6 @@ class userModel
     }
 
     /**
-     * @return string|null
-     */
-    public function getAvatar(): ?string
-    {
-        return ("/uploads/avatar/{$this->avatar}");
-    }
-
-    /**
      * @param   string|null  $avatar
      *
      * @return userModel
@@ -639,14 +642,6 @@ class userModel
     }
 
     /**
-     * @return string|null
-     */
-    public function getTimezone(): ?string
-    {
-        return $this->timezone ?? "Europe/Moscow";
-    }
-
-    /**
      * @param   string|null  $timezone
      *
      * @return userModel
@@ -660,14 +655,6 @@ class userModel
     }
 
     /**
-     * @return string|null
-     */
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    /**
      * @param   string|null  $country
      *
      * @return userModel
@@ -677,14 +664,6 @@ class userModel
         $this->country = $country;
 
         return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCity(): ?string
-    {
-        return $this->city;
     }
 
     /**
@@ -1032,10 +1011,6 @@ class userModel
         return (bool)$this->getAccessLevel("admin");
     }
 
-    public function isGuest(): bool {
-        return (bool)$this->getAccessLevel("guest");
-    }
-
     /**
      * @return string|null
      */
@@ -1047,6 +1022,97 @@ class userModel
 
         return $this->accessLevel;
     }
+
+    public function isGuest(): bool
+    {
+        return (bool)$this->getAccessLevel("guest");
+    }
+
+    public function addVar(string $name, mixed $data, $server = null)
+    {
+        if ($server === null) {
+            $server = $this->getServerId();
+        }
+
+        sql::run('DELETE FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?', [
+          $server,
+          $this->getId(),
+          $name,
+        ]);
+
+        return sql::run('INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)', [
+          $server,
+          $this->getId(),
+          $name,
+          $data,
+        ]);
+    }
+
+    public function getVar(string $name, $serverId = null)
+    {
+        if ($serverId !== null) {
+            return sql::getRow('SELECT `val` FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?', [
+              $serverId,
+              $this->getId(),
+              $name,
+            ]);
+        }
+
+        return sql::getRow('SELECT `val` FROM `user_variables` WHERE `user_id` = ? AND `var` = ?', [
+          $this->getId(),
+          $name,
+        ]);
+    }
+
+    public function toArray(): array
+    {
+        $obj             = get_object_vars($this);
+        $obj['avatar']   = $this->getAvatar();
+        $obj['timezone'] = $this->getTimezone();
+        $obj['country']  = $this->getCountry();
+        $obj['city']     = $this->getCity();
+        $obj['serverId'] = $this->getServerId();
+        $obj['lang']     = $this->getLang();
+
+        return $obj;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAvatar(): ?string
+    {
+        return ("/uploads/avatar/{$this->avatar}");
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTimezone(): ?string
+    {
+        return $this->timezone ?? "Europe/Moscow";
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    //Добавление переменной
+
+    /**
+     * @return string|null
+     */
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    // Получение переменной
+    // Если $serverId null , тогда не обращаем внимание на сервер
 
     public function getLang(): string
     {
@@ -1076,45 +1142,6 @@ class userModel
             sql::run("UPDATE `users` SET `lang` = ? WHERE `id` = ?", [$lang, $this->getId()]);
         }
         redirect::location($_SERVER['HTTP_REFERER'] ?? "/main");
-    }
-
-    //Добавление переменной
-    public function addVar(string $name, mixed $data, $server = null)
-    {
-        if ($server === null) {
-            $server = $this->getServerId();
-        }
-
-        sql::run('DELETE FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?', [
-          $server,
-          $this->getId(),
-          $name,
-        ]);
-
-        return sql::run('INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)', [
-          $server,
-          $this->getId(),
-          $name,
-          $data,
-        ]);
-    }
-
-    // Получение переменной
-    // Если $serverId null , тогда не обращаем внимание на сервер
-    public function getVar(string $name, $serverId = null)
-    {
-        if ($serverId !== null) {
-            return sql::getRow('SELECT `val` FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?', [
-              $serverId,
-              $this->getId(),
-              $name,
-            ]);
-        }
-
-        return sql::getRow('SELECT `val` FROM `user_variables` WHERE `user_id` = ? AND `var` = ?', [
-          $this->getId(),
-          $name,
-        ]);
     }
 
     /**
@@ -1153,19 +1180,6 @@ class userModel
           json_encode($this->objectToArray($players), JSON_UNESCAPED_UNICODE),
           time::mysql(),
         ]);
-    }
-
-    public function toArray(): array
-    {
-        $obj             = get_object_vars($this);
-        $obj['avatar']   = $this->getAvatar();
-        $obj['timezone'] = $this->getTimezone();
-        $obj['country']  = $this->getCountry();
-        $obj['city']     = $this->getCity();
-        $obj['serverId'] = $this->getServerId();
-        $obj['lang']     = $this->getLang();
-
-        return $obj;
     }
 
 }
