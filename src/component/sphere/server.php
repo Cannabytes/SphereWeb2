@@ -110,7 +110,7 @@ class server
         $url     = $link . type::url($type) ?? board::error("Не указан URL запроса");
         $ch      = curl_init();
         $headers = [
-          'Content-Type: application/json', // Изменяем тип контента на application/json
+          'Content-Type: application/json',
           'Authorization: BoberKurwa',
         ];
         if (self::$user !== null) {
@@ -121,7 +121,8 @@ class server
             $headers[] = "User-Id: " . self::$user->getId();
             $headers[] = "User-Email: " . self::$user->getEmail();
             $headers[] = "User-Server-Id: " . self::$server_id;
-            $headers[] = "IP: " . self::$user->getIp();
+            $headers[] = "User-IP: " . self::$user->getIp();
+            $headers[] = "User-isBot: " . (int)(new BotDetector())->isBot();
         } else {
             $headers[] = "User-Id: " . 0;
             if (type::SPHERE_INSTALL != $type) {
