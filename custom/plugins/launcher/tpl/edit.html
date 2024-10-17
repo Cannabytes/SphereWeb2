@@ -39,18 +39,18 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label" for="autoload">Тип загрузки</label>
+                        <label class="form-label" for="autoload">{{phrase('loading type')}}</label>
                         <div class="col-2">
                             <select class="form-select mb-1" id="loadType" name="loadType">
-                                <option value="patch">Патч</option>
-                                <option value="client">Полностью игра</option>
+                                <option value="patch">{{phrase('patch')}}</option>
+                                <option value="client">{{phrase('full game')}}</option>
                             </select>
                         </div>
 
                         <div class="fs-sm fw-medium text-muted mb-0">
-                            <span class="text-success">Патч</span> - только часть файлов игрового клиента. У игрока должна быть игра, файлы которые будут заменены на Ваш патч.
+                            <span class="text-success">{{phrase('patch')}}</span> - {{phrase('patch desc')}}
                             <br>
-                            <span class="text-success">Полностью игра</span> - полный набор всех необходимых файлов для запуска игры. Игроку не обязательно иметь игру.
+                            <span class="text-success">{{phrase('full game')}}</span> - {{phrase('full game desc')}}
                         </div>
                     </div>
 

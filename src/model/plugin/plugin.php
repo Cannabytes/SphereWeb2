@@ -148,7 +148,6 @@ class plugin
     {
         $pluginData = self::get($getNameClass)->getPluginData();
         $customData = self::get($getNameClass)->getAllData();
-
         return array_merge($pluginData, $customData);
     }
 
