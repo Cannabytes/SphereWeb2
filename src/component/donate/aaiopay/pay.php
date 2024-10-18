@@ -81,7 +81,7 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
 
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
         $email       = $_REQUEST['email'];
-        $amount      = $_REQUEST['amount'];
+        $amount      = number_format(506.00, 2, '.', '');
         $merchant_id = $_REQUEST['merchant_id'];
         $order_id    = $_REQUEST['order_id'];
         $currency    = $_REQUEST['currency'];
