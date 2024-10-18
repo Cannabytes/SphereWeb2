@@ -84,16 +84,17 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
         $amount      = $_REQUEST['amount'];
         $merchant_id = $_REQUEST['merchant_id'];
         $order_id    = $_REQUEST['order_id'];
+        $currency    = $_REQUEST['currency'];
 
-        $sign = hash('sha256', implode(':', [$merchant_id, $amount, $_POST['currency'], self::getConfigValue('secret_key_2'), $order_id]));
+        $sign = hash('sha256', implode(':', [$merchant_id, $amount, $currency, self::getConfigValue('secret_key_2'), $order_id]));
 
         if ( ! hash_equals($_REQUEST['sign'], $sign)) {
             die("wrong sign #1");
         }
 
-        donate::control_uuid($_POST['orderID'], get_called_class());
-        $amount = donate::currency($_POST['sum'], $_POST['currency']);
-        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['sum'], $_POST['currency'], get_called_class()]);
+        donate::control_uuid($order_id, get_called_class());
+        $amount = donate::currency($amount, $currency);
+        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
         $user = user::getUserByEmail($email);
         $user->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование Aaio", get_called_class());
         donate::addUserBonus($user->getId(), $amount);
