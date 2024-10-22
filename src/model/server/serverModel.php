@@ -233,7 +233,7 @@ class serverModel
                 $update = false;
                 foreach ($serverCache as $cache) {
                     $totalSeconds = time::diff(time::mysql(), $cache['date_create']);
-                    if ($totalSeconds < config::load()->cache()->getStatus()) {
+                    if ($totalSeconds >= config::load()->cache()->getStatus()) {
                         $update = true;
                     }
                 }
