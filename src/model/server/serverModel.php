@@ -191,45 +191,45 @@ class serverModel
     public function getStatus($forceUpdate = false): ?serverStatus
     {
         //Когда принудительное обновление включено, мы не используем кэш из бд
-//        if (!$forceUpdate) {
-//            if (isset(self::$arrayServerStatus[$this->getId()])) {
-//                return self::$arrayServerStatus[$this->getId()];
-//            }
-//
-//            $serverCache = sql::getRows(
-//                "SELECT `server_id`, `data`, `date_create` FROM `server_cache` WHERE `type` = 'status' ORDER BY `id` DESC", []
-//            );
-//            if ($serverCache) {
-//                /**
-//                 * Если прошло меньше минуты, тогда выводим данные из кэша
-//                 */
-//                $update = false;
-//                foreach ($serverCache as $cache) {
-//                    $totalSeconds = time::diff(time::mysql(), $cache['date_create']);
-//                    if ($totalSeconds >= config::load()->cache()->getStatus()) {
-//                        $update = true;
-//                    }
-//                }
-//                if (!$update) {
-//                    foreach ($serverCache as $cache) {
-//                        $server_id = $cache['server_id'];
-//                        $cache = json_decode($cache['data'], true);
-//                        $serverStatus = new serverStatus();
-//                        $serverStatus->setServerId($server_id);
-//                        $serverStatus->setLoginServer($cache['loginServer']);
-//                        $serverStatus->setGameServer($cache['gameServer']);
-//                        $serverStatus->setOnline($cache['online']);
-//                        $serverStatus->setEnable(filter_var($cache['isEnableStatus'], FILTER_VALIDATE_BOOLEAN));
-//                        self::$arrayServerStatus[$server_id] = $serverStatus;
-//                    }
-//                    foreach(self::$arrayServerStatus as $server_id => $serverStatus){
-//                        if ($server_id == $this->getId()) {
-//                            return $serverStatus;
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        if (!$forceUpdate) {
+            if (isset(self::$arrayServerStatus[$this->getId()])) {
+                return self::$arrayServerStatus[$this->getId()];
+            }
+
+            $serverCache = sql::getRows(
+                "SELECT `server_id`, `data`, `date_create` FROM `server_cache` WHERE `type` = 'status' ORDER BY `id` DESC", []
+            );
+            if ($serverCache) {
+                /**
+                 * Если прошло меньше минуты, тогда выводим данные из кэша
+                 */
+                $update = false;
+                foreach ($serverCache as $cache) {
+                    $totalSeconds = time::diff(time::mysql(), $cache['date_create']);
+                    if ($totalSeconds >= config::load()->cache()->getStatus()) {
+                        $update = true;
+                    }
+                }
+                if (!$update) {
+                    foreach ($serverCache as $cache) {
+                        $server_id = $cache['server_id'];
+                        $cache = json_decode($cache['data'], true);
+                        $serverStatus = new serverStatus();
+                        $serverStatus->setServerId($server_id);
+                        $serverStatus->setLoginServer($cache['loginServer']);
+                        $serverStatus->setGameServer($cache['gameServer']);
+                        $serverStatus->setOnline($cache['online']);
+                        $serverStatus->setEnable(filter_var($cache['isEnableStatus'], FILTER_VALIDATE_BOOLEAN));
+                        self::$arrayServerStatus[$server_id] = $serverStatus;
+                    }
+                    foreach(self::$arrayServerStatus as $server_id => $serverStatus){
+                        if ($server_id == $this->getId()) {
+                            return $serverStatus;
+                        }
+                    }
+                }
+            }
+        }
 
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::GET_STATUS_SERVER_ALL, [])->getResponse();
         if (isset($sphere['status'])) {
