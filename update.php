@@ -32,10 +32,6 @@ class update
                 $this->__TOKEN__ = __TOKEN__;
                 include "src/model/db/sql.php";
                 $this->checkNewCommit();
-            } else {
-                $server_ip = $_SERVER['SERVER_ADDR'];
-                $json      = date('Y-m-d H:i:s') . " - " . $server_ip . " - " . $data['token'] . "\n";
-                file_put_contents("update_errors.log", $json, FILE_APPEND);
             }
         } else {
             header("HTTP/1.1 301 Moved Permanently");
