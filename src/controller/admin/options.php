@@ -190,8 +190,6 @@ class options
             redirect::location("/admin/server/list");
         }
         $server = \Ofey\Logan22\model\server\server::getServer($server_id);
-//        $gameServers = \Ofey\Logan22\component\sphere\server::send(type::GET_GAME_SERVERS)->show()->getResponse();
-//        $loginServers = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS)->show()->getResponse();
         $database = \Ofey\Logan22\component\sphere\server::send(type::GET_DATABASE)->show()->getResponse();
 
         $defaultDB =  $database['defaultDB'];
@@ -307,6 +305,14 @@ class options
             ],
         ])->show()->getResponse();
 
+        if (isset($data["success"])) {
+            board::redirect("/admin/server/list");
+            board::success("Данные сервера обновлены");
+        }
+
+        if (isset($data["error"])) {
+            board::error($data['error']);
+        }
 
     }
 

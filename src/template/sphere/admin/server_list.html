@@ -38,7 +38,7 @@
                   <li class="d-flex align-items-center mb-3">
                                                                 <span class="me-2">
                                                                     <i
-                                                                      class="ri-checkbox-circle-line fs-15 {% if server.getStatus().isEnableLoginServerMySQL() %}text-success{% else %}text-danger{% endif %}"></i>
+                                                                      class="{% if server.getStatus().isEnableLoginServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
                                                                 </span>
                     <span class="{% if server.getStatus().isEnableLoginServerMySQL() %}text-success{% else %}text-danger{% endif %}">
                                                                     <strong class="me-1">Соединение с БД</strong> LoginServer
@@ -47,7 +47,7 @@
                   <li class="d-flex align-items-center mb-3">
                                                                 <span class="me-2">
                                                                     <i
-                                                                      class="ri-checkbox-circle-line fs-15 {% if server.getStatus().isEnableGameServerMySQL() %}text-success{% else %}text-danger{% endif %}"></i>
+                                                                      class="{% if server.getStatus().isEnableGameServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
                                                                 </span>
                     <span class="{% if server.getStatus().isEnableGameServerMySQL() %}text-success{% else %}text-danger{% endif %}">
                                                                     <strong class="me-1">Соединение с БД</strong> GameServer
