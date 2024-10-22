@@ -805,7 +805,7 @@ return array (
     'enable' => 1,
     'method' => 'GET',
     'pattern' => '/admin/server/list',
-    'func' => 'controller\\admin\\options::edit_server_show',
+    'func' => 'controller\\admin\\options::servers_show',
     'access' => 
     array (
       0 => 'admin',
@@ -819,7 +819,7 @@ return array (
     'enable' => 1,
     'method' => 'GET',
     'pattern' => '/admin/server/edit/(\\d+)',
-    'func' => 'controller\\admin\\options::edit_server_show',
+    'func' => 'controller\\admin\\options::server_edit',
     'access' => 
     array (
       0 => 'admin',
@@ -2039,6 +2039,34 @@ return array (
     'method' => 'POST',
     'pattern' => '/admin/balance/pay/renewlicense',
     'func' => 'controller\\admin\\swbalance::renewLicense',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  148 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/db/add/new/connect',
+    'func' => 'controller\\admin\\options::add_new_mysql_connect_to_server',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  149 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/create/server/edit',
+    'func' => 'controller\\admin\\options::server_edit_save',
     'access' => 
     array (
       0 => 'admin',

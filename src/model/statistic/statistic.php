@@ -7,23 +7,10 @@
 
 namespace Ofey\Logan22\model\statistic;
 
-use Error;
-use Exception;
-use Ofey\Logan22\component\cache\cache;
-use Ofey\Logan22\component\cache\dir;
-use Ofey\Logan22\component\cache\timeout;
-use Ofey\Logan22\component\fileSys\fileSys;
-use Ofey\Logan22\component\image\client_icon;
-use Ofey\Logan22\component\image\crest;
-use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
-use Ofey\Logan22\model\lang\lang;
-use Ofey\Logan22\model\server\server;
-use Ofey\Logan22\model\server\serverModel;
-use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\player\character;
 use Ofey\Logan22\model\user\user;
 
@@ -62,6 +49,58 @@ class statistic
         return self::$statistic[$server_id]['pvp'] ?? null;
     }
 
+    private static function getStatistic($server_id = null)
+    {
+        if (self::$statistic === false) {
+            return false;
+        }
+
+        if (is_array(self::$statistic) && isset(self::$statistic[$server_id])) {
+            return self::$statistic[$server_id];
+        }
+
+        if ($server_id === null) {
+            $server_id = user::self()->getServerId();
+        }
+
+        if (\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableEmulation()) {
+            $data = include "src/component/emulation/data/data.php";
+            return self::$statistic[$server_id] = $data[$server_id]['statistic'];
+        }
+
+        // Проверка кэша
+        $data = sql::getRow("SELECT * FROM `server_cache` WHERE `server_id` = ? AND `type` = 'statistic' ORDER BY id DESC LIMIT 1 ", [$server_id]);
+        if($data){
+            if($data['data'] != ""){
+                // Проверка актуальности кэша по времени
+                if (time::diff($data['date_create'], time::mysql()) < config::load()->other()->getTimeoutSaveStatistic()) {
+                    self::$statistic[$server_id] = json_decode($data['data'], true);
+                    return self::$statistic[$server_id];
+                }
+            }
+        }
+
+        \Ofey\Logan22\component\sphere\server::setUser(user::self());
+        $statistics = \Ofey\Logan22\component\sphere\server::send(type::STATISTIC_ALL)->getResponse();
+        if (isset($statistics['statistics'])) {
+            $statistics = $statistics['statistics'];
+            foreach ($statistics as $server_id => $data) {
+                foreach ($data as $type => $statistic) {
+                    self::$statistic[$server_id][$type] = $statistic;
+                    sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = 'statistic' ", [$server_id]);
+                    sql::sql("INSERT INTO `server_cache` (`server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
+                        $server_id,
+                        "statistic",
+                        json_encode(self::$statistic[$server_id], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+                        time::mysql(),
+                    ]);
+                }
+            }
+        }
+
+
+        return self::$statistic[$server_id];
+    }
 
     public static function get_pk($server_id = 0)
     {
@@ -75,7 +114,6 @@ class statistic
         return self::$statistic[$server_id]['online'];
     }
 
-
     public static function get_exp($server_id = 0)
     {
         self::getStatistic($server_id);
@@ -88,20 +126,17 @@ class statistic
         return self::$statistic[$server_id]['clan'];
     }
 
-
-
     public static function get_castle($server_id = 0)
     {
         self::getStatistic($server_id);
         return self::$statistic[$server_id]['castle'];
     }
 
-
     public static function timeHasPassed($seconds, $reduce = false): string
     {
-        $days    = floor($seconds / 86400);
+        $days = floor($seconds / 86400);
         $seconds %= 86400;
-        $hours   = floor($seconds / 3600);
+        $hours = floor($seconds / 3600);
         $seconds %= 3600;
         $minutes = floor($seconds / 60);
         $seconds %= 60;
@@ -128,52 +163,6 @@ class statistic
         $result .= $seconds . ($reduce ? " {$s}. " : " {$secondsStr}");
 
         return $result;
-    }
-
-
-
-    private static function getStatistic($server_id = null)
-    {
-        if (self::$statistic === false) {
-            return false;
-        }
-
-        if (is_array(self::$statistic) && isset(self::$statistic[$server_id])) {
-            return self::$statistic[$server_id];
-        }
-
-        if ($server_id === null) {
-            $server_id = user::self()->getServerId();
-        }
-
-        if (\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableEmulation()){
-           $data = include "src/component/emulation/data/data.php";
-           return self::$statistic[$server_id] = $data[$server_id]['statistic'];
-        }
-
-        // Проверка кэша
-        $data = sql::getRow("SELECT * FROM `server_cache` WHERE `server_id` = ? AND `type` = 'statistic' ORDER BY id DESC LIMIT 1 ", [$server_id]);
-        if($data){
-            if($data['data'] != ""){
-                // Проверка актуальности кэша по времени
-                if (time::diff($data['date_create'], time::mysql()) < config::load()->other()->getTimeoutSaveStatistic()) {
-                    self::$statistic[$server_id] = json_decode($data['data'], true);
-                    return self::$statistic[$server_id];
-                }
-            }
-        }
-
-        \Ofey\Logan22\component\sphere\server::setUser(user::self());
-        self::$statistic[$server_id] = \Ofey\Logan22\component\sphere\server::send(type::STATISTIC, ['id' => $server_id])->getResponse() ?? false;
-        sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = 'statistic' ", [$server_id]);
-        sql::sql("INSERT INTO `server_cache` (`server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
-          $server_id,
-          "statistic",
-          json_encode(self::$statistic[$server_id], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE ),
-          time::mysql(),
-        ]);
-
-        return self::$statistic[$server_id];
     }
 
 

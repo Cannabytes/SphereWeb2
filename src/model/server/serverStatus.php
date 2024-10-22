@@ -22,6 +22,8 @@ class serverStatus
     private bool $isEnableStatus = false;
 
     private ?bool $disabled = null;
+    private bool $enableLoginServerMySQL = false;
+    private bool $enableGameServerMySQL = false;
 
     public function save(): void
     {
@@ -33,7 +35,6 @@ class serverStatus
           'gameServer'            => $this->getGameServer(),
           'loginServer'           => $this->getLoginServer(),
           'isEnableStatus'        => $this->isEnableStatus,
-          'disabled'              => $this->disabled
         ];
         $jsonData = json_encode($data);
         sql::sql("INSERT INTO `server_cache` ( `server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
@@ -124,15 +125,24 @@ class serverStatus
         $this->isEnableStatus = $isEnableStatus;
     }
 
-
-    public function isDisabled(): ?bool
+    public function setEnableLoginServerMySQL(bool $b)
     {
-        return $this->disabled;
+        $this->enableLoginServerMySQL = $b;
     }
 
-    public function setDisabled(?bool $disabled): void
+    public function setEnableGameServerMySQL(bool $b)
     {
-        $this->disabled = $disabled;
+        $this->enableGameServerMySQL = $b;
+    }
+
+    public function isEnableLoginServerMySQL(): bool
+    {
+        return $this->enableLoginServerMySQL;
+    }
+
+    public function isEnableGameServerMySQL() : bool
+    {
+        return $this->enableGameServerMySQL;
     }
 
 

@@ -28,7 +28,6 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
     function create_link(): void
     {
         user::self()->isAuth() ?: board::notice(false, lang::get_phrase(234));
-
         donate::isOnlyAdmin(self::class);
 
         filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT) ?: board::notice(false, "Введіть суму цифрою");
@@ -78,7 +77,6 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
     function transfer(): void
     {
         file_put_contents(__DIR__ . '/debug.log', '_REQUEST: ' . print_r($_REQUEST, true) . PHP_EOL, FILE_APPEND);
-
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
         $email       = $_REQUEST['email'];
         $amount      = number_format($_REQUEST['amount'], 2, '.', '');

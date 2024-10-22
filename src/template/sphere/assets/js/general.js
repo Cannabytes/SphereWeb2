@@ -103,10 +103,22 @@ $(document).on('submit', 'form', function (event) {
     event.preventDefault();
     let url = $(this).attr('action');
     let method = $(this).attr('method');
-    let data = $(this).serialize();
+
+    let data = $(this).find('input, select, textarea').filter(function () {
+        if (this.type === 'checkbox') {
+            return this.checked ? $(this).val('true') : $(this).prop('checked', false).val('false');
+        }
+        if (this.type === 'radio') {
+            return this.checked ? true : false;
+        }
+        return this.type !== 'checkbox' && this.type !== 'radio' || this.checked;
+    }).serialize();
+
     let funcName = $(this).find('button[data-func]').attr('data-func');
     AjaxSend(url, method, data, false, 2, funcName);
 });
+
+
 
 
 function responseAnalysis(response, form) {

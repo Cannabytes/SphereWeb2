@@ -17,7 +17,6 @@ use Ofey\Logan22\component\servername\servername;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
-use Ofey\Logan22\model\admin\patchlist;
 use Ofey\Logan22\model\admin\server;
 use Ofey\Logan22\model\admin\update_cache;
 use Ofey\Logan22\model\admin\validation;
@@ -43,14 +42,14 @@ class options
 
         $servers_id = \Ofey\Logan22\component\sphere\server::send(type::SERVER_LIST)->show(false)->getResponse();
         if (isset($servers_id['error']) or $servers_id === null) {
-            $sphereAPIError        = true;
+            $sphereAPIError = true;
             $servers_id['servers'] = [];
         }
 
         foreach ($servers_id['ids'] as $sid) {
             if ($serverInfo->getId() == $sid) {
                 $response = \Ofey\Logan22\component\sphere\server::send(type::DELETE_SERVER, [
-                  "id" => (int)$sid,
+                    "id" => (int)$sid,
                 ])->show()->getResponse();
                 if ($response['success']) {
                     sql::run("DELETE FROM `servers` WHERE `id` = ?", [$sid]);
@@ -70,65 +69,78 @@ class options
     {
         $loginArr = [];
 
-        $name            = $_POST['name'] ?? "Bartz_" . random_int(1, 999);
-        $rateExp         = $_POST['rateExp'] ?? 1;
-        $rateSp          = $_POST['rateSp'] ?? 1;
-        $rateAdena       = $_POST['rateAdena'] ?? 1;
-        $rateDrop        = $_POST['rateDrop'] ?? 1;
-        $rateSpoil       = $_POST['rateSpoil'] ?? 1;
-        $version_client  = $_POST['version_client'] ?? board::error("No select  client");
-        $sql_base_source = $_POST['sql_base_source'] ?? board::error("No select L2j SQL base");
+        $name = $_POST['name'] ?? "Bartz_" . random_int(1, 999);
+        $rateExp = (int)$_POST['rateExp'] ?? 1;
+        $rateSp = (int)$_POST['rateSp'] ?? 1;
+        $rateAdena = (int)$_POST['rateAdena'] ?? 1;
+        $rateDrop = (int)$_POST['rateDrop'] ?? 1;
+        $rateSpoil = (int)$_POST['rateSpoil'] ?? 1;
+        $version_client = $_POST['version_client'] ?? board::error("No select  client");
+        $collection = $_POST['collection'] ?? board::error("No select L2j SQL base");
+        $dateStartServer = $_POST['dateStartServer'] ?? null;
+        $knowledgeBase = $_POST['knowledge_base'] ?? null;
+        $maxOnline = $_POST['max_online'] ?? 200;
+        $timezone = $_POST['timezone_server'] ?? "Africa/Abidjan";
+        $resetHWID = $_POST['resetHWID'] ?? false;
 
-        $loginserver_id = (int)$_POST['loginserver_id'] ?? 0;
+        $enableStatusServer = filter_var($_POST['enableStatusServer'], FILTER_VALIDATE_BOOL) ?? false;
+        $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? "0.0.0.0";
+        $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? 2106;
+        $statusGameServerIP = $_POST['statusGameServerIP'] ?? "0.0.0.0";
+        $statusGameServerPort = (int)$_POST['statusGameServerPort'] ?? 7777;
 
-        if ($loginserver_id == 0) {
-            $login_host     = $_POST['login_host'] ?? board::error("No select login host");
-            $login_port     = $_POST['login_port'] ?? 3306;
-            $login_user     = $_POST['login_user'] ?? board::error("No select login user");
-            $login_password = $_POST['login_password'] ?? board::error("No select login password");
-            $login_name     = $_POST['login_name'] ?? board::error("No select login name");
-
-            $loginArr = [
-              "login_host"     => $login_host,
-              "login_port"     => $login_port,
-              "login_user"     => $login_user,
-              "login_password" => $login_password,
-              "login_name"     => $login_name,
-            ];
+        if (isset($_POST['loginserver'])) {
+            $loginserver = (int)$_POST['loginserver'] ?? 0;
+        } else {
+            board::error("Выберите подключение к БД LoginServer");
         }
 
-        $game_host     = $_POST['game_host'] ?? board::error("No select game host");
-        $game_port     = $_POST['game_port'] ?? 3306;
-        $game_user     = $_POST['game_user'] ?? board::error("No select game user");
-        $game_password = $_POST['game_password'] ?? board::error("No select game password");
-        $game_name     = $_POST['game_name'] ?? board::error("No select game name");
+        if (isset($_POST['gameserver'])) {
+            $gameserver = (int)$_POST['gameserver'] ?? 0;
+        } else {
+            board::error("Добавьте данные БД к GameServer");
+        }
+
+        $statusServer = [
+            "enable" => $enableStatusServer,
+            "statusLoginServerIP" => $statusLoginServerIP,
+            "statusLoginServerPort" => $statusLoginServerPort,
+            "statusGameServerIP" => $statusGameServerIP,
+            "statusGameServerPort" => $statusGameServerPort,
+        ];
 
         $data = \Ofey\Logan22\component\sphere\server::send(type::ADD_NEW_SERVER, array_merge([
-          "loginserver_id" => $loginserver_id,
-
-          "game_host"     => $game_host,
-          "game_port"     => $game_port,
-          "game_user"     => $game_user,
-          "game_password" => $game_password,
-          "game_name"     => $game_name,
-
-          "collection" => $sql_base_source,
-
+            "loginServerID" => $loginserver,
+            "gameServerID" => $gameserver,
+            "collection" => $collection,
+            "statusServer" => $statusServer,
         ], $loginArr))->show()->getResponse();
 
         if (isset($data['id'])) {
-            $id   = $data['id'];
+            $id = $data['id'];
+            $loginServerID = $data['loginServerID'];
+            $gameServerID = $data['gameServerID'];
+
             $data = [
-              "id"        => $id,
-              "name"      => $name,
-              "rateExp"   => $rateExp,
-              "rateSp"    => $rateSp,
-              "rateAdena" => $rateAdena,
-              "rateDrop"  => $rateDrop,
-              "rateSpoil" => $rateSpoil,
-              "chronicle" => $version_client,
-              "source"    => $sql_base_source,
+                "id" => $id,
+                "login_id" => $loginServerID,
+                "game_id" => $gameServerID,
+                "name" => $name,
+                "rateExp" => $rateExp,
+                "rateSp" => $rateSp,
+                "rateAdena" => $rateAdena,
+                "rateDrop" => $rateDrop,
+                "rateSpoil" => $rateSpoil,
+                "chronicle" => $version_client,
+                "collection" => $collection,
+                "statusServer" => $statusServer,
+                "dateStartServer" => $dateStartServer,
+                "knowledgeBase" => fileSys::modifyString($knowledgeBase),
+                "maxOnline" => $maxOnline,
+                "timezone" => $timezone,
+                "resetHWID" => $resetHWID,
             ];
+
             sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
             board::redirect("/admin/server/list");
             board::success(lang::get_phrase(243));
@@ -140,13 +152,13 @@ class options
     // Обновление коллекции
     static public function updateCollection(): void
     {
-        $platform       = $_POST['platform'];
+        $platform = $_POST['platform'];
         $version_client = $_POST['version_client'];
-        $serverId       = (int)$_POST['serverId'];
-        $collection     = $_POST['collection'];
-        $response       = \Ofey\Logan22\component\sphere\server::send(type::UPDATE_COLLECTION, [
-          "id"   => $serverId,
-          "name" => $collection,
+        $serverId = (int)$_POST['serverId'];
+        $collection = $_POST['collection'];
+        $response = \Ofey\Logan22\component\sphere\server::send(type::UPDATE_COLLECTION, [
+            "id" => $serverId,
+            "name" => $collection,
         ])->show(true)->getResponse();
         if ($response['success']) {
             $server = \Ofey\Logan22\model\server\server::getServer((int)$_POST['serverId']);
@@ -156,28 +168,132 @@ class options
 
             //Сохраним во внутренней бд
             $post = json_encode([
-              'platform'       => $platform,
-              'version_client' => $version_client,
-              'collection'     => $collection,
+                'platform' => $platform,
+                'version_client' => $version_client,
+                'collection' => $collection,
             ], JSON_UNESCAPED_UNICODE);
             sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = 'collection_data'", [$serverId]);
             sql::sql("INSERT INTO `server_cache` ( `server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
-              $serverId,
-              'collection_data',
-              $post,
-              time::mysql(),
+                $serverId,
+                'collection_data',
+                $post,
+                time::mysql(),
             ]);
 
             board::success("Коллекция обновлена");
         }
     }
 
-    static public function edit_server_show($id = null): void
+    static public function server_edit($server_id = null): void
+    {
+        if ($server_id == null) {
+            redirect::location("/admin/server/list");
+        }
+        $server = \Ofey\Logan22\model\server\server::getServer($server_id);
+        $gameServers = \Ofey\Logan22\component\sphere\server::send(type::GET_GAME_SERVERS)->show()->getResponse();
+        $loginServers = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS)->show()->getResponse();
+
+        tpl::addVar([
+            'gameservers' => $gameServers,
+            'loginservers' => $loginServers,
+            "chronicleBaseList" => fileSys::dir_list("src/component/image/icon/items"),
+
+            'client_list_default' => client::all(),
+            'timezone_list_default' => timezone::all(),
+
+            "server" => $server
+        ]);
+        tpl::display("/admin/server_edit.html");
+    }
+
+    static public function server_edit_save()
+    {
+        $serverId = (int)$_POST['id'] ?? board::error("Server id is empty");
+        $name = $_POST['name'] ?? board::error("Set server name");
+        $rateExp = $_POST['rateExp'] ?? 1;
+        $rateSp = $_POST['rateSp'] ?? 1;
+        $rateAdena = $_POST['rateAdena'] ?? 1;
+        $rateDrop = $_POST['rateDrop'] ?? 1;
+        $version_client = $_POST['version_client'] ?? board::error("Set version game");
+        $collection = $_POST['collection'] ?? board::error("Set l2j emulator");
+        $enableStatusServer = $_POST['enableStatusServer'] ?? false;
+        $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? null;
+        $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? null;
+        $statusGameServerIP = $_POST['statusGameServerIP'] ?? null;
+        $statusGameServerPort = (int)$_POST['statusGameServerPort'] ?? null;
+        $loginServerID = $_POST['loginserver'] ?? board::error("Set DB LoginServer");
+        $gameserverID = $_POST['gameserver'] ?? board::error("Set DB GameServer");
+        $dateStartServer = $_POST['dateStartServer'] ?? null;
+        $knowledge_base = $_POST['knowledge_base'] ?? board::error("Select the knowledge base for your game version");
+        $maxOnline = $_POST['max_online'] ?? 200;
+        $timezone = $_POST['timezone_server'] ?? "Europe/Kyiv";
+        $resetHWID = $_POST['resetHWID'] ?? false;
+
+        if (!\Ofey\Logan22\model\server\server::getServer($serverId)) {
+            board::error("Server not find");
+        }
+
+        $statusServer = [
+            "enable" => $enableStatusServer,
+            "statusLoginServerIP" => $statusLoginServerIP,
+            "statusLoginServerPort" => $statusLoginServerPort,
+            "statusGameServerIP" => $statusGameServerIP,
+            "statusGameServerPort" => $statusGameServerPort,
+        ];
+
+
+        $data = [
+            "id" => $serverId,
+            "login_id" => $loginServerID,
+            "game_id" => $gameserverID,
+            "name" => $name,
+            "rateExp" => $rateExp,
+            "rateSp" => $rateSp,
+            "rateAdena" => $rateAdena,
+            "rateDrop" => $rateDrop,
+            "chronicle" => $version_client,
+            "collection" => $collection,
+            "statusServer" => $statusServer,
+            "dateStartServer" => $dateStartServer,
+            "knowledgeBase" => fileSys::modifyString($knowledge_base),
+            "maxOnline" => $maxOnline,
+            "timezone" => $timezone,
+            "resetHWID" => $resetHWID,
+        ];
+
+        $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        sql::run(
+            "UPDATE `servers` SET `data` = ? WHERE `id` = ?",
+            [
+                $data,
+                $serverId,
+            ]
+        );
+
+        //Смена ID логин и гейм сервера
+        $data = \Ofey\Logan22\component\sphere\server::send(type::CONNECT_DB_UPDATE, [
+            "serverId" => $serverId,
+            "loginServerID" => (int)$loginServerID,
+            "gameServerID" => (int)$gameserverID,
+            "collection" => $collection,
+            "statusServer" => [
+                "enable" => (bool)filter_var($enableStatusServer, FILTER_VALIDATE_BOOLEAN),
+                "statusLoginServerIP" => $statusLoginServerIP,
+                "statusLoginServerPort" => (int)$statusLoginServerPort,
+                "statusGameServerIP" => $statusGameServerIP,
+                "statusGameServerPort" => (int)$statusGameServerPort,
+            ],
+        ])->show()->getResponse();
+
+
+    }
+
+    static public function servers_show(): void
     {
         validation::user_protection("admin");
 
         $servers = \Ofey\Logan22\model\server\server::getServerAll();
-        if ( ! $servers) {
+        if (!$servers) {
             redirect::location("/admin/server/add/new");
         }
 
@@ -186,30 +302,15 @@ class options
         if ($serversFullInfo['error']) {
             redirect::location("/admin/server/list");
         }
+
         $serversFullInfo = $serversFullInfo['servers'];
-        if ($id) {
-            $serverInfo = \Ofey\Logan22\model\server\server::getServer($id);
-            if ($serverInfo->getId() != $id) {
-                redirect::location("/admin/server/list");
-            }
-
-            foreach ($serversFullInfo as $serverInfoData) {
-                if ($serverInfo->getId() == $serverInfoData['id']) {
-                    $serverInfo->setIsSphereServer(true);
-                    $serverInfo->getStatus()->setDisabled($serverInfoData['disabled']);
-                }
-            }
-            tpl::addVar([
-              'serverInfo' => $serverInfo,
-            ]);
-        }
-
         if ($serversFullInfo != null) {
             foreach ($servers as &$server) {
                 foreach ($serversFullInfo as $serverInfoData) {
                     if ($server->getId() == $serverInfoData['id']) {
                         $server->setIsSphereServer(true);
-                        $server->getStatus()->setDisabled($serverInfoData['disabled']);
+                        $server->getStatus()->setEnableLoginServerMySQL($serverInfoData['enable_login_mysql']);
+                        $server->getStatus()->setEnableGameServerMySQL($serverInfoData['enable_game_mysql']);
                     }
                 }
             }
@@ -217,36 +318,36 @@ class options
             $arrayUniq = self::filterUniqueIds(\Ofey\Logan22\model\server\server::getServerAll(), $serversFullInfo);
             foreach ($arrayUniq as $id) {
                 $sm = new serverModel([
-                  'id' => $id,
+                    'id' => $id,
                 ]);
                 sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode(['id' => $id])]);
                 $sphereServers = $sm;
-                $servers[]     = $sphereServers;
+                $servers[] = $sphereServers;
             }
         }
 
-        $mysql_data_connect = sql::getRow(
-          "SELECT * FROM `server_cache` WHERE server_id = ? and `type`='mysql_data_connect';",
-          [$server->getId()]
-        );
-        $mysql_data_connect = json_decode($mysql_data_connect['data'], true);
+//        $mysql_data_connect = sql::getRow(
+//            "SELECT * FROM `server_cache` WHERE server_id = ? and `type`='mysql_data_connect';",
+//            [$server->getId()]
+//        );
+//        $mysql_data_connect = json_decode($mysql_data_connect['data'], true);
 
-        $collection_data  = sql::getRow(
-          "SELECT * FROM `server_cache` WHERE server_id = ? and `type`='collection_data';",
-          [$server->getId()]
-        );
-        $collection_data  = json_decode($collection_data['data'], true);
-        $loginServersData = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS_DATA, ['id' => $server->getId()])
-                                                                 ->show(true)
-                                                                 ->getResponse();
+//        $collection_data = sql::getRow(
+//            "SELECT * FROM `server_cache` WHERE server_id = ? and `type`='collection_data';",
+//            [$server->getId()]
+//        );
+//        $collection_data = json_decode($collection_data['data'], true);
+//        $loginServersData = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS_DATA, ['id' => $server->getId()])
+//            ->show(true)
+//            ->getResponse();
         tpl::addVar([
-          'loginServersData'      => $loginServersData,
-          'collection_data'       => $collection_data,
-          'mysql_data_connect'    => $mysql_data_connect,
-          'sphereServers'         => $servers,
-          'client_list_default'   => client::all(),
-          'timezone_list_default' => timezone::all(),
-          "title"                 => lang::get_phrase(221),
+//            'loginServersData' => $loginServersData,
+//            'collection_data' => $collection_data,
+//            'mysql_data_connect' => $mysql_data_connect,
+            'sphereServers' => $servers,
+            'client_list_default' => client::all(),
+            'timezone_list_default' => timezone::all(),
+            "title" => lang::get_phrase(221),
         ]);
         tpl::display("/admin/server_list.html");
     }
@@ -264,7 +365,7 @@ class options
         }, $serversFullInfo);
         // Фильтруем второй массив, исключая ID, которые есть в первом массиве
         $filteredIds = array_filter($ids, function ($id) use ($objectIds) {
-            return ! in_array($id, $objectIds);
+            return !in_array($id, $objectIds);
         });
 
         return $filteredIds;
@@ -276,50 +377,50 @@ class options
         $isDefault = (bool)$_POST['isDefault'] ?? false;
 
         //Отменяем дефолтные сервера у других
-        foreach(\Ofey\Logan22\model\server\server::getServerAll() as $server){
-           $server->setIsDefault(false);
-           $server->save();
+        foreach (\Ofey\Logan22\model\server\server::getServerAll() as $server) {
+            $server->setIsDefault(false);
+            $server->save();
         }
 
-        $data      = json_encode([
-          "id"        => $server_id,
-          "isDefault" => $isDefault,
-          "name"      => $_POST['name'] ?? board::error("Server name is empty"),
-          "rateExp"   => $_POST['rateExp'] ?? board::error("Server rateExp is empty"),
-          "rateSp"    => $_POST['rateSp'] ?? board::error("Server rateSp is empty"),
-          "rateAdena" => $_POST['rateAdena'] ?? board::error("Server rateAdena is empty"),
-          "rateDrop"  => $_POST['rateDrop'] ?? board::error("Server rateDrop is empty"),
-          "rateSpoil" => $_POST['rateSpoil'] ?? board::error("Server rateSpoil is empty"),
-          "chronicle" => $_POST['version_client'] ?? board::error("Server chronicle is empty"),
-          "source"    => $_POST['sql_base_source'] ?? board::error("Server source is empty"),
+        $data = json_encode([
+            "id" => $server_id,
+            "isDefault" => $isDefault,
+            "name" => $_POST['name'] ?? board::error("Server name is empty"),
+            "rateExp" => $_POST['rateExp'] ?? board::error("Server rateExp is empty"),
+            "rateSp" => $_POST['rateSp'] ?? board::error("Server rateSp is empty"),
+            "rateAdena" => $_POST['rateAdena'] ?? board::error("Server rateAdena is empty"),
+            "rateDrop" => $_POST['rateDrop'] ?? board::error("Server rateDrop is empty"),
+            "rateSpoil" => $_POST['rateSpoil'] ?? board::error("Server rateSpoil is empty"),
+            "chronicle" => $_POST['version_client'] ?? board::error("Server chronicle is empty"),
+            "source" => $_POST['sql_base_source'] ?? board::error("Server source is empty"),
         ], JSON_UNESCAPED_UNICODE);
         sql::run(
-          "UPDATE `servers` SET `data` = ? WHERE `id` = ?",
-          [
-            $data,
-            $server_id,
-          ]
+            "UPDATE `servers` SET `data` = ? WHERE `id` = ?",
+            [
+                $data,
+                $server_id,
+            ]
         );
 
         if (isset($_POST['statusServer'])) {
             $status = $_POST['statusServer'];
             if ($status['enableStatusServer']) {
                 $loginServerPort = filter_var(
-                  $status['statusLoginServerPort'],
-                  FILTER_VALIDATE_INT
+                    $status['statusLoginServerPort'],
+                    FILTER_VALIDATE_INT
                 ) ? (int)$status['statusLoginServerPort'] : -1;
-                $gameServerPort  = filter_var(
-                  $status['statusGameServerPort'],
-                  FILTER_VALIDATE_INT
+                $gameServerPort = filter_var(
+                    $status['statusGameServerPort'],
+                    FILTER_VALIDATE_INT
                 ) ? (int)$status['statusGameServerPort'] : -1;
 
                 \Ofey\Logan22\component\sphere\server::setServer($server_id);
                 $data = \Ofey\Logan22\component\sphere\server::send(type::UPDATE_STATUS_SERVER, [
-                  "enableStatusServer"    => filter_var($status['enableStatusServer'], FILTER_VALIDATE_BOOLEAN),
-                  "statusLoginServerIP"   => $status['statusLoginServerIP'] ?? "",
-                  "statusLoginServerPort" => $loginServerPort,
-                  "statusGameServerIP"    => $status['statusGameServerIP'] ?? "",
-                  "statusGameServerPort"  => $gameServerPort,
+                    "enableStatusServer" => filter_var($status['enableStatusServer'], FILTER_VALIDATE_BOOLEAN),
+                    "statusLoginServerIP" => $status['statusLoginServerIP'] ?? "",
+                    "statusLoginServerPort" => $loginServerPort,
+                    "statusGameServerIP" => $status['statusGameServerIP'] ?? "",
+                    "statusGameServerPort" => $gameServerPort,
                 ])->show()->getResponse();
             }
         }
@@ -332,21 +433,21 @@ class options
 
     public static function saveOther(): void
     {
-        $server_id      = $_POST['serverId'];
-        $start_time     = $_POST['date_start_server'];
-        $max_online     = $_POST['max_online'] ?? board::error("Server max_online is empty");
+        $server_id = $_POST['serverId'];
+        $start_time = $_POST['date_start_server'];
+        $max_online = $_POST['max_online'] ?? board::error("Server max_online is empty");
         $knowledge_base = $_POST['knowledge_base'] ?? board::error("Server knowlege_base is empty");
         $knowledge_base = fileSys::modifyString($knowledge_base);
-        $resetHWID      = $_POST['resetHWID'] ?? false;
-        $timezone       = $_POST['timezone'] ?? board::error("Server timezone is empty");
+        $resetHWID = $_POST['resetHWID'] ?? false;
+        $timezone = $_POST['timezone'] ?? board::error("Server timezone is empty");
 
         if (empty($start_time)) {
             $startDate = time::mysql();
             // У меня дата такого формата May 29, 2024 16:00
-            $dateTime  = DateTime::createFromFormat('Y-m-d H:i:s', $startDate);
+            $dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $startDate);
             $startDate = $dateTime->modify('+2 months')->format('Y-m-d H:i:s');
         } else {
-            $dateTime  = DateTime::createFromFormat('Y-m-d H:i', $start_time);
+            $dateTime = DateTime::createFromFormat('Y-m-d H:i', $start_time);
             $startDate = $dateTime->format('Y-m-d H:i:s');
         }
 
@@ -370,38 +471,64 @@ class options
         board::success(lang::get_phrase(217));
     }
 
+    //Добавление БД логин-сервера
+    static public function add_new_mysql_connect_to_server(): void
+    {
+        $type = $_POST['type'] ?? "";
+        $host = $_POST['host'] ?? board::error("No select host");
+        $port = $_POST['port'] ?? 3306;
+        $user = $_POST['user'] ?? board::error("No select user");
+        $password = $_POST['password'] ?? "";
+        $name = $_POST['name'] ?? board::error("No select name");
+
+        $data = \Ofey\Logan22\component\sphere\server::send(type::ADD_NEW_CONNECT_DB, [
+            "type" => $type,
+            "host" => $host,
+            "port" => $port,
+            "user" => $user,
+            "password" => $password,
+            "name" => $name
+        ])->show(true)->getResponse();
+        if (isset($data['id'])) {
+            board::alert([
+                'success' => true,
+                'id' => $data['id'],
+            ]);
+        }
+    }
+
     //Сохранение настроек для подключения к базе данных MySQL
     static public function saveMySQL(): void
     {
-        $server_id      = $_POST['serverId'];
+        $server_id = $_POST['serverId'];
         $loginserver_id = $_POST['loginserver_id'] ?? 0;
-        $login_host     = $_POST['login_host'] ?? board::error("No select login host");
-        $login_port     = $_POST['login_port'] ?? 3306;
-        $login_user     = $_POST['login_user'] ?? board::error("No select login user");
+        $login_host = $_POST['login_host'] ?? board::error("No select login host");
+        $login_port = $_POST['login_port'] ?? 3306;
+        $login_user = $_POST['login_user'] ?? board::error("No select login user");
         $login_password = $_POST['login_password'] ?? "";
-        $login_name     = $_POST['login_name'] ?? board::error("No select login name");
+        $login_name = $_POST['login_name'] ?? board::error("No select login name");
 
-        $game_host     = $_POST['game_host'] ?? board::error("No select game host");
-        $game_port     = $_POST['game_port'] ?? 3306;
-        $game_user     = $_POST['game_user'] ?? board::error("No select game user");
+        $game_host = $_POST['game_host'] ?? board::error("No select game host");
+        $game_port = $_POST['game_port'] ?? 3306;
+        $game_user = $_POST['game_user'] ?? board::error("No select game user");
         $game_password = $_POST['game_password'] ?? "";
-        $game_name     = $_POST['game_name'] ?? board::error("No select game name");
+        $game_name = $_POST['game_name'] ?? board::error("No select game name");
 
         $arr = [
-          "loginserver_id" => (int)$loginserver_id,
-          "login_host"     => $login_host,
-          "login_port"     => $login_port,
-          "login_user"     => $login_user,
-          "login_password" => $login_password,
-          "login_name"     => $login_name,
+            "loginserver_id" => (int)$loginserver_id,
+            "login_host" => $login_host,
+            "login_port" => $login_port,
+            "login_user" => $login_user,
+            "login_password" => $login_password,
+            "login_name" => $login_name,
 
-          "game_host"     => $game_host,
-          "game_port"     => $game_port,
-          "game_user"     => $game_user,
-          "game_password" => $game_password,
-          "game_name"     => $game_name,
+            "game_host" => $game_host,
+            "game_port" => $game_port,
+            "game_user" => $game_user,
+            "game_password" => $game_password,
+            "game_name" => $game_name,
 
-          "serverId" => $server_id,
+            "serverId" => $server_id,
         ];
 
         $data = \Ofey\Logan22\component\sphere\server::send(type::CONNECT_DB_UPDATE, $arr)->show()->getResponse();
@@ -411,10 +538,10 @@ class options
         if ($save_data_MySQL) {
             $jsonData = json_encode($arr);
             sql::sql("INSERT INTO `server_cache` ( `server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
-              $server_id,
-              'mysql_data_connect',
-              $jsonData,
-              time::mysql(),
+                $server_id,
+                'mysql_data_connect',
+                $jsonData,
+                time::mysql(),
             ]);
         }
 
@@ -424,25 +551,29 @@ class options
     static public function new_server(): void
     {
         validation::user_protection("admin");
+        $gameServers = \Ofey\Logan22\component\sphere\server::send(type::GET_GAME_SERVERS)->show()->getResponse();
         $loginServers = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS)->show()->getResponse();
         tpl::addVar([
-          'loginservers'            => $loginServers,
-          'servername_list_default' => servername::all(),
-          'client_list_default'     => client::all(),
-          'timezone_list_default'   => timezone::all(),
-          "title"                   => lang::get_phrase(221),
+            'gameservers' => $gameServers,
+            'loginservers' => $loginServers,
+            'servername_list_default' => servername::all(),
+            'client_list_default' => client::all(),
+            'timezone_list_default' => timezone::all(),
+            "title" => lang::get_phrase(221),
+            "chronicleBaseList" => fileSys::dir_list("src/component/image/icon/items"),
         ]);
         tpl::display("/admin/server_add.html");
     }
+
 
     static public function server_show()
     {
         validation::user_protection("admin");
         tpl::addVar([
-          'servername_list_default' => servername::all(),
-          'client_list_default'     => client::all(),
-          'timezone_list_default'   => timezone::all(),
-          "donateSysNames"          => self::AllDonateSystem(),
+            'servername_list_default' => servername::all(),
+            'client_list_default' => client::all(),
+            'timezone_list_default' => timezone::all(),
+            "donateSysNames" => self::AllDonateSystem(),
         ]);
         tpl::display("/admin/setting.html");
     }
@@ -450,12 +581,12 @@ class options
     private static function AllDonateSystem()
     {
         $all_donate_system = fileSys::get_dir_files("src/component/donate", [
-          'basename' => true,
-          'fetchAll' => true,
+            'basename' => true,
+            'fetchAll' => true,
         ]);
         $donateSysNames = [];
         foreach ($all_donate_system as $system) {
-            if ( ! $system::isEnable()) {
+            if (!$system::isEnable()) {
                 continue;
             }
             if (method_exists($system, 'forAdmin')) {
@@ -469,15 +600,15 @@ class options
             }
             if (method_exists($system, 'getDescription')) {
                 $donateSysNames[] = [
-                  'name'   => basename($system),
-                  'desc'   => $system::getDescription(),
-                  'inputs' => $inputs,
+                    'name' => basename($system),
+                    'desc' => $system::getDescription(),
+                    'inputs' => $inputs,
                 ];
             } else {
                 $donateSysNames[] = [
-                  'name'   => basename($system),
-                  'desc'   => basename($system),
-                  'inputs' => $inputs,
+                    'name' => basename($system),
+                    'desc' => basename($system),
+                    'inputs' => $inputs,
                 ];
             }
         }
@@ -488,24 +619,24 @@ class options
     public static function saveConfigDonate(): void
     {
         $post = json_encode($_POST, JSON_UNESCAPED_UNICODE);
-        if ( ! $post) {
+        if (!$post) {
             board::error("Ошибка парсинга JSON");
         }
         $data = json_decode($post, true);
         foreach ($data['donateSystems'] as $i => $system) {
             $sysData = reset($system);
-            if ( ! $sysData['inputs']) {
+            if (!$sysData['inputs']) {
                 unset($data['donateSystems'][$i]);
             }
         }
         $post = json_encode($data, JSON_UNESCAPED_UNICODE);
         sql::sql("DELETE FROM `settings` WHERE `key` = '__config_donate__' AND serverId = ? ", [
-          user::self()->getServerId(),
+            user::self()->getServerId(),
         ]);
         sql::run("INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES ('__config_donate__', ?, ?, ?)", [
-          $post,
-          user::self()->getServerId(),
-          time::mysql(),
+            $post,
+            user::self()->getServerId(),
+            time::mysql(),
         ]);
         board::success("Настройки сохранены");
     }
@@ -513,16 +644,16 @@ class options
     public static function saveConfigReferral(): void
     {
         $post = json_encode($_POST);
-        if ( ! $post) {
+        if (!$post) {
             board::error("Ошибка парсинга JSON");
         }
         sql::sql("DELETE FROM `settings` WHERE `key` = '__config_referral__' AND serverId = ? ", [
-          user::self()->getServerId(),
+            user::self()->getServerId(),
         ]);
         sql::run("INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES ('__config_referral__', ?, ?, ?)", [
-          $post,
-          user::self()->getServerId(),
-          time::mysql(),
+            $post,
+            user::self()->getServerId(),
+            time::mysql(),
         ]);
         board::success("Настройки сохранены");
     }
@@ -531,11 +662,11 @@ class options
     {
         validation::user_protection("admin");
         if (install::test_connect_mysql(
-          $_POST['host'] ?? "127.0.0.1",
-          $_POST['port'] ?? 3306,
-          $_POST['userModel'] ?? "root",
-          $_POST['password'] ?? "",
-          $_POST['name'] ?? ""
+            $_POST['host'] ?? "127.0.0.1",
+            $_POST['port'] ?? 3306,
+            $_POST['userModel'] ?? "root",
+            $_POST['password'] ?? "",
+            $_POST['name'] ?? ""
         )) {
             board::notice(true, lang::get_phrase(222));
         } else {
@@ -547,12 +678,12 @@ class options
     {
         validation::user_protection("admin");
         $data = \Ofey\Logan22\component\sphere\server::send(type::DELETE_LOGINSERVER, [
-          "loginId" => (int)$_POST['loginId'],
+            "loginId" => (int)$_POST['loginId'],
         ])->show()->getResponse();
         if (isset($data["success"])) {
             board::alert([
-              'message' => "Удалено",
-              'ok'      => true,
+                'message' => "Удалено",
+                'ok' => true,
             ]);
         }
     }
@@ -562,25 +693,25 @@ class options
     {
         validation::user_protection("admin");
         $data = \Ofey\Logan22\component\sphere\server::send(type::CONNECT_DB, [
-          "host"     => $_POST['host'],
-          "port"     => $_POST['port'],
-          "user"     => $_POST['user'],
-          "password" => $_POST['password'],
+            "host" => $_POST['host'],
+            "port" => $_POST['port'],
+            "user" => $_POST['user'],
+            "password" => $_POST['password'],
         ])->getResponse();
         if (isset($data["databases"])) {
             board::alert([
-              'type'      => 'notice',
-              'ok'        => true,
-              'message'   => "Соединение с базой данных успешно",
-              'databases' => $data["databases"],
+                'type' => 'notice',
+                'ok' => true,
+                'message' => "Соединение с базой данных успешно",
+                'databases' => $data["databases"],
             ]);
 
             return;
         }
         board::alert([
-          'type'    => 'notice',
-          'ok'      => false,
-          'message' => "Не удалось соединиться с базой данных",
+            'type' => 'notice',
+            'ok' => false,
+            'message' => "Не удалось соединиться с базой данных",
         ]);
     }
 
@@ -611,12 +742,13 @@ class options
     //Show info about template
     public static function getTemplateInfo()
     {
-            $template   = $_POST['template'] ?? board::error("No select template");
-            $readmeJson = "template/{$template}/readme.json";
-            $img        = "/src/template/sphere/assets/images/none.png";
-            if (file_exists($readmeJson)) {
-                $jsonContents      = file_get_contents($readmeJson);
-                echo $jsonContents;
-            }
+        $template = $_POST['template'] ?? board::error("No select template");
+        $readmeJson = "template/{$template}/readme.json";
+        $img = "/src/template/sphere/assets/images/none.png";
+        if (file_exists($readmeJson)) {
+            $jsonContents = file_get_contents($readmeJson);
+            echo $jsonContents;
+        }
     }
+
 }

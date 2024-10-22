@@ -8,6 +8,7 @@ enum type
     case SPHERE_INSTALL;
     case REGISTRATION;
     case STATISTIC;
+    case STATISTIC_ALL;
     case ACCOUNT_PLAYERS;
     case ACCOUNT_PLAYER_CHANGE_PASSWORD;
     case INVENTORY_TO_GAME;
@@ -20,12 +21,15 @@ enum type
     case CONNECT_DB;
     //Обновление базы данных
     case CONNECT_DB_UPDATE;
+    //Добавление нового соединения с БД
+    case ADD_NEW_CONNECT_DB;
     //Добавление нового сервера
     case ADD_NEW_SERVER;
     //Обновление статуса сервера
     case UPDATE_STATUS_SERVER;
     //Получение статуса сервера
     case GET_STATUS_SERVER;
+    case GET_STATUS_SERVER_ALL;
     case UPDATE_COLLECTION;
     case DELETE_SERVER;
     //Отправка запроса на синхронизацию внутренней базы данных
@@ -64,6 +68,7 @@ enum type
     // Данные для оплаты SphereWeb
     case SPHERE_DONATE;
 
+    case GET_GAME_SERVERS;
     case GET_LOGIN_SERVERS;
     case GET_LOGIN_SERVERS_DATA;
     case DELETE_LOGINSERVER;
@@ -84,6 +89,7 @@ enum type
             self::SPHERE_INSTALL => '/api/admin/install',
             self::REGISTRATION => '/api/user/registration',
             self::STATISTIC => '/api/statistic',
+            self::STATISTIC_ALL => '/api/statistic/all',
             self::ACCOUNT_PLAYERS => '/api/user/player/account',
             self::ACCOUNT_PLAYER_CHANGE_PASSWORD => '/api/user/player/account/change/password',
             self::INVENTORY_TO_GAME => '/api/user/player/item/add',
@@ -93,15 +99,18 @@ enum type
             self::SERVER_COLLECTIONS => '/api/server/collections',
             self::CONNECT_DB => '/api/server/mysql/connection',
             self::CONNECT_DB_UPDATE => '/api/server/update/mysql',
+            self::ADD_NEW_CONNECT_DB => '/api/server/add/db',
             self::ADD_NEW_SERVER => '/api/server/add',
             self::UPDATE_STATUS_SERVER => '/api/server/update/status',
             self::GET_STATUS_SERVER => '/api/server/status',
+            self::GET_STATUS_SERVER_ALL => '/api/server/status/all',
             self::UPDATE_COLLECTION => '/api/server/update/collection',
             self::DELETE_SERVER => '/api/server/delete',
             self::SERVER_LIST => '/api/server/list',
             self::SERVER_FULL_INFO => '/api/server/full/info',
             self::GAME_SERVER_REQUEST => '/api/server/request/mysql',
 
+            self::GET_GAME_SERVERS => '/api/server/get/gameservers',
             self::GET_LOGIN_SERVERS => '/api/server/get/loginservers',
             self::GET_LOGIN_SERVERS_DATA => '/api/server/get/loginservers/data',
 

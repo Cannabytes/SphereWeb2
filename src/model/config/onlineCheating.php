@@ -150,7 +150,7 @@ class onlineCheating
      */
     public function getMinOnlineShow(): int
     {
-        return $this->minOnlineShow;
+        return $this->minOnlineShow ?? 0;
     }
 
     /**
@@ -160,7 +160,7 @@ class onlineCheating
      */
     public function getMaxOnlineShow(): int
     {
-        return $this->maxOnlineShow;
+        return $this->maxOnlineShow ?? 200;
     }
 
     /**
