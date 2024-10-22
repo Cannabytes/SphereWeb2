@@ -190,7 +190,7 @@ class options
             redirect::location("/admin/server/list");
         }
         $server = \Ofey\Logan22\model\server\server::getServer($server_id);
-        $database = \Ofey\Logan22\component\sphere\server::send(type::GET_DATABASE)->show()->getResponse();
+        $database = \Ofey\Logan22\component\sphere\server::send(type::GET_DATABASE_LIST)->show()->getResponse();
 
         $defaultDB =  $database['defaultDB'];
         $gameServers = $database['gameservers'];

@@ -59,10 +59,10 @@ class other
 
         $setting = json_decode($configData['setting'], true);
 
-        $this->openPassword         = filter_var($setting['saveOpenPassword'], FILTER_VALIDATE_BOOLEAN);
-        $this->enableTechnicalWork  = filter_var($setting['enableTechnicalWork'], FILTER_VALIDATE_BOOLEAN);
-        $this->saveStatisticData    = filter_var($setting['saveStatisticData'], FILTER_VALIDATE_BOOLEAN);
-        $this->isAuthShow           = filter_var($setting['isAuthShow'], FILTER_VALIDATE_BOOLEAN);
+        $this->openPassword         = filter_var($setting['saveOpenPassword'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->enableTechnicalWork  = filter_var($setting['enableTechnicalWork'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->saveStatisticData    = filter_var($setting['saveStatisticData'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->isAuthShow           = filter_var($setting['isAuthShow'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->allTitlePage         = $setting['allTitlePage'];
         $this->onlineMul            = (float)$setting['onlinemul'] ?? 1.0;
         $this->timeoutSaveStatistic = (int)$setting['timeoutSaveStatistic'];
