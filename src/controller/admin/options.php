@@ -190,10 +190,32 @@ class options
             redirect::location("/admin/server/list");
         }
         $server = \Ofey\Logan22\model\server\server::getServer($server_id);
-        $gameServers = \Ofey\Logan22\component\sphere\server::send(type::GET_GAME_SERVERS)->show()->getResponse();
-        $loginServers = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS)->show()->getResponse();
+//        $gameServers = \Ofey\Logan22\component\sphere\server::send(type::GET_GAME_SERVERS)->show()->getResponse();
+//        $loginServers = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS)->show()->getResponse();
+        $database = \Ofey\Logan22\component\sphere\server::send(type::GET_DATABASE)->show()->getResponse();
+
+        $defaultDB =  $database['defaultDB'];
+        $gameServers = $database['gameservers'];
+        $loginServers = $database['loginservers'];
+
+
+        foreach($defaultDB AS $db){
+            if ($db['id'] == $server->getId()){
+                 foreach($loginServers AS &$loginServer){
+                     if ($loginServer['id'] == $db['loginServerID']){
+                         $loginServer['default'] = true;
+                     }
+                 }
+                 foreach($gameServers AS &$gameserver){
+                     if ($gameserver['id'] == $db['gameServerID']){
+                         $gameserver['default'] = true;
+                     }
+                 }
+            }
+        }
 
         tpl::addVar([
+            'defaultDB' => $defaultDB,
             'gameservers' => $gameServers,
             'loginservers' => $loginServers,
             "chronicleBaseList" => fileSys::dir_list("src/component/image/icon/items"),

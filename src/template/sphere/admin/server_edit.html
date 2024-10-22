@@ -166,7 +166,7 @@
                                                             {% for loginserver in loginservers %}
                                                             <div class="form-check form-switch mb-2">
                                                                 <input class="form-check-input" type="radio"
-                                                                       {% if server.getLoginId() == loginserver.id %}checked{% endif %}
+                                                                       {% if loginserver.default %}checked{% endif %}
                                                                        name="loginserver" value="{{loginserver.id}}"
                                                                        id="logindb_{{loginserver.id}}">
                                                                 <label class="form-check-label"
@@ -249,7 +249,7 @@
                                                             {% for gameserver in gameservers %}
                                                             <div class="form-check form-switch mb-2">
                                                                 <input class="form-check-input" type="radio"
-                                                                       {% if server.getGameId() == gameserver.id %}checked{% endif %}
+                                                                       {% if gameserver.default %}checked{% endif %}
                                                                        name="gameserver" value="{{gameserver.id}}"
                                                                        id="gamedb_{{gameserver.id}}">
                                                                 <label class="form-check-label"
