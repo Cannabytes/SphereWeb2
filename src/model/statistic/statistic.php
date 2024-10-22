@@ -70,8 +70,8 @@ class statistic
 
         // Проверка кэша
         $data = sql::getRow("SELECT * FROM `server_cache` WHERE `server_id` = ? AND `type` = 'statistic' ORDER BY id DESC LIMIT 1 ", [$server_id]);
-        if($data){
-            if($data['data'] != ""){
+        if ($data) {
+            if ($data['data'] != "") {
                 // Проверка актуальности кэша по времени
                 if (time::diff($data['date_create'], time::mysql()) < config::load()->other()->getTimeoutSaveStatistic()) {
                     self::$statistic[$server_id] = json_decode($data['data'], true);
@@ -83,6 +83,10 @@ class statistic
         \Ofey\Logan22\component\sphere\server::setUser(user::self());
         $statistics = \Ofey\Logan22\component\sphere\server::send(type::STATISTIC_ALL)->getResponse();
         if (isset($statistics['statistics'])) {
+            if (isset($statistics['isFirstLoad'])) {
+                usleep(250000);
+                $statistics = \Ofey\Logan22\component\sphere\server::send(type::STATISTIC_ALL)->getResponse();
+            }
             $statistics = $statistics['statistics'];
             foreach ($statistics as $server_id => $data) {
                 foreach ($data as $type => $statistic) {
