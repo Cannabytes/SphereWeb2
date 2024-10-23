@@ -976,10 +976,10 @@
   });
 
   $(document).on('click', '#Startpackpurchase', function () {
-    var startpackId = $(this).data('startpack-id');
-
+    var startpackId = $(this).attr('data-startpack-id');
+    alert(startpackId)
     var selectedOption = $('#StartpackPlayer option:selected');
-    var account = selectedOption.data('account');
+    var account = selectedOption.attr('data-account');
     var player = selectedOption.val();
     AjaxSend('/startpack/purchase', 'POST', {
       account: account,
@@ -992,9 +992,9 @@
   });
 
   $(document).on('click', '#StartpackWarehouse', function () {
-    var startpackId = $(this).data('startpack-id');
+    var startpackId = $(this).attr('data-startpack-id');
     var selectedOption = $('#StartpackPlayer option:selected');
-    var account = selectedOption.data('account');
+    var account = selectedOption.attr('data-account');
     var player = selectedOption.val();
     AjaxSend('/startpack/purchase/warehouse', 'POST', {
       account: account,
