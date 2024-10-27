@@ -5,66 +5,78 @@
 {% block content %}
 <div class="container-fluid">
 
-  <div class="row">
+    <div class="row">
 
-    {% if getUser().isAuth() %}
-    <div class="col-xl-12">
-      <div class="card custom-card">
+        {% if getUser().isAuth() %}
+        <div class="col-xl-12">
+            <div class="card custom-card">
 
-        <div class="card-body">
-          <div class="row g-3">
+                <div class="card-body">
+                    <div class="row g-3">
 
-            <div class="col-sm-4">
-              <h6 class="fw-semibold mb-0">{{phrase('streaming_game_on_our_server')}}</h6>
-              <p class=" text-muted">{{phrase('add_channel_link')}}</p>
+                        <div class="col-sm-4">
+                            <h6 class="fw-semibold mb-0">{{phrase('streaming_game_on_our_server')}}</h6>
+                            <p class=" text-muted">{{phrase('add_channel_link')}}</p>
+                        </div>
+
+                        <div class="col-sm">
+                            <input value="" id="channel" class="form-control me-auto" type="text"
+                                   placeholder="https://www.youtube.com/watch?v=jNQXAC9IVRw"
+                                   aria-label="">
+                        </div>
+
+
+                        <div class="col-auto">
+                            <button id="add_new_stream" type="submit" class="btn btn-primary">Добавить ссылку</button>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
-
-            <div class="col-sm">
-              <input value="{{my_stream.channel}}" id="channel" class="form-control me-auto" type="text"
-                     placeholder="https://www.youtube.com/watch?v=jNQXAC9IVRw"
-                     aria-label="">
-            </div>
-
-
-            <div class="col-auto">
-              <button id="add_new_stream" type="submit" class="btn btn-primary">Добавить ссылку</button>
-            </div>
-
-            <div class="col-auto">
-              <div class="vr"></div>
-              <button id="delete_stream" data-object-id="{{my_stream.id}}" type="button" class="btn btn-outline-danger">
-                Удалить
-              </button>
-            </div>
-
-          </div>
         </div>
+        {% endif %}
 
-      </div>
-    </div>
-    {% endif %}
+        {% for stream in streams() %}
+        {% set userInfo = getUser(stream.user_id) %}
 
-    {% for stream in streams() %}
+        <div id="stream_{{stream.id}}" class="col-xl-4">
+            <div class="card custom-card">
+                <div class="card-header">
 
-    <div id="stream_{{stream.id}}" class="col-xl-4">
-      <div class="card custom-card">
+                    <div class="d-sm-flex align-items-top">
+                                                <span class="avatar avatar-sm">
+                                                    <img src="{{userInfo.getAvatar()}}" alt="img">
+                                                </span>
 
-        <div class="card-body ">
+                    </div>
+                    <span class="badge bg-info-transparent rounded-pill">{{userInfo.getName()}}</span>
 
-          <div class="ratio ratio-16x9 mb-2">
-            <iframe width="560" height="315" src="{{ stream_link_rev(stream.channel) }}"
-                    title="YouTube video player" style="border:0px"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen=""></iframe>
-          </div>
+                  {% if userInfo.getId() == getUser().getId() %}
+                    <div class="unstyled inbox-pagination ms-auto mb-0 ps-3">
+                                <span>
+                                    <a href="javascript:void(0);" id="delete_stream" data-object-id="{{stream.id}}" class="text-muted d-inline-flex">Удалить</a>
+                                </span>
+                    </div>
+                  {% endif %}
 
+                </div>
+                <div class="card-body ">
+
+                    <div class="ratio ratio-16x9 mb-0">
+                        <iframe width="560" height="315" src="{{ stream_link_rev(stream.channel) }}"
+                                title="YouTube video player" style="border:0px"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen=""></iframe>
+                    </div>
+
+                </div>
+            </div>
         </div>
-      </div>
+        {% endfor %}
+
+
     </div>
-    {% endfor %}
-
-
-  </div>
 
 
 </div>
@@ -74,21 +86,23 @@
 
 {% if getUser().isAuth() %}
 <script>
-  $("#delete_stream").on("click", function () {
-    let id = $(this).data("object-id");
-    AjaxSend("/stream/delete", "POST", {}, true).then(function (response) {
-      responseAnalysis(response);
-      if (response.ok) {
-        $("#stream_" + id).remove();
-      }
-    });
-  })
+    $("#delete_stream").on("click", function () {
+        let id = $(this).attr("data-object-id");
+        AjaxSend("/stream/delete", "POST", {
+            id: id
+        }, true).then(function (response) {
+            responseAnalysis(response);
+            if (response.ok) {
+                $("#stream_" + id).remove();
+            }
+        });
+    })
 
-  $("#add_new_stream").on("click", function () {
-    AjaxSend("/stream/add", "POST", {
-      channel: $("#channel").val()
-    });
-  })
+    $("#add_new_stream").on("click", function () {
+        AjaxSend("/stream/add", "POST", {
+            channel: $("#channel").val()
+        });
+    })
 
 
 </script>

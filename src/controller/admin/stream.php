@@ -53,7 +53,7 @@ class stream
         sql::run("UPDATE `streams` SET `auto_check_date` = NULL WHERE `id` = ?", [$streamId]);
     }
 
-    //Удаление стрима
+    //Удаление стрима админом
     static function removeStream(): void
     {
         $streamId = $_POST['streamId'];

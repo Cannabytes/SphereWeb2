@@ -138,4 +138,24 @@ class stream
         return 'unknown';
     }
 
+    // Удаление собственного стрима пользователем
+    static function userDeleteStream(): void
+    {
+        $streamId = $_POST['id'] ?? null;
+        if($streamId == null){
+            board::error("Не выбран стрим");
+        }
+        $getStream = "SELECT * FROM `streams` WHERE `id` = ?";
+        $streamData = sql::getRow($getStream, [$streamId]);
+        if ($streamData == null) {
+            board::error("Нет данных о стриме");
+        }
+        if(user::self()->getId() == $streamData['user_id']){
+            sql::run("DELETE FROM `streams` WHERE `id` = ?", [$streamId]);
+            board::success("Стрим удален");
+        }else{
+            board::error("Вы не можете удалить этот стрим");
+        }
+    }
+
 }

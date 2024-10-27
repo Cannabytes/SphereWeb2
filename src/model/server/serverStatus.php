@@ -24,24 +24,32 @@ class serverStatus
     private ?bool $disabled = null;
     private bool $enableLoginServerMySQL = false;
     private bool $enableGameServerMySQL = false;
+    private int $portGameStatusServer;
+    private int $portLoginStatusServer;
+    private string $gameIPStatusServer;
+    private string $loginIPStatusServer;
 
     public function save(): void
     {
         //Очищаем предыдущии записи
         sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = 'status'", [$this->getServerId()]);
 
-        $data     = [
-          'online'                => $this->online,
-          'gameServer'            => $this->getGameServer(),
-          'loginServer'           => $this->getLoginServer(),
-          'isEnableStatus'        => $this->isEnableStatus,
+        $data = [
+            'online' => $this->online,
+            'gameServer' => $this->getGameServer(),
+            'loginServer' => $this->getLoginServer(),
+            'gameServerIP' => $this->getGameIPStatusServer(),
+            'gameServerPort' => $this->getGamePortStatusServer(),
+            'loginServerIP' => $this->getLoginIPStatusServer(),
+            'loginServerPort' => $this->getLoginPortStatusServer(),
         ];
+
         $jsonData = json_encode($data);
         sql::sql("INSERT INTO `server_cache` ( `server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
-          $this->getServerId(),
-          'status',
-          $jsonData,
-          time::mysql(),
+            $this->getServerId(),
+            'status',
+            $jsonData,
+            time::mysql(),
         ]);
     }
 
@@ -55,6 +63,26 @@ class serverStatus
         $this->serverId = $serverId;
     }
 
+    public function getGameServer(): bool
+    {
+        return $this->gameServer;
+    }
+
+    public function setGameServer(bool $status): bool
+    {
+        return $this->gameServer = $status;
+    }
+
+    public function getLoginServer(): bool
+    {
+        return $this->loginServer;
+    }
+
+    public function setLoginServer(bool $status): bool
+    {
+        return $this->loginServer = $status;
+    }
+
     public function getOnline(): int
     {
         $online = $this->online;
@@ -64,7 +92,7 @@ class serverStatus
             $currentTime = new DateTime();
             foreach ($cheatingDetails as $key => $details) {
                 foreach ($details as $index => $detail) {
-                    if($detail->getTime() == "" OR $detail->getMultiplier() == ""){
+                    if ($detail->getTime() == "" or $detail->getMultiplier() == "") {
                         continue;
                     }
                     $startTime = DateTime::createFromFormat('H:i', $detail->getTime());
@@ -89,32 +117,6 @@ class serverStatus
         $this->online = $online;
     }
 
-    public function getGameServer(): bool
-    {
-        if( ! $this->gameServer AND $this->online >= 1){
-            return true;
-        }
-        return $this->gameServer;
-    }
-
-    public function setGameServer(bool $status): bool
-    {
-        return $this->gameServer = $status;
-    }
-
-    public function getLoginServer(): bool
-    {
-        if( ! $this->loginServer AND $this->online >= 1){
-            return true;
-        }
-        return $this->loginServer;
-    }
-
-    public function setLoginServer(bool $status): bool
-    {
-        return $this->loginServer = $status;
-    }
-
     public function isEnable(): bool
     {
         return $this->isEnableStatus;
@@ -125,9 +127,19 @@ class serverStatus
         $this->isEnableStatus = $isEnableStatus;
     }
 
+    public function isEnableLoginServerMySQL(): bool
+    {
+        return $this->enableLoginServerMySQL;
+    }
+
     public function setEnableLoginServerMySQL(bool $b)
     {
         $this->enableLoginServerMySQL = $b;
+    }
+
+    public function isEnableGameServerMySQL(): bool
+    {
+        return $this->enableGameServerMySQL;
     }
 
     public function setEnableGameServerMySQL(bool $b)
@@ -135,14 +147,44 @@ class serverStatus
         $this->enableGameServerMySQL = $b;
     }
 
-    public function isEnableLoginServerMySQL(): bool
+    public function setGamePortStatusServer($port): int
     {
-        return $this->enableLoginServerMySQL;
+        return $this->portGameStatusServer = $port;
     }
 
-    public function isEnableGameServerMySQL() : bool
+    public function getGamePortStatusServer(): int
     {
-        return $this->enableGameServerMySQL;
+        return $this->portGameStatusServer;
+    }
+
+    public function setLoginPortStatusServer($port): int
+    {
+        return $this->portLoginStatusServer = $port;
+    }
+
+    public function getLoginPortStatusServer(): int
+    {
+        return $this->portLoginStatusServer;
+    }
+
+    public function getGameIPStatusServer(): string
+    {
+        return $this->gameIPStatusServer;
+    }
+
+    public function setGameIPStatusServer($ip): string
+    {
+        return $this->gameIPStatusServer = $ip;
+    }
+
+    public function getLoginIPStatusServer(): string
+    {
+        return $this->loginIPStatusServer;
+    }
+
+    public function setLoginIPStatusServer($ip): string
+    {
+        return $this->loginIPStatusServer = $ip;
     }
 
 

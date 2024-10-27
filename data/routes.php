@@ -2075,4 +2075,60 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  150 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/server/db',
+    'func' => 'controller\\admin\\databases::show',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  151 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/stream/delete/test',
+    'func' => 'controller\\admin\\stream::test',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  152 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/database/account/import',
+    'func' => 'controller\\admin\\databases::importAccounts',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  153 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/database/account/delete',
+    'func' => 'controller\\admin\\databases::deleteImportFile',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

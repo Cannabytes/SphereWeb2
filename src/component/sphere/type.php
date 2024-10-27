@@ -84,6 +84,8 @@ enum type
     CASE RENEW_LICENSE;
 
 
+    case IMPORT_ACCOUNTS;
+
     static function url(type $type): string
     {
         return match ($type) {
@@ -115,6 +117,7 @@ enum type
             self::GET_GAME_SERVERS => '/api/server/get/gameservers',
             self::GET_LOGIN_SERVERS => '/api/server/get/loginservers',
             self::GET_LOGIN_SERVERS_DATA => '/api/server/get/loginservers/data',
+            self::IMPORT_ACCOUNTS => '/api/server/import/accounts',
 
             self::DELETE_LOGINSERVER => '/api/server/delete/loginservers',
 

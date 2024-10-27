@@ -1,0 +1,177 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-xl-12">
+			<div class="card custom-card">
+				<div class="card-header">
+					<div class="card-title">
+						Добавленные подключения к БД
+					</div>
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-xl-3">
+							<ul class="nav nav-tabs flex-column nav-style-4" role="tablist">
+								{% for i, loginServer in loginServers %}
+								<li class="nav-item" role="presentation">
+									<a class="nav-link {% if i == 0 %}active{% endif %}" data-bs-toggle="tab" role="tab" aria-current="page" href="#loginserver_id_{{loginServer.id}}" aria-selected="false" tabindex="-1">LoginServer ID: {{loginServer.id}}</a>
+								</li>
+								{% endfor %}
+							</ul>
+						</div>
+						<div class="col-xl-9">
+							<div class="tab-content">
+
+								{% for i, loginServer in loginServers %}
+								<div class="tab-pane text-muted {% if i == 0 %}active show{% endif %}" id="loginserver_id_{{loginServer.id}}" role="tabpanel">
+									<div class="col-xl-12">
+										<div class="">
+											<div class="card-header">
+												<div class="d-flex w-100">
+													<div class="me-4">
+                                            <span class="avatar avatar-lg avatar-rounded">
+                                                <img src="{{template}}/assets/images/faces/12.jpg" alt="img">
+                                            </span>
+													</div>
+													<div class="d-flex align-items-center justify-content-between w-100 flex-wrap">
+														<div class="me-3">
+															<p class="text-muted mb-0" role="button" data-bs-original-title="ID LoginServer во внутренней базе SphereAPI" data-bs-toggle="tooltip" data-bs-placement="top">ID</p>
+															<p class="fw-semibold fs-16 mb-0">{{loginServer.id}}</p>
+														</div>
+														<div class="me-3">
+															<p class="text-muted mb-0" role="button" data-bs-original-title="Кол-во аккаунтов, которые были зарегистрированы или подключены на данный LoginServer (ID:23)" data-bs-toggle="tooltip" data-bs-placement="top">Аккаунтов</p>
+															<p class="fw-semibold fs-16 mb-0">?</p>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="card-body">
+												<p class="fs-14 fw-semibold mb-0">Подгрузка и выгрузка:</p>
+												<p class=" card-text mb-0">Вы можете скачать игровые аккаунты, которые привязаны к данному LoginServer, для того чтоб загрузить их в другой логин-сервер.</p>
+
+												<div class="btn-group mb-4" role="group" aria-label="Basic mixed styles example">
+
+													<button id="importAccounts" type="button" class="btn btn-success btn-wave waves-effect waves-light ">
+														<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-database-import"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6c0 1.657 3.582 3 8 3s8 -1.343 8 -3s-3.582 -3 -8 -3s-8 1.343 -8 3" /><path d="M4 6v6c0 1.657 3.582 3 8 3c.856 0 1.68 -.05 2.454 -.144m5.546 -2.856v-6" /><path d="M4 12v6c0 1.657 3.582 3 8 3c.171 0 .341 -.002 .51 -.006" /><path d="M19 22v-6" /><path d="M22 19l-3 -3l-3 3" /></svg>
+														Импорт аккаунтов
+													</button>
+
+													<button type="button" class="btn btn-info btn-wave waves-effect waves-light">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-package-export">
+															<path stroke="none" d="M0 0h24v24H0z" fill="none" />
+															<path d="M12 21l-8 -4.5v-9l8 -4.5l8 4.5v4.5" />
+															<path d="M12 12l8 -4.5" />
+															<path d="M12 12v9" />
+															<path d="M12 12l-8 -4.5" />
+															<path d="M15 18h7" />
+															<path d="M19 15l3 3l-3 3" />
+														</svg>
+														Экспорт аккаунтов
+
+													</button>
+												</div>
+
+												<div class="fw-semibold fs-16 ">Коннект к LoginServer</div>
+												<div class="text-muted fs-11 ">Если Вам больше не нужен данные к подключение к этому логин-серверу, вы можете удалить его.
+													После удаления, вы не сможете подключиться к этому логин-серверу, все аккаунты, которые были зарегистрированы на этом логин-сервере, будут удалены.<br>
+													Рекомендуется удалить, если Вы больше не будете использовать данный логин-сервер.
+												</div>
+												<button class="btn btn-sm btn-danger btn-delete" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Удаление подключения">
+													<i class="ri-delete-bin-line"></i> Удаление
+												</button>
+
+											</div>
+										</div>
+									</div>
+								</div>
+								{% endfor %}
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+	$(document).ready(function () {
+		$("#importAccounts").on("click", function () {
+			// Выполняем POST запрос для импорта
+			fetch("/admin/database/account/import", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			})
+					.then(response => {
+						if (!response.ok) {
+							throw new Error('Ошибка при импорте аккаунтов: ' + response.statusText);
+						}
+						return response.json(); // Обработка ответа в формате JSON
+					})
+					.then(data => {
+						if (data.error) {
+							console.error(data.error);
+							alert("Ошибка при импорте аккаунтов: " + data.error);
+						} else {
+							// Если импорт успешен, создаем временную ссылку для скачивания файла
+							const link = document.createElement('a');
+							link.href = '/' + data.file; // Используем имя файла из ответа
+							link.download = data.file; // Имя файла для скачивания
+							document.body.appendChild(link);
+							link.click(); // Инициируем скачивание
+							document.body.removeChild(link);
+
+							// Теперь удаляем файл после скачивания
+							return fetch("/admin/database/account/delete", { // URL для удаления файла
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+								},
+								body: JSON.stringify({ filename: '/' + data.file }) // Имя файла для удаления
+							});
+						}
+					})
+					.then(response => {
+						if (response.ok) {
+							// Успешное удаление, ничего не делаем
+							return; // Ничего не возвращаем
+						}
+						return response.json().then(data => {
+							// Обработка ошибок
+							if (data && data.error) {
+								console.error(data.error);
+								alert("Ошибка при удалении файла: " + data.error);
+							}
+						});
+					})
+					.then(data => {
+						if (data && data.error) {
+							console.error(data.error);
+							alert("Ошибка при удалении файла: " + data.error);
+						} else if (data) {
+							console.log(data.message);
+							alert(data.message); // Успешное удаление файла
+						}
+					})
+					.catch(error => {
+						console.error('Ошибка:', error);
+						alert("Ошибка: " + error.message);
+					});
+		});
+	});
+</script>
+
+
+{% endblock %}

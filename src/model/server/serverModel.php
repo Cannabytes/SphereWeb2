@@ -63,7 +63,7 @@ class serverModel
         $this->default = $server['isDefault'] ?? null;
         $this->dateStartServer = $server['dateStartServer'] ?? null;
         $this->knowledgeBase = $server['knowledgeBase'] ?? null;
-        $this->maxOnline = filter_var($server['maxOnline'], FILTER_VALIDATE_INT) !== false ? filter_var($server['maxOnline'], FILTER_VALIDATE_INT) : 200;
+        $this->maxOnline = filter_var($server['maxOnline'] ?? 200, FILTER_VALIDATE_INT);
         $this->resetHWID = $server['resetHWID'] ?? false;
         if ($server_data) {
             foreach ($server_data as $data) {
@@ -145,44 +145,6 @@ class serverModel
         return $this->knowledgeBase ?? 'highFive';
     }
 
-    public function getErrorConnectDBServer(): bool
-    {
-        return $this->isErrorConnectDBServer();
-    }
-
-    public function isErrorConnectDBServer(): bool
-    {
-        if ($this->errorConnectDBServer !== null) {
-            $result = $this->errorConnectDBServer;
-            $this->errorConnectDBServer = null; // Сбрасываем значение после использования
-
-            return $result;
-        }
-
-        $serverCache = sql::getRow(
-            "SELECT `data`, `date_create` FROM `server_cache` WHERE `server_id` = ? AND `type` = 'connect' ORDER BY id DESC LIMIT 1",
-            [$this->id]
-        );
-
-        if (!$serverCache) {
-            $this->errorConnectDBServer = false;
-
-            return false;
-        }
-
-        $totalSeconds = time::diff(time::mysql(), $serverCache['date_create']);
-
-        if ($totalSeconds > config::load()->cache()->getTimeoutConnect()) {
-            $this->errorConnectDBServer = false;
-
-            return false;
-        }
-
-        $this->errorConnectDBServer = true;
-
-        return $this->errorConnectDBServer;
-    }
-
     /**
      * Проверка, работает ли логин/гейм сервер и получение количества игроков онлайна
      *
@@ -219,7 +181,13 @@ class serverModel
                         $serverStatus->setLoginServer($cache['loginServer']);
                         $serverStatus->setGameServer($cache['gameServer']);
                         $serverStatus->setOnline($cache['online']);
-                        $serverStatus->setEnable(filter_var($cache['isEnableStatus'], FILTER_VALIDATE_BOOLEAN));
+
+                        $serverStatus->setGameIPStatusServer($cache['gameServerIP']);
+                        $serverStatus->setGamePortStatusServer($cache['gameServerPort']);
+                        $serverStatus->setLoginIPStatusServer($cache['loginServerIP']);
+                        $serverStatus->setLoginPortStatusServer($cache['loginServerPort']);
+
+                        $serverStatus->setEnable(filter_var($this->getStatusServerMem(), FILTER_VALIDATE_BOOLEAN));
                         self::$arrayServerStatus[$server_id] = $serverStatus;
                     }
                     foreach(self::$arrayServerStatus as $server_id => $serverStatus){
@@ -245,14 +213,18 @@ class serverModel
                 if ($onlineCheating && $online == 0) {
                     $online = mt_rand($minOnline, $maxOnline);
                 }
-
                 $serverStatus->setServerId($server_id);
-                $serverStatus->setEnable((bool)$status['isEnableStatus']);
+                $serverStatus->setEnable(filter_var($this->getStatusServerMem()['enable'] ?? false, FILTER_VALIDATE_BOOLEAN));
+                $serverStatus->setEnableLoginServerMySQL($status['loginServerDB'] ?? false);
+                $serverStatus->setEnableGameServerMySQL($status['gameServerDB'] ?? false);
                 $serverStatus->setLoginServer($status['loginServer']);
                 $serverStatus->setGameServer($status['gameServer']);
+                $serverStatus->setGameIPStatusServer($status['gameServerIP']);
+                $serverStatus->setGamePortStatusServer($status['gameServerPort']);
+                $serverStatus->setLoginIPStatusServer($status['loginServerIP']);
+                $serverStatus->setLoginPortStatusServer($status['loginServerPort']);
                 $serverStatus->setOnline($online);
                 $serverStatus->save();
-
                 self::$arrayServerStatus[$server_id] = $serverStatus;
             }
 

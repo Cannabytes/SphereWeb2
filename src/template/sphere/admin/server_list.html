@@ -20,7 +20,6 @@
 
       <div class="row">
         {% for i, server in sphereServers %}
-
         <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6 col-sm-12">
           <div class="card custom-card overflow-hidden">
             <div class="card-body p-0">
@@ -54,17 +53,24 @@
                                                                 </span>
                   </li>
 
+                    <li class="d-flex align-items-center mb-3">
+                        <span class="me-2">  <i  class="{% if server.getStatus().getLoginServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
+                        <span class="{% if server.getStatus().getLoginServer() %}text-success{% else %}text-danger{% endif %}">
+                    <strong class="me-1">Проверка порта </strong> LoginServer
+                    </span>
+                    </li>
+
                   <li class="d-flex align-items-center mb-3">
-                                                                <span class="me-2">
-                                                                    <i
-                                                                      class="ri-checkbox-circle-line fs-15 text-muted op-3"></i>
-                                                                </span>
-                    <span>
-                                                                    <strong class="me-1">Online</strong> {{server.getStatus().getOnline()}} players
-                                                                </span>
+                    <span class="me-2">  <i  class="{% if server.getStatus().getGameServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
+                    <span class="{% if server.getStatus().getGameServer() %}text-success{% else %}text-danger{% endif %}">
+                    <strong class="me-1">Проверка порта</strong> GameServer </span>
                   </li>
 
-
+                  <li class="d-flex align-items-center mb-3">
+                    <span class="me-2"> <i  class="{% if server.getStatus().getOnline() >= 1 %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
+                    <span class="{% if server.getStatus().getOnline() >= 1 %}text-success{% else %}text-danger{% endif %}">
+                    <strong class="me-1">Online</strong> {{ server.getStatus().getOnline }} </span>
+                  </li>
 
                   <li class="d-grid">
 

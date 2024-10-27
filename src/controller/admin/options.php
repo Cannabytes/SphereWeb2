@@ -289,7 +289,6 @@ class options
                 $serverId,
             ]
         );
-
         //Смена ID логин и гейм сервера
         $data = \Ofey\Logan22\component\sphere\server::send(type::CONNECT_DB_UPDATE, [
             "serverId" => $serverId,
@@ -330,15 +329,21 @@ class options
         if ($serversFullInfo['error']) {
             redirect::location("/admin/server/list");
         }
-
         $serversFullInfo = $serversFullInfo['servers'];
         if ($serversFullInfo != null) {
             foreach ($servers as &$server) {
                 foreach ($serversFullInfo as $serverInfoData) {
                     if ($server->getId() == $serverInfoData['id']) {
                         $server->setIsSphereServer(true);
-                        $server->getStatus()->setEnableLoginServerMySQL($serverInfoData['enable_login_mysql']);
-                        $server->getStatus()->setEnableGameServerMySQL($serverInfoData['enable_game_mysql']);
+                        $server->getStatus()->setEnableLoginServerMySQL($serverInfoData['loginServerDB']);
+                        $server->getStatus()->setEnableGameServerMySQL($serverInfoData['gameServerDB']);
+                        $server->getStatus()->setLoginServer($serverInfoData['loginServer']);
+                        $server->getStatus()->setGameServer($serverInfoData['gameServer']);
+                        $server->getStatus()->setGameIPStatusServer($serverInfoData['gameServerIP']);
+                        $server->getStatus()->setGamePortStatusServer($serverInfoData['gameServerPort']);
+                        $server->getStatus()->setLoginIPStatusServer($serverInfoData['loginServerIP']);
+                        $server->getStatus()->setLoginPortStatusServer($serverInfoData['loginServerPort']);
+                        $server->getStatus()->setOnline($serverInfoData['online']);
                     }
                 }
             }

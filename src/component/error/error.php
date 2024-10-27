@@ -27,6 +27,7 @@ class error
             default => 'Unknown error type'
         };
         try {
+            file_put_contents("errors.log", date('Y-m-d H:i:s') . " " . $type . " " . $errstr . " " . $errfile . " " . $errline . " " . self::get_trace_as_string() . "\n", FILE_APPEND);
 //            server::send(type::ERROR_REPORT, [
 //              'URL'     => $_SERVER['REQUEST_URI'] ?? 'Unknown',
 //              'GET'     => $_GET,
