@@ -29,7 +29,6 @@ class board
      */
     public static function notice(bool $ok = true, string $message = null, int $flags = 0, bool $next = false): self
     {
-        // Проверка на аякс запрос
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
             $data = [
               'type'    => 'notice',

@@ -46,26 +46,35 @@ class databases
 
     public static function importAccounts()
     {
+        $data = json_decode(file_get_contents("php://input"), true);
+        if(!isset($data['loginId'])){
+            board::success("Не передан ID логина");
+        }
         $filePath = "uploads/import_accounts_" . time() . ".json";
-        $data = \Ofey\Logan22\component\sphere\server::sendFile($filePath, type::IMPORT_ACCOUNTS);
-
+        \Ofey\Logan22\component\sphere\server::setShowError(true);
+        $data = \Ofey\Logan22\component\sphere\server::sendFile($filePath, type::IMPORT_ACCOUNTS, [
+            "loginId" => (int)$data['loginId'],
+        ]);
         // Проверка, успешен ли импорт
         if (isset($data->response)) {
             if (!file_exists($filePath)) {
-                // Если файл не существует, вернем ошибку
                 http_response_code(404);
-                echo json_encode(['error' => 'Файл не найден.']);
-                exit;
+                board::alert([
+                    'type'    => 'notice',
+                    'ok'      => false,
+                    'message' => 'Файл не найден.',
+                ]);
             }
-
-            // Возвращаем имя файла в JSON-ответе для клиента
             echo json_encode(['file' => $filePath]);
             exit;
         } else {
             // Если произошла ошибка, возвращаем JSON с сообщением об ошибке
             http_response_code(500);
-            echo json_encode(['error' => 'Произошла ошибка при импорте аккаунтов.']);
-            exit;
+            board::alert([
+                'type'    => 'notice',
+                'ok'      => false,
+                'message' => 'Произошла ошибка при импорте аккаунтов.',
+            ]);
         }
     }
 

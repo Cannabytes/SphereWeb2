@@ -56,12 +56,12 @@
 
 												<div class="btn-group mb-4" role="group" aria-label="Basic mixed styles example">
 
-													<button id="importAccounts" type="button" class="btn btn-success btn-wave waves-effect waves-light ">
+													<button data-loginserverid="{{loginServer.id}}" type="button" class="btn btn-success btn-wave waves-effect waves-light importAccounts">
 														<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-database-import"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6c0 1.657 3.582 3 8 3s8 -1.343 8 -3s-3.582 -3 -8 -3s-8 1.343 -8 3" /><path d="M4 6v6c0 1.657 3.582 3 8 3c.856 0 1.68 -.05 2.454 -.144m5.546 -2.856v-6" /><path d="M4 12v6c0 1.657 3.582 3 8 3c.171 0 .341 -.002 .51 -.006" /><path d="M19 22v-6" /><path d="M22 19l-3 -3l-3 3" /></svg>
 														Импорт аккаунтов
 													</button>
 
-													<button type="button" class="btn btn-info btn-wave waves-effect waves-light">
+													<button data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ещё не работает..." type="button" class="btn btn-info btn-wave waves-effect waves-light">
 														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-package-export">
 															<path stroke="none" d="M0 0h24v24H0z" fill="none" />
 															<path d="M12 21l-8 -4.5v-9l8 -4.5l8 4.5v4.5" />
@@ -72,7 +72,6 @@
 															<path d="M19 15l3 3l-3 3" />
 														</svg>
 														Экспорт аккаунтов
-
 													</button>
 												</div>
 
@@ -81,7 +80,7 @@
 													После удаления, вы не сможете подключиться к этому логин-серверу, все аккаунты, которые были зарегистрированы на этом логин-сервере, будут удалены.<br>
 													Рекомендуется удалить, если Вы больше не будете использовать данный логин-сервер.
 												</div>
-												<button class="btn btn-sm btn-danger btn-delete" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Удаление подключения">
+												<button class="btn btn-sm btn-danger btn-delete" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ещё не работает...">
 													<i class="ri-delete-bin-line"></i> Удаление
 												</button>
 
@@ -106,68 +105,54 @@
 {% block js %}
 <script>
 	$(document).ready(function () {
-		$("#importAccounts").on("click", function () {
+		$(".importAccounts").on("click", function () {
+			const loginId = $(this).attr('data-loginserverid');
+
 			// Выполняем POST запрос для импорта
 			fetch("/admin/database/account/import", {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ loginId: loginId })
 			})
 					.then(response => {
-						if (!response.ok) {
-							throw new Error('Ошибка при импорте аккаунтов: ' + response.statusText);
-						}
-						return response.json(); // Обработка ответа в формате JSON
+						if (response.type === "notice" && !ResponseNotice(data)) return;
+						return response.json();
 					})
 					.then(data => {
+						// Проверка типа notice и вызов ResponseNotice
+						if (data.type === "notice" && !ResponseNotice(data)) return;
+
 						if (data.error) {
 							console.error(data.error);
 							alert("Ошибка при импорте аккаунтов: " + data.error);
 						} else {
 							// Если импорт успешен, создаем временную ссылку для скачивания файла
 							const link = document.createElement('a');
-							link.href = '/' + data.file; // Используем имя файла из ответа
-							link.download = data.file; // Имя файла для скачивания
+							link.href = '/' + data.file;
+							link.download = data.file;
 							document.body.appendChild(link);
-							link.click(); // Инициируем скачивание
+							link.click();
 							document.body.removeChild(link);
 
-							// Теперь удаляем файл после скачивания
-							return fetch("/admin/database/account/delete", { // URL для удаления файла
+							// Удаляем файл после скачивания
+							return fetch("/admin/database/account/delete", {
 								method: "POST",
-								headers: {
-									"Content-Type": "application/json",
-								},
-								body: JSON.stringify({ filename: '/' + data.file }) // Имя файла для удаления
+								headers: { "Content-Type": "application/json" },
+								body: JSON.stringify({ filename: '/' + data.file })
 							});
 						}
 					})
 					.then(response => {
-						if (response.ok) {
-							// Успешное удаление, ничего не делаем
-							return; // Ничего не возвращаем
-						}
-						return response.json().then(data => {
-							// Обработка ошибок
-							if (data && data.error) {
-								console.error(data.error);
-								alert("Ошибка при удалении файла: " + data.error);
-							}
-						});
+						if (!response || !response.ok) throw new Error("Ошибка при удалении файла");
+						return response.json();
 					})
 					.then(data => {
-						if (data && data.error) {
-							console.error(data.error);
-							alert("Ошибка при удалении файла: " + data.error);
-						} else if (data) {
-							console.log(data.message);
-							alert(data.message); // Успешное удаление файла
-						}
+						if (data.type === "notice" && !ResponseNotice(data)) return;
+						if (data.error) console.error("Ошибка удаления файла: " + data.error);
+						else if (data.message) console.log(data.message);
 					})
 					.catch(error => {
 						console.error('Ошибка:', error);
-						alert("Ошибка: " + error.message);
 					});
 		});
 	});

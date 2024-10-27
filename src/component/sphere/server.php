@@ -245,12 +245,10 @@ class server
         $parsedHost = parse_url($host, PHP_URL_HOST) ?: $host;
         $parsedHost = preg_replace('/:\d+$/', '', $parsedHost);
         $headers[]  = "Domain: " . $parsedHost;
-
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true); // Указываем, что это POST запрос
 
-        // Создаем файл $filePath в буфере
         file_put_contents($filePath, "");
 
         // Добавляем файл к запросу
@@ -265,7 +263,6 @@ class server
         curl_close($ch);
 
         $response = json_decode($response, true) ?? false;
-        $instance->response = $response;
 
         if ($response === false) {
             return $instance;
@@ -277,9 +274,14 @@ class server
                 self::$codeError = $response['code'];
             }
             if (self::$showError) {
-                board::error($response['error']);
+                board::alert([
+                    'type'    => 'notice',
+                    'ok'      => false,
+                    'message' => $response['error'],
+                ]);
             }
         }
+        $instance->response = $response;
 
         file_put_contents($filePath, json_encode($response, JSON_PRETTY_PRINT));
 
