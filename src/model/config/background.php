@@ -18,7 +18,9 @@ class background
     {
         $sql        = "SELECT id, `key`, `setting`, `serverId`, `dateUpdate` FROM `settings` WHERE `key` = '__config_background__'";
         $configData = sql::getRow($sql);
-
+        if(!$configData){
+            return;
+        }
         $setting = json_decode($configData['setting'], true);
 
         $this->login        = $setting['login'] ?? null;

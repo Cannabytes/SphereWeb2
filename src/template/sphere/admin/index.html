@@ -133,46 +133,85 @@
 
       {% for server in servers %}
       {% set serverInfo = getServer(server.id) %}
-      <div class="card custom-card overflow-hidden">
-
-        <div class="card-body border-bottom">
-
-          {% if serverInfo == null %}
-          <div class="text-danger">{{ phrase('server_not_found_and_is_sphere_api') }}.</div>
-          {% endif %}
-
-          <div class="d-sm-flex  main-profile-cover">
 
 
-            <div class="flex-fill main-profile-info my-auto">
-              <h5 class="fw-semibold mb-1 ">{{serverInfo.getName()}} x{{serverInfo.getRateExp() ?? 0}} -
-                {{serverInfo.getChronicle ?? 'N/A'}}</h5>
-              <div>
-                <p class="mb-1 text-muted">{{ phrase('status') }}: {% if server.disabled %}<span
-                  class="badge bg-danger">{{ phrase('disabled') }}</span>{% else %}<span class="badge bg-success">{{ phrase('enabled') }}</span>{%
-                  endif %}</p> </p>
-                <p class="fs-12 op-7 mb-0">
-                  <span class="me-3 d-inline-flex align-items-center"><a href="/admin/server/statistic/{{server.id}}"><i
-                    class="ri-building-line me-1 align-middle"></i>{{ phrase('menu_statistics') }}</a></span>
-                </p>
+        <div class="card custom-card overflow-hidden">
+          <div class="card-body p-0 border-bottom">
+            <div class="px-1 py-2 {% if serverInfo.getStatus().getGameServer() == false %}bg-danger{% else %}bg-success{% endif %} op-3"></div>
+            <div class="p-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="fs-18 fw-semibold">{{serverInfo.getName()}} x{{serverInfo.getRateExp()}}</div>
+                <div>
+                  <span class="badge bg-info-transparent">{{serverInfo.getChronicle()}}</span>
+                </div>
+              </div>
+              <ul class="list-unstyled mb-0">
+                <li class="d-flex align-items-center mb-3">
+                                                                <span class="me-2">
+                                                                    <i
+                                                                            class="{% if serverInfo.getStatus().isEnableLoginServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
+                                                                </span>
+                  <span class="{% if serverInfo.getStatus().isEnableLoginServerMySQL() %}text-success{% else %}text-danger{% endif %}">
+                                                                    <strong class="me-1">Соединение с БД</strong> LoginServer
+                                                                </span>
+                </li>
+                <li class="d-flex align-items-center mb-3">
+                                                                <span class="me-2">
+                                                                    <i
+                                                                            class="{% if serverInfo.getStatus().isEnableGameServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
+                                                                </span>
+                  <span class="{% if serverInfo.getStatus().isEnableGameServerMySQL() %}text-success{% else %}text-danger{% endif %}">
+                                                                    <strong class="me-1">Соединение с БД</strong> GameServer
+                                                                </span>
+                </li>
+
+                <li class="d-flex align-items-center mb-3">
+                  <span class="me-2">  <i  class="{% if serverInfo.getStatus().getLoginServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
+                  <span class="{% if serverInfo.getStatus().getLoginServer() %}text-success{% else %}text-danger{% endif %}">
+                    <strong class="me-1">Проверка порта </strong> LoginServer
+                    </span>
+                </li>
+
+                <li class="d-flex align-items-center mb-3">
+                  <span class="me-2">  <i  class="{% if serverInfo.getStatus().getGameServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
+                  <span class="{% if serverInfo.getStatus().getGameServer() %}text-success{% else %}text-danger{% endif %}">
+                    <strong class="me-1">Проверка порта</strong> GameServer </span>
+                </li>
+
+
+                <li class="d-grid">
+
+                  <div class="btn-group btn-group-sm my-1" role="group" aria-label="Small button group">
+                    <a href="/admin/server/edit/{{serverInfo.getId()}}" class="btn btn-outline-success">Изменить</a>
+                    <a href="/admin/server/statistic/{{serverInfo.getId()}}" class="btn btn-outline-success">Статистика</a>
+                  </div>
+
+                </li>
+              </ul>
+
+            </div>
+
+          </div>
+
+          <div class="card-body p-0 main-profile-info">
+            <div class="d-flex align-items-center justify-content-between w-100">
+              <div class="py-3 border-end w-100 text-center">
+                <p class="fw-bold fs-20  text-shadow mb-0">{{serverInfo.getStatus().getOnline()}}</p>
+                <p class="mb-0 fs-12 text-muted ">{{ phrase('online') }}</p>
+              </div>
+              <div class="py-3 w-100 text-center {% if server.count_errors >= 1 %}bg-danger-transparent{% endif %}">
+                <a href="/admin/server/errors/{{serverInfo.getId()}}">
+                  <p class="fw-bold fs-20  text-shadow mb-0">
+                    {{server.count_errors}}</p>
+                  <p class="mb-0 fs-12 text-muted ">{{ phrase('errors') }}</p>
+                </a>
               </div>
             </div>
           </div>
+
         </div>
 
-        <div class="card-body p-0 main-profile-info">
-          <div class="d-flex align-items-center justify-content-between w-100">
-            <div class="py-3 border-end w-100 text-center">
-              <p class="fw-bold fs-20  text-shadow mb-0">{{server.request_count}}</p>
-              <p class="mb-0 fs-12 text-muted ">{{ phrase('requests') }}</p>
-            </div>
-            <div class="py-3 w-100 text-center">
-              <p class="fw-bold fs-20  text-shadow mb-0">{{server.count_errors}}</p>
-              <p class="mb-0 fs-12 text-muted ">{{ phrase('errors') }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+
       {% endfor %}
 
       {% endif %}

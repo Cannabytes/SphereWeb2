@@ -132,7 +132,7 @@ class serverModel
 
     public function getMaxOnline(): int
     {
-        return $this->maxOnline ?? 200;
+        return (is_numeric($this->maxOnline) && $this->maxOnline > 0) ? (int)$this->maxOnline : 200;
     }
 
     public function getStartServerDate(): ?string
@@ -152,6 +152,7 @@ class serverModel
      */
     public function getStatus($forceUpdate = false): ?serverStatus
     {
+
         //Когда принудительное обновление включено, мы не используем кэш из бд
         if (!$forceUpdate) {
             if (isset(self::$arrayServerStatus[$this->getId()])) {
@@ -162,6 +163,7 @@ class serverModel
                 "SELECT `server_id`, `data`, `date_create` FROM `server_cache` WHERE `type` = 'status' ORDER BY `id` DESC", []
             );
             if ($serverCache) {
+
                 /**
                  * Если прошло меньше минуты, тогда выводим данные из кэша
                  */
@@ -172,35 +174,39 @@ class serverModel
                         $update = true;
                     }
                 }
+
                 if (!$update) {
+
                     foreach ($serverCache as $cache) {
                         $server_id = $cache['server_id'];
                         $cache = json_decode($cache['data'], true);
+
                         $serverStatus = new serverStatus();
                         $serverStatus->setServerId($server_id);
-                        $serverStatus->setLoginServer($cache['loginServer']);
-                        $serverStatus->setGameServer($cache['gameServer']);
-                        $serverStatus->setOnline($cache['online']);
+                        $serverStatus->setLoginServer($cache['loginServer'] ?? false);
+                        $serverStatus->setGameServer($cache['gameServer'] ?? false);
+                        $serverStatus->setOnline($cache['online'] ?? 0);
+                        $serverStatus->setGameIPStatusServer($cache['gameServerIP'] ?? '0.0.0.0');
+                        $serverStatus->setGamePortStatusServer($cache['gameServerPort'] ?? -1);
+                        $serverStatus->setLoginIPStatusServer($cache['loginServerIP'] ?? '0.0.0.0');
+                        $serverStatus->setLoginPortStatusServer($cache['loginServerPort'] ?? -1);
 
-                        $serverStatus->setGameIPStatusServer($cache['gameServerIP']);
-                        $serverStatus->setGamePortStatusServer($cache['gameServerPort']);
-                        $serverStatus->setLoginIPStatusServer($cache['loginServerIP']);
-                        $serverStatus->setLoginPortStatusServer($cache['loginServerPort']);
+                        $serverStatus->setEnable(filter_var($this->getStatusServerMem()['enable'] ?? false, FILTER_VALIDATE_BOOLEAN));
 
-                        $serverStatus->setEnable(filter_var($this->getStatusServerMem(), FILTER_VALIDATE_BOOLEAN));
                         self::$arrayServerStatus[$server_id] = $serverStatus;
                     }
-                    foreach(self::$arrayServerStatus as $server_id => $serverStatus){
-                        if ($server_id == $this->getId()) {
-                            return $serverStatus;
-                        }
-                    }
+
+                    return self::$arrayServerStatus[$this->getId()] ?? null;
+
                 }
             }
         }
 
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::GET_STATUS_SERVER_ALL, [])->getResponse();
         if (isset($sphere['status'])) {
+            //Очищаем предыдущии записи
+            sql::sql("DELETE FROM `server_cache` WHERE `type` = 'status'");
+
             $config = config::load();
             $onlineCheating = $config->onlineCheating()->isEnabled();
             $minOnline = $config->onlineCheating()->getMinOnlineShow();

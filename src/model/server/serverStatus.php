@@ -24,18 +24,17 @@ class serverStatus
     private ?bool $disabled = null;
     private bool $enableLoginServerMySQL = false;
     private bool $enableGameServerMySQL = false;
-    private int $portGameStatusServer;
-    private int $portLoginStatusServer;
-    private string $gameIPStatusServer;
-    private string $loginIPStatusServer;
+    private int $portGameStatusServer = -1;
+    private int $portLoginStatusServer = -1;
+    private string $gameIPStatusServer = '0.0.0.0';
+    private string $loginIPStatusServer = '0.0.0.0';
 
     public function save(): void
     {
-        //Очищаем предыдущии записи
-        sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = 'status'", [$this->getServerId()]);
 
         $data = [
             'online' => $this->online,
+            'isEnable' => $this->isEnable(),
             'gameServer' => $this->getGameServer(),
             'loginServer' => $this->getLoginServer(),
             'gameServerIP' => $this->getGameIPStatusServer(),
@@ -147,7 +146,7 @@ class serverStatus
         $this->enableGameServerMySQL = $b;
     }
 
-    public function setGamePortStatusServer($port): int
+    public function setGamePortStatusServer($port = -1): int
     {
         return $this->portGameStatusServer = $port;
     }
@@ -157,7 +156,7 @@ class serverStatus
         return $this->portGameStatusServer;
     }
 
-    public function setLoginPortStatusServer($port): int
+    public function setLoginPortStatusServer($port = -1): int
     {
         return $this->portLoginStatusServer = $port;
     }
@@ -169,10 +168,10 @@ class serverStatus
 
     public function getGameIPStatusServer(): string
     {
-        return $this->gameIPStatusServer;
+        return $this->gameIPStatusServer ?? '0.0.0.0';
     }
 
-    public function setGameIPStatusServer($ip): string
+    public function setGameIPStatusServer($ip = '0.0.0.0'): string
     {
         return $this->gameIPStatusServer = $ip;
     }
@@ -182,7 +181,7 @@ class serverStatus
         return $this->loginIPStatusServer;
     }
 
-    public function setLoginIPStatusServer($ip): string
+    public function setLoginIPStatusServer($ip = '0.0.0.0'): string
     {
         return $this->loginIPStatusServer = $ip;
     }

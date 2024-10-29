@@ -1,0 +1,88 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card mb-3 notify-border-start-warning">
+        <div class="d-flex p-3">
+            <div class="d-sm-flex">
+                <div class="">
+                    <svg class="me-4  bg-warning-transparent  alt-notify" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path fill="#ffce6d" d="M18,13.18463V10c0-3.31372-2.68628-6-6-6s-6,2.68628-6,6v3.18463C4.83832,13.59863,4.00146,14.69641,4,16v2c0,0.00037,0,0.00073,0,0.00116C4.00031,18.5531,4.44806,19.00031,5,19h14c0.00037,0,0.00073,0,0.00116,0C19.5531,18.99969,20.00031,18.55194,20,18v-2C19.99854,14.69641,19.16168,13.59863,18,13.18463z"></path><path fill="#ffae0c" d="M8.14233 19c.4472 1.72119 1.99689 2.99817 3.85767 3 1.86078-.00183 3.41046-1.27881 3.85767-3H8.14233zM12 4c.34149 0 .67413.03516 1 .08997V3c0-.55231-.44769-1-1-1s-1 .44769-1 1v1.08997C11.32587 4.03516 11.65851 4 12 4z"></path></svg>
+                </div>
+                <div class="mt-0 text-start">
+                    <span class="fs-14 fw-semibold">Ошибки</span>
+                    <p class="fs-13 text-muted mb-0">Во время работы с Вашим сервером, мы получили ошибки и их задокументировали, чтоб Вы могли отслеживать проблемы и решать.</p>
+                    <p class="fs-13 text-muted mb-0">Если Вы устранили ошибки, тогда удалите список ошибок, это позволит разблокировать выполнение функций, которые вызывают ошибки.</p>
+                    <button type="button" class="btn btn-danger btn-sm btn-wave waves-effect waves-light clearServerErrors" data-server-id="{{id}}">Удалить ошибки</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="card-title">
+                        Ошибки
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="accordion accordion-flush" id="accordionFlushExample">
+                        {% for i, err in data_errors %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="flush-{{i}}">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#flush-collapse{{i}}"
+                                        aria-expanded="false" aria-controls="flush-collapse{{i}}">
+                                    {{err.name}}
+                                </button>
+                            </h2>
+                            <div id="flush-collapse{{i}}" class="accordion-collapse collapse"
+                                 aria-labelledby="flush-{{i}}" data-bs-parent="#accordionFlushExample">
+                                <div class="accordion-body">
+
+                                    <div class="col-xl-12">
+                                        <p>
+                                            <span class="fw-semibold text-muted fs-12">Текст ошибки :</span> {{err.errors}}
+                                        </p>
+                                        <p>
+                                            <span class="fw-semibold text-muted fs-12">Результат :</span> {{err.message}}
+                                        </p>
+                                        <p>
+                                            <span class="fw-semibold text-muted fs-12">Описание :</span> {{err.desc}}
+                                        </p>
+                                        <p>
+                                            <span class="fw-semibold text-muted fs-12">Время :</span> {{err.time|date("H:m:s d.m.Y")}}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(".clearServerErrors").on("click", function () {
+        AjaxSend("/admin/server/errors/clear", "POST", {
+            id: "{{id}}",
+        }, true).then(function (response) {
+            responseAnalysis(response);
+        })
+    })
+</script>
+
+{% endblock %}  

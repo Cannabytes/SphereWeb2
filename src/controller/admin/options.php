@@ -84,10 +84,27 @@ class options
         $resetHWID = $_POST['resetHWID'] ?? false;
 
         $enableStatusServer = filter_var($_POST['enableStatusServer'], FILTER_VALIDATE_BOOL) ?? false;
-        $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? "0.0.0.0";
+        $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? "";
         $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? 2106;
-        $statusGameServerIP = $_POST['statusGameServerIP'] ?? "0.0.0.0";
+        $statusGameServerIP = $_POST['statusGameServerIP'] ?? "";
         $statusGameServerPort = (int)$_POST['statusGameServerPort'] ?? 7777;
+
+        if (!filter_var($statusLoginServerIP, FILTER_VALIDATE_IP)) {
+            if ($enableStatusServer) {
+                board::error("IP адрес логин-сервера недействителен.");
+            } else {
+                $statusLoginServerIP = "0.0.0.0";
+            }
+        }
+        if (!filter_var($statusGameServerIP, FILTER_VALIDATE_IP)) {
+            if ($enableStatusServer) {
+                board::error("IP адрес логин-сервера недействителен.");
+            } else {
+                $statusGameServerIP = "0.0.0.0";
+            }
+        }
+
+
 
         if (isset($_POST['loginserver'])) {
             $loginserver = (int)$_POST['loginserver'] ?? 0;
@@ -192,23 +209,23 @@ class options
         $server = \Ofey\Logan22\model\server\server::getServer($server_id);
         $database = \Ofey\Logan22\component\sphere\server::send(type::GET_DATABASE_LIST)->show()->getResponse();
 
-        $defaultDB =  $database['defaultDB'];
+        $defaultDB = $database['defaultDB'];
         $gameServers = $database['gameservers'];
         $loginServers = $database['loginservers'];
 
 
-        foreach($defaultDB AS $db){
-            if ($db['id'] == $server->getId()){
-                 foreach($loginServers AS &$loginServer){
-                     if ($loginServer['id'] == $db['loginServerID']){
-                         $loginServer['default'] = true;
-                     }
-                 }
-                 foreach($gameServers AS &$gameserver){
-                     if ($gameserver['id'] == $db['gameServerID']){
-                         $gameserver['default'] = true;
-                     }
-                 }
+        foreach ($defaultDB as $db) {
+            if ($db['id'] == $server->getId()) {
+                foreach ($loginServers as &$loginServer) {
+                    if ($loginServer['id'] == $db['loginServerID']) {
+                        $loginServer['default'] = true;
+                    }
+                }
+                foreach ($gameServers as &$gameserver) {
+                    if ($gameserver['id'] == $db['gameServerID']) {
+                        $gameserver['default'] = true;
+                    }
+                }
             }
         }
 
@@ -237,10 +254,26 @@ class options
         $version_client = $_POST['version_client'] ?? board::error("Set version game");
         $collection = $_POST['collection'] ?? board::error("Set l2j emulator");
         $enableStatusServer = $_POST['enableStatusServer'] ?? false;
-        $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? null;
-        $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? null;
-        $statusGameServerIP = $_POST['statusGameServerIP'] ?? null;
-        $statusGameServerPort = (int)$_POST['statusGameServerPort'] ?? null;
+        $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? "";
+        $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? 2106;
+        $statusGameServerIP = $_POST['statusGameServerIP'] ?? "";
+        $statusGameServerPort = (int)$_POST['statusGameServerPort'] ?? 7777;
+
+        if (!filter_var($statusLoginServerIP, FILTER_VALIDATE_IP)) {
+            if ($enableStatusServer) {
+                board::error("IP адрес логин-сервера недействителен.");
+            } else {
+                $statusLoginServerIP = "0.0.0.0";
+            }
+        }
+        if (!filter_var($statusGameServerIP, FILTER_VALIDATE_IP)) {
+            if ($enableStatusServer) {
+                board::error("IP адрес логин-сервера недействителен.");
+            } else {
+                $statusGameServerIP = "0.0.0.0";
+            }
+        }
+
         $loginServerID = $_POST['loginserver'] ?? board::error("Set DB LoginServer");
         $gameserverID = $_POST['gameserver'] ?? board::error("Set DB GameServer");
         $dateStartServer = $_POST['dateStartServer'] ?? null;
