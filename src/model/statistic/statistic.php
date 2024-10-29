@@ -109,31 +109,31 @@ class statistic
     public static function get_pk($server_id = 0)
     {
         self::getStatistic($server_id);
-        return self::$statistic[$server_id]['pk'];
+        return self::$statistic[$server_id]['pk'] ?? [];
     }
 
     public static function get_players_online_time($server_id = 0)
     {
         self::getStatistic($server_id);
-        return self::$statistic[$server_id]['online'];
+        return self::$statistic[$server_id]['online'] ?? [];
     }
 
     public static function get_exp($server_id = 0)
     {
         self::getStatistic($server_id);
-        return self::$statistic[$server_id]['exp'];
+        return self::$statistic[$server_id]['exp'] ?? [];
     }
 
     public static function get_clan($server_id = 0)
     {
         self::getStatistic($server_id);
-        return self::$statistic[$server_id]['clan'];
+        return self::$statistic[$server_id]['clan'] ?? [];
     }
 
     public static function get_castle($server_id = 0)
     {
         self::getStatistic($server_id);
-        return self::$statistic[$server_id]['castle'];
+        return self::$statistic[$server_id]['castle'] ?? [];
     }
 
     public static function timeHasPassed($seconds, $reduce = false): string

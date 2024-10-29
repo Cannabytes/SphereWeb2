@@ -29,17 +29,16 @@ class session
         if ( ! file_exists(fileSys::get_dir('/data/db.php'))) {
             return;
         }
-        if ( ! isset($_SESSION['id'])) {
-            if(isset($_SESSION['HTTP_REFERER_SET'])){
-                return;
-            }
-            if (isset($_SESSION['HTTP_REFERER'])) {
-                $_SESSION['HTTP_REFERER'] = self::domainViewsCounter($_SESSION['HTTP_REFERER']);
-                $_SESSION['HTTP_REFERER_SET'] = true;
-            } else {
-                if (isset($_SERVER['HTTP_REFERER'])) {
-                    $_SESSION['HTTP_REFERER'] = self::domainViewsCounter($_SERVER['HTTP_REFERER']);
+        if (!isset($_SESSION['id'])) {
+            if (!isset($_SESSION['HTTP_REFERER_SET'])) {
+                if (isset($_SESSION['HTTP_REFERER'])) {
+                    $_SESSION['HTTP_REFERER'] = self::domainViewsCounter($_SESSION['HTTP_REFERER']);
                     $_SESSION['HTTP_REFERER_SET'] = true;
+                } else {
+                    if (isset($_SERVER['HTTP_REFERER'])) {
+                        $_SESSION['HTTP_REFERER'] = self::domainViewsCounter($_SERVER['HTTP_REFERER']);
+                        $_SESSION['HTTP_REFERER_SET'] = true;
+                    }
                 }
             }
         }
