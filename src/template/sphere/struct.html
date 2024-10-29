@@ -16,7 +16,18 @@
   <meta name="Author" content="SphereWeb CMS">
   <meta name="keywords" content="{{ config().other().getKeywords() }}">
 
-{{ config().logo().favicon()  }}
+  {{ config().logo().favicon()  }}
+
+  {% if config().other().isL2Cursor() %}
+  <style>
+    body {
+      cursor: url('{{template}}/assets/cursor/lineage2/default.cur'), auto;
+    }
+    a:hover {
+      cursor: url('{{template}}/assets/cursor/lineage2/link.cur'), pointer;
+    }
+  </style>
+  {% endif %}
 
   <!-- Choices JS -->
   <script src="{{template}}/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>

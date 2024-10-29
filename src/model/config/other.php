@@ -9,6 +9,8 @@ class other
 
     private bool $openPassword = false;
 
+    private bool $isL2Cursor = false;
+
     private bool $enableTechnicalWork = false;
 
     private bool $saveStatisticData = false;
@@ -41,6 +43,7 @@ class other
             $configData = [
               'setting' => json_encode([
                 'saveOpenPassword'     => false,
+                'isL2Cursor'           => false,
                 'enableTechnicalWork'  => false,
                 'saveStatisticData'    => false,
                 'isAuthShow'           => false,
@@ -60,6 +63,7 @@ class other
         $setting = json_decode($configData['setting'], true);
 
         $this->openPassword         = filter_var($setting['saveOpenPassword'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->isL2Cursor           = filter_var($setting['isL2Cursor'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->enableTechnicalWork  = filter_var($setting['enableTechnicalWork'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->saveStatisticData    = filter_var($setting['saveStatisticData'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->isAuthShow           = filter_var($setting['isAuthShow'] ?? false, FILTER_VALIDATE_BOOLEAN);
@@ -82,6 +86,11 @@ class other
     public function getOpenPassword(): bool
     {
         return $this->openPassword;
+    }
+
+    public function isL2Cursor()
+    {
+        return $this->isL2Cursor;
     }
 
     public function getEnableTechnicalWork(): bool

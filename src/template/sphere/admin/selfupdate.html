@@ -25,10 +25,7 @@
 
               <div class="text-success" id="messagedata"></div>
               <button id="startUpdate" class="btn btn-success">{{phrase('check_update_software')}}</button>
-              <div class="d-none" id="loading">
-                {{phrase('please_wait')}}<br>
-                <span id="progressText" class=""></span>
-              </div>
+              <div id="message"></div>
 
             </div>
 
@@ -65,6 +62,12 @@
       method: 'POST',
       success: function (response) {
         if (response.ok) {
+
+          if (response.type && response.type === 'notice') {
+            $("#message").html(`<span class="me-1"><i class="ri-checkbox-circle-line text-success fs-15"></i></span>
+             <span class="text-success"><strong class="me-1">${response.message}</strong></span>`);
+            return;
+          }
 
           // Создание таблицы
           var tableHtml = `
