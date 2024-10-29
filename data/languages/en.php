@@ -802,7 +802,7 @@ Try our launcher and experience all the benefits of a fast and reliable tool cre
 	'create_admin_desc' => 'Now create your administrator account.',
 	'create_bonus_codes' => 'Create bonus codes',
 	'create_patch' => 'Create patch',
-	'create_phrase_link' => 'You can create your own phrase <a href=\'/admin/phrases\' target=\'_blank\'>here</a>.',
+	'create_phrase_link' => 'You can create your own phrase <a href=\'/admin/phrases/custom\' target=\'_blank\'>here</a>.',
 	'create_router' => 'Create router',
 	'create_token' => 'Create token',
 	'create_token_on_this_page' => 'Create a token on this page.',

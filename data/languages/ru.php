@@ -1086,7 +1086,7 @@ return [
 	'menu_launcher' => 'Лаунчер',
 	'menu_links_instructions' => 'Вы можете добавить свои ссылки в меню.
                 <br>
-                phraseId - название фразы, а точнее её key из таблицы <a class=\'text-primary\' href=\'/admin/phrases\' target=\'_blank\'>переводов</a>.<br>
+                phraseId - название фразы, а точнее её key из таблицы <a class=\'text-primary\' href=\'/admin/phrases/custom\' target=\'_blank\'>переводов</a>.<br>
                 При выборе иконки, нужно скопировать её стиль.<br>
                   Стиль иконок можно выбрать тут<br>
                   <div class=\'bd-example flex-container\'>

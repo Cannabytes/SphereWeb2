@@ -2131,4 +2131,32 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  154 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/server/errors/(\\d+)',
+    'func' => 'controller\\admin\\errors::getErrors',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  155 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/server/errors/clear',
+    'func' => 'controller\\admin\\errors::clear',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );
