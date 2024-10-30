@@ -26,19 +26,17 @@ class wheel
         validation::user_protection("admin");
         $object_id = null;
         $wheelName = $_POST['wheel_name'] ?? board::error("Введите название вашего колеса");
-        $wheelCost = (float)$_POST['wheel_cost'] ?? board::error("Введите стоимость прокрутки");
+        $wheelCost = $_POST['wheel_cost'] ?? board::error("Введите стоимость прокрутки");
         $wheelType = $_POST['type'] ?? board::error("Нет типа действия");
         if($wheelType == "update"){
             $object_id = (int)$_POST['object_id'] ?? board::error("Не удалось индикатор рулетки");
         }
-        //Проверка wheelCost на int или float и чтоб был больше нуля
         if (!is_numeric($wheelCost)) {
             board::error("Цена прокрутки должна быть числом");
         }
         if ($wheelCost < 0) {
             board::error("Цена прокрутки должна быть больше 0");
         }
-        //Проверка wheelName на длину и чтоб был больше 3 символов
         if (mb_strlen($wheelName) > 20) {
             board::error("Длина названия не может быть больше 20 символов");
         }
@@ -46,7 +44,6 @@ class wheel
             board::error("Длина названия должна быть больше 3 символов");
         }
 
-        // Массив для хранения преобразованных данных
         $transformedData  = [];
         $totalProbability = 0.00;
         $data             = $_POST;
@@ -111,7 +108,7 @@ class wheel
           'wheel_name' => $wheelName,
           'items'      => $transformedData,
           'type'       => $wheelType,
-          'cost'       => $wheelCost,
+          'cost'       => (float)$wheelCost,
         ];
 
         $response = server::send(type::GAME_WHEEL_SAVE, $data)->show()->getResponse();
@@ -236,6 +233,7 @@ class wheel
         if ($response['success']) {
             foreach ($response['wheels'] as $wheel) {
                 $arr[] = [
+                  'id'   => $wheel['id'],
                   'name' => $wheel['name'],
                   'spin' => $wheel['spin'] ?? 0,
                   'cost' => $wheel['cost'] ?? 1,
@@ -317,12 +315,11 @@ class wheel
 
     public function editName()
     {
+        $id         = $_POST['id'] ?? board::error("no id");
         $old_name   = $_POST['old_name'] ?? '';
         $new_name   = $_POST['new_name'] ?? '';
         $wheel_cost = (float)$_POST['wheel_cost'] ?? 1;
-//        if ($old_name == $new_name) {
-//            board::error("Новое название не может быть равным старому");
-//        }
+
         if (mb_strlen($new_name) > 20) {
             board::error("Длина нового названия не может быть больше 20 символов");
         }
@@ -339,9 +336,10 @@ class wheel
           "__config_fun_wheel__",
           user::self()->getServerId(),
         ]);
+
         foreach ($select as $data) {
             $val = json_decode($data['val'], true);
-            if ($val['name'] == $old_name) {
+            if ($val['id'] == $id) {
                 sql::run("DELETE FROM `server_data` WHERE `id` = ?", [
                   $data['id'],
                 ]);
@@ -349,35 +347,36 @@ class wheel
         }
 
         $data = [
+          'id' =>   (int)$id,
           'name' => $new_name,
           'cost' => $wheel_cost,
         ];
 
-        $sql = "INSERT INTO `server_data` (`key`, `val`, `server_id`, `date`) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO `server_data` (`key`, `val`, `server_id`) VALUES (?, ?, ?)";
         sql::run($sql, [
           "__config_fun_wheel__",
           json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
           user::self()->getServerId(),
-          time::mysql(),
         ]);
 
         $data = [
+          'id' =>   (int)$id,
           'old_name' => $old_name,
           'new_name' => $new_name,
           'cost' => $wheel_cost,
         ];
 
-        server::send(type::GAME_WHEEL_EDIT_NAME, $data);
-
-        board::reload();
-        board::success("Сохранено");
+        $response = server::send(type::GAME_WHEEL_EDIT_NAME, $data)->show()->getResponse();
+        board::alert([
+            'ok' => true,
+        ]);
     }
 
     public function remove()
     {
-        $name     = $_POST['name'] ?? board::error("Не удалось получить данные рулетки");
+        $id     = (int)$_POST['id'] ?? board::error("Не удалось получить ID рулетки");
         $data     = [
-          'name' => $name,
+          'id' => $id,
         ];
         $response = server::send(type::GAME_WHEEL_REMOVE, $data)->show()->getResponse();
         if (isset($response['success'])) {
@@ -388,7 +387,7 @@ class wheel
                 ]);
                 foreach ($rows as $data) {
                     $val = json_decode($data['val'], true);
-                    if ($val['name'] == $name) {
+                    if ($val['id'] == $id) {
                         sql::run("DELETE FROM `server_data` WHERE `id` = ?", [
                           $data['id'],
                         ]);

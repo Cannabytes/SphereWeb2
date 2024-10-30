@@ -342,13 +342,13 @@
 
     data['object_id'] = '{{object_id}}';
     data['wheel_name'] = $('#wheel_name').val();
-    data['wheel_cost'] = $('#wheel_cost').val();
+    data['wheel_cost'] = parseFloat($('#wheel_cost').val());
     data['type'] = 'update';
 
     $.ajax({
       type: 'POST',
       url: '/fun/wheel/saveWheel',
-      data: $.param(data),  // Сериализуем объект в строку формата URL-кодировки
+      data: $.param(data),
       success: function (response) {
         responseAnalysis(response);
       },

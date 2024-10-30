@@ -35,7 +35,7 @@
                   <div class="d-flex align-items-center">
 
                     <div class="me-3 lh-1">
-                      <a href="/fun/wheel/edit/{{ wheel.name }}">
+                      <a href="/fun/wheel/{{wheel.name|lower}}">
 <span class="avatar avatar-xxl bd-gray-200">
 <img src="{{template_plugin}}/tpl/images/wheel/icon.png" alt="">
 </span>
@@ -48,7 +48,7 @@
                         <br>
                         Стоимость: {{wheel.cost}}
                         <br>
-                        <span data-name="{{wheel.name}}" data-cost="{{wheel.cost}}" data-bs-target="#changeName"
+                        <span data-wheel-id="{{wheel.id}}" data-name="{{wheel.name}}" data-cost="{{wheel.cost}}" data-bs-target="#changeName"
                               data-bs-toggle="modal"
                               class="btn btn-icon btn-sm btn-info-light editname"><i class="ri-edit-line"></i></span>
                       </div>
@@ -61,7 +61,7 @@
                     href="/fun/wheel/edit/items/{{wheel.name|lower}}">Изменить предметы</a></span>
                 </td>
                 <td>
-                  <button data-name="{{wheel.name|lower}}" type="button" class="btn btn-danger-light btn-sm btn-wave waves-effect waves-light removeWheel">Удалить</button>
+                  <button data-name="{{wheel.name|lower}}" data-wheel-id="{{wheel.id}}" type="button" class="btn btn-danger-light btn-sm btn-wave waves-effect waves-light removeWheel">Удалить</button>
                 </td>
               </tr>
               {% endfor %}
@@ -98,6 +98,7 @@
           <input value="1" name="wheel_cost" type="number" class="form-control" id="wheel_cost">
         </div>
       </div>
+        <input value="" name="wheel_id" type="hidden" id="changeNameWheelId">
       <div class="modal-footer">
         <button id="changeNameSave" type="submit" class="btn btn-sm btn-success">Сохранить</button>
       </div>
@@ -112,9 +113,10 @@
   $(document).ready(function () {
 
     $('.removeWheel').click(function () {
-      let name = $(this).data('name');
+      let id = $(this).attr('data-wheel-id');
+      let name = $(this).attr('data-name');
       AjaxSend('/fun/wheel/remove', 'POST', {
-        name: name,
+          id: id,
       }, true).then(function (response) {
         responseAnalysis(response);
         if(response.ok) {
@@ -125,6 +127,8 @@
 
     $('.editname').click(function () {
       var name = $(this).data('name');
+      let id = $(this).attr('data-wheel-id');
+      $('#changeNameWheelId').val(id)
       $('#old_name').val(name);
       $('#new_name').val(name);
       $('#wheel_cost').val($(this).data('cost'));
@@ -138,19 +142,19 @@
 
     $('#changeNameSave').on('click', function () {
 
+      let id = $('#changeNameWheelId').val();
       let old_name = $('#old_name').val();
       let new_name = $('#new_name').val();
       let wheel_cost = $('#wheel_cost').val();
 
       AjaxSend('/fun/wheel/edit/name', 'POST', {
+        id: id,
         old_name: old_name,
         new_name: new_name,
         wheel_cost: wheel_cost,
-      }, true).then(function (response) {
-        responseAnalysis(response);
-        if (response.success) {
-          $('#changeNameSave').modal('hide');
-        }
+      }, true).then(function (response){
+          console.log(response)
+          location.reload()
       });
 
     });

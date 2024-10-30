@@ -331,7 +331,7 @@
 
     data['wheel_name'] = $('#wheel_name').val();
     data['type'] = 'create';
-    data['cost'] = $('#wheel_cost').val();
+    data['wheel_cost'] = parseFloat($('#wheel_cost').val());
 
     $.ajax({
       type: 'POST',
