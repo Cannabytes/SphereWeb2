@@ -19,4 +19,7 @@ readonly class langStruct
     public function getIsActive(): bool{
         return $this->isActive;
     }
+    public function IsActive(): bool{
+        return $this->isActive;
+    }
 }

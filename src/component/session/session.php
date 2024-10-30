@@ -52,43 +52,53 @@ class session
         } else {
             $host = $url;
         }
+
         $date = date("Y-m-d");
         $data = sql::getRow("SELECT `data` FROM server_cache WHERE `type` = 'HTTP_REFERER_VIEWS';");
+
         if ($data) {
             $dataJSONDecode = json_decode($data["data"], true);
             $n              = false;
+
             foreach ($dataJSONDecode as &$val) {
                 $referer = $val['referer'];
                 if ($host == $referer) {
+                    // Проверяем наличие ключа $date и инициализируем его, если отсутствует
+                    if (!isset($val['count'][$date])) {
+                        $val['count'][$date] = 0;
+                    }
                     $val['count'][$date]++;
                     $n = true;
                     break;
                 }
             }
-            if ( ! $n) {
+
+            if (!$n) {
                 $dataJSONDecode[] = [
-                  'referer' => $host,
-                  'count'   => [
-                    $date => 1,
-                  ],
+                    'referer' => $host,
+                    'count'   => [
+                        $date => 1,
+                    ],
                 ];
             }
+
             $dataJSON = json_encode($dataJSONDecode, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
             sql::run("UPDATE `server_cache` SET `data` = ? WHERE `type` = 'HTTP_REFERER_VIEWS'", [$dataJSON]);
         } else {
             $arr = json_encode([
-              [
-                'referer' => $host,
-                'count'   => [
-                  $date => 1,
+                [
+                    'referer' => $host,
+                    'count'   => [
+                        $date => 1,
+                    ],
                 ],
-              ],
             ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
             sql::run("INSERT INTO `server_cache` (`type`, `data`) VALUES ('HTTP_REFERER_VIEWS', ?)", [$arr]);
         }
 
         return $host;
     }
+
 
     public static function edit($key, $value): bool
     {
