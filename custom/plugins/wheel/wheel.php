@@ -9,8 +9,6 @@ use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
-use Ofey\Logan22\controller\page\error;
-use Ofey\Logan22\controller\page\page;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\log\logTypes;
@@ -21,6 +19,8 @@ class wheel
 {
 
 
+    private static int $COOLDOWN_SECONDS = 5;
+
     public function saveWheel()
     {
         validation::user_protection("admin");
@@ -28,7 +28,7 @@ class wheel
         $wheelName = $_POST['wheel_name'] ?? board::error("Введите название вашего колеса");
         $wheelCost = $_POST['wheel_cost'] ?? board::error("Введите стоимость прокрутки");
         $wheelType = $_POST['type'] ?? board::error("Нет типа действия");
-        if($wheelType == "update"){
+        if ($wheelType == "update") {
             $object_id = (int)$_POST['object_id'] ?? board::error("Не удалось индикатор рулетки");
         }
         if (!is_numeric($wheelCost)) {
@@ -44,10 +44,10 @@ class wheel
             board::error("Длина названия должна быть больше 3 символов");
         }
 
-        $transformedData  = [];
+        $transformedData = [];
         $totalProbability = 0.00;
-        $data             = $_POST;
-        if ( ! isset($data['item']) or $data['item'] == "") {
+        $data = $_POST;
+        if (!isset($data['item']) or $data['item'] == "") {
             board::error("Вы не заполнили массив с ID предметами");
         }
 
@@ -60,19 +60,19 @@ class wheel
 
         // Проходим по каждому элементу
         for ($i = 0; $i < $itemCount; $i++) {
-            $numItem     = $i + 1;
-            $itemId      = $data['item'][$i] ?? null;
-            $enchant     = $data['enchant'][$i] ?? 0;
-            $count       = $data['count'][$i] ?? 1;
-            $countMin    = $data['count_min'][$i] ?? null;
-            $countMax    = $data['count_max'][$i] ?? null;
+            $numItem = $i + 1;
+            $itemId = $data['item'][$i] ?? null;
+            $enchant = $data['enchant'][$i] ?? 0;
+            $count = $data['count'][$i] ?? 1;
+            $countMin = $data['count_min'][$i] ?? null;
+            $countMax = $data['count_max'][$i] ?? null;
             $probability = isset($data['probability'][$i]) ? (float)$data['probability'][$i] : null;
-            if ( ! $itemId) {
+            if (!$itemId) {
                 board::error("Вы не заполнили ID предмета (предмет №{$numItem})");
             }
             $countType = $data['way'][$i] ?? board::error("Вы не заполнили способ кол-ва (предмет №{$numItem})");
 
-            if ( ! $probability) {
+            if (!$probability) {
                 board::error("Вы не указали процент выигрыша (предмет №{$numItem})");
             }
 
@@ -88,14 +88,14 @@ class wheel
             }
 
             $transformedData[] = [
-              'num'         => (int)$numItem,
-              'item_id'     => (int)$itemId,
-              'enchant'     => (int)$enchant,
-              'count_type'  => (int)$countType,
-              'count'       => (int)$count,
-              'count_min'   => (int)$countMin,
-              'count_max'   => (int)$countMax,
-              'probability' => (float)$probability,
+                'num' => (int)$numItem,
+                'item_id' => (int)$itemId,
+                'enchant' => (int)$enchant,
+                'count_type' => (int)$countType,
+                'count' => (int)$count,
+                'count_min' => (int)$countMin,
+                'count_max' => (int)$countMax,
+                'probability' => (float)$probability,
             ];
         }
 
@@ -104,18 +104,18 @@ class wheel
         }
 
         $data = [
-          'object_id' =>  $object_id,
-          'wheel_name' => $wheelName,
-          'items'      => $transformedData,
-          'type'       => $wheelType,
-          'cost'       => (float)$wheelCost,
+            'object_id' => $object_id,
+            'wheel_name' => $wheelName,
+            'items' => $transformedData,
+            'type' => $wheelType,
+            'cost' => (float)$wheelCost,
         ];
 
         $response = server::send(type::GAME_WHEEL_SAVE, $data)->show()->getResponse();
         if ($response == null) {
             board::error("Ошибка при сохранении");
         }
-        if(!$response['success']){
+        if (!$response['success']) {
             board::error($response['message']);
         }
 
@@ -127,51 +127,71 @@ class wheel
     {
         validation::user_protection();
         $stories = sql::getRows(
-          "SELECT `id`, `time`, `variables` FROM `logs_all` WHERE type='wheel_win' AND user_id = ? AND server_id = ? ORDER BY id DESC",
-          [
-            user::self()->getId(),
-            user::self()->getServerId(),
-          ]
+            "SELECT `id`, `time`, `variables` FROM `logs_all` WHERE type=? AND user_id = ? AND server_id = ? ORDER BY id DESC",
+            [
+                logTypes::LOG_BONUS_CODE->value,
+                user::self()->getId(),
+                user::self()->getServerId(),
+            ]
         );
         foreach ($stories as &$story) {
-            $time    = $story['time'];
-            $story   = json_decode($story['variables']);
+            $time = $story['time'];
+            $story = json_decode($story['variables']);
             $item_id = $story[0];
             $enchant = $story[1] ?? "";
-            $count   = $story[3] ?? "";
+            $count = $story[3] ?? "";
 
             $info = client_icon::get_item_info($item_id);
             $info->setCount($count);
-            $story = $info;
-            $story->setEnchant($enchant);
-            //Сделать строку time в DateTime
-            $dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $time);
-            $story->setDate($dateTime);
+            $info->setEnchant($enchant);
+            $data['item'] = $info;
+            $data['time'] = $time;
+            $story = $data;
+        }
+         $select = sql::getRows("SELECT * FROM `server_data` WHERE `key` = ? AND `server_id` = ?", [
+            "__config_fun_wheel__",
+            user::self()->getServerId(),
+        ]);
+        $wheelID = null;
+        foreach ($select as $item) {
+            $val = json_decode($item['val'], true);
+            $id = $val['id'] ?? null;
+            if($id==null){
+                sql::getRow("DELETE FROM server_data WHERE `id` = ?", [$item['id']]);
+            }
+            $_w_name = $val['name'];
+            if ($_w_name == $name) {
+                $wheelID = (int)$id;
+            }
+        }
+
+        if ($wheelID == null) {
+            board::error('Не найден ID рулетки. Пожалуйста, пересоздайте рулетку.');
         }
         $response = server::send(type::GET_WHEEL_ITEMS, [
-          'name' => $name,
+            'id' => $wheelID,
         ])->getResponse();
-        if (isset($response['success']) and ! $response['success'] or $response['success'] == false) {
+
+        if (isset($response['success']) and !$response['success'] or !$response['success']) {
             redirect::location('/main');
         }
         foreach ($response['items'] as &$item) {
-            $itemData             = client_icon::get_item_info($item['item_id']);
-            $item['icon']         = $itemData->getIcon();
-            $item['name']         = $itemData->getItemName();
-            $item['add_name']     = $itemData->getAddName();
-            $item['description']  = $itemData->getDescription();
-            $item['item_type']    = $itemData->getType();
+            $itemData = client_icon::get_item_info($item['item_id']);
+            $item['icon'] = $itemData->getIcon();
+            $item['name'] = $itemData->getItemName();
+            $item['add_name'] = $itemData->getAddName();
+            $item['description'] = $itemData->getDescription();
+            $item['item_type'] = $itemData->getType();
             $item['crystal_type'] = $itemData->getCrystalType();
         }
 
         tpl::addVar('stories', $stories);
+        tpl::addVar('id', $wheelID);
         tpl::addVar('name', $name);
         tpl::addVar('cost', (int)$response['cost']);
         tpl::addVar('items', json_encode($response['items']));
         tpl::displayPlugin("/wheel/tpl/wheel.html");
     }
-
-    private static int $COOLDOWN_SECONDS = 5;
 
     public function callback()
     {
@@ -182,29 +202,29 @@ class wheel
                 board::error("Подождите {$remainingTime} секунд перед следующим использованием.");
             }
         }
-
-        $name     = $_POST['name'] ?? board::error("Не удалось получить данные рулетки");
-        $data     = [
-          'name' => $name,
+        $id = $_POST['id'] ?? board::error("Не удалось получить данные рулетки");
+        $data = [
+            'id' => (int)$id,
         ];
-        $response = server::send(type::GAME_WHEEL, $data)->show()->getResponse();
-        if ( ! $response) {
+        server::setShowError(true);
+        $response = server::send(type::GAME_WHEEL, $data)->getResponse();
+        if (!$response) {
             board::error("Ошибка при получении данных");
         }
         if ($response['success']) {
-            $itemData                          = client_icon::get_item_info($response['wheel']['item_id']);
-            $response['wheel']['icon']         = $itemData->getIcon();
-            $response['wheel']['name']         = $itemData->getItemName();
-            $response['wheel']['add_name']     = $itemData->getAddName();
-            $response['wheel']['description']  = $itemData->getDescription();
-            $response['wheel']['item_type']    = $itemData->getType();
+            $itemData = client_icon::get_item_info($response['wheel']['item_id']);
+            $response['wheel']['icon'] = $itemData->getIcon();
+            $response['wheel']['name'] = $itemData->getItemName();
+            $response['wheel']['add_name'] = $itemData->getAddName();
+            $response['wheel']['description'] = $itemData->getDescription();
+            $response['wheel']['item_type'] = $itemData->getType();
             $response['wheel']['crystal_type'] = $itemData->getCrystalType();
 
             $item = $response['wheel'];
             $cost = $response['cost'];
 
             //Если не удалось уменьшить деньги, то выводим ошибку
-            if(!user::self()->donateDeduct($cost)){
+            if (!user::self()->donateDeduct($cost)) {
                 board::error("У Вас нехватает денег");
             }
 
@@ -218,7 +238,7 @@ class wheel
                 'wheel' => $response['wheel'],
             ]);
 
-        }else{
+        } else {
             board::error($response['message']);
         }
     }
@@ -228,36 +248,34 @@ class wheel
     public function admin()
     {
         validation::user_protection();
-        $arr      = [];
+        $arr = [];
         $response = server::send(type::GET_WHEELS)->show()->getResponse();
         if ($response['success']) {
             foreach ($response['wheels'] as $wheel) {
                 $arr[] = [
-                  'id'   => $wheel['id'],
-                  'name' => $wheel['name'],
-                  'spin' => $wheel['spin'] ?? 0,
-                  'cost' => $wheel['cost'] ?? 1,
+                    'id' => $wheel['id'],
+                    'name' => $wheel['name'],
+                    'spin' => $wheel['spin'] ?? 0,
+                    'cost' => $wheel['cost'] ?? 1,
                 ];
             }
         }
-        $names = array_map(function($item) {
+        $names = array_map(function ($item) {
             return $item['name'];
         }, $arr);
 
-        //Удалить запись в server_cache из бд
         sql::run("DELETE FROM `server_cache` WHERE `type` = ? AND `server_id` = ?", [
-          "__config_fun_wheel__",
-          user::self()->getServerId(),
+            "__config_fun_wheel__",
+            user::self()->getServerId(),
         ]);
 
         //Сохраним в server_cache для вывода в меню
         sql::run("INSERT INTO `server_cache` (`type`, `data`, `server_id`, `date_create`) VALUES (?, ?, ?, ?)", [
-          "__config_fun_wheel__",
-          json_encode($names, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-          user::self()->getServerId(),
-          time::mysql(),
+            "__config_fun_wheel__",
+            json_encode($names, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            user::self()->getServerId(),
+            time::mysql(),
         ]);
-
 
 
         tpl::addVar('wheels', $arr);
@@ -268,33 +286,33 @@ class wheel
     {
         validation::user_protection("admin");
         $response = server::send(type::GET_WHEEL_ITEMS, [
-          'name' => $name,
+            'name' => $name,
         ])->getResponse();
-         //Проверка что
+        //Проверка что
 
-        if ( ! $response) {
+        if (!$response) {
             redirect::location('/fun/wheel/admin');
         }
         if ($response['success']) {
-            if ( ! empty($response['items'])) {
+            if (!empty($response['items'])) {
 
                 $items = $response['items'];
-                $cost  = $response['cost'];
+                $cost = $response['cost'];
                 $name = $response['name'];
                 foreach ($items as &$item) {
-                    $itemData             = client_icon::get_item_info($item['item_id']);
-                    $item['icon']         = $itemData->getIcon();
-                    $item['name']         = $itemData->getItemName();
-                    $item['add_name']     = $itemData->getAddName();
-                    $item['description']  = $itemData->getDescription();
-                    $item['item_type']    = $itemData->getType();
+                    $itemData = client_icon::get_item_info($item['item_id']);
+                    $item['icon'] = $itemData->getIcon();
+                    $item['name'] = $itemData->getItemName();
+                    $item['add_name'] = $itemData->getAddName();
+                    $item['description'] = $itemData->getDescription();
+                    $item['item_type'] = $itemData->getType();
                     $item['crystal_type'] = $itemData->getCrystalType();
-                    $item['count']        = $item['count'] ?? 1;
-                    $item['enchant']      = $item['enchant'] ?? 0;
-                    $item['probability']  = $item['probability'] ?? 0.00;
-                    $item['count_min']    = $item['count_min'] ?? null;
-                    $item['count_max']    = $item['count_max'] ?? null;
-                    $item['count_type']   = $item['count_type'] ?? null;
+                    $item['count'] = $item['count'] ?? 1;
+                    $item['enchant'] = $item['enchant'] ?? 0;
+                    $item['probability'] = $item['probability'] ?? 0.00;
+                    $item['count_min'] = $item['count_min'] ?? null;
+                    $item['count_max'] = $item['count_max'] ?? null;
+                    $item['count_type'] = $item['count_type'] ?? null;
                 }
                 tpl::addVar('object_id', (int)$response['object_id']);
                 tpl::addVar('name', $name);
@@ -315,9 +333,9 @@ class wheel
 
     public function editName()
     {
-        $id         = $_POST['id'] ?? board::error("no id");
-        $old_name   = $_POST['old_name'] ?? '';
-        $new_name   = $_POST['new_name'] ?? '';
+        $id = $_POST['id'] ?? board::error("no id");
+        $old_name = $_POST['old_name'] ?? '';
+        $new_name = $_POST['new_name'] ?? '';
         $wheel_cost = (float)$_POST['wheel_cost'] ?? 1;
 
         if (mb_strlen($new_name) > 20) {
@@ -333,37 +351,37 @@ class wheel
 
         //Удаление старых данных
         $select = sql::getRows("SELECT * FROM `server_data` WHERE `key` = ? AND `server_id` = ?", [
-          "__config_fun_wheel__",
-          user::self()->getServerId(),
+            "__config_fun_wheel__",
+            user::self()->getServerId(),
         ]);
 
         foreach ($select as $data) {
             $val = json_decode($data['val'], true);
             if ($val['id'] == $id) {
                 sql::run("DELETE FROM `server_data` WHERE `id` = ?", [
-                  $data['id'],
+                    $data['id'],
                 ]);
             }
         }
 
         $data = [
-          'id' =>   (int)$id,
-          'name' => $new_name,
-          'cost' => $wheel_cost,
+            'id' => (int)$id,
+            'name' => $new_name,
+            'cost' => $wheel_cost,
         ];
 
         $sql = "INSERT INTO `server_data` (`key`, `val`, `server_id`) VALUES (?, ?, ?)";
         sql::run($sql, [
-          "__config_fun_wheel__",
-          json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-          user::self()->getServerId(),
+            "__config_fun_wheel__",
+            json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            user::self()->getServerId(),
         ]);
 
         $data = [
-          'id' =>   (int)$id,
-          'old_name' => $old_name,
-          'new_name' => $new_name,
-          'cost' => $wheel_cost,
+            'id' => (int)$id,
+            'old_name' => $old_name,
+            'new_name' => $new_name,
+            'cost' => $wheel_cost,
         ];
 
         $response = server::send(type::GAME_WHEEL_EDIT_NAME, $data)->show()->getResponse();
@@ -374,22 +392,22 @@ class wheel
 
     public function remove()
     {
-        $id     = (int)$_POST['id'] ?? board::error("Не удалось получить ID рулетки");
-        $data     = [
-          'id' => $id,
+        $id = (int)$_POST['id'] ?? board::error("Не удалось получить ID рулетки");
+        $data = [
+            'id' => $id,
         ];
         $response = server::send(type::GAME_WHEEL_REMOVE, $data)->show()->getResponse();
         if (isset($response['success'])) {
             if ($response['success']) {
                 $rows = sql::getRows("DELETE FROM `server_data` WHERE `key` = ? AND `server_id` = ?", [
-                  "__config_fun_wheel__",
-                  user::self()->getServerId(),
+                    "__config_fun_wheel__",
+                    user::self()->getServerId(),
                 ]);
                 foreach ($rows as $data) {
                     $val = json_decode($data['val'], true);
                     if ($val['id'] == $id) {
                         sql::run("DELETE FROM `server_data` WHERE `id` = ?", [
-                          $data['id'],
+                            $data['id'],
                         ]);
                     }
                 }
@@ -401,11 +419,12 @@ class wheel
         }
     }
 
-    public function payRoulette() {
-        $months	= $_POST['months'] ?? board::error("Не удалось получить данные рулетки");
+    public function payRoulette()
+    {
+        $months = $_POST['months'] ?? board::error("Не удалось получить данные рулетки");
         $months = filter_var($months, FILTER_VALIDATE_INT);
         $data = [
-          'months' => (int)$months,
+            'months' => (int)$months,
         ];
         $response = server::send(type::GAME_WHEEL_PAY_ROULETTE, $data)->show()->getResponse();
         if (isset($response['success'])) {

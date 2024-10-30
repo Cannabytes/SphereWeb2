@@ -13,7 +13,7 @@ function basename(str) {
     return base;
 }
 
-function AjaxSend(url, method, data, isReturn = false, timeout = 2, funcName = null) {
+function AjaxSend(url, method, data, isReturn = false, timeout = 5, funcName = null) {
     return new Promise(function(resolve, reject) {
         $.ajax({
             url: url,

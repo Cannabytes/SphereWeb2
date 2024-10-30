@@ -2,12 +2,13 @@
 
 namespace Ofey\Logan22\model\item;
 
+use AllowDynamicProperties;
 use DateTime;
 use JsonSerializable;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\image\client_icon;
 
-class item implements JsonSerializable {
+#[AllowDynamicProperties] class item implements JsonSerializable {
 
     private int $id = 0;
 

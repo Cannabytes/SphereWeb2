@@ -48,24 +48,24 @@
       <div class="card-body">
         <ul data-wheel-history-list class="list-unstyled timeline-widget mb-0 my-0">
 
-          {% for item in stories %}
+          {% for story in stories %}
           <li class="timeline-widget-list mb-3">
             <div class="d-flex align-items-top">
               <div class="me-4 text-center">
                 <img class="avatar avatar-md me-0"
-                     src="{{item.getIcon()}}">
+                     src="{{story.item.getIcon()}}">
               </div>
               <div class="d-flex flex-wrap flex-fill align-items-center justify-content-between">
                 <div>
                   <p class="mb-1 text-truncate timeline-widget-content text-wrap">Вы выиграли
-                    {% if item.getEnchant() > 0 %}
-                      <span class="text-danger fs-15 badge bg-success-transparent ">+{{item.getEnchant()}}</span>
+                    {% if story.item.getEnchant() > 0 %}
+                      <span class="text-danger fs-15 badge bg-success-transparent ">+{{story.item.getEnchant()}}</span>
                     {% endif %}
-                    {% if item.getCrystalType() %}
-                      <span class="text-danger fs-15 badge bg-success-transparent ">[{{item.getCrystalType()|upper}}]</span>
+                    {% if story.item.getCrystalType() %}
+                      <span class="text-danger fs-15 badge bg-success-transparent ">[{{story.item.getCrystalType()|upper}}]</span>
                     {% endif %}
-                    <span class="text-danger fs-15 badge bg-success-transparent ">{{item.getItemName()}}</span> x{{item.getCount()}}</p>
-                  <p class="mb-0 fs-12 lh-1 text-muted">{{item.getDate()|date('H:i')}} ({{item.getDate()|date('d.m.Y')}})</p>
+                    <span class="text-danger fs-15 badge bg-success-transparent ">{{story.item.getItemName()}}</span> x{{story.item.getCount()}}</p>
+                  <p class="mb-0 fs-12 lh-1 text-muted">{{story.time|date('H:i')}} ({{story.time|date('d.m.Y')}})</p>
                 </div>
                 <div class="dropdown">
                   <a href="javascript:void(0);" class="p-2 fs-16 text-muted" data-bs-toggle="dropdown">
@@ -297,7 +297,7 @@
   };
 
   __config.wheel = {
-    name : '{{name}}',
+    id : '{{id}}',
     /* 20 итемов, которые будут вставлены в колесо */
     items: [],
 
@@ -343,7 +343,7 @@
     __config.wheelInit = true;
   }
 </script>
-<script src="/custom/plugins/wheel/tpl/js/wheel.js?v=0.2.0"></script>
+<script src="/custom/plugins/wheel/tpl/js/wheel.js?v=0.2.2"></script>
 
 
 {% endblock %}

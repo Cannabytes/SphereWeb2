@@ -35,8 +35,8 @@ function wheelInit() {
             }
         );
         AjaxSend('/fun/wheel/callback', 'POST', {
-            "name": cfg.name,
-        }, true).then(function (data) {
+            id: cfg.id,
+        }, true, 5).then(function (data) {
             responseAnalysis(data);
             console.log(data);
             if (data.success !== true) {
