@@ -166,7 +166,7 @@ class wheel
         }
 
         if ($wheelID == null) {
-            board::error('Не найден ID рулетки. Пожалуйста, пересоздайте рулетку.');
+            redirect::location("/main");
         }
         $response = server::send(type::GET_WHEEL_ITEMS, [
             'id' => $wheelID,

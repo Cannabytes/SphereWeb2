@@ -4,6 +4,7 @@ namespace Ofey\Logan22\component\plugins\itemMaster;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
+use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\template\tpl;
 
 class itemMaster
@@ -28,7 +29,10 @@ class itemMaster
         tpl::displayPlugin("/itemMaster/tpl/item.html");
     }
 
-    public function add($chronicle) {
+    public function add($chronicle = null) {
+        if($chronicle==null){
+            redirect::location("/admin/modify/item");
+        }
         tpl::addVar([
           "chronicle" => $chronicle,
         ]);

@@ -426,7 +426,6 @@
                     </ul>
                     <div class="tab-content">
 
-
                       {% for i, account in getUser().getAccounts() %}
                       <div class="tab-pane text-muted {% if i==0 %}active show{% set i = i + 1 %}{% endif %}"
                            id="ac_{{account.getAccount()}}" role="tabpanel">
@@ -516,7 +515,7 @@
                                     </div>
                                   </div>
 
-                                  {% if getServer().getServerData('resetHWID').getVal() == true %}
+                                  {% if getServer().isResetHWID() == true %}
                                   <div class="accordion-item">
                                     <h2 class="accordion-header" id="hwid_remove_{{character.getPlayerId()}}">
                                       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"

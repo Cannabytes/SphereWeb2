@@ -64,7 +64,7 @@ class serverModel
         $this->dateStartServer = $server['dateStartServer'] ?? null;
         $this->knowledgeBase = $server['knowledgeBase'] ?? null;
         $this->maxOnline = filter_var($server['maxOnline'] ?? 200, FILTER_VALIDATE_INT);
-        $this->resetHWID = $server['resetHWID'] ?? false;
+        $this->resetHWID = filter_var($server['resetHWID'] ?? false, FILTER_VALIDATE_BOOLEAN);
         if ($server_data) {
             foreach ($server_data as $data) {
                 $this->server_data[] = new serverDataModel($data);
