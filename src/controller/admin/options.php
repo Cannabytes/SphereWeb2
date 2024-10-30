@@ -359,7 +359,7 @@ class options
 
         //Подгрузка списокв серверов с сервера сферы
         $serversFullInfo = \Ofey\Logan22\component\sphere\server::send(type::SERVER_FULL_INFO)->showErrorPageIsOffline()->getResponse();
-        if ($serversFullInfo['error']) {
+        if (isset($serversFullInfo['error'])) {
             redirect::location("/admin/server/list");
         }
         $serversFullInfo = $serversFullInfo['servers'];
