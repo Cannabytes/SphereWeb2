@@ -282,14 +282,13 @@ class wheel
         tpl::displayPlugin("/wheel/tpl/admin.html");
     }
 
-    public function edit($name)
+    public function edit($id)
     {
         validation::user_protection("admin");
         $response = server::send(type::GET_WHEEL_ITEMS, [
-            'name' => $name,
+            'id' => (int)$id,
         ])->getResponse();
         //Проверка что
-
         if (!$response) {
             redirect::location('/fun/wheel/admin');
         }
@@ -319,6 +318,8 @@ class wheel
                 tpl::addVar('cost', (float)$cost);
                 tpl::addVar('wheelsItems', $items ?? []);
             }
+        }else{
+            redirect::location('/fun/wheel/admin');
         }
         tpl::addVar('title', 'Добавление рулетки');
         tpl::displayPlugin('/wheel/tpl/edit.html');

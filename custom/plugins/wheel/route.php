@@ -32,10 +32,10 @@ $routes = [
 
   [
     "method"  => "GET",
-    "pattern" => "/fun/wheel/edit/items/{name}",
+    "pattern" => "/fun/wheel/edit/items/{id}",
     "file"    => "wheel.php",
-    "call"    => function ($name) {
-        (new wheel\wheel())->edit($name);
+    "call"    => function ($id) {
+        (new wheel\wheel())->edit($id);
     },
   ],
 
