@@ -1,0 +1,163 @@
+{% if startpacks() is not empty %}
+<div class="card custom-card overflow-hidden">
+    <div class="card-body p-0">
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane p-0 active show" id="pricing-monthly-pane" role="tabpanel"
+                 aria-labelledby="pricing-monthly" tabindex="0">
+                <div class="row">
+
+                    {% for data in startpacks() %}
+                    <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-12 border-end border-inline-end-dashed pe-0">
+                        <div class="p-4 h-100 d-flex flex-column">
+                            <h6 class="fw-semibold text-center startpack_name">{{ data.name }}</h6>
+                            <div class="py-3 d-flex align-items-center justify-content-center">
+                                <div class="">
+                                    <p class="fs-1 fw-semibold mb-0 startpack_cost">{{ data.cost }}</p>
+                                    <p class="text-muted op-5 fs-11 fw-semibold mb-0">Sphere Coin</p>
+                                </div>
+                            </div>
+                            <ul id="item_list_startpack_{{ data.id }}"
+                                class="list-unstyled text-center fs-12 px-3 pt-3 mb-0 flex-grow-1">
+
+                                {% if data.items|length > 0 %}
+                                {% for item in data.items %}
+                                {% set itemInfo = get_item_info(item.itemId) %}
+                                <li data-item-src="{{ itemInfo.getIcon() }}" data-item-name="{{ itemInfo.itemName }}"
+                                    data-item-enchant="{{ item.enchant }}" data-item-count="{{ item.count }}" class="mb-3">
+                                    {{grade_img(itemInfo.getCrystalType())|raw}}
+                                    <img src="{{ itemInfo.getIcon() }}" alt="" class="avatar avatar-sm ">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top"
+                                          data-bs-original-title="{{ itemInfo.getDescription()|e }}" class="text-muted"> {% if item.enchant > 0 %}<span
+                                            class="badge bg-danger text-white ms-1">+{{item.enchant}}</span>{% endif %} {{itemInfo.itemName}} </span>
+                                    x{{format_number_fr(item.count)}}
+                                </li>
+                                {% endfor %}
+                                {% endif %}
+
+                            </ul>
+                            <div class="d-grid mt-auto">
+                <span class="btn btn-primary-light btn-wave waves-effect waves-light btn-open-shop"
+                      data-startpack-id="{{ data.id }}"
+                      type="button" data-bs-target="#openShopStartpack"
+                      data-bs-toggle="modal">{{phrase(74)}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal modal-lg fade" id="openShopStartpack" tabindex="-1" aria-labelledby="openShopStartpackLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="card-title">
+                    {{phrase('purchase')}}
+                </div>
+
+                <div>
+                    <ul class="nav nav-tabs justify-content-end nav-tabs-header mb-0" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
+                               href="#StartpackSendItemsToPlayer" aria-selected="true">{{phrase('send_to_char')}}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                               href="#StartpackSendItemsToWarhouse" aria-selected="true">{{phrase('send_to_wh')}}</a>
+                        </li>
+                    </ul>
+                </div>
+
+
+            </div>
+            <div class="modal-body">
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                            <div class="card custom-card overflow-hidden" id="itemListSellStartpack">
+                                Вставить сюда список предметов
+                            </div>
+                        </div>
+
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+
+                            <div class="tab-content">
+                                <div class="tab-pane show active text-muted" id="StartpackSendItemsToPlayer"
+                                     role="tabpanel">
+                                    <div class="card-body">
+                                        <div class="mx-auto">
+                                            {{phrase(77)}}
+
+                                            <select {% if getUser().getCountPlayers()== 0 %}disabled{% endif
+                                                    %} class="form-control" data-trigger id="StartpackPlayer">
+                                                {% if getUser().getCountPlayers() == 0 %}
+                                                <option>{{phrase('no_chars')}}</option>
+                                                {% else %}
+                                                {% for i, account in getUser().getAccounts() %}
+                                                <optgroup label="{{phrase('account')}}: {{account.getAccount}}">
+                                                    {% if account.getCharactersCount() == 0 %}
+                                                    <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_chars')}}
+                                                    </option>
+                                                    {% else %}
+                                                    {% for i, character in account.getCharacters() %}
+                                                    <option data-account="{{account.getAccount()}}" value="{{character.getPlayerName()}}">
+                                                        &nbsp;&nbsp;&nbsp;&nbsp; {{character.getPlayerName()}}
+                                                    </option>
+                                                    {% endfor %}
+                                                    {% endif %}
+                                                </optgroup>
+                                                {% endfor %}
+                                                {% endif %}
+                                            </select>
+
+                                            <div class="d-flex flex-wrap align-items-center">
+                                                <div class="me-2 fw-semibold">
+                                                    {{phrase(72)}} :
+                                                </div>
+                                                <span class="fs-12 text-muted StartPackCostBuy">0</span>
+                                            </div>
+
+                                            <button data-object-id="0" id="Startpackpurchase" type="button"
+                                                    class="btn btn-success btn-wave waves-effect waves-light">
+                                                {{phrase('buy_send_to_char')}}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane text-muted" id="StartpackSendItemsToWarhouse"
+                                     role="tabpanel">
+                                    <div class="card-body">
+
+                                        <div class="d-flex flex-wrap align-items-center">
+                                            <div class="me-2 fw-semibold">
+                                                {{phrase(72)}} :
+                                            </div>
+                                            <span class="fs-12 text-muted StartPackCostBuy">0</span>
+                                        </div>
+
+                                        <button data-object-id="0" id="StartpackWarehouse" type="button"
+                                                class="btn btn-success btn-wave waves-effect waves-light">
+                                            {{phrase('buy_send_to_wh')}}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
