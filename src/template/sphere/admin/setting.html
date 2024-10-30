@@ -1573,6 +1573,13 @@
                     </div>
                   </div>
 
+                  <div class="col-md-6">
+                    <div class="form-floating">
+                      <input value="{{config().email().getEmailFrom()}}" type="text" class="form-control" id="emailFrom" placeholder="email From">
+                      <label for="emailFrom">E-Mail отправителя</label>
+                    </div>
+                  </div>
+
                 </div>
 
                 <div class="row g-3 mb-3">
@@ -3223,6 +3230,7 @@
       let emailHost = $('#emailHost').val();
       let username = $('#emailUsername').val();
       let password = $('#emailPassword').val();
+      let from = $('#emailFrom').val();
       let emailPort = $('#emailPort').val();
       let emailProtocol = $('#emailProtocol').val();
       let isSMTPAuth = $('#emailSMTPAuth').is(':checked');
@@ -3234,6 +3242,7 @@
         'host': emailHost,
         'username': username,
         'password': password,
+        'from': from,
         'port': emailPort,
         'protocol': emailProtocol,
         'smtpAuth': isSMTPAuth,

@@ -15,6 +15,8 @@ class email
 
     private string $emailPassword = "";
 
+    private string $emailFrom = "";
+
     private string $emailPort = "";
 
     private bool $emailSMTPAuth = true;
@@ -29,11 +31,12 @@ class email
         if ($configData) {
             $setting             = json_decode($configData['setting'], true);
             $this->url = !empty($setting['url']) ? $setting['url'] : "";
-            $this->emailHost     = $setting['emailHost'];
-            $this->emailUsername = $setting['emailUsername'];
-            $this->emailPassword = $setting['emailPassword'];
-            $this->emailPort     = $setting['emailPort'];
-            $this->emailProtocol = $setting['emailProtocol'];
+            $this->emailHost     = $setting['emailHost'] ?? '';
+            $this->emailUsername = $setting['emailUsername'] ?? '';
+            $this->emailPassword = $setting['emailPassword'] ?? '';
+            $this->emailFrom     = $setting['emailFrom'] ?? '';
+            $this->emailPort     = $setting['emailPort'] ?? '';
+            $this->emailProtocol = $setting['emailProtocol'] ?? '';
             $this->emailSMTPAuth = filter_var(
               $setting['emailSMTPAuth'],
               FILTER_VALIDATE_BOOLEAN
@@ -59,6 +62,14 @@ class email
     public function getPassword(): string
     {
         return $this->emailPassword;
+    }
+
+    public function getEmailFrom(): string
+    {
+        if ($this->emailFrom==''){
+            return $this->emailHost;
+        }
+        return $this->emailFrom;
     }
 
     public function getPort(): string

@@ -277,6 +277,7 @@ class mail
         $host     = $_POST['host'];
         $username = $_POST['username'];
         $password = $_POST['password'];
+        $from     = $_POST['from'];
         $port     = $_POST['port'];
         $protocol = $_POST['protocol'];
         $smtpAuth = filter_var($_POST['smtpAuth'], FILTER_VALIDATE_BOOLEAN);
@@ -286,7 +287,7 @@ class mail
         try {
             self::configureMailer($mail, $host, $username, $password, $port, $protocol, $smtpAuth);
 
-            $mail->setFrom($username, "Проверка отправки почты");
+            $mail->setFrom($from, "Проверка отправки почты");
             $mail->addAddress($email);
             $mail->isHTML(true);
             $mail->Subject = $subject;
@@ -357,12 +358,13 @@ class mail
               $config->isSmtpAuth()
             );
 
-            $mail->setFrom($config->getUsername(), $_SERVER["SERVER_NAME"]);
+            $mail->setFrom($config->getEmailFrom(), $_SERVER["SERVER_NAME"]);
             $mail->addAddress($email);
             $mail->isHTML(true);
             $mail->Subject = $subject;
             $mail->Body    = $content;
             $mail->AltBody = 'Enabled HTML';
+            var_dump($mail->send());exit;
 
             if($isShowError) {
                 if ($mail->send()) {
