@@ -34,7 +34,7 @@ class itemMaster
             redirect::location("/admin/modify/item");
         }
         tpl::addVar([
-          "chronicle" => $chronicle,
+            "chronicle" => $chronicle,
         ]);
         tpl::displayPlugin("/itemMaster/tpl/add_item.html");
     }
@@ -135,9 +135,9 @@ class itemMaster
 
         // Возвращаем успешный ответ с путем к файлу
         echo json_encode([
-          'status' => 'success',
-          'message' => 'Файл успешно загружен',
-          'path' => '/uploads/images/icon/' . $itemId . '.webp'
+            'status' => 'success',
+            'message' => 'Файл успешно загружен',
+            'path' => '/uploads/images/icon/' . $itemId . '.webp'
         ]);
         exit;
     }
@@ -157,15 +157,15 @@ class itemMaster
         }
 
         $data = [
-          $itemId => [
-            'id' => $itemId,
-            'type' => $type,
-            'name' => $itemname,
-            'add_name' => $itemaddname,
-            'description' => $desc,
-            'icon' => "{$itemId}.webp",
-            'is_stackable' => $is_stackable,
-          ],
+            $itemId => [
+                'id' => $itemId,
+                'type' => $type,
+                'name' => $itemname,
+                'add_name' => $itemaddname,
+                'description' => $desc,
+                'icon' => "{$itemId}.webp",
+                'is_stackable' => $is_stackable,
+            ],
         ];
 
         if ($grade !== "" && $grade !== "ng" && $grade !== "none") {
@@ -181,6 +181,7 @@ class itemMaster
         }
 
         $filePath = "{$directory}/{$itemId}.php";
+
         if (file_put_contents($filePath, $txt) === false) {
             board::error("Ошибка при сохранении файла {$filePath}");
         }

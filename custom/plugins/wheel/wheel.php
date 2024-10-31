@@ -134,21 +134,22 @@ class wheel
                 user::self()->getServerId(),
             ]
         );
-        foreach ($stories as &$story) {
+        $arrStories = [];
+        foreach ($stories as $i=>$story) {
             $time = $story['time'];
-            $story = json_decode($story['variables']);
-            $item_id = $story[0];
-            $enchant = $story[1] ?? "";
-            $count = $story[3] ?? "";
-
-            $info = client_icon::get_item_info($item_id);
+            $_story = json_decode($story['variables']);
+            $item_id = $_story[0];
+            $enchant = $_story[1] ?? "";
+            $count = $_story[3] ?? "";
+            $info = clone client_icon::get_item_info($item_id);
             $info->setCount($count);
             $info->setEnchant($enchant);
-            $data['item'] = $info;
-            $data['time'] = $time;
-            $story = $data;
+            $info->setDate($time);
+            $arrStories[] = $info;
         }
-         $select = sql::getRows("SELECT * FROM `server_data` WHERE `key` = ? AND `server_id` = ?", [
+        $stories = $arrStories;
+
+        $select = sql::getRows("SELECT * FROM `server_data` WHERE `key` = ? AND `server_id` = ?", [
             "__config_fun_wheel__",
             user::self()->getServerId(),
         ]);

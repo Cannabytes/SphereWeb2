@@ -19,7 +19,7 @@
 							<ul class="nav nav-tabs flex-column nav-style-4" role="tablist">
 								{% for i, loginServer in loginServers %}
 								<li class="nav-item" role="presentation">
-									<a class="nav-link {% if i == 0 %}active{% endif %}" data-bs-toggle="tab" role="tab" aria-current="page" href="#loginserver_id_{{loginServer.id}}" aria-selected="false" tabindex="-1">LoginServer ID: {{loginServer.id}}</a>
+									<a class="loginserver_id_{{loginServer.id}} nav-link {% if i == 0 %}active{% endif %}" data-bs-toggle="tab" role="tab" aria-current="page" href="#loginserver_id_{{loginServer.id}}" aria-selected="false" tabindex="-1">LoginServer ID: {{loginServer.id}}</a>
 								</li>
 								{% endfor %}
 							</ul>
@@ -28,7 +28,7 @@
 							<div class="tab-content">
 
 								{% for i, loginServer in loginServers %}
-								<div class="tab-pane text-muted {% if i == 0 %}active show{% endif %}" id="loginserver_id_{{loginServer.id}}" role="tabpanel">
+								<div class="loginserver_id_{{loginServer.id}} tab-pane text-muted {% if i == 0 %}active show{% endif %}" id="loginserver_id_{{loginServer.id}}" role="tabpanel">
 									<div class="col-xl-12">
 										<div class="">
 											<div class="card-header">
@@ -75,12 +75,30 @@
 													</button>
 												</div>
 
+
 												<div class="fw-semibold fs-16 ">Коннект к LoginServer</div>
 												<div class="text-muted fs-11 ">Если Вам больше не нужен данные к подключение к этому логин-серверу, вы можете удалить его.
 													После удаления, вы не сможете подключиться к этому логин-серверу, все аккаунты, которые были зарегистрированы на этом логин-сервере, будут удалены.<br>
 													Рекомендуется удалить, если Вы больше не будете использовать данный логин-сервер.
 												</div>
-												<button class="btn btn-sm btn-danger btn-delete" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ещё не работает...">
+
+												{% set found = false %}
+												{% for server in getServerAll() %}
+													{% if server.getLoginId() == loginServer.id %}
+														<div class="fw-semibold fs-14 text-success">
+															Внимание: Логин-сервер подключен к серверу - {{server.getName()}} {{server.getRateExp()}} {{server.getChronicle()}}
+														</div>
+														{% set found = true %}
+													{% endif %}
+												{% endfor %}
+
+												{% if found == false %}
+												<div class="fw-semibold fs-14 text-danger">
+													Внимание: Данный Логин-сервер не используется ни одним из Ваших серверов.
+												</div>
+												{% endif %}
+
+												<button class="btn btn-sm btn-danger deleteLoginServer" data-login-id="{{loginServer.id}}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ещё не работает...">
 													<i class="ri-delete-bin-line"></i> Удаление
 												</button>
 
@@ -105,6 +123,43 @@
 {% block js %}
 <script>
 	$(document).ready(function () {
+
+		$(".deleteLoginServer").on("click", function (){
+			let loginServerId = $(this).attr("data-login-id");
+			let panel = $(".loginserver_id_" + loginServerId);
+
+			AjaxSend("/admin/database/delete", "POST", {
+				type: "login",
+				id: loginServerId,
+			}, true).then(function (data){
+				response(data);
+
+				// Проверяем, является ли удаляемая панель активной
+				if (panel.hasClass("active show")) {
+					// Получаем следующую панель, которая будет активной
+					let nextPanel = panel.next(".tab-pane");
+					if (nextPanel.length === 0) {
+						nextPanel = panel.prev(".tab-pane");
+					}
+
+					// Переключаем классы active и show
+					if (nextPanel.length > 0) {
+						$(".nav-link.active").removeClass("active");
+						$(".tab-pane.active.show").removeClass("active show");
+						nextPanel.addClass("active show");
+						$(".nav-link[data-bs-toggle='tab'][href='#" + nextPanel.attr("id") + "']").addClass("active");
+					}
+				}
+
+				// Добавляем анимацию исчезновения перед удалением
+				panel.fadeOut(500, function() {
+					$(this).remove();
+				});
+			})
+		});
+
+
+
 		$(".importAccounts").on("click", function () {
 			const loginId = $(this).attr('data-loginserverid');
 

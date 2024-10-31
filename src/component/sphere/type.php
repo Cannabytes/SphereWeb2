@@ -68,7 +68,11 @@ enum type
     // Данные для оплаты SphereWeb
     case SPHERE_DONATE;
 
+    // Список баз
     case GET_DATABASE_LIST;
+    // Удаление БД
+    case DELETE_DATABASE;
+
     case GET_GAME_SERVERS; //DEPRECATED
     case GET_LOGIN_SERVERS; //DEPRECATED
     case GET_LOGIN_SERVERS_DATA;
@@ -116,6 +120,7 @@ enum type
             self::GAME_SERVER_REQUEST => '/api/server/request/mysql',
 
             self::GET_DATABASE_LIST => '/api/server/get/databases',
+            self::DELETE_DATABASE => '/api/server/delete/db',
             self::GET_GAME_SERVERS => '/api/server/get/gameservers',
             self::GET_LOGIN_SERVERS => '/api/server/get/loginservers',
             self::GET_LOGIN_SERVERS_DATA => '/api/server/get/loginservers/data',

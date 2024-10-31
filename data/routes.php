@@ -2159,4 +2159,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  156 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/database/delete',
+    'func' => 'controller\\admin\\databases::delete',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

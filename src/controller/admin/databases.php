@@ -116,6 +116,18 @@ class databases
     }
 
 
+    static public function delete()
+    {
+        $type = $_POST['type'] ?? board::error('No set type');
+        $id = $_POST['id'] ?? board::error("no id");
+        $response = \Ofey\Logan22\component\sphere\server::send(type::DELETE_DATABASE, [
+           'type' => $type,
+           'id' => (int)$id,
+        ])->show(true)->getResponse();
+        board::success("Удалено");
+    }
+
+
 
 
 

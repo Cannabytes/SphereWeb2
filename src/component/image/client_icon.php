@@ -108,9 +108,9 @@ class client_icon {
         if($object == "items"){
             $object = "items/highFive";
             if(server::getServer()){
-                $set = server::getServer()->getServerData("knowledge_base");
-                if($set){
-                    $object = "items/" . $set->getVal()  ;
+                $itemdb = server::getServer()->getKnowledgeBase();
+                if($itemdb){
+                    $object = "items/" . $itemdb;
                 }
             }
         }

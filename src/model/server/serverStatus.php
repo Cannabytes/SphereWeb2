@@ -108,7 +108,7 @@ class serverStatus
                 }
             }
         }
-        return (int)config::load()->other()->getOnlineMul() * $online;
+        return (int)(config::load()->other()->getOnlineMul() * $online);
     }
 
     public function setOnline(int $online): void

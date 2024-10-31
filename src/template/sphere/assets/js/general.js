@@ -119,7 +119,9 @@ $(document).on('submit', 'form', function (event) {
 });
 
 
-
+function response(response, form){
+    responseAnalysis(response, form)
+}
 
 function responseAnalysis(response, form) {
     //Если существует переменная count_sphere_coin то обновляем счетчик class .count_sphere_coin

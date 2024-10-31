@@ -504,6 +504,8 @@
             name: name,
         }, true)
             .then(function (response) {
+                responseAnalysis(response);
+
                 console.log("Server response:", response);
 
                 if (response && response.success === true) {
@@ -547,6 +549,8 @@
             name: name,
         }, true)
             .then(function (response) {
+                responseAnalysis(response);
+
                 console.log("Server response:", response);
 
                 if (response && response.success === true) {
@@ -591,6 +595,8 @@
             },
             dataType: 'json',
             success: function (response) {
+                responseAnalysis(response);
+
                 $("#login_name").empty();
                 if (response.type === "notice") {
                     if (!ResponseNotice(response)) {
@@ -619,6 +625,8 @@
             },
             dataType: 'json',
             success: function (response) {
+                responseAnalysis(response);
+
                 $("#game_name").empty();
 
                 if (response.type === "notice") {
