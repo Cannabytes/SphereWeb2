@@ -210,7 +210,7 @@
                 </div>
 
                 <div class="col-6">
-                  <div class="fs-3 fw-semibold">{{ if server.getStatus().getOnline() >= 10000 }}∞{{else}}{{server.getStatus().getOnline}}{% endif %}</div>
+                  <div class="fs-3 fw-semibold">{% if server.getStatus().getOnline() >= 10000 %}∞{% else %}{{server.getStatus().getOnline}}{% endif %}</div>
                   <div class="fs-sm fw-semibold text-uppercase text-muted">Online</div>
                 </div>
 
