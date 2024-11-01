@@ -11,6 +11,7 @@ use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\player\character;
 use Ofey\Logan22\model\user\user;
 
@@ -51,6 +52,10 @@ class statistic
 
     private static function getStatistic($server_id = null)
     {
+        if(server::get_count_servers()==0){
+            return false;
+        }
+
         if (self::$statistic === false) {
             return false;
         }
@@ -100,6 +105,8 @@ class statistic
                     ]);
                 }
             }
+        }else{
+            self::$statistic = false;
         }
 
 
