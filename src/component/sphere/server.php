@@ -150,7 +150,6 @@ class server
         curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
         self::$countRequest++;
         $response = curl_exec($ch);
-        file_put_contents('response.txt', json_encode($response, JSON_UNESCAPED_UNICODE), FILE_APPEND);
 
         if ($response === false) {
             self::$codeError       = "sphereapi_unavailable";
