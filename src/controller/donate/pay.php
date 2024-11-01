@@ -43,7 +43,7 @@ class pay
             if (method_exists($system, 'getDescription')) {
                 $donateSysNames[] = [
                   'name'        => $system->getName(),
-                  'description' => $system->getDescription() ,
+                  'description' => $system->getDescription(),
                 ];
             } else {
                 $donateSysNames[] = ['name' => $system->getName()];

@@ -23,7 +23,7 @@ $routes = [
         "pattern" => "/donate/transfer/primepayments",
         "file"    => "pay.php",
         "call"    => function() {
-            (new primepayments())->transfer();
+            (new primepayments())->webhook();
         },
     ],
     [
@@ -31,7 +31,7 @@ $routes = [
         "pattern" => "/donate/webhook/primepayments",
         "file"    => "pay.php",
         "call"    => function() {
-            (new primepayments())->transfer();
+            (new primepayments())->webhook();
         },
     ],
 ];

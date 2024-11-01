@@ -28,4 +28,10 @@ class pay_abstract {
     public static function forAdmin(): bool{
         return static::$forAdmin;
     }
+
+    public static function getWebhook()
+    {
+        return static::$webhook ?? null;
+    }
+
 }

@@ -3,6 +3,7 @@
 namespace Ofey\Logan22\model\config;
 
 use Ofey\Logan22\component\fileSys\fileSys;
+use Ofey\Logan22\component\request\url;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\item\item;
@@ -139,12 +140,14 @@ class donate
                       'name'   => basename($system),
                       'desc'   => $system::getDescription()[config::load()->lang()->getDefault()] ?? "",
                       'inputs' => $inputs,
+                      'webhook' => $system::getWebhook(),
                     ];
                 } else {
                     $donateSysNames[] = [
                       'name'   => basename($system),
                       'desc'   => basename($system),
                       'inputs' => $inputs,
+                      'webhook' => $system::getWebhook(),
                     ];
                 }
             }
@@ -156,7 +159,8 @@ class donate
                 $inputs      = $system['inputs'];
                 $description = $system['description'] ?? "";
                 $forAdmin    = $system['forAdmin'] ?? false;
-                $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin);
+                $webhook     = $system['webhook'];
+                $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, $webhook);
             }
             $this->donateSystems = $donateSys;
         }
@@ -182,8 +186,6 @@ class donate
      */
     private function parseDonateSystem(): array
     {
-
-
         $all_donate_system = fileSys::get_dir_files("src/component/donate", [
           'basename' => true,
           'fetchAll' => true,
@@ -199,6 +201,7 @@ class donate
                 }
             }
             $inputs = [];
+
             if (method_exists($system, 'inputs')) {
                 $inputs = $system::inputs();
             }
@@ -216,15 +219,13 @@ class donate
                 ];
             }
         }
-
         $fileDonateSys = [];
-
         foreach($donateSysNames AS $donateSysName){
-
             $isExist = false;
             foreach($this->donateSystems AS $system){
                 $systemName  = key($system);
                 if($donateSysName['name']==$systemName){
+                    $donateSysName['sort'] = $system['sort'] ?? 1000;
                     $isExist = true;
                     break;
                 }
@@ -237,11 +238,11 @@ class donate
             $inputs      = $donateSysName['inputs'] ?? [];
             $description = $donateSysName['desc'] ?? "";
             $forAdmin    = $donateSysName['forAdmin'] ?? false;
+            $sort = $system[$systemName]['sort'] ?? 1000;
 
-            $fileDonateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin);
+            $fileDonateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort);
 
         }
-
         $donateSys = [];
         foreach ($this->donateSystems as $system) {
             $systemName  = key($system);
@@ -249,13 +250,13 @@ class donate
             $inputs      = $system[$systemName]['inputs'] ?? [];
             $description = $system[$systemName]['description'] ?? "";
             $forAdmin    = $system[$systemName]['forAdmin'] ?? false;
-            $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin);
+            $sort = $system[$systemName]['sort'] ?? 1000;
+            $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort);
+
         }
-
-
         $donateSys = array_merge($donateSys, $fileDonateSys);
         usort($donateSys, function($a, $b) {
-            return strcmp($a->getName(), $b->getName());
+            return strcmp($a->getSortValue(), $b->getSortValue());
         });
         return $donateSys;
     }
@@ -444,9 +445,13 @@ class donateSystem
 
     private array $inputs = [];
 
-    private $description = "";
+    private ?string $webhookUrl = null;
 
-    public function __construct($enable, $name, $inputs, $description = "", $forAdmin = false)
+    private string $description = "";
+
+    private int $sortValue = 1000;
+
+    public function __construct($enable, $name, $inputs, $description = "", $forAdmin = false, $webhookUrl = null, $sort = 1000)
     {
         $this->enable      = filter_var($enable, FILTER_VALIDATE_BOOLEAN);
         $this->name        = $name;
@@ -455,6 +460,21 @@ class donateSystem
         foreach ($inputs as $name => $value) {
             $this->inputs[$name] = $value;
         }
+        $this->webhookUrl = $webhookUrl;
+        $this->sortValue = $sort;
+    }
+
+    public function getSortValue(): int
+    {
+        return $this->sortValue ?? 1000;
+    }
+
+    public function getWebhookUrl(): string
+    {
+        if($this->webhookUrl==null){
+            return url::host("/donate/webhook/" . $this->getName());
+        }
+        return url::host($this->webhookUrl);
     }
 
     public function forAdmin(): bool

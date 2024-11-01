@@ -8,21 +8,21 @@ $routes = [
         //Метод POST/GET
         "method"  => "POST",
         //Адрес
-        "pattern" => "/donate/transfer/morune/createlink",
+        "pattern" => "/donate/transfer/palych/createlink",
         //Файл, в которой будет вызвана функция из call
         "file"    => "pay.php",
         //Функция, которая обработкает когда прийдет запрос
         "call"    => function() {
-            (new morune())->create_link();
+            (new palych())->create_link();
         },
     ],
 
     [
         "method"  => "POST",
-        "pattern" => "/donate/webhook/morune",
+        "pattern" => "/donate/webhook/palych",
         "file"    => "pay.php",
         "call"    => function() {
-            (new morune())->webhook();
+            (new palych())->webhook();
         },
     ],
 

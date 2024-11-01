@@ -22,7 +22,7 @@ $routes = [
         "pattern" => "/donate/webhook/enot",
         "file"    => "pay.php",
         "call"    => function() {
-            (new enot())->transfer();
+            (new enot())->webhook();
         },
     ],
 

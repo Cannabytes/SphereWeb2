@@ -34,21 +34,5 @@ $routes = [
             (new paypal())->webhook();
         },
     ],
-    [
-        "method"  => "GET",
-        "pattern" => "/donate/webhook/paypal",
-        "file"    => "pay.php",
-        "call"    => function() {
-            (new paypal())->webhook();
-        },
-    ],
-    [
-        "method"  => "POST",
-        "pattern" => "/donate/paypal/webhook",
-        "file"    => "pay.php",
-        "call"    => function() {
-            (new paypal())->webhook();
-        },
-    ],
 ];
 

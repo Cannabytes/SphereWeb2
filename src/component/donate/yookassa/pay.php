@@ -101,7 +101,7 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
     }
 
     //Получение информации об оплате
-    function transfer(): void {
+    function webhook(): void {
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
         if(empty($this->shopId) OR empty($this->secretKey)){
             board::error('No set token api');

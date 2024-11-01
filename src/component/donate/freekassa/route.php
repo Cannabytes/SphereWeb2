@@ -25,5 +25,13 @@ $routes = [
             (new freekassa())->transfer();
         },
     ],
+    [
+        "method"  => "POST",
+        "pattern" => "/donate/webhook/freekassa",
+        "file"    => "pay.php",
+        "call"    => function() {
+            (new freekassa())->webhook();
+        },
+    ],
 ];
 

@@ -21,7 +21,15 @@ $routes = [
         'pattern' => "/donate/transfer/yookassa",
         'file'    => 'pay.php',
         'call'    => function() {
-            (new yookassa())->transfer();
+            (new yookassa())->webhook();
+        },
+    ],
+    [
+        'method'  => 'POST',
+        'pattern' => "/donate/webhook/yookassa",
+        'file'    => 'pay.php',
+        'call'    => function() {
+            (new yookassa())->webhook();
         },
     ],
 ];

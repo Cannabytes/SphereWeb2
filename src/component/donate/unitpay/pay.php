@@ -113,7 +113,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
     }
 
     //Получение информации об оплате
-    function transfer(): void {
+    function webhook(): void {
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
 		$method = $_REQUEST['method'] ?? '';

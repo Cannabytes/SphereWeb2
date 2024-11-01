@@ -22,7 +22,15 @@ $routes = [
         "pattern" => "/donate/transfer/unitpay",
         "file"    => "pay.php",
         "call"    => function() {
-            (new unitpay())->transfer();
+            (new unitpay())->webhook();
+        },
+    ],
+    [
+        "method"  => 'GET',
+        "pattern" => "/donate/webhook/unitpay",
+        "file"    => "pay.php",
+        "call"    => function() {
+            (new unitpay())->webhook();
         },
     ],
 ];

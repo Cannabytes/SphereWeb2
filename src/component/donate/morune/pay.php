@@ -77,7 +77,7 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
         }
     }
 
-    function transfer(): void
+    function webhook(): void
     {
         $jsonTxt     = file_get_contents('php://input');
         $requestData = json_decode($jsonTxt, true);

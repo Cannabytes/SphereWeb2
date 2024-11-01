@@ -18,12 +18,17 @@ class url {
 
     //Адрес сайта
     public static function host($addToHost = null): string {
-        $host = self::scheme() . "://" . $_SERVER['SERVER_NAME'];
-        if($addToHost){
+        $scheme = self::scheme();
+        $scheme = rtrim($scheme, '/:') . '://';
+
+        $host = $scheme . $_SERVER['SERVER_NAME'];
+        if ($addToHost) {
             $addToHost = str_replace("\\", "/", $addToHost);
-            return preg_replace("#/+#", "/", $host . "/" . $addToHost);
+            $addToHost = ltrim($addToHost, '/');
+            return rtrim($host, '/') . '/' . $addToHost;
         }
         return $host;
     }
+
 
 }

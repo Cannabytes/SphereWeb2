@@ -17,6 +17,7 @@ use Ofey\Logan22\component\servername\servername;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\server;
 use Ofey\Logan22\model\admin\update_cache;
 use Ofey\Logan22\model\admin\validation;
@@ -632,14 +633,30 @@ class options
     }
 
 
+
+
     static public function server_show()
     {
         validation::user_protection("admin");
+
+        $donateSysName = self::AllDonateSystem();
+        $paySet = config::load()->donate()->getDonateSystems();
+
+        $sortValues = [];
+        foreach ($paySet as $paySystem) {
+            $sortValues[$paySystem->getName()] = $paySystem->getSortValue();
+        }
+        usort($donateSysName, function ($a, $b) use ($sortValues) {
+            $sortA = $sortValues[$a['name']] ?? PHP_INT_MAX;
+            $sortB = $sortValues[$b['name']] ?? PHP_INT_MAX;
+            return $sortA <=> $sortB;
+        });
+
         tpl::addVar([
             'servername_list_default' => servername::all(),
             'client_list_default' => client::all(),
             'timezone_list_default' => timezone::all(),
-            "donateSysNames" => self::AllDonateSystem(),
+            "donateSysNames" => $donateSysName,
         ]);
         tpl::display("/admin/setting.html");
     }
@@ -678,7 +695,6 @@ class options
                 ];
             }
         }
-
         return $donateSysNames;
     }
 

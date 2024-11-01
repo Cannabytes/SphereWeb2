@@ -22,7 +22,15 @@ $routes = [
         "pattern" => "/donate/transfer/aaiopay",
         "file"    => "pay.php",
         "call"    => function() {
-            (new aaiopay())->transfer();
+            (new aaiopay())->webhook();
+        },
+    ],
+    [
+        "method"  => "POST",
+        "pattern" => "/donate/webhook/aaiopay",
+        "file"    => "pay.php",
+        "call"    => function() {
+            (new aaiopay())->webhook();
         },
     ],
 ];

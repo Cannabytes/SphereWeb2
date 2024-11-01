@@ -702,29 +702,85 @@
                     </div>
                     <div class="card-body  align-items-start">
                       <div class="row">
-                        <div class="col-md-3">
-                          <div class="nav flex-column nav-pills me-3 tab-style-7"
-                               id="v-pills-tab" role="tablist"
-                               aria-orientation="vertical">
+
+
+
+                        <div class="col-md-4">
+                          <div class="nav flex-column nav-pills me-3 tab-style-7" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                             {% for i, donate in donateSysNames %}
-                            <button class="nav-link text-start {% if i == 0 %}active{% endif %}"
-                                    id="{{donate.name}}-tab"
-                                    data-bs-toggle="pill"
-                                    data-bs-target="#{{donate.name}}"
-                                    type="button" role="tab"
-                                    aria-controls="{{donate.name}}"
-                                    aria-selected="false" tabindex="-1">
+                            <div class="nav-link text-start d-flex justify-content-between align-items-center {% if i == 0 %}active{% endif %} donatelistSort"
+                                 id="{{donate.name}}-tab"
+                                 data-bs-toggle="pill"
+                                 data-bs-target="#{{donate.name}}"
+                                 type="button" role="tab"
+                                 aria-controls="{{donate.name}}"
+                                 aria-selected="false" tabindex="-1"
+                                 data-order="{{i}}"
+                                 data-name="{{donate.name}}">  <!-- Сохраняем имя элемента -->
                               {{donate.name}}
-                            </button>
+
+                              <div class="ms-auto">
+                                <i class="ri-arrow-down-line move-down" aria-hidden="true" style="cursor: pointer;"></i>
+                                <i class="ri-arrow-up-line move-up" aria-hidden="true" style="cursor: pointer;"></i>
+                              </div>
+                            </div>
                             {% endfor %}
                           </div>
                         </div>
 
-                        <div class="col-md-9">
+                        <script>
+                          $(document).on('click', '.donatelistSort', function() {
+                            var target = $(this).data('bs-target'); // Получаем id целевой вкладки
+
+                            // Удаляем классы active и show у всех вкладок
+                            $('.donatePanelWrite').removeClass('active show');
+                            $('.donatelistSort').removeClass('active');
+
+                            // Добавляем классы active и show к выбранной вкладке
+                            $(target).addClass('active show');
+                            $(this).addClass('active');
+                          });
+
+                          // Перемещение вверх
+                          $(document).on('click', '.move-up', function() {
+                            var $current = $(this).closest('.donatelistSort');
+                            var $prev = $current.prev('.donatelistSort');
+
+                            if ($prev.length) {
+                              $current.insertBefore($prev);
+                              updateOrder();
+                            }
+                          });
+
+                          // Перемещение вниз
+                          $(document).on('click', '.move-down', function() {
+                            var $current = $(this).closest('.donatelistSort');
+                            var $next = $current.next('.donatelistSort');
+
+                            if ($next.length) {
+                              $current.insertAfter($next);
+                              updateOrder();
+                            }
+                          });
+
+                          // Функция для обновления порядка
+                          function updateOrder() {
+                            $('.donatelistSort').each(function(index) {
+                              var name = $(this).attr('data-name');
+                              $(this).attr('data-order', index);
+
+                              // Обновляем соответствующий инпут
+                              $('#sort_' + name).val(index);
+                            });
+                          }
+                        </script>
+
+
+                        <div class="col-md-8">
                           <div class="tab-content" id="v-pills-tabContent">
                             {% for i, donate in config().donate().getDonateSystems() %}
 
-                            <div class="tab-pane {% if i == 0 %}active show{% endif %}"
+                              <div class="tab-pane {% if i == 0 %}active show{% endif %} donatePanelWrite"
                                  id="{{donate.getName()}}" role="tabpanel"
                                  tabindex="0"
                                  aria-labelledby="{{donate.getName()}}-tab">
@@ -774,6 +830,8 @@
                                     </div>
                                     {% endfor %}
 
+
+
                                     <hr>
                                     <div class="form-floating mb-3">
                                       <input
@@ -785,13 +843,23 @@
                                       <label for="description_{{donate.getName()}}">{{ phrase('payment_system_description') }}</label>
                                     </div>
 
+                                    <div class="border rounded-3 p-3">
+                                      <p class="fs-15 fw-semibold mb-2">Webhook</p>
+                                      <p class="fs-12 text-muted">На сайте платежной системы в качестве уведомлений после успешной оплаты укажите POST запрос на адрес:</p>
+                                      {{donate.getWebhookUrl()}}
+                                    </div>
+
+                                    <input type="hidden" value="{{donate.getSortValue()}}" id="sort_{{donate.getName()}}" class="sort-input">
+
                                   </div>
                                 </div>
                               </div>
                             </div>
+
                             {% endfor %}
                           </div>
                         </div>
+
                       </div>
                     </div>
                   </div>
@@ -2571,7 +2639,6 @@
         item_id_to_game_transfer: $('#item_id_to_game_transfer').val(),
         count_items_to_game_transfer: $('#count_items_to_game_transfer').val(),
         donate_item_to_game_transfer: $('#donate_item_to_game_transfer').val(),
-
       }, false);
     });
 
@@ -2981,6 +3048,7 @@
       var isEnabled = $('#is_enable_' + payName).is(':checked'); // Проверяем, включена ли система
       var forAdmin = $('#forAdmin_' + payName).is(':checked'); // Проверяем, является ли система по умолчанию для администратора
       var description = $('#description_' + payName).val(); // Получаем описание платежной системы
+      var sort = $('#sort_' + payName).val(); // Получаем описание платежной системы
 
       var inputsData = {};
       // Итерируем через все поля ввода текущей платежной системы
@@ -2998,6 +3066,7 @@
           forAdmin: forAdmin,
           inputs: inputsData,
           description: description,
+          sort: sort,
         },
       });
     });

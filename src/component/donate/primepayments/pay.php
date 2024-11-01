@@ -96,7 +96,7 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract
     }
 
     //Получение информации об оплате
-    function transfer(): void
+    function webhook(): void
     {
         file_put_contents( __DIR__ . '/debug.log', '_REQUEST: ' . print_r( $_REQUEST, true ) . PHP_EOL, FILE_APPEND );
 

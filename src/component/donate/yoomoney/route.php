@@ -22,7 +22,15 @@ $routes = [
         "pattern" => "/donate/transfer/yoomoney",
         "file"    => "pay.php",
         "call"    => function() {
-            (new yoomoney())->transfer();
+            (new yoomoney())->webhook();
+        },
+    ],
+    [
+        "method"  => "POST",
+        "pattern" => "/donate/webhook/yoomoney",
+        "file"    => "pay.php",
+        "call"    => function() {
+            (new yoomoney())->webhook();
         },
     ],
 ];

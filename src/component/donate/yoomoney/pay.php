@@ -67,7 +67,7 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
     }
 
     //Получение информации об оплате
-    function transfer(): void {
+    function webhook(): void {
         $notification_type = $_POST['notification_type'] ?? "";
         if($notification_type != "card-incoming"){
             exit();

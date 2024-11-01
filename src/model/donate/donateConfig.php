@@ -83,8 +83,6 @@ class donateConfig
                 }
             }
         }
-//        var_dump($this->instance);
-//        exit;
     }
 
     private function parseTableItemsBonus($tableItemsBonus): array
@@ -98,7 +96,6 @@ class donateConfig
                 }
             }
         }
-//        var_dump($result);exit;
         return $result;
     }
 

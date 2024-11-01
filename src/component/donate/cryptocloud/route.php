@@ -22,7 +22,7 @@ $routes = [
         "pattern" => "/donate/transfer/cryptocloud",
         "file"    => "pay.php",
         "call"    => function() {
-            (new cryptocloud())->transfer();
+            (new cryptocloud())->webhook();
         },
     ],
 
@@ -31,7 +31,7 @@ $routes = [
         "pattern" => "/donate/webhook/cryptocloud",
         "file"    => "pay.php",
         "call"    => function() {
-            (new cryptocloud())->transfer();
+            (new cryptocloud())->webhook();
         },
     ],
 
