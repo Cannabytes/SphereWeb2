@@ -332,6 +332,11 @@ class userModel
             return null;
         }
 
+        if(server::get_count_servers()==0){
+            $this->accounts = [];
+            return null;
+        }
+
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::ACCOUNT_PLAYERS, [
           'forced' => $need_reload,
           'email'  => $this->getEmail(),
