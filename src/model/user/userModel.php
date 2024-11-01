@@ -323,11 +323,11 @@ class userModel
 
                 $this->accounts[] = $account;
             }
-            $_SESSION['last_update_accounts_list'] = $currentTime;
+            $_SESSION['last_update_accounts_list'] = $currentTime; // Установка времени обновления
             return $this->accounts;
         }
 
-        if (($currentTime - $_SESSION['last_update_accounts_list'] <= 20) && !$need_reload) {
+        if (isset($_SESSION['last_update_accounts_list']) && ($currentTime - $_SESSION['last_update_accounts_list'] <= 20) && !$need_reload) {
             $this->accounts = [];
             return null;
         }

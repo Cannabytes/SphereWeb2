@@ -3,6 +3,7 @@
 namespace Ofey\Logan22\controller\registration;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\captcha\captcha;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\mail\mail;
@@ -10,6 +11,7 @@ use Ofey\Logan22\component\request\request;
 use Ofey\Logan22\component\request\request_config;
 use Ofey\Logan22\component\request\url;
 use Ofey\Logan22\component\session\session;
+use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
@@ -56,7 +58,6 @@ class user
         }
 
         config::load()->captcha()->validator();
-
         if (auth::is_user($email)) {
             board::response(
               "notice",
@@ -79,17 +80,33 @@ class user
         }
 
         if (server::get_count_servers() > 0) {
-            board::redirect("/main");
+
             $user = \Ofey\Logan22\model\user\user::getUserId($_SESSION['id']);
+
             \Ofey\Logan22\component\sphere\server::setUser($user);
-            player_account::add($account_name, $password, true);
+
+            $prefixEnable = config::load()->registration()->getEnablePrefix();
+            if ($prefixEnable) {
+                $prefixType = config::load()->registration()->getPrefixType();
+                $prefix = $_SESSION['account_prefix'] ?? "";
+                $account_name  = $prefixType == "prefix" ? $prefix . $account_name : $account_name . $prefix;
+            }
+
+            $sphere = \Ofey\Logan22\component\sphere\server::send(type::REGISTRATION, [
+                            'login'            => $account_name,
+                            'password'         => $password,
+                            'is_password_hide' => true,
+           ])->show(false);
+
         }
 
         \Ofey\Logan22\model\user\user::self()->setId($_SESSION['id']);
         \Ofey\Logan22\model\user\user::self()->addLog(logTypes::LOG_REGISTRATION_USER, "LOG_REGISTRATION_USER", [$email]);
 
         $mailTemplate = mail::getTemplates();
+
         if ($mailTemplate['send_notice_for_registration']) {
+
             $config = config::load()->email();
             if (!empty($config->getHost()) || !empty($config->getUsername()) || !empty($config->getPassword()) || !empty(
               $config->getPort()

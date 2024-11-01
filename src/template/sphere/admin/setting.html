@@ -1129,7 +1129,7 @@
                           {% set name = item.getItemName() %}
 
                           {% if item.getAddName() %}
-                          {% set name = item.getAddName() + ' ' + name %}
+                          {% set name = item.getAddName() ~ ' ' ~ name %}
                           {% endif %}
 
                           {% if item.getEnchant() > 0 %}

@@ -115,7 +115,7 @@ $(document).on('submit', 'form', function (event) {
     }).serialize();
 
     let funcName = $(this).find('button[data-func]').attr('data-func');
-    AjaxSend(url, method, data, false, 2, funcName);
+    AjaxSend(url, method, data, false, 10, funcName);
 });
 
 
