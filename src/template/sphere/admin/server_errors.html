@@ -49,10 +49,10 @@
                                             <span class="fw-semibold text-muted fs-12">Текст ошибки :</span> {{err.errors}}
                                         </p>
                                         <p>
-                                            <span class="fw-semibold text-muted fs-12">Результат :</span> {{err.message}}
+                                            <span class="fw-semibold text-muted fs-12">Результат :</span> {{err.message|raw}}
                                         </p>
                                         <p>
-                                            <span class="fw-semibold text-muted fs-12">Описание :</span> {{err.desc}}
+                                            <span class="fw-semibold text-muted fs-12">Описание :</span> {{err.desc|raw}}
                                         </p>
                                         <p>
                                             <span class="fw-semibold text-muted fs-12">Время :</span> {{err.time|date("H:m:s d.m.Y")}}
