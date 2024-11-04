@@ -70,7 +70,7 @@ class server
      *
      * Функция возвращаем всю инфу о сервере
      */
-    public static function getServer($id = null): ?serverModel
+    public static function getServer($id = null, $serverStatus = null): ?serverModel
     {
         // Если сервер с данным ID уже существует, возвращаем его
         if (isset(self::$server_info[$id])) {
@@ -108,8 +108,7 @@ class server
                 $page = self::get_default_desc_page_id($serverId);
                 self::$server_info[$serverId] = new serverModel($server, $server_data, $page);
             }
-
-            self::loadStatusServer();
+            self::loadStatusServer($serverStatus);
             if(!empty(self::$server_info)){
                 foreach(self::$server_info AS $info){
                     foreach(self::$arrayStatus AS $status){
@@ -138,8 +137,23 @@ class server
         return !empty(self::$server_info) ? current(self::$server_info) : null;
     }
 
-    static public function loadStatusServer(): void
+    static public function loadStatusServer($status = null): void
     {
+        if ($status != null){
+            $serverStatus = new serverStatus();
+            $serverStatus->setServerId($status['id']);
+            $serverStatus->setLoginServer($status['loginServer'] ?? false);
+            $serverStatus->setGameServer($status['gameServer'] ?? false);
+            $serverStatus->setEnableLoginServerMySQL($status['loginServerDB'] ?? false);
+            $serverStatus->setEnableGameServerMySQL($status['gameServerDB'] ?? false);
+            $serverStatus->setOnline($cache['online'] ?? 0);
+            $serverStatus->setGameIPStatusServer($status['gameServerIP'] ?? '0.0.0.0');
+            $serverStatus->setGamePortStatusServer($status['gameServerPort'] ?? -1);
+            $serverStatus->setLoginIPStatusServer($status['loginServerIP'] ?? '0.0.0.0');
+            $serverStatus->setLoginPortStatusServer($status['loginServerPort'] ?? -1);
+            $serverStatus->save();
+            self::$arrayStatus[$status['id']] = $serverStatus;
+        }
         if (self::$firstLoadServer) {
             return;
         }

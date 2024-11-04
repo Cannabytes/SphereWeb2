@@ -26,7 +26,8 @@ class index
         if(isset($info['servers'])){
             foreach ($info['servers'] as $server) {
                 $id = $server['id'];
-                $getServer = \Ofey\Logan22\model\server\server::getServer($id);
+                \Ofey\Logan22\model\server\server::loadStatusServer($server);
+                $getServer = \Ofey\Logan22\model\server\server::getServer($id, $server);
                 if ($getServer == null) {
                     $data = [
                         "id" => $id,
@@ -43,17 +44,6 @@ class index
                         "count_errors" => $server['count_errors'],
                     ];
                     sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
-                }else{
-                    $getServer->setIsSphereServer(true);
-                    $getServer->getStatus()->setEnableLoginServerMySQL($server['loginServerDB']);
-                    $getServer->getStatus()->setEnableGameServerMySQL($server['gameServerDB']);
-                    $getServer->getStatus()->setLoginServer($server['loginServer']);
-                    $getServer->getStatus()->setGameServer($server['gameServer']);
-                    $getServer->getStatus()->setGameIPStatusServer($server['gameServerIP']);
-                    $getServer->getStatus()->setGamePortStatusServer($server['gameServerPort']);
-                    $getServer->getStatus()->setLoginIPStatusServer($server['loginServerIP']);
-                    $getServer->getStatus()->setLoginPortStatusServer($server['loginServerPort']);
-                    $getServer->getStatus()->setOnline($server['online']);
                 }
             }
         }
