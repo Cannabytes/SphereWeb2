@@ -357,23 +357,6 @@ class options
             redirect::location("/admin/server/add/new");
         }
 
-        //Подгрузка списокв серверов с сервера сферы
-//        $serversFullInfo = \Ofey\Logan22\component\sphere\server::send(type::SERVER_FULL_INFO)->showErrorPageIsOffline()->getResponse();
-//        if (isset($serversFullInfo['error'])) {
-//            redirect::location("/admin/server/list");
-//        }
-//        $serversFullInfo = $serversFullInfo['servers'];
-//        if ($serversFullInfo != null) {
-//            $arrayUniq = self::filterUniqueIds(\Ofey\Logan22\model\server\server::getServerAll(), $serversFullInfo);
-//            foreach ($arrayUniq as $id) {
-//                $sm = new serverModel([
-//                    'id' => $id,
-//                ]);
-//                sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode(['id' => $id])]);
-//                $sphereServers = $sm;
-//                $servers[] = $sphereServers;
-//            }
-//        }
         tpl::addVar([
             'sphereServers' => $servers,
             'client_list_default' => client::all(),
@@ -802,10 +785,24 @@ class options
                 $server_id = $data['id'];
                 $position = $data['position'];
                 $server = \Ofey\Logan22\model\server\server::getServer($server_id);
-                var_dump($server->getId(), $server_id);
                 $server->setPosition($position)->save();
             }
             echo 'ok';
+        }
+    }
+
+    public static function setDefaultServer()
+    {
+        $serverId = $_POST['id'] ?? board::error("Не получен ID сервера");
+        foreach(\Ofey\Logan22\model\server\server::getServerAll() AS $server){
+            if($server->isDefault()){
+                $server->setIsDefault(0);
+                $server->save();
+            }
+            if($serverId == $server->getId()){
+                $server->setIsDefault(1);
+                $server->save();
+            }
         }
     }
 

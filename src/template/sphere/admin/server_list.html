@@ -13,14 +13,20 @@
             </div>
         </div>
 
-
         <div id="serverContainer" class="row">
             {% for i, server in sphereServers %}
             <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6 col-sm-12 draggable-card" data-id="{{ server.getId() }}"
                  data-position="{{ server.getPosition() }}">
                 <div class="card custom-card overflow-hidden">
                     <div class="card-body p-0">
-                        <div class="px-1 py-2 {% if server.isDisabled() %}bg-danger{% else %}bg-success{% endif %} op-3"></div>
+                        <div class="px-4 py-2 {% if server.isDisabled() %}bg-danger{% else %}bg-success{% endif %} op-3">
+
+                            <div class="form-check form-switch">
+                                <input {% if server.isDefault() %}checked{% endif %} class="form-check-input form-checked-danger setServerDefault" name="isDefault" data-server-id="{{ server.getId() }}" type="radio" role="switch" id="switch-{{ server.getId() }}">
+                                <label class="form-check-label text-white fs-15 fw-semibold" for="switch-{{ server.getId() }}">Сервер по-умолчанию</label>
+                            </div>
+
+                        </div>
                         <div class="p-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div class="fs-18 fw-semibold">{{server.getName()}} x{{server.getRateExp()}}</div>
@@ -115,6 +121,13 @@
 
 
 {% block js %}
+<script>
+    $(".setServerDefault").on("click", function (){
+        AjaxSend("/admin/server/set/default", "POST", {
+            id: ($(this).attr('data-server-id')),
+        }, true);
+    })
+</script>
 
 <script src="{{template}}/assets/libs/dragula/dragula.min.js"></script>
 

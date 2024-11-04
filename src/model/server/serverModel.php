@@ -63,7 +63,7 @@ class serverModel
         $this->timezone = $server['timezone'] ?? '';
         $this->collection = $server['collection'] ?? null;
         $this->statusServerMem = $server['statusServer'] ?? null;
-        $this->default = $server['isDefault'] ?? null;
+        $this->default = $server['default'] ?? null;
         $this->dateStartServer = $server['dateStartServer'] ?? null;
         $this->knowledgeBase = $server['knowledgeBase'] ?? null;
         $this->position = filter_var($server['position'] ?? 0, FILTER_VALIDATE_INT);
