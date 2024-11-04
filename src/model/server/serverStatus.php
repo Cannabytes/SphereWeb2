@@ -35,6 +35,8 @@ class serverStatus
         $data = [
             'online' => $this->online,
             'isEnable' => $this->isEnable(),
+            'loginServerDB' => $this->isEnableLoginServerMySQL(),
+            'gameServerDB' => $this->isEnableGameServerMySQL(),
             'gameServer' => $this->getGameServer(),
             'loginServer' => $this->getLoginServer(),
             'gameServerIP' => $this->getGameIPStatusServer(),

@@ -1,163 +1,220 @@
 {% extends 'struct.html' %}
 
-{% block title %}Edit Server{% endblock %}
+{% block title %}My Servers{% endblock %}
 
 {% block content %}
-
-
 <div class="container-fluid">
-
-
     <div class="col-xl-12">
 
-      <div class="card">
-        <div class="card-body">
-          <a href="/admin/server/add/new" class="btn btn-teal-light btn-border-down">Добавить сервер</a>
-          <a href="/admin/server/db" class="btn btn-teal-light btn-border-down">Базы Данных</a>
+        <div class="card">
+            <div class="card-body">
+                <a href="/admin/server/add/new" class="btn btn-teal-light btn-border-down">Добавить сервер</a>
+                <a href="/admin/server/db" class="btn btn-teal-light btn-border-down">Базы Данных</a>
+            </div>
         </div>
-      </div>
 
 
-      <div class="row">
-        {% for i, server in sphereServers %}
-        <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6 col-sm-12">
-          <div class="card custom-card overflow-hidden">
-            <div class="card-body p-0">
-              <div class="px-1 py-2 {% if server.isDisabled() %}bg-danger{% else %}bg-success{% endif %} op-3"></div>
-              <div class="p-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <div class="fs-18 fw-semibold">{{server.getName()}} x{{server.getRateExp()}}</div>
-                  <div>
+        <div id="serverContainer" class="row">
+            {% for i, server in sphereServers %}
+            <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6 col-sm-12 draggable-card" data-id="{{ server.getId() }}"
+                 data-position="{{ server.getPosition() }}">
+                <div class="card custom-card overflow-hidden">
+                    <div class="card-body p-0">
+                        <div class="px-1 py-2 {% if server.isDisabled() %}bg-danger{% else %}bg-success{% endif %} op-3"></div>
+                        <div class="p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="fs-18 fw-semibold">{{server.getName()}} x{{server.getRateExp()}}</div>
+                                <div>
                     <span
-                      class="badge {% if server.isDisabled() %}bg-danger-transparent{% else %}bg-success-transparent{% endif %}">{% if server.isDisabled() %}For Indivudials{% else %}Работает{% endif %}</span>
-                  </div>
-                </div>
-                <div class="fs-25 fw-bold mb-1">{{server.getChronicle()}}</div>
-                <ul class="list-unstyled mb-0">
-                  <li class="d-flex align-items-center mb-3">
+                            class="badge {% if server.isDisabled() %}bg-danger-transparent{% else %}bg-success-transparent{% endif %}">{% if server.isDisabled() %}For Indivudials{% else %}Работает{% endif %}</span>
+                                </div>
+                            </div>
+                            <div class="fs-25 fw-bold mb-1">{{server.getChronicle()}}</div>
+                            <ul class="list-unstyled mb-0">
+                                <li class="d-flex align-items-center mb-3">
                                                                 <span class="me-2">
                                                                     <i
-                                                                      class="{% if server.getStatus().isEnableLoginServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
+                                                                            class="{% if server.getStatus().isEnableLoginServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
                                                                 </span>
-                    <span class="{% if server.getStatus().isEnableLoginServerMySQL() %}text-success{% else %}text-danger{% endif %}">
+                                    <span class="{% if server.getStatus().isEnableLoginServerMySQL() %}text-success{% else %}text-danger{% endif %}">
                                                                     <strong class="me-1">Соединение с БД</strong> LoginServer
                                                                 </span>
-                  </li>
-                  <li class="d-flex align-items-center mb-3">
+                                </li>
+                                <li class="d-flex align-items-center mb-3">
                                                                 <span class="me-2">
                                                                     <i
-                                                                      class="{% if server.getStatus().isEnableGameServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
+                                                                            class="{% if server.getStatus().isEnableGameServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
                                                                 </span>
-                    <span class="{% if server.getStatus().isEnableGameServerMySQL() %}text-success{% else %}text-danger{% endif %}">
+                                    <span class="{% if server.getStatus().isEnableGameServerMySQL() %}text-success{% else %}text-danger{% endif %}">
                                                                     <strong class="me-1">Соединение с БД</strong> GameServer
                                                                 </span>
-                  </li>
+                                </li>
 
-                    <li class="d-flex align-items-center mb-3">
-                        <span class="me-2">  <i  class="{% if server.getStatus().getLoginServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
-                        <span class="{% if server.getStatus().getLoginServer() %}text-success{% else %}text-danger{% endif %}">
+                                <li class="d-flex align-items-center mb-3">
+                                    <span class="me-2">  <i
+                                            class="{% if server.getStatus().getLoginServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
+                                    <span class="{% if server.getStatus().getLoginServer() %}text-success{% else %}text-danger{% endif %}">
                     <strong class="me-1">Проверка порта </strong> LoginServer
                     </span>
-                    </li>
+                                </li>
 
-                  <li class="d-flex align-items-center mb-3">
-                    <span class="me-2">  <i  class="{% if server.getStatus().getGameServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
-                    <span class="{% if server.getStatus().getGameServer() %}text-success{% else %}text-danger{% endif %}">
+                                <li class="d-flex align-items-center mb-3">
+                                    <span class="me-2">  <i
+                                            class="{% if server.getStatus().getGameServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
+                                    <span class="{% if server.getStatus().getGameServer() %}text-success{% else %}text-danger{% endif %}">
                     <strong class="me-1">Проверка порта</strong> GameServer </span>
-                  </li>
+                                </li>
 
-                  <li class="d-flex align-items-center mb-3">
-                    <span class="me-2"> <i  class="{% if server.getStatus().getOnline() >= 1 %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
-                    <span class="{% if server.getStatus().getOnline() >= 1 %}text-success{% else %}text-danger{% endif %}">
+                                <li class="d-flex align-items-center mb-3">
+                                    <span class="me-2"> <i
+                                            class="{% if server.getStatus().getOnline() >= 1 %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
+                                    <span class="{% if server.getStatus().getOnline() >= 1 %}text-success{% else %}text-danger{% endif %}">
                     <strong class="me-1">Online</strong> {{ server.getStatus().getOnline }} </span>
-                  </li>
+                                </li>
 
-                  <li class="d-grid">
+                                <li class="d-grid">
 
-                    <div class="btn-group btn-group-sm my-1" role="group" aria-label="Small button group">
-                      <a href="/admin/server/edit/{{server.getId()}}" class="btn btn-outline-success">Изменить</a>
-                      <a href="/admin/server/statistic/{{server.getId()}}" class="btn btn-outline-success">Статистика</a>
+                                    <div class="btn-group btn-group-sm my-1" role="group"
+                                         aria-label="Small button group">
+                                        <a href="/admin/server/edit/{{server.getId()}}" class="btn btn-outline-success">Изменить</a>
+                                        <a href="/admin/server/statistic/{{server.getId()}}"
+                                           class="btn btn-outline-success">Статистика</a>
+                                    </div>
+
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-
-                  </li>
-                </ul>
-              </div>
+                </div>
             </div>
-          </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-
-      </div>
 
     </div>
-
 </div>
-
-
 {% endblock %}
 
 
 {% block css %}
 <link rel="stylesheet" href="{{template}}/assets/libs/flatpickr/flatpickr.min.css">
 
+<link rel="stylesheet" href="{{template}}/assets/libs/dragula/dragula.min.css">
+
+<style>
+    #serverContainer {
+        cursor: move;
+    }
+
+    .draggable-card {
+        cursor: move;
+    }
+
+</style>
+
 {% endblock %}
 
 
 {% block js %}
 
+<script src="{{template}}/assets/libs/dragula/dragula.min.js"></script>
 
 <script>
-  $(document).on("click", ".removeServer", function () {
-    AjaxSend("/admin/server/delete", "POST", {
-      serverId: $(this).data('server-id')
-    }, false).then(function (data) {
-      console.log(data)
-    })
-  });
+    let drake = dragula([document.getElementById('serverContainer')], {
+        moves: function (el, container, handle) {
+            return el.classList.contains('draggable-card');
+        }
+    });
+
+    let initialIndex = null;
+    drake.on('drag', function (el, source) {
+        const cards = Array.from(source.children);
+        initialIndex = cards.indexOf(el);
+    });
+
+    drake.on('drop', function (el, target, source, sibling) {
+        if (target === source) {
+            const cards = Array.from(target.children);
+            const newIndex = sibling ? cards.indexOf(sibling) : cards.length - 1;
+
+            if (initialIndex !== null && newIndex !== initialIndex) {
+                const movedCard = cards[initialIndex];
+                cards.splice(initialIndex, 1);
+                cards.splice(newIndex, 0, movedCard);
+                cards.forEach(card => target.appendChild(card));
+            }
+        } else {
+            target.appendChild(el);
+        }
+
+        let serverCards = Array.from(document.querySelectorAll('#serverContainer .draggable-card'));
+        serverCards.forEach((card, index) => {
+            card.setAttribute('data-position', index);
+        });
+
+        let positions = serverCards.map((card, index) => {
+            return {
+                id: card.getAttribute('data-id'),
+                position: index
+            };
+        });
+
+        AjaxSend("/admin/server/change/position", "POST", {positions}, false);
+        initialIndex = null;
+    });
 </script>
 
 <script>
-  $(document).on("click", ".server_reconnect", function () {
-    AjaxSend("/admin/server/reconnect", "POST", {
-      serverId: $(this).data('server-id')
-    }, false).then(function (data) {
-      console.log(data)
-    })
-  });
+    $(document).on("click", ".removeServer", function () {
+        AjaxSend("/admin/server/delete", "POST", {
+            serverId: $(this).data('server-id')
+        }, false).then(function (data) {
+            console.log(data)
+        })
+    });
+</script>
+
+<script>
+    $(document).on("click", ".server_reconnect", function () {
+        AjaxSend("/admin/server/reconnect", "POST", {
+            serverId: $(this).data('server-id')
+        }, false).then(function (data) {
+            console.log(data)
+        })
+    });
 </script>
 
 <script>
 
-  $(document).on("input", ".removeLoginServer", function () {
-    if ($("#loginserver_id").val() === 0) {
-      $(".removeLoginServer").addClass("d-none");
-      noticeError("Сначала выберите логин-сервер");
-      return;
-    }
+    $(document).on("input", ".removeLoginServer", function () {
+        if ($("#loginserver_id").val() === 0) {
+            $(".removeLoginServer").addClass("d-none");
+            noticeError("Сначала выберите логин-сервер");
+            return;
+        }
 
-    if ($("#loginserver_id").val() !== 0 && $("#loginserver_id").val() !== undefined) {
-      $(".removeLoginServer").removeClass("d-none");
-    }
+        if ($("#loginserver_id").val() !== 0 && $("#loginserver_id").val() !== undefined) {
+            $(".removeLoginServer").removeClass("d-none");
+        }
 
-  });
+    });
 
-  $(document).on("click", ".removeLoginServer", function () {
-    if ($("#loginserver_id").val() === 0) {
-      return;
-    }
+    $(document).on("click", ".removeLoginServer", function () {
+        if ($("#loginserver_id").val() === 0) {
+            return;
+        }
 
-    AjaxSend("/admin/server/remove/loginserver", "POST", {
-      loginId: $("#loginserver_id").val(),
-    }, true).then(function (data) {
-      if (data.ok) {
-        noticeSuccess(data.message);
-        let loginID = $("#loginserver_id").val();
-        $(`#loginserver_id option[value='${loginID}']`).remove();
-      }
-      console.log(data)
-    })
+        AjaxSend("/admin/server/remove/loginserver", "POST", {
+            loginId: $("#loginserver_id").val(),
+        }, true).then(function (data) {
+            if (data.ok) {
+                noticeSuccess(data.message);
+                let loginID = $("#loginserver_id").val();
+                $(`#loginserver_id option[value='${loginID}']`).remove();
+            }
+            console.log(data)
+        })
 
-  });
+    });
 </script>
 
 <script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>

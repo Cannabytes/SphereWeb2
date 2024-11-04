@@ -2173,4 +2173,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  157 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/server/change/position',
+    'func' => 'controller\\admin\\options::changePositionServer',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

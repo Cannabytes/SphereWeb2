@@ -75,7 +75,7 @@ class options
         $rateSp = (int)$_POST['rateSp'] ?? 1;
         $rateAdena = (int)$_POST['rateAdena'] ?? 1;
         $rateDrop = (int)$_POST['rateDrop'] ?? 1;
-        $rateSpoil = (int)$_POST['rateSpoil'] ?? 1;
+        $rateSpoil = 1;
         $version_client = $_POST['version_client'] ?? board::error("No select  client");
         $collection = $_POST['collection'] ?? board::error("No select L2j SQL base");
         $dateStartServer = $_POST['dateStartServer'] ?? null;
@@ -84,7 +84,7 @@ class options
         $timezone = $_POST['timezone_server'] ?? "Africa/Abidjan";
         $resetHWID = $_POST['resetHWID'] ?? false;
 
-        $enableStatusServer = filter_var($_POST['enableStatusServer'], FILTER_VALIDATE_BOOL) ?? false;
+        $enableStatusServer = filter_var($_POST['enableStatusServer'] ?? false, FILTER_VALIDATE_BOOL);
         $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? "";
         $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? 2106;
         $statusGameServerIP = $_POST['statusGameServerIP'] ?? "";
@@ -92,19 +92,18 @@ class options
 
         if (!filter_var($statusLoginServerIP, FILTER_VALIDATE_IP)) {
             if ($enableStatusServer) {
-                board::error("IP адрес логин-сервера недействителен.");
+                board::error("IP адрес для проверки логин-сервера недействителен.");
             } else {
                 $statusLoginServerIP = "0.0.0.0";
             }
         }
         if (!filter_var($statusGameServerIP, FILTER_VALIDATE_IP)) {
             if ($enableStatusServer) {
-                board::error("IP адрес логин-сервера недействителен.");
+                board::error("IP адрес для проверки гейм сервера недействителен.");
             } else {
                 $statusGameServerIP = "0.0.0.0";
             }
         }
-
 
 
         if (isset($_POST['loginserver'])) {
@@ -254,7 +253,7 @@ class options
         $rateDrop = $_POST['rateDrop'] ?? 1;
         $version_client = $_POST['version_client'] ?? board::error("Set version game");
         $collection = $_POST['collection'] ?? board::error("Set l2j emulator");
-        $enableStatusServer = $_POST['enableStatusServer'] ?? false;
+        $enableStatusServer = filter_var($_POST['enableStatusServer'] ?? false, FILTER_VALIDATE_BOOL);
         $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? "";
         $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? 2106;
         $statusGameServerIP = $_POST['statusGameServerIP'] ?? "";
@@ -359,58 +358,23 @@ class options
         }
 
         //Подгрузка списокв серверов с сервера сферы
-        $serversFullInfo = \Ofey\Logan22\component\sphere\server::send(type::SERVER_FULL_INFO)->showErrorPageIsOffline()->getResponse();
-        if (isset($serversFullInfo['error'])) {
-            redirect::location("/admin/server/list");
-        }
-        $serversFullInfo = $serversFullInfo['servers'];
-        if ($serversFullInfo != null) {
-            foreach ($servers as &$server) {
-                foreach ($serversFullInfo as $serverInfoData) {
-                    if ($server->getId() == $serverInfoData['id']) {
-                        $server->setIsSphereServer(true);
-                        $server->getStatus()->setEnableLoginServerMySQL($serverInfoData['loginServerDB']);
-                        $server->getStatus()->setEnableGameServerMySQL($serverInfoData['gameServerDB']);
-                        $server->getStatus()->setLoginServer($serverInfoData['loginServer']);
-                        $server->getStatus()->setGameServer($serverInfoData['gameServer']);
-                        $server->getStatus()->setGameIPStatusServer($serverInfoData['gameServerIP']);
-                        $server->getStatus()->setGamePortStatusServer($serverInfoData['gameServerPort']);
-                        $server->getStatus()->setLoginIPStatusServer($serverInfoData['loginServerIP']);
-                        $server->getStatus()->setLoginPortStatusServer($serverInfoData['loginServerPort']);
-                        $server->getStatus()->setOnline($serverInfoData['online']);
-                    }
-                }
-            }
-
-            $arrayUniq = self::filterUniqueIds(\Ofey\Logan22\model\server\server::getServerAll(), $serversFullInfo);
-            foreach ($arrayUniq as $id) {
-                $sm = new serverModel([
-                    'id' => $id,
-                ]);
-                sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode(['id' => $id])]);
-                $sphereServers = $sm;
-                $servers[] = $sphereServers;
-            }
-        }
-
-//        $mysql_data_connect = sql::getRow(
-//            "SELECT * FROM `server_cache` WHERE server_id = ? and `type`='mysql_data_connect';",
-//            [$server->getId()]
-//        );
-//        $mysql_data_connect = json_decode($mysql_data_connect['data'], true);
-
-//        $collection_data = sql::getRow(
-//            "SELECT * FROM `server_cache` WHERE server_id = ? and `type`='collection_data';",
-//            [$server->getId()]
-//        );
-//        $collection_data = json_decode($collection_data['data'], true);
-//        $loginServersData = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS_DATA, ['id' => $server->getId()])
-//            ->show(true)
-//            ->getResponse();
+//        $serversFullInfo = \Ofey\Logan22\component\sphere\server::send(type::SERVER_FULL_INFO)->showErrorPageIsOffline()->getResponse();
+//        if (isset($serversFullInfo['error'])) {
+//            redirect::location("/admin/server/list");
+//        }
+//        $serversFullInfo = $serversFullInfo['servers'];
+//        if ($serversFullInfo != null) {
+//            $arrayUniq = self::filterUniqueIds(\Ofey\Logan22\model\server\server::getServerAll(), $serversFullInfo);
+//            foreach ($arrayUniq as $id) {
+//                $sm = new serverModel([
+//                    'id' => $id,
+//                ]);
+//                sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode(['id' => $id])]);
+//                $sphereServers = $sm;
+//                $servers[] = $sphereServers;
+//            }
+//        }
         tpl::addVar([
-//            'loginServersData' => $loginServersData,
-//            'collection_data' => $collection_data,
-//            'mysql_data_connect' => $mysql_data_connect,
             'sphereServers' => $servers,
             'client_list_default' => client::all(),
             'timezone_list_default' => timezone::all(),
@@ -457,7 +421,7 @@ class options
             "rateSp" => $_POST['rateSp'] ?? board::error("Server rateSp is empty"),
             "rateAdena" => $_POST['rateAdena'] ?? board::error("Server rateAdena is empty"),
             "rateDrop" => $_POST['rateDrop'] ?? board::error("Server rateDrop is empty"),
-            "rateSpoil" => $_POST['rateSpoil'] ?? board::error("Server rateSpoil is empty"),
+            "rateSpoil" => 1,
             "chronicle" => $_POST['version_client'] ?? board::error("Server chronicle is empty"),
             "source" => $_POST['sql_base_source'] ?? board::error("Server source is empty"),
         ], JSON_UNESCAPED_UNICODE);
@@ -493,7 +457,6 @@ class options
         }
 
         $server = \Ofey\Logan22\model\server\server::getServer($server_id);
-        $server->getStatus(true);
 
         board::success(lang::get_phrase(217));
     }
@@ -631,8 +594,6 @@ class options
         ]);
         tpl::display("/admin/server_add.html");
     }
-
-
 
 
     static public function server_show()
@@ -830,6 +791,21 @@ class options
         if (file_exists($readmeJson)) {
             $jsonContents = file_get_contents($readmeJson);
             echo $jsonContents;
+        }
+    }
+
+    public static function changePositionServer(): void
+    {
+        if(isset($_POST['positions'])){
+            $positions = $_POST['positions'];
+            foreach($positions AS $data){
+                $server_id = $data['id'];
+                $position = $data['position'];
+                $server = \Ofey\Logan22\model\server\server::getServer($server_id);
+                var_dump($server->getId(), $server_id);
+                $server->setPosition($position)->save();
+            }
+            echo 'ok';
         }
     }
 

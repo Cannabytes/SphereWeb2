@@ -10,7 +10,8 @@ use Ofey\Logan22\model\db\sql;
 class serverModel
 {
 
-    static public $arrayServerStatus = [];
+    static public array $arrayServerStatus = [];
+
     private ?int $id = null;
     private ?int $loginId = null;
     private ?int $gameId = null;
@@ -31,13 +32,15 @@ class serverModel
     private ?int $checkGameServerPort = null;
     private array $server_data = [];
     private ?serverDescriptionModel $page;
-    private ?serverStatus $serverStatus = null;
+    public ?serverStatus $serverStatus = null;
     private ?bool $errorConnectDBServer = null;
     private ?string $collection = null;
     private ?array $statusServerMem = null;
     private ?bool $default = null;
     private ?string $knowledgeBase = null;
     private ?int $maxOnline = 200;
+    //Позиция сервера при сортировки
+    private ?int $position = 0;
 
     // Есть ли данный сервер на сервере сферы
     private bool $resetHWID = false;
@@ -63,6 +66,7 @@ class serverModel
         $this->default = $server['isDefault'] ?? null;
         $this->dateStartServer = $server['dateStartServer'] ?? null;
         $this->knowledgeBase = $server['knowledgeBase'] ?? null;
+        $this->position = filter_var($server['position'] ?? 0, FILTER_VALIDATE_INT);
         $this->maxOnline = filter_var($server['maxOnline'] ?? 200, FILTER_VALIDATE_INT);
         $this->resetHWID = filter_var($server['resetHWID'] ?? false, FILTER_VALIDATE_BOOLEAN);
         if ($server_data) {
@@ -82,6 +86,19 @@ class serverModel
         return $this->loginId;
     }
 
+    // Позиция сортировки сервера
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    // Установка позиции
+    public function setPosition(?int $position): static
+    {
+        $this->position = $position;
+        return $this;
+    }
+
     public function getGameId(): ?int
     {
         return $this->gameId;
@@ -91,9 +108,6 @@ class serverModel
     {
         return $this->statusServerMem;
     }
-
-
-    //Сервер по умолчанию
 
     public function isResetHWID(): bool
     {
@@ -145,102 +159,22 @@ class serverModel
         return $this->knowledgeBase ?? 'highFive';
     }
 
+    public function getStatusServer(): ?serverStatus
+    {
+        return $this->serverStatus;
+    }
+
     /**
      * Проверка, работает ли логин/гейм сервер и получение количества игроков онлайна
      *
      * @return \Ofey\Logan22\model\server\serverStatus|null
      */
-    public function getStatus($forceUpdate = false): ?serverStatus
+    public function getStatus(): ?serverStatus
     {
-
-        //Когда принудительное обновление включено, мы не используем кэш из бд
-        if (!$forceUpdate) {
-            if (isset(self::$arrayServerStatus[$this->getId()])) {
-                return self::$arrayServerStatus[$this->getId()];
-            }
-
-            $serverCache = sql::getRows(
-                "SELECT `server_id`, `data`, `date_create` FROM `server_cache` WHERE `type` = 'status' ORDER BY `id` DESC", []
-            );
-            if ($serverCache) {
-
-                /**
-                 * Если прошло меньше минуты, тогда выводим данные из кэша
-                 */
-                $update = false;
-                foreach ($serverCache as $cache) {
-                    $totalSeconds = time::diff(time::mysql(), $cache['date_create']);
-                    if ($totalSeconds >= config::load()->cache()->getStatus()) {
-                        $update = true;
-                    }
-                }
-
-                if (!$update) {
-
-                    foreach ($serverCache as $cache) {
-                        $server_id = $cache['server_id'];
-                        $cache = json_decode($cache['data'], true);
-
-                        $serverStatus = new serverStatus();
-                        $serverStatus->setServerId($server_id);
-                        $serverStatus->setLoginServer($cache['loginServer'] ?? false);
-                        $serverStatus->setGameServer($cache['gameServer'] ?? false);
-                        $serverStatus->setOnline($cache['online'] ?? 0);
-                        $serverStatus->setGameIPStatusServer($cache['gameServerIP'] ?? '0.0.0.0');
-                        $serverStatus->setGamePortStatusServer($cache['gameServerPort'] ?? -1);
-                        $serverStatus->setLoginIPStatusServer($cache['loginServerIP'] ?? '0.0.0.0');
-                        $serverStatus->setLoginPortStatusServer($cache['loginServerPort'] ?? -1);
-
-                        $serverStatus->setEnable(filter_var($this->getStatusServerMem()['enable'] ?? false, FILTER_VALIDATE_BOOLEAN));
-
-                        self::$arrayServerStatus[$server_id] = $serverStatus;
-                    }
-
-                    return self::$arrayServerStatus[$this->getId()] ?? null;
-
-                }
-            }
-        }
-
-        $sphere = \Ofey\Logan22\component\sphere\server::send(type::GET_STATUS_SERVER_ALL, [])->getResponse();
-        if (isset($sphere['status'])) {
-            //Очищаем предыдущии записи
-            sql::sql("DELETE FROM `server_cache` WHERE `type` = 'status'");
-
-            $config = config::load();
-            $onlineCheating = $config->onlineCheating()->isEnabled();
-            $minOnline = $config->onlineCheating()->getMinOnlineShow();
-            $maxOnline = $config->onlineCheating()->getMaxOnlineShow();
-
-            foreach ($sphere['status'] as $server_id => $status) {
-                $serverStatus = new serverStatus();
-                $online = $status['online'] ?? 0;
-
-                if ($onlineCheating && $online == 0) {
-                    $online = mt_rand($minOnline, $maxOnline);
-                }
-                $serverStatus->setServerId($server_id);
-                $serverStatus->setEnable(filter_var($this->getStatusServerMem()['enable'] ?? false, FILTER_VALIDATE_BOOLEAN));
-                $serverStatus->setEnableLoginServerMySQL($status['loginServerDB'] ?? false);
-                $serverStatus->setEnableGameServerMySQL($status['gameServerDB'] ?? false);
-                $serverStatus->setLoginServer($status['loginServer']);
-                $serverStatus->setGameServer($status['gameServer']);
-                $serverStatus->setGameIPStatusServer($status['gameServerIP']);
-                $serverStatus->setGamePortStatusServer($status['gameServerPort']);
-                $serverStatus->setLoginIPStatusServer($status['loginServerIP']);
-                $serverStatus->setLoginPortStatusServer($status['loginServerPort']);
-                $serverStatus->setOnline($online);
-                $serverStatus->save();
-                self::$arrayServerStatus[$server_id] = $serverStatus;
-            }
-
-            return self::$arrayServerStatus[$this->getId()] ?? null;
-        }
-
-        return null;
+        return $this->serverStatus;
     }
 
-    public function save()
+    public function save(): void
     {
         $arr = [
             'id' => $this->id,
@@ -256,6 +190,7 @@ class serverModel
             'timezone' => $this->timezone,
             'collection' => $this->collection,
             'default' => $this->default,
+            'position' => $this->position,
         ];
         sql::run(
             "UPDATE `servers` SET `data` = ? WHERE `id` = ?",

@@ -23,36 +23,38 @@ class index
             $info['servers'] = [];
         }
 
-        foreach ($info['servers'] as $server) {
-            $id = $server['id'];
-            $getServer = \Ofey\Logan22\model\server\server::getServer($id);
-            if ($getServer == null) {
-                $data = [
-                    "id" => $id,
-                    "name" => "NoName",
-                    "rateExp" => 1,
-                    "rateSp" => 1,
-                    "rateAdena" => 1,
-                    "rateDrop" => 1,
-                    "rateSpoil" => 1,
-                    "chronicle" => "NoSetChronicle",
-                    "source" => "",
-                    "disabled" => $server['disabled'],
-                    "request_count" => $server['request_count'],
-                    "count_errors" => $server['count_errors'],
-                ];
-                sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
-            }else{
-                $getServer->setIsSphereServer(true);
-                $getServer->getStatus()->setEnableLoginServerMySQL($server['loginServerDB']);
-                $getServer->getStatus()->setEnableGameServerMySQL($server['gameServerDB']);
-                $getServer->getStatus()->setLoginServer($server['loginServer']);
-                $getServer->getStatus()->setGameServer($server['gameServer']);
-                $getServer->getStatus()->setGameIPStatusServer($server['gameServerIP']);
-                $getServer->getStatus()->setGamePortStatusServer($server['gameServerPort']);
-                $getServer->getStatus()->setLoginIPStatusServer($server['loginServerIP']);
-                $getServer->getStatus()->setLoginPortStatusServer($server['loginServerPort']);
-                $getServer->getStatus()->setOnline($server['online']);
+        if(isset($info['servers'])){
+            foreach ($info['servers'] as $server) {
+                $id = $server['id'];
+                $getServer = \Ofey\Logan22\model\server\server::getServer($id);
+                if ($getServer == null) {
+                    $data = [
+                        "id" => $id,
+                        "name" => "NoName",
+                        "rateExp" => 1,
+                        "rateSp" => 1,
+                        "rateAdena" => 1,
+                        "rateDrop" => 1,
+                        "rateSpoil" => 1,
+                        "chronicle" => "NoSetChronicle",
+                        "source" => "",
+                        "disabled" => $server['disabled'],
+                        "request_count" => $server['request_count'],
+                        "count_errors" => $server['count_errors'],
+                    ];
+                    sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
+                }else{
+                    $getServer->setIsSphereServer(true);
+                    $getServer->getStatus()->setEnableLoginServerMySQL($server['loginServerDB']);
+                    $getServer->getStatus()->setEnableGameServerMySQL($server['gameServerDB']);
+                    $getServer->getStatus()->setLoginServer($server['loginServer']);
+                    $getServer->getStatus()->setGameServer($server['gameServer']);
+                    $getServer->getStatus()->setGameIPStatusServer($server['gameServerIP']);
+                    $getServer->getStatus()->setGamePortStatusServer($server['gameServerPort']);
+                    $getServer->getStatus()->setLoginIPStatusServer($server['loginServerIP']);
+                    $getServer->getStatus()->setLoginPortStatusServer($server['loginServerPort']);
+                    $getServer->getStatus()->setOnline($server['online']);
+                }
             }
         }
 

@@ -155,6 +155,7 @@ class sql
      */
     public static function run($query, $args = [])
     {
+//        file_put_contents("query.txt", $query . "\n", FILE_APPEND);
         if (self::connect() === null) {
             board::alert([
               'type'     => 'notice',
