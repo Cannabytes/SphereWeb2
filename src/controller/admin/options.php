@@ -159,7 +159,8 @@ class options
             ];
 
             sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
-            board::redirect("/admin/server/list");
+
+            board::redirect("/admin/server/set/donate/{$id}");
             board::success(lang::get_phrase(243));
         }
 
@@ -583,64 +584,16 @@ class options
     {
         validation::user_protection("admin");
 
-        $donateSysName = self::AllDonateSystem();
-        $paySet = config::load()->donate()->getDonateSystems();
 
-        $sortValues = [];
-        foreach ($paySet as $paySystem) {
-            $sortValues[$paySystem->getName()] = $paySystem->getSortValue();
-        }
-        usort($donateSysName, function ($a, $b) use ($sortValues) {
-            $sortA = $sortValues[$a['name']] ?? PHP_INT_MAX;
-            $sortB = $sortValues[$b['name']] ?? PHP_INT_MAX;
-            return $sortA <=> $sortB;
-        });
 
         tpl::addVar([
             'servername_list_default' => servername::all(),
             'client_list_default' => client::all(),
             'timezone_list_default' => timezone::all(),
-            "donateSysNames" => $donateSysName,
         ]);
         tpl::display("/admin/setting.html");
     }
 
-    private static function AllDonateSystem()
-    {
-        $all_donate_system = fileSys::get_dir_files("src/component/donate", [
-            'basename' => true,
-            'fetchAll' => true,
-        ]);
-        $donateSysNames = [];
-        foreach ($all_donate_system as $system) {
-            if (!$system::isEnable()) {
-                continue;
-            }
-            if (method_exists($system, 'forAdmin')) {
-                if ($system::forAdmin() and auth::get_access_level() != 'admin') {
-                    continue;
-                }
-            }
-            $inputs = [];
-            if (method_exists($system, 'inputs')) {
-                $inputs = $system::inputs();
-            }
-            if (method_exists($system, 'getDescription')) {
-                $donateSysNames[] = [
-                    'name' => basename($system),
-                    'desc' => $system::getDescription(),
-                    'inputs' => $inputs,
-                ];
-            } else {
-                $donateSysNames[] = [
-                    'name' => basename($system),
-                    'desc' => basename($system),
-                    'inputs' => $inputs,
-                ];
-            }
-        }
-        return $donateSysNames;
-    }
 
     public static function saveConfigDonate(): void
     {
@@ -655,13 +608,14 @@ class options
                 unset($data['donateSystems'][$i]);
             }
         }
+        $server_id = $data['serverId'] ?? board::error("Нет ID сервера");
         $post = json_encode($data, JSON_UNESCAPED_UNICODE);
         sql::sql("DELETE FROM `settings` WHERE `key` = '__config_donate__' AND serverId = ? ", [
-            user::self()->getServerId(),
+            $server_id,
         ]);
         sql::run("INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES ('__config_donate__', ?, ?, ?)", [
             $post,
-            user::self()->getServerId(),
+            $server_id,
             time::mysql(),
         ]);
         board::success("Настройки сохранены");

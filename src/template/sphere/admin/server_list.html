@@ -9,7 +9,7 @@
         <div class="card">
             <div class="card-body">
                 <a href="/admin/server/add/new" class="btn btn-teal-light btn-border-down">Добавить сервер</a>
-                <a href="/admin/server/db" class="btn btn-teal-light btn-border-down">Базы Данных</a>
+<!--                <a href="/admin/server/db" class="btn btn-teal-light btn-border-down">Базы Данных</a>-->
             </div>
         </div>
 
@@ -85,6 +85,9 @@
                                         <a href="/admin/server/edit/{{server.getId()}}" class="btn btn-outline-success">Изменить</a>
                                         <a href="/admin/server/statistic/{{server.getId()}}"
                                            class="btn btn-outline-success">Статистика</a>
+                                    </div>
+                                    <div class="btn-group btn-group-sm my-1" role="group"   aria-label="Small button group">
+                                        <a href="/admin/server/set/donate/{{server.getId()}}" class="btn btn-outline-success">Настройки доната сервера</a>
                                     </div>
 
                                 </li>
