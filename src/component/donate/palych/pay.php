@@ -18,6 +18,8 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
 
     private array $allowIP = [
         '138.201.53.39',
+        '176.9.155.22',
+        '2.58.70.63',
     ];
 
     public static function inputs(): array
