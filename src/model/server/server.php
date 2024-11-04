@@ -110,17 +110,19 @@ class server
             }
 
             self::loadStatusServer();
-            foreach(self::$server_info AS $info){
-                foreach(self::$arrayStatus AS $status){
-                    if($status->getServerId()==$info->getId()){
-                        $info->serverStatus = $status;
+            if(!empty(self::$server_info)){
+                foreach(self::$server_info AS $info){
+                    foreach(self::$arrayStatus AS $status){
+                        if($status->getServerId()==$info->getId()){
+                            $info->serverStatus = $status;
+                        }
                     }
                 }
+                uasort(self::$server_info, function($a, $b) {
+                    return $a->getPosition() <=> $b->getPosition();
+                });
             }
 
-            uasort(self::$server_info, function($a, $b) {
-                return $a->getPosition() <=> $b->getPosition();
-            });
         }
 
         // Если запрашиваемый ID передан, возвращаем соответствующий сервер или последний сервер из массива
