@@ -2187,4 +2187,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  158 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/server/set/donate/(\\d+)',
+    'func' => 'controller\\admin\\setDonateServer::show',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

@@ -100,7 +100,7 @@ class forumStruct {
     }
 
     function getAvatarUrl($userId, $avatarDate, $gravatarEmail = null, $size = 'm') {
-        $baseUrl = 'http://xenforo/data/avatars';  // Замените на базовый URL вашего форума
+        $baseUrl = $this->url . '/data/avatars';  // Замените на базовый URL вашего форума
         $defaultAvatarUrl = 'uploads/avatar/none.jpeg'; // Замените на URL аватара по умолчанию
 
         if ($avatarDate) {
