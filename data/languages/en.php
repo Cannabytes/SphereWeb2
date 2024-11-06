@@ -640,41 +640,7 @@ return [
 	'581' => 'Save configuration',
 	'5451' => 'Issued +%s SphereCoin for %s (%s)',
 	'5461' => 'Cumulative bonus for donation: +%s',
-	'extend the Roulette of Luck' => 'For how many months should I extend the Roulette of Fortune?',
-	'description spin the roulette of luck' => 'The opportunity for users to spin the Roulette of Fortune for Donate Coins and win 1 of 20 items.',
-	'extend Launcher' => 'Extend Launcher',
-	'go to launcher settings' => 'Go to launcher settings',
-	'launcher_full_desc' => 'Sphere Launcher is the best and most advanced solution for file downloading. Launcher provides users with a unique ability to download multiple files at once, which significantly saves time and increases productivity. <br>
-Main advantages:<br>
-<br>
-High speed and performance: The launcher is designed taking into account all the best Go practices, which
-ensures lightning-fast data processing and optimal work even with a large number of
-files.<br>
-Simultaneous download: Thanks to parallel processing of tasks, the launcher can download many
-files at the same time, which makes it an indispensable tool for users working with a large
-volume of data.<br>
-Security and reliability: Built-in Go language mechanisms guarantee data protection and stability of
-the launcher, minimizing the likelihood of errors and failures.<br>
-Scalability: The launcher easily adapts to any task, whether it is downloading small files or
-working with large amounts of data, ensuring stable performance in any situation.<br>
-Ease of use: A laconic and clear interface makes working with the launcher accessible even for novice
-users, and built-in functions make it easier to set up and manage downloads.<br>
-Caching of re-downloaded files by the user.
-<br>
-Try our launcher and experience all the benefits of a fast and reliable tool created on the basis of the most modern technologies!<br>',
-	'description of Sphere Launcher' => 'Description of Sphere Launcher',
-	'extend use' => 'Extend use',
-	'months' => 'months',
-	'for how many months should I renew SphereWeb?' => 'For how many months should I renew SphereWeb?',
-	'you can help show gratitude and support to the developer for SphereWeb, just top up your balance.' => 'You can help show gratitude and support to the developer for SphereWeb, just top up your balance.',
-	'activated until' => 'Activated until',
-	'on account' => 'On account',
-	'increase balance' => 'Increase balance',
-	'server_not_found_and_is_sphere_api' => 'The server was not found in your internal DB, but exists in the Sphere API',
-	'frequently asked questions' => 'Frequently asked questions',
-	'end date' => 'End date',
-	'service' => 'Service',
-	'balance management' => 'Balance management',
+	'warning_need_allow_sphere_api' => 'To connect and work with the server database, the REST API (Sphere API) is used. Therefore, it is necessary to grant permission in the game server database to connect from the IP address from which the Sphere API operates.',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Access is denied',
 	'account' => 'Account',
@@ -683,6 +649,7 @@ Try our launcher and experience all the benefits of a fast and reliable tool cre
 	'accum_bonuses' => 'Accumulated bonuses',
 	'accum_sys_bonus' => 'Accumulation system - the more you top up, the more additional bonus you get. You have already accumulated %s Donate Coin (%s%% additional bonuses)',
 	'activate' => 'Activate',
+	'activated until' => 'Activated until',
 	'activated_until' => 'Activated: until',
 	'active' => 'Active',
 	'add_category' => 'Add category',
@@ -727,6 +694,7 @@ Try our launcher and experience all the benefits of a fast and reliable tool cre
 	'available after disabling emulation' => 'Available after disabling emulation',
 	'back' => 'Back',
 	'background' => 'Background',
+	'balance management' => 'Balance management',
 	'balance_topup' => 'Balance top-up',
 	'balance_topup_successful' => 'Balance top-up successful',
 	'base_class' => 'Base class',
@@ -827,6 +795,8 @@ Try our launcher and experience all the benefits of a fast and reliable tool cre
 	'default_timezone' => 'Default TimeZone',
 	'delete' => 'Delete',
 	'deny_viewing_characters' => 'Deny viewing your character',
+	'description of Sphere Launcher' => 'Description of Sphere Launcher',
+	'description spin the roulette of luck' => 'The opportunity for users to spin the Roulette of Fortune for Donate Coins and win 1 of 20 items.',
 	'direct_transfer_items' => 'These items are sent directly to the player when transferred via the \'Transfer to game\' function',
 	'directory' => 'Directory',
 	'directory_rights' => 'Checking the necessary directory rights (755 or 777)',
@@ -885,6 +855,7 @@ After running the launcher, you can update.<br><br>',
 	'enable_standard_captcha' => 'Enable standard CAPTCHA',
 	'enabled' => 'Enabled',
 	'enchant' => 'Enchant',
+	'end date' => 'End date',
 	'enter' => 'Enter',
 	'enter_bonus_code' => 'Enter code',
 	'enter_email_reset_link' => 'Enter your email and we will send you a password reset link',
@@ -895,6 +866,9 @@ After running the launcher, you can update.<br><br>',
 	'exchange' => 'Exchange',
 	'experimental_update_function' => 'Experimental function for updating SphereWeb software.<br>
 I recommend keeping the software up to date.',
+	'extend Launcher' => 'Extend Launcher',
+	'extend the Roulette of Luck' => 'For how many months should I extend the Roulette of Fortune?',
+	'extend use' => 'Extend use',
 	'extensions' => 'Extensions',
 	'external_access_to_db_must_be_enabled' => 'To connect to the server\'s database, external access to the database must be enabled to establish and maintain a constant connection.<br>
 You can allow database connections only for the IP «%s».<br>
@@ -907,6 +881,7 @@ It will not be possible to connect to servers that are set up in a local network
 	'first' => 'First',
 	'first_reg_then_own_items_wh' => 'First <a href=\'/registration/user\' class=\'alert-link\'>register</a>, then you will be able to own items in the warehouse',
 	'follow_the_link' => 'Follow the link',
+	'for how many months should I renew SphereWeb?' => 'For how many months should I renew SphereWeb?',
 	'forgot_pwd_recover_email' => 'If you have forgotten your password, you can recover it using Email',
 	'forum_connection_settings' => 'Forum connection settings',
 	'forum_db_connection' => 'Forum database connection',
@@ -919,6 +894,7 @@ Is your server build not listed when adding?<br>
 If you have a good idea for extending functionality,<br>
 you can always write to the <a class=\'text-info\' href=\'https://t.me/shpereweb\' target=\'_blank\'>Telegram chat of the Sphere project</a>.',
 	'free' => 'Free',
+	'frequently asked questions' => 'Frequently asked questions',
 	'friend_nickname_bonus' => 'Enter friend\'s nickname (referral) and receive bonuses',
 	'from' => 'From',
 	'func_emulation_server_desc_enable' => 'Включен режим эмуляции данных.<br> В этом режиме вы последовательно снижаете статистику и данные серверов.<br> Режим эмуляции подходит для настройки шаблонов.<br> Выключить эмуляцию можно в разделе «<a href=\'/admin/setting#functiondata\'>Функции</a>».',
@@ -937,6 +913,7 @@ you can always write to the <a class=\'text-info\' href=\'https://t.me/shpereweb
 	'generated_bonus_codes' => 'Generated bonus codes',
 	'generated_codes' => 'Generated codes',
 	'get_bonus' => 'Get bonus',
+	'go to launcher settings' => 'Go to launcher settings',
 	'google_recaptcha_v2_keys_instructions' => 'If you decide to use Google reCAPTCHA V2<br>
 You can get the CAPTCHA keys here - <a href=\'https://www.google.com/recaptcha/admin/create\'>Register on Google\'s site</a>',
 	'group' => 'Group',
@@ -968,6 +945,7 @@ You can get the CAPTCHA keys here - <a href=\'https://www.google.com/recaptcha/a
 	'if not launcher' => 'If you don\'t have a launcher, download it.',
 	'if_enable_and_not_set_ip_and_port_status_server' => 'If the server status (working/not working) is not set, then whether the server is working will be determined online.',
 	'if_not_needed_leave_blank' => 'If not needed, leave it blank',
+	'increase balance' => 'Increase balance',
 	'info_db_install' => 'To install, you need to connect to the MySQL database.',
 	'instagram' => 'Instagram',
 	'install_cannot_continue' => 'Installation cannot continue',
@@ -1013,6 +991,24 @@ You can get the CAPTCHA keys here - <a href=\'https://www.google.com/recaptcha/a
 	'Launcher Launcher Panel' => 'Launcher Launcher Panel',
 	'launcher_data' => 'Launcher data',
 	'launcher_download' => 'Download Launcher',
+	'launcher_full_desc' => 'Sphere Launcher is the best and most advanced solution for file downloading. Launcher provides users with a unique ability to download multiple files at once, which significantly saves time and increases productivity. <br>
+Main advantages:<br>
+<br>
+High speed and performance: The launcher is designed taking into account all the best Go practices, which
+ensures lightning-fast data processing and optimal work even with a large number of
+files.<br>
+Simultaneous download: Thanks to parallel processing of tasks, the launcher can download many
+files at the same time, which makes it an indispensable tool for users working with a large
+volume of data.<br>
+Security and reliability: Built-in Go language mechanisms guarantee data protection and stability of
+the launcher, minimizing the likelihood of errors and failures.<br>
+Scalability: The launcher easily adapts to any task, whether it is downloading small files or
+working with large amounts of data, ensuring stable performance in any situation.<br>
+Ease of use: A laconic and clear interface makes working with the launcher accessible even for novice
+users, and built-in functions make it easier to set up and manage downloads.<br>
+Caching of re-downloaded files by the user.
+<br>
+Try our launcher and experience all the benefits of a fast and reliable tool created on the basis of the most modern technologies!<br>',
 	'launcher_info' => 'Download the launcher and you no longer have to have a launcher for each server.',
 	'launcher_info_2' => 'If you previously downloaded the launcher, then simply launch it.',
 	'launcher_note' => 'Launcher note',
@@ -1104,6 +1100,7 @@ Icon styles can be chosen here<br>
 	'minutes' => 'minutes',
 	'moderator' => 'Moderator',
 	'month' => 'month',
+	'months' => 'months',
 	'multiply_displayed_online' => 'Multiply displayed online',
 	'multiply_online_by' => 'Multiply online by',
 	'my_launchers' => 'My launchers',
@@ -1143,6 +1140,7 @@ Icon styles can be chosen here<br>
 	'number_of_registerable_accounts' => 'Number of registrable accounts',
 	'official_server_launch_datetime' => 'Official server launch date and time',
 	'old_password' => 'Old password',
+	'on account' => 'On account',
 	'on' => 'On',
 	'on_your_balance' => 'On your balance',
 	'one_time_bonus' => 'One-time bonus',
@@ -1280,11 +1278,13 @@ Link expiration time: %%expire_time%%',
 	'server_info_desc' => 'You can receive and display information about the server\'s operation and online status for users on the website.',
 	'server_launch_date' => 'Server launch date',
 	'server_name' => 'Server name',
+	'server_not_found_and_is_sphere_api' => 'The server was not found in your internal DB, but exists in the Sphere API',
 	'server_online_statistics' => 'Server online statistics',
 	'server_parameter_change' => 'Server parameter change',
 	'server_start_date' => 'Server start date',
 	'server_time_zone' => 'Server time zone',
 	'servers' => 'Servers',
+	'service' => 'Service',
 	'set_new_password' => 'and set a new password',
 	'setting_applicable_if_auto_login_supported' => 'The setting is applicable only if the game client supports the auto-login feature (without authorization).',
 	'setting_connect_to_db' => 'Setting up the database connection',
@@ -1293,7 +1293,9 @@ Link expiration time: %%expire_time%%',
 	'show_accounts_for_autoload' => 'Show accounts for autoload?',
 	'signature' => 'Signature',
 	'simple_captcha' => 'Simple CAPTCHA',
+	'site_disabled' => 'Site disabled',
 	'site_down_admin_only' => 'Site is down; access is only available to administrators.',
+	'site_is_currently_down' => 'The site is currently disabled by the administrator.',
 	'smtp_authorization' => 'SMTP Authorization',
 	'smtp_password' => 'SMTP password',
 	'smtp_username' => 'SMTP username',
@@ -1418,6 +1420,7 @@ Password: %%password%%',
 	'what_use_launcher_for_reminder' => 'What do you want to use this launcher for? - This is a reminder for you only.',
 	'wrong_data' => 'Wrong data',
 	'yes' => 'Yes',
+	'you can help show gratitude and support to the developer for SphereWeb, just top up your balance.' => 'You can help show gratitude and support to the developer for SphereWeb, just top up your balance.',
 	'you_blocked_user_from_write_message_ticket' => 'You blocked the user from writing messages to the ticket',
 	'you_have_news_and_pages' => 'You have news and pages',
 	'you_have_no_servers' => 'You don\'t have any servers',
