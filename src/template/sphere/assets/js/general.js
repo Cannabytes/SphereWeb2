@@ -13,6 +13,15 @@ function basename(str) {
     return base;
 }
 
+$('.copy').on('click', function() {
+    const elementId = $(this).data('object-id');
+    var textToCopy = $('#' + elementId).val().trim();
+    navigator.clipboard.writeText(textToCopy).then(function () {
+    }).catch(function (error) {
+        console.error("Ошибка при копировании: ", error);
+    });
+});
+
 function AjaxSend(url, method, data, isReturn = false, timeout = 5, funcName = null) {
     return new Promise(function(resolve, reject) {
         $.ajax({

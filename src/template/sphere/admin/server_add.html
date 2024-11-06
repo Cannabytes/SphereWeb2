@@ -157,6 +157,39 @@
 
 
                                             <div class="row">
+
+                                                <div class="card bg-success-transparent mb-0 mt-2 border-success">
+                                                    <div class="d-flex p-2 border-bottom-0">
+                                                        <div class="d-sm-flex">
+                                                            <div class="">
+                                                                <img src="{{template}}/assets/images/gopher_1.webp" alt=""
+                                                                     class="avatar avatar-xxl">
+                                                            </div>
+                                                            <div class="mt-0 ms-3 text-start">
+                                                                <p class="fs-13 text-muted mb-0">{{ phrase('warning_need_allow_sphere_api') }}</p>
+
+
+                                                                <div class="row g-3 align-items-center">
+                                                                    <div class="input-group">
+                                                                        <input id="sphereapi" value="{{ config().sphereApi().getIp() }}"
+                                                                               type="text"
+                                                                               class="form-control bg-light border-0"
+                                                                               placeholder="Search Contact"
+                                                                               aria-describedby="search-contact-member">
+                                                                        <button class="btn btn-light copy" data-object-id="sphereapi" type="button"
+                                                                                id="search-contact-member"><i
+                                                                                class="ri-file-copy-2-line text-muted"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
                                                 <div class="col-xl-6">
                                                     <div class="card-header justify-content-between">
                                                         <div class="card-title">
@@ -240,6 +273,7 @@
                                                     </div>
                                                 </div>
 
+
                                                 <div class="col-xl-6">
                                                     <div class="card-header justify-content-between">
                                                         <div class="card-title">
@@ -320,11 +354,13 @@
                                                         </div>
                                                         <a class="ecommerce-more-link" data-bs-toggle="collapse"
                                                            href="#add_new_game_server_panel" aria-expanded="false"
-                                                           aria-controls="add_new_game_server_panel">Добавить БД гейм-сервера</a>
+                                                           aria-controls="add_new_game_server_panel">Добавить БД
+                                                            гейм-сервера</a>
                                                     </div>
                                                 </div>
-                                            </div>
 
+
+                                            </div>
 
                                         </div>
                                     </div>
@@ -422,7 +458,8 @@
                                             <span class="fs-11 text-muted op-7">{{phrase('enable_hwid_reset_function')}}</span>
                                         </div>
                                         <div class="col-2 form-check form-check-lg form-switch">
-                                            <input name="resetHWID" class="form-check-input" type="checkbox" id="resetHWID">
+                                            <input name="resetHWID" class="form-check-input" type="checkbox"
+                                                   id="resetHWID">
                                         </div>
                                     </div>
                                 </li>
