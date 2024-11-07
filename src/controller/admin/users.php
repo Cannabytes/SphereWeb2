@@ -80,20 +80,48 @@ class users {
     //Выдача предмета пользователю от администратора
     static public function addItemUserToWarehouse(): void
     {
+        // Проверка прав пользователя
         validation::user_protection("admin");
-        $serverId = $_POST['serverId'] ?? board::error("No POST serverId");
-        $userId = $_POST["userId"] ?? board::error("No POST userId");
-        $itemId = $_POST["itemId"] ?? board::error("No POST itemId");
-        $count = $_POST["count"] ?: 1;
-        $enchant = $_POST["enchant"] ?: 0;
 
-       $ok =  \Ofey\Logan22\model\user\user::getUserId($userId)->addToWarehouse($serverId, $itemId, $count, $enchant, 'issued_by_the_administration');
-        if( ! $ok['success']){
-            board::error($ok['errorInfo']['message']);
+        // Проверка обязательных параметров
+        $serverId = $_POST['serverId'] ?? null;
+        $userId = $_POST["userId"] ?? null;
+        $itemId = $_POST["itemId"] ?? null;
+
+        // Если какой-либо обязательный параметр отсутствует или пустой
+        if (empty($serverId) || empty($userId) || empty($itemId)) {
+            board::error("Не все обязательные параметры переданы или они пустые");
+            return;
         }
+
+        // Преобразование параметров, если необходимо
+        $count = isset($_POST["count"]) ? (int)$_POST["count"] : 1;
+        $enchant = isset($_POST["enchant"]) ? (int)$_POST["enchant"] : 0;
+
+        // Проверка, что параметры count и enchant являются целыми числами
+        if (!is_int($count) || $count < 1) {
+            board::error("Неверное количество предметов");
+            return;
+        }
+
+        if (!is_int($enchant) || $enchant < 0) {
+            board::error("Неверный уровень зачарования");
+            return;
+        }
+
+        // Добавление предмета в инвентарь пользователя
+        $ok = \Ofey\Logan22\model\user\user::getUserId($userId)->addToWarehouse($serverId, $itemId, $count, $enchant, 'issued_by_the_administration');
+
+        if (!$ok['success']) {
+            board::error($ok['errorInfo']['message']);
+            return;
+        }
+
         board::reload();
         board::success("Предмет выдан");
-
     }
+
+
+
 
 }

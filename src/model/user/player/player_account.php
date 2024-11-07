@@ -245,8 +245,7 @@ class player_account
           'login'            => $login,
           'password'         => $password,
           'is_password_hide' => $password_hide,
-        ])->getResponse();
-
+        ])->show()->getResponse();
         $content = trim(config::load()->lang()->getPhrase(config::load()->registration()->getPhraseRegistrationDownloadFile())) ?? "";
         $server  = server::getServer(user::self()->getServerId());
         $content = str_replace(["%site_server%", "%server_name%", "%rate_exp%", "%chronicle%", "%email%", "%login%", "%password%"],
