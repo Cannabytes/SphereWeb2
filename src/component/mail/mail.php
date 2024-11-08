@@ -364,7 +364,6 @@ class mail
             $mail->Subject = $subject;
             $mail->Body    = $content;
             $mail->AltBody = 'Enabled HTML';
-            var_dump($mail->send());exit;
 
             if($isShowError) {
                 if ($mail->send()) {
