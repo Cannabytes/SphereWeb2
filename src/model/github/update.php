@@ -44,9 +44,8 @@ class update
               'last_commit' => self::getLastCommit(),
             ])->getResponse();
 
-            if ($sphere['last_commit'] == self::getLastCommit()) {
+            if ($sphere['last_commit_now'] == self::getLastCommit()) {
                 board::success("Обновление не требуется");
-
                 return;
             }
 
@@ -64,6 +63,9 @@ class update
                       'status' => $status,
                     ];
                     $filePath = fileSys::get_dir($file);
+                    if (!is_writable(dirname($filePath))) {
+                        throw new Exception("Директория не доступна для записи: " . dirname($filePath));
+                    }
 
                     if ($status == 'added' || $status == 'modified') {
                         self::ensureDirectoryExists($filePath);

@@ -74,7 +74,6 @@ class users {
             board::error( "Failed to edit user");
         }
 
-
     }
 
     //Выдача предмета пользователю от администратора

@@ -59,8 +59,15 @@
 
     $.ajax({
       url: '/github/update',
+      timeout: 30000,
       method: 'POST',
       success: function (response) {
+
+        if (typeof response === "string") {
+          response = JSON.parse(response); // Парсим строку в объект, если необходимо
+        }
+
+
         if (response.ok) {
 
           if (response.type && response.type === 'notice') {
@@ -119,6 +126,17 @@
 
           // Вставка таблицы в div с id "table"
           $('#table').html(tableHtml);
+        } else {
+          // Обработка ошибки: отображаем сообщение из JSON-ответа
+          $("#message").html(`<span class="me-1"><i class="ri-error-warning-line text-danger fs-15"></i></span>
+                    <span class="text-danger"><strong class="me-1">${response.message}</strong></span>`);
+        }
+      },
+      error: function (jqXHR, textStatus) {
+        if (textStatus === "timeout") {
+          alert("Время ожидания ответа истекло. Попробуйте снова.");
+        } else {
+          alert("Произошла ошибка: " + textStatus);
         }
       }
     });

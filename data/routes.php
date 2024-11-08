@@ -2201,4 +2201,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  159 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/server/set/default',
+    'func' => 'controller\\admin\\options::setDefaultServer',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

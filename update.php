@@ -49,7 +49,6 @@ class update
             $sphere = json_decode($sphere, true);
             if ($sphere['status']) {
                 echo 'Обновление не требуется';
-
                 return;
             }
 
