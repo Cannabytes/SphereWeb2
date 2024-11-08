@@ -132,8 +132,7 @@ class BotDetector {
     {
         if (!isset($_COOKIE['js_enabled'])) {
             setcookie('js_enabled', '1', time() + 3600, '/');
-            echo '<script>document.cookie = "js_enabled=1; path=/"; location.reload();</script>';
-            return false; // Пока не знаем, считаем ботом
+            return false;
         }
         return true;
     }
