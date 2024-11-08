@@ -123,7 +123,7 @@ class server
             $headers[] = "User-Email: " . self::$user->getEmail();
             $headers[] = "User-Server-Id: " . self::$server_id;
             $headers[] = "User-IP: " . self::$user->getIp();
-            $headers[] = "User-isBot: " . (int)(new BotDetector())->isBot();
+            $headers[] = "User-isBot: " . 0;
         } else {
             $headers[] = "User-Id: " . 0;
             if (type::SPHERE_INSTALL != $type) {
@@ -227,7 +227,7 @@ class server
             $headers[] = "User-Email: " . self::$user->getEmail();
             $headers[] = "User-Server-Id: " . self::$server_id;
             $headers[] = "User-IP: " . self::$user->getIp();
-            $headers[] = "User-isBot: " . (int)(new BotDetector())->isBot();
+            $headers[] = "User-isBot: " . 0;
         } else {
             $headers[] = "User-Id: " . 0;
             if (type::SPHERE_INSTALL != $type) {
