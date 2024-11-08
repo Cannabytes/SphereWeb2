@@ -24,6 +24,7 @@ use Ofey\Logan22\component\time\microtime;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\controller\admin\startpack;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\stream\stream;
 use Ofey\Logan22\controller\ticket\ticket;
 use Ofey\Logan22\model\admin\launcher;
@@ -696,6 +697,11 @@ class tpl
             }
 
             return (sprintf("/uploads/avatar/%s", $img));
+        }));
+
+        $twig->addFunction(new TwigFunction('balance_to_dollars', function ($dc = 0) {
+            return $dc * (config::load()->donate()->getRatioUSD() / config::load()->donate()->getSphereCoinCost());
+
         }));
 
         $twig->addFunction(new TwigFunction('get_skill', function ($img = "none.jpeg") {

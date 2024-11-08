@@ -1,0 +1,312 @@
+{% extends 'struct.html' %}
+
+{% block title %}Статистика доната{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-xl-5">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">Линейный график</div>
+                </div>
+                <div class="card-body">
+                    <div id="zoom-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-5">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">Линейчатая диаграмма</div>
+                </div>
+                <div class="card-body">
+                    <div id="bar-basic"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">Куплено</div>
+                </div>
+                <div class="card-body">
+                   За всё время было пожертвовано: {{donatePoint}}
+                    <br>
+                    Это около: ${{dollars}}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">Пожертвование пользователей</div>
+                </div>
+                <div class="card-body">
+                    <table id="file-export" class="table table-bordered text-nowrap w-100">
+                        <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Donate Point</th>
+                            <th>Message</th>
+                            <th>System</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for donate in donate_users %}
+                        {% set user = getUser(donate.user_id) %}
+                        <tr>
+                            <td>
+
+                                <div class="d-flex align-items-center mt-auto">
+                                    <a href="/admin/user/info/{{user.getId()}}" class="text-default">
+                                    <div class="avatar avatar-rounded avatar-md me-3 cover-image" data-bs-image-src="{{user.getAvatar()}}" style="background: url('{{user.getAvatar()}}') center center;"></div>
+                                    </a>
+                                    <div>
+                                        <a href="/admin/user/info/{{user.getId()}}" class="text-default">{{user.getEmail()}}</a>
+                                        <small class="d-block text-muted">Country: {{user.getCountry()}}</small>
+                                    </div>
+                                </div>
+
+                            </td>
+
+                            <td>{{donate.point}} {% if donate.sphere == false %}(${{balance_to_dollars(donate.point)}}){% endif %}</td>
+                            <td>{{donate.message}}</td>
+                            <td>{{donate.pay_system}}</td>
+                            <td>{{donate.date}}</td>
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block js %}
+
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.6/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+    $('#file-export').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ],
+        language: {
+            searchPlaceholder: 'Search...',
+            sSearch: '',
+        },
+        scrollX: true,
+        ordering: true, // Включаем сортировку
+        order: [[4, 'desc']], // Сортировка по столбцу с индексом 7 (предполагается, что это столбец 'date'), по убыванию (desc)
+    });
+</script>
+
+
+<!-- Apex Charts JS -->
+<script src="{{template}}assets/libs/apexcharts/apexcharts.min.js"></script>
+
+<!-- Used In Zoomable TIme Series Chart -->
+<script src="{{template}}assets/js/dataseries.js"></script>
+
+<!---Used In Annotations Chart-->
+<script src="{{template}}assets/js/apexcharts-stock-prices.js"></script>
+
+<script>
+    var monthlyPoints = {{ monthly_statistic_pay|json_encode|raw }};
+</script>
+
+<script>
+    // Преобразуем данные monthlyPoints в массивы для графика
+    var months = Object.keys(monthlyPoints); // Месяцы
+    var points = Object.values(monthlyPoints); // Поинты за каждый месяц
+
+    var options = {
+        series: [{
+            name: 'Donate Points', // Название серии
+            data: points // Данные по количеству поинтов
+        }],
+        chart: {
+            type: 'bar',
+            height: 320
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 4,
+                horizontal: true,
+            }
+        },
+        colors: ["#6c5ffc"],
+        grid: {
+            borderColor: '#f2f5f7',
+        },
+        dataLabels: {
+            enabled: true
+        },
+        xaxis: {
+            categories: months, // Месяцы
+            labels: {
+                show: true,
+                style: {
+                    colors: "#8c9097",
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    cssClass: 'apexcharts-xaxis-label',
+                },
+            }
+        },
+        yaxis: {
+            labels: {
+                show: true,
+                style: {
+                    colors: "#8c9097",
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    cssClass: 'apexcharts-yaxis-label',
+                },
+            }
+        }
+    };
+    var chart = new ApexCharts(document.querySelector("#bar-basic"), options);
+    chart.render();
+</script>
+
+
+{% set data_series = [] %}
+
+
+{% for date, point in statistic_pay %}
+
+{% set timestamp = date|date("U") * 1000 %} {# Преобразуем дату в миллисекунды #}
+{% set data_series = data_series | merge([[timestamp, point]]) %}
+{% endfor %}
+
+<script>
+    var dates = {{ data_series | json_encode | raw }};
+
+    var options = {
+        series: [{
+            name: 'Donate',
+            data: dates
+        }],
+        chart: {
+            type: 'area',
+            stacked: false,
+            height: 320,
+            zoom: {
+                type: 'x',
+                enabled: true,
+                autoScaleYaxis: true
+            },
+            toolbar: {
+                autoSelected: 'zoom'
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        markers: {
+            size: 0,
+        },
+        title: {
+            text: 'Donate Amount Over Time',
+            align: 'left',
+            style: {
+                fontSize: '13px',
+                fontWeight: 'bold',
+                color: '#8c9097'
+            },
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                inverseColors: false,
+                opacityFrom: 0.5,
+                opacityTo: 0,
+                stops: [0, 90, 100]
+            },
+        },
+        grid: {
+            borderColor: '#f2f5f7',
+        },
+        colors: ["#6c5ffc"],
+        yaxis: {
+            labels: {
+                formatter: function (val) {
+                    return val.toFixed(2); // Для отображения значений point
+                },
+                show: true,
+                style: {
+                    colors: "#8c9097",
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    cssClass: 'apexcharts-yaxis-label',
+                },
+            },
+            title: {
+                text: 'Point',
+                fontSize: '13px',
+                fontWeight: 'bold',
+                style: {
+                    color: "#8c9097"
+                }
+            },
+        },
+        xaxis: {
+            type: 'datetime',
+            labels: {
+                show: true,
+                style: {
+                    colors: "#8c9097",
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    cssClass: 'apexcharts-xaxis-label',
+                },
+            },
+        },
+        tooltip: {
+            shared: false,
+            y: {
+                formatter: function (val) {
+                    return val.toFixed(2); // Отображение реального значения point
+                }
+            }
+        }
+    };
+    var chart = new ApexCharts(document.querySelector("#zoom-chart"), options);
+    chart.render();
+</script>
+
+{% endblock %}

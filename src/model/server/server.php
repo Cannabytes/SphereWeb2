@@ -278,6 +278,20 @@ class server
         return $lastServer instanceof serverModel ? $lastServer : null;
     }
 
+    public static function getDefaultServer(): ?int
+    {
+       foreach(self::getServerAll() AS $server){
+           if ($server->isDefault()){
+               return $server->getId();
+           }
+       }
+        $lastServer = server::getLastServer();
+        if ($lastServer !== null) {
+            return $lastServer->getId();
+        }
+        return 0;
+    }
+
     public static function server_info($id = null): bool|array
     {
         return server::getServer($id);

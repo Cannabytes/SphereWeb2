@@ -68,42 +68,17 @@ class userModel
         );
         if ($user) {
             if ($user['server_id'] === null) {
-                $lastServer = server::getLastServer();
-                if ($lastServer !== null) {
-                    $server_id = $lastServer->getId();
-                    if ($server_id !== null) {
-                        $this->changeServerId($server_id, $user['id']);
-                        $user['server_id'] = $server_id;
-                    }
-                }
-            }
-            //Проверим, актуален ли сервер, который у пользователя
-            $lastServer = server::getServer($user['server_id']);
-            if ($lastServer !== null) {
-                $server_id = $lastServer->getId();
-                if ($server_id !== null) {
-                    $this->changeServerId($server_id, $user['id']);
-                    $user['server_id'] = $server_id;
-                }
+                $server_id = server::getDefaultServer();
+                $this->changeServerId($server_id, $user['id']);
+                $user['server_id'] = $server_id;
             }
 
             if ($_SESSION['id'] == $user['id']) {
                 if ( ! password_verify($_SESSION['password'], $user['password'])) {
-                    var_dump("Пароли не совпали, удаляем сессию");
                     session::clear();
-                    exit;
+                    redirect::location("/main");
                 }
             }
-
-            //TODO: Сделать разлогин, если пароль изменился
-            //Нужно проверять  ещё isset, так как идет запрос из платежек сюда.
-            //            if($_SESSION['id'] == $user['id']){
-            //                if ($user['password'] != password_hash($user['password'], PASSWORD_BCRYPT)) {
-            //                    $user['password'] = null;
-            //                    session::clear();
-            //                    return null;
-            //                }
-            //            }
 
             $this->setIsAuth(true);
             $this->id          = $user['id'];

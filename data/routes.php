@@ -2215,4 +2215,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  160 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/server/statistic/donate',
+    'func' => 'controller\\admin\\statistic::getDonate',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );
