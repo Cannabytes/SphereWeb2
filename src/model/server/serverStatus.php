@@ -31,7 +31,9 @@ class serverStatus
 
     public function save(): void
     {
-
+        sql::sql("DELETE FROM `server_cache` WHERE type='status' AND `server_id`=?", [
+            $this->getServerId(),
+        ]);
         $data = [
             'online' => $this->online,
             'isEnable' => $this->isEnable(),

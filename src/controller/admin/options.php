@@ -17,14 +17,11 @@ use Ofey\Logan22\component\servername\servername;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
-use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\server;
 use Ofey\Logan22\model\admin\update_cache;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\install\install;
-use Ofey\Logan22\model\server\serverModel;
-use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
@@ -295,6 +292,7 @@ class options
             "statusGameServerPort" => $statusGameServerPort,
         ];
 
+        $server = \Ofey\Logan22\model\server\server::getServer($serverId);
 
         $data = [
             "id" => $serverId,
@@ -313,6 +311,8 @@ class options
             "maxOnline" => $maxOnline,
             "timezone" => $timezone,
             "resetHWID" => $resetHWID,
+            "default" => $server->isDefault(),
+            'position' => $server->getPosition(),
         ];
 
         $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -365,25 +365,6 @@ class options
             "title" => lang::get_phrase(221),
         ]);
         tpl::display("/admin/server_list.html");
-    }
-
-    static private function filterUniqueIds($objects, $serversFullInfo): array
-    {
-        // Получаем все ID из первого массива
-        $objectIds = array_map(function ($object) {
-            return $object->getId(); // Предполагается, что в классе есть метод getId()
-        }, $objects);
-
-        // Получаем массив только с ID из $serversFullInfo
-        $ids = array_map(function ($server) {
-            return $server['id'];
-        }, $serversFullInfo);
-        // Фильтруем второй массив, исключая ID, которые есть в первом массиве
-        $filteredIds = array_filter($ids, function ($id) use ($objectIds) {
-            return !in_array($id, $objectIds);
-        });
-
-        return $filteredIds;
     }
 
     public static function saveGeneral(): void
@@ -485,7 +466,6 @@ class options
         board::success(lang::get_phrase(217));
     }
 
-    //Добавление БД логин-сервера
     static public function add_new_mysql_connect_to_server(): void
     {
         $type = $_POST['type'] ?? "";
@@ -511,7 +491,8 @@ class options
         }
     }
 
-    //Сохранение настроек для подключения к базе данных MySQL
+    //Добавление БД логин-сервера
+
     static public function saveMySQL(): void
     {
         $server_id = $_POST['serverId'];
@@ -562,6 +543,8 @@ class options
         board::success(lang::get_phrase(217));
     }
 
+    //Сохранение настроек для подключения к базе данных MySQL
+
     static public function new_server(): void
     {
         validation::user_protection("admin");
@@ -579,11 +562,9 @@ class options
         tpl::display("/admin/server_add.html");
     }
 
-
     static public function server_show()
     {
         validation::user_protection("admin");
-
 
 
         tpl::addVar([
@@ -593,7 +574,6 @@ class options
         ]);
         tpl::display("/admin/setting.html");
     }
-
 
     public static function saveConfigDonate(): void
     {
@@ -668,7 +648,6 @@ class options
         }
     }
 
-    //Проверка соединения с базой данных игрового сервера MySQL
     public static function test_connect_db_selected_name()
     {
         validation::user_protection("admin");
@@ -695,6 +674,8 @@ class options
         ]);
     }
 
+    //Проверка соединения с базой данных игрового сервера MySQL
+
     public static function server_list()
     {
         validation::user_protection("admin");
@@ -719,7 +700,6 @@ class options
         update_cache::save();
     }
 
-    //Show info about template
     public static function getTemplateInfo()
     {
         $template = $_POST['template'] ?? board::error("No select template");
@@ -731,11 +711,13 @@ class options
         }
     }
 
+    //Show info about template
+
     public static function changePositionServer(): void
     {
-        if(isset($_POST['positions'])){
+        if (isset($_POST['positions'])) {
             $positions = $_POST['positions'];
-            foreach($positions AS $data){
+            foreach ($positions as $data) {
                 $server_id = $data['id'];
                 $position = $data['position'];
                 $server = \Ofey\Logan22\model\server\server::getServer($server_id);
@@ -748,16 +730,35 @@ class options
     public static function setDefaultServer()
     {
         $serverId = $_POST['id'] ?? board::error("Не получен ID сервера");
-        foreach(\Ofey\Logan22\model\server\server::getServerAll() AS $server){
-            if($server->isDefault()){
+        foreach (\Ofey\Logan22\model\server\server::getServerAll() as $server) {
+            if ($server->isDefault()) {
                 $server->setIsDefault(0);
                 $server->save();
             }
-            if($serverId == $server->getId()){
+            if ($serverId == $server->getId()) {
                 $server->setIsDefault(1);
                 $server->save();
             }
         }
+    }
+
+    static private function filterUniqueIds($objects, $serversFullInfo): array
+    {
+        // Получаем все ID из первого массива
+        $objectIds = array_map(function ($object) {
+            return $object->getId(); // Предполагается, что в классе есть метод getId()
+        }, $objects);
+
+        // Получаем массив только с ID из $serversFullInfo
+        $ids = array_map(function ($server) {
+            return $server['id'];
+        }, $serversFullInfo);
+        // Фильтруем второй массив, исключая ID, которые есть в первом массиве
+        $filteredIds = array_filter($ids, function ($id) use ($objectIds) {
+            return !in_array($id, $objectIds);
+        });
+
+        return $filteredIds;
     }
 
 }

@@ -46,13 +46,16 @@ class statistic
 
     public static function get_pvp($server_id = 0)
     {
+        if ($server_id == 0 or $server_id == null) {
+            $server_id = user::self()->getServerId();
+        }
         self::getStatistic($server_id);
         return self::$statistic[$server_id]['pvp'] ?? null;
     }
 
     private static function getStatistic($server_id = null)
     {
-        if(server::get_count_servers()==0){
+        if (server::get_count_servers() == 0) {
             return false;
         }
 
@@ -64,7 +67,7 @@ class statistic
             return self::$statistic[$server_id];
         }
 
-        if ($server_id === null) {
+        if ($server_id == 0 or $server_id == null) {
             $server_id = user::self()->getServerId();
         }
 
@@ -105,7 +108,7 @@ class statistic
                     ]);
                 }
             }
-        }else{
+        } else {
             self::$statistic = false;
         }
 
@@ -115,30 +118,45 @@ class statistic
 
     public static function get_pk($server_id = 0)
     {
+        if ($server_id == 0 or $server_id == null) {
+            $server_id = user::self()->getServerId();
+        }
         self::getStatistic($server_id);
         return self::$statistic[$server_id]['pk'] ?? [];
     }
 
     public static function get_players_online_time($server_id = 0)
     {
+        if ($server_id == 0 or $server_id == null) {
+            $server_id = user::self()->getServerId();
+        }
         self::getStatistic($server_id);
         return self::$statistic[$server_id]['online'] ?? [];
     }
 
     public static function get_exp($server_id = 0)
     {
+        if ($server_id == 0 or $server_id == null) {
+            $server_id = user::self()->getServerId();
+        }
         self::getStatistic($server_id);
         return self::$statistic[$server_id]['exp'] ?? [];
     }
 
     public static function get_clan($server_id = 0)
     {
+        if ($server_id == 0 or $server_id == null) {
+            $server_id = user::self()->getServerId();
+        }
         self::getStatistic($server_id);
         return self::$statistic[$server_id]['clan'] ?? [];
     }
 
     public static function get_castle($server_id = 0)
     {
+        if ($server_id == 0 or $server_id == null) {
+            $server_id = user::self()->getServerId();
+        }
         self::getStatistic($server_id);
         return self::$statistic[$server_id]['castle'] ?? [];
     }

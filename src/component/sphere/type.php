@@ -72,6 +72,8 @@ enum type
     case GET_DATABASE_LIST;
     // Удаление БД
     case DELETE_DATABASE;
+    case CONNECTION_QUALITY_DATABASE;
+    case PORT_QUALITY_DATABASE;
 
     case GET_GAME_SERVERS; //DEPRECATED
     case GET_LOGIN_SERVERS; //DEPRECATED
@@ -121,6 +123,8 @@ enum type
 
             self::GET_DATABASE_LIST => '/api/server/get/databases',
             self::DELETE_DATABASE => '/api/server/delete/db',
+            self::CONNECTION_QUALITY_DATABASE => '/api/server/quality/db',
+            self::PORT_QUALITY_DATABASE => '/api/server/quality/port',
             self::GET_GAME_SERVERS => '/api/server/get/gameservers',
             self::GET_LOGIN_SERVERS => '/api/server/get/loginservers',
             self::GET_LOGIN_SERVERS_DATA => '/api/server/get/loginservers/data',

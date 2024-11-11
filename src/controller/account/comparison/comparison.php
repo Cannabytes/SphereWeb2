@@ -25,9 +25,13 @@ class comparison
           'login'=>$login,
           'password'=>$password,
         ])->show(false)->getResponse();
-        if($response['success']){
-            user::self()->getLoadAccounts(true);
-            board::success("Аккаунт добавлен");
+        if(isset($response['success'])){
+            if($response['success']){
+                user::self()->getLoadAccounts(true);
+                board::success("Аккаунт добавлен");
+            }else{
+                board::success($response['message']);
+            }
         }else{
             //error type
             switch ($response['error']){

@@ -73,10 +73,12 @@ class userModel
                 $user['server_id'] = $server_id;
             }
 
-            if ($_SESSION['id'] == $user['id']) {
-                if ( ! password_verify($_SESSION['password'], $user['password'])) {
-                    session::clear();
-                    redirect::location("/main");
+            if(isset($_SESSION['id'])){
+                if ($_SESSION['id'] == $user['id']) {
+                    if ( ! password_verify($_SESSION['password'], $user['password'])) {
+                        session::clear();
+                        redirect::location("/main");
+                    }
                 }
             }
 
@@ -337,7 +339,7 @@ class userModel
 
     public function getServerId(): ?int
     {
-        if ($this->serverId === null) {
+        if ($this->serverId === null OR $this->serverId == 0) {
             if (isset($_SESSION['server_id']) && ! $this->isAuth) {
                 return $_SESSION['server_id'];
             }
@@ -350,8 +352,12 @@ class userModel
                     return $server->getId();
                 }
             }
+
             //Если нет выбранного сервера по умолчанию, тогда вернем последний
             $lastServer = server::getLastServer();
+            if($lastServer){
+                $this->setServerId($lastServer->getPosition());
+            }
 
             return $lastServer?->getId();
         }

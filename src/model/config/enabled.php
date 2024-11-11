@@ -39,7 +39,7 @@ class enabled
             $this->enable_referral  = (bool)filter_var($setting['enable_referral'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_ticket    = (bool)filter_var($setting['enable_ticket'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_send_balance_game    = (bool)filter_var($setting['enable_send_balance_game'] ?? true, FILTER_VALIDATE_BOOLEAN);
-            $this->enable_bonus_code    = (bool)filter_var($setting['enable_bonus_code'], FILTER_VALIDATE_BOOLEAN);
+            $this->enable_bonus_code    = (bool)filter_var($setting['enable_bonus_code'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_stream    = (bool)filter_var($setting['enable_stream'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_emulation    = (bool)filter_var($setting['enable_emulation'] ?? false, FILTER_VALIDATE_BOOLEAN);
         }

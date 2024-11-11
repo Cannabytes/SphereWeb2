@@ -25,7 +25,6 @@ class server
     private static ?array $server_info = null;
 
     private static array $get_default_desc_page_id = [];
-    private static mixed $arrayServerStatus;
     static private $firstLoadServer = false;
     /**
      * @var serverStatus[]|null
@@ -95,7 +94,8 @@ class server
                 $serverStatus->setGameServer($server['serverStatus']['loginserver']);
                 $serverStatus->setOnline($server['serverStatus']['online'] ?? 200);
                 $serverStatus->setEnable(filter_var($server['serverStatus']['isEnableStatus'] ?? true, FILTER_VALIDATE_BOOLEAN));
-                serverModel::$arrayServerStatus[$serverId] = $serverStatus;
+
+                self::$server_info[$serverId]->serverStatus = $serverStatus;
             }
         } else {
 
@@ -141,6 +141,7 @@ class server
     {
         if ($status != null){
             $serverStatus = new serverStatus();
+            $serverStatus->setEnable($status['isEnableStatus']);
             $serverStatus->setServerId($status['id']);
             $serverStatus->setLoginServer($status['loginServer'] ?? false);
             $serverStatus->setGameServer($status['gameServer'] ?? false);

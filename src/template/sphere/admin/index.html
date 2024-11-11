@@ -7,709 +7,791 @@
 <div class="container-fluid">
 
 
-  <!-- Start::row-1 -->
-  <div class="row">
-    <div class="col-xxl-3">
+    <!-- Start::row-1 -->
+    <div class="row">
+        <div class="col-xxl-3">
 
-      {% if config().enabled().isEnableEmulation() %}
+            {% if config().enabled().isEnableEmulation() %}
 
-      <div class="alert alert-dark" role="alert">
-        {{ phrase('func_emulation_server_desc_enable')|raw }}
-      </div>
+            <div class="alert alert-dark" role="alert">
+                {{ phrase('func_emulation_server_desc_enable')|raw }}
+            </div>
 
-      {% endif %}
+            {% endif %}
 
-      {% if sphereAPIError %}
-      <div class="card custom-card">
-        <div class="p-4 border-bottom border-block-end-dashed">
-          {{ phrase(SphereApiCodeError())|raw }}
-        </div>
-      </div>
-      {% else %}
-
-      {% if self_last_commit != sphere_last_commit %}
-      <div class="card custom-card">
-        <div class="p-4 border-bottom border-block-end-dashed">
-          <p class="fw-semibold mb-2 text-danger">{{ phrase('sphereweb_update_detected') }}</p>
-          <a href="/admin/sphere/update" class="btn btn-light btn-wave btn-sm ms-auto">{{ phrase('proceed_to_update')
-            }}</a>
-        </div>
-      </div>
-      {% endif %}
-
-      {% if servers|length == 0 %}
-      <div class="card custom-card">
-        <div class="p-4 border-bottom border-block-end-dashed">
-          <p class="fw-semibold mb-2 text-danger">{{ phrase('you_have_no_servers') }}</p>
-          <a href="/admin/server/add/new" class="btn btn-light btn-wave btn-sm ms-auto">{{ phrase('add_server') }}</a>
-        </div>
-      </div>
-      {% endif %}
-
-
-        <div class="card custom-card">
-          <div class="card-body">
-            <div class="d-flex align-items-top justify-content-between mb-2">
-
-              <div class="flex-fill d-flex align-items-top">
-                <div class="me-2">
-                  <span class="avatar avatar-md text-primary border bg-light"><i class="ti ti-currency-dollar fs-18"></i></span>
+            {% if sphereAPIError %}
+            <div class="card custom-card">
+                <div class="p-4 border-bottom border-block-end-dashed">
+                    {{ phrase(SphereApiCodeError())|raw }}
                 </div>
-                <div class="flex-fill">
-                  <p class="fw-semibold fs-14 mb-0"><a href="/admin/balance">{{ phrase('sphereweb_maintenance') }}</a></p>
-                  <p class="mb-0 text-muted fs-12 op-7">{{ phrase('on_your_balance') }} <span class="text-primary h4">${{balance|number_format(2)}}</span></p>
-                </div>
-              </div>
+            </div>
+            {% else %}
 
-              <div>
-                <a href="javascript:void(0);" data-bs-toggle="dropdown" class="btn btn-icon btn-sm btn-light" aria-expanded="false"><i class="ti ti-dots"></i></a>
-                <ul class="dropdown-menu" style="">
-                  <li><a href="/admin/balance/faq" class="dropdown-item">{{ phrase('frequently asked questions') }}</a></li>
-                  <li><a href="/admin/balance" class="dropdown-item">{{ phrase('refill') }}</a></li>
-                </ul>
-              </div>
+            {% if self_last_commit != sphere_last_commit %}
+            <div class="card custom-card">
+                <div class="p-4 border-bottom border-block-end-dashed">
+                    <p class="fw-semibold mb-2 text-danger">{{ phrase('sphereweb_update_detected') }}</p>
+                    <a href="/admin/sphere/update" class="btn btn-light btn-wave btn-sm ms-auto">{{
+                        phrase('proceed_to_update')
+                        }}</a>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if servers|length == 0 %}
+            <div class="card custom-card">
+                <div class="p-4 border-bottom border-block-end-dashed">
+                    <p class="fw-semibold mb-2 text-danger">{{ phrase('you_have_no_servers') }}</p>
+                    <a href="/admin/server/add/new" class="btn btn-light btn-wave btn-sm ms-auto">{{
+                        phrase('add_server') }}</a>
+                </div>
+            </div>
+            {% endif %}
+
+
+            <div class="card custom-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-top justify-content-between mb-2">
+
+                        <div class="flex-fill d-flex align-items-top">
+                            <div class="me-2">
+                                <span class="avatar avatar-md text-primary border bg-light"><i
+                                        class="ti ti-currency-dollar fs-18"></i></span>
+                            </div>
+                            <div class="flex-fill">
+                                <p class="fw-semibold fs-14 mb-0"><a href="/admin/balance">{{
+                                    phrase('sphereweb_maintenance') }}</a></p>
+                                <p class="mb-0 text-muted fs-12 op-7">{{ phrase('on_your_balance') }} <span
+                                        class="text-primary h4">${{balance|number_format(2)}}</span></p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <a href="javascript:void(0);" data-bs-toggle="dropdown"
+                               class="btn btn-icon btn-sm btn-light" aria-expanded="false"><i
+                                    class="ti ti-dots"></i></a>
+                            <ul class="dropdown-menu" style="">
+                                <li><a href="/admin/balance/faq" class="dropdown-item">{{ phrase('frequently asked
+                                    questions') }}</a></li>
+                                <li><a href="/admin/balance" class="dropdown-item">{{ phrase('refill') }}</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3 ">
+                        <div class="text-muted">
+                            <div class="table-responsive">
+                                <table class="table text-nowrap">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">{{ phrase('service') }}</th>
+                                        <th scope="col">{{ phrase('end date') }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="table-group-divider">
+
+                                    <tr>
+                                        <th scope="row">Sphere Web</th>
+                                        <td><span class="text-{% if licenseActive %}success{% else %}danger{% endif %}">{% if licenseActive == false %}<i
+                                                class="bi bi-x-circle"></i> {% endif %}{{ license|date('d.m.Y H:i', getUser().getTimezone()) }}</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th scope="row">Sphere Launcher</th>
+                                        <td>
+                                            {% if launcher.dateTimeout == false %}
+                                            <span class="text-danger">{{ phrase('not_active') }}</span>
+                                            {% else %}
+                                            <span class="text-success">{{launcher.dateTimeout|date('d.m.Y H:i', getUser().getTimezone())}}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th scope="row">{{ phrase('lucky_wheel') }}</th>
+                                        <td>
+                                            {% if rouletteActive == false %}
+                                            <span class="text-danger">{{ phrase('not_active') }}</span>
+                                            {% else %}
+                                            <span class="text-success">{{roulette|date('d.m.Y H:i', getUser().getTimezone())}}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+                    <div class="d-grid gap-2 ">
+                        <a class="btn btn-teal me-md-2 btn-wave waves-effect waves-light" href="/admin/balance">{{
+                            phrase('balance management') }}</a>
+                    </div>
+
+
+                </div>
 
             </div>
 
-            <div class="mb-3 ">
-              <div class="text-muted">
-                <div class="table-responsive">
-                  <table class="table text-nowrap">
-                    <thead>
-                    <tr>
-                      <th scope="col">{{ phrase('service') }}</th>
-                      <th scope="col">{{ phrase('end date') }}</th>
-                    </tr>
-                    </thead>
-                    <tbody class="table-group-divider">
+            {% if config().enabled().isEnableEmulation() == false %}
 
-                    <tr>
-                      <th scope="row">Sphere Web</th>
-                      <td><span class="text-{% if licenseActive %}success{% else %}danger{% endif %}">{% if licenseActive == false %}<i class="bi bi-x-circle"></i> {% endif %}{{ license|date('d.m.Y H:i', getUser().getTimezone()) }}</span></td>
-                    </tr>
+            {% for server in servers %}
+            {% set serverInfo = getServer(server.id) %}
 
-                    <tr>
-                      <th scope="row">Sphere Launcher</th>
-                      <td>
-                        {% if launcher.dateTimeout == false %}
-                          <span class="text-danger">{{ phrase('not_active') }}</span>
-                        {% else %}
-                        <span class="text-success">{{launcher.dateTimeout|date('d.m.Y H:i', getUser().getTimezone())}}</span>
-                        {% endif %}
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <th scope="row">{{ phrase('lucky_wheel') }}</th>
-                      <td>
-                        {% if rouletteActive == false %}
-                          <span class="text-danger">{{ phrase('not_active') }}</span>
-                        {% else %}
-                        <span class="text-success">{{roulette|date('d.m.Y H:i', getUser().getTimezone())}}</span>
-                        {% endif %}
-                      </td>
-                    </tr>
-
-                    </tbody>
-                  </table>
-                </div>
-
-
-
-              </div>
-
-
-            </div>
-            <div class="d-grid gap-2 ">
-              <a class="btn btn-teal me-md-2 btn-wave waves-effect waves-light" href="/admin/balance">{{ phrase('balance management') }}</a>
-            </div>
-
-
-          </div>
-
-        </div>
-
-      {% if config().enabled().isEnableEmulation() == false %}
-
-      {% for server in servers %}
-      {% set serverInfo = getServer(server.id) %}
-
-
-        <div class="card custom-card overflow-hidden">
-          <div class="card-body p-0 border-bottom">
-            <div class="px-1 py-2 {% if serverInfo.getStatus().getGameServer() == false %}bg-danger{% else %}bg-success{% endif %} op-3"></div>
-            <div class="p-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="fs-18 fw-semibold">{{serverInfo.getName()}} x{{serverInfo.getRateExp()}}</div>
-                <div>
-                  <span class="badge bg-info-transparent">{{serverInfo.getChronicle()}}</span>
-                </div>
-              </div>
-              <ul class="list-unstyled mb-0">
-                <li class="d-flex align-items-center mb-3">
+            <div class="card custom-card overflow-hidden">
+                <div class="card-body p-0 border-bottom">
+                    <div class="px-1 py-2 {% if serverInfo.getStatus().getGameServer() == false %}bg-danger{% else %}bg-success{% endif %} op-3"></div>
+                    <div class="p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="fs-18 fw-semibold">{{serverInfo.getName()}} x{{serverInfo.getRateExp()}}</div>
+                            <div>
+                                <span class="badge bg-info-transparent">{{serverInfo.getChronicle()}}</span>
+                            </div>
+                        </div>
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex align-items-center mb-3">
                                                                 <span class="me-2">
                                                                     <i
                                                                             class="{% if serverInfo.getStatus().isEnableLoginServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
                                                                 </span>
-                  <span class="{% if serverInfo.getStatus().isEnableLoginServerMySQL() %}text-success{% else %}text-danger{% endif %}">
+
+
+                                <svg role="button" data-type="login" data-server-id="{{serverInfo.getLoginId()}}"
+                                     class="connectionQualityCheck bi bi-database text-primary"
+                                     xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
+                                </svg>
+
+                                <span class="{% if serverInfo.getStatus().isEnableLoginServerMySQL() %}text-success{% else %}text-danger{% endif %}">
                                                                     <strong class="me-1">Соединение с БД</strong> LoginServer
                                                                 </span>
-                </li>
-                <li class="d-flex align-items-center mb-3">
-                                                                <span class="me-2">
-                                                                    <i
-                                                                            class="{% if serverInfo.getStatus().isEnableGameServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
-                                                                </span>
-                  <span class="{% if serverInfo.getStatus().isEnableGameServerMySQL() %}text-success{% else %}text-danger{% endif %}">
+
+                            </li>
+                            <li class="d-flex align-items-center mb-3">
+                <span class="me-2">
+                   <i class="{% if serverInfo.getStatus().isEnableGameServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
+                </span>
+
+                                <svg role="button" data-type="game" data-server-id="{{serverInfo.getGameId()}}"
+                                        class="connectionQualityCheck bi bi-database text-primary"
+                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
+                                </svg>
+
+                                <span class="{% if serverInfo.getStatus().isEnableGameServerMySQL() %}text-success{% else %}text-danger{% endif %}">
                                                                     <strong class="me-1">Соединение с БД</strong> GameServer
                                                                 </span>
-                </li>
+                            </li>
 
-                <li class="d-flex align-items-center mb-3">
-                  <span class="me-2">  <i  class="{% if serverInfo.getStatus().getLoginServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
-                  <span class="{% if serverInfo.getStatus().getLoginServer() %}text-success{% else %}text-danger{% endif %}">
+                            <li class="d-flex align-items-center mb-3">
+                                <span class="me-2">  <i
+                                        class="{% if serverInfo.getStatus().getLoginServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
+                                <span class="{% if serverInfo.getStatus().getLoginServer() %}text-success{% else %}text-danger{% endif %}">
+
+                                                                    <svg role="button" data-type="login" data-server-id="{{serverInfo.getId()}}"
+                                                                         class="portQualityCheck bi bi-database text-primary"
+                                                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
+                                </svg>
+
                     <strong class="me-1">Проверка порта </strong> LoginServer
                     </span>
-                </li>
+                            </li>
 
-                <li class="d-flex align-items-center mb-3">
-                  <span class="me-2">  <i  class="{% if serverInfo.getStatus().getGameServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
-                  <span class="{% if serverInfo.getStatus().getGameServer() %}text-success{% else %}text-danger{% endif %}">
+                            <li class="d-flex align-items-center mb-3">
+                                <span class="me-2">  <i
+                                        class="{% if serverInfo.getStatus().getGameServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
+                                <span class="{% if serverInfo.getStatus().getGameServer() %}text-success{% else %}text-danger{% endif %}">
+
+                                                                    <svg role="button" data-type="game" data-server-id="{{serverInfo.getId()}}"
+                                                                         class="portQualityCheck bi bi-database text-primary"
+                                                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
+                                </svg>
+
                     <strong class="me-1">Проверка порта</strong> GameServer </span>
-                </li>
+                            </li>
 
 
-                <li class="d-grid">
+                            <li class="d-grid">
 
-                  <div class="btn-group btn-group-sm my-1" role="group" aria-label="Small button group">
-                    <a href="/admin/server/edit/{{serverInfo.getId()}}" class="btn btn-outline-success">Изменить</a>
-                    <a href="/admin/server/statistic/{{serverInfo.getId()}}" class="btn btn-outline-success">Статистика</a>
-                  </div>
+                                <div class="btn-group btn-group-sm my-1" role="group" aria-label="Small button group">
+                                    <a href="/admin/server/edit/{{serverInfo.getId()}}" class="btn btn-outline-success">Изменить</a>
+                                    <a href="/admin/server/statistic/{{serverInfo.getId()}}"
+                                       class="btn btn-outline-success">Статистика</a>
+                                </div>
 
-                </li>
-              </ul>
-
-            </div>
-
-          </div>
-
-          <div class="card-body p-0 main-profile-info">
-            <div class="d-flex align-items-center justify-content-between w-100">
-              <div class="py-3 border-end w-100 text-center">
-                <p class="fw-bold fs-20  text-shadow mb-0">{{serverInfo.getStatus().getOnline()}}</p>
-                <p class="mb-0 fs-12 text-muted ">{{ phrase('online') }}</p>
-              </div>
-              <div class="py-3 w-100 text-center {% if server.count_errors >= 1 %}bg-danger-transparent{% endif %}">
-                <a href="/admin/server/errors/{{serverInfo.getId()}}">
-                  <p class="fw-bold fs-20  text-shadow mb-0">
-                    {{server.count_errors}}</p>
-                  <p class="mb-0 fs-12 text-muted ">{{ phrase('errors') }}</p>
-                </a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-
-      {% endfor %}
-
-      {% endif %}
-
-      {% endif %}
-
-
-
-      <div class="card">
-        <div class="card-body">
-          <h4 class="mb-2 fw-semibold">Sphere Launcher</h4>
-          <p>
-            {{ phrase('sphere_launcher_description') }}
-          </p>
-          <a href="/admin/launcher" class="btn btn-light">{{ phrase('connect') }}</a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-body">
-          <h4 class="mb-2 fw-semibold">{{phrase('found_bug_question')}}</h4>
-          <p>{{phrase('found_issue_server_build_missing_idea_contact_sphere_chat')|raw}}</p>
-        </div>
-      </div>
-
-
-    </div>
-    <div class="col-xxl-9">
-      <div class="row">
-        <div class="col-xl-12">
-          <div class=" custom-card">
-            <div class="card-body p-0">
-              <div class="border-block-end-dashed  bg-white rounded-2 p-2">
-                <div>
-                  <ul class="nav nav-pills nav-justified gx-3 tab-style-6 d-sm-flex d-block " id="myTab" role="tablist">
-                    <li class="nav-item rounded" role="presentation">
-                      <button class="nav-link active" id="followers-tab" data-bs-toggle="tab"
-                              data-bs-target="#followers-tab-pane" type="button" role="tab"
-                              aria-controls="followers-tab-pane" aria-selected="false"><i
-                        class="ri-money-dollar-box-line me-1 align-middle d-inline-block fs-16"></i>{{
-                        phrase('settings') }}
-                      </button>
-                    </li>
-
-                    <li class="nav-item rounded" role="presentation">
-                      <button class="nav-link " id="activity-tab" data-bs-toggle="tab"
-                              data-bs-target="#activity-tab-pane" type="button" role="tab"
-                              aria-controls="activity-tab-pane" aria-selected="true"><i
-                        class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>{{ phrase('logs_and_events') }}
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div class="py-4">
-                <div class="tab-content" id="myTabContent">
-
-                  <div class="tab-pane show active fade p-0 border-0" id="followers-tab-pane"
-                       role="tabpanel" aria-labelledby="followers-tab" tabindex="0">
-                    <div class="row">
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/general.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('general_settings') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/setting" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/donate.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('donation_history') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/server/statistic/donate" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/pages.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('news_and_pages') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/pages" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/servers.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('servers') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            {% if config().enabled().isEnableEmulation() %}
-                              {{ phrase('available after disabling emulation') }}
-                            {% else %}
-                            <div class="btn-list">
-                              <a href="/admin/server/list" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
-                                }}</a>
-                            </div>
-                            {% endif %}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/stream.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{phrase('stream')}}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/stream" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/shop.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase(215) }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            {% if config().enabled().isEnableEmulation() %}
-                            {{ phrase('available after disabling emulation') }}
-                            {% else %}
-                            <div class="btn-list">
-                              <a href="/admin/shop" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                            {% endif %}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/startpack.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('starter_pack') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            {% if config().enabled().isEnableEmulation() %}
-                            {{ phrase('available after disabling emulation') }}
-                            {% else %}
-                            <div class="btn-list">
-                              <a href="/admin/shop/startpack" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
-                                }}</a>
-                            </div>
-                            {% endif %}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/bonuscode.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('bonus_codes') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            {% if config().enabled().isEnableEmulation() %}
-                            {{ phrase('available after disabling emulation') }}
-                            {% else %}
-                            <div class="btn-list">
-                              <a href="/admin/bonuscode/create" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
-                                }}</a>
-                              <a href="/admin/bonuscode/list" class="btn btn-sm btn-light btn-wave">{{ phrase(56) }}</a>
-                            </div>
-                            {% endif %}
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/forum.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('connect_forum') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/forum" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/users.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('users') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/users" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/mailing.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('mail_messages') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/mailing" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/logs.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('logs') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/logs" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/paidext.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('extensions') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/extensions/paid" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
-                                }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-
-                      <h5 class="mb-5 mt-3 fw-semibold text-center">Служебное</h5>
-
-
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/paidext.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">Sphere API</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/sphereapi" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {# переводы #}
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/news.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('translations') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/phrases" class="btn btn-sm btn-light btn-wave">{{ phrase('system_phrase') }}</a>
-                              <a href="/admin/phrases/custom" class="btn btn-sm btn-light btn-wave">{{ phrase('custom_phrase') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {# Маршрутизаторы #}
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/routers.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('routers') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/route" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {# Обновления ПО #}
-                      <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div class="card custom-card shadow-none border">
-                          <div class="card-body p-4">
-                            <div class="text-center">
-                                                                            <span
-                                                                              class="avatar avatar-xl avatar-rounded">
-                                                                                <img
-                                                                                  src="{{template}}/assets/images/admenu/updates.png"
-                                                                                  alt="">
-                                                                            </span>
-                              <div class="mt-2">
-                                <p class="mb-0 fw-semibold">{{ phrase('software_update') }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer text-center">
-                            <div class="btn-list">
-                              <a href="/admin/sphere/update" class="btn btn-sm btn-light btn-wave">{{ phrase('open')
-                                }}</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
+                            </li>
+                        </ul>
 
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-  </div>
-  <!--End::row-1 -->
+                </div>
+
+                <div class="card-body p-0 main-profile-info">
+                    <div class="d-flex align-items-center justify-content-between w-100">
+                        <div class="py-3 border-end w-100 text-center">
+                            <p class="fw-bold fs-20  text-shadow mb-0">{{serverInfo.getStatus().getOnline()}}</p>
+                            <p class="mb-0 fs-12 text-muted ">{{ phrase('online') }}</p>
+                        </div>
+                        <div class="py-3 w-100 text-center {% if server.count_errors >= 1 %}bg-danger-transparent{% endif %}">
+                            <a href="/admin/server/errors/{{serverInfo.getId()}}">
+                                <p class="fw-bold fs-20  text-shadow mb-0">
+                                    {{server.count_errors}}</p>
+                                <p class="mb-0 fs-12 text-muted ">{{ phrase('errors') }}</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            {% endfor %}
+
+            {% endif %}
+
+            {% endif %}
+
+
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mb-2 fw-semibold">Sphere Launcher</h4>
+                    <p>
+                        {{ phrase('sphere_launcher_description') }}
+                    </p>
+                    <a href="/admin/launcher" class="btn btn-light">{{ phrase('connect') }}</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mb-2 fw-semibold">{{phrase('found_bug_question')}}</h4>
+                    <p>{{phrase('found_issue_server_build_missing_idea_contact_sphere_chat')|raw}}</p>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="col-xxl-9">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class=" custom-card">
+                        <div class="card-body p-0">
+                            <div class="border-block-end-dashed  bg-white rounded-2 p-2">
+                                <div>
+                                    <ul class="nav nav-pills nav-justified gx-3 tab-style-6 d-sm-flex d-block "
+                                        id="myTab" role="tablist">
+                                        <li class="nav-item rounded" role="presentation">
+                                            <button class="nav-link active" id="followers-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#followers-tab-pane" type="button" role="tab"
+                                                    aria-controls="followers-tab-pane" aria-selected="false"><i
+                                                    class="ri-money-dollar-box-line me-1 align-middle d-inline-block fs-16"></i>{{
+                                                phrase('settings') }}
+                                            </button>
+                                        </li>
+
+                                        <li class="nav-item rounded" role="presentation">
+                                            <button class="nav-link " id="activity-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#activity-tab-pane" type="button" role="tab"
+                                                    aria-controls="activity-tab-pane" aria-selected="true"><i
+                                                    class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>{{
+                                                phrase('logs_and_events') }}
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="py-4">
+                                <div class="tab-content" id="myTabContent">
+
+                                    <div class="tab-pane show active fade p-0 border-0" id="followers-tab-pane"
+                                         role="tabpanel" aria-labelledby="followers-tab" tabindex="0">
+                                        <div class="row">
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/general.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{
+                                                                    phrase('general_settings') }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/setting"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/donate.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{
+                                                                    phrase('donation_history') }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/server/statistic/donate"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/pages.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase('news_and_pages')
+                                                                    }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/pages"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/servers.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase('servers') }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        {% if config().enabled().isEnableEmulation() %}
+                                                        {{ phrase('available after disabling emulation') }}
+                                                        {% else %}
+                                                        <div class="btn-list">
+                                                            <a href="/admin/server/list"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/stream.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{phrase('stream')}}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/stream"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/shop.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase(215) }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        {% if config().enabled().isEnableEmulation() %}
+                                                        {{ phrase('available after disabling emulation') }}
+                                                        {% else %}
+                                                        <div class="btn-list">
+                                                            <a href="/admin/shop" class="btn btn-sm btn-light btn-wave">{{
+                                                                phrase('open') }}</a>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/startpack.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase('starter_pack')
+                                                                    }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        {% if config().enabled().isEnableEmulation() %}
+                                                        {{ phrase('available after disabling emulation') }}
+                                                        {% else %}
+                                                        <div class="btn-list">
+                                                            <a href="/admin/shop/startpack"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/bonuscode.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase('bonus_codes')
+                                                                    }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        {% if config().enabled().isEnableEmulation() %}
+                                                        {{ phrase('available after disabling emulation') }}
+                                                        {% else %}
+                                                        <div class="btn-list">
+                                                            <a href="/admin/bonuscode/create"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                            <a href="/admin/bonuscode/list"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase(56)
+                                                                }}</a>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/forum.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase('connect_forum')
+                                                                    }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/forum"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/users.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase('users') }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/users"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/mailing.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase('mail_messages')
+                                                                    }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/mailing"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/logs.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase('logs') }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/logs" class="btn btn-sm btn-light btn-wave">{{
+                                                                phrase('open') }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/paidext.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase('extensions')
+                                                                    }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/extensions/paid"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <h5 class="mb-5 mt-3 fw-semibold text-center">Служебное</h5>
+
+
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/paidext.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">Sphere API</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/sphereapi"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {# переводы #}
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/news.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase('translations')
+                                                                    }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/phrases"
+                                                               class="btn btn-sm btn-light btn-wave">{{
+                                                                phrase('system_phrase') }}</a>
+                                                            <a href="/admin/phrases/custom"
+                                                               class="btn btn-sm btn-light btn-wave">{{
+                                                                phrase('custom_phrase') }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {# Маршрутизаторы #}
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/routers.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase('routers') }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/route"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {# Обновления ПО #}
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                        src="{{template}}/assets/images/admenu/updates.png"
+                                                                                        alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{ phrase('software_update')
+                                                                    }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/sphere/update"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!--End::row-1 -->
 
 </div>
 
@@ -717,9 +799,12 @@
 
 
 {% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/sweetalert2/sweetalert2.min.css">
 
 {% endblock %}
 
 
 {% block js %}
+<script src="{{template}}/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+<script src="{{template}}/assets/js/sweetalertdb.js?v=0.0.3"></script>
 {% endblock %}
