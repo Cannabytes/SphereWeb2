@@ -340,7 +340,7 @@ class userModel
     public function getServerId(): ?int
     {
         if ($this->serverId === null OR $this->serverId == 0) {
-            if (isset($_SESSION['server_id']) && ! $this->isAuth) {
+            if (isset($_SESSION['server_id']) && ! $this->isAuth && !$_SESSION['id']==0) {
                 return $_SESSION['server_id'];
             }
             if(server::getServerAll() === null) {
