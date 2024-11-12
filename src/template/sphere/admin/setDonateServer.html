@@ -87,10 +87,20 @@
 
                                 <hr>
 
-                                <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
-                                    <div>
+                                {% if config().other().IsExchangeRates() %}
+                                <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between text-success">
+                                    Включено автоматическое получение курса валют.
+                                    <br>
+                                    Блок "соотношение валют" не будет применен.
+                                </div>
+                                {% endif %}
+
+                                <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between ">
+
+                                    <div class="col-xl-2">
                                         <p class="fs-14 mb-1 fw-semibold">{{ phrase('currency_ratio') }}</p>
                                     </div>
+
                                     <div class="col-xl-2">
                                         <label for="ratioUSD" class="form-label">USD</label>
                                         <input min="0.01" step="0.01" type="number" class="form-control" disabled
@@ -112,7 +122,10 @@
                                         <input min="0.01" step="0.01" type="number" class="form-control" id="ratioRUB"
                                                value="{{config().donate().getRatioRUB()}}" placeholder="100">
                                     </div>
+
                                 </div>
+
+
 
                                 <hr>
 
@@ -825,10 +838,10 @@
 
 {% block js %}
 <script>
+
     $(document).on('click', '.saveDonateConfig', function () {
-        let tableItemsBonus = {}; // Инициализация результирующего объекта
-        // Перебор всех вкладок и сбор данных
-        $('#bonus_Item_donation .nav-tabs .nav-link').each(function () {
+        let tableItemsBonus = {};
+         $('#bonus_Item_donation .nav-tabs .nav-link').each(function () {
             var tabId = $(this).attr('id');
             var tabPaneId = $(this).attr('aria-controls');
             var tabValue = $(this).text().trim(); // Используем текст вкладки как ключ

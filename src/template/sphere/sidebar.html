@@ -180,7 +180,7 @@
     </nav>
 
     {% for server in getServerAll() %}
-    {% if server.getStatus().isEnable() %}
+    {% if server.showStatusBar() %}
     <div class="col-xl-12">
       <div class="card custom-card border-top-card border-top-danger rounded-0">
         <div class="card-body">

@@ -133,9 +133,9 @@ class databases
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? board::error("No id");
         $response = \Ofey\Logan22\component\sphere\server::send(type::CONNECTION_QUALITY_DATABASE, [
             'type' => $type,
-            'id'   => $id,
+            'id' => $id,
         ])->show(true)->getResponse();
-        if($response['success'] ?? false){
+        if ($response['success'] ?? false) {
             $response['evaluate'] = self::evaluateConnection($response['connectionTime'], $response['queryTime']);
         }
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
@@ -155,14 +155,15 @@ class databases
         };
     }
 
-    public static function portQualityCheck(): void {
+    public static function portQualityCheck(): void
+    {
         $type = filter_input(INPUT_POST, 'type') ?? board::error('No set type');
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? board::error("No id");
         $response = \Ofey\Logan22\component\sphere\server::send(type::PORT_QUALITY_DATABASE, [
             'type' => $type,
-            'id'   => $id,
+            'id' => $id,
         ])->show(true)->getResponse();
-        if($response['success'] ?? false){
+        if ($response['success'] ?? false) {
             $response['evaluate'] = self::evaluatePort($response['pingTime']);
         }
         echo json_encode($response, JSON_UNESCAPED_UNICODE);

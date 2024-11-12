@@ -87,7 +87,6 @@ class server
                 $serverId = $server['id'];
                 $page = self::get_default_desc_page_id($serverId);
                 self::$server_info[$serverId] = new serverModel($server, [], $page);
-
                 $serverStatus = new serverStatus();
                 $serverStatus->setServerId($serverId);
                 $serverStatus->setLoginServer($server['serverStatus']['loginserver']);
@@ -147,7 +146,7 @@ class server
             $serverStatus->setGameServer($status['gameServer'] ?? false);
             $serverStatus->setEnableLoginServerMySQL($status['loginServerDB'] ?? false);
             $serverStatus->setEnableGameServerMySQL($status['gameServerDB'] ?? false);
-            $serverStatus->setOnline($cache['online'] ?? 0);
+            $serverStatus->setOnline($status['online'] ?? 0);
             $serverStatus->setGameIPStatusServer($status['gameServerIP'] ?? '0.0.0.0');
             $serverStatus->setGamePortStatusServer($status['gameServerPort'] ?? -1);
             $serverStatus->setLoginIPStatusServer($status['loginServerIP'] ?? '0.0.0.0');

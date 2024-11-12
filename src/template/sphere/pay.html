@@ -22,33 +22,39 @@
                             <button class="btn btn-icon btn-primary input-group-text flex-fill "
                                     id="product-quantity-minus"><i class="ri-subtract-line"></i></button>
                             <input min="1"
-                                   max="{{config().donate().getMaxSummaPaySphereCoin()}}" type="text" class="form-control form-control-sm border-0 text-center w-100"
-                                   aria-label="quantity" id="numberOfCoinsPurchased" value="{{config().donate().getMinSummaPaySphereCoin()}}">
+                                   max="{{config().donate().getMaxSummaPaySphereCoin()}}" type="text"
+                                   class="form-control form-control-sm border-0 text-center w-100"
+                                   aria-label="quantity" id="numberOfCoinsPurchased"
+                                   value="{{config().donate().getMinSummaPaySphereCoin()}}">
                             <button class="btn btn-icon btn-primary input-group-text flex-fill "
                                     id="product-quantity-plus"><i class="ri-add-line"></i></button>
                         </div>
                     </div>
 
                     <div class="text-center">{{phrase('estimated_cost')}}</div>
+                    {% set USD = config().donate().getRatioUSD() / config().donate().getSphereCoinCost() %}
+                    {% set EUR = config().donate().getRatioEUR() / config().donate().getSphereCoinCost() %}
+                    {% set RUB = config().donate().getRatioRUB() / config().donate().getSphereCoinCost() %}
+                    {% set UAH = config().donate().getRatioUAH() / config().donate().getSphereCoinCost() %}
 
                     <div class="block-content block-content-full">
                         <div class="row text-center">
                             <div class="col-6">
                                 <div class="fs-sm fw-semibold text-uppercase text-muted">USD</div>
-                                <div data-cost="{{config().donate().getRatioUSD() / config().donate().getSphereCoinCost()}}" data-count="usd" class="fs-3 fw-semibold">0</div>
+                                <div data-cost="{{USD}}" data-count="usd" class="fs-3 fw-semibold">0</div>
                             </div>
                             <div class="col-6">
                                 <div class="fs-sm fw-semibold text-uppercase text-muted">EUR</div>
-                                <div data-cost="{{config().donate().getRatioEUR() / config().donate().getSphereCoinCost()}}" data-count="eur" class="fs-3 fw-semibold">0</div>
+                                <div data-cost="{{EUR}}" data-count="eur" class="fs-3 fw-semibold">0</div>
                             </div>
 
                             <div class="col-6">
                                 <div class="fs-sm fw-semibold text-uppercase text-muted">RUB</div>
-                                <div data-cost="{{config().donate().getRatioRUB() / config().donate().getSphereCoinCost()}}" data-count="rub" class="fs-3 fw-semibold">0</div>
+                                <div data-cost="{{RUB}}" data-count="rub" class="fs-3 fw-semibold">0</div>
                             </div>
                             <div class="col-6">
                                 <div class="fs-sm fw-semibold text-uppercase text-muted">UAH</div>
-                                <div data-cost="{{config().donate().getRatioUAH() / config().donate().getSphereCoinCost()}}" data-count="uah" class="fs-3 fw-semibold">0</div>
+                                <div data-cost="{{UAH}}" data-count="uah" class="fs-3 fw-semibold">0</div>
                             </div>
                         </div>
                     </div>
@@ -99,7 +105,7 @@
                     <div class="row">
                         <div class="col-xl-3">
                             <ul class="nav nav-tabs flex-column nav-style-4" role="tablist">
-                                 {% if config().donate().isRewardForDonatingItems() %}
+                                {% if config().donate().isRewardForDonatingItems() %}
                                 <li class="nav-item">
                                     <a class="nav-link active" data-bs-toggle="tab" role="tab"
                                        aria-current="page" href="#home-vertical"
@@ -109,7 +115,8 @@
 
                                 {% if config().donate().isEnableOneTimeBonus() %}
                                 <li class="nav-item">
-                                    <a class="nav-link {% if config().donate().isRewardForDonatingItems() == false %}active{% endif %}" data-bs-toggle="tab" role="tab"
+                                    <a class="nav-link {% if config().donate().isRewardForDonatingItems() == false %}active{% endif %}"
+                                       data-bs-toggle="tab" role="tab"
                                        aria-current="page" href="#about-vertical"
                                        aria-selected="true">{{phrase('one_time_bonus')}}</a>
                                 </li>
@@ -117,15 +124,17 @@
 
                                 {% if config().donate().isEnableCumulativeDiscountSystem() %}
                                 <li class="nav-item">
-                                    <a class="nav-link {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false %}active{% endif %}" data-bs-toggle="tab" role="tab"
+                                    <a class="nav-link {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false %}active{% endif %}"
+                                       data-bs-toggle="tab" role="tab"
                                        aria-current="page" href="#services-vertical"
                                        aria-selected="true">{{phrase('accum_bonuses')}}</a>
                                 </li>
                                 {% endif %}
 
-                                {% if config().other().getContactAdmin() is not empty  %}
+                                {% if config().other().getContactAdmin() is not empty %}
                                 <li class="nav-item">
-                                    <a class="nav-link btn btn-success btn-sm {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false and config().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %} " data-bs-toggle="tab" role="tab"
+                                    <a class="nav-link btn btn-success btn-sm {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false and config().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %} "
+                                       data-bs-toggle="tab" role="tab"
                                        aria-current="page" href="#contacts-vertical"
                                        aria-selected="true">{{phrase('contact_admin')}}</a>
                                 </li>
@@ -172,7 +181,8 @@
                                 {% endif %}
 
                                 {% if config().donate().isEnableOneTimeBonus() %}
-                                <div class="tab-pane text-muted {% if config().donate().isRewardForDonatingItems() == false %}active{% endif %}" id="about-vertical"
+                                <div class="tab-pane text-muted {% if config().donate().isRewardForDonatingItems() == false %}active{% endif %}"
+                                     id="about-vertical"
                                      role="tabpanel">
                                     {{phrase('one_time_bonus_pct_topup')}}
                                     <br>
@@ -200,10 +210,12 @@
                                 {% endif %}
 
                                 {% if config().donate().isEnableCumulativeDiscountSystem() %}
-                                <div class="tab-pane text-muted {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false %}active{% endif %}" id="services-vertical"
+                                <div class="tab-pane text-muted {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false %}active{% endif %}"
+                                     id="services-vertical"
                                      role="tabpanel">
 
-                                    {{phrase('accum_sys_bonus', count_all_donate_bonus, count_all_donate_bonus_percent)|raw}}
+                                    {{phrase('accum_sys_bonus', count_all_donate_bonus,
+                                    count_all_donate_bonus_percent)|raw}}
 
                                     <br>
                                     <div class="table-responsive mt-4">
@@ -217,7 +229,7 @@
                                             <tbody>
                                             {% for bonus in config().donate().getTableCumulativeDiscountSystem() %}
                                             <tr data-percent="{{bonus.percent}}">
-                                                <td>{{bonus.coin}} </td>
+                                                <td>{{bonus.coin}}</td>
                                                 <td>{{bonus.percent}}%</td>
                                             </tr>
                                             {% endfor %}
@@ -229,8 +241,9 @@
                                 </div>
                                 {% endif %}
 
-                                {% if config().other().getContactAdmin() is not empty  %}
-                                <div class="tab-pane text-muted {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false and config().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %}" id="contacts-vertical"
+                                {% if config().other().getContactAdmin() is not empty %}
+                                <div class="tab-pane text-muted {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false and config().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %}"
+                                     id="contacts-vertical"
                                      role="tabpanel">
                                     {{ config().other().getContactAdmin()|raw }}
                                 </div>
@@ -268,9 +281,11 @@
                         {% for history in donate_history_pay %}
                         <tr>
                             <td>{{history.date|date('H:i:s d.m.Y')}}</td>
-                             <td>+{{history.point}}</td>
+                            <td>+{{history.point}}</td>
                             <td>{{history.message}}</td>
-                            <td> {% if history.sphere == 0 %}{{history.pay_system}}{% else %}{{phrase('bonus')}}{% endif %}</td>
+                            <td> {% if history.sphere == 0 %}{{history.pay_system}}{% else %}{{phrase('bonus')}}{% endif
+                                %}
+                            </td>
                         </tr>
                         {% endfor %}
 
@@ -284,8 +299,6 @@
 
 
 </div>
-
-
 
 
 {% endblock %}
@@ -328,9 +341,6 @@
         });
 
 
-
-
-
         var incrementTimer;
         var deincrementTimer;
 
@@ -359,7 +369,6 @@
         });
 
 
-
         $("#product-quantity-plus").on("mousedown", function () {
             incrementTimer = setInterval(function () {
                 var currentValue = parseInt($('#numberOfCoinsPurchased').val());
@@ -385,7 +394,6 @@
         });
 
 
-
     });
 
     function updateCurrencyValues() {
@@ -404,11 +412,11 @@
     }
 
 
-
     selectTablePanel();
-    function selectTablePanel(){
+
+    function selectTablePanel() {
         var currentPercent = parseFloat('{{count_all_donate_bonus_percent}}');
-        $('tr[data-percent]').each(function() {
+        $('tr[data-percent]').each(function () {
             var rowPercent = parseFloat($(this).data('percent'));
 
             if (rowPercent === currentPercent) {
@@ -438,7 +446,7 @@
         let $maxCostElement = null;
 
         // Сначала находим элемент с максимальным data-cost, который меньше или равен введенному значению
-        $('.bonus_items').each(function() {
+        $('.bonus_items').each(function () {
             let cost = parseInt($(this).data('cost'), 10);
             if (cost > maxCost && enteredValue >= cost) {
                 maxCost = cost;
@@ -454,7 +462,6 @@
             $maxCostElement.addClass('alert alert-success');
         }
     }
-
 
 
     $(document).on("click", "#paynext", function () {
@@ -474,27 +481,26 @@
                     if (redirectLink['ok'] === false) {
                         noticeError(redirectLink['message'])
                         return;
-                    }else{
+                    } else {
                         window.open(redirectLink, '_blank');
                     }
                 }
             });
     });
 
-        activateRadio("{{config().donate().getPaySystemDefault()}}");
+    activateRadio("{{config().donate().getPaySystemDefault()}}");
 
-        $(document).on("click", ".selectDonSys", function (e) {
-            var name = $(this).data("name");
-            activateRadio(name);
-        });
+    $(document).on("click", ".selectDonSys", function (e) {
+        var name = $(this).data("name");
+        activateRadio(name);
+    });
 
-        function activateRadio(name) {
-            $('input[name="paysystem"]').prop('checked', false);
-            $('.form-check').removeClass('bg-success-transparent border-success notify-border-start-success');
-            $('#' + name).prop('checked', true);
-            $('.selectDonSys[data-name="' + name + '"]').addClass('bg-success-transparent border-success notify-border-start-success');
-        }
-
+    function activateRadio(name) {
+        $('input[name="paysystem"]').prop('checked', false);
+        $('.form-check').removeClass('bg-success-transparent border-success notify-border-start-success');
+        $('#' + name).prop('checked', true);
+        $('.selectDonSys[data-name="' + name + '"]').addClass('bg-success-transparent border-success notify-border-start-success');
+    }
 
 
 </script>

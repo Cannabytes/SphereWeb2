@@ -11,6 +11,10 @@ class other
 
     private bool $isL2Cursor = false;
 
+    private bool $isExchangeRates = false;
+
+    private ?array $exchangeRates = [];
+
     private bool $enableTechnicalWork = false;
 
     private bool $saveStatisticData = false;
@@ -21,7 +25,7 @@ class other
 
     private float $onlineMul = 1.0;
 
-    private int $timeoutSaveStatistic = 60*5;
+    private int $timeoutSaveStatistic = 60 * 5;
 
     private string $timezone = "";
 
@@ -39,43 +43,47 @@ class other
     {
         $configData = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_other__'");
 
-        if ( ! $configData) {
+        if (!$configData) {
             $configData = [
-              'setting' => json_encode([
-                'saveOpenPassword'     => false,
-                'isL2Cursor'           => false,
-                'enableTechnicalWork'  => false,
-                'saveStatisticData'    => false,
-                'isAuthShow'           => false,
-                'allTitlePage'         => '',
-                'onlinemul'            => 1.0,
-                'timeoutSaveStatistic' => 60*5,
-                'timezone'             => 'UTC',
-                'messageTechnicalWork' => '',
-                'keywords'             => '',
-                'linkMainPage'         => '/',
-                'max_account'          => 30,
-                'contactAdmin'         => '',
-              ]),
+                'setting' => json_encode([
+                    'saveOpenPassword' => false,
+                    'isL2Cursor' => false,
+                    'isExchangeRates' => false,
+                    'exchangeRates' => [],
+                    'enableTechnicalWork' => false,
+                    'saveStatisticData' => false,
+                    'isAuthShow' => false,
+                    'allTitlePage' => '',
+                    'onlinemul' => 1.0,
+                    'timeoutSaveStatistic' => 60 * 5,
+                    'timezone' => 'UTC',
+                    'messageTechnicalWork' => '',
+                    'keywords' => '',
+                    'linkMainPage' => '/',
+                    'max_account' => 30,
+                    'contactAdmin' => '',
+                ]),
             ];
         }
 
         $setting = json_decode($configData['setting'], true);
 
-        $this->openPassword         = filter_var($setting['saveOpenPassword'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $this->isL2Cursor           = filter_var($setting['isL2Cursor'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $this->enableTechnicalWork  = filter_var($setting['enableTechnicalWork'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $this->saveStatisticData    = filter_var($setting['saveStatisticData'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $this->isAuthShow           = filter_var($setting['isAuthShow'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $this->allTitlePage         = $setting['allTitlePage'];
-        $this->onlineMul            = (float)$setting['onlinemul'] ?? 1.0;
+        $this->openPassword = filter_var($setting['saveOpenPassword'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->isL2Cursor = filter_var($setting['isL2Cursor'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->isExchangeRates = filter_var($setting['isExchangeRates'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->exchangeRates = is_array($setting['exchangeRates'] ?? null) ? $setting['exchangeRates'] : null;
+        $this->enableTechnicalWork = filter_var($setting['enableTechnicalWork'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->saveStatisticData = filter_var($setting['saveStatisticData'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->isAuthShow = filter_var($setting['isAuthShow'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->allTitlePage = $setting['allTitlePage'];
+        $this->onlineMul = (float)$setting['onlinemul'] ?? 1.0;
         $this->timeoutSaveStatistic = (int)$setting['timeoutSaveStatistic'];
-        $this->timezone             = $setting['timezone'];
+        $this->timezone = $setting['timezone'];
         $this->messageTechnicalWork = $setting['messageTechnicalWork'];
-        $this->keywords             = $setting['keywords'];
-        $this->linkMainPage         = $setting['linkMainPage'] ?? '/';
-        $this->maxAccount           = (int)$setting['max_account'] ?? 30;
-        $this->contactAdmin         = $setting['contactAdmin'] ?? '';
+        $this->keywords = $setting['keywords'];
+        $this->linkMainPage = $setting['linkMainPage'] ?? '/';
+        $this->maxAccount = (int)$setting['max_account'] ?? 30;
+        $this->contactAdmin = $setting['contactAdmin'] ?? '';
     }
 
     public function getLinkMainPage(): string
@@ -88,9 +96,19 @@ class other
         return $this->openPassword;
     }
 
-    public function isL2Cursor()
+    public function isL2Cursor(): bool
     {
         return $this->isL2Cursor;
+    }
+
+    public function isExchangeRates(): bool
+    {
+        return $this->isExchangeRates;
+    }
+
+    public function getExchangeRates(): ?array
+    {
+        return $this->exchangeRates;
     }
 
     public function getEnableTechnicalWork(): bool
@@ -115,7 +133,7 @@ class other
 
     public function getOnlineMul(): float
     {
-        if($this->onlineMul <= 0) {
+        if ($this->onlineMul <= 0) {
             $this->onlineMul = 1.0;
         }
         return $this->onlineMul;

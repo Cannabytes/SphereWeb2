@@ -1044,6 +1044,21 @@
                 <li class="list-group-item">
                   <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                     <div>
+                      <p class="fs-14 mb-1 fw-semibold">Получать автоматически актуальный курс валют</p>
+                      <p class="fs-12 mb-0 text-muted">При пожертвовании будет использован курс валют согласно сервису https://openexchangerates.org</p>
+                    </div>
+                    <div>
+                      <div class="custom-toggle-switch float-sm-end">
+                        <input id="isExchangeRates" name="isExchangeRates" type="checkbox" {% if config().other().IsExchangeRates() %}checked="" {% endif %}>
+                        <label for="isExchangeRates" class="label-success mb-1"></label>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="list-group-item">
+                  <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                    <div>
                       <p class="fs-14 mb-1 fw-semibold">{{phrase('maintenance')}}</p>
                       <p class="fs-12 mb-0 text-muted">{{phrase('site_down_admin_only')}}</p>
                     </div>

@@ -349,6 +349,9 @@ class donate
      */
     public function getRatioUSD(): float
     {
+        if (config::load()->other()->isExchangeRates()){
+            return config::load()->other()->getExchangeRates()['USD'];
+        }
         return $this->ratioUSD;
     }
 
@@ -357,6 +360,9 @@ class donate
      */
     public function getRatioEUR(): float
     {
+        if (config::load()->other()->isExchangeRates()){
+            return config::load()->other()->getExchangeRates()['EUR'];
+        }
         return $this->ratioEUR;
     }
 
@@ -365,6 +371,9 @@ class donate
      */
     public function getRatioUAH(): float
     {
+        if (config::load()->other()->isExchangeRates()){
+            return config::load()->other()->getExchangeRates()['UAH'];
+        }
         return $this->ratioUAH;
     }
 
@@ -373,6 +382,9 @@ class donate
      */
     public function getRatioRUB(): float
     {
+        if (config::load()->other()->isExchangeRates()){
+            return config::load()->other()->getExchangeRates()['RUB'];
+        }
         return $this->ratioRUB;
     }
 

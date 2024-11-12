@@ -33,6 +33,7 @@ class serverModel
     private array $server_data = [];
     private ?serverDescriptionModel $page;
     public ?serverStatus $serverStatus = null;
+    private ?bool $showStatusBar = false;
     private ?bool $errorConnectDBServer = null;
     private ?string $collection = null;
     private ?array $statusServerMem = null;
@@ -62,6 +63,7 @@ class serverModel
         $this->launcherEnabled = $server['launcher_enabled'] ?? 0;
         $this->timezone = $server['timezone'] ?? '';
         $this->collection = $server['collection'] ?? null;
+        $this->showStatusBar = $server['showStatusBar'] ?? false;
         $this->statusServerMem = $server['statusServer'] ?? null;
         $this->default = $server['default'] ?? null;
         $this->dateStartServer = $server['dateStartServer'] ?? null;
@@ -77,8 +79,12 @@ class serverModel
         if ($pageId) {
             $this->page = new serverDescriptionModel($pageId);
         }
-
         return $this;
+    }
+
+    public function getshowStatusBar(): ?bool
+    {
+        return $this->showStatusBar;
     }
 
     public function getLoginId(): ?int
@@ -187,6 +193,7 @@ class serverModel
             'chronicle' => $this->chronicle,
             'chatGameEnabled' => $this->chatGameEnabled,
             'launcherEnabled' => $this->launcherEnabled,
+            'showStatusBar' => $this->showStatusBar,
             'timezone' => $this->timezone,
             'collection' => $this->collection,
             'default' => $this->default,

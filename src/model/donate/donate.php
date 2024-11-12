@@ -9,7 +9,6 @@ namespace Ofey\Logan22\model\donate;
 
 use Exception;
 use Ofey\Logan22\component\alert\board;
-use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\request\ip;
@@ -33,12 +32,12 @@ class donate
     public static function get_shop_items(): array
     {
         $server_id = user::self()->getServerId();
-        if ( ! $server_id) {
+        if (!$server_id) {
             echo 'Server is not set';
             exit;
         }
         $shopItems = sql::getRows('SELECT * FROM `donate` WHERE server_id = ?', [$server_id]);
-        $items     = [];
+        $items = [];
         foreach ($shopItems as $shopItem) {
             $item = new shop();
             $item->setId($shopItem['id']);
@@ -56,8 +55,8 @@ class donate
     } // Время задержки в секундах до последующей попытки купить что-то
 
     /**
-     * @param           $uuid             - Индификатор
-     * @param   string  $pay_system_name  - Название платежной системы
+     * @param           $uuid - Индификатор
+     * @param string $pay_system_name - Название платежной системы
      *
      * @return void
      * @throws Exception
@@ -107,13 +106,13 @@ class donate
     public static function set_uuid($uuid, $pay_system_name): false|PDOStatement|null
     {
         $request = '';
-        if (isset($_REQUEST) && ! empty($_REQUEST)) {
+        if (isset($_REQUEST) && !empty($_REQUEST)) {
             $request = json_encode($_REQUEST, JSON_UNESCAPED_UNICODE);
         }
 
         return sql::sql(
-          "INSERT INTO `donate_uuid` (`uuid`, `pay_system`, `ip`, `request`, `date`) VALUES (?, ?, ?, ?, ?);",
-          [$uuid, $pay_system_name, ip::getIp(), $request, time::mysql()]
+            "INSERT INTO `donate_uuid` (`uuid`, `pay_system`, `ip`, `request`, `date`) VALUES (?, ?, ?, ?, ?);",
+            [$uuid, $pay_system_name, ip::getIp(), $request, time::mysql()]
         );
     }
 
@@ -126,29 +125,29 @@ class donate
     static public function products()
     {
         $server_id = auth::get_default_server();
-        if ( ! $server_id) {
+        if (!$server_id) {
             tpl::addVar("message", "Not Server");
             tpl::display("page/error.html");
         }
         $donate = sql::getRows("SELECT * FROM `donate` WHERE server_id = ? ORDER BY id DESC", [
-          $server_id,
+            $server_id,
         ]);
         foreach ($donate as &$item) {
             //Если установлен пак
             if ($item['is_pack']) {
                 $item['pack'] = [];
-                $packData     = self::get_pack($item['id']);
+                $packData = self::get_pack($item['id']);
                 foreach ($packData as $pack_item) {
-                    $item_info          = client_icon::get_item_info($pack_item['item_id'], false, false);
+                    $item_info = client_icon::get_item_info($pack_item['item_id'], false, false);
                     $item_info['count'] = $pack_item['count'];
-                    $item['pack'][]     = $item_info;
+                    $item['pack'][] = $item_info;
                 }
             } else {
                 $item_info = client_icon::get_item_info($item['item_id'], false, false);
-                if ( ! $item_info) {
+                if (!$item_info) {
                     $item_info['item_id'] = $item['id'];
-                    $item_info['name']    = "No Item Name";
-                    $item_info['icon']    = ("/uploads/images/icon/NOIMAGE.webp");
+                    $item_info['name'] = "No Item Name";
+                    $item_info['icon'] = ("/uploads/images/icon/NOIMAGE.webp");
                 }
                 $item = array_merge($item, $item_info);
             }
@@ -182,10 +181,10 @@ class donate
             }
             $_SESSION['COOLDOWN_DONATE_TRANSACTION'] = time();
 
-            $shopId    = $_POST['shopId'] ?? board::error("No Shop ID");
-            $quantity  = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_INT) ?? 1;
+            $shopId = $_POST['shopId'] ?? board::error("No Shop ID");
+            $quantity = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_INT) ?? 1;
             $shopItems = donate::getShopItems($shopId, false);
-            if ( ! $shopItems) {
+            if (!$shopItems) {
                 board::error("Магазин не найден", next: true);
                 $db->rollback();
 
@@ -197,12 +196,12 @@ class donate
              */
             $isStackable = true;
             foreach ($shopItems as $item) {
-                if ( ! $item->getItemInfo()->getIsStackable()) {
+                if (!$item->getItemInfo()->getIsStackable()) {
                     $isStackable = false;
                     break;
                 }
             }
-            if ( ! $isStackable) {
+            if (!$isStackable) {
                 if ($quantity > 1) {
                     board::error("Эта закупка не может быть стакнутой", next: true);
                     $db->rollback();
@@ -217,9 +216,9 @@ class donate
             /**
              * Проверяем есть ли у пользователя N денег на аккаунте
              */
-            $totalPrice        = $groupPrice * $quantity;
+            $totalPrice = $groupPrice * $quantity;
             $canAffordPurchase = user::self()->canAffordPurchase($totalPrice);
-            if ( ! $canAffordPurchase) {
+            if (!$canAffordPurchase) {
                 board::error(sprintf("Для покупки у Вас нехватает %s SphereCoin", $totalPrice), next: true);
                 $db->rollback();
 
@@ -233,7 +232,7 @@ class donate
              */
             foreach ($shopItems as $item) {
                 $server_info = server::getServer($item->getServerId());
-                if ( ! $server_info) {
+                if (!$server_info) {
                     board::error(lang::get_phrase(150), next: true);
                     break;
                 }
@@ -244,13 +243,13 @@ class donate
                     return;
                 }
                 $data = user::self()->addToWarehouse(
-                  $server_info->getId(),
-                  $item->getItemId(),
-                  $item->getCount() * $quantity,
-                  $item->getEnchant(),
-                  "purchase"
+                    $server_info->getId(),
+                    $item->getItemId(),
+                    $item->getCount() * $quantity,
+                    $item->getEnchant(),
+                    "purchase"
                 );
-                if ( ! $data['success']) {
+                if (!$data['success']) {
                     if (user::self()->isAdmin()) {
                         board::error($data['errorInfo']['message'], next: true);
                     } else {
@@ -264,10 +263,10 @@ class donate
 
             $db->commit();
             board::alert([
-              'type'       => 'notice',
-              'ok'         => true,
-              'message'    => lang::get_phrase(304),
-              'sphereCoin' => user::self()->getDonate(),
+                'type' => 'notice',
+                'ok' => true,
+                'message' => lang::get_phrase(304),
+                'sphereCoin' => user::self()->getDonate(),
             ]);
         } catch (Exception $e) {
             $db->rollback();
@@ -282,7 +281,7 @@ class donate
     /**
      * Получение информации о товарах в магазине.
      *
-     * @param   int|null  $shopId  Идентификатор магазина
+     * @param int|null $shopId Идентификатор магазина
      *
      * @return shop[]|null Массив содержит объекты класса shop, индексированный ID магазина
      */
@@ -291,13 +290,13 @@ class donate
         $shopInfo = [];
 
         if ($shopId) {
-            $sql  = 'SELECT * FROM `shop_items` WHERE id = ? AND serverId = ?';
+            $sql = 'SELECT * FROM `shop_items` WHERE id = ? AND serverId = ?';
             $shop = sql::getRow($sql, [$shopId, user::self()->getServerId()]);
-            if ( ! $shop) {
+            if (!$shop) {
                 return null; // Возвращаем null, если ничего не найдено
             }
             $shop['items'] = json_decode($shop['items'], true);
-            if ( ! is_array($shop['items'])) {
+            if (!is_array($shop['items'])) {
                 return null;
             }
             $serverId = $shop['serverId'];
@@ -317,16 +316,16 @@ class donate
                 }
             }
         } else {
-            $sql  = 'SELECT * FROM `shop_items` WHERE serverId = ?';
+            $sql = 'SELECT * FROM `shop_items` WHERE serverId = ?';
             $shop = sql::getRows($sql, [user::self()->getServerId()]);
-            if ( ! $shop) {
+            if (!$shop) {
                 return null;
             }
             foreach ($shop as &$row) {
                 $row['items'] = json_decode($row['items'], true);
             }
             foreach ($shop as $items) {
-                if ( ! $items['items']) {
+                if (!$items['items']) {
                     continue;
                 }
                 $objectID = (int)$items['id'];
@@ -378,7 +377,7 @@ class donate
             board::error("У Вас нет персонажей");
         }
         $db = sql::instance();
-        if ( ! $db) {
+        if (!$db) {
             board::error("Ошибка подключения к базе данных.");
 
             return;
@@ -395,7 +394,7 @@ class donate
             }
             $_SESSION['COOLDOWN_DONATE_TRANSACTION'] = time();
 
-            $shopId   = $_POST['shopId'] ?? board::error("No Shop ID");
+            $shopId = $_POST['shopId'] ?? board::error("No Shop ID");
             $quantity = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_INT) ?? 1;
 
             $playerName = $_POST['playerName'] ?? null;
@@ -413,7 +412,7 @@ class donate
                     $foundAccount = true;
                 }
             }
-            if ( ! $foundAccount) {
+            if (!$foundAccount) {
                 board::notice(false, "Аккаунт не найден");
             }
 
@@ -426,17 +425,17 @@ class donate
                     }
                 }
             }
-            if ( ! $foundPlayer) {
+            if (!$foundPlayer) {
                 board::notice(false, "Персонаж не найден");
             }
 
             $shopItems = donate::getShopItems($shopId, false);
-            if ( ! $shopItems) {
+            if (!$shopItems) {
                 board::error("Магазин не найден");
             }
 
             $server_info = server::getServer($shopItems[0]->getServerId());
-            if ( ! $server_info) {
+            if (!$server_info) {
                 board::notice(false, lang::get_phrase(150));
             }
 
@@ -446,12 +445,12 @@ class donate
              */
             $isStackable = true;
             foreach ($shopItems as $item) {
-                if ( ! $item->getItemInfo()->getIsStackable()) {
+                if (!$item->getItemInfo()->getIsStackable()) {
                     $isStackable = false;
                     break;
                 }
             }
-            if ( ! $isStackable) {
+            if (!$isStackable) {
                 if ($quantity > 1) {
                     board::error("Эта закупка не может быть стакнутой");
                 }
@@ -465,9 +464,9 @@ class donate
             /**
              * Проверяем есть ли у пользователя N денег на аккаунте
              */
-            $totalPrice        = $groupPrice * $quantity;
+            $totalPrice = $groupPrice * $quantity;
             $canAffordPurchase = user::self()->canAffordPurchase($totalPrice);
-            if ( ! $canAffordPurchase) {
+            if (!$canAffordPurchase) {
                 board::error(sprintf("Для покупки у Вас нехватает %s SphereCoin", $totalPrice));
             }
 
@@ -483,28 +482,28 @@ class donate
             $arrObjectItems = [];
             foreach ($shopItems as $item) {
                 $arrObjectItems[] = [
-                  'objectID' => $item->getId(),
-                  'count'    => $item->getCount() * $quantity,
-                  'enchant'  => $item->getEnchant(),
-                  'itemId'   => $item->getItemId(),
+                    'objectID' => $item->getId(),
+                    'count' => $item->getCount() * $quantity,
+                    'enchant' => $item->getEnchant(),
+                    'itemId' => $item->getItemId(),
                 ];
             }
 
             $json = \Ofey\Logan22\component\sphere\server::send(type::INVENTORY_TO_GAME, [
-              'items'   => $arrObjectItems,
-              'player'  => $playerName,
-              'account' => $account,
-              'email'   => user::self()->getEmail(),
+                'items' => $arrObjectItems,
+                'player' => $playerName,
+                'account' => $account,
+                'email' => user::self()->getEmail(),
             ])->show()->getResponse();
             if (isset($json['data']) && $json['data'] === true) {
                 $objectItems = $json['objects'];
                 user::self()->removeWarehouseObjectId($objectItems);
                 $db->commit();
                 board::alert([
-                  'type'       => 'notice',
-                  'ok'         => true,
-                  'message'    => lang::get_phrase(304),
-                  'sphereCoin' => user::self()->getDonate(),
+                    'type' => 'notice',
+                    'ok' => true,
+                    'message' => lang::get_phrase(304),
+                    'sphereCoin' => user::self()->getDonate(),
                 ]);
             }
             if (isset($json['error']) && $json['error'] !== "") {
@@ -565,10 +564,10 @@ class donate
 
             $db->commit();
             board::alert([
-              'type'       => 'notice',
-              'ok'         => true,
-              'message'    => lang::get_phrase(304),
-              'sphereCoin' => user::self()->getDonate(),
+                'type' => 'notice',
+                'ok' => true,
+                'message' => lang::get_phrase(304),
+                'sphereCoin' => user::self()->getDonate(),
             ]);
         } catch (Exception $e) {
             $db->rollback();
@@ -599,11 +598,11 @@ class donate
 
     public static function donate_history_pay_self($user_id = null): array
     {
-        if ( ! $user_id) {
+        if (!$user_id) {
             $user_id = auth::get_id();
         }
         $pays = sql::getRows(
-          "SELECT
+            "SELECT
                                 donate_history_pay.point, 
                                 donate_history_pay.message,
                                 donate_history_pay.pay_system,
@@ -615,17 +614,17 @@ class donate
                                 donate_history_pay.user_id = ?
                             ORDER BY
                                 donate_history_pay.id DESC", [
-            $user_id,
-          ]
+                $user_id,
+            ]
         );
         foreach ($pays as &$pay) {
-            if ( ! empty($pay['id_admin_pay'])) {
-                $admin             = auth::get_user_info($pay['id_admin_pay']);
+            if (!empty($pay['id_admin_pay'])) {
+                $admin = auth::get_user_info($pay['id_admin_pay']);
                 $pay['admin_name'] = $admin['name'];
             }
         }
-        $trs    = sql::getRows(
-          "SELECT
+        $trs = sql::getRows(
+            "SELECT
                                         log_transfer_spherecoin.*, 
                                         sender.`name` AS sender_name,
                                         receiver.`name` AS receiver_name
@@ -655,6 +654,15 @@ class donate
     {
         $quantity = config::load()->donate()->getSphereCoinCost();
 
+        if (config::load()->other()->isExchangeRates()) {
+            $exchangeRates = config::load()->other()->getExchangeRates();
+            foreach($exchangeRates AS $name=>$rate){
+                if($currency == $name){
+                    return ($sum / $rate) * $quantity;
+                }
+            }
+        }
+
         return match ($currency) {
             "RUB" => ($sum / config::load()->donate()->getRatioRUB()) * $quantity,
             "UAH" => ($sum / config::load()->donate()->getRatioUAH()) * $quantity,
@@ -667,20 +675,19 @@ class donate
 
     public static function getBonusDiscount($user_id, $table)
     {
-        $amount        = sql::run("SELECT SUM(point) AS `count` FROM donate_history_pay WHERE user_id = ? and sphere=0", [$user_id])->fetch(
-        )['count'] ?? 0;
-        $rangeKey      = null;
+        $amount = sql::run("SELECT SUM(point) AS `count` FROM donate_history_pay WHERE user_id = ? and sphere=0", [$user_id])->fetch()['count'] ?? 0;
+        $rangeKey = null;
         $discountValue = null;
-        $lastValue     = null;
-        $keys          = array_keys($table);
-        $firstKey      = reset($keys);
+        $lastValue = null;
+        $keys = array_keys($table);
+        $firstKey = reset($keys);
         if ($amount < $firstKey) {
             return 0;
         } else {
             $reversedTable = array_reverse($table, true);
             foreach ($reversedTable as $key => $value) {
                 if ($amount >= $key) {
-                    $rangeKey      = $key;
+                    $rangeKey = $key;
                     $discountValue = $value;
                     break;
                 }
@@ -729,34 +736,12 @@ class donate
 
         //Выдача бонусов за рефералку
         if (config::load()->referral()->isEnable()) {
-           $masterUser = referral::get_user_leader($user_id);
-           if ($masterUser) {
-               $bonus = ($sphereCoin * config::load()->referral()->getProcentDonateBonus()) / 100;
-               $masterUser->donateAdd($bonus)->AddHistoryDonate($bonus, "Привлеченный Вами игрок пожертвовал и Вы получаете +$bonus бонуса по реферальной системе", "referralBonus");
-           }
-        }
-    }
-
-    private static function addCumulativeBonus($user_id, $sphereCoin)
-    {
-        $sumDonate    = sql::run("SELECT SUM(point) AS `count` FROM donate_history_pay WHERE user_id = ? and sphere=0", [$user_id])->fetch(
-        )['count'] ?? 0;
-        $donateConfig = config::load()->donate();
-        $bonusTable   = $donateConfig->getTableCumulativeDiscountSystem();
-        $percent      = 0;
-        foreach ($bonusTable as $row) {
-            if ($sumDonate >= $row['coin']) {
-                $percent = $row['percent'];
-            } else {
-                break;
+            $masterUser = referral::get_user_leader($user_id);
+            if ($masterUser) {
+                $bonus = ($sphereCoin * config::load()->referral()->getProcentDonateBonus()) / 100;
+                $masterUser->donateAdd($bonus)->AddHistoryDonate($bonus, "Привлеченный Вами игрок пожертвовал и Вы получаете +$bonus бонуса по реферальной системе", "referralBonus");
             }
         }
-        if ($percent == 0) {
-            return;
-        }
-        $addSphereCoin = ($sphereCoin * $percent / 100);
-        //TODO: Добавить логирование о действий пользователя
-        user::getUserId($user_id)->donateAdd($addSphereCoin)->AddHistoryDonate($addSphereCoin, "Выдача {$percent}% бонуса ($addSphereCoin) по накопительной системе", "cumulativeBonus");
     }
 
     /**
@@ -766,12 +751,12 @@ class donate
     public static function AddDonateItemBonus($user_id, $sphereCoin): bool
     {
         //Был ли выдан бонус
-        $isAddBonus   = false;
+        $isAddBonus = false;
         $donateConfig = config::load()->donate();
         //Проверяем, нужно ли выдавать бонус предметами
         if ($donateConfig->isRewardForDonatingItems()) {
             //Список предметов для выдачи бонуса
-            $bonusItems      = false;
+            $bonusItems = false;
             $donateBonusList = $donateConfig->getTableItemsBonus();
             foreach ($donateBonusList as $cost => $bonus) {
                 if ($sphereCoin >= $cost) {
@@ -782,7 +767,7 @@ class donate
             if ($bonusItems) {
                 foreach ($bonusItems as $bonus) {
                     $item_id = (int)$bonus['id'];
-                    $count   = (int)$bonus['count'] ?? 1;
+                    $count = (int)$bonus['count'] ?? 1;
                     $enchant = (int)$bonus['enchant'] ?? 0;
                     //TODO: Нужно получать server_id из базы данных, по ссылке, которым генерируется оплата
                     //TODO: Добавить логирование о действий пользователя
@@ -800,7 +785,7 @@ class donate
     private static function AddOneTimeBonus($user_id, $sphereCoin)
     {
         //Список предметов для выдачи бонуса
-        $bonusData       = false;
+        $bonusData = false;
         $donateBonusList = config::load()->donate()->getTableEnableOneTimeBonus();
         foreach ($donateBonusList as $bonus) {
             if ($bonus['coin'] <= $sphereCoin) {
@@ -810,13 +795,34 @@ class donate
         //Если бонус есть, тогда добавим процент sphereCoin пользователю
         if ($bonusData) {
             //Сумма бонуса в процентах от суммы доната
-            $percent       = $bonusData['percent'];
+            $percent = $bonusData['percent'];
             $addSphereCoin = ($sphereCoin * $percent / 100);
             //TODO: Добавить логирование о действий пользователя
             user::getUserId($user_id)->donateAdd($addSphereCoin)->AddHistoryDonate($addSphereCoin, "Выдача {$percent}% бонуса (+$addSphereCoin) за единоразовый донат", "oneTimeBonus");
         }
 
         return $bonusData;
+    }
+
+    private static function addCumulativeBonus($user_id, $sphereCoin)
+    {
+        $sumDonate = sql::run("SELECT SUM(point) AS `count` FROM donate_history_pay WHERE user_id = ? and sphere=0", [$user_id])->fetch()['count'] ?? 0;
+        $donateConfig = config::load()->donate();
+        $bonusTable = $donateConfig->getTableCumulativeDiscountSystem();
+        $percent = 0;
+        foreach ($bonusTable as $row) {
+            if ($sumDonate >= $row['coin']) {
+                $percent = $row['percent'];
+            } else {
+                break;
+            }
+        }
+        if ($percent == 0) {
+            return;
+        }
+        $addSphereCoin = ($sphereCoin * $percent / 100);
+        //TODO: Добавить логирование о действий пользователя
+        user::getUserId($user_id)->donateAdd($addSphereCoin)->AddHistoryDonate($addSphereCoin, "Выдача {$percent}% бонуса ($addSphereCoin) по накопительной системе", "cumulativeBonus");
     }
 
     //Выдача бонуса предметом, за N сумму доната единоразвым платежем
@@ -836,8 +842,8 @@ class donate
     static private function donate_item_info($item_id, $server_id)
     {
         return sql::run("SELECT * FROM donate WHERE id = ? AND server_id = ?", [
-          $item_id,
-          $server_id,
+            $item_id,
+            $server_id,
         ])->fetch();
     }
 
@@ -847,7 +853,7 @@ class donate
 
     private static function findValueForN($inputN, $keyValueObject = 0)
     {
-        if ( ! is_array($keyValueObject)) {
+        if (!is_array($keyValueObject)) {
             return 0;
         }
         $result = null;

@@ -22,7 +22,6 @@ class index
             $sphereAPIError = true;
             $info['servers'] = [];
         }
-
         if(isset($info['servers'])){
             foreach ($info['servers'] as $server) {
                 $id = $server['id'];

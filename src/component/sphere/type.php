@@ -90,9 +90,10 @@ enum type
 
     CASE RENEW_LICENSE;
 
-
     case IMPORT_ACCOUNTS;
     case GET_ERRORS;
+
+    case EXCHANGER;
 
     static function url(type $type): string
     {
@@ -163,6 +164,8 @@ enum type
             self::ERROR_REPORT => '/api/error/report',
 
             self::RENEW_LICENSE => '/api/license/renew',
+
+            self::EXCHANGER => '/api/exchanger',
 
             default => null,
         };

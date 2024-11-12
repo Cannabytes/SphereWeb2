@@ -4,6 +4,7 @@ namespace Ofey\Logan22\model\config;
 
 use JetBrains\PhpStorm\NoReturn;
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\lang\lang;
@@ -62,6 +63,15 @@ class config
             board::error("Not config name");
         }
 
+        if($configName=='__config_other__'){
+            if (!empty($_POST['isExchangeRates']) && filter_var($_POST['isExchangeRates'], FILTER_VALIDATE_BOOLEAN)) {
+                $exchanger = \Ofey\Logan22\component\sphere\server::send(type::EXCHANGER)->show(true)->getResponse();
+                if (!empty($exchanger['rates'])) {
+                    $_POST['exchangeRates'] = $exchanger['rates'];
+                }
+            }
+        }
+
         $post = json_encode($_POST, JSON_UNESCAPED_UNICODE);
         if ( ! $post) {
             board::error("Ошибка парсинга JSON");
@@ -70,6 +80,7 @@ class config
           $configName,
           0,
         ]);
+
         sql::run(
           "INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES (?, ?, ?, ?)",
           [

@@ -80,7 +80,7 @@ class options
         $maxOnline = $_POST['max_online'] ?? 200;
         $timezone = $_POST['timezone_server'] ?? "Africa/Abidjan";
         $resetHWID = $_POST['resetHWID'] ?? false;
-
+        $showStatusBar = filter_var($_POST['showStatusBar'] ?? false, FILTER_VALIDATE_BOOL);
         $enableStatusServer = filter_var($_POST['enableStatusServer'] ?? false, FILTER_VALIDATE_BOOL);
         $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? "";
         $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? 2106;
@@ -147,6 +147,7 @@ class options
                 "rateSpoil" => $rateSpoil,
                 "chronicle" => $version_client,
                 "collection" => $collection,
+                "showStatusBar" => $showStatusBar,
                 "statusServer" => $statusServer,
                 "dateStartServer" => $dateStartServer,
                 "knowledgeBase" => fileSys::modifyString($knowledgeBase),
@@ -251,6 +252,7 @@ class options
         $rateDrop = $_POST['rateDrop'] ?? 1;
         $version_client = $_POST['version_client'] ?? board::error("Set version game");
         $collection = $_POST['collection'] ?? board::error("Set l2j emulator");
+        $showStatusBar = filter_var($_POST['showStatusBar'] ?? false, FILTER_VALIDATE_BOOL);
         $enableStatusServer = filter_var($_POST['enableStatusServer'] ?? false, FILTER_VALIDATE_BOOL);
         $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? "";
         $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? 2106;
@@ -305,6 +307,7 @@ class options
             "rateDrop" => $rateDrop,
             "chronicle" => $version_client,
             "collection" => $collection,
+            "showStatusBar" => $showStatusBar,
             "statusServer" => $statusServer,
             "dateStartServer" => $dateStartServer,
             "knowledgeBase" => fileSys::modifyString($knowledge_base),
@@ -589,6 +592,7 @@ class options
             }
         }
         $server_id = $data['serverId'] ?? board::error("Нет ID сервера");
+
         $post = json_encode($data, JSON_UNESCAPED_UNICODE);
         sql::sql("DELETE FROM `settings` WHERE `key` = '__config_donate__' AND serverId = ? ", [
             $server_id,
