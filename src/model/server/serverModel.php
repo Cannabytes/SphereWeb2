@@ -2,19 +2,17 @@
 
 namespace Ofey\Logan22\model\server;
 
-use Ofey\Logan22\component\sphere\type;
-use Ofey\Logan22\component\time\time;
-use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
 
 class serverModel
 {
 
     static public array $arrayServerStatus = [];
-
+    public ?serverStatus $serverStatus = null;
     private ?int $id = null;
     private ?int $loginId = null;
     private ?int $gameId = null;
+    private bool $disabled = false;
     private string $name;
     private int $rateExp = 0;
     private int $rateSp = 0;
@@ -32,7 +30,6 @@ class serverModel
     private ?int $checkGameServerPort = null;
     private array $server_data = [];
     private ?serverDescriptionModel $page;
-    public ?serverStatus $serverStatus = null;
     private ?bool $showStatusBar = false;
     private ?bool $errorConnectDBServer = null;
     private ?string $collection = null;
@@ -52,6 +49,7 @@ class serverModel
         $this->id = $server['id'] ?? null;
         $this->loginId = $server['login_id'] ?? null;
         $this->gameId = $server['game_id'] ?? null;
+        $this->disabled = $server['disabled'] ?? false;
         $this->name = $server['name'] ?? '';
         $this->rateExp = $server['rateExp'] ?? 1;
         $this->rateSp = $server['rateSp'] ?? 1;
@@ -82,7 +80,27 @@ class serverModel
         return $this;
     }
 
-    public function getshowStatusBar(): ?bool
+    public function isEnabled(): bool
+    {
+        return !$this->disabled;
+    }
+
+    public function setEnabled(bool $enabled): void
+    {
+        $this->disabled = $enabled;
+    }
+
+    public function isDisabled(): bool
+    {
+        return $this->disabled;
+    }
+
+    public function setDisabled(bool $enabled): void
+    {
+        $this->disabled = $enabled;
+    }
+
+    public function getShowStatusBar(): ?bool
     {
         return $this->showStatusBar;
     }
@@ -184,6 +202,9 @@ class serverModel
     {
         $arr = [
             'id' => $this->id,
+            'login_id' => $this->loginId,
+            'game_id' => $this->gameId,
+            'disabled' => $this->disabled,
             'name' => $this->name,
             'rateExp' => $this->rateExp,
             'rateSp' => $this->rateSp,
@@ -194,8 +215,10 @@ class serverModel
             'chatGameEnabled' => $this->chatGameEnabled,
             'launcherEnabled' => $this->launcherEnabled,
             'showStatusBar' => $this->showStatusBar,
+            'date_start_server' => $this->dateStartServer,
             'timezone' => $this->timezone,
             'collection' => $this->collection,
+            'statusServer' => $this->statusServerMem,
             'default' => $this->default,
             'position' => $this->position,
         ];
@@ -206,28 +229,6 @@ class serverModel
                 $this->id,
             ]
         );
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return server
-     */
-    public function setId(
-        int $id
-    ): serverModel
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getArrayVar(): array
@@ -251,6 +252,28 @@ class serverModel
             'launcher_enabled' => $this->getLauncherEnabled(),
             'timezone' => $this->getTimezone(),
         ];
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return server
+     */
+    public function setId(
+        int $id
+    ): serverModel
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

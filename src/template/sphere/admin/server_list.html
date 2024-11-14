@@ -9,12 +9,13 @@
         <div class="card">
             <div class="card-body">
                 <a href="/admin/server/add/new" class="btn btn-teal-light btn-border-down">Добавить сервер</a>
-<!--                <a href="/admin/server/db" class="btn btn-teal-light btn-border-down">Базы Данных</a>-->
+                <!--                <a href="/admin/server/db" class="btn btn-teal-light btn-border-down">Базы Данных</a>-->
             </div>
         </div>
 
         <div id="serverContainer" class="row">
-            {% for i, server in sphereServers %}
+
+            {% for i, server in getServerAll() %}
             <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6 col-sm-12 draggable-card" data-id="{{ server.getId() }}"
                  data-position="{{ server.getPosition() }}">
                 <div class="card custom-card overflow-hidden">
@@ -22,9 +23,34 @@
                         <div class="px-4 py-2 {% if server.isDisabled() %}bg-danger{% else %}bg-success{% endif %} op-3">
 
                             <div class="form-check form-switch">
-                                <input {% if server.isDefault() %}checked{% endif %} class="form-check-input form-checked-danger setServerDefault" name="isDefault" data-server-id="{{ server.getId() }}" type="radio" role="switch" id="switch-{{ server.getId() }}">
-                                <label class="form-check-label text-white fs-15 fw-semibold" for="switch-{{ server.getId() }}">Сервер по-умолчанию</label>
+                                <input class="form-check-input form-checked-danger setServerEnabled"
+                                       {% if server.isEnabled() %}checked{% endif %}
+                                       data-server-id="{{server.getId()}}" type="checkbox" value=""
+                                       id="serverEnable-{{ server.getId() }}">
+                                <label class="form-check-label" for="serverEnable-{{ server.getId() }}">
+                                    <label class="form-check-label  fs-15 fw-semibold"
+                                           for="switch-{{ server.getId() }}">Вкл/выкл. сервер</label>
+
+                                    <span class="me-4" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Выключение сервера - полностью прекращение обслуживания сервера, отключение от MySQL, проверка портов. Отключенный сервер будет виден только администратору.">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="svg-primary text-white"
+                                             height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+                                            <path d="M0 0h24v24H0V0z" fill="none"></path>
+                                            <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
+                                        </svg>
+                                    </span>
+
+                                </label>
                             </div>
+
+                            <div class="form-check form-switch">
+                                <input {% if server.isDefault() %}checked{% endif %}
+                                       class="form-check-input form-checked-danger setServerDefault" name="isDefault"
+                                       data-server-id="{{ server.getId() }}" type="radio" role="switch"
+                                       id="switch-{{ server.getId() }}">
+                                <label class="form-check-label  fs-15 fw-semibold" for="switch-{{ server.getId() }}">Сервер
+                                    по-умолчанию</label>
+                            </div>
+
 
                         </div>
                         <div class="p-4">
@@ -45,7 +71,8 @@
 
                                     <svg role="button" data-type="login" data-server-id="{{server.getLoginId()}}"
                                          class="connectionQualityCheck bi bi-database text-primary"
-                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         viewBox="0 0 16 16">
                                         <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
                                     </svg>
 
@@ -61,7 +88,8 @@
 
                                     <svg role="button" data-type="game" data-server-id="{{server.getGameId()}}"
                                          class="connectionQualityCheck bi bi-database text-primary"
-                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         viewBox="0 0 16 16">
                                         <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
                                     </svg>
 
@@ -100,8 +128,10 @@
                                         <a href="/admin/server/statistic/{{server.getId()}}"
                                            class="btn btn-outline-success">Статистика</a>
                                     </div>
-                                    <div class="btn-group btn-group-sm my-1" role="group"   aria-label="Small button group">
-                                        <a href="/admin/server/set/donate/{{server.getId()}}" class="btn btn-outline-success">Настройки доната</a>
+                                    <div class="btn-group btn-group-sm my-1" role="group"
+                                         aria-label="Small button group">
+                                        <a href="/admin/server/set/donate/{{server.getId()}}"
+                                           class="btn btn-outline-success">Настройки доната</a>
                                     </div>
 
                                 </li>
@@ -144,7 +174,14 @@
 <script src="{{template}}/assets/js/sweetalertdb.js"></script>
 
 <script>
-    $(".setServerDefault").on("click", function (){
+    $(".setServerEnabled").on("change", function () {
+        AjaxSend("/admin/server/set/enabled", "POST", {
+            enabled: $(this).is(':checked'),
+            id: $(this).data('server-id'),
+        }, false);
+    })
+
+    $(".setServerDefault").on("change", function () {
         AjaxSend("/admin/server/set/default", "POST", {
             id: ($(this).attr('data-server-id')),
         }, true);

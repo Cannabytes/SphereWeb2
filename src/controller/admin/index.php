@@ -41,13 +41,15 @@ class index
                         "disabled" => $server['disabled'],
                         "request_count" => $server['request_count'],
                         "count_errors" => $server['count_errors'],
+                        "enabled" => $server['enabled'],
                     ];
                     sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
+                }else{
+                    $getServer->setDisabled($server['enabled']);
                 }
             }
         }
 
-        \Ofey\Logan22\model\server\server::getServer();
         if (!$sphereAPIError) {
             tpl::addVar([
                 "launcher" => $info['launcher'] ?? null,

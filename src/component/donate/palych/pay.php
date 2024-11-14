@@ -50,6 +50,7 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
 
         $data = [
             'amount' => $order_amount,
+            'order_id' => '123456',
             'type' => 'normal',
             'shop_id' => self::getConfigValue('shop_id'),
             'custom' => user::self()->getId(),
@@ -91,7 +92,7 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
         file_put_contents(__DIR__ . '/debug.log', '_REQUEST: ' . print_r($requestData, true) . PHP_EOL, FILE_APPEND);
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
-        $invId = $_POST['InvId']; // Уникальный идентификатор заказа, переданный при формировании счета
+        $invId = $_POST['InvId'] ?? ""; // Уникальный идентификатор заказа, переданный при формировании счета
         $amount = $_POST['OutSum']; //Сумма платежа
         $currencyIn = $_POST['CurrencyIn']; // Валюта, в которой оплачивался счет
         $user_id = $_POST['custom']; //Произвольное поле, переданное при формировании счета

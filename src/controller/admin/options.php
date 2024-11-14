@@ -259,20 +259,29 @@ class options
         $statusGameServerIP = $_POST['statusGameServerIP'] ?? "";
         $statusGameServerPort = (int)$_POST['statusGameServerPort'] ?? 7777;
 
+        $statusLoginServerIP = preg_replace("/^https?:\/\//", "", $statusLoginServerIP);
+        $statusGameServerIP = preg_replace("/^https?:\/\//", "", $statusGameServerIP);
+
         if (!filter_var($statusLoginServerIP, FILTER_VALIDATE_IP)) {
-            if ($enableStatusServer) {
-                board::error("IP адрес логин-сервера недействителен.");
-            } else {
-                $statusLoginServerIP = "0.0.0.0";
+            $resolvedIP = gethostbyname($statusLoginServerIP);
+            if (!filter_var($resolvedIP, FILTER_VALIDATE_IP)) {
+                if ($enableStatusServer) {
+                    board::error("IP адрес или домен логин-сервера недействителен.");
+                }
             }
         }
+
         if (!filter_var($statusGameServerIP, FILTER_VALIDATE_IP)) {
-            if ($enableStatusServer) {
-                board::error("IP адрес логин-сервера недействителен.");
-            } else {
-                $statusGameServerIP = "0.0.0.0";
+            $resolvedIP = gethostbyname($statusGameServerIP);
+            if (!filter_var($resolvedIP, FILTER_VALIDATE_IP)) {
+                if ($enableStatusServer) {
+                    board::error("Указанный адрес игрового сервера недействителен.");
+                }
             }
         }
+
+
+
 
         $loginServerID = $_POST['loginserver'] ?? board::error("Set DB LoginServer");
         $gameserverID = $_POST['gameserver'] ?? board::error("Set DB GameServer");
@@ -359,6 +368,55 @@ class options
         $servers = \Ofey\Logan22\model\server\server::getServerAll();
         if (!$servers) {
             redirect::location("/admin/server/add/new");
+        }
+
+        $sphereAPIError = null;
+        $info = \Ofey\Logan22\component\sphere\server::send(type::SERVER_FULL_INFO)->show(false)->getResponse();
+        if (isset($info['error']) or $info === null) {
+            $sphereAPIError = true;
+            $info['servers'] = [];
+        }
+
+        if(isset($info['servers'])){
+            foreach ($info['servers'] as $server) {
+//                var_dump($server);exit();
+                $id = $server['id'];
+                \Ofey\Logan22\model\server\server::loadStatusServer($server);
+                $getServer = \Ofey\Logan22\model\server\server::getServer($id, $server);
+                if ($getServer == null) {
+                    $data = [
+                        "id" => $id,
+                        "name" => "NoName",
+                        "rateExp" => 1,
+                        "rateSp" => 1,
+                        "rateAdena" => 1,
+                        "rateDrop" => 1,
+                        "rateSpoil" => 1,
+                        "chronicle" => "NoSetChronicle",
+                        "source" => "",
+                        "disabled" => $server['disabled'],
+                        "request_count" => $server['request_count'],
+                        "count_errors" => $server['count_errors'],
+                        "enabled" => $server['enabled'],
+                    ];
+                    sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
+                }else{
+                    $getServer->setDisabled($server['enabled']);
+                }
+            }
+        }
+
+        if (!$sphereAPIError) {
+            tpl::addVar([
+                "launcher" => $info['launcher'] ?? null,
+                "license" => $info['license'] ?? null,
+                "licenseActive" => $info['licenseActive'] ?? null,
+                "roulette" => $info['roulette'] ?? null,
+                "rouletteActive" => $info['rouletteActive'] ?? false,
+                "balance" => (float)$info['balance'] ?? 0,
+                "servers" => $info['servers'],
+                "sphere_last_commit" => $info['last_commit'],
+            ]);
         }
 
         tpl::addVar([

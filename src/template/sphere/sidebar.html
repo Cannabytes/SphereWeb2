@@ -180,6 +180,7 @@
     </nav>
 
     {% for server in getServerAll() %}
+
     {% if server.showStatusBar() %}
     <div class="col-xl-12">
       <div class="card custom-card border-top-card border-top-danger rounded-0">
@@ -194,7 +195,7 @@
             </a>
             {% endif %}
 
-            <p class="fs-14 fw-semibold mb-2">{{server.getChronicle()}} x<span class="mb-0 fw-semibold">{{server.getRateExp()}}</span>
+            <p class="fs-14 fw-semibold mb-2 {% if getUser().getServerId() == server.getId() %}text-warning{% endif %}">{{server.getChronicle()}} x<span class="mb-0 fw-semibold">{{server.getRateExp()}}</span>
             </p>
 
             <div class="d-flex align-items-center justify-content-center flex-wrap">
@@ -220,6 +221,10 @@
               </div>
 
             </div>
+
+            <p class="fs-14 fw-semibold mb-2"><span class="mb-0 fw-semibold">{{server.getDateStartServer()}}</span>
+            </p>
+
           </div>
         </div>
       </div>

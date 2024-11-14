@@ -71,6 +71,22 @@ class userModel
                 $server_id = server::getDefaultServer();
                 $this->changeServerId($server_id, $user['id']);
                 $user['server_id'] = $server_id;
+            }else{
+                $allServersId = server::getServerIds();
+                if($allServersId!=null){
+                    $found = false;
+                    foreach($allServersId AS $id){
+                        if($user['server_id']==$id){
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if(!$found){
+                        $server_id = server::getDefaultServer();
+                        $this->changeServerId($server_id, $user['id']);
+                        $user['server_id'] = $server_id;
+                    }
+                }
             }
 
             if(isset($_SESSION['id'])){

@@ -39,6 +39,8 @@ enum type
     case SERVER_LIST;
     case SERVER_FULL_INFO;
 
+    case SET_SERVER_ENABLED;
+
     //Отправка запроса на сервер игровой
     case GAME_SERVER_REQUEST;
 
@@ -166,6 +168,8 @@ enum type
             self::RENEW_LICENSE => '/api/license/renew',
 
             self::EXCHANGER => '/api/exchanger',
+
+            self::SET_SERVER_ENABLED => '/api/server/set/enabled',
 
             default => null,
         };

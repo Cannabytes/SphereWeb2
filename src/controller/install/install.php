@@ -282,7 +282,6 @@ class install
         $user = $_POST['user'];
         $password = $_POST['password'];
         $name = $_POST['name'];
-
         if (!$email) {
             echo json_encode([
                 "type" => "notice",
@@ -296,32 +295,35 @@ class install
          * Создаем проверочный файл
          */
         $filenameCheck = substr(bin2hex(random_bytes(10)), 0, 10) . ".txt";
-        try {
-            $file = file_put_contents($filenameCheck, "OK");
-            if ($file === false) {
-                throw new Exception("Failed to create check file");
-            }
 
-            $link = new sphereApi();
-            server::setInstallLink("{$link->getIp()}:{$link->getPort()}");
-            server::tokenDisable(true);
+        if(!file_exists(fileSys::get_dir('/data/token.php'))){
+            try {
+                $file = file_put_contents($filenameCheck, "OK");
+                if ($file === false) {
+                    throw new Exception("Failed to create check file");
+                }
 
-            $response = server::send(type::SPHERE_INSTALL, [
-                'filename' => $filenameCheck,
-            ])->show()->getResponse();
-            if (!$response['success']) {
-                throw new Exception("Failed to install sphere");
+                $link = new sphereApi();
+                server::setInstallLink("{$link->getIp()}:{$link->getPort()}");
+                server::tokenDisable(true);
+
+                $response = server::send(type::SPHERE_INSTALL, [
+                    'filename' => $filenameCheck,
+                ])->show(false)->getResponse();
+                if (!$response['success']) {
+                    throw new Exception("Failed to install sphere");
+                }
+                $token = $response['token'];
+                file_put_contents("data/token.php", "<?php const __TOKEN__ = \"$token\";\n");
+                unlink($filenameCheck);
+            } catch (Exception $e) {
+                echo json_encode([
+                    "type" => "notice",
+                    "ok" => false,
+                    "message" => "Installation error: " . $e->getMessage(),
+                ]);
+                exit();
             }
-            $token = $response['token'];
-            file_put_contents("data/token.php", "<?php const __TOKEN__ = \"$token\";\n");
-            unlink($filenameCheck);
-        } catch (Exception $e) {
-            echo json_encode([
-                "type" => "notice",
-                "ok" => false,
-                "message" => "Installation error: " . $e->getMessage(),
-            ]);
-            exit();
         }
 
         \Ofey\Logan22\model\install\install::saveConfig($host, $port, $user, $password, $name);

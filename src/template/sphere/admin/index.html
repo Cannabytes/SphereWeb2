@@ -143,10 +143,11 @@
 
             {% for server in servers %}
             {% set serverInfo = getServer(server.id) %}
-
             <div class="card custom-card overflow-hidden">
                 <div class="card-body p-0 border-bottom">
-                    <div class="px-1 py-2 {% if serverInfo.getStatus().getGameServer() == false %}bg-danger{% else %}bg-success{% endif %} op-3"></div>
+                    <div class="px-1 py-2 {% if serverInfo.getStatus().getGameServer() == false %}bg-danger{% else %}bg-success{% endif %} op-3">
+                        {% if serverInfo.isDisabled() %}<div class="text-center text-white">Сервер отключен администратором</div>{% endif %}
+                    </div>
                     <div class="p-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="fs-18 fw-semibold">{{serverInfo.getName()}} x{{serverInfo.getRateExp()}}</div>
@@ -154,6 +155,7 @@
                                 <span class="badge bg-info-transparent">{{serverInfo.getChronicle()}}</span>
                             </div>
                         </div>
+
                         <ul class="list-unstyled mb-0">
                             <li class="d-flex align-items-center mb-3">
                                                                 <span class="me-2">

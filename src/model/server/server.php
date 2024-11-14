@@ -8,13 +8,12 @@
 namespace Ofey\Logan22\model\server;
 
 use Exception;
-use Ofey\Logan22\component\base\base;
-use Ofey\Logan22\component\restapi\restapi;
+use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
-use trash\sdb;
+use Ofey\Logan22\model\user\user;
 
 class server
 {
@@ -39,8 +38,11 @@ class server
     /**
      * Возвращает список ID серверов
      */
-    public static function getServerIds(): array
+    public static function getServerIds(): ?array
     {
+        if(self::getServerAll()==null){
+            return null;
+        }
         return array_keys(self::getServerAll());
     }
 
@@ -57,7 +59,6 @@ class server
         if (self::$server_info != null) {
             return self::$server_info;
         }
-
         return null;
     }
 
@@ -81,7 +82,7 @@ class server
             $server = current(self::$server_info);
             return $server instanceof serverModel ? $server : null;
         }
-        if (\Ofey\Logan22\controller\config\config::load()->enabled()->isEnableEmulation()) {
+        if (config::load()->enabled()->isEnableEmulation()) {
             $data = include_once "src/component/emulation/data/data.php";
             foreach ($data as $server) {
                 $serverId = $server['id'];
@@ -100,6 +101,9 @@ class server
 
             // Получаем все серверы из базы данных
             $servers = sql::getRows("SELECT * FROM `servers`");
+            if($servers==[]){
+                return null;
+            }
             foreach ($servers as $server) {
                 $server = json_decode($server['data'], true);
                 $serverId = $server['id'];
@@ -107,16 +111,28 @@ class server
                 $page = self::get_default_desc_page_id($serverId);
                 self::$server_info[$serverId] = new serverModel($server, $server_data, $page);
             }
+
+            if(!user::self()->isAdmin()){
+                foreach(self::$server_info AS $id=>$server){
+                    if($server->isDisabled()){
+                       unset(self::$server_info[$id]);
+                    }
+                }
+            }
+            if(self::$server_info==[]){
+                return null;
+            }
+
             self::loadStatusServer($serverStatus);
-            if(!empty(self::$server_info)){
-                foreach(self::$server_info AS $info){
-                    foreach(self::$arrayStatus AS $status){
-                        if($status->getServerId()==$info->getId()){
+            if (!empty(self::$server_info)) {
+                foreach (self::$server_info as $info) {
+                    foreach (self::$arrayStatus as $status) {
+                        if ($status->getServerId() == $info->getId()) {
                             $info->serverStatus = $status;
                         }
                     }
                 }
-                uasort(self::$server_info, function($a, $b) {
+                uasort(self::$server_info, function ($a, $b) {
                     return $a->getPosition() <=> $b->getPosition();
                 });
             }
@@ -136,9 +152,35 @@ class server
         return !empty(self::$server_info) ? current(self::$server_info) : null;
     }
 
+    public static function get_default_desc_page_id($server_id)
+    {
+        if (self::$get_default_desc_page_id == []) {
+            self::$get_default_desc_page_id = sql::getRows("SELECT server_id, lang, page_id, `default` FROM server_description");
+        }
+        //Возращаем ID страницы описания согласно языка пользователя
+        foreach (self::$get_default_desc_page_id as $row) {
+            if ($server_id == $row['server_id']) {
+                if ($row['lang'] == config::load()->lang()->lang_user_default()) {
+                    return $row['page_id'];
+                }
+            }
+        }
+        //Если нет такой страницы, вернем ID страницы по умолчанию
+        foreach (self::$get_default_desc_page_id as $row) {
+            if ($server_id == $row['server_id']) {
+                if ($row['default']) {
+                    return $row['page_id'];
+                }
+            }
+        }
+
+        //Если ничего не найдено, вернем NULL
+        return null;
+    }
+
     static public function loadStatusServer($status = null): void
     {
-        if ($status != null){
+        if ($status != null) {
             $serverStatus = new serverStatus();
             $serverStatus->setEnable($status['isEnableStatus']);
             $serverStatus->setServerId($status['id']);
@@ -159,9 +201,7 @@ class server
         }
         self::$firstLoadServer = true;
         $update = false;
-        $serverCache = sql::getRows(
-            "SELECT `server_id`, `data`, `date_create` FROM `server_cache` WHERE `type` = 'status' ORDER BY `id` DESC", []
-        );
+        $serverCache = sql::getRows("SELECT `server_id`, `data`, `date_create` FROM `server_cache` WHERE `type` = 'status' ORDER BY `id` DESC", []);
         if ($serverCache) {
             /**
              * Если прошло меньше минуты, тогда выводим данные из кэша
@@ -175,7 +215,7 @@ class server
             }
             if ($update) {
                 $serverStatusAll = \Ofey\Logan22\component\sphere\server::send(type::GET_STATUS_SERVER_ALL, [])->getResponse();
-                if(isset($serverStatusAll['status'])){
+                if (isset($serverStatusAll['status'])) {
                     $serverStatusAll = $serverStatusAll['status'];
                     sql::sql("DELETE FROM `server_cache` WHERE `type` = 'status'");
 
@@ -184,7 +224,7 @@ class server
                     $minOnline = $config->onlineCheating()->getMinOnlineShow();
                     $maxOnline = $config->onlineCheating()->getMaxOnlineShow();
 
-                    foreach($serverStatusAll AS $server_id => $status){
+                    foreach ($serverStatusAll as $server_id => $status) {
                         $online = $status['online'] ?? 0;
 
                         if ($onlineCheating && $online == 0) {
@@ -228,33 +268,36 @@ class server
 
     }
 
-    public static function get_default_desc_page_id($server_id)
+    /**
+     * Проверка существования включенных серверов
+     * @return void
+     * @throws Exception
+     */
+    public static function checkActiveServers(): void
     {
-        if (self::$get_default_desc_page_id == []) {
-            self::$get_default_desc_page_id = sql::getRows("SELECT server_id, lang, page_id, `default` FROM server_description");
-        }
-        //Возращаем ID страницы описания согласно языка пользователя
-        foreach (self::$get_default_desc_page_id as $row) {
-            if ($server_id == $row['server_id']) {
-                if ($row['lang'] == config::load()->lang()->lang_user_default()) {
-                    return $row['page_id'];
-                }
+        foreach (server::getServerAll() as $server) {
+            if ($server->isEnabled()) {
+                return;
             }
         }
-        //Если нет такой страницы, вернем ID страницы по умолчанию
-        foreach (self::$get_default_desc_page_id as $row) {
-            if ($server_id == $row['server_id']) {
-                if ($row['default']) {
-                    return $row['page_id'];
-                }
-            }
-        }
-
-        //Если ничего не найдено, вернем NULL
-        return null;
+        board::error("К сожалению, этот сервер отключен администратором");
     }
 
     //Кол-во серверов
+
+    public static function getDefaultServer(): ?int
+    {
+        foreach (self::getServerAll() as $server) {
+            if ($server->isDefault()) {
+                return $server->getId();
+            }
+        }
+        $lastServer = server::getLastServer();
+        if ($lastServer !== null) {
+            return $lastServer->getId();
+        }
+        return 0;
+    }
 
     /**
      * @return serverModel|null
@@ -276,20 +319,6 @@ class server
 
         $lastServer = end(self::$server_info);
         return $lastServer instanceof serverModel ? $lastServer : null;
-    }
-
-    public static function getDefaultServer(): ?int
-    {
-       foreach(self::getServerAll() AS $server){
-           if ($server->isDefault()){
-               return $server->getId();
-           }
-       }
-        $lastServer = server::getLastServer();
-        if ($lastServer !== null) {
-            return $lastServer->getId();
-        }
-        return 0;
     }
 
     public static function server_info($id = null): bool|array

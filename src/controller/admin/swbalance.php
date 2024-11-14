@@ -74,7 +74,6 @@ class swbalance
             $sphereAPIError = true;
             $info['servers'] = [];
         }
-
         if(!$sphereAPIError){
             tpl::addVar([
               "info" => $info,

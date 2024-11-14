@@ -5,6 +5,7 @@ namespace Ofey\Logan22\model\plugin;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
@@ -24,6 +25,9 @@ class plugin
 
     static public function loading(): void
     {
+        if(server::get_count_servers()==0){
+            return;
+        }
         $pluginList = [];
         $configData = sql::getRow(
           "SELECT * FROM `settings` WHERE `key` = '__PLUGIN__'"
