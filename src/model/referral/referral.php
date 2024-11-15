@@ -17,7 +17,7 @@ class referral
 
     public static function get_user_leader($user_id): ?UserModel
     {
-        $query = sql::getRow("SELECT `leader_id` FROM `referrals` WHERE `leader_id` = ? AND `done` = 1", [$user_id]);
+        $query = sql::getRow("SELECT `leader_id` FROM `referrals` WHERE `user_id` = ? AND `done` = 1 LIMIT 1", [$user_id]);
         if (!$query) {
             return null;
         }
