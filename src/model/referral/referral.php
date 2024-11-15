@@ -15,9 +15,10 @@ use Ofey\Logan22\model\user\userModel;
 class referral
 {
 
+    //Вне зависимости завершен или нет
     public static function get_user_leader($user_id): ?UserModel
     {
-        $query = sql::getRow("SELECT `leader_id` FROM `referrals` WHERE `user_id` = ? AND `done` = 1 LIMIT 1", [$user_id]);
+        $query = sql::getRow("SELECT `leader_id` FROM `referrals` WHERE `user_id` = ? LIMIT 1", [$user_id]);
         if (!$query) {
             return null;
         }
