@@ -134,6 +134,31 @@
                             phrase('balance management') }}</a>
                     </div>
 
+                    {# Если лицензия была отключена #}
+                    {% if licenseActive == false %}
+                    <div class="mt-3 task-navigation border-bottom border-block-end-dashed">
+                        <ul class="list-unstyled task-main-nav mb-0">
+                            <li class="px-0 pt-0">
+                                <span class="fs-11 text-muted op-7 fw-semibold">Введенные ограничения из-за окончания лицензии</span>
+                            </li>
+                            <li class="" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="После окончания лицензии SphereWeb вводится квота на 20 регистраций игровых аккаунтов в день. Пожалуйста, цените труд и пополните баланс, продлите использования SphereWeb, чтоб снять ограничение.">
+                                <a href="javascript:void(0);">
+                                    <div class="d-flex align-items-center">
+                                                        <span class="me-2 lh-1">
+                                                            <i class="ri-task-line align-middle fs-14"></i>
+                                                        </span>
+                                        <span class="flex-fill text-nowrap">
+                                                            Регистраций в день
+                                                        </span>
+                                        <span class="badge bg-secondary-transparent rounded-pill">{{registrationLimit}}/20</span>
+                                    </div>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                    {% endif %}
+
 
                 </div>
 
@@ -145,8 +170,10 @@
             {% set serverInfo = getServer(server.id) %}
             <div class="card custom-card overflow-hidden">
                 <div class="card-body p-0 border-bottom">
-                    <div class="px-1 py-2 {% if serverInfo.getStatus().getGameServer() == false %}bg-danger{% else %}bg-success{% endif %} op-3">
-                        {% if serverInfo.isDisabled() %}<div class="text-center text-white">Сервер отключен администратором</div>{% endif %}
+                    <div class="px-1 py-2 {% if serverInfo.getStatus().getGameServer() == false %}bg-danger{% else %}bg-success{% endif %}">
+                        {% if serverInfo.isDisabled() %}
+                        <div class="text-center text-white">Сервер отключен администратором</div>
+                        {% endif %}
                     </div>
                     <div class="p-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -166,7 +193,8 @@
 
                                 <svg role="button" data-type="login" data-server-id="{{serverInfo.getLoginId()}}"
                                      class="connectionQualityCheck bi bi-database text-primary"
-                                     xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                     xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     viewBox="0 0 16 16">
                                     <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
                                 </svg>
 
@@ -181,8 +209,9 @@
                 </span>
 
                                 <svg role="button" data-type="game" data-server-id="{{serverInfo.getGameId()}}"
-                                        class="connectionQualityCheck bi bi-database text-primary"
-                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                     class="connectionQualityCheck bi bi-database text-primary"
+                                     xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     viewBox="0 0 16 16">
                                     <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
                                 </svg>
 
@@ -196,9 +225,12 @@
                                         class="{% if serverInfo.getStatus().getLoginServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
                                 <span class="{% if serverInfo.getStatus().getLoginServer() %}text-success{% else %}text-danger{% endif %}">
 
-                                                                    <svg role="button" data-type="login" data-server-id="{{serverInfo.getId()}}"
+                                                                    <svg role="button" data-type="login"
+                                                                         data-server-id="{{serverInfo.getId()}}"
                                                                          class="portQualityCheck bi bi-database text-primary"
-                                                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                                         xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                         height="16" fill="currentColor"
+                                                                         viewBox="0 0 16 16">
                                     <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
                                 </svg>
 
@@ -211,9 +243,12 @@
                                         class="{% if serverInfo.getStatus().getGameServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
                                 <span class="{% if serverInfo.getStatus().getGameServer() %}text-success{% else %}text-danger{% endif %}">
 
-                                                                    <svg role="button" data-type="game" data-server-id="{{serverInfo.getId()}}"
+                                                                    <svg role="button" data-type="game"
+                                                                         data-server-id="{{serverInfo.getId()}}"
                                                                          class="portQualityCheck bi bi-database text-primary"
-                                                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                                         xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                         height="16" fill="currentColor"
+                                                                         viewBox="0 0 16 16">
                                     <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
                                 </svg>
 
@@ -227,6 +262,11 @@
                                     <a href="/admin/server/edit/{{serverInfo.getId()}}" class="btn btn-outline-success">Изменить</a>
                                     <a href="/admin/server/statistic/{{serverInfo.getId()}}"
                                        class="btn btn-outline-success">Статистика</a>
+                                </div>
+                                <div class="btn-group btn-group-sm my-1" role="group"
+                                     aria-label="Small button group">
+                                    <a href="/admin/server/set/donate/{{server.getId()}}"
+                                       class="btn btn-outline-success">Настройки доната</a>
                                 </div>
 
                             </li>
@@ -791,7 +831,6 @@
                 </div>
             </div>
         </div>
-
     </div>
     <!--End::row-1 -->
 
@@ -802,11 +841,10 @@
 
 {% block css %}
 <link rel="stylesheet" href="{{template}}/assets/libs/sweetalert2/sweetalert2.min.css">
-
 {% endblock %}
 
 
 {% block js %}
-<script src="{{template}}/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+<script src="{{template}}/assets/libs/sweetalert2/sweetalert2.min.js?v=0.0.2"></script>
 <script src="{{template}}/assets/js/sweetalertdb.js?v=0.0.3"></script>
 {% endblock %}

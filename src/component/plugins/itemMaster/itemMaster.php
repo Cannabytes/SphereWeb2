@@ -151,7 +151,6 @@ class itemMaster
         $desc = $_POST["desc"] ?? "";
         $chronicle = $_POST["chronicle"] ?? "highFive";
         $is_stackable = isset($_POST["is_stackable"]);
-
         if ($itemId === null || $itemId === false) {
             board::error("Не указан или неверный ID предмета");
         }
@@ -186,6 +185,7 @@ class itemMaster
             board::error("Ошибка при сохранении файла {$filePath}");
         }
 
+        board::redirect("/admin/modify/item/get/{$chronicle}");
         board::success("Предмет {$itemname} сохранен");
     }
 

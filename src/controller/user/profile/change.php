@@ -19,11 +19,9 @@ use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\log\logTypes;
-use Ofey\Logan22\model\notification\notification;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
-use Verot\Upload\Upload;
 
 class change {
 

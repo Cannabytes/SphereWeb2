@@ -18,8 +18,11 @@ class hwid
             $server    = server::send(type::RESET_HWID, [
                 "player_id" => (int)$player_id,
             ])->show(true)->getResponse();
-            if ($server['success'] == 'success') {
-                board::success($server['success']);
+            if(isset($server['success'])){
+               board::success($server['success']);
+            }
+            if(isset($server['error'])){
+                board::error($server['error']);
             }
         }else{
             board::error("Server not allow reset HWID");

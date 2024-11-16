@@ -49,7 +49,6 @@ class index
                 }
             }
         }
-
         if (!$sphereAPIError) {
             tpl::addVar([
                 "launcher" => $info['launcher'] ?? null,
@@ -60,6 +59,7 @@ class index
                 "balance" => (float)$info['balance'] ?? 0,
                 "servers" => $info['servers'],
                 "sphere_last_commit" => $info['last_commit'],
+                "registrationLimit" => $info['registrationLimit'],
             ]);
         }
 

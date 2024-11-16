@@ -4,9 +4,6 @@
 
 {% block content %}
 
-
-
-
 <div class="container-fluid">
 
   {% if config().enabled().isEnableEmulation() %}
@@ -193,14 +190,21 @@
 
                       <div class="row mb-0">
 
-                        <div class="input-group mb-3 ">
+                        <div class="input-group mb-3">
 
-                          <div
-                            class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm ">
+                          <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between">
                             {{ phrase(40) }}
+
+                            <span data-bs-toggle="modal" data-bs-target="#syncAccount" >
+                              <label role="button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Synchronization of accounts. Do you have an account that is not in your list of accounts?">
+                              У Вас уже есть аккаунт?
+                              </label>
+                            </span>
+
                           </div>
 
                         </div>
+
 
 
                         <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>

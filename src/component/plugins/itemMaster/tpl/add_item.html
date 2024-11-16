@@ -145,7 +145,7 @@
               const response = JSON.parse(request.responseText);
               if (response.status === 'success') {
                 load(response.path);
-                window.location.href = "/admin/modify/item/get/{{chronicle}}"
+                // window.location.href = "/admin/modify/item/get/{{chronicle}}"
               } else {
                 noticeError(response.message || 'Ошибка загрузки')
               }
