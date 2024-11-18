@@ -21,20 +21,19 @@ class user
         return self::getUserId();
     }
 
-    public static function getUserId($userId = null): ?userModel
+    public static function getUserId($userId = 0): ?userModel
     {
-        if ($userId === null) {
-            $userId = $_SESSION['id'] ?? null;
-            if ($userId == null) {
-                return new userModel(null);
-            }
-        }
         if (isset(self::$users[$userId])) {
             return self::$users[$userId];
         }
+        if ($userId === 0) {
+            $userId = $_SESSION['id'] ?? 0;
+            if ($userId == 0) {
+                return new userModel(null);
+            }
+        }
         $user                 = new userModel($userId);
         self::$users[$userId] = $user;
-
         return $user;
     }
 

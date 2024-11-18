@@ -125,7 +125,7 @@ class forumStruct {
         }
         $rows = fdb::getRows("SELECT
                                         post.post_id,
-                                        post.message AS message,
+                                        SUBSTRING(post.message, 1, 140) AS message,
                                         post.post_date,
                                         thread.title AS title,
                                         thread.thread_id,
@@ -145,7 +145,8 @@ class forumStruct {
                                         post.message_state = 'visible'
                                     ORDER BY
                                         post.post_date DESC
-                                    LIMIT ?;", [self::getElements()]);
+                                    LIMIT ?;
+                                    ", [self::getElements()]);
         foreach($rows as &$row) {
             $row['message'] = $this->stripBBCode($row['message']);
             $row['avatar'] = $this->getAvatarUrl($row['user_id'], $row['avatar_date'], $row['gravatar']);
