@@ -355,31 +355,40 @@ class userModel
 
     public function getServerId(): ?int
     {
-        if ($this->serverId === null OR $this->serverId == 0) {
-            if (isset($_SESSION['server_id']) && !$this->isAuth && (!isset($_SESSION['id']) || $_SESSION['id'] != 0)) {
-                return $_SESSION['server_id'];
-            }
-            if(server::getServerAll() === null) {
-                return null;
-            }
-            //Если у пользователя не выбран server_id по умолчанию, тогда проверим выставлен какой-то сервер по дефолту
-            foreach (server::getServerAll() as $server) {
-                if ($server->isDefault()) {
-                    return $server->getId();
-                }
-            }
+        // Если ID сервера уже установлен
+        if (!empty($this->serverId)) {
+            return $this->serverId;
+        }
 
-            //Если нет выбранного сервера по умолчанию, тогда вернем последний
-            $lastServer = server::getLastServer();
-            if($lastServer){
-                $this->setServerId($lastServer->getPosition());
-            }
+        // Проверяем значение в сессии
+        if (!$this->isAuth && !empty($_SESSION['server_id'])) {
+            $this->serverId = (int)$_SESSION['server_id'];
+            return $this->serverId;
+        }
 
-            return $lastServer?->getId();
+        // Получаем все серверы
+        $servers = server::getServerAll();
+        if (empty($servers)) {
+            return null;
+        }
+
+        // Проверяем сервер по умолчанию
+        foreach ($servers as $server) {
+            if ($server->isDefault()) {
+                $this->serverId = $server->getId();
+                return $this->serverId;
+            }
+        }
+
+        // Если сервер по умолчанию отсутствует, берем последний сервер
+        $lastServer = server::getLastServer();
+        if ($lastServer) {
+            $this->serverId = $lastServer->getId();
         }
 
         return $this->serverId ?? null;
     }
+
 
     public function setServerId(int $serverId): void
     {
