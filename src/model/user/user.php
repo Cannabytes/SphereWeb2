@@ -27,10 +27,12 @@ class user
             return self::$users[$userId];
         }
         if ($userId === 0) {
-            $userId = $_SESSION['id'] ?? 0;
-            if ($userId == 0) {
-                return new userModel(null);
+            if(isset($_SESSION['id'])){
+                $userId = $_SESSION['id'];
             }
+        }
+        if (isset(self::$users[$userId])) {
+            return self::$users[$userId];
         }
         $user                 = new userModel($userId);
         self::$users[$userId] = $user;
