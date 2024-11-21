@@ -1,4 +1,5 @@
 <?php
+/////
 
 namespace Ofey\Logan22\model\user;
 

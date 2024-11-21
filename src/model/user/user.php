@@ -1,5 +1,5 @@
 <?php
-
+/////
 namespace Ofey\Logan22\model\user;
 
 use Ofey\Logan22\model\db\sql;
