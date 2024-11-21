@@ -1,4 +1,5 @@
 <?php
+/** UPDATE **/
 
 namespace Ofey\Logan22\model\config;
 

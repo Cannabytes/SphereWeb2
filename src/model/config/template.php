@@ -1,5 +1,5 @@
 <?php
-
+/** UPDATE **/
 namespace Ofey\Logan22\model\config;
 
 use AllowDynamicProperties;
