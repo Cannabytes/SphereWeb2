@@ -2,6 +2,8 @@
 
 namespace Ofey\Logan22\model\donate;
 
+use Ofey\Logan22\model\user\user;
+
 class pay_abstract {
 
     /**
