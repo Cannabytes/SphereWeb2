@@ -17,7 +17,7 @@
     AddType application/x-woff              woff
     AddType image/svg+xml                   svg svgz
     AddEncoding gzip                        svgz
-</Ifmodule>
+</IfModule>
 
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/plain

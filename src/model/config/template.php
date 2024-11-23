@@ -26,15 +26,9 @@ class template
 
     private string $template = "KnightDesert";
 
-    public function __construct()
+    public function __construct($setting)
     {
-        $configData     = sql::getRow(
-          "SELECT * FROM `settings` WHERE `key` = '__config_template__'"
-        );
-        if($configData){
-            $setting        = json_decode($configData['setting'], true);
-            $this->template = $setting['template'];
-        }
+            $this->template = $setting['template'] ?? $this->template;
     }
 
     private function loadJSONTemplate(): void

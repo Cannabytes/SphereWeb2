@@ -129,7 +129,6 @@ class player_account
             $login  = $prefixType == "prefix" ? $prefix . $login : $login . $prefix;
         }
 
-
         if (config::load()->registration()->isMassRegistration()) {
             self::add_mass_players($login, $password, $password_hide);
         } else {
@@ -216,7 +215,6 @@ class player_account
         if ($password_hide) {
             $password = "";
         }
-
         return sql::run(
           "INSERT INTO `player_accounts` (`login`, `password`, `email`, `ip`, `server_id`, `password_hide`, `date_create`, `date_update`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
           [

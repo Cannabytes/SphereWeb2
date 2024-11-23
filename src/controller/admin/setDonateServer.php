@@ -4,7 +4,6 @@ namespace Ofey\Logan22\controller\admin;
 
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\redirect;
-use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\template\tpl;
 
@@ -18,10 +17,8 @@ class setDonateServer
         }
 
         $donateSysName = self::AllDonateSystem();
-        $paySet = config::load()->donate()->getDonateSystems();
-
-
-        $sortValues = [];
+        $server = \Ofey\Logan22\model\server\server::getServer($id);
+        $paySet = $server->getDonateConfig()->getDonateSystems();
         foreach ($paySet as $paySystem) {
             $sortValues[$paySystem->getName()] = $paySystem->getSortValue();
         }
@@ -30,8 +27,6 @@ class setDonateServer
             $sortB = $sortValues[$b['name']] ?? PHP_INT_MAX;
             return $sortA <=> $sortB;
         });
-
-        $server = \Ofey\Logan22\model\server\server::getServer($id);
 
         tpl::addVar([
             'server' => $server,

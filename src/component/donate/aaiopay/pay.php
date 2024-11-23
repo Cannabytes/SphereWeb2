@@ -32,7 +32,7 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
 
         filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT) ?: board::notice(false, "Введіть суму цифрою");
 
-        $donate = \Ofey\Logan22\controller\config\config::load()->donate();
+        $donate = \Ofey\Logan22\model\server\server::getServer()->getDonateConfig();
 
         if ($_POST['count'] < $donate->getMinSummaPaySphereCoin()) {
             board::notice(false, "Минимальное пополнение: " . $donate->getMinSummaPaySphereCoin());

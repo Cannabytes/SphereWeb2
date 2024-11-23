@@ -2,6 +2,8 @@
 
 namespace Ofey\Logan22\model\server;
 
+use Ofey\Logan22\model\config\donate;
+use Ofey\Logan22\model\config\referral;
 use Ofey\Logan22\model\db\sql;
 
 class serverModel
@@ -44,6 +46,9 @@ class serverModel
     private bool $resetHWID = false;
     private ?bool $isSphereServer = null;
 
+    private ?donate $donate = null;
+    private ?referral $referral = null;
+
     public function __construct(array $server, array $server_data = [], ?int $pageId = null)
     {
         $this->id = $server['id'] ?? null;
@@ -77,7 +82,20 @@ class serverModel
         if ($pageId) {
             $this->page = new serverDescriptionModel($pageId);
         }
+
+        $this->donate = new donate($this->id);
+        $this->referral = new referral($this->id);
         return $this;
+    }
+
+    public function getRefferal()
+    {
+        return $this->referral;
+    }
+
+    public function getDonateConfig(): ?donate
+    {
+        return $this->donate;
     }
 
     public function isEnabled(): bool

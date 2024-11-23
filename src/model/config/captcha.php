@@ -21,11 +21,9 @@ class captcha
 
     private string $googleServerKey = "";
 
-    public function __construct()
+    public function __construct($setting)
     {
-        $configData = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_captcha__'");
-        if ($configData) {
-            $setting               = json_decode($configData['setting'], true);
+        if ($setting) {
             $this->defaultCaptcha  = filter_var($setting['defaultCaptcha'], FILTER_VALIDATE_BOOLEAN);
             $this->googleCaptcha   = filter_var($setting['googleCaptcha'], FILTER_VALIDATE_BOOLEAN);
             $this->googleClientKey = $setting['googleClientKey'];

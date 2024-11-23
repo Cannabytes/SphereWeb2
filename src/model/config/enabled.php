@@ -28,11 +28,8 @@ class enabled
 
     private bool $enable_emulation = false;
 
-    public function __construct()
+    public function __construct($setting)
     {
-        $configData = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_enabled__'");
-        if($configData){
-            $setting    = json_decode($configData['setting'], true);
             $this->enable_news      = (bool)filter_var($setting['enable_news'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_shop      = (bool)filter_var($setting['enable_shop'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_balance   = (bool)filter_var($setting['enable_balance'] ?? true, FILTER_VALIDATE_BOOLEAN);
@@ -43,7 +40,6 @@ class enabled
             $this->enable_bonus_code    = (bool)filter_var($setting['enable_bonus_code'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_stream    = (bool)filter_var($setting['enable_stream'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_emulation    = (bool)filter_var($setting['enable_emulation'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        }
     }
 
     public function isEnableNews(): bool

@@ -3,8 +3,6 @@
 
 namespace Ofey\Logan22\model\config;
 
-use Ofey\Logan22\model\db\sql;
-
 class email
 {
 
@@ -24,25 +22,19 @@ class email
 
     private string $emailProtocol = "SMTP";
 
-    public function __construct()
+    public function __construct($setting)
     {
-        $configData = sql::getRow(
-          "SELECT * FROM `settings` WHERE `key` = '__config_email__'"
+        $this->url = !empty($setting['url']) ? $setting['url'] : "";
+        $this->emailHost = $setting['emailHost'] ?? '';
+        $this->emailUsername = $setting['emailUsername'] ?? '';
+        $this->emailPassword = $setting['emailPassword'] ?? '';
+        $this->emailFrom = $setting['emailFrom'] ?? '';
+        $this->emailPort = $setting['emailPort'] ?? '';
+        $this->emailProtocol = $setting['emailProtocol'] ?? '';
+        $this->emailSMTPAuth = filter_var(
+            $setting['emailSMTPAuth'] ?? true,
+            FILTER_VALIDATE_BOOLEAN
         );
-        if ($configData) {
-            $setting             = json_decode($configData['setting'], true);
-            $this->url = !empty($setting['url']) ? $setting['url'] : "";
-            $this->emailHost     = $setting['emailHost'] ?? '';
-            $this->emailUsername = $setting['emailUsername'] ?? '';
-            $this->emailPassword = $setting['emailPassword'] ?? '';
-            $this->emailFrom     = $setting['emailFrom'] ?? '';
-            $this->emailPort     = $setting['emailPort'] ?? '';
-            $this->emailProtocol = $setting['emailProtocol'] ?? '';
-            $this->emailSMTPAuth = filter_var(
-              $setting['emailSMTPAuth'],
-              FILTER_VALIDATE_BOOLEAN
-            );
-        }
     }
 
     public function getURL(): string
@@ -67,7 +59,7 @@ class email
 
     public function getEmailFrom(): string
     {
-        if ($this->emailFrom==''){
+        if ($this->emailFrom == '') {
             return $this->emailHost;
         }
         return $this->emailFrom;

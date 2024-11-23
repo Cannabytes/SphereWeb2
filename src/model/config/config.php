@@ -1,5 +1,4 @@
 <?php
-/** UPDATE **/
 
 namespace Ofey\Logan22\model\config;
 
@@ -11,6 +10,7 @@ use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\lang\lang;
 use Ofey\Logan22\model\log\log;
 use Ofey\Logan22\model\log\logTypes;
+use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\user;
 
 class config
@@ -46,7 +46,7 @@ class config
 
     private ?sphereApi $sphereApi = null;
 
-    private ?menu $menu = null;
+    public ?menu $menu = null;
 
     private ?background $background = null;
 
@@ -78,29 +78,83 @@ class config
             board::error("Ошибка парсинга JSON");
         }
         sql::sql("DELETE FROM `settings` WHERE `key` = ? AND serverId = ? ", [
-          $configName,
-          0,
+            $configName,
+            0,
         ]);
 
         sql::run(
-          "INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES (?, ?, ?, ?)",
-          [
-            $configName,
-            html_entity_decode($post),
-            0,
-            time::mysql(),
-          ]
+            "INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES (?, ?, ?, ?)",
+            [
+                $configName,
+                html_entity_decode($post),
+                0,
+                time::mysql(),
+            ]
         );
         user::self()->addLog(logTypes::LOG_SAVE_CONFIG, 581);
         board::success("Настройки сохранены");
     }
 
+    public static array $settings;
+
+    static function findConfigByKeySetting(string $searchKey ): ?array {
+        foreach (self::$settings as $config) {
+            if (isset($config['key']) && $config['key'] === $searchKey) {
+                return $config['setting'];
+            }
+        }
+        return null;
+    }
+
+    static function findConfigByKey(string $searchKey ): ?array {
+        foreach (self::$settings as $config) {
+            if (isset($config['key']) && $config['key'] === $searchKey) {
+                return $config;
+            }
+        }
+        return null;
+    }
+
+    private array $donateArr = [];
     /**
      * Загрузка конфигов
      */
     public function __construct()
     {
-        $this->lang = new lang();
+        self::$settings = sql::getRows("SELECT * FROM `settings`" );
+        foreach(self::$settings AS &$setting){
+            $setting['setting'] = json_decode($setting['setting'], true);
+        }
+        $this->lang = new lang(self::findConfigByKeySetting('__config_lang__'));
+        // var_dump($this->lang->getPhrase(0));exit();
+
+        $this->captcha = new captcha(self::findConfigByKeySetting('__config_captcha__'));
+        $this->onlineCheating = new onlineCheating(self::findConfigByKeySetting('__config_cheating__'));
+        $this->registration = new registration(self::findConfigByKeySetting('__config_registration__'));
+        $this->email = new email(self::findConfigByKeySetting('__config_email__'));
+        $this->cache = new cache(self::findConfigByKeySetting('__config_cache__'));
+        $this->other = new other(self::findConfigByKeySetting('__config_other__'));
+        $this->template = new template(self::findConfigByKeySetting('__config_template__'));
+//        var_dump($this->lang()->getDefault());exit;
+        //Тут нужно ещё и ID сервера
+//        self::$referral = new referral(self::findConfigByKeySetting('__config_referral__'));
+//        var_dump(self::findConfigByKey('__config_donate__'));exit;
+//        $this->donate = new donate(self::findConfigByKey('__config_donate__'));
+//        foreach(self::$settings AS $getsetting){
+//            if($getsetting['key'] == '__config_donate__'){
+//                $this->donateArr[$getsetting['serverId']] = new donate($getsetting['serverId']);
+//            }
+//        }
+        $this->enabled = new enabled(self::findConfigByKeySetting('__config_enabled__'));
+// DEPCRICATED        self::$github = new github(self::findConfigByKeySetting('__config_github__'));
+        $this->logo = new logo(self::findConfigByKeySetting('__config_logo__'));
+        $this->palette = new palette(self::findConfigByKeySetting('__config_palette__'));
+
+        $this->sphereApi = new sphereApi(self::findConfigByKeySetting('__config_sphere_api__'));
+        //  var_dump(mt_rand(1,999));exit;
+        // $this->menu = new menu(self::findConfigByKeySetting('__config_menu__'), $this->lang);
+        $this->background = new background(self::findConfigByKeySetting('__config_background__'));
+
     }
 
     /**
@@ -118,10 +172,6 @@ class config
      */
     public function captcha(): captcha
     {
-        if ($this->captcha == null) {
-            $this->captcha = new captcha();
-        }
-
         return $this->captcha;
     }
 
@@ -130,10 +180,6 @@ class config
      */
     public function onlineCheating(): onlineCheating
     {
-        if ($this->onlineCheating == null) {
-            $this->onlineCheating = new onlineCheating();
-        }
-
         return $this->onlineCheating;
     }
 
@@ -142,10 +188,6 @@ class config
      */
     public function registration(): registration
     {
-        if ($this->registration == null) {
-            $this->registration = new registration();
-        }
-
         return $this->registration;
     }
 
@@ -154,10 +196,6 @@ class config
      */
     public function email(): email
     {
-        if ($this->email == null) {
-            $this->email = new email();
-        }
-
         return $this->email;
     }
 
@@ -166,10 +204,6 @@ class config
      */
     public function cache(): cache
     {
-        if ($this->cache == null) {
-            $this->cache = new cache();
-        }
-
         return $this->cache;
     }
 
@@ -178,10 +212,6 @@ class config
      */
     public function other(): other
     {
-        if ($this->other == null) {
-            $this->other = new other();
-        }
-
         return $this->other;
     }
 
@@ -190,10 +220,6 @@ class config
      */
     public function template(): template
     {
-        if ($this->template == null) {
-            $this->template = new template();
-        }
-
         return $this->template;
     }
 
@@ -202,11 +228,7 @@ class config
      */
     public function referral(): referral
     {
-        if ($this->referral == null) {
-            $this->referral = new referral();
-        }
-
-        return $this->referral;
+        return server::getServer(user::self()->getServerId())->getRefferal();
     }
 
     /**
@@ -214,66 +236,41 @@ class config
      */
     public function enabled(): enabled
     {
-        if ($this->enabled == null) {
-            $this->enabled = new enabled();
-        }
-
         return $this->enabled;
     }
 
-    public function donate(): ?donate
+    public function donate($id = null)
     {
-        if ($this->donate == null) {
-            $this->donate = new donate();
-        }
-        return $this->donate;
+        return server::getServer(user::self()->getServerId())->getDonateConfig();
     }
 
     public function github(): ?github
     {
-        if ($this->github == null) {
-            $this->github = new github();
-        }
         return $this->github;
     }
 
     public function logo(): ?logo
     {
-        if ($this->logo == null) {
-            $this->logo = new logo();
-        }
         return $this->logo;
     }
 
     public function palette(): ?palette
     {
-        if ($this->palette == null) {
-            $this->palette = new palette();
-        }
         return $this->palette;
     }
 
     public function sphereApi(): ?sphereApi
     {
-        if ($this->sphereApi == null) {
-            $this->sphereApi = new sphereApi();
-        }
         return $this->sphereApi;
     }
 
     public function menu(): ?menu
     {
-        if ($this->menu == null) {
-            $this->menu = new menu();
-        }
         return $this->menu;
     }
 
     public function background()
     {
-        if ($this->background == null) {
-            $this->background = new background();
-        }
         return $this->background;
     }
 

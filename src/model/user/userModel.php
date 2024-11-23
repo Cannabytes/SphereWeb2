@@ -241,6 +241,7 @@ class userModel
             return [];
         }
         $this->accounts = $this->getLoadAccounts();
+//        var_dump($this->getServerId(), $this->accounts);exit();
         if ($this->accounts === null or $this->accounts == []) {
             return [];
         }
@@ -263,6 +264,9 @@ class userModel
         $currentTime = time();
         $needUpdate  = true;
 
+        if(server::get_count_servers()==0){
+            $this->accounts = [];
+        }
         if ($this->getServerId() == null) {
             return null;
         }
@@ -294,11 +298,20 @@ class userModel
                 }
             }
         }
-
         if ($need_reload) {
             $needUpdate = true;
+        }else{
+            $accountsUser = [];
+            foreach($accounts AS &$player){
+                $account = new accountModel();
+                $account->setAccount($player['login']);
+                $account->setPassword($player['password']);
+                $account->setPasswordHide($player['is_password_hide'] ?? false);
+                $account->setCharacters(json_decode($player['characters'],true));
+                $accountsUser[] = $account;
+            }
+            return $this->accounts = $accountsUser;
         }
-
         //Если обновление не требуется, выводим данные ранее сохраненные
         if ( ! $needUpdate) {
             $this->accounts = [];
@@ -322,13 +335,7 @@ class userModel
         }
 
         if (isset($_SESSION['last_update_accounts_list']) && ($currentTime - $_SESSION['last_update_accounts_list'] <= 20) && !$need_reload) {
-            $this->accounts = [];
-            return null;
-        }
-
-        if(server::get_count_servers()==0){
-            $this->accounts = [];
-            return null;
+            return $this->account;
         }
 
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::ACCOUNT_PLAYERS, [
@@ -349,7 +356,6 @@ class userModel
             $this->account[] = $account;
         }
         $this->saveAccounts();
-
         $_SESSION['last_update_accounts_list'] = $currentTime;
         return $this->account;
     }

@@ -40,10 +40,10 @@ class referral
 
     private null|array $itemsLeader = null;
 
-    public function __construct()
+    public function __construct($id)
     {
         $sql        = "SELECT id, `key`, `setting`, `serverId`, `dateUpdate` FROM `settings` WHERE `serverId` = ? AND `key` = '__config_referral__'";
-        $configData = sql::getRow($sql, [user::self()->getServerId()]);
+        $configData = sql::getRow($sql, [$id]);
 
         if ( ! $configData) {
             return self::$instance;

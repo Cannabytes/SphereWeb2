@@ -62,6 +62,11 @@ class server
         return null;
     }
 
+    public static function getDefault(): serverModel|array|null
+    {
+        return self::getServer(server::getDefaultServer());
+    }
+
     /**
      * @param $id
      *

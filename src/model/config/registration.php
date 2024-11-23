@@ -1,9 +1,5 @@
 <?php
-/** UPDATE **/
-
 namespace Ofey\Logan22\model\config;
-
-use Ofey\Logan22\model\db\sql;
 
 class registration
 {
@@ -18,18 +14,15 @@ class registration
 
     private string $phraseRegistrationDownloadFile = 'text_registration_account';
 
-    public function __construct()
+    public function __construct($setting)
     {
-        $configData = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_registration__'");
-        if($configData){
-            $setting            = json_decode($configData['setting'], true);
-            $this->enablePrefix = filter_var( $setting['enablePrefix'], FILTER_VALIDATE_BOOLEAN );
-            $this->prefixType = $setting['prefixType'] ?? 'prefix';
-            $this->massRegistration = filter_var($setting['massRegistration'],FILTER_VALIDATE_BOOLEAN );
-            $this->enableLoadFileRegistration = filter_var($setting['enableLoadFileRegistration'],FILTER_VALIDATE_BOOLEAN );
-            $this->phraseRegistrationDownloadFile = $setting['phraseRegistrationDownloadFile'] ?? 'text_registration_account';
-        }
+        $this->enablePrefix = filter_var($setting['enablePrefix'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->prefixType = $setting['prefixType'] ?? 'prefix';
+        $this->massRegistration = filter_var($setting['massRegistration'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->enableLoadFileRegistration = filter_var($setting['enableLoadFileRegistration'] ?? true, FILTER_VALIDATE_BOOLEAN);
+        $this->phraseRegistrationDownloadFile = !empty($setting['phraseRegistrationDownloadFile']) ? $setting['phraseRegistrationDownloadFile'] : 'text_registration_account';
     }
+
     /**
      * Get the value of enablePrefix.
      *

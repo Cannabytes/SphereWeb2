@@ -22,20 +22,20 @@ class lang
 
     private array $phrasesData = [];
 
-    private array $allowLanguages = [];
+    private array $allowLanguages = ['en', 'ru'];
 
     //Загрузка языкового пакета шаблона
 
-    private ?string $default = null;
+    private string $default = 'en';
 
     private array $pluginCache = [];
 
     /**
      * Загрузка всех необходимых языковых пакетов
      */
-    public function __construct()
+    public function __construct($setting)
     {
-        $this->getConfig();
+        $this->getConfig($setting);
         $this->getLangList();
         //Загрузка языкового пакета
         $this->package();
@@ -46,15 +46,10 @@ class lang
      *
      * @return void
      */
-    public function getConfig(): void
+    public function getConfig($setting): void
     {
-        $configData = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_lang__'");
-        if ( ! $configData) {
-            $configData = ['setting' => '{"allow":["ru","en"],"default":"en"}'];
-        }
-        $setting              = json_decode($configData['setting'], true);
-        $this->allowLanguages = $setting['allow'];
-        $this->default        = $setting['default'];
+        $this->allowLanguages = $setting['allow'] ?? $this->allowLanguages;
+        $this->default        = $setting['default'] ?? $this->default;
     }
 
     public function getLangList(): array

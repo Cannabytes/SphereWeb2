@@ -44,7 +44,6 @@ class account
         }
 
         server::checkActiveServers();
-
         if (\Ofey\Logan22\model\user\user::self()->isAuth()) {
             player_account::add($login, $password, $password_hide);
         } else {

@@ -26,19 +26,10 @@ class github
 
     private ?int $countCommits = null;
 
-    public function __construct()
+    public function __construct($setting)
     {
-        $configData        = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_github__'");
-        if($configData){
-            $setting           = json_decode($configData['setting'], true);
             $this->githubToken = $setting['githubToken'] ?? '';
             $this->tokenDays   = $setting['tokenDays'] ?? 90;
-        }else{
-            $this->error       = true;
-            $this->errorMessage = 'Настройки github не найдены';
-            $this->githubToken = '';
-            $this->tokenDays   = 90;
-        }
     }
 
     public function getToken(): string

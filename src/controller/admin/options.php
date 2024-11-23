@@ -650,7 +650,6 @@ class options
             }
         }
         $server_id = $data['serverId'] ?? board::error("Нет ID сервера");
-
         $post = json_encode($data, JSON_UNESCAPED_UNICODE);
         sql::sql("DELETE FROM `settings` WHERE `key` = '__config_donate__' AND serverId = ? ", [
             $server_id,

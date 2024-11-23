@@ -12,14 +12,10 @@ class logo
 
     private array $favicon = [16=>'/src/template/sphere/assets/images/favicon.ico'];
 
-    public function __construct()
+    public function __construct($setting)
     {
-        $configData = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_logo__'");
-        if ($configData) {
-            $setting       = json_decode($configData['setting'], true);
             $this->favicon = $setting['favicon'] ?? $this->favicon;
             $this->logo    = $setting['logo'] ?? $this->logo;
-        }
     }
 
     public function getLogo(): string

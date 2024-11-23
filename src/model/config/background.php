@@ -15,15 +15,8 @@ class background
 
     private null|string $forget = null;
 
-    public function __construct()
+    public function __construct($setting)
     {
-        $sql        = "SELECT id, `key`, `setting`, `serverId`, `dateUpdate` FROM `settings` WHERE `key` = '__config_background__'";
-        $configData = sql::getRow($sql);
-        if(!$configData){
-            return;
-        }
-        $setting = json_decode($configData['setting'], true);
-
         $this->login        = $setting['login'] ?? null;
         $this->registration = $setting['registration'] ?? null;
         $this->forget       = $setting['forget'] ?? null;

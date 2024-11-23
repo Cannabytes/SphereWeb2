@@ -22,22 +22,17 @@ class cache
 
     private int $referral = 60;
 
-    public function __construct()
+    public function __construct($setting)
     {
-        $configData     = sql::getRow(
-          "SELECT * FROM `settings` WHERE `key` = '__config_cache__'"
-        );
-        if($configData) {
-            $setting        = json_decode($configData['setting'], true);
-            $this->forum    = (int)$setting['forumCache'];
-            $this->status   = (int)$setting['statusCache'];
-            $this->pvp      = (int)$setting['pvpCache'];
-            $this->pk       = (int)$setting['pkCache'];
-            $this->clan     = (int)$setting['clanCache'];
-            $this->castle   = (int)$setting['castleCache'];
-            $this->referral = (int)$setting['referralCache'];
-        }
+        $this->forum    = isset($setting['forumCache']) ? (int)$setting['forumCache'] : $this->forum;
+        $this->status   = isset($setting['statusCache']) ? (int)$setting['statusCache'] : $this->status;
+        $this->pvp      = isset($setting['pvpCache']) ? (int)$setting['pvpCache'] : $this->pvp;
+        $this->pk       = isset($setting['pkCache']) ? (int)$setting['pkCache'] : $this->pk;
+        $this->clan     = isset($setting['clanCache']) ? (int)$setting['clanCache'] : $this->clan;
+        $this->castle   = isset($setting['castleCache']) ? (int)$setting['castleCache'] : $this->castle;
+        $this->referral = isset($setting['referralCache']) ? (int)$setting['referralCache'] : $this->referral;
     }
+
 
     public function getForum(): int
     {

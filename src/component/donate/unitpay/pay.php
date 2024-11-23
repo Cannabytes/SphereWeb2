@@ -51,7 +51,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
      * Генерируем ссылку для перехода на сайт оплаты
      */
     function create_link(): void {
-        auth::get_is_auth() ?: board::notice(false, lang::get_phrase(234));
+        user::self()->isAuth() ?: board::notice(false, lang::get_phrase(234));
         filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT) ?: board::notice(false, "Введите сумму цифрой");
 
         $donate = __config__donate;

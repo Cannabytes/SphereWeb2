@@ -4,6 +4,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 
 class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
 
@@ -52,18 +53,18 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
      * Генерируем ссылку для перехода на сайт оплаты
      */
     function create_link(): void {
-        auth::get_is_auth() ?: board::notice(false, lang::get_phrase(234));
+        user::self()->isAuth() ?: board::notice(false, lang::get_phrase(234));
         filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT) ?: board::notice(false, "Введите сумму цифрой");
         donate::isOnlyAdmin(self::class);
         if(empty($this->shopId) OR empty($this->secretKey)){
             board::error('No set token api');
         }
-        $donate = __config__donate;
-        if ($_POST['count'] < $donate['min_donate_bonus_coin']) {
-            board::notice(false, "Минимальное пополнение: " . $donate['min_donate_bonus_coin'] );
+        $donate = \Ofey\Logan22\controller\config\config::load()->donate();
+        if ($_POST['count'] < $donate->getMinSummaPaySphereCoin()) {
+            board::notice(false, "Минимальное пополнение: " . $donate->getMinSummaPaySphereCoin());
         }
-        if ($_POST['count'] > $donate['max_donate_bonus_coin']) {
-            board::notice(false, "Максимальная пополнение: " . $donate['max_donate_bonus_coin'] );
+        if ($_POST['count'] > $donate->getMaxSummaPaySphereCoin()) {
+            board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 		$order_amount = $_POST['count'] * ($donate['coefficient']['RUB'] / $donate['quantity']);
 		$userId = auth::get_id();

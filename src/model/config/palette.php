@@ -22,13 +22,8 @@ class palette
     public string $style = "";
 
 
-    public function __construct()
+    public function __construct($setting)
     {
-        $configData          = sql::getRow(
-          "SELECT * FROM `settings` WHERE `key` = '__config_palette__'"
-        );
-        if($configData){
-            $setting             = json_decode($configData['setting'], true, 512);
             $this->navLayout = $setting['nav-layout'] ?? "vertical";
             $this->themeMode = $setting['theme-mode'] ?? "light";
             $this->headerStyles = $setting['header-styles'] ?? "light";
@@ -42,7 +37,6 @@ class palette
             $this->pageStyle = $setting['page-style'] ?? "regular";
             $this->width = $setting['width'] ?? "fullwidth";
             $this->style = $setting['style'] ?? "";
-         }
     }
 
     public function getAll(): array

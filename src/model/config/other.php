@@ -28,7 +28,7 @@ class other
 
     private int $timeoutSaveStatistic = 60 * 5;
 
-    private string $timezone = "";
+    private string $timezone = "Europe/Kyiv";
 
     private string $messageTechnicalWork = "";
 
@@ -36,39 +36,12 @@ class other
 
     private string $linkMainPage = "/";
 
-    private int $maxAccount = 30;
+    private int $maxAccount = 20;
 
     private string $contactAdmin = "";
 
-    public function __construct()
+    public function __construct($setting)
     {
-        $configData = sql::getRow("SELECT * FROM `settings` WHERE `key` = '__config_other__'");
-
-        if (!$configData) {
-            $configData = [
-                'setting' => json_encode([
-                    'saveOpenPassword' => false,
-                    'isL2Cursor' => false,
-                    'isExchangeRates' => false,
-                    'exchangeRates' => [],
-                    'enableTechnicalWork' => false,
-                    'saveStatisticData' => false,
-                    'isAuthShow' => false,
-                    'allTitlePage' => '',
-                    'onlinemul' => 1.0,
-                    'timeoutSaveStatistic' => 60 * 5,
-                    'timezone' => 'UTC',
-                    'messageTechnicalWork' => '',
-                    'keywords' => '',
-                    'linkMainPage' => '/',
-                    'max_account' => 30,
-                    'contactAdmin' => '',
-                ]),
-            ];
-        }
-
-        $setting = json_decode($configData['setting'], true);
-
         $this->openPassword = filter_var($setting['saveOpenPassword'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->isL2Cursor = filter_var($setting['isL2Cursor'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->isExchangeRates = filter_var($setting['isExchangeRates'] ?? false, FILTER_VALIDATE_BOOLEAN);
@@ -76,15 +49,15 @@ class other
         $this->enableTechnicalWork = filter_var($setting['enableTechnicalWork'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->saveStatisticData = filter_var($setting['saveStatisticData'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->isAuthShow = filter_var($setting['isAuthShow'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $this->allTitlePage = $setting['allTitlePage'];
+        $this->allTitlePage = $setting['allTitlePage'] ?? '';
         $this->onlineMul = (float)$setting['onlinemul'] ?? 1.0;
-        $this->timeoutSaveStatistic = (int)$setting['timeoutSaveStatistic'];
-        $this->timezone = $setting['timezone'];
-        $this->messageTechnicalWork = $setting['messageTechnicalWork'];
-        $this->keywords = $setting['keywords'];
-        $this->linkMainPage = $setting['linkMainPage'] ?? '/';
-        $this->maxAccount = (int)$setting['max_account'] ?? 30;
-        $this->contactAdmin = $setting['contactAdmin'] ?? '';
+        $this->timeoutSaveStatistic = (int)$setting['timeoutSaveStatistic'] ?? $this->timeoutSaveStatistic;
+        $this->timezone = $setting['timezone'] ?? $this->timezone;
+        $this->messageTechnicalWork = $setting['messageTechnicalWork'] ?? $this->messageTechnicalWork;
+        $this->keywords = $setting['keywords'] ?? $this->keywords;
+        $this->linkMainPage = $setting['linkMainPage'] ?? $this->linkMainPage;
+        $this->maxAccount = (int)$setting['max_account'] ?? $this->maxAccount;
+        $this->contactAdmin = $setting['contactAdmin'] ?? $this->contactAdmin;
     }
 
     public function getLinkMainPage(): string

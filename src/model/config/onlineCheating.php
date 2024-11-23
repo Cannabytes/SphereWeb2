@@ -16,13 +16,9 @@ class onlineCheating
 
     private array $cheatingDetails = [];
 
-    public function __construct()
+    public function __construct($setting)
     {
-        $configData = sql::getRow(
-          "SELECT * FROM `settings` WHERE `key` = '__config_cheating__'"
-        );
-        if ($configData) {
-            $setting             = json_decode($configData['setting'], true);
+        if ($setting) {
             $this->enabled       = filter_var(
               $setting['isEnableOnlineCheaters'],
               FILTER_VALIDATE_BOOLEAN

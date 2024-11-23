@@ -13,10 +13,11 @@ session::init();
 $isFileDB = false;
 if (file_exists(fileSys::get_dir('/data/db.php'))) {
     $isFileDB = true;
+    \Ofey\Logan22\controller\config\dsys::initPaySysClass();
     config::load();
     plugin::loading();
-    date_default_timezone_set(config::load()->other()->getTimezone());
     $route           = new Ofey\Logan22\route\Route();
+    date_default_timezone_set(config::load()->other()->getTimezone());
     //Проверка что сайт отключен
     if (config::load()->other()->getEnableTechnicalWork() AND ! user::self()->isAdmin()) {
         $route->get("/admin", function () {

@@ -6,10 +6,10 @@ namespace Ofey\Logan22\model\config;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\request\url;
 use Ofey\Logan22\controller\config\config;
+use Ofey\Logan22\controller\config\dsys;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\item\item;
 use Ofey\Logan22\model\user\auth\auth;
-use Ofey\Logan22\model\user\user;
 
 class donate
 {
@@ -63,108 +63,197 @@ class donate
      */
     public array $donateSystems = [];
 
-    public function __construct()
+    public function __construct($serverId = 0)
     {
-        $configData = sql::getRow("SELECT * FROM `settings` WHERE serverId = ? AND `key` = '__config_donate__'", [
-          user::self()->getServerId(),
+        $config = sql::getRow("SELECT * FROM `settings` WHERE serverId = ? AND `key` = '__config_donate__'", [
+            $serverId
         ]);
-        if ($configData) {
-            $setting                                                           = json_decode($configData['setting'], true);
-            $this->paySystemDefault                                            = $setting['paySystemDefault'] ?? "freekassa";
-            $this->minSummaPaySphereCoin                                       = $setting['minSummaPaySphereCoin'] ?? 1;
-            $this->maxSummaPaySphereCoin                                       = $setting['maxSummaPaySphereCoin'] ?? 999999;
-            $this->sphereCoinCost                                              = $setting['sphereCoinCost'] ?? 1;
-            $this->ratioUSD                                                    = 1;
-            $this->ratioEUR                                                    = (float)$setting['ratioEUR'] ?? 1.09;
-            $this->ratioUAH                                                    = (float)$setting['ratioUAH'] ?? 40.54;
-            $this->ratioRUB                                                    = (float)$setting['ratioRUB'] ?? 90.44;
-            $this->enableCumulativeDiscountSystem                              = filter_var(
-              $setting['enableCumulativeDiscountSystem'],
-              FILTER_VALIDATE_BOOLEAN
-            );
-            $this->tableCumulativeDiscountSystem                               = $setting['table_CumulativeDiscountSystem'] ?? [];
-            $this->enableOneTimeBonus                                          = filter_var(
-              $setting['enableOneTimeBonus'],
-              FILTER_VALIDATE_BOOLEAN
-            );
-            $this->tableEnableOneTimeBonus                                     = $setting['table_EnableOneTimeBonus'] ?? [];
-            $this->enableSystemDiscountsOnItemPurchases                        = filter_var(
-              $setting['enableSystemDiscountsOnItemPurchases'],
-              FILTER_VALIDATE_BOOLEAN
-            );
-            $this->tableSystemDiscountsOnItemPurchases                         = $setting['table_SystemDiscountsOnItemPurchases'] ?? [];
-            $this->enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity = filter_var(
-              $setting['enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity'],
-              FILTER_VALIDATE_BOOLEAN
-            );
-            $this->tableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity  = $setting['table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity'] ?? [];
-            $this->tableListOfItemsForDiscount                                 = $setting['table_ListOfItemsForDiscount'] ?? [];
-            $this->rewardForDonatingItems                                      = filter_var(
-              $setting['rewardForDonatingItems'],
-              FILTER_VALIDATE_BOOLEAN
-            );
-            $this->tableItemsBonus                                             = $setting['tableItemsBonus'] ?? [];
-            $this->donateSystems                                               = $setting['donateSystems'] ?? [];
+            if ($config) {
+                $setting = json_decode($config['setting'], true);
+                $this->paySystemDefault = $setting['paySystemDefault'] ?? "freekassa";
+                $this->minSummaPaySphereCoin = $setting['minSummaPaySphereCoin'] ?? 1;
+                $this->maxSummaPaySphereCoin = $setting['maxSummaPaySphereCoin'] ?? 999999;
+                $this->sphereCoinCost = $setting['sphereCoinCost'] ?? 1;
+                $this->ratioUSD = 1;
+                $this->ratioEUR = (float)$setting['ratioEUR'] ?? 1.09;
+                $this->ratioUAH = (float)$setting['ratioUAH'] ?? 40.54;
+                $this->ratioRUB = (float)$setting['ratioRUB'] ?? 90.44;
+                $this->enableCumulativeDiscountSystem = filter_var(
+                    $setting['enableCumulativeDiscountSystem'],
+                    FILTER_VALIDATE_BOOLEAN
+                );
+                $this->tableCumulativeDiscountSystem = $setting['table_CumulativeDiscountSystem'] ?? [];
+                $this->enableOneTimeBonus = filter_var(
+                    $setting['enableOneTimeBonus'],
+                    FILTER_VALIDATE_BOOLEAN
+                );
+                $this->tableEnableOneTimeBonus = $setting['table_EnableOneTimeBonus'] ?? [];
+                $this->enableSystemDiscountsOnItemPurchases = filter_var(
+                    $setting['enableSystemDiscountsOnItemPurchases'],
+                    FILTER_VALIDATE_BOOLEAN
+                );
+                $this->tableSystemDiscountsOnItemPurchases = $setting['table_SystemDiscountsOnItemPurchases'] ?? [];
+                $this->enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity = filter_var(
+                    $setting['enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity'],
+                    FILTER_VALIDATE_BOOLEAN
+                );
+                $this->tableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity = $setting['table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity'] ?? [];
+                $this->tableListOfItemsForDiscount = $setting['table_ListOfItemsForDiscount'] ?? [];
+                $this->rewardForDonatingItems = filter_var(
+                    $setting['rewardForDonatingItems'],
+                    FILTER_VALIDATE_BOOLEAN
+                );
+                $this->tableItemsBonus = $setting['tableItemsBonus'] ?? [];
+                $this->donateSystems = $setting['donateSystems'] ?? [];
 
-            foreach ($this->tableItemsBonus as &$itemsBonus) {
-                foreach ($itemsBonus as &$itemBonus) {
-                    $id                = $itemBonus['id'];
-                    $item              = item::getItem($id);
-                    $itemBonus['item'] = $item; // Добавляем объект item к каждому bonus
-                }
-            }
-            $this->donateSystems = $this->parseDonateSystem();
-            $this->item_id_to_game_transfer = filter_var($setting['item_id_to_game_transfer'], FILTER_VALIDATE_INT) ?? 0;
-            $this->donate_item_to_game_transfer = filter_var($setting['donate_item_to_game_transfer'] ?? 1, FILTER_VALIDATE_INT);
-            $this->count_items_to_game_transfer = filter_var($setting['count_items_to_game_transfer'] ?? 1, FILTER_VALIDATE_INT);
-        } else {
-            $all_donate_system = fileSys::get_dir_files("src/component/donate", [
-              'basename' => true,
-              'fetchAll' => true,
-            ]);
-            $donateSysNames    = [];
-            foreach ($all_donate_system as $system) {
-                if ( ! $system::isEnable()) {
-                    continue;
-                }
-                if (method_exists($system, 'forAdmin')) {
-                    if ($system::forAdmin() and auth::get_access_level() != 'admin') {
-                        continue;
+                foreach ($this->tableItemsBonus as &$itemsBonus) {
+                    foreach ($itemsBonus as &$itemBonus) {
+                        $id = $itemBonus['id'];
+                        $item = item::getItem($id);
+                        $itemBonus['item'] = $item; // Добавляем объект item к каждому bonus
                     }
                 }
-                $inputs = [];
-                if (method_exists($system, 'inputs')) {
-                    $inputs = $system::inputs();
+                $this->donateSystems = $this->parseDonateSystem();
+                $this->item_id_to_game_transfer = filter_var($setting['item_id_to_game_transfer'], FILTER_VALIDATE_INT) ?? 0;
+                $this->donate_item_to_game_transfer = filter_var($setting['donate_item_to_game_transfer'] ?? 1, FILTER_VALIDATE_INT);
+                $this->count_items_to_game_transfer = filter_var($setting['count_items_to_game_transfer'] ?? 1, FILTER_VALIDATE_INT);
+            } else {
+                $all_donate_system = fileSys::get_dir_files("src/component/donate", [
+                    'basename' => true,
+                    'fetchAll' => true,
+                ]);
+                $donateSysNames = [];
+                foreach ($all_donate_system as $system) {
+                    if (!$system::isEnable()) {
+                        continue;
+                    }
+                    if (method_exists($system, 'forAdmin')) {
+                        if ($system::forAdmin() and auth::get_access_level() != 'admin') {
+                            continue;
+                        }
+                    }
+                    $inputs = [];
+                    if (method_exists($system, 'inputs')) {
+                        $inputs = $system::inputs();
+                    }
+                    if (method_exists($system, 'getDescription')) {
+                        $donateSysNames[] = [
+                            'name' => basename($system),
+                            'desc' => $system::getDescription()[config::load()->lang()->getDefault()] ?? "",
+                            'inputs' => $inputs,
+                            'webhook' => $system::getWebhook(),
+                        ];
+                    } else {
+                        $donateSysNames[] = [
+                            'name' => basename($system),
+                            'desc' => basename($system),
+                            'inputs' => $inputs,
+                            'webhook' => $system::getWebhook(),
+                        ];
+                    }
                 }
-                if (method_exists($system, 'getDescription')) {
-                    $donateSysNames[] = [
-                      'name'   => basename($system),
-                      'desc'   => $system::getDescription()[config::load()->lang()->getDefault()] ?? "",
-                      'inputs' => $inputs,
-                      'webhook' => $system::getWebhook(),
-                    ];
-                } else {
-                    $donateSysNames[] = [
-                      'name'   => basename($system),
-                      'desc'   => basename($system),
-                      'inputs' => $inputs,
-                      'webhook' => $system::getWebhook(),
-                    ];
-                }
-            }
 
-            $donateSys = [];
-            foreach ($donateSysNames as $system) {
-                $systemName  = $system['name'] ?? "";
-                $enable      = $system['enable'] ?? false;
-                $inputs      = $system['inputs'];
-                $description = $system['description'] ?? "";
-                $forAdmin    = $system['forAdmin'] ?? false;
-                $webhook     = $system['webhook'];
-                $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, $webhook);
+                $donateSys = [];
+                foreach ($donateSysNames as $system) {
+                    $systemName = $system['name'] ?? "";
+                    $enable = $system['enable'] ?? false;
+                    $inputs = $system['inputs'];
+                    $description = $system['description'] ?? "";
+                    $forAdmin = $system['forAdmin'] ?? false;
+                    $webhook = $system['webhook'];
+                    $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, $webhook);
+                }
+                $this->donateSystems = $donateSys;
             }
-            $this->donateSystems = $donateSys;
+    }
+
+    /**
+     * @return donateSystem[]|array
+     */
+    private function parseDonateSystem(): array
+    {
+        $all_donate_system = fileSys::get_dir_files("src/component/donate", [
+            'basename' => true,
+            'fetchAll' => true,
+        ]);
+
+        $donateSysNames = [];
+        foreach ($all_donate_system as $systemName) {
+            $system = dsys::getClone($systemName);
+            if (!$system::isEnable()) {
+                continue;
+            }
+            if (method_exists($system, 'forAdmin')) {
+                if ($system::forAdmin() and auth::get_access_level() != 'admin') {
+                    continue;
+                }
+            }
+            $inputs = [];
+
+            if (method_exists($system, 'inputs')) {
+                $inputs = $system::inputs();
+            }
+            if (method_exists($system, 'getDescription')) {
+                $desc = $system::getDescription();
+                if ($desc == null){
+                    $desc = basename($systemName);
+                }else{
+                    $desc = $system::getDescription() ?? "";
+                }
+                $donateSysNames[] = [
+                    'name' => basename($systemName),
+                    'desc' => $desc,
+                    'inputs' => '$inputs',
+                ];
+            } else {
+                $donateSysNames[] = [
+                    'name' => basename($systemName),
+                    'desc' => basename($systemName),
+                    'inputs' => $inputs,
+                ];
+            }
         }
+        $fileDonateSys = [];
+
+        foreach ($donateSysNames as $donateSysName) {
+            $isExist = false;
+            foreach ($this->donateSystems as $system) {
+                $systemName = key($system);
+                if ($donateSysName['name'] == $systemName) {
+                    $donateSysName['sort'] = $system['sort'] ?? 1000;
+                    $isExist = true;
+                    break;
+                }
+            }
+            if ($isExist) {
+                continue;
+            }
+            $systemName = $donateSysName['name'];
+            $enable = $donateSysName['enable'] ?? false;
+            $inputs = $donateSysName['inputs'] ?? [];
+            $description = $donateSysName['desc'] ?? "";
+            $forAdmin = $donateSysName['forAdmin'] ?? false;
+            $sort = $system[$systemName]['sort'] ?? 1000;
+
+            $fileDonateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort);
+
+        }
+        $donateSys = [];
+        foreach ($this->donateSystems as $system) {
+            $systemName = key($system);
+            $enable = $system[$systemName]['enable'] ?? false;
+            $inputs = $system[$systemName]['inputs'] ?? [];
+            $description = $system[$systemName]['description'] ?? "";
+            $forAdmin = $system[$systemName]['forAdmin'] ?? false;
+            $sort = $system[$systemName]['sort'] ?? 1000;
+            $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort);
+
+        }
+        $donateSys = array_merge($donateSys, $fileDonateSys);
+        usort($donateSys, function ($a, $b) {
+            return strcmp($a->getSortValue(), $b->getSortValue());
+        });
+        return $donateSys;
     }
 
     public function getItemIdToGameTransfer(): int
@@ -181,87 +270,6 @@ class donate
     {
         return $this->count_items_to_game_transfer;
     }
-
-    /**
-     * @return donateSystem[]|array
-     */
-    private function parseDonateSystem(): array
-    {
-        $all_donate_system = fileSys::get_dir_files("src/component/donate", [
-          'basename' => true,
-          'fetchAll' => true,
-        ]);
-        $donateSysNames    = [];
-        foreach ($all_donate_system as $system) {
-            if ( ! $system::isEnable()) {
-                continue;
-            }
-            if (method_exists($system, 'forAdmin')) {
-                if ($system::forAdmin() and auth::get_access_level() != 'admin') {
-                    continue;
-                }
-            }
-            $inputs = [];
-
-            if (method_exists($system, 'inputs')) {
-                $inputs = $system::inputs();
-            }
-            if (method_exists($system, 'getDescription')) {
-                $donateSysNames[] = [
-                  'name'   => basename($system),
-                  'desc'   => $system::getDescription()[config::load()->lang()->getDefault()] ?? "",
-                  'inputs' => $inputs,
-                ];
-            } else {
-                $donateSysNames[] = [
-                  'name'   => basename($system),
-                  'desc'   => basename($system),
-                  'inputs' => $inputs,
-                ];
-            }
-        }
-        $fileDonateSys = [];
-        foreach($donateSysNames AS $donateSysName){
-            $isExist = false;
-            foreach($this->donateSystems AS $system){
-                $systemName  = key($system);
-                if($donateSysName['name']==$systemName){
-                    $donateSysName['sort'] = $system['sort'] ?? 1000;
-                    $isExist = true;
-                    break;
-                }
-            }
-            if($isExist){
-                continue;
-            }
-            $systemName  = $donateSysName['name'];
-            $enable      = $donateSysName['enable'] ?? false;
-            $inputs      = $donateSysName['inputs'] ?? [];
-            $description = $donateSysName['desc'] ?? "";
-            $forAdmin    = $donateSysName['forAdmin'] ?? false;
-            $sort = $system[$systemName]['sort'] ?? 1000;
-
-            $fileDonateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort);
-
-        }
-        $donateSys = [];
-        foreach ($this->donateSystems as $system) {
-            $systemName  = key($system);
-            $enable      = $system[$systemName]['enable'] ?? false;
-            $inputs      = $system[$systemName]['inputs'] ?? [];
-            $description = $system[$systemName]['description'] ?? "";
-            $forAdmin    = $system[$systemName]['forAdmin'] ?? false;
-            $sort = $system[$systemName]['sort'] ?? 1000;
-            $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort);
-
-        }
-        $donateSys = array_merge($donateSys, $fileDonateSys);
-        usort($donateSys, function($a, $b) {
-            return strcmp($a->getSortValue(), $b->getSortValue());
-        });
-        return $donateSys;
-    }
-
 
     public function get($name): donateSystem
     {
@@ -350,7 +358,7 @@ class donate
      */
     public function getRatioUSD(): float
     {
-        if (config::load()->other()->isExchangeRates()){
+        if (config::load()->other()->isExchangeRates()) {
             return config::load()->other()->getExchangeRates()['USD'];
         }
         return $this->ratioUSD;
@@ -361,7 +369,7 @@ class donate
      */
     public function getRatioEUR(): float
     {
-        if (config::load()->other()->isExchangeRates()){
+        if (config::load()->other()->isExchangeRates()) {
             return config::load()->other()->getExchangeRates()['EUR'];
         }
         return $this->ratioEUR;
@@ -372,7 +380,7 @@ class donate
      */
     public function getRatioUAH(): float
     {
-        if (config::load()->other()->isExchangeRates()){
+        if (config::load()->other()->isExchangeRates()) {
             return config::load()->other()->getExchangeRates()['UAH'];
         }
         return $this->ratioUAH;
@@ -383,7 +391,7 @@ class donate
      */
     public function getRatioRUB(): float
     {
-        if (config::load()->other()->isExchangeRates()){
+        if (config::load()->other()->isExchangeRates()) {
             return config::load()->other()->getExchangeRates()['RUB'];
         }
         return $this->ratioRUB;
@@ -466,10 +474,10 @@ class donateSystem
 
     public function __construct($enable, $name, $inputs, $description = "", $forAdmin = false, $webhookUrl = null, $sort = 1000)
     {
-        $this->enable      = filter_var($enable, FILTER_VALIDATE_BOOLEAN);
-        $this->name        = $name;
+        $this->enable = filter_var($enable, FILTER_VALIDATE_BOOLEAN);
+        $this->name = $name;
         $this->description = $description;
-        $this->forAdmin    = filter_var($forAdmin, FILTER_VALIDATE_BOOLEAN);
+        $this->forAdmin = filter_var($forAdmin, FILTER_VALIDATE_BOOLEAN);
         foreach ($inputs as $name => $value) {
             $this->inputs[$name] = $value;
         }
@@ -484,10 +492,18 @@ class donateSystem
 
     public function getWebhookUrl(): string
     {
-        if($this->webhookUrl==null){
+        if ($this->webhookUrl == null) {
             return url::host("/donate/webhook/" . $this->getName());
         }
         return url::host($this->webhookUrl);
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     public function forAdmin(): bool
@@ -509,15 +525,7 @@ class donateSystem
     }
 
     /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param   string|null  $method
+     * @param string|null $method
      *
      * @return int|string
      */
