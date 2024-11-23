@@ -59,7 +59,7 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
         if(empty($this->shopId) OR empty($this->secretKey)){
             board::error('No set token api');
         }
-        $donate = \Ofey\Logan22\controller\config\config::load()->donate();
+        $donate = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
         if ($_POST['count'] < $donate->getMinSummaPaySphereCoin()) {
             board::notice(false, "Минимальное пополнение: " . $donate->getMinSummaPaySphereCoin());
         }

@@ -297,21 +297,26 @@ class userModel
                     break;
                 }
             }
+        }else{
+            $needUpdate = true;
         }
         if ($need_reload) {
             $needUpdate = true;
-        }else{
-            $accountsUser = [];
-            foreach($accounts AS &$player){
-                $account = new accountModel();
-                $account->setAccount($player['login']);
-                $account->setPassword($player['password']);
-                $account->setPasswordHide($player['is_password_hide'] ?? false);
-                $account->setCharacters(json_decode($player['characters'],true));
-                $accountsUser[] = $account;
-            }
-            return $this->accounts = $accountsUser;
         }
+
+//        if(!$needUpdate){
+//            $accountsUser = [];
+//            foreach($accounts AS &$player){
+//                $account = new accountModel();
+//                $account->setAccount($player['login']);
+//                $account->setPassword($player['password']);
+//                $account->setPasswordHide($player['is_password_hide'] ?? false);
+//                $account->setCharacters(json_decode($player['characters'],true));
+//                $accountsUser[] = $account;
+//            }
+//            return $this->accounts = $accountsUser;
+//        }
+
         //Если обновление не требуется, выводим данные ранее сохраненные
         if ( ! $needUpdate) {
             $this->accounts = [];

@@ -113,11 +113,11 @@ class inventory
             board::error("Недостаточно монет");
         }
 
-
-        $countItemsToGameTransfer = config::load()->donate()->getCountItemsToGameTransfer()*$coins / config::load()->donate()->getDonateItemToGameTransfer();
+        
+        $countItemsToGameTransfer = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getCountItemsToGameTransfer()*$coins / \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getDonateItemToGameTransfer();
 
         if (fmod($countItemsToGameTransfer, 1) !== 0.0) {
-            board::error("Введите кратное значение. К примеру " . (int)$countItemsToGameTransfer * config::load()->donate()->getDonateItemToGameTransfer());
+            board::error("Введите кратное значение. К примеру " . (int)$countItemsToGameTransfer * \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getDonateItemToGameTransfer());
         }
 
         if ( ! user::self()->donateDeduct($coins)) {
@@ -126,7 +126,7 @@ class inventory
 
         $items[] = [
           'objectId' => 0,
-          'itemId'   => config::load()->donate()->getItemIdToGameTransfer(),
+          'itemId'   => \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getItemIdToGameTransfer(),
           'count'    => $countItemsToGameTransfer,
           'enchant'  => 0,
         ];
@@ -139,7 +139,7 @@ class inventory
           'email'   => user::self()->getEmail(),
         ])->show()->getResponse();
         if (isset($json['data']) && $json['data'] === true) {
-            user::self()->addLog(logTypes::LOG_DONATE_COIN_TO_GAME, "LOG_DONATE_COIN_TO_GAME", [$account, config::load()->donate()->getItemIdToGameTransfer(), $countItemsToGameTransfer]);
+            user::self()->addLog(logTypes::LOG_DONATE_COIN_TO_GAME, "LOG_DONATE_COIN_TO_GAME", [$account, \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getItemIdToGameTransfer(), $countItemsToGameTransfer]);
             board::alert([
               "type"       => "notice",
               "ok"         => true,

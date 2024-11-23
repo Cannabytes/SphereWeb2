@@ -43,7 +43,7 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
         }
         filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT) ?: board::notice(false, "Введите сумму цифрой");
 
-        $donate = \Ofey\Logan22\controller\config\config::load()->donate();
+        $donate = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
 
         if ($_POST['count'] < $donate->getMinSummaPaySphereCoin()) {
             board::notice(false, "Минимальное пополнение: " . $donate->getMinSummaPaySphereCoin());

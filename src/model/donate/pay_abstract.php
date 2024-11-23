@@ -14,7 +14,7 @@ class pay_abstract {
      */
     public static function getConfigValue(string $methodName): string|int
     {
-        return \Ofey\Logan22\controller\config\config::load()->donate()->get(get_called_class())->getInput($methodName);
+        return \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->get(get_called_class())->getInput($methodName);
     }
 
     public static function getDescription(): ?array {
