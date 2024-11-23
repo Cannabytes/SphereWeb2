@@ -63,7 +63,7 @@ class account
               $email
             )) {
                 $content = trim(config::load()->lang()->getPhrase(config::load()->registration()->getPhraseRegistrationDownloadFile())) ?? "";
-                if (config::load()->registration()->isMassRegistration()) {
+                if (config::load()->registration()->getEnableLoadFileRegistration()) {
                     $content = str_replace(
                       [
                         "%site_server%",

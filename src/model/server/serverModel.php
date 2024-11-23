@@ -15,12 +15,12 @@ class serverModel
     private ?int $loginId = null;
     private ?int $gameId = null;
     private bool $disabled = false;
-    private string $name;
-    private int $rateExp = 0;
-    private int $rateSp = 0;
-    private int $rateAdena = 0;
-    private int $rateDrop = 0;
-    private int $rateSpoil = 0;
+    private string $name = 'No Name';
+    private int $rateExp = 1;
+    private int $rateSp = 1;
+    private int $rateAdena = 1;
+    private int $rateDrop = 1;
+    private int $rateSpoil = 1;
     private ?string $dateStartServer = null;
     private string $chronicle;
     private int $chatGameEnabled;
@@ -241,13 +241,15 @@ class serverModel
             'position' => $this->position,
         ];
         sql::run(
-            "UPDATE `servers` SET `data` = ? WHERE `id` = ?",
+            "INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)
+        ON DUPLICATE KEY UPDATE `data` = VALUES(`data`)",
             [
-                json_encode($arr),
                 $this->id,
+                json_encode($arr),
             ]
         );
     }
+
 
     public function getArrayVar(): array
     {

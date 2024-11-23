@@ -188,7 +188,7 @@ class player_account
               [
                 "ok"         => true,
                 "message"    => lang::get_phrase(207),
-                "isDownload" => config::load()->registration()->isMassRegistration(),
+                "isDownload" => config::load()->registration()->getEnableLoadFileRegistration(),
                 "title"      => $_SERVER['SERVER_NAME'] . " - " . $login . ".txt",
                 "content"    => trim($content),
               ]

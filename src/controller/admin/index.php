@@ -3,11 +3,13 @@
 namespace Ofey\Logan22\controller\admin;
 
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\github\update;
+use Ofey\Logan22\model\server\serverModel;
 use Ofey\Logan22\template\tpl;
 
 class index
@@ -23,30 +25,25 @@ class index
             $info['servers'] = [];
         }
         if(isset($info['servers'])){
+            $restart = false;
             foreach ($info['servers'] as $server) {
                 $id = $server['id'];
                 \Ofey\Logan22\model\server\server::loadStatusServer($server);
-                $getServer = \Ofey\Logan22\model\server\server::getServer($id, $server);
+                $getServer = \Ofey\Logan22\model\server\server::isServer($id, $server);
                 if ($getServer == null) {
-                    $data = [
-                        "id" => $id,
-                        "name" => "NoName",
-                        "rateExp" => 1,
-                        "rateSp" => 1,
-                        "rateAdena" => 1,
-                        "rateDrop" => 1,
-                        "rateSpoil" => 1,
-                        "chronicle" => "NoSetChronicle",
-                        "source" => "",
-                        "disabled" => $server['disabled'],
-                        "request_count" => $server['request_count'],
-                        "count_errors" => $server['count_errors'],
-                        "enabled" => $server['enabled'],
-                    ];
-                    sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
+                    $serverNew = new serverModel($server, []);
+                    $serverNew->setId($id);
+                    $serverNew->setName("NoName #{$id}");
+                    $serverNew->setEnabled($server['enabled']);
+                    $serverNew->save();
+                    $restart = true;
                 }else{
                     $getServer->setDisabled($server['enabled']);
                 }
+                unset($getServer);
+            }
+            if($restart){
+                redirect::location("/admin");
             }
         }
         if (!$sphereAPIError) {

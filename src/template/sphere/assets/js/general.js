@@ -263,7 +263,6 @@ function noticeError(message) {
 }
 
 function ResponseNoticeRegistration(response) {
-
     noticeSuccess(response.message)
 
     if(response.isDownload){
