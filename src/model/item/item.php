@@ -240,7 +240,8 @@ use Ofey\Logan22\component\image\client_icon;
         if (isset(self::$arrItems[$id])) {
             return self::$arrItems[$id];
         }
-        $file = client_icon::includeFileByRange($id, $dbVersion);
+        $file = client_icon::includeFileByRange($id, dbVersion: $dbVersion);
+
         if (!$file) {
             return null;
         }
