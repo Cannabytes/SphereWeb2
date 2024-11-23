@@ -98,6 +98,11 @@ class serverModel
         return $this->donate;
     }
 
+    public function donate(): ?donate
+    {
+        return $this->donate;
+    }
+
     public function isEnabled(): bool
     {
         return !$this->disabled;

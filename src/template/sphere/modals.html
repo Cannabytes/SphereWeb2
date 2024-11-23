@@ -70,7 +70,7 @@
 
           {# Если пользователь не установил в настройках какой предмет отправлять пользователю #}
 
-          {% if config().donate().getItemIdToGameTransfer() == 0 %}
+          {% if getServer().donate().getItemIdToGameTransfer() == 0 %}
               {{ phrase('no_item_to_send') }}
 
               {% if getUser().isAdmin() %}
@@ -79,7 +79,7 @@
 
           {% else %}
 
-          {% set item = get_item_info(config().donate().getItemIdToGameTransfer()) %}
+          {% set item = get_item_info(getServer().donate().getItemIdToGameTransfer()) %}
           {% if getUser().isAuth() %}
 
           {% if getUser().getDonate() == 0 %}
@@ -122,8 +122,8 @@
           <label class="mb-0 fs-12 text-muted text-truncate max-w-150 mx-auto ">{{phrase('char_will_be_sent')}}
             <img class="avatar avatar-sm rounded" src="{{item.getIcon()}}"> <span class="text-success">{{ item.itemName }}</span>
             x<span class="text-success" id="itemCountGameTransfer"
-                   data-count-donate-item="{{ config().donate().getDonateItemToGameTransfer() }}"
-                   data-count-items="{{ config().donate().getCountItemsToGameTransfer() }}">{{ config().donate().getCountItemsToGameTransfer() }}</span></label>
+                   data-count-donate-item="{{ getServer().donate().getDonateItemToGameTransfer() }}"
+                   data-count-items="{{ getServer().donate().getCountItemsToGameTransfer() }}">{{ getServer().donate().getCountItemsToGameTransfer() }}</span></label>
           {% endif %}
 
           {% endif %}
@@ -137,9 +137,9 @@
         </div>
       </div>
       <div class="modal-footer d-flex justify-content-between align-items-center">
-        {% if getUser().isAuth() and config().donate().getItemIdToGameTransfer() != 0 %}
+        {% if getUser().isAuth() and getServer().donate().getItemIdToGameTransfer() != 0 %}
         <p class="mb-0">
-          <span class="fw-semibold text-muted fs-12">{{ phrase('exchange') }} :</span> {{ config().donate().getDonateItemToGameTransfer() }} {{ phrase('donate_coin') }} = {{ config().donate().getCountItemsToGameTransfer() }} <img class="avatar avatar-xs rounded" src="{{item.getIcon()}}"> {{ item.itemName }}
+          <span class="fw-semibold text-muted fs-12">{{ phrase('exchange') }} :</span> {{ getServer().donate().getDonateItemToGameTransfer() }} {{ phrase('donate_coin') }} = {{ getServer().donate().getCountItemsToGameTransfer() }} <img class="avatar avatar-xs rounded" src="{{item.getIcon()}}"> {{ item.itemName }}
         </p>
         {% endif %}
 
@@ -223,7 +223,7 @@
       muchSphereCoinVal = maxValue;
       $('#muchSphereCoin').val(muchSphereCoinVal);
     }
-    let itemCountGameTransferCount = ($('#itemCountGameTransfer').data('count-items')) / {{ config().donate().getDonateItemToGameTransfer() }};
+    let itemCountGameTransferCount = ($('#itemCountGameTransfer').data('count-items')) / {{ getServer().donate().getDonateItemToGameTransfer() }};
     if (!isNaN(muchSphereCoinVal) && !isNaN(itemCountGameTransferCount) && itemCountGameTransferCount > 0) {
       let result = muchSphereCoinVal * itemCountGameTransferCount;
       result = Math.floor(result)

@@ -40,7 +40,7 @@
                                     <select class="form-control" data-trigger="" name="paySystemDefault"
                                             id="paySystemDefault">
                                         {% for donate in donateSysNames %}
-                                        <option {% if config().donate().getPaySystemDefault()== donate.name %}selected{%
+                                        <option {% if getServer().donate().getPaySystemDefault()== donate.name %}selected{%
                                                 endif %}
                                                 value="{{donate.name}}">{{donate.name}}
                                         </option>
@@ -59,13 +59,13 @@
                                     <div class="col-xl-3">
                                         <label for="minSummaPaySphereCoin" class="form-label">{{ phrase('min_amount')
                                             }}</label>
-                                        <input value="{{config().donate().getMinSummaPaySphereCoin()}}" type="number"
+                                        <input value="{{getServer().donate().getMinSummaPaySphereCoin()}}" type="number"
                                                class="form-control" id="minSummaPaySphereCoin" placeholder="1">
                                     </div>
                                     <div class="col-xl-3">
                                         <label for="maxSummaPaySphereCoin" class="form-label">{{ phrase('max_amount')
                                             }}</label>
-                                        <input value="{{config().donate().getMaxSummaPaySphereCoin()}}" type="number"
+                                        <input value="{{getServer().donate().getMaxSummaPaySphereCoin()}}" type="number"
                                                class="form-control" id="maxSummaPaySphereCoin" placeholder="999999">
                                     </div>
                                 </div>
@@ -80,7 +80,7 @@
 
                                     <div class="col-xl-3">
                                         <input min="0.01" step="0.01" type="number"
-                                               value="{{config().donate().getSphereCoinCost()}}"
+                                               value="{{getServer().donate().getSphereCoinCost()}}"
                                                class="form-control" id="sphereCoinCost" placeholder="1">
                                     </div>
                                 </div>
@@ -105,22 +105,22 @@
                                         <label for="ratioUSD" class="form-label">USD</label>
                                         <input min="0.01" step="0.01" type="number" class="form-control" disabled
                                                id="ratioUSD"
-                                               value="{{config().donate().getRatioUSD()}}" placeholder="1">
+                                               value="{{getServer().donate().getRatioUSD()}}" placeholder="1">
                                     </div>
                                     <div class="col-xl-2">
                                         <label for="ratioEUR" class="form-label">EUR</label>
                                         <input min="0.01" step="0.01" type="number" class="form-control" id="ratioEUR"
-                                               value="{{config().donate().getRatioEUR()}}" placeholder="1.05">
+                                               value="{{getServer().donate().getRatioEUR()}}" placeholder="1.05">
                                     </div>
                                     <div class="col-xl-2">
                                         <label for="ratioUAH" class="form-label">UAH</label>
                                         <input min="0.01" step="0.01" type="number" class="form-control" id="ratioUAH"
-                                               value="{{config().donate().getRatioUAH()}}" placeholder="38.5">
+                                               value="{{getServer().donate().getRatioUAH()}}" placeholder="38.5">
                                     </div>
                                     <div class="col-xl-2">
                                         <label for="ratioRUB" class="form-label">RUB</label>
                                         <input min="0.01" step="0.01" type="number" class="form-control" id="ratioRUB"
-                                               value="{{config().donate().getRatioRUB()}}" placeholder="100">
+                                               value="{{getServer().donate().getRatioRUB()}}" placeholder="100">
                                     </div>
 
                                 </div>
@@ -138,7 +138,7 @@
                                         </p>
                                     </div>
                                     <div class="custom-toggle-switch ms-sm-2 ms-0">
-                                        <input {% if config().donate().isEnableCumulativeDiscountSystem() %}checked{%
+                                        <input {% if getServer().donate().isEnableCumulativeDiscountSystem() %}checked{%
                                                endif %}
                                                id="enableCumulativeDiscountSystem" name="enableCumulativeDiscountSystem"
                                                type="checkbox">
@@ -167,7 +167,7 @@
                                                         <tbody>
 
                                                         {% for table in
-                                                        config().donate().getTableCumulativeDiscountSystem() %}
+                                                        getServer().donate().getTableCumulativeDiscountSystem() %}
                                                         <tr>
                                                             <th scope="row">{{table.coin}}</th>
                                                             <td>{{table.percent}}</td>
@@ -208,7 +208,7 @@
                                         </p>
                                     </div>
                                     <div class="custom-toggle-switch ms-sm-2 ms-0">
-                                        <input {% if config().donate().isEnableOneTimeBonus() %}checked{% endif %}
+                                        <input {% if getServer().donate().isEnableOneTimeBonus() %}checked{% endif %}
                                                id="enableOneTimeBonus" name="enableOneTimeBonus" type="checkbox">
                                         <label for="enableOneTimeBonus" class="label-primary mb-1"></label>
                                     </div>
@@ -232,7 +232,7 @@
                                                         </tr>
                                                         </thead>
                                                         <tbody>
-                                                        {% for table in config().donate().getTableEnableOneTimeBonus()
+                                                        {% for table in getServer().donate().getTableEnableOneTimeBonus()
                                                         %}
                                                         <tr>
                                                             <th data-name="coin" scope="row">{{table.coin}}</th>
@@ -276,7 +276,7 @@
                                         </p>
                                     </div>
                                     <div class="custom-toggle-switch ms-sm-2 ms-0">
-                                        <input {% if config().donate().isEnableSystemDiscountsOnItemPurchases()
+                                        <input {% if getServer().donate().isEnableSystemDiscountsOnItemPurchases()
                                                %}checked{% endif %}
                                                id="enableSystemDiscountsOnItemPurchases"
                                                name="enableSystemDiscountsOnItemPurchases"
@@ -306,7 +306,7 @@
                                                         </thead>
                                                         <tbody>
                                                         {% for table in
-                                                        config().donate().getTableSystemDiscountsOnItemPurchases() %}
+                                                        getServer().donate().getTableSystemDiscountsOnItemPurchases() %}
                                                         <tr>
                                                             <th scope="row">{{table.coin}}</th>
                                                             <td>{{table.percent}}</td>
@@ -350,7 +350,7 @@
                                     </div>
                                     <div class="custom-toggle-switch ms-sm-2 ms-0">
                                         <input {% if
-                                               config().donate().isEnableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity()
+                                               getServer().donate().isEnableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity()
                                                %}checked{% endif %}
                                                id="enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity"
                                                name="enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity"
@@ -380,7 +380,7 @@
                                                         </thead>
                                                         <tbody>
                                                         {% for table in
-                                                        config().donate().getTableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity()
+                                                        getServer().donate().getTableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity()
                                                         %}
                                                         <tr>
                                                             <th scope="row">{{table.count}}</th>
@@ -429,7 +429,7 @@
                                                         <tbody>
 
                                                         {% for table in
-                                                        config().donate().getTableListOfItemsForDiscount() %}
+                                                        getServer().donate().getTableListOfItemsForDiscount() %}
                                                         <tr>
                                                             <th scope="row">{{table.count}}</th>
                                                             <td>{{table.percent}}</td>
@@ -476,7 +476,7 @@
                                                class="form-control form-control-sm"
                                                id="item_id_to_game_transfer"
                                                placeholder="4037"
-                                               value="{{config().donate().getItemIdToGameTransfer()}}">
+                                               value="{{getServer().donate().getItemIdToGameTransfer()}}">
                                     </div>
                                 </div>
 
@@ -487,7 +487,7 @@
                                                class="form-control form-control-sm"
                                                id="donate_item_to_game_transfer"
                                                placeholder="1"
-                                               value="{{config().donate().getDonateItemToGameTransfer()}}">
+                                               value="{{getServer().donate().getDonateItemToGameTransfer()}}">
                                     </div>
                                 </div>
 
@@ -498,7 +498,7 @@
                                                class="form-control form-control-sm"
                                                id="count_items_to_game_transfer"
                                                placeholder="1000"
-                                               value="{{config().donate().getCountItemsToGameTransfer()}}">
+                                               value="{{getServer().donate().getCountItemsToGameTransfer()}}">
                                     </div>
                                 </div>
 
@@ -512,7 +512,7 @@
                                 </div>
                                 <div class="mt-sm-0 mt-2">
                                     <div class="custom-toggle-switch ms-sm-2 ms-0">
-                                        <input {% if config().donate().isRewardForDonatingItems()
+                                        <input {% if getServer().donate().isRewardForDonatingItems()
                                                %}checked{% endif %} id="rewardForDonatingItems"
                                                name="rewardForDonatingItems" type="checkbox">
                                         <label for="rewardForDonatingItems"
@@ -541,7 +541,7 @@
                                 <ul class="nav nav-tabs mb-3 tab-style-6" id="myTab"
                                     role="tablist">
                                     {% set i = 1 %}
-                                    {% for key, table in config().donate().getTableItemsBonus() %}
+                                    {% for key, table in getServer().donate().getTableItemsBonus() %}
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link {% if i==1 %} active{% endif %}"
                                                 id="list_{{i}}" data-bs-toggle="tab"
@@ -558,7 +558,7 @@
 
                                 <div class="tab-content" id="allItemsBonusData">
                                     {% set i = 1 %}
-                                    {% for key, table in config().donate().getTableItemsBonus() %}
+                                    {% for key, table in getServer().donate().getTableItemsBonus() %}
                                     <div class="tab-pane fade p-0 border-bottom-0 {% if i==1 %}show active{% endif %} "
                                          id="list_{{i}}-pane"
                                          role="tabpanel" aria-labelledby="list_{{i}}"
@@ -724,7 +724,7 @@
 
                                     <div class="col-md-8">
                                         <div class="tab-content" id="v-pills-tabContent">
-                                            {% for i, donate in config().donate().getDonateSystems() %}
+                                            {% for i, donate in getServer().donate().getDonateSystems() %}
 
                                             <div class="tab-pane {% if i == 0 %}active show{% endif %} donatePanelWrite"
                                                  id="{{donate.getName()}}" role="tabpanel"

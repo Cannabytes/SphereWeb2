@@ -22,20 +22,20 @@
                             <button class="btn btn-icon btn-primary input-group-text flex-fill "
                                     id="product-quantity-minus"><i class="ri-subtract-line"></i></button>
                             <input min="1"
-                                   max="{{config().donate().getMaxSummaPaySphereCoin()}}" type="text"
+                                   max="{{getServer().donate().getMaxSummaPaySphereCoin()}}" type="text"
                                    class="form-control form-control-sm border-0 text-center w-100"
                                    aria-label="quantity" id="numberOfCoinsPurchased"
-                                   value="{{config().donate().getMinSummaPaySphereCoin()}}">
+                                   value="{{getServer().donate().getMinSummaPaySphereCoin()}}">
                             <button class="btn btn-icon btn-primary input-group-text flex-fill "
                                     id="product-quantity-plus"><i class="ri-add-line"></i></button>
                         </div>
                     </div>
 
                     <div class="text-center">{{phrase('estimated_cost')}}</div>
-                    {% set USD = config().donate().getRatioUSD() / config().donate().getSphereCoinCost() %}
-                    {% set EUR = config().donate().getRatioEUR() / config().donate().getSphereCoinCost() %}
-                    {% set RUB = config().donate().getRatioRUB() / config().donate().getSphereCoinCost() %}
-                    {% set UAH = config().donate().getRatioUAH() / config().donate().getSphereCoinCost() %}
+                    {% set USD = getServer().donate().getRatioUSD() / getServer().donate().getSphereCoinCost() %}
+                    {% set EUR = getServer().donate().getRatioEUR() / getServer().donate().getSphereCoinCost() %}
+                    {% set RUB = getServer().donate().getRatioRUB() / getServer().donate().getSphereCoinCost() %}
+                    {% set UAH = getServer().donate().getRatioUAH() / getServer().donate().getSphereCoinCost() %}
 
                     <div class="block-content block-content-full">
                         <div class="row text-center">
@@ -105,7 +105,7 @@
                     <div class="row">
                         <div class="col-xl-3">
                             <ul class="nav nav-tabs flex-column nav-style-4" role="tablist">
-                                {% if config().donate().isRewardForDonatingItems() %}
+                                {% if getServer().donate().isRewardForDonatingItems() %}
                                 <li class="nav-item">
                                     <a class="nav-link active" data-bs-toggle="tab" role="tab"
                                        aria-current="page" href="#home-vertical"
@@ -113,18 +113,18 @@
                                 </li>
                                 {% endif %}
 
-                                {% if config().donate().isEnableOneTimeBonus() %}
+                                {% if getServer().donate().isEnableOneTimeBonus() %}
                                 <li class="nav-item">
-                                    <a class="nav-link {% if config().donate().isRewardForDonatingItems() == false %}active{% endif %}"
+                                    <a class="nav-link {% if getServer().donate().isRewardForDonatingItems() == false %}active{% endif %}"
                                        data-bs-toggle="tab" role="tab"
                                        aria-current="page" href="#about-vertical"
                                        aria-selected="true">{{phrase('one_time_bonus')}}</a>
                                 </li>
                                 {% endif %}
 
-                                {% if config().donate().isEnableCumulativeDiscountSystem() %}
+                                {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
                                 <li class="nav-item">
-                                    <a class="nav-link {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false %}active{% endif %}"
+                                    <a class="nav-link {% if getServer().donate().isRewardForDonatingItems() == false and getServer().donate().isEnableOneTimeBonus() == false %}active{% endif %}"
                                        data-bs-toggle="tab" role="tab"
                                        aria-current="page" href="#services-vertical"
                                        aria-selected="true">{{phrase('accum_bonuses')}}</a>
@@ -133,7 +133,7 @@
 
                                 {% if config().other().getContactAdmin() is not empty %}
                                 <li class="nav-item">
-                                    <a class="nav-link btn btn-success btn-sm {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false and config().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %} "
+                                    <a class="nav-link btn btn-success btn-sm {% if getServer().donate().isRewardForDonatingItems() == false and getServer().donate().isEnableOneTimeBonus() == false and getServer().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %} "
                                        data-bs-toggle="tab" role="tab"
                                        aria-current="page" href="#contacts-vertical"
                                        aria-selected="true">{{phrase('contact_admin')}}</a>
@@ -144,14 +144,14 @@
                         </div>
                         <div class="col-xl-9">
                             <div class="tab-content">
-                                {% if config().donate().isRewardForDonatingItems() %}
+                                {% if getServer().donate().isRewardForDonatingItems() %}
                                 <div class="tab-pane show active text-muted" id="home-vertical"
                                      role="tabpanel">
 
                                     {{phrase('bonus_items_topup_amt')}}<br>
 
 
-                                    {% for cost, bonus in config().donate().getTableItemsBonus() %}
+                                    {% for cost, bonus in getServer().donate().getTableItemsBonus() %}
                                     <div class="table-responsive mt-4 bonus_items" data-cost="{{cost}}">
                                         <table class="table table-sm text-nowrap table-bordered border-primary">
                                             <thead>
@@ -180,8 +180,8 @@
                                 </div>
                                 {% endif %}
 
-                                {% if config().donate().isEnableOneTimeBonus() %}
-                                <div class="tab-pane text-muted {% if config().donate().isRewardForDonatingItems() == false %}active{% endif %}"
+                                {% if getServer().donate().isEnableOneTimeBonus() %}
+                                <div class="tab-pane text-muted {% if getServer().donate().isRewardForDonatingItems() == false %}active{% endif %}"
                                      id="about-vertical"
                                      role="tabpanel">
                                     {{phrase('one_time_bonus_pct_topup')}}
@@ -195,7 +195,7 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            {% for bonus in config().donate().getTableEnableOneTimeBonus() %}
+                                            {% for bonus in getServer().donate().getTableEnableOneTimeBonus() %}
                                             <tr>
                                                 <th scope="row">{{bonus.coin}}</th>
                                                 <td>+{{bonus.percent}}%</td>
@@ -209,8 +209,8 @@
                                 </div>
                                 {% endif %}
 
-                                {% if config().donate().isEnableCumulativeDiscountSystem() %}
-                                <div class="tab-pane text-muted {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false %}active{% endif %}"
+                                {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
+                                <div class="tab-pane text-muted {% if getServer().donate().isRewardForDonatingItems() == false and getServer().donate().isEnableOneTimeBonus() == false %}active{% endif %}"
                                      id="services-vertical"
                                      role="tabpanel">
 
@@ -227,7 +227,7 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            {% for bonus in config().donate().getTableCumulativeDiscountSystem() %}
+                                            {% for bonus in getServer().donate().getTableCumulativeDiscountSystem() %}
                                             <tr data-percent="{{bonus.percent}}">
                                                 <td>{{bonus.coin}}</td>
                                                 <td>{{bonus.percent}}%</td>
@@ -242,7 +242,7 @@
                                 {% endif %}
 
                                 {% if config().other().getContactAdmin() is not empty %}
-                                <div class="tab-pane text-muted {% if config().donate().isRewardForDonatingItems() == false and config().donate().isEnableOneTimeBonus() == false and config().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %}"
+                                <div class="tab-pane text-muted {% if getServer().donate().isRewardForDonatingItems() == false and getServer().donate().isEnableOneTimeBonus() == false and getServer().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %}"
                                      id="contacts-vertical"
                                      role="tabpanel">
                                     {{ config().other().getContactAdmin()|raw }}
@@ -488,7 +488,7 @@
             });
     });
 
-    activateRadio("{{config().donate().getPaySystemDefault()}}");
+    activateRadio("{{getServer().donate().getPaySystemDefault()}}");
 
     $(document).on("click", ".selectDonSys", function (e) {
         var name = $(this).data("name");
