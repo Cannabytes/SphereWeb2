@@ -30,7 +30,7 @@ class referral
 
     private $leader_bonus_items = null;
 
-    private $slave_bonus_items = null;
+    private ?array $slave_bonus_items = null;
 
     private int $serverId = -1;
 
@@ -178,10 +178,14 @@ class referral
             $this->itemsSlave = null;
             return $this->itemsSlave;
         }
+
         foreach ($this->slave_bonus_items as $item) {
             $enchant  = (int)$item->enchant ?? 0;
             $count    = (int)$item->count ?? 0;
             $itemData = item::getItem($item->item_id);
+            if($itemData==null){
+                continue;
+            }
             $itemData->setCount($count);
             $itemData->setEnchant($enchant);
             $this->itemsSlave[] = $itemData;

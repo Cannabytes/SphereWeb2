@@ -70,7 +70,7 @@ class serverModel
         $this->statusServerMem = $server['statusServer'] ?? null;
         $this->default = $server['default'] ?? null;
         $this->dateStartServer = $server['dateStartServer'] ?? null;
-        $this->knowledgeBase = $server['knowledgeBase'] ?? null;
+        $this->knowledgeBase = $server['knowledgeBase'] ?? 'highFive';
         $this->position = filter_var($server['position'] ?? 0, FILTER_VALIDATE_INT);
         $this->maxOnline = filter_var($server['maxOnline'] ?? 200, FILTER_VALIDATE_INT);
         $this->resetHWID = filter_var($server['resetHWID'] ?? false, FILTER_VALIDATE_BOOLEAN);
@@ -83,7 +83,7 @@ class serverModel
             $this->page = new serverDescriptionModel($pageId);
         }
 
-        $this->donate = new donate($this->id);
+        $this->donate = new donate($this->id, $this->knowledgeBase);
         $this->referral = new referral($this->id);
         return $this;
     }

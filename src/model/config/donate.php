@@ -63,7 +63,7 @@ class donate
      */
     public array $donateSystems = [];
 
-    public function __construct($serverId = 0)
+    public function __construct($serverId = 0, $dbVersion = null)
     {
         $config = sql::getRow("SELECT * FROM `settings` WHERE serverId = ? AND `key` = '__config_donate__'", [
             $serverId
@@ -109,7 +109,7 @@ class donate
                 foreach ($this->tableItemsBonus as &$itemsBonus) {
                     foreach ($itemsBonus as &$itemBonus) {
                         $id = $itemBonus['id'];
-                        $item = item::getItem($id);
+                        $item = item::getItem($id, $dbVersion);
                         $itemBonus['item'] = $item; // Добавляем объект item к каждому bonus
                     }
                 }

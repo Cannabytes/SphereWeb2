@@ -104,14 +104,18 @@ class client_icon {
         return file_exists(fileSys::get_dir("/uploads/images/{$object}/" . $fileIcon . ".webp")) && $fileIcon != null ? ("/uploads/images/{$object}/" . $fileIcon . ".webp") : ("/uploads/images/icon/NOIMAGE.webp");
     }
 
-    public static function includeFileByRange($itemId, $object = "items"): string|false {
+    public static function includeFileByRange($itemId, $object = "items", $dbVersion = null): string|false {
         if($object == "items"){
             $object = "items/highFive";
-            if(server::getServer()){
-                $itemdb = server::getServer()->getKnowledgeBase();
-                if($itemdb){
-                    $object = "items/" . $itemdb;
+            if($dbVersion==null){
+                if(server::getServer()){
+                    $itemdb = server::getServer()->getKnowledgeBase();
+                    if($itemdb){
+                        $object = "items/" . $itemdb;
+                    }
                 }
+            }else{
+                $object = "items/" . $dbVersion;
             }
         }
         $range = floor(($itemId ) / 100) * 100;

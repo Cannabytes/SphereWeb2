@@ -235,12 +235,12 @@ use Ofey\Logan22\component\image\client_icon;
 
     private static array $arrItems = [];
 
-    public static function getItem($id): ?item
+    public static function getItem($id, $dbVersion = null): ?item
     {
         if (isset(self::$arrItems[$id])) {
             return self::$arrItems[$id];
         }
-        $file = client_icon::includeFileByRange($id);
+        $file = client_icon::includeFileByRange($id, $dbVersion);
         if (!$file) {
             return null;
         }

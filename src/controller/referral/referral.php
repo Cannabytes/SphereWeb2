@@ -53,8 +53,6 @@ class referral
                 $playerNames[] = $referral['name'];
                 user::self()->donateAdd($bonusDonateCoin);
 
-                // Выдача бонусов предметами
-                // Сначала лидеру
                 $leaderDonateItems = config::load()->referral()->getLeaderBonusItems();
                 foreach ($leaderDonateItems as $item) {
                     $item_id = $item->getItemId();
@@ -63,7 +61,6 @@ class referral
                     user::self()->addToWarehouse(user::self()->getServerId(), $item_id, $count, $enchant, "add_item_donate_bonus_referral_master");
                 }
 
-                // Выдача бонусов предметами привлеченному игроку
                 $slaveDonateItems = config::load()->referral()->getSlaveBonusItems();
                 foreach ($slaveDonateItems as $item) {
                     $item_id = (int)$item->getItemId();
