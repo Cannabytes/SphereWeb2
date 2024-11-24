@@ -124,17 +124,16 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
 
         $donate = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
 
+        $amount = $_POST['count'] * ($donate->getRatioUAH() / $donate->getSphereCoinCost());
 
-        $amount = $_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost());
-
-        if ($amount < 500) {
-            board::notice(false, "Минимальное пополнение от 500 RUB");
+        if ($amount < 300) {
+            board::notice(false, "Минимальное пополнение от 500 UAH");
         }
         if ($amount > 50000) {
-            board::notice(false, "Максимальная пополнение до 50000 RUB");
+            board::notice(false, "Максимальная пополнение до 50000 UAH");
         }
 
-        $response = $this->payment(strval(round($amount, 1)), 'RUB', user::self()->getId() . '_' . mt_rand(0, 999999), ['paymentSystem' => 'Card3']);
+        $response = $this->payment(strval(round($amount, 1)), 'UAH', user::self()->getId() . '_' . mt_rand(0, 999999), ['paymentSystem' => 'Card']);
 
         if (isset($response['body'])) {
             $body = $response['body'];
@@ -180,7 +179,7 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
         $amount = (float)$_POST['amount'] ?? null;
         $orderAmount = $_POST['orderAmount'] ?? 0; //Сумма без комиссии
         $orderId = $_POST['orderId'] ?? null;
-        $currency = $_POST['currency'] ?? "RUB";
+        $currency = $_POST['currency'] ?? "UAH";
         if ($sign && $amount && $orderId && $this->callbackSignIsValid($sign, $amount, $orderId))
         {
             $data = explode("_", $orderId);
