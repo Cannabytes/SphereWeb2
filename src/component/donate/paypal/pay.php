@@ -13,6 +13,8 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
     // Включена/отключена платежная система
     protected static bool $enable = true;
 
+    private $api_mode = 'LIVE';
+
     protected string $currency_default = 'USD';
 
     public static function isEnable(): bool
@@ -59,11 +61,10 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальное пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
+        $auth_url = $this->api_mode === 'LIVE' ? "https://api-m.paypal.com/v1/oauth2/token" : "https://api-m.sandbox.paypal.com/v1/oauth2/token";
+
         // Расчет суммы заказа
         $order_amount = $count * ($donate->getRatioUSD() / $donate->getSphereCoinCost());
-
-        // URL для получения токена (замените на live URL)
-        $auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token";
 
         // Запрос для получения токена
         $ch = curl_init();
@@ -94,8 +95,7 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
 
         curl_close($ch);
 
-        // Создание заказа (замените URL на Live)
-        $url = "https://api-m.sandbox.paypal.com/v2/checkout/orders";
+        $url = $this->api_mode === 'LIVE' ? "https://api-m.paypal.com/v2/checkout/orders" : "https://api-m.sandbox.paypal.com/v2/checkout/orders";
 
         $orderRequest = json_encode([
           'intent'              => 'CAPTURE',
@@ -110,8 +110,8 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
             ],
           ],
           'application_context' => [
-            'return_url' => "https://test.sphereweb.net/balance",
-            'cancel_url' => "https://test.sphereweb.net/balance",
+            'return_url' =>  \Ofey\Logan22\component\request\url::host("/balance"),
+            'cancel_url' => \Ofey\Logan22\component\request\url::host("/balance"),
           ],
         ]);
 
@@ -138,7 +138,7 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
 
         if (isset($responseData['status']) && $responseData['status'] === 'CREATED') {
             $order_id    = $responseData['id'];
-            $approveLink = "https://www.sandbox.paypal.com/checkoutnow?token={$order_id}";  // Live URL
+            $approveLink = $this->api_mode === 'LIVE' ? "https://www.paypal.com/checkoutnow?token={$order_id}" : "https://www.sandbox.paypal.com/checkoutnow?token={$order_id}";
             echo $approveLink;
         } else {
             die("Ошибка при создании заказа: " . json_encode($responseData));
@@ -163,9 +163,11 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
             return;
         }
 
+        $auth_url = $this->api_mode === 'LIVE' ? "https://api-m.paypal.com/v1/oauth2/token" : "https://api-m.sandbox.paypal.com/v1/oauth2/token";
+
         // Генерация токена доступа для PayPal API
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api-m.sandbox.paypal.com/v1/oauth2/token");
+        curl_setopt($ch, CURLOPT_URL, $auth_url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
           "Accept: application/json",
           "Accept-Language: en_US",
@@ -178,9 +180,11 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
 
         $accessToken = json_decode($response)->access_token;
 
+        $url = $this->api_mode === 'LIVE' ? "https://api-m.paypal.com/v2/checkout/orders/$orderId/capture" : "https://api-m.sandbox.paypal.com/v2/checkout/orders/$orderId/capture";
+
         // Захват средств
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api-m.sandbox.paypal.com/v2/checkout/orders/$orderId/capture");
+        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
           "Content-Type: application/json",
@@ -198,9 +202,12 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
             $currency = $result['purchase_units'][0]['payments']['captures'][0]['amount']['currency_code'];
             $amount = $result['purchase_units'][0]['payments']['captures'][0]['amount']['value'];
             $customId = $result['purchase_units'][0]['payments']['captures'][0]['custom_id'];
-            user::getUserId($customId)->donateAdd($amount);
-        }
 
+            $amount   = donate::currency($amount, $currency);
+            \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$result['purchase_units'][0]['payments']['captures'][0]['amount']['value'], $currency, get_called_class()]);
+            user::getUserId($customId)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование PayPal", get_called_class());
+            donate::addUserBonus($customId, $amount);
+        }
 
     }
 
