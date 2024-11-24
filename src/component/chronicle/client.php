@@ -295,6 +295,10 @@ class client
             'protocol' => [474],
             'name'     => "Shield of The Kingdom",
           ],
+          [
+            'protocol' => [502],
+            'name'     => "Superion",
+          ],
 
         ];
     }
