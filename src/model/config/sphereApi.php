@@ -12,7 +12,7 @@ class sphereApi
 
     private int $port = 80;
 
-    public function __construct()
+    public function __construct($setting = null)
     {
         //Проверка на существоване token.php
         if (!file_exists(fileSys::get_dir('/data/token.php'))) {
