@@ -5,212 +5,279 @@
 {% block content %}
 <div class="container-fluid">
 
-	<div class="row">
-		<div class="col-xl-12">
-			<div class="card custom-card">
-				<div class="card-header">
-					<div class="card-title">
-						Добавленные подключения к БД
-					</div>
-				</div>
-				<div class="card-body">
-					<div class="row">
-						<div class="col-xl-3">
-							<ul class="nav nav-tabs flex-column nav-style-4" role="tablist">
-								{% for i, loginServer in loginServers %}
-								<li class="nav-item" role="presentation">
-									<a class="loginserver_id_{{loginServer.id}} nav-link {% if i == 0 %}active{% endif %}" data-bs-toggle="tab" role="tab" aria-current="page" href="#loginserver_id_{{loginServer.id}}" aria-selected="false" tabindex="-1">LoginServer ID: {{loginServer.id}}</a>
-								</li>
-								{% endfor %}
-							</ul>
-						</div>
-						<div class="col-xl-9">
-							<div class="tab-content">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        Добавленные подключения к БД
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-xl-3">
+                            <ul class="nav nav-tabs flex-column nav-style-4" role="tablist">
+                                {% for i, loginServer in loginServers %}
+                                <li class="nav-item" role="presentation">
+                                    <a class="loginserver_id_{{loginServer.id}} nav-link {% if i == 0 %}active{% endif %}"
+                                       data-bs-toggle="tab" role="tab" aria-current="page"
+                                       href="#loginserver_id_{{loginServer.id}}" aria-selected="false" tabindex="-1">LoginServer
+                                        ID: {{loginServer.id}}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-xl-9">
+                            <div class="tab-content">
 
-								{% for i, loginServer in loginServers %}
-								<div class="loginserver_id_{{loginServer.id}} tab-pane text-muted {% if i == 0 %}active show{% endif %}" id="loginserver_id_{{loginServer.id}}" role="tabpanel">
-									<div class="col-xl-12">
-										<div class="">
-											<div class="card-header">
-												<div class="d-flex w-100">
-													<div class="me-4">
+                                {% for i, loginServer in loginServers %}
+                                <div class="loginserver_id_{{loginServer.id}} tab-pane text-muted {% if i == 0 %}active show{% endif %}"
+                                     id="loginserver_id_{{loginServer.id}}" role="tabpanel">
+                                    <div class="col-xl-12">
+                                        <div class="">
+                                            <div class="card-header">
+                                                <div class="d-flex w-100">
+                                                    <div class="me-4">
                                             <span class="avatar avatar-lg avatar-rounded">
                                                 <img src="{{template}}/assets/images/faces/12.jpg" alt="img">
                                             </span>
-													</div>
-													<div class="d-flex align-items-center justify-content-between w-100 flex-wrap">
-														<div class="me-3">
-															<p class="text-muted mb-0" role="button" data-bs-original-title="ID LoginServer во внутренней базе SphereAPI" data-bs-toggle="tooltip" data-bs-placement="top">ID</p>
-															<p class="fw-semibold fs-16 mb-0">{{loginServer.id}}</p>
-														</div>
-														<div class="me-3">
-															<p class="text-muted mb-0" role="button" data-bs-original-title="Кол-во аккаунтов, которые были зарегистрированы или подключены на данный LoginServer (ID:23)" data-bs-toggle="tooltip" data-bs-placement="top">Аккаунтов</p>
-															<p class="fw-semibold fs-16 mb-0">?</p>
-														</div>
-													</div>
-												</div>
-											</div>
-											<div class="card-body">
-												<p class="fs-14 fw-semibold mb-0">Подгрузка и выгрузка:</p>
-												<p class=" card-text mb-0">Вы можете скачать игровые аккаунты, которые привязаны к данному LoginServer, для того чтоб загрузить их в другой логин-сервер.</p>
+                                                    </div>
+                                                    <div class="d-flex align-items-center justify-content-between w-100 flex-wrap">
+                                                        <div class="me-3">
+                                                            <p class="text-muted mb-0" role="button"
+                                                               data-bs-original-title="ID LoginServer во внутренней базе SphereAPI"
+                                                               data-bs-toggle="tooltip" data-bs-placement="top">ID</p>
+                                                            <p class="fw-semibold fs-16 mb-0">{{loginServer.id}}</p>
+                                                        </div>
+                                                        <div class="me-3">
+                                                            <p class="text-muted mb-0" role="button"
+                                                               data-bs-original-title="Кол-во аккаунтов, которые были зарегистрированы или подключены на данный LoginServer (ID:23)"
+                                                               data-bs-toggle="tooltip" data-bs-placement="top">
+                                                                Аккаунтов</p>
+                                                            <p class="fw-semibold fs-16 mb-0">?</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <p class="fs-14 fw-semibold mb-0">Подгрузка и выгрузка:</p>
+                                                <p class=" card-text mb-0">Вы можете скачать игровые аккаунты, которые
+                                                    привязаны к данному LoginServer, для того чтоб загрузить их в другой
+                                                    логин-сервер.</p>
 
-												<div class="btn-group mb-4" role="group" aria-label="Basic mixed styles example">
+                                                <div class="btn-group mb-4" role="group"
+                                                     aria-label="Basic mixed styles example">
 
-													<button data-loginserverid="{{loginServer.id}}" type="button" class="btn btn-success btn-wave waves-effect waves-light importAccounts">
-														<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-database-import"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6c0 1.657 3.582 3 8 3s8 -1.343 8 -3s-3.582 -3 -8 -3s-8 1.343 -8 3" /><path d="M4 6v6c0 1.657 3.582 3 8 3c.856 0 1.68 -.05 2.454 -.144m5.546 -2.856v-6" /><path d="M4 12v6c0 1.657 3.582 3 8 3c.171 0 .341 -.002 .51 -.006" /><path d="M19 22v-6" /><path d="M22 19l-3 -3l-3 3" /></svg>
-														Импорт аккаунтов
-													</button>
+                                                    <button data-loginserverid="{{loginServer.id}}" type="button"
+                                                            class="btn btn-success btn-wave waves-effect waves-light importAccounts">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                             stroke-width="2" stroke-linecap="round"
+                                                             stroke-linejoin="round"
+                                                             class="icon icon-tabler icons-tabler-outline icon-tabler-database-import">
+                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                            <path d="M4 6c0 1.657 3.582 3 8 3s8 -1.343 8 -3s-3.582 -3 -8 -3s-8 1.343 -8 3"/>
+                                                            <path d="M4 6v6c0 1.657 3.582 3 8 3c.856 0 1.68 -.05 2.454 -.144m5.546 -2.856v-6"/>
+                                                            <path d="M4 12v6c0 1.657 3.582 3 8 3c.171 0 .341 -.002 .51 -.006"/>
+                                                            <path d="M19 22v-6"/>
+                                                            <path d="M22 19l-3 -3l-3 3"/>
+                                                        </svg>
+                                                        Импорт аккаунтов
+                                                    </button>
 
-													<button data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ещё не работает..." type="button" class="btn btn-info btn-wave waves-effect waves-light">
-														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-package-export">
-															<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-															<path d="M12 21l-8 -4.5v-9l8 -4.5l8 4.5v4.5" />
-															<path d="M12 12l8 -4.5" />
-															<path d="M12 12v9" />
-															<path d="M12 12l-8 -4.5" />
-															<path d="M15 18h7" />
-															<path d="M19 15l3 3l-3 3" />
-														</svg>
-														Экспорт аккаунтов
-													</button>
-												</div>
+                                                    <button data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            data-bs-title="Ещё не работает..." type="button"
+                                                            class="btn btn-info btn-wave waves-effect waves-light">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                             stroke-width="2" stroke-linecap="round"
+                                                             stroke-linejoin="round"
+                                                             class="icon icon-tabler icons-tabler-outline icon-tabler-package-export">
+                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                            <path d="M12 21l-8 -4.5v-9l8 -4.5l8 4.5v4.5"/>
+                                                            <path d="M12 12l8 -4.5"/>
+                                                            <path d="M12 12v9"/>
+                                                            <path d="M12 12l-8 -4.5"/>
+                                                            <path d="M15 18h7"/>
+                                                            <path d="M19 15l3 3l-3 3"/>
+                                                        </svg>
+                                                        Экспорт аккаунтов
+                                                    </button>
+                                                </div>
 
 
-												<div class="fw-semibold fs-16 ">Коннект к LoginServer</div>
-												<div class="text-muted fs-11 ">Если Вам больше не нужен данные к подключение к этому логин-серверу, вы можете удалить его.
-													После удаления, вы не сможете подключиться к этому логин-серверу, все аккаунты, которые были зарегистрированы на этом логин-сервере, будут удалены.<br>
-													Рекомендуется удалить, если Вы больше не будете использовать данный логин-сервер.
-												</div>
+                                                <div class="fw-semibold fs-16 ">Коннект к LoginServer</div>
+                                                <div class="text-muted fs-11 ">Если Вам больше не нужен данные к
+                                                    подключение к этому логин-серверу, вы можете удалить его.
+                                                    После удаления, вы не сможете подключиться к этому логин-серверу,
+                                                    все аккаунты, которые были зарегистрированы на этом логин-сервере,
+                                                    будут удалены.<br>
+                                                    Рекомендуется удалить, если Вы больше не будете использовать данный
+                                                    логин-сервер.
+                                                </div>
 
-												{% set found = false %}
-												{% for server in getServerAll() %}
-													{% if server.getLoginId() == loginServer.id %}
-														<div class="fw-semibold fs-14 text-success">
-															Внимание: Логин-сервер подключен к серверу - {{server.getName()}} {{server.getRateExp()}} {{server.getChronicle()}}
-														</div>
-														{% set found = true %}
-													{% endif %}
-												{% endfor %}
+                                                {% set found = false %}
+                                                {% for server in getServerAll() %}
+                                                {% if server.getLoginId() == loginServer.id %}
+                                                <div class="fw-semibold fs-14 text-success">
+                                                    Внимание: Логин-сервер подключен к серверу - {{server.getName()}}
+                                                    {{server.getRateExp()}} {{server.getChronicle()}}
+                                                </div>
+                                                {% set found = true %}
+                                                {% endif %}
+                                                {% endfor %}
 
-												{% if found == false %}
-												<div class="fw-semibold fs-14 text-danger">
-													Внимание: Данный Логин-сервер не используется ни одним из Ваших серверов.
-												</div>
-												{% endif %}
+                                                {% if found == false %}
+                                                <div class="fw-semibold fs-14 text-danger">
+                                                    Внимание: Данный Логин-сервер не используется ни одним из Ваших
+                                                    серверов.
+                                                </div>
+                                                {% endif %}
 
-												<button class="btn btn-sm btn-danger deleteLoginServer" data-login-id="{{loginServer.id}}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ещё не работает...">
-													<i class="ri-delete-bin-line"></i> Удаление
-												</button>
+                                                <button class="btn btn-sm btn-danger deleteLoginServer"
+                                                        data-login-id="{{loginServer.id}}" data-bs-toggle="tooltip"
+                                                        data-bs-placement="top" data-bs-title="Ещё не работает...">
+                                                    <i class="ri-delete-bin-line"></i> Удаление
+                                                </button>
 
-											</div>
-										</div>
-									</div>
-								</div>
-								{% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
 
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-	</div>
+    </div>
 
 </div>
 {% endblock %}
 
 {% block js %}
 <script>
-	$(document).ready(function () {
+    $(document).ready(function () {
 
-		$(".deleteLoginServer").on("click", function (){
-			let loginServerId = $(this).attr("data-login-id");
-			let panel = $(".loginserver_id_" + loginServerId);
+        $(".deleteLoginServer").on("click", function () {
+            let loginServerId = $(this).attr("data-login-id");
+            let panel = $(".loginserver_id_" + loginServerId);
 
-			AjaxSend("/admin/database/delete", "POST", {
-				type: "login",
-				id: loginServerId,
-			}, true).then(function (data){
-				response(data);
+            AjaxSend("/admin/database/delete", "POST", {
+                type: "login",
+                id: loginServerId,
+            }, true).then(function (data) {
+                response(data);
 
-				// Проверяем, является ли удаляемая панель активной
-				if (panel.hasClass("active show")) {
-					// Получаем следующую панель, которая будет активной
-					let nextPanel = panel.next(".tab-pane");
-					if (nextPanel.length === 0) {
-						nextPanel = panel.prev(".tab-pane");
-					}
+                // Проверяем, является ли удаляемая панель активной
+                if (panel.hasClass("active show")) {
+                    // Получаем следующую панель, которая будет активной
+                    let nextPanel = panel.next(".tab-pane");
+                    if (nextPanel.length === 0) {
+                        nextPanel = panel.prev(".tab-pane");
+                    }
 
-					// Переключаем классы active и show
-					if (nextPanel.length > 0) {
-						$(".nav-link.active").removeClass("active");
-						$(".tab-pane.active.show").removeClass("active show");
-						nextPanel.addClass("active show");
-						$(".nav-link[data-bs-toggle='tab'][href='#" + nextPanel.attr("id") + "']").addClass("active");
-					}
-				}
+                    // Переключаем классы active и show
+                    if (nextPanel.length > 0) {
+                        $(".nav-link.active").removeClass("active");
+                        $(".tab-pane.active.show").removeClass("active show");
+                        nextPanel.addClass("active show");
+                        $(".nav-link[data-bs-toggle='tab'][href='#" + nextPanel.attr("id") + "']").addClass("active");
+                    }
+                }
 
-				// Добавляем анимацию исчезновения перед удалением
-				panel.fadeOut(500, function() {
-					$(this).remove();
-				});
-			})
-		});
+                // Добавляем анимацию исчезновения перед удалением
+                panel.fadeOut(500, function () {
+                    $(this).remove();
+                });
+            })
+        });
 
 
+        $(".importAccounts").on("click", function () {
+            const $button = $(this); // Сохраняем кнопку
+            const originalText = $button.html(); // Сохраняем оригинальный HTML кнопки
 
-		$(".importAccounts").on("click", function () {
-			const loginId = $(this).attr('data-loginserverid');
+            // Отключаем кнопку и показываем анимацию загрузки
+            $button.prop("disabled", true).html(`
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Загрузка...
+    `);
 
-			// Выполняем POST запрос для импорта
-			fetch("/admin/database/account/import", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ loginId: loginId })
-			})
-					.then(response => {
-						if (response.type === "notice" && !ResponseNotice(data)) return;
-						return response.json();
-					})
-					.then(data => {
-						// Проверка типа notice и вызов ResponseNotice
-						if (data.type === "notice" && !ResponseNotice(data)) return;
+            const loginId = $button.attr('data-loginserverid');
 
-						if (data.error) {
-							console.error(data.error);
-							alert("Ошибка при импорте аккаунтов: " + data.error);
-						} else {
-							// Если импорт успешен, создаем временную ссылку для скачивания файла
-							const link = document.createElement('a');
-							link.href = '/' + data.file;
-							link.download = data.file;
-							document.body.appendChild(link);
-							link.click();
-							document.body.removeChild(link);
+            // Выполняем POST запрос для импорта
+            fetch("/admin/database/account/import", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ loginId: loginId })
+            }).then(response => {
+                if (response.type === "notice" && !ResponseNotice(data)) return;
+                return response.json();
+            }).then(data => {
+                console.log(data);
+                // Проверка типа notice и вызов ResponseNotice
+                if (data.type === "notice" && !ResponseNotice(data)) return;
 
-							// Удаляем файл после скачивания
-							return fetch("/admin/database/account/delete", {
-								method: "POST",
-								headers: { "Content-Type": "application/json" },
-								body: JSON.stringify({ filename: '/' + data.file })
-							});
-						}
-					})
-					.then(response => {
-						if (!response || !response.ok) throw new Error("Ошибка при удалении файла");
-						return response.json();
-					})
-					.then(data => {
-						if (data.type === "notice" && !ResponseNotice(data)) return;
-						if (data.error) console.error("Ошибка удаления файла: " + data.error);
-						else if (data.message) console.log(data.message);
-					})
-					.catch(error => {
-						console.error('Ошибка:', error);
-					});
-		});
-	});
+                if (data.error) {
+                    console.error(data.error);
+                    alert("Ошибка при импорте аккаунтов: " + data.error);
+                } else {
+                    (async function downloadAndDeleteFile() {
+                        try {
+                            // Формируем полный путь к файлу
+                            const baseUrl = window.location.origin; // Базовый URL (например, "https://example.com")
+                            const filePath = data.response.file.startsWith('/')
+                                ? data.response.file // Абсолютный путь
+                                : '/' + data.response.file; // Добавляем слэш, если его нет
+                            const fileUrl = baseUrl + filePath;
+
+                            console.log("Ссылка для скачивания:", fileUrl);
+
+                            // Создаём временную ссылку для скачивания
+                            const link = document.createElement('a');
+                            link.href = fileUrl;
+                            link.download = "account_backup.zip"; // Имя для сохранения
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+
+                            // Удаляем файл после скачивания
+                            const response = await fetch("/admin/database/account/delete", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ filename: filePath }) // Убедитесь, что отправляется верный путь
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`Ошибка при удалении файла: ${response.statusText}`);
+                            }
+
+                            console.log("Файл успешно удалён с сервера");
+                        } catch (error) {
+                            console.error("Произошла ошибка:", error);
+                        }
+                    })();
+                }
+            }).then(response => {
+                if (!response || !response.ok) throw new Error("Ошибка при удалении файла");
+                return response.json();
+            }).then(data => {
+                if (data.type === "notice" && !ResponseNotice(data)) return;
+                if (data.error) console.error("Ошибка удаления файла: " + data.error);
+                else if (data.message) console.log(data.message);
+            }).catch(error => {
+                console.error("Ошибка:", error);
+            }).finally(() => {
+                // Восстанавливаем кнопку после завершения всех операций
+                $button.prop("disabled", false).html(originalText);
+            });
+        });
+
+    });
 </script>
 
 

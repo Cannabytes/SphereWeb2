@@ -3,45 +3,28 @@
 namespace Ofey\Logan22\controller\admin;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\request\url;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\template\tpl;
 
 class databases
 {
 
-    public static function importAccounts()
+    public static function importAccounts(): void
     {
         $data = json_decode(file_get_contents("php://input"), true);
         if (!isset($data['loginId'])) {
             board::success("Не передан ID логина");
+            return;
         }
-        $filePath = "uploads/import_accounts_" . time() . ".json";
+
         \Ofey\Logan22\component\sphere\server::setShowError(true);
-        $data = \Ofey\Logan22\component\sphere\server::sendFile($filePath, type::IMPORT_ACCOUNTS, [
-            "loginId" => (int)$data['loginId'],
+        $data = \Ofey\Logan22\component\sphere\server::downloadFile(type::IMPORT_ACCOUNTS, [
+            'loginId' => (int)$data['loginId'],
         ]);
-        // Проверка, успешен ли импорт
-        if (isset($data->response)) {
-            if (!file_exists($filePath)) {
-                http_response_code(404);
-                board::alert([
-                    'type' => 'notice',
-                    'ok' => false,
-                    'message' => 'Файл не найден.',
-                ]);
-            }
-            echo json_encode(['file' => $filePath]);
-            exit;
-        } else {
-            // Если произошла ошибка, возвращаем JSON с сообщением об ошибке
-            http_response_code(500);
-            board::alert([
-                'type' => 'notice',
-                'ok' => false,
-                'message' => 'Произошла ошибка при импорте аккаунтов.',
-            ]);
-        }
+        echo json_encode($data);
     }
+
 
     public static function deleteImportFile(): void
     {

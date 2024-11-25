@@ -129,7 +129,7 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
         if ($amount < 300) {
             board::notice(false, "Минимальное пополнение от 500 UAH");
         }
-        if ($amount > 50000) {
+        if ($amount > 20000) {
             board::notice(false, "Максимальная пополнение до 50000 UAH");
         }
 
