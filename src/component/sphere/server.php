@@ -327,8 +327,9 @@ class server
             return $instance;
         }
 
-        // Проверяем, существует ли каталог для сохранения файла
-        $savePath = 'uploads/data.zip'; // Путь для сохранения
+        //некоторые хосты кэширует файлы, по этому делает все архивы новые
+        $rand = mt_rand(1,9999999);
+        $savePath = "uploads/data_{$rand}.zip";
         $result = file_put_contents($savePath, $fileData);
 
         if ($result === false) {

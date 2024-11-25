@@ -228,24 +228,17 @@
                 } else {
                     (async function downloadAndDeleteFile() {
                         try {
-                            // Формируем полный путь к файлу
-                            const baseUrl = window.location.origin; // Базовый URL (например, "https://example.com")
-                            const filePath = data.response.file.startsWith('/')
-                                ? data.response.file // Абсолютный путь
-                                : '/' + data.response.file; // Добавляем слэш, если его нет
+                            const currentDate = new Date();
+                            const formattedDate = currentDate.toISOString().replace(/T/, '_').replace(/:/g, '-').split('.')[0];
+                            const baseUrl = window.location.origin;
+                            const filePath = data.response.file.startsWith('/') ? data.response.file : '/' + data.response.file;
                             const fileUrl = baseUrl + filePath;
-
-                            console.log("Ссылка для скачивания:", fileUrl);
-
-                            // Создаём временную ссылку для скачивания
                             const link = document.createElement('a');
                             link.href = fileUrl;
-                            link.download = "account_backup.zip"; // Имя для сохранения
+                            link.download = `backup_accounts_loginserver_${loginId}_${formattedDate}.zip`;
                             document.body.appendChild(link);
                             link.click();
                             document.body.removeChild(link);
-
-                            // Удаляем файл после скачивания
                             const response = await fetch("/admin/database/account/delete", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
