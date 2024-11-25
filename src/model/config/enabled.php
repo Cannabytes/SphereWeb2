@@ -16,8 +16,6 @@ class enabled
 
     private bool $enable_statistic = true;
 
-    private bool $enable_referral = true;
-
     private bool $enable_ticket = true;
 
     private bool $enable_send_balance_game = true;
@@ -34,7 +32,6 @@ class enabled
             $this->enable_shop      = (bool)filter_var($setting['enable_shop'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_balance   = (bool)filter_var($setting['enable_balance'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_statistic = (bool)filter_var($setting['enable_statistic'] ?? true, FILTER_VALIDATE_BOOLEAN);
-            $this->enable_referral  = (bool)filter_var($setting['enable_referral'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_ticket    = (bool)filter_var($setting['enable_ticket'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_send_balance_game    = (bool)filter_var($setting['enable_send_balance_game'] ?? true, FILTER_VALIDATE_BOOLEAN);
             $this->enable_bonus_code    = (bool)filter_var($setting['enable_bonus_code'] ?? true, FILTER_VALIDATE_BOOLEAN);
@@ -60,11 +57,6 @@ class enabled
     public function isEnableStatistic(): bool
     {
         return $this->enable_statistic;
-    }
-
-    public function isEnableReferral(): bool
-    {
-        return $this->enable_referral;
     }
 
     public function isEnableTicket(): bool

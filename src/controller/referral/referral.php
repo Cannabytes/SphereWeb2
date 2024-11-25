@@ -86,7 +86,6 @@ class referral
 
     public static function show()
     {
-
         if (!config::load()->referral()->isEnable()) {
             redirect::location("/main");
         }

@@ -626,8 +626,6 @@ class options
     static public function server_show()
     {
         validation::user_protection("admin");
-
-
         tpl::addVar([
             'servername_list_default' => servername::all(),
             'client_list_default' => client::all(),
@@ -665,15 +663,16 @@ class options
     public static function saveConfigReferral(): void
     {
         $post = json_encode($_POST);
+        $serverId = $_POST['server_id'];
         if (!$post) {
             board::error("Ошибка парсинга JSON");
         }
         sql::sql("DELETE FROM `settings` WHERE `key` = '__config_referral__' AND serverId = ? ", [
-            user::self()->getServerId(),
+            $serverId,
         ]);
         sql::run("INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES ('__config_referral__', ?, ?, ?)", [
             $post,
-            user::self()->getServerId(),
+            $serverId,
             time::mysql(),
         ]);
         board::success("Настройки сохранены");

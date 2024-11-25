@@ -15,6 +15,7 @@ class update
 {
 
     private static string $shaLastCommit = '';
+    private static string $dateLastCommit = '';
 
     static function update()
     {
@@ -112,8 +113,23 @@ class update
     {
         $github              = sql::getRow("SELECT * FROM `github_updates` WHERE sha != '' ORDER BY `id` DESC LIMIT 1");
         self::$shaLastCommit = $github['sha'] ?? '';
+        self::$dateLastCommit = $github['date'] ?? '';
 
         return self::$shaLastCommit;
+    }
+
+    static function getLastDateUpdateCommit(): string
+    {
+        return self::$dateLastCommit;
+    }
+
+    static function getCountCommit(): int
+    {
+        $count = sql::getRow("SELECT count(*) AS `count` FROM `github_updates`");
+        if($count){
+            return $count['count'];
+        }
+        return 0;
     }
 
     private static function ensureDirectoryExists($filePath)

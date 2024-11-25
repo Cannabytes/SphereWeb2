@@ -88,7 +88,7 @@ class serverModel
         return $this;
     }
 
-    public function getRefferal()
+    public function getReferral()
     {
         return $this->referral;
     }

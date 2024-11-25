@@ -228,7 +228,7 @@ class config
      */
     public function referral(): referral
     {
-        return server::getServer(user::self()->getServerId())->getRefferal();
+        return server::getServer(user::self()->getServerId())->getReferral();
     }
 
     /**

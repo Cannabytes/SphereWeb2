@@ -87,12 +87,13 @@ enum type
     case AUTH_SUPER_USER;
     case CHECK_SUPER_USER_EMAIL_CONFIRM;
 
-    CASE ERROR_REPORT;
-    CASE CLEAR_ERRORS;
+    case ERROR_REPORT;
+    case CLEAR_ERRORS;
 
-    CASE RENEW_LICENSE;
+    case RENEW_LICENSE;
 
-    case IMPORT_ACCOUNTS;
+    case DOWNLOAD_ACCOUNTS;
+    case LOAD_ACCOUNTS;
     case GET_ERRORS;
 
     case EXCHANGER;
@@ -131,7 +132,8 @@ enum type
             self::GET_GAME_SERVERS => '/api/server/get/gameservers',
             self::GET_LOGIN_SERVERS => '/api/server/get/loginservers',
             self::GET_LOGIN_SERVERS_DATA => '/api/server/get/loginservers/data',
-            self::IMPORT_ACCOUNTS => '/api/server/import/accounts',
+            self::DOWNLOAD_ACCOUNTS => '/api/server/download/accounts',
+            self::LOAD_ACCOUNTS => '/api/server/load/accounts',
             self::GET_ERRORS => '/api/server/get/errors',
             self::CLEAR_ERRORS => '/api/server/errors/clear',
 

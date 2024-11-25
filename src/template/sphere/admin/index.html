@@ -141,7 +141,8 @@
                             <li class="px-0 pt-0">
                                 <span class="fs-11 text-muted op-7 fw-semibold">Введенные ограничения из-за окончания лицензии</span>
                             </li>
-                            <li class="" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="После окончания лицензии SphereWeb вводится квота на 20 регистраций игровых аккаунтов в день. Пожалуйста, цените труд и пополните баланс, продлите использования SphereWeb, чтоб снять ограничение.">
+                            <li class="" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                data-bs-original-title="После окончания лицензии SphereWeb вводится квота на 20 регистраций игровых аккаунтов в день. Пожалуйста, цените труд и пополните баланс, продлите использования SphereWeb, чтоб снять ограничение.">
                                 <a href="javascript:void(0);">
                                     <div class="d-flex align-items-center">
                                                         <span class="me-2 lh-1">
@@ -257,19 +258,22 @@
 
 
                             <li class="d-grid">
-
-                                <div class="btn-group btn-group-sm my-1" role="group" aria-label="Small button group">
-                                    <a href="/admin/server/edit/{{serverInfo.getId()}}" class="btn btn-outline-success">Изменить</a>
+                                <div class="btn-group btn-group-sm my-1 d-flex" role="group"
+                                     aria-label="Small button group">
+                                    <a href="/admin/server/edit/{{serverInfo.getId()}}"
+                                       class="btn btn-outline-success w-100">Изменить</a>
                                     <a href="/admin/server/statistic/{{serverInfo.getId()}}"
-                                       class="btn btn-outline-success">Статистика</a>
+                                       class="btn btn-outline-success w-100">Статистика online</a>
                                 </div>
-                                <div class="btn-group btn-group-sm my-1" role="group"
+                                <div class="btn-group btn-group-sm my-1 d-flex" role="group"
                                      aria-label="Small button group">
                                     <a href="/admin/server/set/donate/{{serverInfo.getId()}}"
-                                       class="btn btn-outline-success">Настройки доната</a>
+                                       class="btn btn-outline-success w-100">Настройки пожертвований</a>
+                                    <a href="/admin/server/set/referral/{{serverInfo.getId()}}"
+                                       class="btn btn-outline-success w-100">Настройки рефералки</a>
                                 </div>
-
                             </li>
+
                         </ul>
 
                     </div>
@@ -343,8 +347,9 @@
                                             <button class="nav-link " id="activity-tab" data-bs-toggle="tab"
                                                     data-bs-target="#activity-tab-pane" type="button" role="tab"
                                                     aria-controls="activity-tab-pane" aria-selected="true"><i
-                                                    class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>{{
-                                                phrase('logs_and_events') }}
+                                                    class="bi bi-cloud-download me-1 align-middle d-inline-block fs-16"></i>
+                                                История обновлений ПО
+                                                <span class="badge ms-2 bg-danger">{{getCountCommit}}</span>
                                             </button>
                                         </li>
                                     </ul>
@@ -824,6 +829,55 @@
 
                                         </div>
                                     </div>
+
+                                    <div class="tab-pane show  fade p-0 border-0" id="activity-tab-pane"
+                                         role="tabpanel" aria-labelledby="followers-tab" tabindex="0">
+                                        <div class="row">
+
+                                            <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+
+                                                    <div class="card-body border-bottom">
+                                                        <div class="d-md-flex">
+                                                            <a href="javascript:void(0);"
+                                                               class="d-flex me-4 mb-sm-0 mb-2">
+                                                                Список последних важных обновлений
+                                                            </a>
+
+                                                            <div class="ms-auto">
+                                                                Последнее обновление ПО:
+                                                                <span class="my-auto ms-2 text-muted fw-semibold">{{getLastDateUpdateCommit|date("H:m:s / d.m.Y")}}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <ul class="list-unstyled profile-timeline   p-0 border-0 bg-white p-4 rounded-3 ">
+
+                                                        {% for log in updateLog %}
+                                                        <li>
+                                                            <span class="fs-12 text-muted fw-semibold text-end profile-timeline-time">{{log.date}}</span>
+                                                            <div>
+                                                                    <span class="avatar avatar-sm avatar-rounded profile-timeline-avatar">
+                                                                        <img src="{{template}}/assets/images/update_icon.webp"
+                                                                             alt="">
+                                                                    </span>
+
+                                                                <p class="text-muted mb-0">
+                                                                    {{log.message|raw}}
+                                                                </p>
+
+                                                            </div>
+                                                        </li>
+                                                        {% endfor %}
+
+
+                                                    </ul>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>

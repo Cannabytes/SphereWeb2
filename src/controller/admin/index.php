@@ -10,6 +10,7 @@ use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\github\update;
 use Ofey\Logan22\model\server\serverModel;
+use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
 class index
@@ -60,10 +61,25 @@ class index
             ]);
         }
 
+        $updateLog = require 'uploads/update_log.php';
+        $myLang = user::self()->getLang();
+        $updateLog = array_map(function ($item) use ($myLang) {
+            if (isset($item['message'][$myLang])) {
+                $item['message'] = $item['message'][$myLang];
+            } else {
+                $item['message'] = null;
+            }
+            return $item;
+        }, $updateLog);
+
+
         tpl::addVar([
             "sphereAPIError" => $sphereAPIError,
             "title" => lang::get_phrase("admin_panel"),
             "self_last_commit" => update::getLastCommit(),
+            "getLastDateUpdateCommit" => update::getLastDateUpdateCommit(),
+            "getCountCommit" => update::getCountCommit(),
+            "updateLog" => $updateLog,
         ]);
         tpl::display("admin/index.html");
     }

@@ -1,0 +1,386 @@
+{% extends 'struct.html' %}
+
+{% block title %}Referral{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="row">
+
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <a href="/admin" class="avatar border text-muted me-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                                 fill="currentColor">
+                                <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                            </svg>
+                        </a>
+                        Настройки реферальной системы для сервера {{getServer(id).getName()}}
+                    </div>
+                </div>
+                <div class="card-body row">
+
+                    <ul class="list-group list-group-flush rounded">
+                        <li class="list-group-item text-center">
+
+                            <div class="form-check form-check-lg form-switch">
+                                <input {% if getServer(id).getReferral().isEnable() %}checked=""{% endif %} class="form-check-input" type="checkbox" role="switch" id="enable">
+                                <label class="form-check-label" for="enable">Включить реферальную систему для сервера {{getServer(id).getName()}}</label>
+                            </div>
+                        </li>
+
+
+                        <ul class="list-group list-group-flush rounded">
+                            <li class="list-group-item text-center">
+                                <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
+                                    <div class="">
+                                        <span class="fs-6 mb-0 badge bg-primary text-wrap">{{phrase('referral_system_completion_requirements')}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
+                                    <div class="col-xl-6">
+                                        <span class="fs-14 mb-0">{{phrase('minimum_time_in_game')}}</span>
+                                    </div>
+                                    <div class="col-xl-2">
+                                        <div class="form-floating mb-3">
+                                            <input value="{{getServer(id).getReferral().getTimeGame()}}" type="number" step="60"
+                                                   class="form-control"
+                                                   id="game_time_referral" placeholder="3600">
+                                            <label for="game_time_referral">{{ phrase('seconds') }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                                    <div class="col-xl-6">
+                                        <span class="fs-14 mb-0">{{phrase('minimum_level')}} :</span>
+                                    </div>
+                                    <div class="col-xl-2">
+                                        <div class="form-floating mb-3">
+                                            <input value="{{getServer(id).getReferral().getLevel()}}" type="number" step="1"
+                                                   class="form-control"
+                                                   id="ref_level" placeholder="80">
+                                            <label for="ref_level">{{ phrase(100) }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                                    <div class="col-xl-6">
+                                        <span class="fs-14 mb-0">{{phrase('required_pvp_pk')}} :</span>
+                                    </div>
+                                    <div class="col-xl-3">
+
+                                        <div class="input-group">
+                                            <div class="form-floating mb-3 col-xl-2">
+                                                <input value="{{getServer(id).getReferral().getPvp()}}" type="number" step="1"
+                                                       class="form-control"
+                                                       id="ref_pvp" placeholder="80">
+                                                <label for="ref_pvp">PvP</label>
+                                            </div>
+
+                                            <div class="form-floating mb-3 col-xl-2">
+                                                <input value="{{getServer(id).getReferral().getPK()}}" type="number" step="1"
+                                                       class="form-control"
+                                                       id="ref_pk" placeholder="80">
+                                                <label for="ref_pk">PK</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="list-group-item text-center">
+                                <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
+                                    <div class="">
+                                        <span class="fs-6 mb-0 badge bg-primary text-wrap ">{{phrase('issue_bonuses_to_leader')}}</span>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="list-group-item">
+                                <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                                    <div class="col-xl-6">
+                                        <span class="fs-14 mb-0">{{ phrase('bonus_donate_coins_for_referral_completion') }} :</span>
+                                    </div>
+                                    <div class="col-xl-2">
+                                        <div class="form-floating mb-3">
+                                            <input value="{{getServer(id).getReferral().getBonusAmount()}}" type="number"
+                                                   step="1"
+                                                   class="form-control"
+                                                   id="ref_bonus_amount" placeholder="80">
+                                            <label for="ref_bonus_amount">Donate Coin</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                                    <div class="col-xl-6">
+                                        <span class="fs-14 mb-0">{{phrase('bonus_for_referrer_on_donation')}}</span>
+                                    </div>
+                                    <div class="col-xl-5">
+                                        <div class="custom-toggle-switch float-sm-end">
+                                            <input {% if getServer(id).getReferral().getEnableDonateBonusReferral() %}checked{%
+                                                   endif %}
+                                                   id="enable_referral_donate_bonus" name="enable_referral_donate_bonus"
+                                                   type="checkbox">
+                                            <label for="enable_referral_donate_bonus" class="label-danger mb-1"></label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </li>
+                            <li class="list-group-item">
+                                <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                                    <div class="col-xl-6">
+                                        <span class="fs-14 mb-0">{{phrase('reward_percentage_donate_coin_topup')}}</span>
+                                    </div>
+                                    <div class="col-xl-2">
+                                        <div class="form-floating mb-3">
+                                            <input value="{{getServer(id).getReferral().getProcentDonateBonus()}}" type="number"
+                                                   step="1"
+                                                   class="form-control" id="ref_precent" placeholder="5" min="0"
+                                                   max="1000">
+                                            <label for="ref_precent">{{phrase('percentage')}}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="list-group-item">
+                                <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                                    <div class="col-xl-6">
+                                        <span class="fs-14 mb-0">{{phrase('bonus_item_for_user')}} </span>
+                                    </div>
+                                    <div class="col-xl-3">
+                                        <div class="form-floating mb-3">
+
+                                            <div class="input-group input-group-sm">
+
+                                                <div class="form-floating mb-3 ">
+                                                    <input value="" type="number" step="1" class="form-control "
+                                                           id="item_id_ref_bonus_leader" placeholder="4037">
+                                                    <label for="item_id_ref_bonus_leader">Item ID</label>
+                                                </div>
+
+                                                <div class="form-floating mb-3 ">
+                                                    <input value="" type="number" step="1" class="form-control "
+                                                           id="count_ref_bonus_leader" placeholder="10">
+                                                    <label for="count_ref_bonus_leader">{{ phrase(71) }}</label>
+                                                </div>
+
+                                                <div class="form-floating mb-3 ">
+                                                    <input value="" type="number" step="1" class="form-control "
+                                                           id="enchant_ref_bonus_leader" placeholder="10">
+                                                    <label for="enchant_ref_bonus_leader">Enchant</label>
+                                                </div>
+
+                                                <div class="form-floating mb-3 ">
+                                                    <button type="button"
+                                                            class="btn btn-success btn-wave waves-effect waves-light"
+                                                            id="item_add_to_leader">{{ phrase(438) }}
+                                                    </button>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table text-nowrap table-bordered bonus_ref_leader_table">
+                                            <tbody>
+
+                                            {% for item in getServer(id).getReferral().getLeaderBonusItems() %}
+                                            <tr data-item-id="{{ item.getItemId() }}" data-count="{{ item.getCount() }}"
+                                                data-enchant="{{ item.getEnchant() }}">
+                                                {% set icon = item.getIcon() %}
+                                                {% set name = item.getItemName() %}
+
+                                                {% if item.getAddName() %}
+                                                {% set name = item.getAddName() + ' ' + name %}
+                                                {% endif %}
+
+                                                {% if item.getEnchant() > 0 %}
+                                                {% set name = ' +' ~ item.getEnchant() ~ ' ' ~ name %}
+                                                {% endif %}
+
+                                                <td><span class="avatar avatar-sm"><img src="{{ item.getIcon() }}"
+                                                                                        alt="img"></span> (ID:
+                                                    {{item.getItemId()}})
+                                                    {{name}}
+                                                </td>
+                                                </td>
+                                                <td>{{ item.count }}</td>
+
+                                                <td>
+                                                    <div class="hstack gap-2 flex-wrap"><a href="javascript:void(0);"
+                                                                                           class="text-danger fs-14 lh-1"><i
+                                                            class="ri-delete-bin-5-line"></i></a></div>
+                                                </td>
+
+                                            </tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+                                </div>
+                            </li>
+
+                            <li class="list-group-item text-center">
+                                <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
+                                    <div class="">
+                                        <span class="fs-6 mb-0 badge bg-primary text-wrap">{{phrase('issue_bonuses_to_referred_player')}}</span>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="list-group-item">
+                                <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                                    <div class="col-xl-6">
+                                        <span class="fs-14 mb-0">{{phrase('bonus_item_for_user')}} </span>
+                                    </div>
+                                    <div class="col-xl-3">
+                                        <div class="form-floating mb-3">
+
+                                            <div class="input-group input-group-sm">
+
+                                                <div class="form-floating mb-3 ">
+                                                    <input value="" type="number" step="1" class="form-control "
+                                                           id="item_id_ref_bonus_slave" placeholder="4037">
+                                                    <label for="item_id_ref_bonus_slave">Item ID</label>
+                                                </div>
+
+                                                <div class="form-floating mb-3 ">
+                                                    <input value="" type="number" step="1" class="form-control "
+                                                           id="count_ref_bonus_slave" placeholder="10">
+                                                    <label for="count_ref_bonus_slave">{{ phrase(71) }}</label>
+                                                </div>
+
+                                                <div class="form-floating mb-3 ">
+                                                    <input value="" min="0" type="number" step="1" class="form-control "
+                                                           id="enchant_ref_bonus_slave" placeholder="10">
+                                                    <label for="enchant_ref_bonus_slave">Enchant</label>
+                                                </div>
+
+                                                <div class="form-floating mb-3 ">
+                                                    <button type="button"
+                                                            class="btn btn-success btn-wave waves-effect waves-light"
+                                                            id="item_add_to_slave">{{ phrase(438) }}
+                                                    </button>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table text-nowrap table-bordered bonus_ref_slave_table">
+                                            <tbody>
+
+                                            {% for item in getServer(id).getReferral().getSlaveBonusItems() %}
+
+                                            <tr data-item-id="{{ item.getItemId() }}" data-count="{{ item.getCount() }}"
+                                                data-enchant="{{ item.getEnchant() }}">
+                                                {% set icon = item.getIcon() %}
+                                                {% set name = item.getItemName() %}
+
+                                                {% if item.getAddName() %}
+                                                {% set name = item.getAddName() ~ ' ' ~ name %}
+                                                {% endif %}
+
+                                                {% if item.getEnchant() > 0 %}
+                                                {% set name = ' +' ~ item.getEnchant() ~ ' ' ~ name %}
+                                                {% endif %}
+
+                                                <td><span class="avatar avatar-sm"><img src="{{ item.getIcon() }}"
+                                                                                        alt="img"></span> (ID:
+                                                    {{item.getItemId()}})
+                                                    {{name}}
+                                                </td>
+                                                </td>
+                                                <td>{{ item.count }}</td>
+
+                                                <td>
+                                                    <div class="hstack gap-2 flex-wrap"><a href="javascript:void(0);"
+                                                                                           class="text-danger fs-14 lh-1"><i
+                                                            class="ri-delete-bin-5-line"></i></a></div>
+                                                </td>
+
+                                            </tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+                                </div>
+                            </li>
+
+                            <li class="list-group-item">
+                                <div class="float-end">
+                                    <button id="saveConfigReferral" type="button" class="btn btn-success">
+                                        {{ phrase(271) }}
+                                    </button>
+                                </div>
+                            </li>
+
+                        </ul>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).on('click', '#saveConfigReferral', function () {
+        let slave_bonus_items = [];
+        let leader_bonus_items = [];
+
+        // Проходим по каждой строке таблицы и собираем данные
+        $('.bonus_ref_slave_table tbody tr').each(function () {
+            let itemId = $(this).data('item-id');
+            let count = $(this).data('count');
+            let enchant = $(this).data('enchant');
+            slave_bonus_items.push({item_id: itemId, count: count, enchant: enchant});
+        });
+
+        $('.bonus_ref_leader_table tbody tr').each(function () {
+            let itemId = $(this).data('item-id');
+            let count = $(this).data('count');
+            let enchant = $(this).data('enchant');
+            leader_bonus_items.push({item_id: itemId, count: count, enchant: enchant});
+        });
+
+        AjaxSend('/admin/setting/referral/save', 'POST', {
+            server_id: '{{id}}',
+            enable: $('#enable').is(':checked'),
+            time_game: $('#game_time_referral').val(),
+            level: $('#ref_level').val(),
+            pvp: $('#ref_pvp').val(),
+            pk: $('#ref_pk').val(),
+            bonus_amount: $('#ref_bonus_amount').val(),
+            enable_referral_donate_bonus: $('#enable_referral_donate_bonus').is(':checked'),
+            procent_donate_bonus: $('#ref_precent').val(),
+            slave_bonus_items: slave_bonus_items,
+            leader_bonus_items: leader_bonus_items,
+        }, false);
+    });
+</script>
+{% endblock %}

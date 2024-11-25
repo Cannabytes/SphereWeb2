@@ -78,14 +78,18 @@
           </a>
         </li>
 
+
+
         {% if getUser().isAuth() %}
-        <li class="slide enable_referral" {% if config().enabled().isEnableReferral()== false
-            %}style="display: none;" {% endif %}>
+
+        {% if getServer().getReferral().isEnable() %}
+        <li class="slide enable_referral">
           <a href="/referral" class="side-menu__item">
             <i class="fe fe-users side-menu__icon"></i>
             <span class="side-menu__label">{{phrase(306)}}</span>
           </a>
         </li>
+        {% endif %}
 
         <li class="slide enable_ticket" {% if config().enabled().isEnableTicket() == false
             %}style="display: none;" {% endif %}>

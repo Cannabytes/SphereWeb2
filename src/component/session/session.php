@@ -20,9 +20,16 @@ class session
         ini_set('session.gc_probability', 1);
         ini_set('session.gc_divisor', 100);
 
-        ini_set('session.cookie_secure', 1);
         ini_set('session.cookie_httponly', 1);
         ini_set('session.cookie_samesite', 'Lax');
+
+        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['REQUEST_SCHEME'] === 'https') {
+            // Сайт использует HTTPS
+            ini_set('session.cookie_secure', 1);
+        } else {
+            // Сайт не использует HTTPS
+            ini_set('session.cookie_secure', 0);
+        }
 
         session_start();
 

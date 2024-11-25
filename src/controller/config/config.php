@@ -18,7 +18,6 @@ use Ofey\Logan22\model\config\referral;
 use Ofey\Logan22\model\config\registration;
 use Ofey\Logan22\model\config\sphereApi;
 use Ofey\Logan22\model\config\template;
-use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\lang\lang;
 use Ofey\Logan22\model\user\user;
 

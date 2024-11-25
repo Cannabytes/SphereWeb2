@@ -12,15 +12,15 @@ class referral
 
     private static $instance;
 
-    private $enable;
+    private bool $enable = false;
 
-    private string|int $time_game = 0;
+    private string|int $time_game = 3600;
 
-    private string|int $level = 0;
+    private string|int $level = 20;
 
-    private string|int $pvp = 0;
+    private string|int $pvp = 5;
 
-    private string|int $pk = 0;
+    private string|int $pk = 1;
 
     private float|int|string $bonus_amount = 0;
 
@@ -98,9 +98,9 @@ class referral
     /**
      * @return mixed
      */
-    public function isEnable()
+    public function isEnable(): bool
     {
-        return \Ofey\Logan22\controller\config\config::load()->enabled()->isEnableReferral();
+        return $this->enable;
     }
 
     /**

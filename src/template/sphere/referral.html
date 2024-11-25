@@ -4,11 +4,6 @@
 {% block title %}{{ phrase('menu_referrals') }}{% endblock %}
 
 {% block content %}
-
-{% if config().enabled().isEnableReferral() == false  %}
-  {{ redirect("/main") }}
-{% endif %}
-
 <div class="row">
 
 

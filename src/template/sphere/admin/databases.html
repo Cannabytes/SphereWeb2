@@ -69,7 +69,7 @@
                                                      aria-label="Basic mixed styles example">
 
                                                     <button data-loginserverid="{{loginServer.id}}" type="button"
-                                                            class="btn btn-success btn-wave waves-effect waves-light importAccounts">
+                                                            class="btn btn-success btn-wave waves-effect waves-light downloadAccounts">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                              viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                              stroke-width="2" stroke-linecap="round"
@@ -82,12 +82,12 @@
                                                             <path d="M19 22v-6"/>
                                                             <path d="M22 19l-3 -3l-3 3"/>
                                                         </svg>
-                                                        Импорт аккаунтов
+                                                        Скачать базу аккаунтов логина
                                                     </button>
 
-                                                    <button data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    <button data-loginserverid="{{loginServer.id}}" data-bs-toggle="tooltip" data-bs-placement="top"
                                                             data-bs-title="Ещё не работает..." type="button"
-                                                            class="btn btn-info btn-wave waves-effect waves-light">
+                                                            class="btn btn-info btn-wave waves-effect waves-light loadAccountsToSphere">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                              viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                              stroke-width="2" stroke-linecap="round"
@@ -101,9 +101,10 @@
                                                             <path d="M15 18h7"/>
                                                             <path d="M19 15l3 3l-3 3"/>
                                                         </svg>
-                                                        Экспорт аккаунтов
+                                                        Загрузить базу аккаунтов в логин
                                                     </button>
                                                 </div>
+                                                <input type="file" id="file-input" accept=".zip,.json">
 
 
                                                 <div class="fw-semibold fs-16 ">Коннект к LoginServer</div>
@@ -158,6 +159,14 @@
 </div>
 {% endblock %}
 
+{% block css %}
+<style>
+    #file-input {
+        display: none; /* Прячем его, чтобы не мозолил глаза */
+    }
+</style>
+{% endblock %}
+
 {% block js %}
 <script>
     $(document).ready(function () {
@@ -197,7 +206,7 @@
         });
 
 
-        $(".importAccounts").on("click", function () {
+        $(".downloadAccounts").on("click", function () {
             const $button = $(this); // Сохраняем кнопку
             const originalText = $button.html(); // Сохраняем оригинальный HTML кнопки
 
@@ -210,7 +219,7 @@
             const loginId = $button.attr('data-loginserverid');
 
             // Выполняем POST запрос для импорта
-            fetch("/admin/database/account/import", {
+            fetch("/admin/database/account/download", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ loginId: loginId })
@@ -226,6 +235,7 @@
                     console.error(data.error);
                     alert("Ошибка при импорте аккаунтов: " + data.error);
                 } else {
+
                     (async function downloadAndDeleteFile() {
                         try {
                             const currentDate = new Date();
@@ -233,18 +243,24 @@
                             const baseUrl = window.location.origin;
                             const filePath = data.response.file.startsWith('/') ? data.response.file : '/' + data.response.file;
                             const fileUrl = baseUrl + filePath;
+
                             const link = document.createElement('a');
                             link.href = fileUrl;
                             link.download = `backup_accounts_loginserver_${loginId}_${formattedDate}.zip`;
                             document.body.appendChild(link);
                             link.click();
                             document.body.removeChild(link);
+
+                            // Задержка для ожидания завершения загрузки
+                            await new Promise(resolve => setTimeout(resolve, 5000)); // Установите подходящее время ожидания
+
+                            // Удаляем файл с сервера
                             const response = await fetch("/admin/database/account/delete", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ filename: filePath }) // Убедитесь, что отправляется верный путь
                             });
-
+                            console.log(response)
                             if (!response.ok) {
                                 throw new Error(`Ошибка при удалении файла: ${response.statusText}`);
                             }
@@ -254,10 +270,9 @@
                             console.error("Произошла ошибка:", error);
                         }
                     })();
+
+
                 }
-            }).then(response => {
-                if (!response || !response.ok) throw new Error("Ошибка при удалении файла");
-                return response.json();
             }).then(data => {
                 if (data.type === "notice" && !ResponseNotice(data)) return;
                 if (data.error) console.error("Ошибка удаления файла: " + data.error);
@@ -269,6 +284,47 @@
                 $button.prop("disabled", false).html(originalText);
             });
         });
+
+
+        $(".loadAccountsToSphere").on("click", function (){
+            const loginId = $(this).attr('data-loginserverid');
+            $('#file-input').click();
+            $('#file-input').on('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const allowedExtensions = ['zip', 'json'];
+                    const fileExtension = file.name.split('.').pop().toLowerCase();
+
+                    if (!allowedExtensions.includes(fileExtension)) {
+                        this.value = ''; // Сбрасываем выбранный файл
+                    } else {
+                        sendFile(file, loginId); // Отправляем файл на сервер
+                    }
+                }
+            });
+        })
+
+        function sendFile(file, loginId) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('loginId', loginId);
+
+            $.ajax({
+                url: '/admin/database/account/load',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(xhr, status, error) {
+                    alert('Произошла ошибка при загрузке файла');
+                    console.error(error);
+                }
+            });
+        }
+
 
     });
 </script>

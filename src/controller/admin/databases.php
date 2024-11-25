@@ -3,14 +3,14 @@
 namespace Ofey\Logan22\controller\admin;
 
 use Ofey\Logan22\component\alert\board;
-use Ofey\Logan22\component\request\url;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\template\tpl;
+use ZipArchive;
 
 class databases
 {
 
-    public static function importAccounts(): void
+    public static function downloadAccounts(): void
     {
         $data = json_decode(file_get_contents("php://input"), true);
         if (!isset($data['loginId'])) {
@@ -19,12 +19,11 @@ class databases
         }
 
         \Ofey\Logan22\component\sphere\server::setShowError(true);
-        $data = \Ofey\Logan22\component\sphere\server::downloadFile(type::IMPORT_ACCOUNTS, [
+        $data = \Ofey\Logan22\component\sphere\server::downloadFile(type::DOWNLOAD_ACCOUNTS, [
             'loginId' => (int)$data['loginId'],
         ]);
         echo json_encode($data);
     }
-
 
     public static function deleteImportFile(): void
     {
@@ -61,6 +60,59 @@ class databases
             echo json_encode(['error' => 'Не удалось удалить файл.']);
         }
     }
+
+    public static function loadAccounts(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
+            $file = $_FILES['file'];
+            $loginId = $_POST['loginId'];
+            // Убедимся, что файл имеет правильное расширение
+            $allowedExtensions = ['zip', 'json'];
+            $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
+
+            if (in_array($fileExtension, $allowedExtensions)) {
+                // Папка для сохранения загруженных файлов
+                $uploadDir = 'uploads/';
+                $uploadFile = $uploadDir . basename($file['name']);
+
+                // Если это JSON файл, архивируем его в ZIP
+                if ($fileExtension == 'json') {
+                    $zipFile = $uploadDir . pathinfo($file['name'], PATHINFO_FILENAME) . '.zip';
+
+                    // Создаём новый архив
+                    $zip = new ZipArchive();
+                    if ($zip->open($zipFile, ZipArchive::CREATE) === TRUE) {
+                        // Добавляем файл JSON в архив
+                        $zip->addFile($file['tmp_name'], basename($file['name']));
+                        $zip->close();
+
+                        // Удаляем исходный JSON файл после архивации
+                        unlink($file['tmp_name']);
+                        $uploadFile = $zipFile;
+//                        echo json_encode(['status' => 'success', 'message' => 'Файл JSON успешно загружен и заархивирован в ZIP']);
+                    } else {
+                        echo json_encode(['status' => 'error', 'message' => 'Не удалось создать ZIP архив']);
+                    }
+                } else {
+                    // Для файлов ZIP просто перемещаем их в папку
+                    if (move_uploaded_file($file['tmp_name'], $uploadFile)) {
+//                        echo json_encode(['status' => 'success', 'message' => 'Файл успешно загружен']);
+                    } else {
+                        echo json_encode(['status' => 'error', 'message' => 'Не удалось загрузить файл']);
+                    }
+                }
+
+                $data = \Ofey\Logan22\component\sphere\server::uploadFile($uploadFile, type::LOAD_ACCOUNTS, [
+                    'loginId' => (int)$loginId,
+                ]);
+                var_dump($data);exit();
+
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Неверный формат файла']);
+            }
+        }
+    }
+
 
     static public function delete()
     {
