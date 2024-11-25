@@ -121,7 +121,7 @@
               </div>
             </div>
 
-             <div class="tab-pane p-0" id="referralSystem" role="tabpanel">
+            <div class="tab-pane p-0" id="referralSystem" role="tabpanel">
               <ul class="list-group list-group-flush rounded">
                 <li class="list-group-item text-center">
                   <div class="row gy-3 d-sm-flex align-items-center justify-content-between">
@@ -824,7 +824,7 @@
                 <div class="col-12">
                   <div class="custom-toggle-switch d-flex align-items-center mb-4">
                     <input id="massRegistration" name="massRegistration" type="checkbox" {% if
-                           config().registration().getMassRegistration() %}checked="" {% endif %}>
+                           config().registration().isMassRegistration() %}checked="" {% endif %}>
                     <label for="massRegistration" class="label-success"></label><span class="ms-3">{{phrase('enable_registration_on_all_servers')}}</span>
                   </div>
                 </div>
