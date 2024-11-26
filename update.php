@@ -32,6 +32,7 @@ class update
                 $this->__TOKEN__ = __TOKEN__;
                 include "src/model/db/sql.php";
                 $this->checkNewCommit();
+                include "uploads/cleaning.php";
             }
         } else {
             header("HTTP/1.1 301 Moved Permanently");
