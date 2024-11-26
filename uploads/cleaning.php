@@ -15,7 +15,7 @@ function deleteLogFiles($directory): void
     }
 }
 
-$path = __DIR__ . '/src/component/donate/';
+$path = 'src/component/donate/';
 
 if (is_dir($path)) {
     deleteLogFiles($path);
