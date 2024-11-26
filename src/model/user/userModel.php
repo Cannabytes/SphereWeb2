@@ -292,7 +292,7 @@ class userModel
                     break;
                 }
                 $accountUpdateTime = strtotime($account['date_update_characters']);
-                if (($currentTime - $accountUpdateTime) < 60) {
+                if (($currentTime - $accountUpdateTime) < 5) {
                     $needUpdate = false;
                     break;
                 }
@@ -303,19 +303,6 @@ class userModel
         if ($need_reload) {
             $needUpdate = true;
         }
-
-//        if(!$needUpdate){
-//            $accountsUser = [];
-//            foreach($accounts AS &$player){
-//                $account = new accountModel();
-//                $account->setAccount($player['login']);
-//                $account->setPassword($player['password']);
-//                $account->setPasswordHide($player['is_password_hide'] ?? false);
-//                $account->setCharacters(json_decode($player['characters'],true));
-//                $accountsUser[] = $account;
-//            }
-//            return $this->accounts = $accountsUser;
-//        }
 
         //Если обновление не требуется, выводим данные ранее сохраненные
         if ( ! $needUpdate) {
@@ -339,9 +326,6 @@ class userModel
             return $this->accounts;
         }
 
-        if (isset($_SESSION['last_update_accounts_list']) && ($currentTime - $_SESSION['last_update_accounts_list'] <= 20) && !$need_reload) {
-            return $this->account;
-        }
 
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::ACCOUNT_PLAYERS, [
           'forced' => $need_reload,

@@ -149,7 +149,8 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
     {
         // Получаем данные из тела запроса
         $requestBody = file_get_contents('php://input');
-        file_put_contents(__DIR__ . '/data_request.log', print_r($requestBody, true) . PHP_EOL, FILE_APPEND);
+        file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $requestBody, true ) . PHP_EOL, FILE_APPEND );
+
         $data = json_decode($requestBody, true);
 
         $clientId     = self::getConfigValue('clientId');

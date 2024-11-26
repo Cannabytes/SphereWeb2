@@ -89,7 +89,8 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
     {
         $jsonTxt     = file_get_contents('php://input');
         $requestData = json_decode($jsonTxt, true);
-        file_put_contents(__DIR__ . '/debug.log', '_REQUEST: ' . print_r($requestData, true) . PHP_EOL, FILE_APPEND);
+        file_put_contents(__DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r($requestData, true) . PHP_EOL, FILE_APPEND);
+
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
         $invId = $_POST['InvId'] ?? ""; // Уникальный идентификатор заказа, переданный при формировании счета
