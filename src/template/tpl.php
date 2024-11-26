@@ -634,6 +634,9 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('getServer', function ($id = null) {
+            if($id==null){
+                $id = user::self()->getServerId();
+            }
             return server::getServer($id);
         }));
 
