@@ -5,6 +5,7 @@ namespace Ofey\Logan22\model\phrases;
 use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
+use Ofey\Logan22\component\lang\lang;
 
 class phrases
 {
@@ -62,7 +63,7 @@ class phrases
             }
         }
 
-        board::success("Сохранено");
+        board::success(lang::get_phrase(217));
     }
 
     static function saveCustom()
@@ -117,7 +118,7 @@ class phrases
             }
         }
 
-        board::success("Сохранено");
+        board::success(lang::get_phrase(217));
     }
 
 }

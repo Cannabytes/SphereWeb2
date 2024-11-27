@@ -8,19 +8,9 @@
 
   <div class="card custom-card">
     <div class="card-body">
-      <h6 class="card-title fw-semibold mb-2">Это полезно знать</h6>
-      <p class="card-subtitle mb-3 text-muted">Стоимость SphereWeb CMS - <span class="text-success ">12.50$</span> в
-        месяц.</p>
-      <p class="card-text">
-        От разработчика: Оплата не обязательная, Вы предоставляете финансовую помощь в развитии проекта на любую сумму,
-        и я буду очень благодарен так как я один выполняю такой огромный пласт работы. Если у Вас не будет средств на
-        балансе, SphereWeb продолжит работать, однако для минимилизации нагрузки на сервера будут введены ограничения,
-        до тех пор пока Ваш баланс положительный, у Вас не будет ограничений.
-        <br>
-        Сумма на балансе уменьшается каждый час, пока Ваш баланс положительный, и за месяц эта сумма будет $12.5.<br>
-        Если Вы подключили дополнительные модули, к примеру «Рулетка (Wheel)», стоит 8$, эта сумма так же будет
-        распределена на месяц и ежечастно отниматься, в результате сумма за месяц составит 8$.
-      </p>
+      <h6 class="card-title fw-semibold mb-2">{{ phrase('This is useful to know') }}</h6>
+      <p class="card-subtitle mb-3 text-muted">{{ phrase('cost of SphereWeb CMS')|raw }}</p>
+
     </div>
 
   </div>
@@ -30,7 +20,7 @@
       <div class="card custom-card">
         <div class="card-header">
           <div class="card-title">
-            Пополнение баланса
+            {{ phrase('balance_topup') }}
           </div>
         </div>
         <div class="card-body">
@@ -47,11 +37,11 @@
               <div class="card-body">
 
                 <div class="mb-3">
-                  <label for="freekassa_amount" class="form-label fs-14 text-dark">Введите сумму пополнения</label>
+                  <label for="freekassa_amount" class="form-label fs-14 text-dark">{{ phrase('Enter the top-up amount') }}</label>
                   <input type="number" min="5" class="form-control" id="freekassa_amount" placeholder="" value="5">
                 </div>
 
-                <button data-name="freekassa" class="btn btn-primary donateSphereWeb" type="submit">Перейти к оплате
+                <button data-name="freekassa" class="btn btn-primary donateSphereWeb" type="submit">{{ phrase('Proceed to payment') }}
                 </button>
               </div>
               <script>

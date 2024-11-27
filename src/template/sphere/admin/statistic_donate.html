@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Статистика доната{% endblock %}
+{% block title %}{{ phrase('Donat statistics') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -9,7 +9,7 @@
         <div class="col-xl-5">
             <div class="card custom-card">
                 <div class="card-header">
-                    <div class="card-title">Линейный график</div>
+                    <div class="card-title">{{ phrase('Line chart') }}</div>
                 </div>
                 <div class="card-body">
                     <div id="zoom-chart"></div>
@@ -20,7 +20,7 @@
         <div class="col-xl-5">
             <div class="card custom-card">
                 <div class="card-header">
-                    <div class="card-title">Линейчатая диаграмма</div>
+                    <div class="card-title">{{ phrase('Line chart') }}</div>
                 </div>
                 <div class="card-body">
                     <div id="bar-basic"></div>
@@ -31,12 +31,12 @@
         <div class="col-xl-2">
             <div class="card custom-card">
                 <div class="card-header">
-                    <div class="card-title">Куплено</div>
+                    <div class="card-title">{{ phrase('Income') }}</div>
                 </div>
                 <div class="card-body">
-                   За всё время было пожертвовано: {{donatePoint}}
+                    {{ phrase('Over the entire period, there were donations') }}: {{donatePoint}}
                     <br>
-                    Это около: ${{dollars}}
+                    {{ phrase('Approximate amount') }}: ${{dollars}}
                 </div>
             </div>
         </div>
@@ -48,7 +48,7 @@
         <div class="col-xl-12">
             <div class="card custom-card">
                 <div class="card-header">
-                    <div class="card-title">Пожертвование пользователей</div>
+                    <div class="card-title">{{ phrase('User donation') }}</div>
                 </div>
                 <div class="card-body">
                     <table id="file-export" class="table table-bordered text-nowrap w-100">

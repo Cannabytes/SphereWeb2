@@ -200,7 +200,7 @@
                                 </svg>
 
                                 <span class="{% if serverInfo.getStatus().isEnableLoginServerMySQL() %}text-success{% else %}text-danger{% endif %}">
-                                                                    <strong class="me-1">Соединение с БД</strong> LoginServer
+                                                                    <strong class="me-1">{{ phrase('Connecting to DB') }}</strong> LoginServer
                                                                 </span>
 
                             </li>
@@ -217,7 +217,7 @@
                                 </svg>
 
                                 <span class="{% if serverInfo.getStatus().isEnableGameServerMySQL() %}text-success{% else %}text-danger{% endif %}">
-                                                                    <strong class="me-1">Соединение с БД</strong> GameServer
+                                                                    <strong class="me-1">{{ phrase('Connecting to DB') }}</strong> GameServer
                                                                 </span>
                             </li>
 
@@ -235,7 +235,7 @@
                                     <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
                                 </svg>
 
-                    <strong class="me-1">Проверка порта </strong> LoginServer
+                    <strong class="me-1">{{ phrase('Checking the port') }} </strong> LoginServer
                     </span>
                             </li>
 
@@ -253,7 +253,7 @@
                                     <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
                                 </svg>
 
-                    <strong class="me-1">Проверка порта</strong> GameServer </span>
+                    <strong class="me-1">{{ phrase('Checking the port') }}</strong> GameServer </span>
                             </li>
 
 
@@ -261,16 +261,16 @@
                                 <div class="btn-group btn-group-sm my-1 d-flex" role="group"
                                      aria-label="Small button group">
                                     <a href="/admin/server/edit/{{serverInfo.getId()}}"
-                                       class="btn btn-outline-success w-100">Изменить</a>
+                                       class="btn btn-outline-success w-100">{{ phrase('change') }}</a>
                                     <a href="/admin/server/statistic/{{serverInfo.getId()}}"
-                                       class="btn btn-outline-success w-100">Статистика online</a>
+                                       class="btn btn-outline-success w-100">{{ phrase('server_online_statistics') }}</a>
                                 </div>
                                 <div class="btn-group btn-group-sm my-1 d-flex" role="group"
                                      aria-label="Small button group">
                                     <a href="/admin/server/set/donate/{{serverInfo.getId()}}"
-                                       class="btn btn-outline-success w-100">Настройки пожертвований</a>
+                                       class="btn btn-outline-success w-100">{{ phrase('Donation settings') }}</a>
                                     <a href="/admin/server/set/referral/{{serverInfo.getId()}}"
-                                       class="btn btn-outline-success w-100">Настройки рефералки</a>
+                                       class="btn btn-outline-success w-100">{{ phrase('Referral settings') }}</a>
                                 </div>
                             </li>
 
@@ -348,7 +348,7 @@
                                                     data-bs-target="#activity-tab-pane" type="button" role="tab"
                                                     aria-controls="activity-tab-pane" aria-selected="true"><i
                                                     class="bi bi-cloud-download me-1 align-middle d-inline-block fs-16"></i>
-                                                История обновлений ПО
+                                                {{ phrase('History of software updates') }}
                                                 <span class="badge ms-2 bg-danger">{{getCountCommit}}</span>
                                             </button>
                                         </li>
@@ -715,7 +715,7 @@
                                             </div>
 
 
-                                            <h5 class="mb-5 mt-3 fw-semibold text-center">Служебное</h5>
+                                            <h5 class="mb-5 mt-3 fw-semibold text-center">{{ phrase('Developer Panel') }}</h5>
 
 
                                             <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
@@ -841,11 +841,11 @@
                                                         <div class="d-md-flex">
                                                             <a href="javascript:void(0);"
                                                                class="d-flex me-4 mb-sm-0 mb-2">
-                                                                Список последних важных обновлений
+                                                                {{ phrase('List of recent important updates') }}
                                                             </a>
 
                                                             <div class="ms-auto">
-                                                                Последнее обновление ПО:
+                                                                {{ phrase('Latest software update') }}:
                                                                 <span class="my-auto ms-2 text-muted fw-semibold">{{getLastDateUpdateCommit|date("H:m:s / d.m.Y")}}</span>
                                                             </div>
                                                         </div>

@@ -13,17 +13,17 @@
                         <a href="/admin" class="avatar border text-muted">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
                         </a>
-                        Настройки пожертвований и вознаграждений
+                        {{ phrase('Donation and Reward Settings') }}
                     </div>
                     <div class="d-flex">
                         <button class="btn btn-sm btn-success btn-wave waves-light waves-effect waves-light saveDonateConfig"><i
-                                class="ri-add-line fw-semibold align-middle me-1"></i> Сохранить</button>
+                                class="ri-add-line fw-semibold align-middle me-1"></i> {{ phrase(271) }}</button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-primary alert-dismissible fade show custom-alert-icon shadow-sm" role="alert">
                         <svg class="svg-primary" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path></svg>
-                        Настройки пожертвований и других настроек этого раздела будут использоваться для сервера {{server.getName()}} x{{server.getRateExp()}}
+                        {{ phrase('donate_setting_title') }} {{server.getName()}} x{{server.getRateExp()}}
                     </div>
                     <div class="row">
                     <div class="col-xl-6">
@@ -819,7 +819,7 @@
                 </div>
                 <div class="card-footer">
                     <button type="button" class="btn btn-success saveDonateConfig">
-                        Сохранить
+                        {{ phrase(271) }}
                     </button>
                 </div>
             </div>

@@ -5,6 +5,7 @@ namespace Ofey\Logan22\component\plugins\wheel;
 use DateTime;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\image\client_icon;
+use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
@@ -25,37 +26,37 @@ class wheel
     {
         validation::user_protection("admin");
         $object_id = null;
-        $wheelName = $_POST['wheel_name'] ?? board::error("Введите название вашего колеса");
-        $wheelCost = $_POST['wheel_cost'] ?? board::error("Введите стоимость прокрутки");
-        $wheelType = $_POST['type'] ?? board::error("Нет типа действия");
+        $wheelName = $_POST['wheel_name'] ?? board::error(lang::get_phrase('Enter the name of your roulette'));
+        $wheelCost = $_POST['wheel_cost'] ?? board::error(lang::get_phrase('Enter the scroll cost'));
+        $wheelType = $_POST['type'] ?? board::error(lang::get_phrase('No action type'));
         if ($wheelType == "update") {
-            $object_id = (int)$_POST['object_id'] ?? board::error("Не удалось индикатор рулетки");
+            $object_id = (int)$_POST['object_id'] ?? board::error(lang::get_phrase('Unable to find roulette indicator'));
         }
         if (!is_numeric($wheelCost)) {
-            board::error("Цена прокрутки должна быть числом");
+            board::error(lang::get_phrase('Scroll price must be a number'));
         }
         if ($wheelCost < 0) {
-            board::error("Цена прокрутки должна быть больше 0");
+            board::error(lang::get_phrase('Scroll price must be greater than 0'));
         }
         if (mb_strlen($wheelName) > 20) {
-            board::error("Длина названия не может быть больше 20 символов");
+            board::error(lang::get_phrase('The length of the name cannot be more than 20 characters'));
         }
         if (mb_strlen($wheelName) < 3) {
-            board::error("Длина названия должна быть больше 3 символов");
+            board::error(lang::get_phrase('The length of the name must be more than 3 characters'));
         }
 
         $transformedData = [];
         $totalProbability = 0.00;
         $data = $_POST;
         if (!isset($data['item']) or $data['item'] == "") {
-            board::error("Вы не заполнили массив с ID предметами");
+            board::error(lang::get_phrase('You have not filled the array with item IDs'));
         }
 
         // Получаем количество элементов в массиве 'item'
         $itemCount = count($data['item']);
         //Если больше 20 элементов, то ошибка
         if ($itemCount > 20) {
-            board::error("Массив с данными для создания рулетки содержит больше 20 элементов");
+            board::error(lang::get_phrase('The array with data for creating a roulette contains more than 20 elements'));
         }
 
         // Проходим по каждому элементу
@@ -68,23 +69,23 @@ class wheel
             $countMax = $data['count_max'][$i] ?? null;
             $probability = isset($data['probability'][$i]) ? (float)$data['probability'][$i] : null;
             if (!$itemId) {
-                board::error("Вы не заполнили ID предмета (предмет №{$numItem})");
+                board::error(lang::get_phrase('You have not filled in the item ID', $numItem));
             }
-            $countType = $data['way'][$i] ?? board::error("Вы не заполнили способ кол-ва (предмет №{$numItem})");
+            $countType = $data['way'][$i] ?? board::error(lang::get_phrase('You have not filled in the quantity method', $numItem));
 
             if (!$probability) {
-                board::error("Вы не указали процент выигрыша (предмет №{$numItem})");
+                board::error(lang::get_phrase('You have not specified the winning percentage', $numItem));
             }
 
             $totalProbability = round($totalProbability, 2);
             $totalProbability += $probability;
             if ($probability < 0) {
-                board::error("Процент выигрыша должен быть больше 0");
+                board::error(lang::get_phrase('The winning percentage must be greater than 0'));
             }
 
             $itemData = client_icon::get_item_info($itemId);
             if ($itemData == null) {
-                board::error("Не удалось получить информацию о предмете (предмет #{$numItem})");
+                board::error(lang::get_phrase('Failed to get item information', $numItem));
             }
 
             $transformedData[] = [
@@ -100,7 +101,7 @@ class wheel
         }
 
         if ($totalProbability != 100.00) {
-            board::error("Общий процент выигрыша должен быть 100%, у Вас {$totalProbability}%.");
+            board::error(lang::get_phrase('The total winning percentage should be 100%', $totalProbability));
         }
 
         $data = [
@@ -113,14 +114,14 @@ class wheel
 
         $response = server::send(type::GAME_WHEEL_SAVE, $data)->show()->getResponse();
         if ($response == null) {
-            board::error("Ошибка при сохранении");
+            board::error('Ошибка при сохранении');
         }
-        if (!$response['success']) {
+        if(!$response['success']){
             board::error($response['message']);
         }
 
-        board::redirect("/fun/wheel/admin");
-        board::success("Сохранено");
+        board::redirect('/fun/wheel/admin');
+        board::success(lang::get_phrase(217));
     }
 
     public function show($name)
@@ -200,17 +201,17 @@ class wheel
             $timeSinceLastSpin = time() - $_SESSION['last_wheel_spin'];
             if ($timeSinceLastSpin < self::$COOLDOWN_SECONDS) {
                 $remainingTime = self::$COOLDOWN_SECONDS - $timeSinceLastSpin;
-                board::error("Подождите {$remainingTime} секунд перед следующим использованием.");
+                board::error(lang::get_phrase('Wait seconds before next use', $remainingTime));
             }
         }
-        $id = $_POST['id'] ?? board::error("Не удалось получить данные рулетки");
+        $id = $_POST['id'] ?? board::error(lang::get_phrase('Failed to get roulette data'));
         $data = [
             'id' => (int)$id,
         ];
         server::setShowError(true);
         $response = server::send(type::GAME_WHEEL, $data)->getResponse();
         if (!$response) {
-            board::error("Ошибка при получении данных");
+            board::error(lang::get_phrase('Error while receiving data'));
         }
         if ($response['success']) {
             $itemData = client_icon::get_item_info($response['wheel']['item_id']);
@@ -226,7 +227,7 @@ class wheel
 
             //Если не удалось уменьшить деньги, то выводим ошибку
             if (!user::self()->donateDeduct($cost)) {
-                board::error("У Вас нехватает денег");
+                board::error(lang::get_phrase('Insufficient funds'));
             }
 
             user::self()->addLog(logTypes::LOG_BONUS_CODE, '_LOG_User_Win_Wheel', [$item['item_id'], $item['enchant'], $item['name'], $item['count']]);
@@ -341,14 +342,14 @@ class wheel
         $wheel_cost = (float)$_POST['wheel_cost'] ?? 1;
 
         if (mb_strlen($new_name) > 20) {
-            board::error("Длина нового названия не может быть больше 20 символов");
+            board::error(lang::get_phrase('The length of the name cannot be more than 20 characters'));
         }
         if (mb_strlen($new_name) < 3) {
-            board::error("Длина нового названия должна быть больше 3 символов");
+            board::error(lang::get_phrase('The length of the name must be more than 3 characters'));
         }
         //Цена прокрутки, может быть float 0.01, но больше нуля
         if ($wheel_cost < 0) {
-            board::error("Цена прокрутки должна быть больше 0");
+            board::error(lang::get_phrase('Scroll price must be greater than 0'));
         }
 
         //Удаление старых данных
@@ -394,7 +395,7 @@ class wheel
 
     public function remove()
     {
-        $id = (int)$_POST['id'] ?? board::error("Не удалось получить ID рулетки");
+        $id = (int)$_POST['id'] ?? board::error(lang::get_phrase('Failed to get roulette data'));
         $data = [
             'id' => $id,
         ];
@@ -414,7 +415,7 @@ class wheel
                     }
                 }
 
-                board::success("Удаление");
+                board::success(lang::get_phrase(146));
             } else {
                 board::error($response['error']);
             }
@@ -423,7 +424,7 @@ class wheel
 
     public function payRoulette()
     {
-        $months = $_POST['months'] ?? board::error("Не удалось получить данные рулетки");
+        $months = $_POST['months'] ?? board::error(lang::get_phrase('Failed to get roulette data'));
         $months = filter_var($months, FILTER_VALIDATE_INT);
         $data = [
             'months' => (int)$months,
@@ -431,7 +432,7 @@ class wheel
         $response = server::send(type::GAME_WHEEL_PAY_ROULETTE, $data)->show()->getResponse();
         if (isset($response['success'])) {
             if ($response['success']) {
-                board::success("Оплата прошла успешно");
+                board::success(lang::get_phrase('Payment was successful'));
             } else {
                 board::error($response['error']);
             }

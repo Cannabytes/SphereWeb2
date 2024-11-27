@@ -8,6 +8,7 @@
 namespace Ofey\Logan22\controller\account\password;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\model\admin\validation;
@@ -22,15 +23,29 @@ class change
     public static function password(): void
     {
         validation::user_protection();
-        $login         = $_POST['login'] ?? board::notice(false, "Не получен login");
-        $password      = $_POST['password'] ?? board::notice(false, "Введите пароль");
+        $login         = $_POST['login'] ?? board::error('Login not received');
+        $password      = $_POST['password'] ?? board::error(lang::get_phrase('Enter password'));
         $password_hide = false;
         if(!isset($_POST['password_hide'])){
             $password_hide = true;
         }
 
-        if(mb_strlen($password) < 4){
-            board::notice(false, "Пароль слишком короткий");
+        $passwordMinLength = 4;
+        $passwordMaxLength = 32;
+        if (mb_strlen($password) < $passwordMinLength || mb_strlen($password) > $passwordMaxLength) {
+            board::error(lang::get_phrase('password_max_min_sim', $passwordMinLength, $passwordMaxLength), 400);
+        }
+
+        $accountFind = false;
+        //Проверяем сущестоввание такого аккаунта
+        foreach (user::self()->getAccounts() AS $account){
+            if($account->getAccount()==$login){
+                $accountFind = true;
+                break;
+            }
+        }
+        if(!$accountFind){
+            board::error(lang::get_phrase(164));
         }
 
         $response      = \Ofey\Logan22\component\sphere\server::send(type::ACCOUNT_PLAYER_CHANGE_PASSWORD, [
@@ -40,7 +55,7 @@ class change
         ])->show()->getResponse();
         if (isset($response['success']) && $response['success'] === true) {
             user::self()->addLog(logTypes::LOG_CHANGE_ACCOUNT_PASSWORD, "LOG_CHANGE_ACCOUNT_PASSWORD", [$login]);
-            board::notice(true, "Пароль успешно изменен");
+            board::success(lang::get_phrase(181));
         }
     }
 

@@ -170,13 +170,12 @@ class donate
         $db->beginTransaction(); // Начало транзакции
         try {
             if (auth::get_donate_point() < 0) {
-                board::notice(false, "Not enough money");
+                board::error(lang::get_phrase('Insufficient funds'));
             }
             $lastUsage = $_SESSION['COOLDOWN_DONATE_TRANSACTION'] ?? 0;
             if (time() - $lastUsage < self::$COOLDOWN_SECONDS) {
-                board::error("Покупка разрешена только раз в " . self::$COOLDOWN_SECONDS . " сек.", next: true);
+                board::error(lang::get_phrase('Purchase is allowed only once per sec', self::$COOLDOWN_SECONDS), next: true);
                 $db->rollback();
-
                 return;
             }
             $_SESSION['COOLDOWN_DONATE_TRANSACTION'] = time();
@@ -185,7 +184,7 @@ class donate
             $quantity = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_INT) ?? 1;
             $shopItems = donate::getShopItems($shopId, false);
             if (!$shopItems) {
-                board::error("Магазин не найден", next: true);
+                board::error(lang::get_phrase('Store not found'), next: true);
                 $db->rollback();
 
                 return;
@@ -203,7 +202,7 @@ class donate
             }
             if (!$isStackable) {
                 if ($quantity > 1) {
-                    board::error("Эта закупка не может быть стакнутой", next: true);
+                    board::error(lang::get_phrase('This purchase cannot be stacked'), next: true);
                     $db->rollback();
 
                     return;
@@ -219,9 +218,8 @@ class donate
             $totalPrice = $groupPrice * $quantity;
             $canAffordPurchase = user::self()->canAffordPurchase($totalPrice);
             if (!$canAffordPurchase) {
-                board::error(sprintf("Для покупки у Вас нехватает %s SphereCoin", $totalPrice), next: true);
+                board::error(lang::get_phrase('You dont have enough to purchase', $totalPrice), next: true);
                 $db->rollback();
-
                 return;
             }
 
@@ -237,7 +235,7 @@ class donate
                     break;
                 }
                 if ($item->getCount() * $quantity >= 2_000_000_000) {
-                    board::error("Кол-во покупаемых предметов не может быть больше 2ккк", next: true);
+                    board::error(lang::get_phrase('max_count_item_buy'), next: true);
                     $db->rollBack();
 
                     return;
@@ -374,23 +372,22 @@ class donate
     public static function buyShopItem(): void
     {
         if (user::self()->getCountPlayers() == 0) {
-            board::error("У Вас нет персонажей");
+            board::error(lang::get_phrase('no_chars'));
         }
         $db = sql::instance();
         if (!$db) {
-            board::error("Ошибка подключения к базе данных.");
-
+            board::error("Error DB");
             return;
         }
         $db->beginTransaction();
         try {
             //Формальная проверка, что у пользователя вообще есть ли деньги.
             if (auth::get_donate_point() < 0) {
-                board::notice(false, "Not enough money");
+               board::error('Insufficient funds');
             }
             $lastUsage = $_SESSION['COOLDOWN_DONATE_TRANSACTION'] ?? 0;
             if (time() - $lastUsage < self::$COOLDOWN_SECONDS) {
-                board::error("Покупка разрешена только раз в " . self::$COOLDOWN_SECONDS . " сек.");
+                board::error(lang::get_phrase('Purchase is allowed only once per sec', self::$COOLDOWN_SECONDS));
             }
             $_SESSION['COOLDOWN_DONATE_TRANSACTION'] = time();
 
@@ -413,7 +410,7 @@ class donate
                 }
             }
             if (!$foundAccount) {
-                board::notice(false, "Аккаунт не найден");
+                board::error(lang::get_phrase(164));
             }
 
             $foundPlayer = false;
@@ -426,12 +423,12 @@ class donate
                 }
             }
             if (!$foundPlayer) {
-                board::notice(false, "Персонаж не найден");
+                board::error('Character not found');
             }
 
             $shopItems = donate::getShopItems($shopId, false);
             if (!$shopItems) {
-                board::error("Магазин не найден");
+                board::error(lang::get_phrase('Store not found'));
             }
 
             $server_info = server::getServer($shopItems[0]->getServerId());
@@ -452,7 +449,7 @@ class donate
             }
             if (!$isStackable) {
                 if ($quantity > 1) {
-                    board::error("Эта закупка не может быть стакнутой");
+                    board::error(lang::get_phrase('This purchase cannot be stacked'));
                 }
             }
 
@@ -467,7 +464,7 @@ class donate
             $totalPrice = $groupPrice * $quantity;
             $canAffordPurchase = user::self()->canAffordPurchase($totalPrice);
             if (!$canAffordPurchase) {
-                board::error(sprintf("Для покупки у Вас нехватает %s SphereCoin", $totalPrice));
+                board::error(lang::get_phrase("You dont have enough to purchase", $totalPrice));
             }
 
             /**
@@ -507,60 +504,8 @@ class donate
                 ]);
             }
             if (isset($json['error']) && $json['error'] !== "") {
-                board::error("Произошла чудовищная ошибка");
+                board::error(lang::get_phrase(145));
             }
-
-            //Проверяем что магазин относится к выбранному пользователем серверу
-            //        if(user::self()->getServerId() == $shop)
-
-            //        var_dump($shop);exit();
-            //        $donat_info = self::donate_item_info($id, $server_id);
-            //        if (!$donat_info) {
-            //            board::notice(false, lang::get_phrase(152));
-            //        }
-            //        if(isset($donat_info['is_pack'])){
-            //            $user_value = 1;
-            //        }
-            //        $donat_info_cost = $donat_info['cost'];
-            //        $cost_product = $donat_info_cost * $user_value;
-
-            //Проверка на скидку по товару
-            //        $donateInfo = __config__donate;
-            //
-            //        if ($donateInfo['DONATE_DISCOUNT_TYPE_PRODUCT_ENABLE']) {
-            //            $procentDiscount = donate::getBonusDiscount(auth::get_id(), $donateInfo['discount_product']['table']);
-            //            $decrease_factor = 1 - ($procentDiscount / 100);
-            //            $cost_product *= $decrease_factor;
-            //        }
-            //
-            //        if ($donateInfo['DONATE_DISCOUNT_COUNT_ENABLE']) {
-            //            $discount_count_product_table = $donateInfo["discount_count_product"]['table'] ?? [];
-            //            $discount_count_product_items = $donateInfo["discount_count_product"]['items'] ?? [];
-            //            if (in_array($donat_info['item_id'], $discount_count_product_items) or empty($discount_count_product_items)) {
-            //                $procentDiscount = self::findValueForN($user_value, $discount_count_product_table);
-            //                if ($procentDiscount) {
-            //                    $decrease_factor = 1 - ($procentDiscount / 100);
-            //                    $cost_product *= $decrease_factor;
-            //                }
-            //            }
-            //        }
-            //        if ((auth::get_donate_point() - $cost_product) < 0) {
-            //            board::notice(false, lang::get_phrase(149, $cost_product, auth::get_donate_point()));
-            //        }
-            //
-            //        $addToUserItems = $donat_info['count'] * $user_value;
-
-            //            $player_info = player_account::is_player($server_info, [$playerName]);
-            //            $player_info = $player_info->fetch();
-            //            if (!$player_info){
-            //                board::notice(false, lang::get_phrase(151, $playerName));
-            //            }
-            //            foreach ($shopItems as $item) {
-            //                if (!self::sending_implementation($server_info, $player_info, $playerName, $player_info["player_id"], $item->getItemInfo()->getIsStackable(), $item->getItemId(), $item->getCount())) {
-            //                    $db->rollBack();
-            //                    return;
-            //                }
-            //            }
 
             $db->commit();
             board::alert([

@@ -79,7 +79,7 @@ class change {
                 $_SESSION['password'] = $newPassword;
             }
             board::redirect();
-            board::success("Сохранено");
+            board::success(lang::get_phrase(217));
         }else{
             board::error("Нечего сохранять");
         }

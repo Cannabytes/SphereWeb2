@@ -6,6 +6,7 @@ namespace Ofey\Logan22\model\user;
 use DateTime;
 use Exception;
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\component\sphere\type;
@@ -531,7 +532,7 @@ class userModel
         }
         foreach ($this->accounts as $players) {
             foreach ($players->getCharacters() as $player) {
-                if ($player->getPlayerName() === $playerName) {
+                if ($player->getPlayerName() == $playerName) {
                     return $player;
                 }
             }
@@ -827,7 +828,7 @@ class userModel
     public function donateDeduct(float $amount): bool
     {
         if ($amount < 0) {
-            board::error("Сумма должна быть положительным числом.");
+            board::error(lang::get_phrase('The amount must be a positive number'));
         }
 
         if ($this->donate < $amount) {
@@ -841,15 +842,10 @@ class userModel
 
     public function getCountPlayers(): int
     {
-        //        if (empty($this->getPlayers())) {
-        //            return 0;
-        //        }
-        //        $allPlayerCount = 0;
-        //        foreach ($this->getPlayers() as $player) {
-        //            $allPlayerCount += count($player->getCharacters());
-        //        }
-        $allPlayerCount = 24;
-
+        $allPlayerCount = 0;
+        foreach ($this->getAccounts() AS $accounts){
+            $allPlayerCount += count($accounts->getCharacters());
+        }
         return $allPlayerCount;
     }
 

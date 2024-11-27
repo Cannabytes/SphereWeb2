@@ -259,7 +259,7 @@
                   <div class="card custom-card shadow-none border">
                     <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
                       <div class="">
-                        <span class="fw-semibold">Эмуляции данных</span>
+                        <span class="fw-semibold">{{ phrase('Data emulations') }}</span>
                       </div>
                       <div>
                         <div class="custom-toggle-switch float-sm-end">
@@ -711,8 +711,8 @@
                 <li class="list-group-item">
                   <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                     <div>
-                      <p class="fs-14 mb-1 fw-semibold">Курсор Lineage 2</p>
-                      <p class="fs-12 mb-0 text-muted">В личном кабинете будет использован курсор из игры Lineage 2 - <img src="{{template}}/assets/cursor/lineage2/cursor.webp?v=12" class="img-fluid"> вместо классического - <img src="{{template}}/assets/cursor/lineage2/windows.webp?v=12" class="img-fluid"></p>
+                      <p class="fs-14 mb-1 fw-semibold">{{ phrase('Lineage 2 Cursor') }}</p>
+                      <p class="fs-12 mb-0 text-muted">{{ phrase('lineage_2_cursor_desc', template ~ '/assets/cursor/lineage2/cursor.webp', template ~ '/assets/cursor/lineage2/windows.webp')|raw }}</p>
                     </div>
                     <div>
                       <div class="custom-toggle-switch float-sm-end">
@@ -726,8 +726,8 @@
                 <li class="list-group-item">
                   <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                     <div>
-                      <p class="fs-14 mb-1 fw-semibold">Получать автоматически актуальный курс валют</p>
-                      <p class="fs-12 mb-0 text-muted">При пожертвовании будет использован курс валют согласно сервису https://openexchangerates.org</p>
+                      <p class="fs-14 mb-1 fw-semibold">{{ phrase('Receive the current exchange rate automatically') }}</p>
+                      <p class="fs-12 mb-0 text-muted">{{phrase('openexchangerates')}}</p>
                     </div>
                     <div>
                       <div class="custom-toggle-switch float-sm-end">
