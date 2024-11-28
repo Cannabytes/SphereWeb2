@@ -58,7 +58,7 @@ class userModel
      */
     private array $account = [];
 
-    private ?string $lang = 'en';
+    private ?string $lang = null;
 
     public function __construct(?int $userId = null)
     {
@@ -1134,7 +1134,6 @@ class userModel
     {
         if ($this->lang == null) {
             $this->lang = config::load()->lang()->lang_user_default();
-
             return $this->lang;
         }
         if (config::load()->lang()->name($this->lang)) {

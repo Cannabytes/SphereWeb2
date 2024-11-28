@@ -21,7 +21,7 @@
                         <div class="input-group border rounded flex-nowrap">
                             <button class="btn btn-icon btn-primary input-group-text flex-fill "
                                     id="product-quantity-minus"><i class="ri-subtract-line"></i></button>
-                            <input min="1"
+                            <input min="{{getServer().donate().getMinSummaPaySphereCoin()}}"
                                    max="{{getServer().donate().getMaxSummaPaySphereCoin()}}" type="text"
                                    class="form-control form-control-sm border-0 text-center w-100"
                                    aria-label="quantity" id="numberOfCoinsPurchased"
@@ -348,7 +348,6 @@
             deincrementTimer = setInterval(function () {
                 var currentValue = parseInt($('#numberOfCoinsPurchased').val());
                 var min = parseInt($('#numberOfCoinsPurchased').attr('min'));
-
                 if (!isNaN(currentValue)) {
                     var newValue = currentValue - 1;
                     if (newValue >= min) {
