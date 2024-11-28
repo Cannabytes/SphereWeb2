@@ -20,8 +20,6 @@ class dsys
                 include $routePath;
                 $classInstance = new $system(); // где $system - имя класса
                 self::$classArray[$system] = $classInstance;
-            } else {
-                throw new \Exception("Файл маршрутов {$routePath} не найден.");
             }
         }
 
