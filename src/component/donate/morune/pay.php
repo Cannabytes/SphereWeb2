@@ -19,8 +19,8 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
     public static function inputs(): array
     {
         return [
-          'shop_id'    => '',
-          'secret_key' => '',
+            'shop_id' => '',
+            'secret_key' => '',
         ];
     }
 
@@ -41,26 +41,26 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
         $order_amount = $_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost());
-        $shop_id      = self::getConfigValue('shop_id');
-        $email        = user::self()->getEmail();
-        $secret_word  = self::getConfigValue('secret_key');
-        $currency     = "RUB";
-        $order_id     = uniqid();
-        $sign         = md5($shop_id . ':' . $order_amount . ':' . $secret_word . ':' . $currency . ':' . $order_id);
-        $params       = [
-          'amount'        => $order_amount,
-          'order_id'      => $order_id,
-          'email'         => $email,
-          'currency'      => $currency,
-          'shop_id'       => $shop_id,
-          "custom_fields" => ["order" => user::self()->getId()],
+        $shop_id = self::getConfigValue('shop_id');
+        $email = user::self()->getEmail();
+        $secret_word = self::getConfigValue('secret_key');
+        $currency = "RUB";
+        $order_id = uniqid();
+        $sign = md5($shop_id . ':' . $order_amount . ':' . $secret_word . ':' . $currency . ':' . $order_id);
+        $params = [
+            'amount' => $order_amount,
+            'order_id' => $order_id,
+            'email' => $email,
+            'currency' => $currency,
+            'shop_id' => $shop_id,
+            "custom_fields" => ["order" => user::self()->getId()],
         ];
-        $headers      = [
-          'Accept: application/json',
-          'Content-Type: application/json',
-          'x-api-key: ' . self::getConfigValue('secret_key'),
+        $headers = [
+            'Accept: application/json',
+            'Content-Type: application/json',
+            'x-api-key: ' . self::getConfigValue('secret_key'),
         ];
-        $ch           = curl_init();
+        $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://api.morune.com/invoice/create');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
@@ -79,16 +79,12 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
 
     function webhook(): void
     {
-        $jsonTxt     = file_get_contents('php://input');
-        $requestData = json_decode($jsonTxt, true);
+        $input = file_get_contents('php://input');
+        $requestData = json_decode($input, true);
         file_put_contents(__DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r($requestData, true) . PHP_EOL, FILE_APPEND);
 
-//        \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
-
         $status = $requestData['status'] ?? null;
-
         $order = $requestData['custom_fields']['order'] ?? null;
-
         $user_id = $order !== null ? (int)$order : null;
 
         // Получаем сигнатуру из заголовка 'x-api-sha256-signature'
@@ -96,17 +92,16 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
 
         if ($status == "success") {
             $invoice = $this->getInvoiceInfo(
-              self::getConfigValue('secret_key'),
-              $requestData['invoice_id'],
-              self::getConfigValue('shop_id')
+                self::getConfigValue('secret_key'),
+                $requestData['invoice_id'],
+                self::getConfigValue('shop_id')
             );
-            file_put_contents(__DIR__ . '/debug_invoice.log', '_REQUEST: ' . print_r($invoice, true) . PHP_EOL, FILE_APPEND);
             $invoice = $invoice['data'];
-            $amount   = $invoice['invoice_amount'];
+            $amount = $invoice['invoice_amount'];
             $currency = $invoice['currency'];
-            $amount   = donate::currency($amount, $currency);
+            $amount = donate::currency($amount, $currency);
             \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
-            user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование morune", get_called_class());
+            user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system: get_called_class(), input: $input);
             donate::addUserBonus($user_id, $amount);
             echo 'YES';
         } else {
@@ -116,12 +111,12 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
 
     function getInvoiceInfo(string $apiKey, string $invoiceId, string $shopId): array
     {
-        $url     = "https://api.morune.com/invoice/info";
+        $url = "https://api.morune.com/invoice/info";
         $headers = [
-          "accept: application/json",
-          "x-api-key: {$apiKey}",
+            "accept: application/json",
+            "x-api-key: {$apiKey}",
         ];
-        $ch      = curl_init();
+        $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "$url?invoice_id={$invoiceId}&shop_id={$shopId}");
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

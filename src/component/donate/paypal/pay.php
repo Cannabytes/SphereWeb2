@@ -148,21 +148,16 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
     function webhook(): void
     {
         // Получаем данные из тела запроса
-        $requestBody = file_get_contents('php://input');
-        file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $requestBody, true ) . PHP_EOL, FILE_APPEND );
+        $input = file_get_contents('php://input');
+        file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $input, true ) . PHP_EOL, FILE_APPEND );
 
-        $data = json_decode($requestBody, true);
+        $data = json_decode($input, true);
 
         $clientId     = self::getConfigValue('clientId');
         $clientSecret = self::getConfigValue('secretKey');
 
         $orderId = $data['resource']['id'];  // Полученный ранее идентификатор заказа
         $customId = $data['resource']['purchase_units'][0]['custom_id'] ?? null;
-        if ($customId) {
-            file_put_contents(__DIR__ . '/custom_id.log', "Custom ID: $customId" . PHP_EOL, FILE_APPEND);
-        } else {
-            return;
-        }
 
         $auth_url = $this->api_mode === 'LIVE' ? "https://api-m.paypal.com/v1/oauth2/token" : "https://api-m.sandbox.paypal.com/v1/oauth2/token";
 
@@ -196,7 +191,6 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
         curl_close($ch);
 
         $result = json_decode($response, true);
-        file_put_contents(__DIR__ . '/data_request_result.log', print_r($result, true) . PHP_EOL, FILE_APPEND);
 
         if($result['status'] === 'COMPLETED') {
             // Добавление средств
@@ -206,7 +200,7 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
 
             $amount   = donate::currency($amount, $currency);
             \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$result['purchase_units'][0]['payments']['captures'][0]['amount']['value'], $currency, get_called_class()]);
-            user::getUserId($customId)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование PayPal", get_called_class());
+            user::getUserId($customId)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class(), input: $input);
             donate::addUserBonus($customId, $amount);
         }
 

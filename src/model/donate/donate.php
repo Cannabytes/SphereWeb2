@@ -684,7 +684,7 @@ class donate
             $masterUser = referral::get_user_leader($user_id);
             if ($masterUser) {
                 $bonus = ($sphereCoin * config::load()->referral()->getProcentDonateBonus()) / 100;
-                $masterUser->donateAdd($bonus)->AddHistoryDonate($bonus, "Привлеченный Вами игрок пожертвовал и Вы получаете +$bonus бонуса по реферальной системе", "referralBonus");
+                $masterUser->donateAdd($bonus)->AddHistoryDonate(amount: $bonus, message: lang::get_phrase('message_ref_bonus', (string)$bonus), pay_system:  "referralBonus" );
             }
         }
     }
@@ -743,7 +743,7 @@ class donate
             $percent = $bonusData['percent'];
             $addSphereCoin = ($sphereCoin * $percent / 100);
             //TODO: Добавить логирование о действий пользователя
-            user::getUserId($user_id)->donateAdd($addSphereCoin)->AddHistoryDonate($addSphereCoin, "Выдача {$percent}% бонуса (+$addSphereCoin) за единоразовый донат", "oneTimeBonus");
+            user::getUserId($user_id)->donateAdd($addSphereCoin)->AddHistoryDonate(amount: $addSphereCoin, message: lang::get_phrase('bonus for one-time donation', $percent, $addSphereCoin), pay_system:  "oneTimeBonus");
         }
 
         return $bonusData;
@@ -767,7 +767,7 @@ class donate
         }
         $addSphereCoin = ($sphereCoin * $percent / 100);
         //TODO: Добавить логирование о действий пользователя
-        user::getUserId($user_id)->donateAdd($addSphereCoin)->AddHistoryDonate($addSphereCoin, "Выдача {$percent}% бонуса ($addSphereCoin) по накопительной системе", "cumulativeBonus");
+        user::getUserId($user_id)->donateAdd($addSphereCoin)->AddHistoryDonate(amount: $addSphereCoin, message: lang::get_phrase('bonus for cumulative system', $percent, $addSphereCoin), pay_system:  "cumulativeBonus");
     }
 
     //Выдача бонуса предметом, за N сумму доната единоразвым платежем

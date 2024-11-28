@@ -187,7 +187,7 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
             donate::control_uuid($sign, get_called_class());
             $amount = donate::currency($amount, $currency);
             \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
-            user::getUserId($userId)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование BetaTransferApi", get_called_class());
+            user::getUserId($userId)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
             donate::addUserBonus($userId, $amount);
             die('OK');
         }

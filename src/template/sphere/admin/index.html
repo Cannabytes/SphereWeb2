@@ -139,17 +139,17 @@
                     <div class="mt-3 task-navigation border-bottom border-block-end-dashed">
                         <ul class="list-unstyled task-main-nav mb-0">
                             <li class="px-0 pt-0">
-                                <span class="fs-11 text-muted op-7 fw-semibold">Введенные ограничения из-за окончания лицензии</span>
+                                <span class="fs-11 text-muted op-7 fw-semibold">{{ phrase('Restrictions introduced due to license expiration') }}</span>
                             </li>
                             <li class="" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                data-bs-original-title="После окончания лицензии SphereWeb вводится квота на 20 регистраций игровых аккаунтов в день. Пожалуйста, цените труд и пополните баланс, продлите использования SphereWeb, чтоб снять ограничение.">
+                                data-bs-original-title="{{ phrase('sphere off license desc') }}">
                                 <a href="javascript:void(0);">
                                     <div class="d-flex align-items-center">
                                                         <span class="me-2 lh-1">
                                                             <i class="ri-task-line align-middle fs-14"></i>
                                                         </span>
                                         <span class="flex-fill text-nowrap">
-                                                            Регистраций в день
+                                                            {{ phrase('Registrations per day') }}
                                                         </span>
                                         <span class="badge bg-secondary-transparent rounded-pill">{{registrationLimit}}/20</span>
                                     </div>
@@ -173,7 +173,7 @@
                 <div class="card-body p-0 border-bottom">
                     <div class="px-1 py-2 {% if serverInfo.getStatus().getGameServer() == false %}bg-danger{% else %}bg-success{% endif %}">
                         {% if serverInfo.isDisabled() %}
-                        <div class="text-center text-white">Сервер отключен администратором</div>
+                        <div class="text-center text-white">{{ phrase('The server has been disabled by the administrator') }}</div>
                         {% endif %}
                     </div>
                     <div class="p-4">

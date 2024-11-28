@@ -95,7 +95,7 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
         $amount = donate::currency($amount, $currency);
         \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
         $user = user::getUserByEmail($email);
-        $user->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование Aaio", get_called_class());
+        $user->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
         donate::addUserBonus($user->getId(), $amount);
         echo 'YES';
     }

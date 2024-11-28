@@ -115,7 +115,7 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract
         $amount = donate::currency($_POST['sum'], $_POST['currency']);
 
         \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['sum'], $_POST['currency'], get_called_class()]);
-        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование", get_called_class());
+        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Primepayments", get_called_class());
         donate::addUserBonus($user_id, $amount);
         echo 'YES';
     }

@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Услуги Sphere Web{% endblock %}
+{% block title %}{{ phrase('Sphere Web Services') }}{% endblock %}
 
 {% block content %}
 
@@ -294,7 +294,7 @@
         $("#successPayLauncher").html("                        <div class=\"alert alert-success d-flex align-items-center rounded-0 shadow-none\" role=\"alert\">\n" +
           "                            <svg class=\"flex-shrink-0 me-2 svg-success\" xmlns=\"http://www.w3.org/2000/svg\" height=\"1.5rem\" viewBox=\"0 0 24 24\" width=\"1.5rem\" fill=\"#000000\"><path d=\"M0 0h24v24H0V0zm0 0h24v24H0V0z\" fill=\"none\"></path><path d=\"M16.59 7.58L10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"></path></svg>\n" +
           "                            <div>\n" +
-          "                                <strong>Вы успешно пополнили использование лаунчера до " + response.date + " \n" +
+          "                                <strong>{{ phrase('You have successfully extended the use of the launcher') }} " + response.date + " \n" +
           "                            </div>\n" +
           "                        </div>")
       }

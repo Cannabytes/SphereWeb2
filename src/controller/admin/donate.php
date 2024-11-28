@@ -96,7 +96,7 @@ class donate {
         $user = user::getUserId($user_id);
         if ($user) {
             $user_id = $user->getId();
-            user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование", "Administrator", user::self()->getId());
+            user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  "Administrator", id_admin_pay: user::self()->getId());
             if($addBonus) {
                 \Ofey\Logan22\model\donate\donate::addUserBonus($user_id, $amount);
             }

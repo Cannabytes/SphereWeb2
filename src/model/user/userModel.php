@@ -14,6 +14,7 @@ use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\userlog;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\donate\payMessage;
 use Ofey\Logan22\model\item\item;
 use Ofey\Logan22\model\item\warehouse;
 use Ofey\Logan22\model\log\logTypes;
@@ -65,25 +66,25 @@ class userModel
             return $this;
         }
         $user = sql::getRow(
-          "SELECT `id`, `email`, `password`, `name`, `signature`, `ip`, `date_create`, `date_update`, `access_level`, `donate_point`, `avatar`, `avatar_background`, `timezone`, `country`, `city`, `server_id`, `lang` FROM `users` WHERE id = ? LIMIT 1",
-          [$userId]
+            "SELECT `id`, `email`, `password`, `name`, `signature`, `ip`, `date_create`, `date_update`, `access_level`, `donate_point`, `avatar`, `avatar_background`, `timezone`, `country`, `city`, `server_id`, `lang` FROM `users` WHERE id = ? LIMIT 1",
+            [$userId]
         );
         if ($user) {
             if ($user['server_id'] === null) {
                 $server_id = server::getDefaultServer();
                 $this->changeServerId($server_id, $user['id']);
                 $user['server_id'] = $server_id;
-            }else{
+            } else {
                 $allServersId = server::getServerIds();
-                if($allServersId!=null){
+                if ($allServersId != null) {
                     $found = false;
-                    foreach($allServersId AS $id){
-                        if($user['server_id']==$id){
+                    foreach ($allServersId as $id) {
+                        if ($user['server_id'] == $id) {
                             $found = true;
                             break;
                         }
                     }
-                    if(!$found){
+                    if (!$found) {
                         $server_id = server::getDefaultServer();
                         $this->changeServerId($server_id, $user['id']);
                         $user['server_id'] = $server_id;
@@ -91,9 +92,9 @@ class userModel
                 }
             }
 
-            if(isset($_SESSION['id'])){
+            if (isset($_SESSION['id'])) {
                 if ($_SESSION['id'] == $user['id']) {
-                    if ( ! password_verify($_SESSION['password'], $user['password'])) {
+                    if (!password_verify($_SESSION['password'], $user['password'])) {
                         session::clear();
                         redirect::location("/main");
                     }
@@ -101,26 +102,26 @@ class userModel
             }
 
             $this->setIsAuth(true);
-            $this->id          = $user['id'];
-            $this->email       = $user['email'];
-            $this->password    = $user['password'];
-            $this->signature   = $user['signature'];
-            $this->name        = $user['name'] ?? 'User does not exist';
-            $this->ip          = $this->getIp();
-            $this->dateCreate  = new DateTime($user['date_create']);
-            $this->dateUpdate  = new DateTime($user['date_update']);
+            $this->id = $user['id'];
+            $this->email = $user['email'];
+            $this->password = $user['password'];
+            $this->signature = $user['signature'];
+            $this->name = $user['name'] ?? 'User does not exist';
+            $this->ip = $this->getIp();
+            $this->dateCreate = new DateTime($user['date_create']);
+            $this->dateUpdate = new DateTime($user['date_update']);
             $this->accessLevel = $user['access_level'];
-            $this->donate      = $user['donate_point'];
-            $this->avatar      = $user['avatar'];
-            $this->timezone    = $user['timezone'];
-            $this->country     = $user['country'];
-            $this->city        = $user['city'];
-            $this->serverId    = $user['server_id'];
-            $this->lang        = $user['lang'];
+            $this->donate = $user['donate_point'];
+            $this->avatar = $user['avatar'];
+            $this->timezone = $user['timezone'];
+            $this->country = $user['country'];
+            $this->city = $user['city'];
+            $this->serverId = $user['server_id'];
+            $this->lang = $user['lang'];
 
             \Ofey\Logan22\component\sphere\server::setUser($this);
             $this->warehouse = $this->warehouse() ?? null;
-            $this->accounts  = null;
+            $this->accounts = null;
 
             //            $this->players   = $this->getCharacters();
 
@@ -130,21 +131,11 @@ class userModel
         return null;
     }
 
-    public function getId(): int
-    {
-        return $this->id ?? 0;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
-
     private function changeServerId(int $serverId, int $user_id): void
     {
         sql::sql("UPDATE `users` SET `server_id` = ? WHERE `id` = ?", [
-          $serverId,
-          $user_id,
+            $serverId,
+            $user_id,
         ]);
     }
 
@@ -170,25 +161,25 @@ class userModel
         }
 
         $this->setIsAuth(true);
-        $this->id          = $user['id'];
-        $this->email       = $user['email'];
-        $this->password    = $user['password'];
-        $this->signature   = $user['signature'];
-        $this->name        = $user['name'] ?? 'User does not exist';
-        $this->ip          = $this->getIp();
-        $this->dateCreate  = new DateTime($user['date_create']);
-        $this->dateUpdate  = new DateTime($user['date_update']);
+        $this->id = $user['id'];
+        $this->email = $user['email'];
+        $this->password = $user['password'];
+        $this->signature = $user['signature'];
+        $this->name = $user['name'] ?? 'User does not exist';
+        $this->ip = $this->getIp();
+        $this->dateCreate = new DateTime($user['date_create']);
+        $this->dateUpdate = new DateTime($user['date_update']);
         $this->accessLevel = $user['access_level'];
-        $this->donate      = $user['donate_point'];
-        $this->avatar      = $user['avatar'];
-        $this->timezone    = $user['timezone'];
-        $this->country     = $user['country'];
-        $this->city        = $user['city'];
-        $this->serverId    = $user['server_id'];
-        $this->lang        = $user['lang'];
+        $this->donate = $user['donate_point'];
+        $this->avatar = $user['avatar'];
+        $this->timezone = $user['timezone'];
+        $this->country = $user['country'];
+        $this->city = $user['city'];
+        $this->serverId = $user['server_id'];
+        $this->lang = $user['lang'];
 
         $this->warehouse = $this->warehouse() ?? null;
-        $this->accounts  = false;
+        $this->accounts = false;
         //        $this->accounts  = $this->getLoadAccounts();
 
         //        $this->players     = $this->getCharacters();
@@ -196,22 +187,32 @@ class userModel
         return $this;
     }
 
+    public function getId(): int
+    {
+        return $this->id ?? 0;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
     /**
      * @return warehouse[]|array
      */
     private function warehouse(): array
     {
-        $items          = sql::getRows(
-          "SELECT id, item_id, count, enchant, phrase FROM `warehouse` WHERE server_id = ? AND user_id = ? AND issued = 0", [
-            $this->serverId(),
-            $this->getId(),
-          ]
+        $items = sql::getRows(
+            "SELECT id, item_id, count, enchant, phrase FROM `warehouse` WHERE server_id = ? AND user_id = ? AND issued = 0", [
+                $this->serverId(),
+                $this->getId(),
+            ]
         );
         $warehouseArray = [];
         foreach ($items as $item) {
             $warehouse = new warehouse();
             $warehouse->setId($item['id'])->setItemId($item['item_id'])->setCount($item['count'])->setEnchant($item['enchant'])->setPhrase(
-              $item['phrase']
+                $item['phrase']
             )->setItem(item::getItem($item['item_id']))->setServerId($this->serverId());
             $warehouseArray[] = $warehouse;
         }
@@ -231,8 +232,383 @@ class userModel
         return $this;
     }
 
+    public function AddHistoryDonate(float|int $amount, string $message = null, string $pay_system = "sphereBonus", null|int $id_admin_pay = null, $input = null): void
+    {
+        if ($message == null){
+            $message = payMessage::getRandomPhrase();
+        }
+        $isSphereSystem = in_array($pay_system, ["sphereBonus", "cumulativeBonus", "oneTimeBonus"]) ? 1 : 0;
+
+        if ($isSphereSystem == 0) {
+            if ( $input == null ) {
+                $input = json_encode($_REQUEST, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            }
+            \Ofey\Logan22\component\sphere\server::send(type::DONATE_STATISTIC, [
+                'paySystem' => $pay_system,
+                'request' => $input,
+            ]);
+        }
+
+        sql::run(
+            "INSERT INTO `donate_history_pay` (`user_id`, `point`, `message`, `pay_system`, `id_admin_pay`, `date`, `sphere`) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [
+                $this->getId(),
+                ceil($amount),
+                $message,
+                $pay_system,
+                $id_admin_pay,
+                time::mysql(),
+                $isSphereSystem, //Означает что это зачисление от sphere
+            ]
+        );
+    }
+
+    /** Возвращает историю пожертвваний */
+    public function getHistoryDonate($getPoint = false)
+    {
+        if ($getPoint) {
+            $point = sql::getRow(
+                "SELECT SUM(donate_history_pay.point) AS `point` FROM donate_history_pay WHERE sphere = 0 AND user_id = ?;",
+                [$this->getId()]
+            );
+            if ($point) {
+                return $point['point'];
+            }
+
+            return 0;
+        }
+
+        return sql::getRows("SELECT * FROM `donate_history_pay` WHERE user_id = ?", [$this->getId()]);
+    }
+
+    public function isPlayer($playerName): characterModel|false
+    {
+        if ($this->accounts === null) {
+            return false;
+        }
+        foreach ($this->accounts as $players) {
+            foreach ($players->getCharacters() as $player) {
+                if ($player->getPlayerName() == $playerName) {
+                    return $player;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function getPlayerCount(): int
+    {
+        return $this->accounts ? count($this->accounts) : 0;
+    }
+
+    public function __toString(): string
+    {
+        return "Нет выбранного у метода: Список доступных методов в <src/model/user/userModel.php>";
+    }
+
+    public function countWarehouseItems(): int
+    {
+        if (!$this->isAuth) {
+            return 0;
+        }
+        if ($this->countWarehouseItems === null) {
+            return count($this->getWarehouse());
+        }
+
+        return $this->countWarehouseItems;
+    }
+
     /**
-     * @param   null  $account
+     * @return warehouse[]
+     */
+    public function getWarehouse($reload = false): mixed
+    {
+        if ($reload) {
+            return $this->warehouse();
+        }
+
+        return $this->warehouse;
+    }
+
+    /**
+     * @param mixed $warehouse
+     */
+    public function setWarehouse($warehouse): void
+    {
+        $this->warehouse = $warehouse;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string|null $name
+     *
+     * @return userModel
+     */
+    public function setName(?string $name): userModel
+    {
+        sql::run("UPDATE `users` SET `name` = ? WHERE `id` = ?", [$name, $this->getId()]);
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSignature(): ?string
+    {
+        return $this->signature;
+    }
+
+    //Запись в историю пожертвований
+
+    /**
+     * @param string|null $signature
+     *
+     * @return userModel
+     */
+    public function setSignature(?string $signature): userModel
+    {
+        $this->signature = $signature;
+
+        return $this;
+    }
+
+    /**
+     * @param string|null $accessLevel
+     *
+     * @return userModel
+     */
+    public function setAccessLevel(?string $accessLevel): userModel
+    {
+        $this->accessLevel = $accessLevel;
+
+        return $this;
+    }
+
+    /**
+     * @param string|null $avatar
+     *
+     * @return userModel
+     */
+    public function setAvatar(?string $avatar): userModel
+    {
+        sql::run('UPDATE `users` SET `avatar` = ? WHERE `id` = ?', [
+            $avatar,
+            $this->getId(),
+        ]);
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    /**
+     * @param string|null $timezone
+     *
+     * @return userModel
+     */
+    public function setTimezone(?string $timezone): userModel
+    {
+        sql::run("UPDATE `users` SET `timezone` = ? WHERE `id` = ?", [$timezone, $this->getId()]);
+        $this->timezone = $timezone;
+
+        return $this;
+    }
+
+    /**
+     * @param string|null $country
+     *
+     * @return userModel
+     */
+    public function setCountry(?string $country): userModel
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    /**
+     * @param string|null $city
+     *
+     * @return userModel
+     */
+    public function setCity(?string $city): userModel
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getDateCreate(): string
+    {
+        return $this->dateCreate->format('Y-m-d H:i:s');
+    }
+
+    /**
+     * @param DateTime|null $dateCreate
+     *
+     * @return userModel
+     */
+    public function setDateCreate(?DateTime $dateCreate): userModel
+    {
+        $this->dateCreate = $dateCreate;
+
+        return $this;
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getDateUpdate(): ?DateTime
+    {
+        return $this->dateUpdate;
+    }
+
+    /**
+     * @param DateTime|null $dateUpdate
+     *
+     * @return userModel
+     */
+    public function setDateUpdate(?DateTime $dateUpdate): userModel
+    {
+        $this->dateUpdate = $dateUpdate;
+
+        return $this;
+    }
+
+    /**
+     * Проверяет, достаточно ли денег у пользователя для совершения покупки.
+     *
+     * @param float|int $purchaseAmount Стоимость покупки.
+     *
+     * @return bool Возвращает true, если средств достаточно, иначе false.
+     */
+    public function canAffordPurchase(float|int $purchaseAmount): bool
+    {
+        $userBalance = self::getDonate();
+
+        if ($userBalance <= 0) {
+            board::error("Вы не можете совершать покупки если у Вас на счету 0");
+        }
+
+        // Проверяем, что оба аргумента являются числами и не являются NaN или INF
+        if (!is_numeric($userBalance) || is_nan($userBalance) || is_infinite($userBalance)) {
+            board::error('Некорректное значение баланса пользователя.');
+        }
+
+        if (!is_numeric($purchaseAmount) || is_nan($purchaseAmount) || is_infinite($purchaseAmount)) {
+            board::error('Некорректная стоимость покупки.');
+        }
+
+        // Проверяем, что баланс пользователя и стоимость покупки неотрицательны
+        if ($purchaseAmount < 0) {
+            board::error('Стоимость покупки должны быть неотрицательными числами.');
+        }
+
+        // Проверяем, что сумма денег на счету не меньше стоимости покупки
+        return $userBalance >= $purchaseAmount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDonate(): int|float
+    {
+        return floor($this->donate * 10) / 10;
+    }
+
+    /**
+     * @param int $donate
+     *
+     * @return userModel
+     */
+    public function setDonate(int $donate): userModel
+    {
+        $this->donate = $donate;
+
+        return $this;
+    }
+
+    /**
+     * Добавляет средства на счет пользователя.
+     *
+     * @param float|int $amount Сумма для добавления.
+     *
+     * @return \Ofey\Logan22\model\user\userModel Возвращает true, если операция успешна.
+     */
+    public function donateAdd(float|int $amount)
+    {
+        if ($amount < 0) {
+            board::error("Сумма должна быть положительным числом.");
+        }
+        $this->donate += round($amount, 1);
+        $this->donateUpdate();
+
+        return $this;
+    }
+
+    /**
+     * Обновляет баланс донатов пользователя в базе данных.
+     *
+     * @return bool Возвращает true, если обновление прошло успешно.
+     */
+    private function donateUpdate(): bool
+    {
+        try {
+            sql::run("UPDATE `users` SET `donate_point` = ? WHERE `id` = ?", [$this->donate, $this->getId()]);
+
+            return true;
+        } catch (Exception $e) {
+            board::error("Ошибка при обновлении средств: " . $e->getMessage());
+
+            return false;
+        }
+    }
+
+    /**
+     * Уменьшает средства на счету пользователя.
+     *
+     * @param float $amount Сумма для уменьшения.
+     *
+     * @return bool Возвращает true, если операция успешна и средств достаточно.
+     */
+    public function donateDeduct(float $amount): bool
+    {
+        if ($amount < 0) {
+            board::error(lang::get_phrase('The amount must be a positive number'));
+        }
+
+        if ($this->donate < $amount) {
+            return false;  // Недостаточно средств
+        }
+
+        $this->donate -= $amount;
+
+        return $this->donateUpdate();
+    }
+
+    public function getCountPlayers(): int
+    {
+        $allPlayerCount = 0;
+        foreach ($this->getAccounts() as $accounts) {
+            $allPlayerCount += count($accounts->getCharacters());
+        }
+        return $allPlayerCount;
+    }
+
+    /**
+     * @param null $account
      *
      * @return array|null|AccountModel[]
      */
@@ -263,27 +639,27 @@ class userModel
     public function getLoadAccounts($need_reload = false): ?array
     {
         $currentTime = time();
-        $needUpdate  = true;
+        $needUpdate = true;
 
-        if(server::get_count_servers()==0){
+        if (server::get_count_servers() == 0) {
             $this->accounts = [];
         }
         if ($this->getServerId() == null) {
             return null;
         }
-        if ( ! $this->isAuth()) {
+        if (!$this->isAuth()) {
             return null;
         }
         if ($this->accounts != null) {
             return $this->accounts;
         }
 
-        $accounts    = sql::getRows(
-          "SELECT `id`, `login`, `password`, `password_hide`, `email`, `ip`, `server_id`, `characters`, `date_update_characters` FROM `player_accounts` WHERE email = ? AND server_id = ?;",
-          [
-            $this->getEmail(),
-            $this->getServerId(),
-          ]
+        $accounts = sql::getRows(
+            "SELECT `id`, `login`, `password`, `password_hide`, `email`, `ip`, `server_id`, `characters`, `date_update_characters` FROM `player_accounts` WHERE email = ? AND server_id = ?;",
+            [
+                $this->getEmail(),
+                $this->getServerId(),
+            ]
         );
 
         if ($accounts) {
@@ -298,7 +674,7 @@ class userModel
                     break;
                 }
             }
-        }else{
+        } else {
             $needUpdate = true;
         }
         if ($need_reload) {
@@ -306,7 +682,7 @@ class userModel
         }
 
         //Если обновление не требуется, выводим данные ранее сохраненные
-        if ( ! $needUpdate) {
+        if (!$needUpdate) {
             $this->accounts = [];
             foreach ($accounts as $player) {
                 $account = new accountModel();
@@ -329,10 +705,10 @@ class userModel
 
 
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::ACCOUNT_PLAYERS, [
-          'forced' => $need_reload,
-          'email'  => $this->getEmail(),
+            'forced' => $need_reload,
+            'email' => $this->getEmail(),
         ])->show(false)->getResponse();
-        if (isset($sphere['error']) or ! $sphere) {
+        if (isset($sphere['error']) or !$sphere) {
             $_SESSION['last_update_accounts_list'] = $currentTime;
             $this->accounts[] = [];
             return [];
@@ -386,7 +762,6 @@ class userModel
         return $this->serverId ?? null;
     }
 
-
     public function setServerId(int $serverId): void
     {
         if (user::getUserId()->isAuth()) {
@@ -416,7 +791,7 @@ class userModel
     }
 
     /**
-     * @param   string  $email
+     * @param string $email
      *
      * @return userModel
      */
@@ -440,7 +815,7 @@ class userModel
     }
 
     /**
-     * @param   string  $password
+     * @param string $password
      *
      * @return userModel
      */
@@ -456,26 +831,24 @@ class userModel
     function saveAccounts()
     {
         sql::run('DELETE FROM `player_accounts` WHERE `email` = ? AND `server_id` = ?;', [
-          $this->getEmail(),
-          $this->getServerId(),
+            $this->getEmail(),
+            $this->getServerId(),
         ]);
 
         $sql = 'INSERT INTO `player_accounts` (`login`, `password`, `email`, `server_id`, `characters`, `date_update_characters`, `password_hide`) VALUES (?, ?, ?, ?, ?, ?, ?);';
         foreach ($this->account as $account) {
             //Удаление старых записей
             sql::run($sql, [
-              $account->getAccount(),
-              $account->getPassword(),
-              $this->getEmail(),
-              (int)$this->getServerId(),
-              json_encode($account->getCharactersArray()),
-              time::mysql(),
-              (int)$account->isPasswordHide(),
+                $account->getAccount(),
+                $account->getPassword(),
+                $this->getEmail(),
+                (int)$this->getServerId(),
+                json_encode($account->getCharactersArray()),
+                time::mysql(),
+                (int)$account->isPasswordHide(),
             ]);
         }
     }
-
-    //Запись в историю пожертвований
 
     /**
      * @return string
@@ -485,374 +858,10 @@ class userModel
         return $this->password;
     }
 
-    public function AddHistoryDonate(
-      float|int $amount,
-      $message = "За Пожертвование",
-      $pay_system = "sphereBonus",
-      $id_admin_pay = null
-    ): void {
-        $isSphereSystem = in_array($pay_system, ["sphereBonus", "cumulativeBonus", "oneTimeBonus"]) ? 1 : 0;
-
-        sql::run(
-          "INSERT INTO `donate_history_pay` (`user_id`, `point`, `message`, `pay_system`, `id_admin_pay`, `date`, `sphere`) VALUES (?, ?, ?, ?, ?, ?, ?)",
-          [
-            $this->getId(),
-            ceil($amount),
-            $message,
-            $pay_system,
-            $id_admin_pay,
-            time::mysql(),
-            $isSphereSystem, //Означает что это зачисление от sphere
-          ]
-        );
-    }
-
-    /** Возвращает историю пожертвваний */
-    public function getHistoryDonate($getPoint = false)
-    {
-        if ($getPoint) {
-            $point = sql::getRow(
-              "SELECT SUM(donate_history_pay.point) AS `point` FROM donate_history_pay WHERE sphere = 0 AND user_id = ?;",
-              [$this->getId()]
-            );
-            if ($point) {
-                return $point['point'];
-            }
-
-            return 0;
-        }
-
-        return sql::getRows("SELECT * FROM `donate_history_pay` WHERE user_id = ?", [$this->getId()]);
-    }
-
-    public function isPlayer($playerName): characterModel|false
-    {
-        if ($this->accounts === null) {
-            return false;
-        }
-        foreach ($this->accounts as $players) {
-            foreach ($players->getCharacters() as $player) {
-                if ($player->getPlayerName() == $playerName) {
-                    return $player;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    public function getPlayerCount(): int
-    {
-        return $this->accounts ? count($this->accounts) : 0;
-    }
-
-    public function __toString(): string
-    {
-        return "Нет выбранного у метода: Список доступных методов в <src/model/user/userModel.php>";
-    }
-
-    public function countWarehouseItems(): int
-    {
-        if ( ! $this->isAuth) {
-            return 0;
-        }
-        if ($this->countWarehouseItems === null) {
-            return count($this->getWarehouse());
-        }
-
-        return $this->countWarehouseItems;
-    }
-
-    /**
-     * @return warehouse[]
-     */
-    public function getWarehouse($reload = false): mixed
-    {
-        if ($reload) {
-            return $this->warehouse();
-        }
-
-        return $this->warehouse;
-    }
-
-    /**
-     * @param   mixed  $warehouse
-     */
-    public function setWarehouse($warehouse): void
-    {
-        $this->warehouse = $warehouse;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param   string|null  $name
-     *
-     * @return userModel
-     */
-    public function setName(?string $name): userModel
-    {
-        sql::run("UPDATE `users` SET `name` = ? WHERE `id` = ?", [$name, $this->getId()]);
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSignature(): ?string
-    {
-        return $this->signature;
-    }
-
-    /**
-     * @param   string|null  $signature
-     *
-     * @return userModel
-     */
-    public function setSignature(?string $signature): userModel
-    {
-        $this->signature = $signature;
-
-        return $this;
-    }
-
-    /**
-     * @param   string|null  $accessLevel
-     *
-     * @return userModel
-     */
-    public function setAccessLevel(?string $accessLevel): userModel
-    {
-        $this->accessLevel = $accessLevel;
-
-        return $this;
-    }
-
-    /**
-     * @param   string|null  $avatar
-     *
-     * @return userModel
-     */
-    public function setAvatar(?string $avatar): userModel
-    {
-        sql::run('UPDATE `users` SET `avatar` = ? WHERE `id` = ?', [
-          $avatar,
-          $this->getId(),
-        ]);
-        $this->avatar = $avatar;
-
-        return $this;
-    }
-
-    /**
-     * @param   string|null  $timezone
-     *
-     * @return userModel
-     */
-    public function setTimezone(?string $timezone): userModel
-    {
-        sql::run("UPDATE `users` SET `timezone` = ? WHERE `id` = ?", [$timezone, $this->getId()]);
-        $this->timezone = $timezone;
-
-        return $this;
-    }
-
-    /**
-     * @param   string|null  $country
-     *
-     * @return userModel
-     */
-    public function setCountry(?string $country): userModel
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
-    /**
-     * @param   string|null  $city
-     *
-     * @return userModel
-     */
-    public function setCity(?string $city): userModel
-    {
-        $this->city = $city;
-
-        return $this;
-    }
-
-    /**
-     * @return DateTime|null
-     */
-    public function getDateCreate(): string
-    {
-        return $this->dateCreate->format('Y-m-d H:i:s');
-    }
-
-    /**
-     * @param   DateTime|null  $dateCreate
-     *
-     * @return userModel
-     */
-    public function setDateCreate(?DateTime $dateCreate): userModel
-    {
-        $this->dateCreate = $dateCreate;
-
-        return $this;
-    }
-
-    /**
-     * @return DateTime|null
-     */
-    public function getDateUpdate(): ?DateTime
-    {
-        return $this->dateUpdate;
-    }
-
-    /**
-     * @param   DateTime|null  $dateUpdate
-     *
-     * @return userModel
-     */
-    public function setDateUpdate(?DateTime $dateUpdate): userModel
-    {
-        $this->dateUpdate = $dateUpdate;
-
-        return $this;
-    }
-
-    /**
-     * Проверяет, достаточно ли денег у пользователя для совершения покупки.
-     *
-     * @param   float|int  $purchaseAmount  Стоимость покупки.
-     *
-     * @return bool Возвращает true, если средств достаточно, иначе false.
-     */
-    public function canAffordPurchase(float|int $purchaseAmount): bool
-    {
-        $userBalance = self::getDonate();
-
-        if ($userBalance <= 0) {
-            board::error("Вы не можете совершать покупки если у Вас на счету 0");
-        }
-
-        // Проверяем, что оба аргумента являются числами и не являются NaN или INF
-        if ( ! is_numeric($userBalance) || is_nan($userBalance) || is_infinite($userBalance)) {
-            board::error('Некорректное значение баланса пользователя.');
-        }
-
-        if ( ! is_numeric($purchaseAmount) || is_nan($purchaseAmount) || is_infinite($purchaseAmount)) {
-            board::error('Некорректная стоимость покупки.');
-        }
-
-        // Проверяем, что баланс пользователя и стоимость покупки неотрицательны
-        if ($purchaseAmount < 0) {
-            board::error('Стоимость покупки должны быть неотрицательными числами.');
-        }
-
-        // Проверяем, что сумма денег на счету не меньше стоимости покупки
-        return $userBalance >= $purchaseAmount;
-    }
-
-    /**
-     * @return int
-     */
-    public function getDonate(): int|float
-    {
-        return floor($this->donate * 10) / 10;
-    }
-
-    /**
-     * @param   int  $donate
-     *
-     * @return userModel
-     */
-    public function setDonate(int $donate): userModel
-    {
-        $this->donate = $donate;
-
-        return $this;
-    }
-
-    /**
-     * Добавляет средства на счет пользователя.
-     *
-     * @param   float|int  $amount  Сумма для добавления.
-     *
-     * @return \Ofey\Logan22\model\user\userModel Возвращает true, если операция успешна.
-     */
-    public function donateAdd(float|int $amount)
-    {
-        if ($amount < 0) {
-            board::error("Сумма должна быть положительным числом.");
-        }
-        $this->donate += round($amount, 1);
-        $this->donateUpdate();
-
-        return $this;
-    }
-
-    /**
-     * Обновляет баланс донатов пользователя в базе данных.
-     *
-     * @return bool Возвращает true, если обновление прошло успешно.
-     */
-    private function donateUpdate(): bool
-    {
-        try {
-            sql::run("UPDATE `users` SET `donate_point` = ? WHERE `id` = ?", [$this->donate, $this->getId()]);
-
-            return true;
-        } catch (Exception $e) {
-            board::error("Ошибка при обновлении средств: " . $e->getMessage());
-
-            return false;
-        }
-    }
-
-    /**
-     * Уменьшает средства на счету пользователя.
-     *
-     * @param   float  $amount  Сумма для уменьшения.
-     *
-     * @return bool Возвращает true, если операция успешна и средств достаточно.
-     */
-    public function donateDeduct(float $amount): bool
-    {
-        if ($amount < 0) {
-            board::error(lang::get_phrase('The amount must be a positive number'));
-        }
-
-        if ($this->donate < $amount) {
-            return false;  // Недостаточно средств
-        }
-
-        $this->donate -= $amount;
-
-        return $this->donateUpdate();
-    }
-
-    public function getCountPlayers(): int
-    {
-        $allPlayerCount = 0;
-        foreach ($this->getAccounts() AS $accounts){
-            $allPlayerCount += count($accounts->getCharacters());
-        }
-        return $allPlayerCount;
-    }
-
     public function addLog(logTypes $type, $phrase, $variables = []): void
     {
         $variables = json_encode($variables);
-        $request   = $_REQUEST;
+        $request = $_REQUEST;
 
         if (isset($_REQUEST['g-recaptcha-response'])) {
             $request['g-recaptcha-response'] = '_REMOVED_';
@@ -865,49 +874,50 @@ class userModel
         }
 
         $request = json_encode($_REQUEST);
-        $method  = $_SERVER['REQUEST_METHOD'];
-        $action  = $_SERVER['REQUEST_URI'];
-        $trace   = debug_backtrace()[0];
-        $file    = $trace['file'];
-        $line    = $trace['line'];
+        $method = $_SERVER['REQUEST_METHOD'];
+        $action = $_SERVER['REQUEST_URI'];
+        $trace = debug_backtrace()[0];
+        $file = $trace['file'];
+        $line = $trace['line'];
         sql::run(
-          "INSERT INTO `logs_all` (`user_id`, `time`, `type`, `phrase`, `variables`, `server_id`, `request`, `method`, `action`, `file`, `line`) VALUES
+            "INSERT INTO `logs_all` (`user_id`, `time`, `type`, `phrase`, `variables`, `server_id`, `request`, `method`, `action`, `file`, `line`) VALUES
                         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-          [$this->getId(), time::mysql(), $type->value, $phrase, $variables, $this->getServerId(), $request, $method, $action, $file, $line]
+            [$this->getId(), time::mysql(), $type->value, $phrase, $variables, $this->getServerId(), $request, $method, $action, $file, $line]
         );
     }
 
     /**
      * Добавить предмето пользователю в склад
      *
-     * @param   int|string  $server_id
-     * @param   int|string  $item_id
-     * @param   int|string  $count
-     * @param   int|string  $enchant
-     * @param   string|int  $phrase
+     * @param int|string $server_id
+     * @param int|string $item_id
+     * @param int|string $count
+     * @param int|string $enchant
+     * @param string|int $phrase
      *
      * @return array
      * @throws \Exception
      */
     public function addToWarehouse(
-      int|string $server_id = 0,
-      int|string $item_id = 0,
-      int|string $count = 0,
-      int|string $enchant = 0,
-      string|int $phrase = 'none'
-    ): array {
+        int|string $server_id = 0,
+        int|string $item_id = 0,
+        int|string $count = 0,
+        int|string $enchant = 0,
+        string|int $phrase = 'none'
+    ): array
+    {
         if ($server_id == 0) {
             $server_id = $this->serverId();
         }
         $stmt = sql::run(
-          "INSERT INTO `warehouse` (`user_id`, `server_id`, `item_id`, `count`, `enchant`, `phrase`) VALUES (?, ?, ?, ?, ?, ?)", [
-            $this->getId(),
-            $server_id,
-            $item_id,
-            $count,
-            $enchant,
-            $phrase,
-          ]
+            "INSERT INTO `warehouse` (`user_id`, `server_id`, `item_id`, `count`, `enchant`, `phrase`) VALUES (?, ?, ?, ?, ?, ?)", [
+                $this->getId(),
+                $server_id,
+                $item_id,
+                $count,
+                $enchant,
+                $phrase,
+            ]
         );
         if ($stmt instanceof PDOStatement) {
             return ['success' => true, 'errorInfo' => null];
@@ -933,7 +943,7 @@ class userModel
     {
         $warehouseItems = array_map(fn($item) => $item->getId(), user::self()->getWarehouse());
         foreach ($objectItems as $itemId) {
-            if ( ! in_array($itemId, $warehouseItems)) {
+            if (!in_array($itemId, $warehouseItems)) {
                 return false;
             }
         }
@@ -956,9 +966,9 @@ class userModel
         sql::transaction(function () use ($playerName, $objectItems, &$isSend) {
             foreach (user::self()->getWarehouse() as $warehouse) {
                 if (in_array($warehouse->getId(), $objectItems)) {
-                    $itemId   = $warehouse->getItemId();
-                    $count    = $warehouse->getCount();
-                    $enchant  = $warehouse->getEnchant();
+                    $itemId = $warehouse->getItemId();
+                    $count = $warehouse->getCount();
+                    $enchant = $warehouse->getEnchant();
                     $serverId = $warehouse->getServerId();
                     userlog::add("inventory_to_game", 542, [$itemId, $count, $enchant, $playerName]);
                     $this->addToInventoryPlayer($serverId, $itemId, $count, $enchant, $playerName);
@@ -991,7 +1001,7 @@ class userModel
      * Удаление предметов из склада.
      * Удалить можно по ID или массиву ID объектов
      *
-     * @param   int|array  $objectId
+     * @param int|array $objectId
      *
      * @return void
      * @throws \Exception
@@ -1041,16 +1051,16 @@ class userModel
         }
 
         sql::run('DELETE FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?', [
-          $server,
-          $this->getId(),
-          $name,
+            $server,
+            $this->getId(),
+            $name,
         ]);
 
         return sql::run('INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)', [
-          $server,
-          $this->getId(),
-          $name,
-          $data,
+            $server,
+            $this->getId(),
+            $name,
+            $data,
         ]);
     }
 
@@ -1058,27 +1068,27 @@ class userModel
     {
         if ($serverId !== null) {
             return sql::getRow('SELECT `val` FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?', [
-              $serverId,
-              $this->getId(),
-              $name,
+                $serverId,
+                $this->getId(),
+                $name,
             ]);
         }
 
         return sql::getRow('SELECT `val` FROM `user_variables` WHERE `user_id` = ? AND `var` = ?', [
-          $this->getId(),
-          $name,
+            $this->getId(),
+            $name,
         ]);
     }
 
     public function toArray(): array
     {
-        $obj             = get_object_vars($this);
-        $obj['avatar']   = $this->getAvatar();
+        $obj = get_object_vars($this);
+        $obj['avatar'] = $this->getAvatar();
         $obj['timezone'] = $this->getTimezone();
-        $obj['country']  = $this->getCountry();
-        $obj['city']     = $this->getCity();
+        $obj['country'] = $this->getCountry();
+        $obj['city'] = $this->getCity();
         $obj['serverId'] = $this->getServerId();
-        $obj['lang']     = $this->getLang();
+        $obj['lang'] = $this->getLang();
 
         return $obj;
     }
@@ -1163,10 +1173,10 @@ class userModel
                 $json = json_encode($characters);
             }
             sql::run("UPDATE `player_accounts` SET `characters` = ? , `date_update_characters` = ? WHERE `login` = ? AND `server_id` = ?", [
-              $json,
-              time::mysql(),
-              $login,
-              $this->getServerId(),
+                $json,
+                time::mysql(),
+                $login,
+                $this->getServerId(),
             ]);
         }
     }
@@ -1175,16 +1185,16 @@ class userModel
     {
         // Удаление старой записи
         sql::run('DELETE FROM `user_players` WHERE `user_id` = ? AND `server_id` = ?;', [
-          $this->getId(),
-          $this->getServerId(),
+            $this->getId(),
+            $this->getServerId(),
         ]);
 
         $sql = 'INSERT INTO `user_players` (`user_id`, `server_id`, `players`, `date`) VALUES (?, ?, ?, ?);';
         sql::run($sql, [
-          $this->getId(),
-          $this->getServerId(),
-          json_encode($this->objectToArray($players), JSON_UNESCAPED_UNICODE),
-          time::mysql(),
+            $this->getId(),
+            $this->getServerId(),
+            json_encode($this->objectToArray($players), JSON_UNESCAPED_UNICODE),
+            time::mysql(),
         ]);
     }
 

@@ -87,8 +87,8 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
 
     function webhook(): void
     {
-        $jsonTxt     = file_get_contents('php://input');
-        $requestData = json_decode($jsonTxt, true);
+        $input     = file_get_contents('php://input');
+        $requestData = json_decode($input, true);
         file_put_contents(__DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r($requestData, true) . PHP_EOL, FILE_APPEND);
 
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
@@ -101,13 +101,14 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
 
         //Проверяем подпись
         if (!$this->checkSignature($signatureValue, $amount, $invId)){
-            file_put_contents(__DIR__ . '/error_checksumm.log', '_REQUEST: ' . print_r($invId, true) . PHP_EOL, FILE_APPEND);
+            echo 'checksum error';exit;
+//            file_put_contents(__DIR__ . '/error_checksumm.log', '_REQUEST: ' . print_r($invId, true) . PHP_EOL, FILE_APPEND);
         }
 
         $amount   = donate::currency($amount, $currencyIn);
 
         \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['OutSum'], $currencyIn, get_called_class()]);
-        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Пожертвование Palych", get_called_class());
+        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, message: null, pay_system:  get_called_class(), input: $input);
         donate::addUserBonus($user_id, $amount);
         echo 'YES';
 

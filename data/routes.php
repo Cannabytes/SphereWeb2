@@ -1728,7 +1728,7 @@ return array (
     'enable' => true,
     'method' => 'POST',
     'pattern' => '/response/request',
-    'func' => 'component\\request\\response::get',
+    'func' => 'component\\cron\\arrival::receiving',
     'access' => 
     array (
       0 => 'any',

@@ -76,6 +76,7 @@ enum type
     case DELETE_DATABASE;
     case CONNECTION_QUALITY_DATABASE;
     case PORT_QUALITY_DATABASE;
+    case DONATE_STATISTIC;
 
     case GET_GAME_SERVERS; //DEPRECATED
     case GET_LOGIN_SERVERS; //DEPRECATED
@@ -160,6 +161,7 @@ enum type
             self::LAUNCHER_UPDATE_TIME => '/api/launcher/update/time',
 
             self::SPHERE_DONATE => "/api/donate",
+            self::DONATE_STATISTIC => "/api/statistic/server/donate",
 
             self::CREATE_SUPER_USER_EMAIL_CHECK => "/api/user/global/add/email/check",
             self::AUTH_SUPER_USER => "/api/user/global/auth",

@@ -3,6 +3,7 @@
 
 namespace Ofey\Logan22\model\config;
 
+use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
 
 class other
@@ -141,6 +142,48 @@ class other
     public function getContactAdmin(): string
     {
         return $this->contactAdmin;
+    }
+
+    public function save(): void
+    {
+        $data = json_encode([
+            'saveOpenPassword' => $this->openPassword,
+            'isL2Cursor' => $this->isL2Cursor,
+            'isExchangeRates' => $this->isExchangeRates,
+            'exchangeRates' => $this->exchangeRates,
+            'enableTechnicalWork' => $this->enableTechnicalWork,
+            'saveStatisticData' => $this->saveStatisticData,
+            'isAuthShow' => $this->isAuthShow,
+            'allTitlePage' => $this->allTitlePage,
+            'onlinemul' => $this->onlineMul,
+            'timeoutSaveStatistic' => $this->timeoutSaveStatistic,
+            'timezone' => $this->timezone,
+            'messageTechnicalWork' => $this->messageTechnicalWork,
+            'keywords' => $this->keywords,
+            'linkMainPage' => $this->linkMainPage,
+            'max_account' => $this->maxAccount,
+            'contactAdmin' => $this->contactAdmin,
+        ]);
+
+        sql::sql("DELETE FROM `settings` WHERE `key` = ? AND serverId = ? ", [
+            '__config_other__',
+            0,
+        ]);
+
+        sql::run(
+            "INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES (?, ?, ?, ?)",
+            [
+                '__config_other__',
+                html_entity_decode($data),
+                0,
+                time::mysql(),
+            ]
+        );
+    }
+
+    public function setRates($rates): void
+    {
+        $this->exchangeRates = $rates;
     }
 
 }
