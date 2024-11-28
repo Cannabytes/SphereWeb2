@@ -79,6 +79,11 @@ function showButtonStartGame() {
   }
   if (Array.isArray(application)) {
     application.forEach((element) => {
+      if (userLang == 'ru') {
+        button_start = element.button_start_ru
+      }else {
+        button_start = element.button_start_en
+      }
       const desc = element.description ? " - " + element.description : "";
       const htmlButton = `<div class="startL2 col-sm-6 col-xl-${col}" data-exe="${element.l2exe}" data-args="${element.args}">
               <div style="background-image: url('/${element.background}');" class="alert alert-img alert-info alert-dismissible fase show flex-wrap" role="button">
