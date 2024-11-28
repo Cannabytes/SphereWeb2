@@ -30,8 +30,6 @@ class dsys
         // Проверка на существование класса в массиве
         if (isset(self::$classArray[$name])) {
             return clone self::$classArray[$name]; // Возвращаем клон объекта
-        } else {
-            throw new \Exception("Класс с именем {$name} не найден в массиве.");
         }
     }
 }
