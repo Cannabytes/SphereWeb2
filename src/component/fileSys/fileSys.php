@@ -71,18 +71,47 @@ class fileSys {
      */
     public static function get_dir_files(string $dir, array $options = []): array|string|int|false {
         $options += [
-            'basename'        => false,
-            'suffix'          => '',
+            'basename' => false,
+            'suffix' => '',
             'include_folders' => false,
-            'recursive'       => false,
-            'sort'            => false,
-            'fetchAll'        => false,
+            'recursive' => false,
+            'sort' => false,
+            'fetchAll' => false,
+            'only_non_empty_folders' => false,
         ];
+
         $dir = trim($dir, "/\\");
         $files = glob("$dir/{,.}[!.,!..]*", GLOB_BRACE);
+
+        // Фильтруем пустые папки, если включена соответствующая опция
+        if ($options['only_non_empty_folders']) {
+            $files = array_filter($files, function($file) {
+                if (is_dir($file)) {
+                    $dir_contents = scandir($file);
+                    $dir_contents = array_diff($dir_contents, ['.', '..']);
+                    return !empty($dir_contents);
+                }
+                return true; // оставляем все файлы
+            });
+        }
+
         if($options['recursive']) {
             $files = array_reduce($files, function($acc, $file) use ($options) {
-                return is_dir($file) && $options['include_folders'] ? array_merge($acc, static::get_dir_files($file, $options)) : array_merge($acc, [$file]);
+                if (is_dir($file)) {
+                    if ($options['include_folders']) {
+                        $subfiles = static::get_dir_files($file, $options);
+                        if (!empty($subfiles)) {
+                            if ($options['only_non_empty_folders']) {
+                                return array_merge($acc, [$file], (array)$subfiles);
+                            } else {
+                                return array_merge($acc, static::get_dir_files($file, $options));
+                            }
+                        }
+                        return $acc;
+                    }
+                    return $acc;
+                }
+                return array_merge($acc, [$file]);
             }, []);
         }
 
@@ -104,6 +133,7 @@ class fileSys {
 
         return $options['fetchAll'] ? $files : reset($files);
     }
+
 
     /**
      * Функция проверка отсчета времени

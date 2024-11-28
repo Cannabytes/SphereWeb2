@@ -121,7 +121,12 @@ class donate
                 $all_donate_system = fileSys::get_dir_files("src/component/donate", [
                     'basename' => true,
                     'fetchAll' => true,
+                    'only_non_empty_folders' => true,
                 ]);
+                $key = array_search("monobank", $all_donate_system);
+                if ($key !== false) {
+                    unset($all_donate_system[$key]);
+                }
                 $donateSysNames = [];
                 foreach ($all_donate_system as $system) {
                     if (!$system::isEnable()) {
@@ -175,13 +180,13 @@ class donate
         $all_donate_system = fileSys::get_dir_files("src/component/donate", [
             'basename' => true,
             'fetchAll' => true,
+            'only_non_empty_folders' => true,
         ]);
-
-        $donateSysNames = [];
         $key = array_search("monobank", $all_donate_system);
         if ($key !== false) {
             unset($all_donate_system[$key]);
         }
+        $donateSysNames = [];
         foreach ($all_donate_system as $systemName) {
             $system = dsys::getClone($systemName);
             if (!$system::isEnable()) {

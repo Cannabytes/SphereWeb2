@@ -12,7 +12,12 @@ class dsys
         $all_donate_system = fileSys::get_dir_files("src/component/donate", [
             'basename' => true,
             'fetchAll' => true,
+            'only_non_empty_folders' => true,
         ]);
+        $key = array_search("monobank", $all_donate_system);
+        if ($key !== false) {
+            unset($all_donate_system[$key]);
+        }
 
         foreach ($all_donate_system as $system) {
             $routePath = "src/component/donate/{$system}/pay.php";
