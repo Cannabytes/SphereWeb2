@@ -361,7 +361,7 @@
                 }
                 selectBonusPanel();
                 updateCurrencyValues()
-            }, 4);
+            }, 50);
         }).on("mouseup mouseleave", function () {
             clearInterval(deincrementTimer);
             updateCurrencyValues()
@@ -386,7 +386,7 @@
                 }
                 selectBonusPanel();
                 updateCurrencyValues();
-            }, 4);
+            }, 50);
         }).on("mouseup mouseleave", function () {
             clearInterval(incrementTimer);
             updateCurrencyValues(); // Обновление значений валюты при остановке
