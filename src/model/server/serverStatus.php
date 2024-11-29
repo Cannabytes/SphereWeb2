@@ -112,6 +112,9 @@ class serverStatus
                 }
             }
         }
+        if(!$this->gameServer and $online >= 1){
+            $this->gameServer = true;
+        }
         return (int)(config::load()->other()->getOnlineMul() * $online);
     }
 

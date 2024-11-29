@@ -382,5 +382,76 @@
             leader_bonus_items: leader_bonus_items,
         }, false);
     });
+
+    $('#item_add_to_leader').click(function () {
+        let itemId = $('#item_id_ref_bonus_leader').val();
+        let count = $('#count_ref_bonus_leader').val();
+        let enchant = $('#enchant_ref_bonus_leader').val();
+
+        AjaxSend('/admin/client/item/info', 'POST', { 'itemID': itemId }, true).then(function (response) {
+                let icon = response.item.icon;
+                let name = response.item.itemName;
+
+                if (response.item.addName) {
+                    name = response.item.addName + ' ' + name;
+                }
+
+                if (enchant > 0) {
+                    name = ' +' + enchant + ' ' + name;
+                }
+
+                let newRow = '<tr data-item-id="' + itemId + '" data-count="' + count + '" data-enchant="' + enchant + '">' +
+                    '<th scope="row"><span class="avatar avatar-sm"><img src="' + icon + '" alt="img"></span> (ID: ' + itemId + ') ' + name + '</td>' +
+                    '<td>' + count + '</td>' +
+                    '<td>' +
+                    '<div class="hstack gap-2 flex-wrap">' +
+                    '<a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line deleteItem"></i></a>' +
+                    ' </div>' +
+                    '</td>' +
+                    '</tr>';
+                $('.bonus_ref_leader_table tbody').append(newRow);
+
+            },
+        );
+    });
+
+
+    $('#item_add_to_slave').click(function () {
+        let itemId = $('#item_id_ref_bonus_slave').val();
+        let count = $('#count_ref_bonus_slave').val();
+        let enchant = $('#enchant_ref_bonus_slave').val();
+
+        AjaxSend('/admin/client/item/info', 'POST', { 'itemID': itemId }, true).then(function (response) {
+                let icon = response.item.icon;
+                let name = response.item.itemName;
+
+                if (response.item.addName) {
+                    name = response.item.addName + ' ' + name;
+                }
+
+                if (enchant > 0) {
+                    name = ' +' + enchant + ' ' + name;
+                }
+
+                let newRow = '<tr data-item-id="' + itemId + '" data-count="' + count + '" data-enchant="' + enchant + '">' +
+                    '<th scope="row"><span class="avatar avatar-sm"><img src="' + icon + '" alt="img"></span> (ID: ' + itemId + ') ' + name + '</td>' +
+                    '<td>' + count + '</td>' +
+                    '<td>' +
+                    '<div class="hstack gap-2 flex-wrap">' +
+                    '<a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line deleteItem"></i></a>' +
+                    ' </div>' +
+                    '</td>' +
+                    '</tr>';
+                $('.bonus_ref_slave_table tbody').append(newRow);
+
+            },
+        );
+    });
+
+    $(document).on('click', '.deleteItem', function () {
+        $(this).closest('tr').remove();
+    });
+
+
 </script>
 {% endblock %}
