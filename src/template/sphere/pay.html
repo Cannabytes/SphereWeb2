@@ -321,7 +321,8 @@
             this.value = this.value.replace(/[^0-9]/g, '');
 
             var value = this.value === '' ? '' : parseInt(this.value);
-            var min = parseInt(this.getAttribute('min'));
+            // var min = parseInt(this.getAttribute('min'));
+            var min = 1;
             var max = parseInt(this.getAttribute('max'));
 
             // Проверяем, если значение пустое, оставляем его пустым
