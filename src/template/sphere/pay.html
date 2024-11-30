@@ -347,7 +347,7 @@
         $("#product-quantity-minus").on("mousedown", function () {
             deincrementTimer = setInterval(function () {
                 var currentValue = parseInt($('#numberOfCoinsPurchased').val());
-                var min = parseInt($('#numberOfCoinsPurchased').attr('min'));
+                var min = 1;
                 if (!isNaN(currentValue)) {
                     var newValue = currentValue - 1;
                     if (newValue >= min) {
