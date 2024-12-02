@@ -155,7 +155,6 @@ class sql
      */
     public static function run($query, $args = [])
     {
-//        file_put_contents("query.txt", $query . "\n", FILE_APPEND);
         if (self::connect() === null) {
             board::alert([
               'type'     => 'notice',
@@ -183,7 +182,7 @@ class sql
             file_put_contents("sql_error_log.txt", $e->getMessage() . "\n", FILE_APPEND);
             self::$error     = true;
             self::$exception = $e;
-            throw $e;
+            return $e;
         }
     }
 
