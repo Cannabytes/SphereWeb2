@@ -239,7 +239,7 @@
       <div class="card-header justify-content-between">
         <div class="d-flex align-items-center w-100">
           <div class="card-title">
-            <div class="fs-15 fw-semibold">Отслеживание кол-во предметов</div>
+            <div class="fs-15 fw-semibold">{{ phrase('Tracking the number of items') }}</div>
           </div>
           <div class="ms-auto prism-toggle">
             {% if info.isActiveTopFarmStats %}
@@ -251,10 +251,10 @@
         </div>
       </div>
         <div class="card-body">
-          Плагин с сбора кол-ва N предметов и ТОП их владельцев, вывод информации в графике.
+          {{ phrase('Plugin for collecting top farm') }}
 
           <div class="col-xl-12 mt-2">
-            <label for="itemsIncreaseMonths" class="form-label">На сколько месяцев продлить сбор инфы?</label>
+            <label for="itemsIncreaseMonths" class="form-label">{{ phrase('For how many months should the collection of information on the number of items be extended') }}</label>
             <select class="form-control" name="itemsIncreaseMonths" id="itemsIncreaseMonths">
               <option value="1">1 {{ phrase('month') }} / $3 </option>
               <option value="2">2 {{ phrase('months') }} / $5.6 </option>
