@@ -2,7 +2,6 @@
 
 namespace Ofey\Logan22\component\plugins\items_increase;
 
-use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
@@ -12,20 +11,6 @@ use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\template\tpl;
 use PDOException;
-
-enum MyCustomType
-{
-    case CUSTOM_ACTION;
-    case ANOTHER_ACTION;
-
-    static function url(MyCustomType $type): string
-    {
-        return match ($type) {
-            self::CUSTOM_ACTION => '/api/custom/action',
-            self::ANOTHER_ACTION => '/api/another/action',
-        };
-    }
-}
 
 class items_increase
 {
@@ -68,6 +53,22 @@ class items_increase
         tpl::displayPlugin("/items_increase/tpl/show.html");
     }
 
+    public function getItems($serverId, $count = 10080): array
+    {
+        validation::user_protection("admin");
+        $result = sql::run("SELECT `id`, `date`, `itemId`, `data` FROM `items_increase` WHERE server_id = ? LIMIT ?", [
+            $serverId,
+            $count
+        ]);
+        if ($result instanceof PDOException) {
+            if ($result->getCode() == "42S02") {
+                $this->sqlInstall();
+            }
+            return [];
+        }
+        return $result->fetchAll();
+    }
+
     private function sqlInstall()
     {
         return sql::run("CREATE TABLE IF NOT EXISTS `items_increase` (
@@ -82,22 +83,6 @@ class items_increase
           CHARACTER SET = utf8mb4 
           COLLATE = utf8mb4_general_ci 
           ROW_FORMAT = Dynamic;");
-    }
-
-    public function getItems($serverId, $count = 10080): array
-    {
-        validation::user_protection("admin");
-        $result = sql::run("SELECT `id`, `date`, `itemId`, `data` FROM `items_increase` WHERE server_id = ? LIMIT ?", [
-            $serverId,
-            $count
-        ]);
-        if ($result instanceof PDOException) {
-            if($result->getCode()=="42S02"){
-                $this->sqlInstall();
-            }
-            return [];
-        }
-        return $result->fetchAll();
     }
 
     public function addItem(): void
@@ -128,48 +113,43 @@ class items_increase
     public function pay()
     {
         $months = $_POST['months'] ?? 1;
-        $data = \Ofey\Logan22\component\sphere\server::send(type::ITEM_INCREASE_PAY, ['months'=>$months])->getResponse();
-        if(isset($data['type']) AND $data['type']=='success'){
+        $data = \Ofey\Logan22\component\sphere\server::send(type::ITEM_INCREASE_PAY, ['months' => $months])->getResponse();
+        if (isset($data['type']) and $data['type'] == 'success') {
             board::reload();
-            board::success('Использование плагина продлено на '.$months.' месяцев');
-        }else{
+            board::success('Использование плагина продлено на ' . $months . ' месяцев');
+        } else {
             board::error($data['message']);
         }
     }
 
     public function save()
     {
-        try {
-            $jsonData = file_get_contents('php://input');
-            $data = json_decode($jsonData, true);
+        $jsonData = file_get_contents('php://input');
+        $data = json_decode($jsonData, true);
 
-            $token = $data['token'] ?? "";
-            if (!config::isToken($token)) {
-                return;
-            }
+        $token = $data['token'] ?? "";
+        if (!config::isToken($token)) {
+            return;
+        }
 
-            $server_id = $data['server_id'] ?? null;
-            if (!$server_id || !isset($data['items'])) {
-                return;
-            }
+        $server_id = $data['server_id'] ?? null;
+        if (!$server_id || !isset($data['items'])) {
+            return;
+        }
 
-            foreach ($data['items'] as $item) {
-                try {
-                    $result = sql::run("INSERT INTO `items_increase` (`date`, `itemId`, `data`, `server_id`) VALUES (?, ?, ?, ?)", [
-                        time::mysql(),
-                        $item['itemId'] ?? 0,
-                        json_encode($item['item'] ?? []),
-                        $server_id,
-                    ]);
-                } catch (PDOException $e) {
-                    if ($e->getCode() == "42S02") {
-                        $this->sqlInstall();
-                    }
-                    break;
+        foreach ($data['items'] as $item) {
+            $result = sql::run("INSERT INTO `items_increase` (`date`, `itemId`, `data`, `server_id`) VALUES (?, ?, ?, ?)", [
+                time::mysql(),
+                $item['itemId'] ?? 0,
+                json_encode($item['item'] ?? []),
+                $server_id,
+            ]);
+            if ($result instanceof PDOException) {
+                if ($result->getCode() == "42S02") {
+                    $this->sqlInstall();
                 }
+                break;
             }
-        } catch (Exception $e) {
-            file_put_contents("error_log.txt", $e->getMessage(), FILE_APPEND);
         }
     }
 
