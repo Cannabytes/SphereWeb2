@@ -486,11 +486,18 @@ class donateSystem
         $this->name = $name;
         $this->description = $description;
         $this->forAdmin = filter_var($forAdmin, FILTER_VALIDATE_BOOLEAN);
+
+        $this->webhookUrl = $webhookUrl;
+        $this->sortValue = $sort;
+
+        if (!is_array($inputs) && !is_object($inputs)) {
+            return;
+        }
+
         foreach ($inputs as $name => $value) {
             $this->inputs[$name] = $value;
         }
-        $this->webhookUrl = $webhookUrl;
-        $this->sortValue = $sort;
+
     }
 
     public function getSortValue(): int
