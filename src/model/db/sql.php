@@ -180,10 +180,10 @@ class sql
 
             return $stmt;
         } catch (PDOException $e) {
+            file_put_contents("sql_error_log.txt", $e->getMessage() . "\n", FILE_APPEND);
             self::$error     = true;
             self::$exception = $e;
-
-            return $e;
+            throw $e;
         }
     }
 

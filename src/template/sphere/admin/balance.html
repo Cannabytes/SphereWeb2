@@ -233,9 +233,57 @@
         </div>
       </div>
       </div>
-    </div>
 
+    <div class="col-xl-4">
+      <div class="card custom-card">
+      <div class="card-header justify-content-between">
+        <div class="d-flex align-items-center w-100">
+          <div class="card-title">
+            <div class="fs-15 fw-semibold">Отслеживание кол-во предметов</div>
+          </div>
+          <div class="ms-auto prism-toggle">
+            {% if info.isActiveTopFarmStats %}
+              <span class="text-success">{{info.topFarmStats|date('d.m.Y H:i', getUser().getTimezone())}}</span>
+            {% else %}
+              <span class="text-danger">{{ phrase('not_active') }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+        <div class="card-body">
+          Плагин с сбора кол-ва N предметов и ТОП их владельцев, вывод информации в графике.
 
+          <div class="col-xl-12 mt-2">
+            <label for="itemsIncreaseMonths" class="form-label">На сколько месяцев продлить сбор инфы?</label>
+            <select class="form-control" name="itemsIncreaseMonths" id="itemsIncreaseMonths">
+              <option value="1">1 {{ phrase('month') }} / $3 </option>
+              <option value="2">2 {{ phrase('months') }} / $5.6 </option>
+              <option value="3">3 {{ phrase('months') }} / $7.8 </option>
+              <option value="6">6 {{ phrase('months') }} / $14.4 </option>
+              <option value="12">12 {{ phrase('months') }} / $24 </option>
+            </select>
+          </div>
+
+        </div>
+        <div class="card-footer">
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-success label-btn label-end" id="clickItemsIncreaseMonths">
+              {{ phrase('extend use') }}
+              <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
+            </button>
+            <script>
+              $("#clickItemsIncreaseMonths").on("click", function () {
+                AjaxSend("/admin/balance/pay/item/increase", "POST", {
+                  months: $("#increaseMonths").val()
+                }, false);
+              });
+            </script>
+          </div>
+        </div>
+      </div>
+      </div>
+
+  </div>
 
 </div>
 

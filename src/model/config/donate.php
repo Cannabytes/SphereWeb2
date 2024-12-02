@@ -256,7 +256,6 @@ class donate
             $forAdmin = $system[$systemName]['forAdmin'] ?? false;
             $sort = $system[$systemName]['sort'] ?? 1000;
             $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort);
-
         }
         $donateSys = array_merge($donateSys, $fileDonateSys);
         usort($donateSys, function ($a, $b) {
@@ -550,6 +549,11 @@ class donateSystem
     public function getInputs(): array
     {
         return $this->inputs;
+    }
+
+    public function addInput($input, $value): void
+    {
+        $this->inputs[$input] = $value;
     }
 
 }

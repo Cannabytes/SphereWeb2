@@ -77,4 +77,19 @@ class config
         return self::$config;
     }
 
+    private static null|string $__TOKEN__ = null;
+    public static function getToken()
+    {
+        if(self::$__TOKEN__ != null){
+            return self::$__TOKEN__;
+        }
+        include_once 'data/token.php';
+        return self::$__TOKEN__ = __TOKEN__;
+    }
+
+    public static function isToken($token): bool
+    {
+        return hash_equals(self::getToken(), $token);
+    }
+
 }

@@ -2,19 +2,78 @@
 
 namespace Ofey\Logan22\component\plugins\items_increase;
 
+use Exception;
+use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
-use Ofey\Logan22\model\user\user;
+use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\template\tpl;
+use PDOException;
+
+enum MyCustomType
+{
+    case CUSTOM_ACTION;
+    case ANOTHER_ACTION;
+
+    static function url(MyCustomType $type): string
+    {
+        return match ($type) {
+            self::CUSTOM_ACTION => '/api/custom/action',
+            self::ANOTHER_ACTION => '/api/another/action',
+        };
+    }
+}
 
 class items_increase
 {
-    private function sqlInstall(): void
+
+    public function show(int $serverId = null)
     {
-        sql::run("CREATE TABLE IF NOT EXISTS `items_increase` (
+        validation::user_protection("admin");
+        if ($serverId == null) {
+            $serverId = server::getDefaultServer();
+        }
+        $getItems = $this->getItems($serverId);
+        $chartData = [];
+        foreach ($getItems as $entry) {
+            $itemId = $entry['itemId'];
+            $date = $entry['date'];
+            $item = json_decode($entry['data'], true);
+            $chartData[$itemId][] = [
+                'date' => $date,
+                'TotalCount' => $item['TotalCount'],
+                'TopOwnerId' => $item['TopOwnerId'],
+                'TopOwnerName' => $item['TopOwnerName'],
+                'TopOwnerItemCount' => $item['TopOwnerItemCount'],
+                'TopOwnerIp' => $item['TopOwnerIp'],
+            ];
+        }
+
+        $series = [];
+        foreach ($chartData as $itemId => $dataPoints) {
+            $series[$itemId] = [
+                'ID' => "ID: $itemId",
+                'data' => $dataPoints
+            ];
+        }
+        $items = \Ofey\Logan22\component\sphere\server::send(type::ITEM_INCREASE_ITEMS, ['serverId' => $serverId])->getResponse();
+        tpl::addVar([
+            'items' => $items['items'],
+            'serverId' => $serverId,
+            'getItems' => $series,
+        ]);
+        tpl::displayPlugin("/items_increase/tpl/show.html");
+    }
+
+    private function sqlInstall()
+    {
+        return sql::run("CREATE TABLE IF NOT EXISTS `items_increase` (
             `id` int NOT NULL AUTO_INCREMENT,
             `date` datetime NULL DEFAULT NULL,
+            `itemId` int(11) NOT NULL,
             `data` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
             `server_id` int NULL DEFAULT NULL,
             PRIMARY KEY (`id`) USING BTREE
@@ -25,67 +84,94 @@ class items_increase
           ROW_FORMAT = Dynamic;");
     }
 
-    public function show()
+    public function getItems($serverId, $count = 10080): array
     {
         validation::user_protection("admin");
-        $getItems = $this->getItems(user::self()->getServerId());
-
-        $chartData = [];
-        foreach ($getItems as $entry) {
-            $date = $entry['date'];
-            $items = json_decode($entry['data'], true);
-            foreach ($items as $item) {
-                $chartData[$item['ItemId']][] = [
-                    'date' => $date,
-                    'TotalCount' => $item['TotalCount'],
-                    'TopOwnerId' => $item['TopOwnerId'],
-                    'TopOwnerName' => $item['TopOwnerName'],
-                    'TopOwnerItemCount' => $item['TopOwnerItemCount'],
-                    'TopOwnerIp' => $item['TopOwnerIp'],
-                ];
-            }
-        }
-
-// Формируем данные для передачи в TWIG
-        $series = [];
-        foreach ($chartData as $itemId => $dataPoints) {
-            $series[$itemId] = [
-                'ID' => "ID: $itemId",
-                'data' => $dataPoints
-            ];
-        }
-
-        tpl::addVar([
-            'getItems' => $series,
+        $result = sql::run("SELECT `id`, `date`, `itemId`, `data` FROM `items_increase` WHERE server_id = ? LIMIT ?", [
+            $serverId,
+            $count
         ]);
-        tpl::displayPlugin("/items_increase/tpl/show.html");
+        if ($result instanceof PDOException) {
+            if($result->getCode()=="42S02"){
+                $this->sqlInstall();
+            }
+            return [];
+        }
+        return $result->fetchAll();
+    }
+
+    public function addItem(): void
+    {
+        validation::user_protection("admin");
+        $itemId = $_POST['itemId'];
+        $serverId = $_POST['serverId'];
+        $response = \Ofey\Logan22\component\sphere\server::send(type::ITEM_INCREASE_ADD, [
+            'itemId' => (int)$itemId,
+            'serverId' => (int)$serverId,
+        ])->getResponse();
+        board::success("Добавлено");
+    }
+
+    public function DeleteItem(): void
+    {
+        validation::user_protection("admin");
+        $itemId = $_POST['itemId'];
+        $serverId = $_POST['serverId'];
+        $response = \Ofey\Logan22\component\sphere\server::send(type::ITEM_INCREASE_DELETE, [
+            'itemId' => (int)$itemId,
+            'serverId' => (int)$serverId,
+        ])->getResponse();
+        sql::run("DELETE FROM `items_increase` WHERE `itemId` = ?", [$itemId]);
+        board::success("delete");
+    }
+
+    public function pay()
+    {
+        $months = $_POST['months'] ?? 1;
+        $data = \Ofey\Logan22\component\sphere\server::send(type::ITEM_INCREASE_PAY, ['months'=>$months])->getResponse();
+        if(isset($data['type']) AND $data['type']=='success'){
+            board::reload();
+            board::success('Использование плагина продлено на '.$months.' месяцев');
+        }else{
+            board::error($data['message']);
+        }
     }
 
     public function save()
     {
-        // Получаем данные из тела запроса
-        $jsonData = file_get_contents('php://input');
+        try {
+            $jsonData = file_get_contents('php://input');
+            $data = json_decode($jsonData, true);
 
-        // Преобразуем JSON в массив (если необходимо)
-        $data = json_decode($jsonData, true);
-        sql::run("INSERT INTO `items_increase` (`date`, `data`, `server_id`) VALUES (?, ?, ?)",[
-            time::mysql(),
-            json_encode($data['items']),
-            $data['server_id'],
-        ]);
+            $token = $data['token'] ?? "";
+            if (!config::isToken($token)) {
+                return;
+            }
 
-        // Логируем полученные данные
-        file_put_contents('increase.log', '_POST: ' . print_r($data, true) . PHP_EOL, FILE_APPEND);
+            $server_id = $data['server_id'] ?? null;
+            if (!$server_id || !isset($data['items'])) {
+                return;
+            }
+
+            foreach ($data['items'] as $item) {
+                try {
+                    $result = sql::run("INSERT INTO `items_increase` (`date`, `itemId`, `data`, `server_id`) VALUES (?, ?, ?, ?)", [
+                        time::mysql(),
+                        $item['itemId'] ?? 0,
+                        json_encode($item['item'] ?? []),
+                        $server_id,
+                    ]);
+                } catch (PDOException $e) {
+                    if ($e->getCode() == "42S02") {
+                        $this->sqlInstall();
+                    }
+                    break;
+                }
+            }
+        } catch (Exception $e) {
+            file_put_contents("error_log.txt", $e->getMessage(), FILE_APPEND);
+        }
     }
-
-    public function getItems($serverId): array
-    {
-        // данные приходят раз в минуту, соответственно мы выведем данные за 7 дней
-        return sql::getRows("SELECT `date`, `data` FROM `items_increase` WHERE server_id = ? LIMIT 10080",[
-            $serverId,
-        ]);
-    }
-
 
 
 }

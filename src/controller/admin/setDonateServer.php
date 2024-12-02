@@ -27,7 +27,19 @@ class setDonateServer
             $sortB = $sortValues[$b['name']] ?? PHP_INT_MAX;
             return $sortA <=> $sortB;
         });
+        foreach ($paySet as &$ps) {
+            foreach ($donateSysName as $d) {
+                if ($ps->getName() === $d['name']) {
+                    $psInputs = $ps->getInputs();
+                    $dInputs = $d['inputs'];
+                    $missingKeys = array_diff_key($dInputs, $psInputs);
+                    foreach($missingKeys AS $n => $v){
+                        $ps->addInput($n, $v);
+                    }
 
+                }
+            }
+        }
         tpl::addVar([
             'server' => $server,
             "donateSysNames" => $donateSysName,

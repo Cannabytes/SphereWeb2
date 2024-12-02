@@ -685,5 +685,14 @@ CREATE TABLE `streams`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
+DROP TABLE IF EXISTS `items_increase`;
+CREATE TABLE `items_increase` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `date` datetime NULL DEFAULT NULL,
+    `itemId` int(11) NOT NULL,
+    `data` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+    `server_id` int NULL DEFAULT NULL,
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

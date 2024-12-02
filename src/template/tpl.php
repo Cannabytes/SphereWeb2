@@ -640,6 +640,10 @@ class tpl
             return server::getServer($id);
         }));
 
+        $twig->addFunction(new TwigFunction('getServers', function () {
+            return server::getServerAll();
+        }));
+
         $twig->addFunction(new TwigFunction('getServerAll', function () {
             return server::getServerAll();
         }));

@@ -446,3 +446,15 @@ $(document).on("click", ".launcherAccountsPlayer", function () {
   }
 });
 
+$(document).on("click", "#createDir", function (){
+  if (wsclient.isConnected() === false) {
+    errorMessage(getPhrase("need_start_launcher"))
+    return;
+  }
+  obj = {
+    command: 'createDir',
+    name: $("#createDirName").val(),
+    path: $(".saveDirClient").attr('data-client-dir-path'),
+  }
+  sendToLauncher(obj)
+})

@@ -286,13 +286,13 @@ class server
         $headers[] = "Token: " . self::getToken();
 
         $host = $_SERVER['HTTP_HOST'];
-        if (empty($host) || ! self::is_valid_domain(parse_url($host, PHP_URL_HOST))) {
+        if (empty($host) || !self::is_valid_domain(parse_url($host, PHP_URL_HOST))) {
             $host = $_SERVER['SERVER_NAME'];
         }
 
         $parsedHost = parse_url($host, PHP_URL_HOST) ?: $host;
         $parsedHost = preg_replace('/:\d+$/', '', $parsedHost);
-        $headers[]  = "Domain: " . $parsedHost;
+        $headers[] = "Domain: " . $parsedHost;
 
         $json = json_encode($arr);
         curl_setopt($ch, CURLOPT_POST, true);
@@ -328,7 +328,7 @@ class server
         }
 
         //некоторые хосты кэширует файлы, по этому делает все архивы новые
-        $rand = mt_rand(1,9999999);
+        $rand = mt_rand(1, 9999999);
         $savePath = "uploads/data_{$rand}.zip";
         $result = file_put_contents($savePath, $fileData);
 
@@ -396,13 +396,13 @@ class server
         $headers[] = "Token: " . self::getToken();
 
         $host = $_SERVER['HTTP_HOST'];
-        if (empty($host) || ! self::is_valid_domain(parse_url($host, PHP_URL_HOST))) {
+        if (empty($host) || !self::is_valid_domain(parse_url($host, PHP_URL_HOST))) {
             $host = $_SERVER['SERVER_NAME'];
         }
 
         $parsedHost = parse_url($host, PHP_URL_HOST) ?: $host;
         $parsedHost = preg_replace('/:\d+$/', '', $parsedHost);
-        $headers[]  = "Domain: " . $parsedHost;
+        $headers[] = "Domain: " . $parsedHost;
 
         // Проверяем существование файла перед отправкой
         if (!file_exists($filePath) || !is_readable($filePath)) {

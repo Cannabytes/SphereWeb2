@@ -12,23 +12,6 @@
     {{ phrase('func_emulation_server_desc_enable')|raw }}
   </div>
 
-  {% else %}
-      {% if SphereApiError() %}
-      <div class="col-xl-12">
-        <div class="card custom-card">
-
-          <div class="card-body">
-            <div class="row gy-3">
-              <div class="col-xl-12">
-                <div class="alert alert-danger" role="alert">
-                  {{ SphereApiError() }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endif %}
   {% endif %}
 
 

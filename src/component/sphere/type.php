@@ -99,6 +99,11 @@ enum type
 
     case EXCHANGER;
 
+    case ITEM_INCREASE_ADD;
+    case ITEM_INCREASE_DELETE;
+    case ITEM_INCREASE_ITEMS;
+    case ITEM_INCREASE_PAY;
+
     static function url(type $type): string
     {
         return match ($type) {
@@ -174,6 +179,12 @@ enum type
             self::EXCHANGER => '/api/exchanger',
 
             self::SET_SERVER_ENABLED => '/api/server/set/enabled',
+
+            self::ITEM_INCREASE_ADD => '/api/item/increase/add',
+            self::ITEM_INCREASE_DELETE => '/api/item/increase/delete',
+            self::ITEM_INCREASE_ITEMS => '/api/item/increase/items',
+            self::ITEM_INCREASE_PAY => '/api/item/increase/pay',
+
 
             default => null,
         };
