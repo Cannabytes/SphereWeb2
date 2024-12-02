@@ -88,6 +88,7 @@
                         <button id="paynext" type="button" class="btn btn-success btn-wave waves-effect waves-light">
                             {{phrase('pay')}}
                         </button>
+                        <div id="linkPay"></div>
                     </div>
                 </div>
             </div>
@@ -480,8 +481,9 @@
                     console.log(redirectLink)
                     if (redirectLink['ok'] === false) {
                         noticeError(redirectLink['message'])
-                        return;
                     } else {
+                        const linkText = "{{phrase('Click to go to the payment page')}}";
+                        $("#linkPay").html(`<a href="${redirectLink}" target="_blank">${linkText}</a>`);
                         window.open(redirectLink, '_blank');
                     }
                 }

@@ -1,7 +1,13 @@
 <?php
 
 return [
-
+    [
+        'date' => '06:53 02.12.2024',
+        'message' => [
+            'ru' => 'У некоторые браузеры блокируют открытие новой страницы при переходе для оплаты. Теперь будет добавляться ссылка.',
+            'en' => 'Some browsers block opening a new page when going to pay. Now a link will be added.',
+        ],
+    ],
     [
         'date' => '07:17 27.11.2024',
         'message' => [
@@ -23,5 +29,4 @@ return [
             'en' => 'Changing the referral system and moving it to server settings. It will be necessary to reconfigure and save the referral system.',
         ],
     ],
-
 ];
