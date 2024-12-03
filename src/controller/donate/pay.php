@@ -31,6 +31,11 @@ class pay
         ]);
         $donateSysNames    = [];
 
+        if(server::get_count_servers()==0){
+            error::error404("Ошибка: Необходимо подключить хотя бы один сервер и настроить его платежную систему.");
+            return;
+        }
+
         $donate = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getDonateConfig();
         foreach ($donate->getDonateSystems() as $system) {
             if ( ! $system->isEnable()) {

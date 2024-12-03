@@ -37,7 +37,7 @@ class other
 
     private string $linkMainPage = "/";
 
-    private int $maxAccount = 20;
+    private int $maxAccount = 10;
 
     private string $contactAdmin = "";
 
@@ -51,13 +51,13 @@ class other
         $this->saveStatisticData = filter_var($setting['saveStatisticData'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->isAuthShow = filter_var($setting['isAuthShow'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->allTitlePage = $setting['allTitlePage'] ?? '';
-        $this->onlineMul = (float)$setting['onlinemul'] ?? 1.0;
-        $this->timeoutSaveStatistic = (int)$setting['timeoutSaveStatistic'] ?? $this->timeoutSaveStatistic;
+        $this->onlineMul = (float)($setting['onlinemul'] ?? 1.0);
+        $this->timeoutSaveStatistic = (int)(is_array($setting) ? ($setting['timeoutSaveStatistic'] ?? $this->timeoutSaveStatistic) : $this->timeoutSaveStatistic);
         $this->timezone = $setting['timezone'] ?? $this->timezone;
         $this->messageTechnicalWork = $setting['messageTechnicalWork'] ?? $this->messageTechnicalWork;
         $this->keywords = $setting['keywords'] ?? $this->keywords;
         $this->linkMainPage = $setting['linkMainPage'] ?? $this->linkMainPage;
-        $this->maxAccount = (int)$setting['max_account'] ?? $this->maxAccount;
+        $this->maxAccount = (int)(is_array($setting) ? ($setting['max_account'] ?? $this->maxAccount) : $this->maxAccount);
         $this->contactAdmin = $setting['contactAdmin'] ?? $this->contactAdmin;
     }
 
