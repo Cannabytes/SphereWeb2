@@ -101,7 +101,7 @@ class wheel
         }
 
         if ($totalProbability != 100.00) {
-            board::error(lang::get_phrase('The total winning percentage should be 100%', $totalProbability));
+            board::error(lang::get_phrase('The total winning percentage should', $totalProbability));
         }
 
         $data = [
