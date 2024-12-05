@@ -150,33 +150,17 @@ class wheel
         }
         $stories = $arrStories;
 
-        $select = sql::getRows("SELECT * FROM `server_data` WHERE `key` = ? AND `server_id` = ?", [
-            "__config_fun_wheel__",
-            user::self()->getServerId(),
-        ]);
-        $wheelID = null;
-        foreach ($select as $item) {
-            $val = json_decode($item['val'], true);
-            $id = $val['id'] ?? null;
-            if($id==null){
-                sql::getRow("DELETE FROM server_data WHERE `id` = ?", [$item['id']]);
-            }
-            $_w_name = $val['name'];
-            if ($_w_name == $name) {
-                $wheelID = (int)$id;
-            }
-        }
-
-        if ($wheelID == null) {
-            redirect::location("/main");
-        }
-        $response = server::send(type::GET_WHEEL_ITEMS, [
-            'id' => $wheelID,
-        ])->getResponse();
-
+        $response = server::send(type::GET_WHEELS)->show()->getResponse();
         if (isset($response['success']) and !$response['success'] or !$response['success']) {
             redirect::location('/main');
         }
+
+        foreach ($response['wheels'] AS $row){
+            if($row['name']==$name){
+                $response = $row;
+            }
+        }
+
         foreach ($response['items'] as &$item) {
             $itemData = client_icon::get_item_info($item['item_id']);
             $item['icon'] = $itemData->getIcon();
@@ -188,7 +172,7 @@ class wheel
         }
 
         tpl::addVar('stories', $stories);
-        tpl::addVar('id', $wheelID);
+        tpl::addVar('id', (int)$response['id']);
         tpl::addVar('name', $name);
         tpl::addVar('cost', (int)$response['cost']);
         tpl::addVar('items', json_encode($response['items']));
@@ -231,7 +215,11 @@ class wheel
             }
 
             user::self()->addLog(logTypes::LOG_BONUS_CODE, '_LOG_User_Win_Wheel', [$item['item_id'], $item['enchant'], $item['name'], $item['count']]);
-            user::self()->addToWarehouse(0, $item['item_id'], $item['count'], $item['enchant'], 'lucky_wheel');
+            if($item['item_id']==-1){
+                user::self()->donateAdd($item['count']);
+            }else{
+                user::self()->addToWarehouse(0, $item['item_id'], $item['count'], $item['enchant'], 'lucky_wheel');
+            }
 
             $_SESSION['last_wheel_spin'] = time();
 
