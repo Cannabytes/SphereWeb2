@@ -93,7 +93,7 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
 
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
-        if($_POST['Status'] != 'success'){
+        if (strcasecmp($_POST['Status'], 'SUCCESS') !== 0) {
             echo "Status no success";exit;
         }
 
