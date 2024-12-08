@@ -1,0 +1,439 @@
+{% extends 'struct.html' %}
+
+{% block title %}Maket{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="main-mail-container gap-4 d-flex">
+        <div class="mails-information">
+            <div class="mail-info-header p-1 d-xxl-flex align-items-center justify-content-between">
+                <div class="mail-option-read d-md-flex d-block">
+                    <a aria-label="anchor" href="/support" class="vertical-phone" data-bs-toggle="tooltip" data-bs-original-title="Назад">
+                        <i class="bx bx-left-arrow-alt"></i>
+                    </a>
+                </div>
+
+                <div class="unstyled inbox-pagination d-flex flex-wrap align-items-center gap-2 mb-0">
+                    {% if thread.is_close %}
+                    <div class="me-2">Тема закрыта</div>
+                    {% endif %}
+
+                    {% if isUserModerator %}
+
+                    <button type="button" class="btn btn-sm btn-primary d-flex align-items-center justify-content-center" data-bs-toggle="modal"
+                            data-bs-target="#mail-Compose">
+                        <i class="ri-add-circle-line fs-16 align-middle me-1"></i>Переместить
+                    </button>
+
+                    <div class="modal modal-sm fade" id="mail-Compose" tabindex="-1" aria-labelledby="mail-ComposeLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h6 class="modal-title" id="mail-ComposeLabel">Переместить</h6>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body px-4">
+                                    <div class="row">
+
+                                        <div class="col-xl-12 mb-2">
+                                            <label for="section" class="form-label">В какую категорию переместить диалог?</label>
+                                            <select class="form-control" name="section" id="section" >
+                                                {% for section in sections %}
+                                                <option {% if section.id == id %}disabled{% endif %} value="{{section.id}}">{{phrase(section.thread_name)}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="d-sm-flex justify-content-between align-items-center">
+                                            <div>
+                                                <button id="toMove" type="button" class="btn btn-sm btn-success">Применить</button>
+                                            </div>
+                                        </div>
+                                        <script>
+                                            $("#toMove").on("click", function (){
+                                                let id = "{{id}}";
+                                                let toMove = $("#section").val();
+                                                AjaxSend("/support/admin/move", "POST", {
+                                                    id: id,
+                                                    toMove: toMove,
+                                                });
+                                            })
+                                        </script>
+
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-light"
+                                            data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    {% if thread.is_close %}
+                    <div data-topic-id="{{id}}" class="btn btn-sm btn-info-light closeTopic"><i class="bi bi-unlock me-2"></i> Открыть вопрос</div>
+                    {% else %}
+                    <div data-topic-id="{{id}}" class="btn btn-sm btn-info-light closeTopic"><i class="bi bi-lock me-2"></i> Закрыть вопрос</div>
+                    {% endif %}
+                    <script>
+                        $(".closeTopic").on("click", function (){
+                            AjaxSend("/support/admin/topic/close", "POST", {id:$(this).attr('data-topic-id')});
+                        })
+                    </script>
+
+                    <div id="deleteTopic" data-topic-id="{{id}}" class="btn btn-sm btn-danger-light"><i class="bi bi-trash me-2"></i> Удалить</div>
+                    <script>
+                        $("#deleteTopic").on("click", function (){
+                            AjaxSend("/support/admin/delete/topic", "POST", {id:$(this).attr('data-topic-id')});
+                        })
+                    </script>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mail-info-body p-4" id="mail-info-body">
+                {% for i, post in posts %}
+                <div>
+                    <div class="d-flex align-items-center">
+                        <div class="me-1">
+                <span class="avatar avatar-md online me-2 avatar-rounded mail-msg-avatar">
+                    <img src="{{getUser(post.user_id).getAvatar()}}" alt="">
+                </span>
+                        </div>
+
+                        <div class="flex-fill">
+                            {% if getUser().isAdmin() or isUserModerator %}
+                                {% if i != 0 %}
+                                <div role="button" class="mail-date float-end text-muted fw-normal fs-11 ms-3 deletePost" data-post-id="{{post.id}}">
+                                    Удалить
+                                </div>
+                                {% endif %}
+                            {% endif %}
+
+                            <div class="mail-date float-end text-muted fw-normal fs-11">
+                                <span class="me-2 d-inline-flex align-items-center"></span>{{thread.date_update|date("H:m d.m.Y")}}
+                            </div>
+
+                            <h6 class="mb-0 fw-semibold">
+                                {% if getUser().isAdmin() %}
+                                    <a href="/admin/user/info/{{post.user_id}}">{{getUser(post.user_id).getName()}}</a>
+                                {% else %}
+                                    <h6 class="mb-0 fw-semibold">{{getUser(post.user_id).getName()}}</h6>
+                                {% endif %}
+                            </h6>
+
+
+
+
+                            <span class="text-muted fs-12">
+                                {% if getUser().isAdmin() or isUserModerator %}
+                                    <a href="/admin/user/info/{{post.user_id}}">{{getUser(post.user_id).getEmail()}}</a>
+                                {% endif %}
+
+                            </span>
+
+
+                        </div>
+                    </div>
+                    <div class="main-mail-content my-1">
+                        {{post.message|raw}}
+                        <div class="row g-2">
+                            {% for screen in post.screens|json_decode %}
+                            {% set imgPath = screen|split('.') %}
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <a href="{{screen}}" class="glightbox card" data-gallery="gallery_{{screen.id}}">
+                                    <img src="{{imgPath[0]}}_thumb.{{imgPath[1]}}" class="img-fluid rounded" alt="image">
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+
+            {% if isSendMessage %}
+            <div class="mail-info-footer  align-items-center justify-content-between">
+
+                <div class="mail-reply">
+                    <div id="reply"></div>
+                </div>
+
+                <div class="">
+
+                    <div id="screens" class="mt-2 row"></div>
+
+                    <button id="toReply" aria-label="button" type="button" class="btn btn-success  d-inline-flex">
+                        <i class="ri-reply-all-line me-1 align-middle"></i>Отправить
+                    </button>
+
+                    <button  aria-label="anchor" class="btn btn-icon mx-2 btn-primary-light"
+                             type="button"  data-bs-toggle="modal"
+                             data-bs-target="#exampleModalScrollable2" >
+                        <i class="ri-attachment-2"></i>
+                    </button>
+
+
+                    <div class="modal fade" id="exampleModalScrollable2" tabindex="-1"
+                         aria-labelledby="exampleModalScrollable2" data-bs-keyboard="false"
+                         aria-hidden="true">
+                        <!-- Scrollable modal -->
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-body">
+                                    <input type="file" class="multiple-filepond" name="filepond" multiple data-allow-reorder="true" data-max-file-size="3MB" data-max-files="6">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+
+
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block css %}
+
+<link rel="stylesheet" href="{{template}}/assets/libs/prismjs/themes/prism-coy.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond/filepond.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond-plugin-image-edit/filepond-plugin-image-edit.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/dropzone/dropzone.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/glightbox/css/glightbox.min.css">
+
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.snow.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.bubble.css">
+
+{% endblock %}
+
+{% block js %}
+
+<script src="{{template}}/assets/libs/filepond/filepond.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-exif-orientation/filepond-plugin-image-exif-orientation.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-encode/filepond-plugin-file-encode.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-edit/filepond-plugin-image-edit.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-crop/filepond-plugin-image-crop.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-resize/filepond-plugin-image-resize.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-transform/filepond-plugin-image-transform.min.js"></script>
+<script src="{{template}}/assets/libs/glightbox/js/glightbox.min.js"></script>
+<script src="{{template}}/assets/js/gallery.js"></script>
+<script src="{{template}}/assets/libs/dropzone/dropzone-min.js"></script>
+
+
+<script src="{{template}}/assets/libs/simplebar/simplebar.min.js"></script>
+<script src="{{template}}/assets/js/simplebar.js"></script>
+
+<script src="{{template}}/assets/libs/quill/quill.min.js"></script>
+
+<script>
+    (function () {
+        "use strict";
+
+
+        var myElement13 = document.getElementById('mail-info-body');
+         var simpleBarInstance = new SimpleBar(myElement13, { autoHide: true });
+        // Прокрутка до последнего сообщения
+        // Прокрутка до последнего сообщения с плавностью
+        function scrollToLastMessage() {
+            const scrollElement = simpleBarInstance.getScrollElement(); // Получаем внутренний элемент прокрутки
+            const targetScroll = scrollElement.scrollHeight; // Конечная позиция
+            const scrollStep = 50; // Шаг прокрутки в пикселях
+            const interval = 10; // Интервал времени между шагами (мс)
+
+            let currentScroll = scrollElement.scrollTop;
+
+            // Анимация прокрутки
+            const scrollAnimation = setInterval(() => {
+                if (currentScroll < targetScroll) {
+                    currentScroll = Math.min(currentScroll + scrollStep, targetScroll); // Увеличиваем текущую позицию
+                    scrollElement.scrollTop = currentScroll; // Устанавливаем новую позицию
+                } else {
+                    clearInterval(scrollAnimation); // Останавливаем таймер, когда достигли конца
+                }
+            }, interval);
+        }
+        // Выполняем прокрутку после загрузки страницы
+        window.addEventListener('load', scrollToLastMessage);
+
+
+        var toolbarOptions = [
+            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+            [{'list': 'ordered'}, {'list': 'bullet'}],
+            ['clean']                                         // remove formatting button
+        ];
+
+        let quill = new Quill('#reply', {
+            modules: {
+                toolbar: toolbarOptions
+            },
+            theme: 'snow'
+        });
+
+        // Отключаем вставку изображений при CTRL+V
+        quill.clipboard.addMatcher('img', function (node, delta) {
+            return new Delta(); // Возвращаем пустой дельта-объект, чтобы игнорировать вставку изображения
+        });
+
+        // Обработка события вставки
+        quill.root.addEventListener('paste', function (e) {
+            const clipboardData = e.clipboardData || window.clipboardData;
+
+            // Проверяем, есть ли вставка изображения
+            if (clipboardData.files && clipboardData.files.length > 0) {
+                e.preventDefault(); // Отменяем вставку
+                noticeError("Вставка отключена")
+            }
+        });
+
+
+
+        $('#toReply').on('click', function () {
+            let screens = []; // Массив для названий скриншотов
+
+            // Получаем содержимое из редактора Quill
+            let editorContent = quill.root.innerHTML;
+
+            // Проверяем, что контент не пустой
+            if ($.trim(editorContent) === '<p><br></p>') {
+                alert('Сообщение не может быть пустым!');
+                return;
+            }
+
+            // Собираем пути к скриншотам из элементов .glightbox
+            $('#screens .glightbox').each(function () {
+                let href = $(this).attr('href'); // Берём значение href
+                if (href) {
+                    let filename = href.split('/').pop(); // Извлекаем только название файла
+                    screens.push(filename);
+                }
+            });
+
+            AjaxSend("/support/reply/request", "POST", {
+                message: editorContent,
+                id: "{{id}}",
+                screens: screens,
+            }, false);
+
+        });
+
+
+    })();
+</script>
+
+<script>
+    (function () {
+        'use strict';
+        let pond;
+        let controllers = [];
+
+        function addImageToScreens(response) {
+            // Проверяем, существует ли элемент #screens
+            const screensElement = document.querySelector('#screens');
+            if (!screensElement) {
+                console.error("Элемент с ID 'screens' не найден.");
+                return;
+            }
+
+            // Проверяем, содержит ли response нужное свойство
+            if (!response.screen) {
+                console.error("Ответ сервера не содержит 'screen'.", response);
+                return;
+            }
+
+            // Добавляем изображение
+            $(screensElement).append(` <div class="col-lg-1 col-md-1 col-sm-6 col-12">
+                            <a href="${response.screen}" class="glightbox card" data-gallery="gallery1">
+                                <img src="${response.screen}" alt="image">
+                            </a>
+                        </div>`);
+
+            // Инициализация Glightbox для новых элементов
+            const lightbox = GLightbox({
+                selector: '.glightbox',
+                touchNavigation: true,
+                loop: true
+            });
+
+            console.log('Изображение добавлено:', response.screen);
+        }
+
+        FilePond.setOptions({
+            server: {
+                url: '/support/load/file',
+                process: {
+                    ondata: (formData) => {
+                        return formData;
+                    },
+                    onload: (response, loadFile) => {
+                        try {
+                            const parsedResponse = typeof response === 'string' ? JSON.parse(response) : response;
+                            if (parsedResponse.ok === false) {
+                                console.error("Ошибка при загрузке файлов:", parsedResponse.message);
+                                noticeError(parsedResponse.message);
+                                $('#exampleModalScrollable2').modal('hide');
+                                controllers.forEach(controller => controller.abort());
+
+                                if (pond) {
+                                    pond.disable(); // Блокируем возможность дальнейших загрузок
+                                }
+                                return;
+                            }
+
+                            addImageToScreens(parsedResponse);
+                            return parsedResponse;
+                        } catch (e) {
+                            console.error('Ошибка при обработке ответа сервера:', e);
+                            return null;
+                        }
+                    }
+                }
+            }
+        });
+
+        const MultipleElement = document.querySelector('.multiple-filepond');
+        if (MultipleElement) {
+            pond = FilePond.create(MultipleElement);
+            pond.on('processfile', (error, file) => {
+                $('#exampleModalScrollable2').modal('hide');
+                if (error) {
+                    console.error('Ошибка загрузки файла:', error);
+                }
+            });
+        } else {
+            console.error("Элемент '.multiple-filepond' не найден.");
+        }
+
+    })();
+</script>
+
+<script>
+    $(".deletePost").on("click", function (){
+        let postId = $(this).attr('data-post-id');
+        AjaxSend("/support/admin/delete/post", "POST", {postId:postId});
+    })
+</script>
+
+
+{% endblock %}

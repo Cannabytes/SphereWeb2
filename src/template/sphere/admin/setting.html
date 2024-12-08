@@ -204,6 +204,24 @@
                   </div>
                 </div>
 
+
+                <div class="col-xl-3">
+                  <div class="card custom-card shadow-none border">
+                    <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+                      <div class="">
+                        <span class="fw-semibold">{{ phrase('technical support') }}</span>
+                      </div>
+                      <div>
+                        <div class="custom-toggle-switch float-sm-end">
+                          <input class="enableFunction" id="enable_support" name="enable_support" type="checkbox" {% if
+                                 config().enabled().isEnableSupport() %}checked="" {% endif %}>
+                          <label for="enable_support" class="label-success mb-1"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="col-xl-3">
                   <div class="card custom-card shadow-none border">
                     <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">

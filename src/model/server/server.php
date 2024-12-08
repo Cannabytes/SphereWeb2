@@ -288,21 +288,26 @@ class server
         board::error("К сожалению, этот сервер отключен администратором");
     }
 
-    //Кол-во серверов
-
     public static function getDefaultServer(): ?int
     {
-        foreach (self::getServerAll() as $server) {
-            if ($server->isDefault()) {
-                return $server->getId();
+        $servers = self::getServerAll();
+        if (is_array($servers)) {
+            foreach ($servers as $server) {
+                if ($server->isDefault()) {
+                    return $server->getId();
+                }
             }
         }
+
         $lastServer = server::getLastServer();
         if ($lastServer !== null) {
             return $lastServer->getId();
         }
-        return 0;
+
+        return null;
     }
+
+
 
     /**
      * @return serverModel|null

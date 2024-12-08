@@ -1,19 +1,19 @@
 <?php
 return [
-  1 => 
+  -1 =>
   [
-    'id' => 1,
-    'type' => 'weapon',
-    'name' => 'Short Sword',
+    'id' => -1,
+    'type' => 'etcitem',
+    'name' => 'Balance Coin',
     'add_name' => '',
     'description' => '',
-    'icon' => 'weapon_small_sword_i00',
-    'weapon_type' => 'sword',
-    'bodypart' => 'rhand',
-    'weight' => 1600,
-    'price' => 768,
-    'soulshots' => 1,
-    'spiritshots' => 1,
+    'icon' => 'etc_coins_gold_i00',
+    'price' => 1,
+    'is_tradable' => false,
+    'is_dropable' => false,
+    'is_sellable' => false,
+    'is_depositable' => false,
+    'is_stackable' => true,
   ],
   2 => 
   [

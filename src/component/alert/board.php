@@ -80,7 +80,6 @@ class board
     public static function redirect(string $url = "refresh"): self
     {
         self::$redirectUrl = $url;
-
         return new self();
     }
 

@@ -26,6 +26,7 @@ use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\controller\admin\startpack;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\stream\stream;
+use Ofey\Logan22\controller\support\support;
 use Ofey\Logan22\controller\ticket\ticket;
 use Ofey\Logan22\model\admin\launcher;
 use Ofey\Logan22\model\db\sql;
@@ -704,6 +705,10 @@ class tpl
             }
 
             return (sprintf("/uploads/avatar/%s", $img));
+        }));
+
+        $twig->addFunction(new TwigFunction('get_support_thread_name', function ($thread_id){
+            return support::getSection($thread_id);
         }));
 
         $twig->addFunction(new TwigFunction('balance_to_dollars', function ($dc = 0) {

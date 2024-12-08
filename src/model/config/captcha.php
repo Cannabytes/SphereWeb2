@@ -63,8 +63,19 @@ class captcha
             }
         } elseif ($this->getCaptcha() == "default") {
             $builder = new Builder();
-            $captcha = $_POST['captcha'] ?? false;
-            if ( ! $builder->compare(trim(mb_strtolower($captcha)), mb_strtolower($_SESSION['captcha']))) {
+            $captcha = $_POST['captcha'] ?? null;
+            $sessionCaptcha = $_SESSION['captcha'] ?? null;
+            if($captcha == null OR $sessionCaptcha == null){
+                board::response(
+                    "notice",
+                    [
+                        "message"       => lang::get_phrase(295),
+                        "ok"            => false,
+                        "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false,
+                    ]
+                );
+            }
+            if ( ! $builder->compare(trim(mb_strtolower($captcha)), mb_strtolower($sessionCaptcha))) {
                 board::response(
                   "notice",
                   [

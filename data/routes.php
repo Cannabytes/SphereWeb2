@@ -2285,4 +2285,207 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  165 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/support',
+    'func' => 'controller\\support\\support::show',
+    'access' => 
+    array (
+        0 => 'any',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  166 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/support/read/(\\d+)',
+    'func' => 'controller\\support\\support::read',
+    'access' => 
+    array (
+        0 => 'any',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  167 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/support/new',
+    'func' => 'controller\\support\\support::create',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  168 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/support/create/request',
+    'func' => 'controller\\support\\support::requestCreate',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  169 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/support/reply/request',
+    'func' => 'controller\\support\\support::requestReply',
+    'access' => 
+    array (
+      0 => 'user',
+      1 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  170 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/support/thread/(\\d+)',
+    'func' => 'controller\\support\\support::showThread',
+    'access' => 
+    array (
+        0 => 'any',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  171 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/support/admin/add/section',
+    'func' => 'controller\\support\\support::addSection',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  172 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/support/admin/delete/section',
+    'func' => 'controller\\support\\support::deleteSection',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  173 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/support/admin/delete/topic',
+    'func' => 'controller\\support\\support::deleteTopic',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  174 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/support/admin/update/moderator',
+    'func' => 'controller\\support\\support::updateModeratorsPrivilege',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  175 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/support/admin/topic/close',
+    'func' => 'controller\\support\\support::closeTopic',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  176 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/support/load/file',
+    'func' => 'controller\\support\\support::fileLoad',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  177 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/support/admin/delete/post',
+    'func' => 'controller\\support\\support::deletePost',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  178 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/support/admin/move',
+    'func' => 'controller\\support\\support::toMove',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

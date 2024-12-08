@@ -1,5 +1,20 @@
 <?php
 return [
+  -1 =>
+  [
+    'id' => -1,
+    'type' => 'etcitem',
+    'name' => 'Balance Coin',
+    'add_name' => '',
+    'description' => '',
+    'icon' => 'etc_coins_gold_i00',
+    'price' => 1,
+    'is_tradable' => false,
+    'is_dropable' => false,
+    'is_sellable' => false,
+    'is_depositable' => false,
+    'is_stackable' => true,
+  ],
   1 => 
   [
     'id' => 1,

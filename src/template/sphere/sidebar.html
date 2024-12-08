@@ -80,29 +80,17 @@
 
 
 
-        {% if getUser().isAuth() %}
 
-        {% if getServer().getReferral().isEnable() %}
-        <li class="slide enable_referral">
-          <a href="/referral" class="side-menu__item">
-            <i class="fe fe-users side-menu__icon"></i>
-            <span class="side-menu__label">{{phrase(306)}}</span>
-          </a>
-        </li>
-        {% endif %}
-
-        <li class="slide enable_ticket" {% if config().enabled().isEnableTicket() == false
+        {% if config().enabled().isEnableSupport() %}
+        <li class="slide enable_support" {% if config().enabled().isEnableSupport() == false
             %}style="display: none;" {% endif %}>
-          <a href="/ticket" class="side-menu__item">
-            <i class="fe fe-activity side-menu__icon"></i>
-            <span class="side-menu__label">{{phrase("menu_ticket")}}</span>
-             {% if getUser().isAdmin() %}
-              <span class="badge bg-danger-transparent ms-2 {% if ticket_get_count() > 0 %}pulse pulse-danger{% endif %}">{{ticket_get_count()}}</span>
-             {% endif %}
+            <a href="/support" class="side-menu__item">
+            <i class="bi bi-question-circle side-menu__icon"></i>
+            <span class="side-menu__label">{{phrase("technical support")}}</span>
           </a>
         </li>
-
         {% endif %}
+
 
         <li class="slide enable_stream" {% if config().enabled().isEnableStream() == false
             %}style="display: none;" {% endif %}>

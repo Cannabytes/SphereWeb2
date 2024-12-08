@@ -12,7 +12,7 @@ use PDOStatement;
 
 class sql
 {
-
+    private static int $connect_timeout = 3;
     private static int $countRequest = 0;
 
     public static bool $error = false;
@@ -58,6 +58,7 @@ class sql
                     PDO::ATTR_EMULATE_PREPARES   => false,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
+                    PDO::ATTR_TIMEOUT => self::$connect_timeout,
                   ]
                 );
 

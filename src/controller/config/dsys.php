@@ -1,6 +1,7 @@
 <?php
 namespace Ofey\Logan22\controller\config;
 
+use Exception;
 use Ofey\Logan22\component\fileSys\fileSys;
 
 class dsys
@@ -21,12 +22,20 @@ class dsys
 
         foreach ($all_donate_system as $system) {
             $routePath = "src/component/donate/{$system}/pay.php";
+
             if (file_exists($routePath)) {
                 include $routePath;
-                $classInstance = new $system(); // где $system - имя класса
-                self::$classArray[$system] = $classInstance;
+                try {
+                    if (class_exists($system)) {
+                        $classInstance = new $system(); // где $system - имя класса
+                        self::$classArray[$system] = $classInstance;
+                    }
+                } catch (Exception $e) {
+                    continue;
+                }
             }
         }
+
 
     }
 

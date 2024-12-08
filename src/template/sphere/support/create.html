@@ -1,0 +1,347 @@
+{% extends 'struct.html' %}
+
+{% block title %}Обращение в техподдержку{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="main-mail-container gap-4 d-flex">
+        <div class="mails-information">
+            <div class="mail-info-header p-1 d-xxl-flex align-items-center">
+                <div class="mail-option-read d-md-flex  d-block">
+                    <a aria-label="anchor" href="/support" class="vertical-phone" data-bs-toggle="tooltip"
+                       data-bs-original-title="Назад">
+                        <i class="bx bx-left-arrow-alt"></i>
+                    </a>
+
+
+                </div>
+            </div>
+
+            <div class="mail-info-body p-4" id="mail-info-body">
+
+                <div class="accordion accordion-customicon1 accordion-primary accordions-items-seperate mb-2"
+                     id="accordionFAQ1">
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingcustomicon1One">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapsecustomicon1One" aria-expanded="false"
+                                    aria-controls="collapsecustomicon1One">
+                                Как описать проблему правильно?
+                            </button>
+                        </h2>
+                        <div id="collapsecustomicon1One" class="accordion-collapse collapse"
+                             aria-labelledby="headingcustomicon1One" data-bs-parent="#accordionFAQ1" style="">
+                            <div class="accordion-body">
+                                <div class="support-request">
+                                    <h2>Для более быстрого и точного решения вашего вопроса, пожалуйста, предоставьте
+                                        как можно больше информации:</h2>
+
+                                    <ol>
+                                        <li>
+                                            <strong>Подробное описание проблемы:</strong>
+                                            <ul>
+                                                <li>Что именно не работает?</li>
+                                                <li>Возникает ли ошибка? Если да, укажите её текст или код.</li>
+                                                <li>В каком контексте возникает проблема (например, при входе в игру, в
+                                                    процессе выполнения определённого действия)?
+                                                </li>
+                                                <li>В какой момент проблема была замечена?</li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <strong>Если проблема связана с персонажем:</strong>
+                                            <ul>
+                                                <li>Никнейм персонажа.</li>
+                                                <li>Уровень, класс или другие характеристики персонажа, если они могут
+                                                    быть важными.
+                                                </li>
+                                                <li>Когда впервые заметили проблему с персонажем?</li>
+                                                <li>Повторяется ли ошибка при взаимодействии с определёнными объектами
+                                                    или NPC?
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <strong>Если вы пытались решить проблему, расскажите, что вы
+                                                пробовали:</strong>
+                                            <ul>
+                                                <li>Применялись ли стандартные методы устранения неполадок (перезапуск
+                                                    игры, очистка кэша и т.д.)?
+                                                </li>
+                                                <li>Были ли предприняты какие-либо нестандартные шаги (например,
+                                                    изменение настроек, использование сторонних программ)?
+                                                </li>
+                                                <li>Что из предпринятых шагов привело к положительным или отрицательным
+                                                    результатам?
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ol>
+
+                                    <h3>Дополнительно:</h3>
+                                    <ul>
+                                        <li>Если у вас есть <strong>скриншоты или видеозаписи</strong> проблемы,
+                                            прикрепите их к сообщению.
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="mail-reply">
+
+                    <div class="col-xl-3 mb-1">
+                        <label class="form-label">Категория :</label>
+                        <select class="form-control" data-trigger name="section" id="section">
+                            {% for section in sections %}
+                            <option value="{{section.id}}">{{phrase(section.thread_name)}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-check form-check-md d-flex align-items-center mb-2">
+                        <input class="form-check-input" type="checkbox" value="" name="private" id="private">
+                        <label class="form-check-label" for="private">
+                            Приватный вопрос (виден только вам и модераторам)
+                        </label>
+                    </div>
+
+                    <div id="mail-reply-editor"></div>
+                </div>
+            </div>
+            <div class="mail-info-footer d-xl-flex align-items-center justify-content-between">
+                <div>
+
+                    <div id="screens" class="mt-2 row"></div>
+
+                    <button id="createSupportRequest" aria-label="button" type="button"
+                            class="btn btn-success d-inline-flex">
+                        <i class="ri-share-forward-line me-1 align-middle"></i>Отправить сообщение
+                    </button>
+
+                    <button aria-label="anchor" class="btn btn-icon mx-2 btn-primary-light"
+                            type="button" data-bs-toggle="modal"
+                            data-bs-target="#modalLoadImgPanel">
+                        <i class="ri-attachment-2"></i>
+                    </button>
+
+
+                    <div class="modal fade" id="modalLoadImgPanel" tabindex="-1"
+                         aria-labelledby="modalLoadImgPanel" data-bs-keyboard="false"
+                         aria-hidden="true">
+                        <!-- Scrollable modal -->
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-body">
+                                    <input type="file" class="multiple-filepond" name="filepond" multiple
+                                           data-allow-reorder="true" data-max-file-size="3MB" data-max-files="6">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block css %}
+
+<link rel="stylesheet" href="{{template}}/assets/libs/prismjs/themes/prism-coy.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond/filepond.min.css">
+<link rel="stylesheet"
+      href="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond-plugin-image-edit/filepond-plugin-image-edit.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/dropzone/dropzone.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/glightbox/css/glightbox.min.css">
+
+
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.snow.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.bubble.css">
+{% endblock %}
+
+{% block js %}
+<script src="{{template}}/assets/libs/filepond/filepond.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-exif-orientation/filepond-plugin-image-exif-orientation.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-encode/filepond-plugin-file-encode.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-edit/filepond-plugin-image-edit.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-crop/filepond-plugin-image-crop.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-resize/filepond-plugin-image-resize.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-transform/filepond-plugin-image-transform.min.js"></script>
+<script src="{{template}}/assets/libs/glightbox/js/glightbox.min.js"></script>
+<script src="{{template}}/assets/js/gallery.js"></script>
+<script src="{{template}}/assets/libs/dropzone/dropzone-min.js"></script>
+
+
+<script src="{{template}}/assets/libs/simplebar/simplebar.min.js"></script>
+<script src="{{template}}/assets/js/simplebar.js"></script>
+
+<script src="{{template}}/assets/libs/quill/quill.min.js"></script>
+
+<script>
+    var quill; // Глобальное объявление переменной
+
+    $(function () {
+        var toolbarOptions = [
+            [{'header': [1, 2, 3, 4, 5, 6, false]}],
+            [{'font': []}],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{'header': 1}, {'header': 2}],
+            ['clean']
+        ];
+
+        quill = new Quill('#mail-reply-editor', {
+            modules: {
+                toolbar: toolbarOptions
+            },
+            theme: 'snow'
+        });
+    });
+
+
+    $('#createSupportRequest').on('click', function () {
+        let editorContent = quill.root.innerHTML;
+        let section = $("#section").val();
+        let screens = [];
+        let isPrivate = $('#private').prop('checked');
+        if ($.trim(editorContent) === '<p><br></p>') {
+            alert('Сообщение не может быть пустым!');
+            return;
+        }
+        $('#screens .glightbox').each(function () {
+            let href = $(this).attr('href');
+            if (href) {
+                let filename = href.split('/').pop();
+                screens.push(filename);
+            }
+        });
+        AjaxSend("/support/create/request", "POST", {
+            message: editorContent,
+            section: section,
+            private: isPrivate,
+            screens: screens
+        }, false)
+    });
+
+
+</script>
+
+<script>
+    (function () {
+        'use strict';
+        let pond;
+        let controllers = [];
+
+        function addImageToScreens(response) {
+            // Проверяем, существует ли элемент #screens
+            const screensElement = document.querySelector('#screens');
+            if (!screensElement) {
+                console.error("Элемент с ID 'screens' не найден.");
+                return;
+            }
+
+            // Проверяем, содержит ли response нужное свойство
+            if (!response.screen) {
+                console.error("Ответ сервера не содержит 'screen'.", response);
+                return;
+            }
+
+            // Добавляем изображение
+            $(screensElement).append(` <div class="col-lg-1 col-md-1 col-sm-6 col-12">
+                            <a href="${response.screen}" class="glightbox card" data-gallery="gallery1">
+                                <img src="${response.screen}" alt="image">
+                            </a>
+                        </div>`);
+
+            // Инициализация Glightbox для новых элементов
+            const lightbox = GLightbox({
+                selector: '.glightbox',
+                touchNavigation: true,
+                loop: true
+            });
+
+            console.log('Изображение добавлено:', response.screen);
+        }
+
+        FilePond.setOptions({
+            server: {
+                url: '/support/load/file',
+                process: {
+                    ondata: (formData) => {
+                        return formData;
+                    },
+                    onload: (response, loadFile) => {
+                        try {
+                            const parsedResponse = typeof response === 'string' ? JSON.parse(response) : response;
+                            if (parsedResponse.ok === false) {
+                                console.error("Ошибка при загрузке файлов:", parsedResponse.message);
+                                noticeError(parsedResponse.message);
+                                $('#modalLoadImgPanel').modal('hide');
+                                controllers.forEach(controller => controller.abort());
+                                if (pond) {
+                                    pond.disable();
+                                }
+                                return;
+                            }
+                            addImageToScreens(parsedResponse);
+                            $('#modalLoadImgPanel').modal('hide');
+                            return parsedResponse;
+                        } catch (e) {
+                            console.error('Ошибка при обработке ответа сервера:', e);
+                            return null;
+                        }
+                    }
+                }
+            },
+            onprocessfile: (fileItem, message) => {
+                const controller = new AbortController();
+                controllers.push(controller);
+                fileItem.xhr.abort = controller.abort;
+                const signal = controller.signal;
+                fileItem.xhr.onreadystatechange = () => {
+                    if (fileItem.xhr.readyState === 4 && fileItem.xhr.status !== 200) {
+                        controller.abort();
+                    }
+                };
+
+                return signal;
+            }
+        });
+
+        const MultipleElement = document.querySelector('.multiple-filepond');
+        if (MultipleElement) {
+            pond = FilePond.create(MultipleElement);
+            pond.on('processfile', (error, file) => {
+                if (error) {
+                    console.error('Ошибка загрузки файла:', error);
+                }
+            });
+        } else {
+            console.error("Элемент '.multiple-filepond' не найден.");
+        }
+
+    })();
+</script>
+
+{% endblock %}

@@ -1,0 +1,359 @@
+{% extends 'struct.html' %}
+
+{% block title %}Тикет{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    {% if config().enabled().isEnableSupport() == false %}
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-body">
+                <blockquote class="blockquote mb-0 text-center">
+                    <h6 class="text-danger">Техническая поддержка отключена.</h6>
+                    <h6 class="">Вы как администратор/модератор можете пользоваться этим разделом.</h6>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="main-mail-container gap-4 mb-5 d-lg-flex">
+        <div class="mail-navigation">
+            <div class="d-grid align-items-top p-2 border-bottom">
+                <a href="{% if getUser().isAuth() %}/support/new{% else %}/login{% endif %}" type="button"
+                   class="btn btn-primary btn-sm d-flex align-items-center justify-content-center">
+                    <i class="ri-add-circle-line fs-16 align-middle me-1"></i>Задать вопрос
+                </a>
+            </div>
+            <div>
+                <ul class="list-unstyled mail-main-nav" id="mail-main-nav">
+                    {% for section in sections %}
+                    <li class="">
+                        <a href="/support/thread/{{section.id}}">
+                            <div class="d-flex align-items-center">
+                                            <span class="me-2 lh-1">
+                                                <i class="ri-inbox-archive-line align-middle fs-14"></i>
+                                            </span>
+                                <span class="flex-fill text-nowrap">
+                                                {{phrase(section.thread_name)}}
+                                            </span>
+                                <span class="badge bg-info-transparent rounded-1">{{section.thread_count}}</span>
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                {% if getUser().isAdmin() %}
+                <div class="card-footer text-center">
+                    <a href="/support/admin/add/section" data-bs-toggle="modal" data-bs-target="#add-section" class="btn btn-sm btn-primary-light m-1"><i class="ri-bar-chart-horizontal-line me-2 align-middle d-inline-block"></i>Разделы</a>
+                    <a href="/support/admin/add/moderator" data-bs-toggle="modal" data-bs-target="#add-moderator" class="btn btn-sm btn-success-light m-1"><i class="ri-group-line me-2 align-middle d-inline-block"></i>Добавить модератора</a>
+                </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <div class="modal modal-lg fade" id="add-section" tabindex="-1" aria-labelledby="add-sectionLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="add-sectionLabel">Разделы</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body px-4">
+                        <div class="row">
+                            <div class="col-xl-6 mb-2">
+                                <label for="phraseId" class="form-label"><a target="_blank" href="/admin/phrases/custom">ID фразы раздела</a><sup><i class="ri-star-s-fill text-danger fs-8"></i></sup></label>
+                                <input type="text" class="form-control" id="phraseId" value="">
+                                <button id="add_section" type="button" class="btn btn-sm btn-success mt-2"><i class="ri-stack-line me-2"></i> Добавить</button>
+                                <script>
+                                    $("#add_section").on("click", function (){
+                                        phraseId = $("#phraseId").val();
+                                        AjaxSend("/support/admin/add/section", "POST", {phraseId: phraseId}, false);
+                                    })
+                                </script>
+                            </div>
+                            <div class="col-xl-6 mb-2">
+                                <label class="form-label">Удаление разделов</label>
+
+                                <div class="card-body" id="section_delete_list">
+
+                                    {% for section in sections %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="{{section.id}}" id="remove_section_{{section.id}}">
+                                        <label class="form-check-label" for="remove_section_{{section.id}}">
+                                            {{phrase(section.thread_name)}}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+
+                                </div>
+
+                                <button id="delete_section" type="button" class="btn btn-sm btn-danger mt-2"><i class="ri-delete-bin-line me-2"></i> Удаление</button>
+                                <script>
+                                    $("#delete_section").on("click", function () {
+                                        let ids = [];
+                                        $("#section_delete_list .form-check-input:checked").each(function () {
+                                            ids.push($(this).val());
+                                        });
+                                        if (ids.length === 0) {
+                                            noticeError("Нет выбранных элементов")
+                                            return;
+                                        }
+                                        AjaxSend("/support/admin/delete/section", "POST", {ids:ids}, false)
+                                    });
+                                </script>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light"
+                                data-bs-dismiss="modal">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal modal-lg fade" id="add-moderator" tabindex="-1" aria-labelledby="add-moderatorLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="add-moderatorLabel">Настройка модераторов</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body px-4">
+                        <div class="row">
+
+                            <div class="col-xl-6 mb-2">
+                                <label for="selectEmailToModerator" class="form-label">Пользователь<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
+                                <select class="form-control" name="toMail" id="selectEmailToModerator">
+                                    {% for user in getUsers() %}
+                                    <option value="{{user.getEmail()}}" >{{user.getEmail()}}</option>
+                                    {% endfor %}
+                                </select>
+                                <button id="add_moderator" type="button" class="btn btn-sm btn-primary me-2">Добавить модератора</button>
+
+                                <script>
+                                    $("#add_moderator").on("click", function() {
+                                        // Получаем выбранный email
+                                        const selectedEmail = $("#selectEmailToModerator").val();
+
+                                        if (!selectedEmail) {
+                                            alert("Выберите пользователя!");
+                                            return;
+                                        }
+
+                                        // Находим все отмеченные чекбоксы
+                                        $("#section_moderator_list .form-check-input:checked").each(function() {
+                                            const sectionId = $(this).val();
+                                            const tableId = `#section_moderator_list_${sectionId}`;
+
+                                            // Проверяем, есть ли уже такой email в таблице
+                                            const existingEmails = $(`${tableId} tbody tr td.email-cell`).map(function() {
+                                                return $(this).text();
+                                            }).get();
+
+                                            if (!existingEmails.includes(selectedEmail)) {
+                                                // Добавляем нового модератора в таблицу
+                                                const newRow = `
+                    <tr>
+                        <td class="email-cell">${selectedEmail}</td>
+                        <td class="action-cell">
+                            <button type="button" class="btn btn-sm btn-danger remove-moderator">
+                                Удалить
+                            </button>
+                        </td>
+                    </tr>`;
+                                                $(`${tableId} tbody`).append(newRow);
+                                            }
+                                        });
+                                    });
+
+                                    // Делегируем событие на удаление, чтобы работало для новых строк
+                                    $(document).on("click", ".remove-moderator", function() {
+                                        $(this).closest("tr").remove();
+                                    });
+                                </script>
+
+
+
+
+                            </div>
+
+                            <div class="col-xl-6 mb-2">
+                                <label for="section_moderator_list" class="form-label">Выберите раздел<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
+                                <div class="card-body" id="section_moderator_list">
+
+                                    {% for section in sections %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="{{section.id}}" id="moderator_section_{{section.id}}">
+                                        <label class="form-check-label" for="moderator_section_{{section.id}}">
+                                            {{phrase(section.thread_name)}}
+                                        </label>
+
+                                        <div class="table-responsive">
+                                            <table data-section-id="{{section.id}}" id="section_moderator_list_{{section.id}}" class="table table-sm table-bordered table-hover text-nowrap">
+                                                <tbody>
+                                                {% for moderator in section.moderators %}
+                                                <tr>
+                                                    <td class="email-cell">{{moderator}}</td>
+                                                    <td class="action-cell">
+                                                        <button type="button" class="btn btn-sm btn-danger remove-moderator">
+                                                            Удалить
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <button id="update_moderator" type="button" class="btn btn-sm btn-success">Сохранить</button>
+                        </div>
+
+                        <script>
+                            $("#update_moderator").on("click", function () {
+                                const data = [];
+
+                                // Перебираем каждую секцию
+                                $("#section_moderator_list .form-check").each(function () {
+                                    const sectionId = $(this).find(".form-check-input").val();
+                                    const tableId = `#section_moderator_list_${sectionId}`;
+                                    const emails = [];
+
+                                    // Собираем email-ы модераторов из таблицы секции
+                                    $(`${tableId} tbody tr td.email-cell`).each(function () {
+                                        emails.push($(this).text());
+                                    });
+
+                                    // Если есть хотя бы один модератор, добавляем данные в массив
+                                    if (emails.length > 0) {
+                                        data.push({
+                                            id: sectionId,
+                                            moderators: emails
+                                        });
+                                    }
+                                });
+
+                                AjaxSend("/support/admin/update/moderator", "POST", {data});
+                            });
+
+                        </script>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light"
+                                data-bs-dismiss="modal">{{phrase('close')}}</button>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+        <div class="total-mails mt-5 mt-lg-0">
+            <div class="p-1 d-flex align-items-center border-bottom">
+                  <div class="mail-option-read d-md-flex d-block">
+                      {% if main %}
+                          <a aria-label="anchor" href="javascript:location.reload();" class="vertical-phone" data-bs-toggle="tooltip" data-bs-original-title="Refresh">
+                              <i class="bx bx-refresh"></i>
+                          </a>
+                      {% else %}
+                        <a aria-label="anchor" href="/support" class="vertical-phone" data-bs-toggle="tooltip" data-bs-original-title="Back to inbox">
+                            <i class="bx bx-left-arrow-alt"></i>
+                        </a>
+                      <a aria-label="anchor" href="javascript:location.reload();" class="vertical-phone" data-bs-toggle="tooltip" data-bs-original-title="Refresh">
+                          <i class="bx bx-refresh"></i>
+                      </a>
+                      {% endif %}
+                  </div>
+
+            </div>
+            <div class="mail-messages" id="mail-messages">
+                <ul class="list-unstyled mb-0">
+
+                    {% for thread in threads %}
+                    <li>
+                        {% set sectionInfo = get_support_thread_name(thread.thread_id) %}
+
+                          <div class="d-flex align-items-top">
+                            <div class="me-2 lh-1">
+                                <a aria-label="anchor" href="javascript:void(0);" class="main-mail-star  d-inline-block">
+                                    {% if thread.is_close %}
+                                        <i data-bs-toggle="tooltip" data-bs-original-title="Разговор закончен" class="bi bi-lock"></i>
+                                    {% else %}
+                                        <i data-bs-toggle="tooltip" data-bs-original-title="Разговор открыт" class="bi bi-unlock"></i>
+                                    {% endif %}
+                                </a>
+                                <a aria-label="anchor" href="javascript:void(0);" class="main-mail-star  d-inline-block">
+                                    {% if thread.private %}
+                                    <i data-bs-toggle="tooltip" data-bs-original-title="Закрыт просмотр" class="bi bi-eye-slash"></i>
+                                    {% else %}
+                                    <i data-bs-toggle="tooltip" data-bs-original-title="Просмотр открыт" class="bi bi-eye"></i>
+                                    {% endif %}
+                                </a>
+
+                            </div>
+
+                            <div class="flex-fill ms-2 subject-container">
+{% if thread.owner_id == getUser().getId() or getUser().isAdmin() or isUserModerator or thread.private == false %}<a href="/support/read/{{thread.id}}">{% endif %}
+                                    <div class="d-flex align-items-center subject-container">
+                                        <span class="avatar avatar-lg me-2">
+                                            <img src="{{getUser(thread.last_user_id).getAvatar()}}" alt="img">
+                                        </span>
+                                        <div class="text-truncate">
+                                            <span class="d-block mb-0 fw-semibold fs-16">
+                                                <span class="badge rounded-pill bg-light-transparent text-dark">
+                                                    {{ phrase(sectionInfo.thread_name) }}
+                                                </span>
+                                                от {{getUser(thread.owner_id).getName()}}
+                                            </span>
+                                                 <span class="fs-12 text-muted">
+                                                    {{getUser(thread.last_user_id).getName()}}: {% if thread.private and thread.owner_id != getUser().getId() and getUser().isAdmin() == false and isUserModerator == false %}<i class="bi bi-eye-slash"></i>{% else %}{{strip_html_tags(thread.message)}}{% endif %}
+                                                 </span>
+                                        </div>
+                                    </div>
+{% if thread.owner_id == getUser().getId() or getUser().isAdmin() or isUserModerator %}</a>{% endif %}
+                            </div>
+
+                            <div class="icons-mail">
+                                <div class="float-end text-muted fw-normal fs-11">{{thread.date_update|date("H:m d.m.Y")}}</div>
+
+                            </div>
+
+                        </div>
+
+                    </li>
+                    {% endfor %}
+
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block js %}
+
+<script src="{{template}}/assets/js/mail.js"></script>
+
+{% endblock %}

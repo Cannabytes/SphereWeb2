@@ -212,7 +212,7 @@ function ResponseNotice(response) {
     if(response.type!=="notice"){
         return false;
     }
-    if(response === undefined || response === ""){
+    if(response === ""){
         return false
     }
 
@@ -226,13 +226,11 @@ function ResponseNotice(response) {
         get_captcha()
     }
 
-
     if (response.reload === true){
         setTimeout(function() {
             window.location.reload();
         }, 1000);
     }
-
     if (response.redirect !== undefined) {
         setTimeout(function() {
             if (response.redirect === "refresh") {
