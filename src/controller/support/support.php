@@ -228,7 +228,6 @@ class support
      */
     static function show(): void
     {
-        var_dump(self::getThreads());exit;
         self::isEnable();
         tpl::addVar([
             'main' => true,
