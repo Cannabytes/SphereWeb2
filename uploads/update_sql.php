@@ -6,11 +6,9 @@ class updateSql
     {
 
         if (file_exists("uploads/sql.php")) {
-            include "uploads/sql.php";
-            if ($sql == null or $sql == "") {
-                return;
+            foreach (include "uploads/sql.php" AS $arr){
+                \Ofey\Logan22\model\db\sql::run($arr);
             }
-            \Ofey\Logan22\model\db\sql::run($sql);
             unlink("uploads/sql.php");
         }
     }
