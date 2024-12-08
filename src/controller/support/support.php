@@ -82,32 +82,42 @@ class support
     private static function getThreads($id = null): array
     {
         if ($id != null) {
-            return sql::getRows("SELECT 
-                                            st.id, 
-                                            st.thread_id, 
-                                            st.owner_id, 
-                                            st.last_user_id, 
-                                            st.date_update, 
-                                            (
-                                                SELECT sm.message 
-                                                FROM support_message sm 
-                                                WHERE sm.id = (
-                                                    SELECT MAX(sm_inner.id) 
-                                                    FROM support_message sm_inner 
-                                                    WHERE sm_inner.thread_id = st.id
-                                                )
-                                            ) AS message, 
-                                            st.private, 
-                                            st.is_close
-                                        FROM 
-                                            support_thread st
-                                        WHERE 
-                                            st.thread_id = ?
-                                        ORDER BY 
-                                            st.date_update DESC;
-                                    ", [$id]);
+            return sql::getRows("
+                                SELECT 
+                                    st.id, 
+                                    st.thread_id, 
+                                    st.owner_id, 
+                                    (
+                                        SELECT sm.user_id 
+                                        FROM support_message sm 
+                                        WHERE sm.id = (
+                                            SELECT MAX(sm_inner.id) 
+                                            FROM support_message sm_inner 
+                                            WHERE sm_inner.thread_id = st.id
+                                        )
+                                    ) AS last_user_id, 
+                                    st.date_update, 
+                                    (
+                                        SELECT SUBSTRING(sm.message, 1, 200) 
+                                        FROM support_message sm 
+                                        WHERE sm.id = (
+                                            SELECT MAX(sm_inner.id) 
+                                            FROM support_message sm_inner 
+                                            WHERE sm_inner.thread_id = st.id
+                                        )
+                                    ) AS message, 
+                                    st.private, 
+                                    st.is_close
+                                FROM 
+                                    support_thread st
+                                WHERE 
+                                    st.thread_id = ?
+                                ORDER BY 
+                                    st.date_update DESC;
+                            ", [$id]);
+
         }
-        return sql::getRows("SELECT st.id, st.thread_id, st.owner_id, st.last_user_id, st.date_update, ( SELECT sm.message FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS message, st.private, st.is_close FROM support_thread st ORDER BY st.date_update DESC; ");
+        return sql::getRows("SELECT st.id, st.thread_id, st.owner_id, ( SELECT sm.user_id FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS last_user_id, st.date_update, ( SELECT SELECT SUBSTRING(sm.message, 1, 200)  FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS message, st.private, st.is_close FROM support_thread st ORDER BY st.date_update DESC; ");
     }
 
     public static function getSection(int $threadId): ?array
