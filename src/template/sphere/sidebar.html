@@ -78,8 +78,18 @@
           </a>
         </li>
 
+        {% if getUser().isAuth() %}
 
+        {% if getServer().getReferral().isEnable() %}
+        <li class="slide enable_referral">
+          <a href="/referral" class="side-menu__item">
+            <i class="fe fe-users side-menu__icon"></i>
+            <span class="side-menu__label">{{phrase(306)}}</span>
+          </a>
+        </li>
+        {% endif %}
 
+        {% endif %}
 
         {% if config().enabled().isEnableSupport() %}
         <li class="slide enable_support" {% if config().enabled().isEnableSupport() == false
