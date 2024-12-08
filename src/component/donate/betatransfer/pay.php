@@ -171,10 +171,6 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
         if(empty(self::getConfigValue('public_api_key')) OR empty(self::getConfigValue('secret_api_key'))){
             board::error("betatransfer token is empty");
         }
-        $status = $_POST['status'] ?? 'bad';
-        if ($status != 'success'){
-            die('No success');
-        }
         $sign = $_POST['sign'] ?? null;
         $amount = (float)$_POST['amount'] ?? null;
         $orderAmount = $_POST['orderAmount'] ?? 0; //Сумма без комиссии
