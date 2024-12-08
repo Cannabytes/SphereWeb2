@@ -32,6 +32,9 @@ class update
                 $this->__TOKEN__ = __TOKEN__;
                 include "src/model/db/sql.php";
                 $this->checkNewCommit();
+
+                include "uploads/update_sql.php";
+                new updateSql();
                 include "uploads/cleaning.php";
             }
         } else {
@@ -66,19 +69,18 @@ class update
 
                         $curlResponse = self::getContentUsingCurl($link);
                         if ( ! $curlResponse['success']) {
-                            throw new Exception("Не удалось получить контент по ссылке: " . $link);
+                            return;
                         }
 
                         $content = $curlResponse['data'];
 
                         $writeResult = file_put_contents($file, $content);
                         if ($writeResult === false) {
-                            throw new Exception("Не удалось записать контент в файл: " . $file);
+                            return;
                         }
-
                         $writtenContent = file_get_contents($file);
                         if ($writtenContent === false || $writtenContent !== $content) {
-                            throw new Exception("Содержимое файла не совпадает с ожидаемым: " . $file);
+                            return;
                         }
                     } elseif ($status == 'removed') {
                         if ($file == 'data/db.php') {
