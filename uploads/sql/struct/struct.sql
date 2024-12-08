@@ -695,6 +695,17 @@ CREATE TABLE `items_increase` (
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
+DROP TABLE IF EXISTS `support_message`;
+CREATE TABLE `support_message` (
+  `id` int(11) NOT NULL,
+  `thread_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `message` mediumtext,
+  `screens` varchar(1000) NOT NULL,
+  `date_update` datetime DEFAULT NULL,
+  `date_create` datetime DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
 DROP TABLE IF EXISTS `support_message_screen`;
 CREATE TABLE `support_message_screen` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -702,7 +713,7 @@ CREATE TABLE `support_message_screen` (
   `user_id` int(11) NOT NULL,
   `date_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `support_thread`;
 CREATE TABLE `support_thread` (
@@ -716,7 +727,7 @@ CREATE TABLE `support_thread` (
   `date_update` datetime DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
 DROP TABLE IF EXISTS `support_thread_name`;
@@ -727,7 +738,7 @@ CREATE TABLE `support_thread_name` (
   `thread_count` int(11) NOT NULL DEFAULT '0',
   `weight` int(11) DEFAULT '0',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `support_thread_name` (`id`, `thread_name`, `moderators`, `thread_count`, `weight`) VALUES
 (1, 'account', NULL, 0, 0),
@@ -735,6 +746,6 @@ INSERT INTO `support_thread_name` (`id`, `thread_name`, `moderators`, `thread_co
 (3, 'Server problems', NULL, 0, 0),
 (4, 'Payment problems', NULL, 0, 0),
 (5, 'Complaints about players', NULL, 0, 0),
-(6, 'other', NULL,01, 0);
+(6, 'other', NULL, 0, 0);
 
 SET FOREIGN_KEY_CHECKS = 1;

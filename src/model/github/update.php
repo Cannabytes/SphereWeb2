@@ -49,7 +49,6 @@ class update
                 board::success("Обновление не требуется");
                 return;
             }
-
             if ( ! $sphere['status']) {
                 set_time_limit(600);
                 $last_commit_now = $sphere['last_commit_now'];
