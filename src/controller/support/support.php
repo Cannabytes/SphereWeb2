@@ -83,27 +83,31 @@ class support
     {
         if ($id != null) {
             return sql::getRows("SELECT 
-                                            support_thread.id, 
-                                            support_thread.thread_id, 
-                                            support_thread.owner_id, 
-                                            support_thread.last_user_id, 
-                                            support_thread.date_update, 
-                                            support_message.message,
-                                            support_thread.private,
-                                            support_thread.is_close
+                                            st.id, 
+                                            st.thread_id, 
+                                            st.owner_id, 
+                                            st.last_user_id, 
+                                            st.date_update, 
+                                            (
+                                                SELECT sm.message 
+                                                FROM support_message sm 
+                                                WHERE sm.id = (
+                                                    SELECT MAX(sm_inner.id) 
+                                                    FROM support_message sm_inner 
+                                                    WHERE sm_inner.thread_id = st.id
+                                                )
+                                            ) AS message, 
+                                            st.private, 
+                                            st.is_close
                                         FROM 
-                                            support_thread 
-                                        INNER JOIN 
-                                            support_message 
-                                        ON 
-                                            support_thread.last_message_id = support_message.id 
+                                            support_thread st
                                         WHERE 
-                                            support_thread.thread_id = ? 
+                                            st.thread_id = ?
                                         ORDER BY 
-                                            support_thread.date_update DESC;
-                                        ", [$id]);
+                                            st.date_update DESC;
+                                    ", [$id]);
         }
-        return sql::getRows("SELECT support_thread.id, support_thread.thread_id, support_thread.owner_id, support_thread.last_user_id, support_thread.date_update, support_message.message, support_thread.private, support_thread.is_close FROM support_thread INNER JOIN support_message ON support_thread.last_message_id = support_message.id ORDER BY support_thread.date_update DESC");
+        return sql::getRows("SELECT st.id, st.thread_id, st.owner_id, st.last_user_id, st.date_update, ( SELECT sm.message FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS message, st.private, st.is_close FROM support_thread st ORDER BY st.date_update DESC; ");
     }
 
     public static function getSection(int $threadId): ?array
@@ -364,29 +368,35 @@ class support
         if (self::isUserModerator() or user::self()->isAdmin()) {
             $postId = $_POST['postId'] ?? board::error("Нет ID объекта");
             $row = sql::getRow("SELECT * FROM `support_message` WHERE `id` = ? LIMIT 1", [$postId]);
-            if ($row['screens']) {
-                $screens = json_decode($row['screens'], true);
-                if ($screens) {
-                    foreach ($screens as $screen) {
-                        $screenBaseName = basename($screen);
-                        sql::run("DELETE FROM support_message_screen WHERE `filename` = ?", [$screenBaseName]);
-                        $fullPath = realpath(ltrim($screen, '/'));
-                        if ($fullPath && file_exists($fullPath)) {
-                            unlink($fullPath);
-                            $lastDotPos = mb_strrpos($fullPath, '.');
-                            if ($lastDotPos !== false) {
-                                $baseName = substr($fullPath, 0, $lastDotPos);
-                                $extension = substr($fullPath, $lastDotPos + 1);
-                                $thumbnailPath = $baseName . '_thumb.' . $extension;
-                                unlink($thumbnailPath);
+            if($row){
+                $thread_id = $row['thread_id'];
+                if ($row['screens']) {
+                    $screens = json_decode($row['screens'], true);
+                    if ($screens) {
+                        foreach ($screens as $screen) {
+                            $screenBaseName = basename($screen);
+                            sql::run("DELETE FROM support_message_screen WHERE `filename` = ?", [$screenBaseName]);
+                            $fullPath = realpath(ltrim($screen, '/'));
+                            if ($fullPath && file_exists($fullPath)) {
+                                unlink($fullPath);
+                                $lastDotPos = mb_strrpos($fullPath, '.');
+                                if ($lastDotPos !== false) {
+                                    $baseName = substr($fullPath, 0, $lastDotPos);
+                                    $extension = substr($fullPath, $lastDotPos + 1);
+                                    $thumbnailPath = $baseName . '_thumb.' . $extension;
+                                    unlink($thumbnailPath);
+                                }
                             }
                         }
                     }
                 }
+
+                sql::run("DELETE FROM support_message WHERE `id` = ?", [$postId]);
+
+                board::reload();
+                board::success("Удалено");
+
             }
-            sql::run("DELETE FROM support_message WHERE `id` = ?", [$postId]);
-            board::reload();
-            board::success("Удалено");
         } else {
             board::error("Запрещенное действие");
         }
