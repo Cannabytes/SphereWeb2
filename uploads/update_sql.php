@@ -12,29 +12,8 @@ CREATE TABLE IF NOT EXISTS `support_thread_name` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT = 1 DEFAULT  CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
--- Вставляем данные, только если таблица была создана
-INSERT INTO `support_thread_name` (`id`, `thread_name`, `moderators`, `thread_count`, `weight`) 
-SELECT 1, 'account', NULL, 1, 0
-WHERE NOT EXISTS (SELECT 1 FROM `support_thread_name` LIMIT 1)
-UNION ALL
-SELECT 2, 'Client, crash', NULL, 1, 0
-WHERE NOT EXISTS (SELECT 1 FROM `support_thread_name` LIMIT 1)
-UNION ALL
-SELECT 3, 'Server problems', NULL, 1, 0
-WHERE NOT EXISTS (SELECT 1 FROM `support_thread_name` LIMIT 1)
-UNION ALL
-SELECT 4, 'Payment problems', NULL, 3, 0
-WHERE NOT EXISTS (SELECT 1 FROM `support_thread_name` LIMIT 1)
-UNION ALL
-SELECT 5, 'Complaints about players', NULL, 1, 0
-WHERE NOT EXISTS (SELECT 1 FROM `support_thread_name` LIMIT 1)
-UNION ALL
-SELECT 6, 'other', NULL, 1, 0
-WHERE NOT EXISTS (SELECT 1 FROM `support_thread_name` LIMIT 1);
-
-
 CREATE TABLE IF NOT EXISTS `support_thread` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `thread_id` int(11) DEFAULT NULL,
   `owner_id` int(11) DEFAULT NULL COMMENT 'создатель вопроса',
   `last_user_id` int(11) DEFAULT NULL COMMENT 'ID последний ответ',
@@ -42,9 +21,9 @@ CREATE TABLE IF NOT EXISTS `support_thread` (
   `private` int(11) NOT NULL DEFAULT '0',
   `is_close` int(11) NOT NULL DEFAULT '0',
   `date_update` datetime DEFAULT NULL,
-  `date_create` datetime DEFAULT NULL
-) ENGINE=InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
-
+  `date_create` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 CREATE TABLE IF NOT EXISTS `support_message` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
