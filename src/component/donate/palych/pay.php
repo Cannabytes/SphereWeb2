@@ -94,7 +94,7 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
         if($_POST['Status'] != 'success'){
-            echo "Status no success";
+            echo "Status no success";exit;
         }
 
         $invId = $_POST['InvId'] ?? ""; // Уникальный идентификатор заказа, переданный при формировании счета
