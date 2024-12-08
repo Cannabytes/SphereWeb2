@@ -93,6 +93,10 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
 
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
+        if($_POST['Status'] != 'success'){
+            echo "Status no success";
+        }
+
         $invId = $_POST['InvId'] ?? ""; // Уникальный идентификатор заказа, переданный при формировании счета
         $amount = $_POST['OutSum']; //Сумма платежа
         $currencyIn = $_POST['CurrencyIn']; // Валюта, в которой оплачивался счет
@@ -102,10 +106,10 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
         //Проверяем подпись
         if (!$this->checkSignature($signatureValue, $amount, $invId)){
             echo 'checksum error';exit;
-//            file_put_contents(__DIR__ . '/error_checksumm.log', '_REQUEST: ' . print_r($invId, true) . PHP_EOL, FILE_APPEND);
         }
 
         $amount   = donate::currency($amount, $currencyIn);
+        donate::control_uuid($invId, get_called_class());
 
         \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['OutSum'], $currencyIn, get_called_class()]);
         user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class(), input: $input);

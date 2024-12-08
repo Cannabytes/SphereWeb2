@@ -93,6 +93,10 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
 
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
+        if($_POST['Status'] != 'success'){
+            echo "Status no success";
+        }
+
         $invId = $_POST['InvId'] ?? ""; // Уникальный идентификатор заказа, переданный при формировании счета
         $amount = $_POST['OutSum']; //Сумма платежа
         $currencyIn = $_POST['CurrencyIn']; // Валюта, в которой оплачивался счет
