@@ -61,17 +61,21 @@ class index
             ]);
         }
 
-        $updateLog = require 'uploads/update_log.php';
-        $myLang = user::self()->getLang();
-        $updateLog = array_map(function ($item) use ($myLang) {
-            if (isset($item['message'][$myLang])) {
-                $item['message'] = $item['message'][$myLang];
-            } else {
-                $item['message'] = null;
-            }
-            return $item;
-        }, $updateLog);
-
+        $updateLog = "uploads/update_log.php";
+        if(file_exists($updateLog)){
+            $updateLog = require 'uploads/update_log.php';
+            $myLang = user::self()->getLang();
+            $updateLog = array_map(function ($item) use ($myLang) {
+                if (isset($item['message'][$myLang])) {
+                    $item['message'] = $item['message'][$myLang];
+                } else {
+                    $item['message'] = null;
+                }
+                return $item;
+            }, $updateLog);
+        }else{
+            $updateLog = [];
+        }
 
         tpl::addVar([
             "sphereAPIError" => $sphereAPIError,

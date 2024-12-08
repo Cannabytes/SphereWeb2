@@ -696,7 +696,7 @@ CREATE TABLE `items_increase` (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 DROP TABLE IF EXISTS `support_message_screen`;
-CREATE TABLE IF NOT EXISTS `support_message_screen` (
+CREATE TABLE `support_message_screen` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `filename` varchar(60) NOT NULL,
   `user_id` int(11) NOT NULL,
@@ -705,7 +705,7 @@ CREATE TABLE IF NOT EXISTS `support_message_screen` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `support_thread`;
-CREATE TABLE IF NOT EXISTS `support_thread` (
+CREATE TABLE `support_thread` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `thread_id` int(11) DEFAULT NULL,
   `owner_id` int(11) DEFAULT NULL COMMENT 'создатель вопроса',
@@ -720,7 +720,7 @@ CREATE TABLE IF NOT EXISTS `support_thread` (
 
 
 DROP TABLE IF EXISTS `support_thread_name`;
-CREATE TABLE IF NOT EXISTS `support_thread_name` (
+CREATE TABLE `support_thread_name` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `thread_name` varchar(600) DEFAULT NULL,
   `moderators` varchar(1000) DEFAULT NULL,
@@ -730,13 +730,11 @@ CREATE TABLE IF NOT EXISTS `support_thread_name` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `support_thread_name` (`id`, `thread_name`, `moderators`, `thread_count`, `weight`) VALUES
-(1, 'account', NULL, 1, 0),
-(2, 'Client, crash', NULL, 1, 0),
-(3, 'Server problems', NULL, 1, 0),
-(4, 'Payment problems', NULL, 3, 0),
-(5, 'Complaints about players', NULL, 1, 0),
-(6, 'other', NULL, 1, 0);
-
-
+(1, 'account', NULL, 0, 0),
+(2, 'Client, crash', NULL, 0, 0),
+(3, 'Server problems', NULL, 0, 0),
+(4, 'Payment problems', NULL, 0, 0),
+(5, 'Complaints about players', NULL, 0, 0),
+(6, 'other', NULL,01, 0);
 
 SET FOREIGN_KEY_CHECKS = 1;

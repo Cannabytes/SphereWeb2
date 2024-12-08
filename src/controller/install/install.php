@@ -362,7 +362,7 @@ class install
 
             session::add('id', (int)$pdo->lastInsertId());
             session::add('email', $email);
-            session::add('password', $password);
+            session::add('password', $adminPassword);
 
             echo json_encode([
                 "type" => "notice",
@@ -370,6 +370,11 @@ class install
                 'ok' => true,
                 'message' => 'Установлено',
             ]);
+
+            if(file_exists("uploads/sql.php")){
+                unlink("uploads/sql.php");
+            }
+
             exit();
         } catch (PDOException|Exception $e) {
             echo json_encode([

@@ -65,7 +65,7 @@ class update
                     ];
                     $filePath = fileSys::get_dir($file);
                     if (!is_writable(dirname($filePath))) {
-                        throw new Exception("Директория не доступна для записи: " . dirname($filePath));
+//                        throw new Exception("Директория не доступна для записи: " . dirname($filePath));
                     }
 
                     if ($status == 'added' || $status == 'modified') {
@@ -91,7 +91,18 @@ class update
                         if ($file == 'data/db.php') {
                             continue;
                         }
-                        unlink($filePath);
+
+                        $filePath = fileSys::get_dir($file);
+
+                        if (is_dir($filePath)) {
+                            self::deleteDirectory($filePath);
+                        } else {
+                            if (file_exists($filePath)) {
+                                if (!unlink($filePath)) {
+                                    throw new Exception("Не удалось удалить файл: " . $filePath);
+                                }
+                            }
+                        }
                     }
                 }
                 self::addLastCommit($last_commit_now);
@@ -106,6 +117,30 @@ class update
             }
         } catch (Exception $e) {
             board::error("Произошла ошибка во время обновления: " . $e->getMessage());
+        }
+    }
+
+    private static function deleteDirectory(string $dirPath): void
+    {
+        if (!is_dir($dirPath)) {
+            throw new Exception("Путь не является директорией: " . $dirPath);
+        }
+
+        $files = array_diff(scandir($dirPath), ['.', '..']);
+
+        foreach ($files as $file) {
+            $filePath = $dirPath . DIRECTORY_SEPARATOR . $file;
+            if (is_dir($filePath)) {
+                self::deleteDirectory($filePath); // Рекурсивный вызов для вложенной директории
+            } else {
+                if (!unlink($filePath)) {
+                    throw new Exception("Не удалось удалить файл: " . $filePath);
+                }
+            }
+        }
+
+        if (!rmdir($dirPath)) {
+            throw new Exception("Не удалось удалить директорию: " . $dirPath);
         }
     }
 
