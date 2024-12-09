@@ -72,8 +72,10 @@ class userModel
         if ($user) {
             if ($user['server_id'] === null) {
                 $server_id = server::getDefaultServer();
-                $this->changeServerId($server_id, $user['id']);
-                $user['server_id'] = $server_id;
+                if($server_id!=null){
+                    $this->changeServerId($server_id, $user['id']);
+                    $user['server_id'] = $server_id;
+                }
             } else {
                 $allServersId = server::getServerIds();
                 if ($allServersId != null) {
