@@ -50,7 +50,7 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
 
         $data = [
             'amount' => $order_amount,
-            'order_id' => '123456',
+            'order_id' => (string)(time() . mt_rand(1, 999)),
             'type' => 'normal',
             'shop_id' => self::getConfigValue('shop_id'),
             'custom' => user::self()->getId(),
@@ -104,7 +104,6 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
         //Проверяем подпись
         if (!$this->checkSignature($signatureValue, $amount, $invId)){
             echo 'checksum error';exit;
-//            file_put_contents(__DIR__ . '/error_checksumm.log', '_REQUEST: ' . print_r($invId, true) . PHP_EOL, FILE_APPEND);
         }
 
         $amount   = donate::currency($amount, $currencyIn);

@@ -50,7 +50,7 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
 
         $data = [
             'amount' => $order_amount,
-            'order_id' => '123456',
+            'order_id' => (string)(time() . mt_rand(1, 999)),
             'type' => 'normal',
             'shop_id' => self::getConfigValue('shop_id'),
             'custom' => user::self()->getId(),
