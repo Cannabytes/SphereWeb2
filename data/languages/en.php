@@ -739,10 +739,71 @@ return [
 	'680' => 'You are an example of true generosity. Thank you from the bottom of our hearts! 🌹',
 	'5451' => 'Issued +%s SphereCoin for %s (%s)',
 	'5461' => 'Cumulative bonus for donation: +%s',
-	'Complaints about players' => 'Complaints about players',
-	'Payment problems' => 'Payment problems',
-	'Server problems' => 'Server problems',
-	'Client, crash' => 'Client, crash',
+	'Insertion disabled' => 'Insertion disabled',
+	'Which category should I move the dialog to?' => 'Which category should I move the dialog to?',
+	'Move' => 'Move',
+	'Send message' => 'Send message',
+	'Private question (visible only to you and moderators)' => 'Private question (visible only to you and moderators)',
+	'Category' => 'Category',
+	'Detailed description of the problem' => '<ol>
+<li>
+<strong>Detailed description of the problem:</strong>
+<ul>
+<li>What exactly is not working?</li>
+<li>Does an error occur? If so, provide its text or code.</li>
+<li>In what context does the problem occur (e.g. when entering the game, during a certain action)?
+</li>
+<li>At what point was the problem noticed?</li>
+</ul>
+</li>
+<li>
+<strong>If the problem is related to the character:</strong>
+<ul>
+<li>Nickname of the character.</li>
+<li>Level, class, or other characteristics of the character, if they may be important.
+</li>
+<li>When did you first notice the problem with the character?</li>
+<li>Does the error repeat when interacting with certain objects
+or NPCs?
+</li>
+</ul>
+</li>
+<li>
+<strong>If you tried to troubleshoot the issue, please tell us what you
+tried:</strong>
+<ul>
+<li>Were standard troubleshooting methods used (restarting the game, clearing the cache, etc.)?
+</li>
+<li>Were any non-standard steps taken (e.g.,
+changing settings, using third-party programs)?
+</li>
+<li>Which of the steps resulted in positive or negative results?
+</li>
+</ul>
+</li>
+</ol>
+
+<h3>Additional:</h3>
+<ul>
+<li>If you have <strong>screenshots or videos</strong> of the issue,
+attach them to the message.
+</li>
+</ul>',
+	'much information as possible' => 'For a faster and more accurate solution to your question, please provide as much information as possible.',
+	'How to describe the problem correctly?' => 'How to describe the problem correctly?',
+	'I ask a question' => 'I ask a question',
+	'Viewing is open' => 'Viewing is open',
+	'Viewing is closed' => 'Viewing is closed',
+	'Select category' => 'Select category',
+	'Setting up moderators' => 'Setting up moderators',
+	'Removal' => 'Removal',
+	'Removing categories' => 'Removing categories',
+	'Phrase ID category name' => 'Phrase ID - category name',
+	'As an administrator/moderator you can use this section' => 'As an administrator/moderator you can use this section',
+	'Technical support is disabled' => 'Technical support is disabled',
+	'Add moderator' => 'Add moderator',
+	'Categories' => 'Categories',
+	'Ask a question' => 'Ask a question',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Access is denied',
 	'Account added' => 'Account added',
@@ -854,6 +915,7 @@ return [
 	'Checking the port' => 'Checking the port',
 	'clear_dialog' => 'Clear dialog',
 	'Click to go to the payment page' => 'Click to go to the payment page',
+	'Client, crash' => 'Client, crash',
 	'close' => 'Close',
 	'code' => 'Code',
 	'code_bonus' => 'Bonus code',
@@ -866,6 +928,7 @@ return [
 	'comparison_files' => 'Default: 20MB<br>
             It works like this: When you click update patch, the files of your game client and the server patch files are compared.<br>
             Large files can be compared by the number of their sizes, you need to indicate the size of large files.',
+	'Complaints about players' => 'Complaints about players',
 	'completed_ref_quest_count' => 'Completed the referral quest %d players',
 	'confirm' => 'Confirm',
 	'connect' => 'Connect',
@@ -1353,6 +1416,7 @@ This corresponds to an online boost coefficient of 3.15.<br>
 	'password_reset_email' => 'This email will be sent to the user upon password reset',
 	'patch_creation' => 'Patch creation',
 	'pay' => 'Pay',
+	'Payment problems' => 'Payment problems',
 	'Payment was successful' => 'Payment was successful',
 	'payment_system_description' => 'Payment system description',
 	'payment_system_settings' => 'Payment system settings',
@@ -1446,6 +1510,7 @@ Link expiration time: %%expire_time%%',
 	'send_to_char' => 'Send to character',
 	'send_to_wh' => 'Send to warehouse',
 	'sent_to_user' => 'Sent to user',
+	'Server problems' => 'Server problems',
 	'server' => 'Server',
 	'server_build' => 'Server build',
 	'server_build_info' => 'Server build information',

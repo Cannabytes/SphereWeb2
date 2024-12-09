@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Обращение в техподдержку{% endblock %}
+{% block title %}{{ phrase('I ask a question') }} - {{ phrase('technical support') }}{% endblock %}
 
 {% block content %}
 
@@ -9,13 +9,11 @@
     <div class="main-mail-container gap-4 d-flex">
         <div class="mails-information">
             <div class="mail-info-header p-1 d-xxl-flex align-items-center">
-                <div class="mail-option-read d-md-flex  d-block">
+                <div class="mail-option-read d-md-flex d-block">
                     <a aria-label="anchor" href="/support" class="vertical-phone" data-bs-toggle="tooltip"
                        data-bs-original-title="Назад">
                         <i class="bx bx-left-arrow-alt"></i>
                     </a>
-
-
                 </div>
             </div>
 
@@ -29,64 +27,16 @@
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapsecustomicon1One" aria-expanded="false"
                                     aria-controls="collapsecustomicon1One">
-                                Как описать проблему правильно?
+                                {{ phrase('How to describe the problem correctly?') }}
                             </button>
                         </h2>
                         <div id="collapsecustomicon1One" class="accordion-collapse collapse"
                              aria-labelledby="headingcustomicon1One" data-bs-parent="#accordionFAQ1" style="">
                             <div class="accordion-body">
                                 <div class="support-request">
-                                    <h2>Для более быстрого и точного решения вашего вопроса, пожалуйста, предоставьте
-                                        как можно больше информации:</h2>
+                                    <h2>{{ phrase('much information as possible') }}:</h2>
 
-                                    <ol>
-                                        <li>
-                                            <strong>Подробное описание проблемы:</strong>
-                                            <ul>
-                                                <li>Что именно не работает?</li>
-                                                <li>Возникает ли ошибка? Если да, укажите её текст или код.</li>
-                                                <li>В каком контексте возникает проблема (например, при входе в игру, в
-                                                    процессе выполнения определённого действия)?
-                                                </li>
-                                                <li>В какой момент проблема была замечена?</li>
-                                            </ul>
-                                        </li>
-                                        <li>
-                                            <strong>Если проблема связана с персонажем:</strong>
-                                            <ul>
-                                                <li>Никнейм персонажа.</li>
-                                                <li>Уровень, класс или другие характеристики персонажа, если они могут
-                                                    быть важными.
-                                                </li>
-                                                <li>Когда впервые заметили проблему с персонажем?</li>
-                                                <li>Повторяется ли ошибка при взаимодействии с определёнными объектами
-                                                    или NPC?
-                                                </li>
-                                            </ul>
-                                        </li>
-                                        <li>
-                                            <strong>Если вы пытались решить проблему, расскажите, что вы
-                                                пробовали:</strong>
-                                            <ul>
-                                                <li>Применялись ли стандартные методы устранения неполадок (перезапуск
-                                                    игры, очистка кэша и т.д.)?
-                                                </li>
-                                                <li>Были ли предприняты какие-либо нестандартные шаги (например,
-                                                    изменение настроек, использование сторонних программ)?
-                                                </li>
-                                                <li>Что из предпринятых шагов привело к положительным или отрицательным
-                                                    результатам?
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ol>
-
-                                    <h3>Дополнительно:</h3>
-                                    <ul>
-                                        <li>Если у вас есть <strong>скриншоты или видеозаписи</strong> проблемы,
-                                            прикрепите их к сообщению.
-                                        </li>
-                                    </ul>
+                                    {{ phrase('Detailed description of the problem')|raw }}
                                 </div>
 
                             </div>
@@ -99,7 +49,7 @@
                 <div class="mail-reply">
 
                     <div class="col-xl-3 mb-1">
-                        <label class="form-label">Категория :</label>
+                        <label class="form-label">{{ phrase('Category') }} :</label>
                         <select class="form-control" data-trigger name="section" id="section">
                             {% for section in sections %}
                             <option value="{{section.id}}">{{phrase(section.thread_name)}}</option>
@@ -110,7 +60,7 @@
                     <div class="form-check form-check-md d-flex align-items-center mb-2">
                         <input class="form-check-input" type="checkbox" value="" name="private" id="private">
                         <label class="form-check-label" for="private">
-                            Приватный вопрос (виден только вам и модераторам)
+                            {{ phrase('Private question (visible only to you and moderators)') }}
                         </label>
                     </div>
 
@@ -124,7 +74,7 @@
 
                     <button id="createSupportRequest" aria-label="button" type="button"
                             class="btn btn-success d-inline-flex">
-                        <i class="ri-share-forward-line me-1 align-middle"></i>Отправить сообщение
+                        <i class="ri-share-forward-line me-1 align-middle"></i>{{ phrase('Send message') }}
                     </button>
 
                     <button aria-label="anchor" class="btn btn-icon mx-2 btn-primary-light"
@@ -137,7 +87,6 @@
                     <div class="modal fade" id="modalLoadImgPanel" tabindex="-1"
                          aria-labelledby="modalLoadImgPanel" data-bs-keyboard="false"
                          aria-hidden="true">
-                        <!-- Scrollable modal -->
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
 
@@ -226,7 +175,7 @@
         let screens = [];
         let isPrivate = $('#private').prop('checked');
         if ($.trim(editorContent) === '<p><br></p>') {
-            alert('Сообщение не может быть пустым!');
+            alert('{{ phrase(502) }}');
             return;
         }
         $('#screens .glightbox').each(function () {
@@ -257,13 +206,11 @@
             // Проверяем, существует ли элемент #screens
             const screensElement = document.querySelector('#screens');
             if (!screensElement) {
-                console.error("Элемент с ID 'screens' не найден.");
                 return;
             }
 
             // Проверяем, содержит ли response нужное свойство
             if (!response.screen) {
-                console.error("Ответ сервера не содержит 'screen'.", response);
                 return;
             }
 
@@ -281,7 +228,6 @@
                 loop: true
             });
 
-            console.log('Изображение добавлено:', response.screen);
         }
 
         FilePond.setOptions({
@@ -308,7 +254,6 @@
                             $('#modalLoadImgPanel').modal('hide');
                             return parsedResponse;
                         } catch (e) {
-                            console.error('Ошибка при обработке ответа сервера:', e);
                             return null;
                         }
                     }
@@ -340,7 +285,6 @@
         } else {
             console.error("Элемент '.multiple-filepond' не найден.");
         }
-
     })();
 </script>
 

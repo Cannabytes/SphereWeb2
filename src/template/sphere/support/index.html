@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Тикет{% endblock %}
+{% block title %}{{ phrase('technical support') }}{% endblock %}
 
 {% block content %}
 
@@ -11,8 +11,8 @@
         <div class="card custom-card">
             <div class="card-body">
                 <blockquote class="blockquote mb-0 text-center">
-                    <h6 class="text-danger">Техническая поддержка отключена.</h6>
-                    <h6 class="">Вы как администратор/модератор можете пользоваться этим разделом.</h6>
+                    <h6 class="text-danger">{{ phrase('Technical support is disabled') }}</h6>
+                    <h6 class="">{{ phrase('As an administrator/moderator you can use this section') }}</h6>
                 </blockquote>
             </div>
         </div>
@@ -24,7 +24,7 @@
             <div class="d-grid align-items-top p-2 border-bottom">
                 <a href="{% if getUser().isAuth() %}/support/new{% else %}/login{% endif %}" type="button"
                    class="btn btn-primary btn-sm d-flex align-items-center justify-content-center">
-                    <i class="ri-add-circle-line fs-16 align-middle me-1"></i>Задать вопрос
+                    <i class="ri-add-circle-line fs-16 align-middle me-1"></i>{{ phrase('Ask a question') }}
                 </a>
             </div>
             <div>
@@ -48,8 +48,8 @@
 
                 {% if getUser().isAdmin() %}
                 <div class="card-footer text-center">
-                    <a href="/support/admin/add/section" data-bs-toggle="modal" data-bs-target="#add-section" class="btn btn-sm btn-primary-light m-1"><i class="ri-bar-chart-horizontal-line me-2 align-middle d-inline-block"></i>Разделы</a>
-                    <a href="/support/admin/add/moderator" data-bs-toggle="modal" data-bs-target="#add-moderator" class="btn btn-sm btn-success-light m-1"><i class="ri-group-line me-2 align-middle d-inline-block"></i>Добавить модератора</a>
+                    <a href="/support/admin/add/section" data-bs-toggle="modal" data-bs-target="#add-section" class="btn btn-sm btn-primary-light m-1"><i class="ri-bar-chart-horizontal-line me-2 align-middle d-inline-block"></i>{{ phrase('Categories') }}</a>
+                    <a href="/support/admin/add/moderator" data-bs-toggle="modal" data-bs-target="#add-moderator" class="btn btn-sm btn-success-light m-1"><i class="ri-group-line me-2 align-middle d-inline-block"></i>{{ phrase('Add moderator') }}</a>
                 </div>
                 {% endif %}
 
@@ -61,16 +61,16 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h6 class="modal-title" id="add-sectionLabel">Разделы</h6>
+                        <h6 class="modal-title" id="add-sectionLabel">{{ phrase('Categories') }}</h6>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                     </div>
                     <div class="modal-body px-4">
                         <div class="row">
                             <div class="col-xl-6 mb-2">
-                                <label for="phraseId" class="form-label"><a target="_blank" href="/admin/phrases/custom">ID фразы раздела</a><sup><i class="ri-star-s-fill text-danger fs-8"></i></sup></label>
+                                <label for="phraseId" class="form-label"><a target="_blank" href="/admin/phrases/custom">{{ phrase('Phrase ID category name') }}</a><sup><i class="ri-star-s-fill text-danger fs-8"></i></sup></label>
                                 <input type="text" class="form-control" id="phraseId" value="">
-                                <button id="add_section" type="button" class="btn btn-sm btn-success mt-2"><i class="ri-stack-line me-2"></i> Добавить</button>
+                                <button id="add_section" type="button" class="btn btn-sm btn-success mt-2"><i class="ri-stack-line me-2"></i> {{ phrase(438) }}</button>
                                 <script>
                                     $("#add_section").on("click", function (){
                                         phraseId = $("#phraseId").val();
@@ -79,7 +79,7 @@
                                 </script>
                             </div>
                             <div class="col-xl-6 mb-2">
-                                <label class="form-label">Удаление разделов</label>
+                                <label class="form-label">{{ phrase('Removing categories') }}</label>
 
                                 <div class="card-body" id="section_delete_list">
 
@@ -94,7 +94,7 @@
 
                                 </div>
 
-                                <button id="delete_section" type="button" class="btn btn-sm btn-danger mt-2"><i class="ri-delete-bin-line me-2"></i> Удаление</button>
+                                <button id="delete_section" type="button" class="btn btn-sm btn-danger mt-2"><i class="ri-delete-bin-line me-2"></i> {{ phrase('Removal') }}</button>
                                 <script>
                                     $("#delete_section").on("click", function () {
                                         let ids = [];
@@ -115,7 +115,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light"
-                                data-bs-dismiss="modal">Закрыть</button>
+                                data-bs-dismiss="modal">{{ phrase('close') }}</button>
                     </div>
                 </div>
             </div>
@@ -125,7 +125,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h6 class="modal-title" id="add-moderatorLabel">Настройка модераторов</h6>
+                        <h6 class="modal-title" id="add-moderatorLabel">{{ phrase('Setting up moderators') }}</h6>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                     </div>
@@ -133,13 +133,13 @@
                         <div class="row">
 
                             <div class="col-xl-6 mb-2">
-                                <label for="selectEmailToModerator" class="form-label">Пользователь<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
+                                <label for="selectEmailToModerator" class="form-label">{{ phrase('user') }}<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
                                 <select class="form-control" name="toMail" id="selectEmailToModerator">
                                     {% for user in getUsers() %}
                                     <option value="{{user.getEmail()}}" >{{user.getEmail()}}</option>
                                     {% endfor %}
                                 </select>
-                                <button id="add_moderator" type="button" class="btn btn-sm btn-primary me-2">Добавить модератора</button>
+                                <button id="add_moderator" type="button" class="btn btn-sm btn-primary me-2">{{ phrase('Add moderator') }}</button>
 
                                 <script>
                                     $("#add_moderator").on("click", function() {
@@ -168,7 +168,7 @@
                         <td class="email-cell">${selectedEmail}</td>
                         <td class="action-cell">
                             <button type="button" class="btn btn-sm btn-danger remove-moderator">
-                                Удалить
+                                {{ phrase('delete') }}
                             </button>
                         </td>
                     </tr>`;
@@ -189,7 +189,7 @@
                             </div>
 
                             <div class="col-xl-6 mb-2">
-                                <label for="section_moderator_list" class="form-label">Выберите раздел<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
+                                <label for="section_moderator_list" class="form-label">{{ phrase('Select category') }}<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
                                 <div class="card-body" id="section_moderator_list">
 
                                     {% for section in sections %}
@@ -224,7 +224,7 @@
 
                         </div>
                         <div class="d-flex justify-content-center align-items-center">
-                            <button id="update_moderator" type="button" class="btn btn-sm btn-success">Сохранить</button>
+                            <button id="update_moderator" type="button" class="btn btn-sm btn-success">{{ phrase(271) }}</button>
                         </div>
 
                         <script>
@@ -294,16 +294,16 @@
                             <div class="me-2 lh-1">
                                 <a aria-label="anchor" href="javascript:void(0);" class="main-mail-star  d-inline-block">
                                     {% if thread.is_close %}
-                                        <i data-bs-toggle="tooltip" data-bs-original-title="Разговор закончен" class="bi bi-lock"></i>
+                                        <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('is_close') }}" class="bi bi-lock"></i>
                                     {% else %}
-                                        <i data-bs-toggle="tooltip" data-bs-original-title="Разговор открыт" class="bi bi-unlock"></i>
+                                        <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('is_open') }}" class="bi bi-unlock"></i>
                                     {% endif %}
                                 </a>
                                 <a aria-label="anchor" href="javascript:void(0);" class="main-mail-star  d-inline-block">
                                     {% if thread.private %}
-                                    <i data-bs-toggle="tooltip" data-bs-original-title="Закрыт просмотр" class="bi bi-eye-slash"></i>
+                                    <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('Viewing is closed') }}" class="bi bi-eye-slash"></i>
                                     {% else %}
-                                    <i data-bs-toggle="tooltip" data-bs-original-title="Просмотр открыт" class="bi bi-eye"></i>
+                                    <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('Viewing is open') }}" class="bi bi-eye"></i>
                                     {% endif %}
                                 </a>
 
