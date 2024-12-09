@@ -87,9 +87,7 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
 
     function webhook(): void
     {
-        $input     = file_get_contents('php://input');
-        $requestData = json_decode($input, true);
-        file_put_contents(__DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r($requestData, true) . PHP_EOL, FILE_APPEND);
+        file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $_REQUEST, true ) . PHP_EOL, FILE_APPEND );
 
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
@@ -113,7 +111,7 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
         donate::control_uuid($signatureValue, get_called_class());
 
         \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['OutSum'], $currencyIn, get_called_class()]);
-        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, message: null, pay_system:  get_called_class(), input: $input);
+        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, message: null, pay_system:  get_called_class());
         donate::addUserBonus($user_id, $amount);
         echo 'YES';
 

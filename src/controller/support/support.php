@@ -55,9 +55,11 @@ class support
             return true;
         }
         foreach (self::$sections as $section) {
-            foreach ($section['moderators'] as $moderator) {
-                if ($moderator == user::self()->getEmail()) {
-                    return true;
+            if($section['moderators'] != null){
+                foreach ($section['moderators'] as $moderator) {
+                    if ($moderator == user::self()->getEmail()) {
+                        return true;
+                    }
                 }
             }
         }
