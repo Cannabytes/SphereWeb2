@@ -2,6 +2,8 @@
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\controller\admin\telegram;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\user;
@@ -113,6 +115,12 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract
         donate::control_uuid($_POST['orderID'], get_called_class());
         //Зачисление на пользовательский аккаунт средств
         $amount = donate::currency($_POST['sum'], $_POST['currency']);
+
+        if (config::load()->notice()->getDonationCrediting()) {
+            $msg = sprintf("Пользователь %s (%s) пополнил баланс на %s %s.\nДобавлено %0.1f внутренней валюты.\nСистема: %s",
+                user::getUserId($user_id)->getEmail(), user::getUserId($user_id)->getName(), $amount, $_POST['currency'], $_POST['sum'], get_called_class());
+            telegram::sendTelegramMessage($msg);
+        }
 
         \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['sum'], $_POST['currency'], get_called_class()]);
         user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate($amount, "Primepayments", get_called_class());

@@ -2,6 +2,8 @@
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\controller\admin\telegram;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\user;
 
@@ -182,6 +184,13 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
             $userId = (int)$data[0];
             donate::control_uuid($sign, get_called_class());
             $amount = donate::currency($amount, $currency);
+
+            if (config::load()->notice()->getDonationCrediting()) {
+                $msg = sprintf("Пользователь %s (%s) пополнил баланс на %s %s.\nДобавлено %0.1f внутренней валюты.\nСистема: %s",
+                    user::getUserId($userId)->getEmail(), user::getUserId($userId)->getName(), $_POST['amount'], $currency, $amount, get_called_class());
+                telegram::sendTelegramMessage($msg);
+            }
+
             \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
             user::getUserId($userId)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
             donate::addUserBonus($userId, $amount);
