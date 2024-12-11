@@ -444,13 +444,47 @@
 
       <div class="card custom-card">
 
-        <div class="card-body">
-          <div id="radialbar-multiple"></div>
-          <div id="echart-gauge-basic" class="echart-charts"></div>
-        </div>
-        <div class="card-footer d-none border-top-0">
+        <div class="card-body ">
+          <div class="table-responsive">
+            <table class="table table-bordered text-nowrap mb-0">
+              <tbody class="top-selling">
 
+              <tr>
+                <th class="">
+                  <span class="fw-semibold fs-13">{{ phrase('status') }}</span>
+                </th>
+                <td><span id="statusLauncher" class=" text-muted fs-13 fw-normal">{{phrase('expectation')}}</span></td>
+              </tr>
+
+              <tr>
+                <th class="">
+                  <span class="fw-semibold fs-13">{{ phrase(477) }}</span>
+                </th>
+                <td><span class=" text-muted fs-13 fw-normal"><span id="loadedFiles">0</span> / <span id="filesTotal">0</span> </span></td>
+              </tr>
+
+              <tr>
+                <th class="">
+                  <span class="fw-semibold fs-13">{{ phrase(30) }}</span>
+                </th>
+                <td><span id="elapsedTimeInSeconds" class=" text-muted fs-13 fw-normal">-</span></td>
+              </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <!--div class="mt-4 text-center">
+            <button type="button" class="btn btn-icon  btn-info-light me-2 bradius"><i class="fe fe-edit"></i></button>
+            <button type="button" class="btn btn-icon  btn-danger-light me-2 bradius"><i class="fe fe-trash"></i></button>
+            <button type="button" class="btn btn-icon  btn-success-light me-2 bradius"><i class="fe fe-download fs-14"></i></button>
+            <button type="button" class="btn btn-icon  btn-warning-light bradius"><i class="fe fe-share-2 fs-14"></i></button>
+          </div-->
+
+          <div id="radialbar-multiple"></div>
         </div>
+
+
       </div>
     </div>
 
@@ -491,18 +525,18 @@
 
   var tokenApi = `{{launcher.tokenApi}}`;
   var serverID = {{launcher.server}};
+  var rateExp = {{getServer(serverID).getRateExp()}};
   var chronicle = `{{launcher.chronicle}}`;
   var button_start = `{{ phrase('launch_game') }}`;
   var application = JSON.parse(`{{application|raw}}`);
   var userLang = `{{getUser().getLang()}}`;
 
-
 </script>
 
 
-<script src="{{template_plugin}}/tpl/jsl/lang.js?v=0.0.1"></script>
-<script src="{{template_plugin}}/tpl/jsl/general.js?v=0.0.4"></script>
-<script src="{{template_plugin}}/tpl/jsl/weblauncher.js?v=0.0.1"></script>
+<script src="{{template_plugin}}/tpl/jsl/lang.js?v=0.0.2"></script>
+<script src="{{template_plugin}}/tpl/jsl/general.js?v=0.0.5"></script>
+<script src="{{template_plugin}}/tpl/jsl/weblauncher.js?v=0.0.4"></script>
 
 
 <script src="{{template}}/assets/libs/echarts/echarts.min.js"></script>
@@ -511,7 +545,6 @@
 <script>
 
   var totalLoaded = 0;
-
   var options = {
     series: [0],
     chart: {
@@ -558,7 +591,6 @@
     options
   );
   chartLoaderStatus.render();
-
   function updateChart(total, action) {
     totalLoaded = total;
     chartLoaderStatus.updateSeries([totalLoaded], totalLoaded);
@@ -579,77 +611,6 @@
       },
     });
   }
-
-  var dom = document.getElementById('echart-gauge-basic');
-  var myChart = echarts.init(dom, null, {
-    renderer: 'canvas',
-    useDirtyRect: false
-  });
-  var app = {};
-  var currentMax = 10; // Начальное максимальное значение
-
-  var option = {
-    tooltip: {
-      formatter: '{a} <br/>{b} : {c} MB/s'
-    },
-    series: [
-      {
-        name: 'Speed Downloading',
-        type: 'gauge',
-        max: currentMax, // Используем переменную currentMax
-        progress: {
-          show: true
-        },
-        detail: {
-          valueAnimation: true,
-          formatter: '{value} MB/s'
-        },
-        data: [
-          {
-            value: 0,
-            name: 'MB/s'
-          }
-        ]
-      }
-    ],
-    color: ["#6c5ffc"]
-  };
-
-  if (option && typeof option === 'object') {
-    myChart.setOption(option);
-  }
-
-  window.addEventListener('resize', myChart.resize);
-
-  function updateGauge(value) {
-    // Округляем значение до ближайшего целого, кратного 5
-    value = Math.round(value / 5) * 5;
-
-    if (value > currentMax) {
-      currentMax = Math.ceil(value / 10) * 10; // Увеличиваем максимальное значение на ближайшее кратное 10
-      myChart.setOption({
-        series: [
-          {
-            max: currentMax // Обновляем максимальное значение
-          }
-        ]
-      });
-    }
-
-    myChart.setOption({
-      series: [
-        {
-          data: [
-            {
-              value: value,
-              name: 'Speed'
-            }
-          ]
-        }
-      ]
-    });
-  }
-
 
 </script>
 

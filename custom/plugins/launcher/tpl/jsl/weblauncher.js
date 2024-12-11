@@ -245,14 +245,14 @@ function ResponseStatus(response) {
             }
             percent = ((response.loaded / response.filesTotal) * 100).toFixed(1)
             $("#domainLauncher").text(response.domain)
-            $("#statusLauncher").text(getPhrase("StatusDownload")).addClass("bg-gd-sea");
+            $("#statusLauncher").text(getPhrase("StatusDownload"));
 
             $("#loadedFiles").text(response.loaded)
             $("#filesTotal").text(response.filesTotal)
             $('#processName').text(getPhrase("file_upload"));
             $('#processRunLevel').text( percent + "%");
 
-            updateChart(percent, "Загрузка");
+            updateChart(percent, getPhrase("file_upload"));
 
             $('title').text("Launcher" + " " + chronicle + " (" + percent + "%)");
 
@@ -270,7 +270,6 @@ function ResponseStatus(response) {
                 drawProgressBar(index, filename, size, totalSize)
             }
 
-            updateGauge(response.downloadSpeed.toFixed(1));
 
             $('#totalSpeedDownload').text((response.downloadSpeed).toFixed(1));
         }
@@ -442,7 +441,10 @@ function startUpdate() {
                 uid: domain,
                 dirID: parseInt($("#selectClient").val()),
                 serverID: serverID,
-                tokenApi: tokenApi
+                tokenApi: tokenApi,
+                rateExp: rateExp,
+                chronicle: chronicle,
+                url: window.location.href,
             };
             sendToLauncher(obj);
             setUpdateClient(true);

@@ -69,6 +69,7 @@ class userModel
             "SELECT `id`, `email`, `password`, `name`, `signature`, `ip`, `date_create`, `date_update`, `access_level`, `donate_point`, `avatar`, `avatar_background`, `timezone`, `country`, `city`, `server_id`, `lang` FROM `users` WHERE id = ? LIMIT 1",
             [$userId]
         );
+
         if ($user) {
             if ($user['server_id'] === null) {
                 $server_id = server::getDefaultServer();

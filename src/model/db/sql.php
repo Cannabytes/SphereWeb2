@@ -5,6 +5,7 @@ namespace Ofey\Logan22\model\db;
 use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\controller\page\error;
 use Ofey\Logan22\template\tpl;
 use PDO;
 use PDOException;
@@ -181,6 +182,9 @@ class sql
             return $stmt;
         } catch (PDOException $e) {
             file_put_contents("sql_error_log.txt", $e->getMessage() . "\n", FILE_APPEND);
+            if($e->getCode() == "42S02"){
+                error::error404($e->getMessage());
+            }
             self::$error     = true;
             self::$exception = $e;
             return $e;

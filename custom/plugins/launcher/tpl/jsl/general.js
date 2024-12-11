@@ -181,27 +181,27 @@ function statusLoad(status) {
   if (lastStatusID === status) {
     switch (status) {
       case 0:
-        $("#statusLauncher").text(getPhrase('StatusWait')).addClass("bg-earth");
+        $("#statusLauncher").text(getPhrase('StatusWait'));
         $('.percent').text(0);
         break;
       case 1:
-        $("#statusLauncher").text(getPhrase('StatusScroll')).addClass("bg-gd-leaf");
+        $("#statusLauncher").text(getPhrase('StatusScroll'));
         break;
       case 2:
-        $("#statusLauncher").text(getPhrase('StatusComparison')).addClass("bg-gd-sea");
+        $("#statusLauncher").text(getPhrase('StatusComparison'));
         break;
       case 3:
-        $("#statusLauncher").text(getPhrase('StatusDownload')).addClass("bg-corporate");
+        $("#statusLauncher").text(getPhrase('StatusDownload'));
         break;
       case 4:
-        $("#statusLauncher").text(getPhrase('StatusCompleted')).addClass("bg-success");
+        $("#statusLauncher").text(getPhrase('StatusCompleted'));
         break;
       case 5:
-        $("#statusLauncher").text(getPhrase('StatusStopped')).addClass("bg-earth");
+        $("#statusLauncher").text(getPhrase('StatusStopped'));
         $('.percent').text(0);
         break;
       case 6:
-        $("#statusLauncher").text(getPhrase('StatusError')).addClass("bg-gd-sun");
+        $("#statusLauncher").text(getPhrase('StatusError'));
         $('.percent').text(0);
         break;
     }
