@@ -5,6 +5,7 @@ namespace Ofey\Logan22\model\config;
 use JetBrains\PhpStorm\NoReturn;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\sphere\type;
+use Ofey\Logan22\component\telegram\telegram;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\lang\lang;
@@ -50,6 +51,8 @@ class config
 
     private ?background $background = null;
 
+    private ?notice $notice = null;
+
     /**
      * Сохранения конфигурации
      */
@@ -70,6 +73,16 @@ class config
                 if (!empty($exchanger['rates'])) {
                     $_POST['exchangeRates'] = $exchanger['rates'];
                 }
+            }
+        }
+
+        if($configName=='__config_notice__'){
+            //Проверка телеграмма и получения chat_id
+            if(!empty($_POST['telegramTokenApi'])){
+               $chatId = \Ofey\Logan22\controller\admin\telegram::getChatID($_POST['telegramTokenApi']);
+               if($chatId != ""){
+                   $_POST['telegramChatID'] = $chatId;
+               }
             }
         }
 
@@ -135,25 +148,12 @@ class config
         $this->cache = new cache(self::findConfigByKeySetting('__config_cache__'));
         $this->other = new other(self::findConfigByKeySetting('__config_other__'));
         $this->template = new template(self::findConfigByKeySetting('__config_template__'));
-//        var_dump($this->lang()->getDefault());exit;
-        //Тут нужно ещё и ID сервера
-//        self::$referral = new referral(self::findConfigByKeySetting('__config_referral__'));
-//        var_dump(self::findConfigByKey('__config_donate__'));exit;
-//        $this->donate = new donate(self::findConfigByKey('__config_donate__'));
-//        foreach(self::$settings AS $getsetting){
-//            if($getsetting['key'] == '__config_donate__'){
-//                $this->donateArr[$getsetting['serverId']] = new donate($getsetting['serverId']);
-//            }
-//        }
         $this->enabled = new enabled(self::findConfigByKeySetting('__config_enabled__'));
-// DEPCRICATED        self::$github = new github(self::findConfigByKeySetting('__config_github__'));
         $this->logo = new logo(self::findConfigByKeySetting('__config_logo__'));
         $this->palette = new palette(self::findConfigByKeySetting('__config_palette__'));
-
         $this->sphereApi = new sphereApi(self::findConfigByKeySetting('__config_sphere_api__'));
-        //  var_dump(mt_rand(1,999));exit;
-        // $this->menu = new menu(self::findConfigByKeySetting('__config_menu__'), $this->lang);
         $this->background = new background(self::findConfigByKeySetting('__config_background__'));
+        $this->notice = new notice(self::findConfigByKeySetting('__config_notice__'));
 
     }
 
@@ -272,6 +272,11 @@ class config
     public function background()
     {
         return $this->background;
+    }
+
+    public function notice()
+    {
+        return $this->notice;
     }
 
 }

@@ -6,7 +6,10 @@ use Exception;
 use Intervention\Image\ImageManager;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\component\request\url;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\admin\telegram;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\page\error;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\user;
@@ -55,7 +58,7 @@ class support
             return true;
         }
         foreach (self::$sections as $section) {
-            if($section['moderators'] != null){
+            if ($section['moderators'] != null) {
                 foreach ($section['moderators'] as $moderator) {
                     if ($moderator == user::self()->getEmail()) {
                         return true;
@@ -174,8 +177,14 @@ class support
 
             sql::run("UPDATE `support_thread` SET `last_message_id` = ? WHERE `id` = ?", [$support_message_id, $support_thread_id]);
             self::incMessage($section);
+            $link = "/support/read/" . $support_thread_id;
 
-            board::redirect("/support/read/" . $support_thread_id);
+            if (!self::isUserModerator() and config::load()->notice()->getTechnicalSupport()) {
+                $msg = sprintf("Пользователь %s (%s) обратился в техническую поддержку\n<a href='%s'>Открыть ссылку</a>", user::self()->getEmail(), user::self()->getName(), url::host($link));
+                telegram::sendTelegramMessage($msg);
+            }
+
+            board::redirect($link);
             board::success("Создано");
 
         } catch (Exception $exception) {
@@ -279,6 +288,14 @@ class support
         $support_message_id = sql::lastInsertId();
         sql::run("UPDATE `support_thread` SET `last_message_id` = ?, `last_user_id` = ? WHERE `id` = ?", [
             $support_message_id, \Ofey\Logan22\model\user\user::self()->getId(), $support_thread_id]);
+
+        if (!self::isUserModerator() and config::load()->notice()->getTechnicalSupport()) {
+            $link = "/support/read/" . $support_thread_id;
+            $msg = sprintf("Пользователь %s (%s) написал сообщение в техническую поддержку\n<a href='%s'>Открыть ссылку</a>", user::self()->getEmail(), user::self()->getName(), url::host($link));
+            telegram::sendTelegramMessage($msg);
+        }
+
+
         board::reload();
         board::success("Добавлен");
     }
@@ -380,7 +397,7 @@ class support
         if (self::isUserModerator() or user::self()->isAdmin()) {
             $postId = $_POST['postId'] ?? board::error("Нет ID объекта");
             $row = sql::getRow("SELECT * FROM `support_message` WHERE `id` = ? LIMIT 1", [$postId]);
-            if($row){
+            if ($row) {
                 $thread_id = $row['thread_id'];
                 if ($row['screens']) {
                     $screens = json_decode($row['screens'], true);
