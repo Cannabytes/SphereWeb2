@@ -2293,7 +2293,7 @@ return array (
     'func' => 'controller\\support\\support::show',
     'access' => 
     array (
-        0 => 'any',
+      0 => 'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -2307,7 +2307,7 @@ return array (
     'func' => 'controller\\support\\support::read',
     'access' => 
     array (
-        0 => 'any',
+      0 => 'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -2366,7 +2366,7 @@ return array (
     'func' => 'controller\\support\\support::showThread',
     'access' => 
     array (
-        0 => 'any',
+      0 => 'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -2483,6 +2483,20 @@ return array (
     array (
       0 => 'admin',
       1 => 'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  179 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/telegram/notice/test',
+    'func' => 'controller\\admin\\telegram::testSendNotice',
+    'access' => 
+    array (
+      0 => 'admin',
     ),
     'weight' => 0,
     'page' => '',
