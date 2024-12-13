@@ -103,12 +103,7 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
             $currency = $invoice['currency'];
             $amount = donate::currency($amount, $currency);
 
-            if (config::load()->notice()->isDonationCrediting()) {
-                $msg = sprintf("Пользователь %s (%s) пополнил баланс на %s %s.\nДобавлено %0.1f внутренней валюты.\nСистема: %s",
-                    user::getUserId($user_id)->getEmail(), user::getUserId($user_id)->getName(), $invoice['invoice_amount'], $currency, $amount, get_called_class());
-                telegram::sendTelegramMessage($msg);
-            }
-
+            self::telegramNotice(user::getUserId($user_id), $invoice['invoice_amount'], $currency, $amount, get_called_class());
             \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
             user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system: get_called_class(), input: $input);
             donate::addUserBonus($user_id, $amount);

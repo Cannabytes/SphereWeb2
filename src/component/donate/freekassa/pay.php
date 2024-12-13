@@ -93,12 +93,7 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
 
         $amount = donate::currency($_REQUEST['AMOUNT'], $this->currency_default);
 
-        if (config::load()->notice()->isDonationCrediting()) {
-            $msg = sprintf("Пользователь %s (%s) пополнил баланс на %s %s.\nДобавлено %0.1f внутренней валюты.\nСистема: %s",
-            user::getUserId($user_id)->getEmail(), user::getUserId($user_id)->getName(), $_REQUEST['AMOUNT'], $this->currency_default, $amount, get_called_class());
-            telegram::sendTelegramMessage($msg);
-        }
-
+        self::telegramNotice(user::getUserId($user_id), $_POST['AMOUNT'], $this->currency_default, $amount, get_called_class());
         \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['sum'], $this->currency_default, get_called_class()]);
         user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
         donate::addUserBonus($user_id, $amount);

@@ -4,7 +4,7 @@ namespace Ofey\Logan22\model\config;
 
 class notice
 {
-    private ?string $telegramTokenApi;
+    private ?string $telegramTokenApi = null;
     private string $telegramChatID = "";
     private string $noticeLang = "en";
     private bool $isTechnicalSupport = false;
@@ -26,6 +26,9 @@ class notice
 
     public function __construct($setting = null)
     {
+        if ($setting == null) {
+            return;
+        }
         $this->telegramTokenApi = $setting['telegramTokenApi'] ?? null;
         $this->telegramChatID = isset($setting['telegramChatID']) ? (string)$setting['telegramChatID'] : "";
         $this->noticeLang = isset($setting['noticeLang']) ? (string)$setting['noticeLang'] : "en";

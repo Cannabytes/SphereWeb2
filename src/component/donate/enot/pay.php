@@ -93,8 +93,6 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
         $requestData = json_decode($input, true);
         file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $requestData, true ) . PHP_EOL, FILE_APPEND );
 
-//        \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
-
         $status = $requestData['status'] ?? null;
 
         $order = $requestData['custom_fields']['order'] ?? null;
@@ -110,18 +108,12 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
               $requestData['invoice_id'],
               self::getConfigValue('shop_id')
             );
-            file_put_contents(__DIR__ . '/debug_invoice.log', '_REQUEST: ' . print_r($invoice, true) . PHP_EOL, FILE_APPEND);
             $invoice = $invoice['data'];
             $amount   = $invoice['invoice_amount'];
             $currency = $invoice['currency'];
             $amount   = donate::currency($amount, $currency);
 
-            if (config::load()->notice()->isDonationCrediting()) {
-                $msg = sprintf("Пользователь %s (%s) пополнил баланс на %s %s.\nДобавлено %0.1f внутренней валюты.\nСистема: %s",
-                    user::getUserId($user_id)->getEmail(), user::getUserId($user_id)->getName(), $invoice['invoice_amount'], $currency, $amount, get_called_class());
-                telegram::sendTelegramMessage($msg);
-            }
-
+            self::telegramNotice(user::getUserId($user_id), $invoice['invoice_amount'], $currency, $amount, get_called_class());
             \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
             user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, message: null, pay_system:  get_called_class(), input: $input);
             donate::addUserBonus($user_id, $amount);

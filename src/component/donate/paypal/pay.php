@@ -200,13 +200,8 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
             $amount_r = $result['purchase_units'][0]['payments']['captures'][0]['amount']['value'];
             $amount = $result['purchase_units'][0]['payments']['captures'][0]['amount']['value'];
             $customId = $result['purchase_units'][0]['payments']['captures'][0]['custom_id'];
-
             $amount   = donate::currency($amount, $currency);
-            if (config::load()->notice()->isDonationCrediting()) {
-                $msg = sprintf("Пользователь %s (%s) пополнил баланс на %s %s.\nДобавлено %0.1f внутренней валюты.\nСистема: %s",
-                    user::getUserId($customId)->getEmail(), user::getUserId($customId)->getName(), $_POST['OutSum'], $currency, $amount_r, get_called_class());
-                telegram::sendTelegramMessage($msg);
-            }
+            self::telegramNotice(user::getUserId($customId), $_POST['OutSum'], $currency, $amount_r, get_called_class());
             \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$result['purchase_units'][0]['payments']['captures'][0]['amount']['value'], $currency, get_called_class()]);
             user::getUserId($customId)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class(), input: $input);
             donate::addUserBonus($customId, $amount);

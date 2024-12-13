@@ -111,11 +111,7 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
         $amount   = donate::currency($amount, $currencyIn);
         donate::control_uuid($signatureValue, get_called_class());
 
-        if (config::load()->notice()->isDonationCrediting()) {
-            $msg = sprintf("Пользователь %s (%s) пополнил баланс на %s %s.\nДобавлено %0.1f внутренней валюты.\nСистема: %s",
-                user::getUserId($user_id)->getEmail(), user::getUserId($user_id)->getName(), $_POST['OutSum'], $currencyIn, $amount, get_called_class());
-            telegram::sendTelegramMessage($msg);
-        }
+        self::telegramNotice(user::getUserId($user_id), $_POST['OutSum'], $currencyIn, $amount, get_called_class());
         \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['OutSum'], $currencyIn, get_called_class()]);
         user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, message: null, pay_system:  get_called_class());
         donate::addUserBonus($user_id, $amount);

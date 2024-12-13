@@ -139,7 +139,6 @@ class config
             $setting['setting'] = json_decode($setting['setting'], true);
         }
         $this->lang = new lang(self::findConfigByKeySetting('__config_lang__'));
-        // var_dump($this->lang->getPhrase(0));exit();
 
         $this->captcha = new captcha(self::findConfigByKeySetting('__config_captcha__'));
         $this->onlineCheating = new onlineCheating(self::findConfigByKeySetting('__config_cheating__'));
