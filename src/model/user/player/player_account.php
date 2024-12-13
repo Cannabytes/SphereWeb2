@@ -14,6 +14,7 @@ use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\userlog;
 use Ofey\Logan22\model\db\sql;
@@ -169,6 +170,7 @@ class player_account
               $password_hide
             );
             $content = trim(config::load()->lang()->getPhrase(config::load()->registration()->getPhraseRegistrationDownloadFile())) ?? "";
+            $serversName = "";
             if (config::load()->registration()->isMassRegistration()) {
                 $content = str_replace(["%site_server%", "%server_name%", "%rate_exp%", "%chronicle%", "%email%", "%login%", "%password%"],
                   [
@@ -181,7 +183,20 @@ class player_account
                     $password,
                   ],
                   $content);
+                $serversName .= " " . server::getLastServer()->getName() . " x" . server::getLastServer()->getRateExp();
             }
+
+            if (config::load()->notice()->isRegistrationAccount()) {
+                $template = lang::get_other_phrase(config::load()->notice()->getNoticeLang(), 'notice_registration_account');
+                $msg = strtr($template, [
+                    '{name}' => user::self()->getName(),
+                    '{email}' => user::self()->getEmail(),
+                    '{login}' => $login,
+                    '{server}' => $serversName,
+                ]);
+                telegram::sendTelegramMessage($msg);
+            }
+
             user::self()->addLog(logTypes::LOG_REGISTRATION_ACCOUNT, 532, [$login]);
             board::response(
               "notice_registration",
@@ -257,6 +272,17 @@ class player_account
             $password,
           ],
           $content);
+
+        if (config::load()->notice()->isRegistrationAccount()) {
+            $template = lang::get_other_phrase(config::load()->notice()->getNoticeLang(), 'notice_registration_account');
+            $msg = strtr($template, [
+                '{name}' => user::self()->getName(),
+                '{email}' => user::self()->getEmail(),
+                '{login}' => $login,
+                '{server}' => $server->getName() . " x" . $server->getRateExp(),
+            ]);
+            telegram::sendTelegramMessage($msg);
+        }
 
         user::self()->addLog(logTypes::LOG_REGISTRATION_ACCOUNT, 532, [$login]);
         board::response(

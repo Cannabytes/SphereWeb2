@@ -9,6 +9,7 @@ namespace Ofey\Logan22\component\mail;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\user\forget\forget;
 use Ofey\Logan22\model\db\sql;
@@ -367,16 +368,46 @@ class mail
 
             if($isShowError) {
                 if ($mail->send()) {
+                    if (\Ofey\Logan22\controller\config\config::load()->notice()->isForgetPassword()) {
+                        $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_forget_password_request');
+                        $msg = strtr($template, [
+                            '{email}' => $email,
+                        ]);
+                        telegram::sendTelegramMessage($msg);
+                    }
                     board::response("notice", ["message" => "Письмо отправлено на почту {$email}", "ok" => true]);
                 } else {
+                    if (\Ofey\Logan22\controller\config\config::load()->notice()->isForgetPassword()) {
+                        $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_forget_password_request_error');
+                        $msg = strtr($template, [
+                            '{email}' => $email,
+                            '{error}' => $mail->ErrorInfo,
+                        ]);
+                        telegram::sendTelegramMessage($msg);
+                    }
                     board::error("Не удалось отправить письмо на почту {$email}. {$mail->ErrorInfo}");
                 }
             }else{
+                if (\Ofey\Logan22\controller\config\config::load()->notice()->isForgetPassword()) {
+                    $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_forget_password_request');
+                    $msg = strtr($template, [
+                        '{email}' => $email,
+                    ]);
+                    telegram::sendTelegramMessage($msg);
+                }
                 $mail->send();
             }
 
         } catch (Exception $e) {
             if($isShowError){
+                if (\Ofey\Logan22\controller\config\config::load()->notice()->isForgetPassword()) {
+                    $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_forget_password_request_error');
+                    $msg = strtr($template, [
+                        '{email}' => $email,
+                        '{error}' => $mail->ErrorInfo,
+                    ]);
+                    telegram::sendTelegramMessage($msg);
+                }
                 board::error("Не удалось отправить письмо на почту {$email}. {$mail->ErrorInfo}");
             }
         }

@@ -7,13 +7,12 @@
 
 namespace Ofey\Logan22\controller\user\profile;
 
-use DateTime;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\config\config;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\lang\lang;
-use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\component\time\timezone;
+use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\model\admin\userlog;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
@@ -23,10 +22,12 @@ use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
-class change {
+class change
+{
 
 
-    public static function save() {
+    public static function save()
+    {
         $isChange = false;
         $isChangePassword = false;
         $name = $_POST['name'] ?? board::error("Некорректное имя");
@@ -64,28 +65,77 @@ class change {
         }
 
         //Проверка существование таймзоны
-        if(!empty($timezone)){
-            if(in_array(timezone::replace_old_timezone($timezone), timezone::all())){
+        if (!empty($timezone)) {
+            if (in_array(timezone::replace_old_timezone($timezone), timezone::all())) {
                 user::self()->setTimezone(timezone::replace_old_timezone($timezone));
                 $isChange = true;
-            }else{
+            } else {
                 board::error("Некорректная таймзона");
             }
         }
 
-        if($isChange){
+        if ($isChange) {
+
+            if (\Ofey\Logan22\controller\config\config::load()->notice()->isChangeUserPassword()) {
+                $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_change_user_password');
+                $msg = strtr($template, [
+                    '{email}' => user::self()->getEmail(),
+                ]);
+                telegram::sendTelegramMessage($msg);
+            }
+
             user::self()->addLog(logTypes::LOG_USER_CHANGE_PROFILE, "LOG_USER_CHANGE_PROFILE", []);
-            if($isChangePassword){
+            if ($isChangePassword) {
                 $_SESSION['password'] = $newPassword;
             }
             board::redirect();
             board::success(lang::get_phrase(217));
-        }else{
+        } else {
             board::error("Нечего сохранять");
         }
     }
 
-    public static function show_avatar_page(): void {
+    private static function valid_name($name): bool
+    {
+        $error = [];
+        $ok = true;
+        if (2 > mb_strlen($name)) {
+            $error[] = lang::get_phrase(188);
+            $ok = false;
+        }
+        if (16 < mb_strlen($name)) {
+            $error[] = lang::get_phrase(189);
+            $ok = false;
+        }
+        if (!preg_match("/^[a-zA-Z0-9_\-]+$/u", $name)) {
+            $error[] = lang::get_phrase(190);
+            $ok = false;
+        }
+        if ($ok) {
+            if (!ctype_alpha($name[0])) {
+                $error[] = "Имя должно начинаться с буквы";
+                $ok = false;
+            }
+        }
+
+        //Проверка существования пользователя с таким ником
+        if (sql::run("SELECT `id` FROM `users` WHERE `name` = ?", [$name])->rowCount() > 0) {
+            $error[] = "Пользователь с таким ником уже существует";
+            $ok = false;
+        }
+
+        if (!$ok) {
+            $error = implode("\n", $error);
+            board::error($error);
+        }
+
+        return $ok;
+    }
+
+    //Смена аватарки на свой
+
+    public static function show_avatar_page(): void
+    {
         validation::user_protection();
         $avatarList = fileSys::file_list('uploads/avatar', ['jpeg']);
         foreach ($avatarList as $key => $value) {
@@ -97,22 +147,23 @@ class change {
             }
         }
         tpl::addVar([
-          "title" => lang::get_phrase(192),
-          "avatars" => $avatarList,
+            "title" => lang::get_phrase(192),
+            "avatars" => $avatarList,
         ]);
         tpl::display("select_avatar.html");
     }
 
-    //Смена аватарки на свой
-    public static function set_self_avatar() {
+    public static function set_self_avatar()
+    {
         validation::user_protection();
         tpl::addVar([
-          "PRICE_CHANGE_AVATAR" => PRICE_CHANGE_AVATAR,
+            "PRICE_CHANGE_AVATAR" => PRICE_CHANGE_AVATAR,
         ]);
         tpl::display("userModel/profile/set_avatar.html");
     }
 
-    public static function set_self_avatar_load() {
+    public static function set_self_avatar_load()
+    {
         validation::user_protection();
         $files = $_FILES['files'] ?? null;
         if ($files == null) {
@@ -170,11 +221,11 @@ class change {
                     userlog::add("new_avatar", 548);
                     \Ofey\Logan22\model\user\profile\change::set_avatar($filename . ".webp");
                     board::alert([
-                      'type' => 'notice_set_avatar',
-                      'ok' => true,
-                      'message' => lang::get_phrase(197),
-                      'src' => "/uploads/avatar/thumb_" . $filename . ".webp",
-                      'count_sphere_coin' => auth::get_donate_point(),
+                        'type' => 'notice_set_avatar',
+                        'ok' => true,
+                        'message' => lang::get_phrase(197),
+                        'src' => "/uploads/avatar/thumb_" . $filename . ".webp",
+                        'count_sphere_coin' => auth::get_donate_point(),
                     ]);
 
                 }
@@ -187,16 +238,18 @@ class change {
         }
     }
 
-    public static function show_background_avatar_page(): void {
+    public static function show_background_avatar_page(): void
+    {
         validation::user_protection();
         tpl::addVar([
-          "title" => lang::get_phrase(193),
-          "avatars" => fileSys::file_list('src/template/logan22/assets/images/navatarback'),
+            "title" => lang::get_phrase(193),
+            "avatars" => fileSys::file_list('src/template/logan22/assets/images/navatarback'),
         ]);
         tpl::display("userModel/option/select_background_avatar.html");
     }
 
-    public static function save_avatar(): void {
+    public static function save_avatar(): void
+    {
         validation::user_protection();
         $avatar = $_POST['avatar'] ?? null;
         if ($avatar == null) {
@@ -208,47 +261,10 @@ class change {
             board::notice(false, lang::get_phrase(196));
         user::self()->setAvatar($avatar)->addLog(logTypes::LOG_CHANGE_AVATAR, "LOG_CHANGE_AVATAR", []);
         board::alert([
-          'ok' => true,
-          'message' => lang::get_phrase(197),
-          'src' => ("/uploads/avatar/" . $avatar),
+            'ok' => true,
+            'message' => lang::get_phrase(197),
+            'src' => ("/uploads/avatar/" . $avatar),
         ]);
-    }
-
-
-    private static function valid_name($name): bool {
-        $error = [];
-        $ok = true;
-        if (2 > mb_strlen($name)) {
-            $error[] = lang::get_phrase(188);
-            $ok = false;
-        }
-        if (16 < mb_strlen($name)) {
-            $error[] = lang::get_phrase(189);
-            $ok = false;
-        }
-        if (!preg_match("/^[a-zA-Z0-9_\-]+$/u", $name)) {
-            $error[] = lang::get_phrase(190);
-            $ok = false;
-        }
-        if ($ok) {
-            if (!ctype_alpha($name[0])) {
-                $error[] = "Имя должно начинаться с буквы";
-                $ok = false;
-            }
-        }
-
-        //Проверка существования пользователя с таким ником
-        if(sql::run("SELECT `id` FROM `users` WHERE `name` = ?", [$name])->rowCount() > 0){
-            $error[] = "Пользователь с таким ником уже существует";
-            $ok = false;
-        }
-
-        if (!$ok) {
-            $error = implode("\n", $error);
-            board::error($error);
-        }
-
-        return $ok;
     }
 
 

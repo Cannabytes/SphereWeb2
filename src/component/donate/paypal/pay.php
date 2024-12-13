@@ -202,7 +202,7 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
             $customId = $result['purchase_units'][0]['payments']['captures'][0]['custom_id'];
 
             $amount   = donate::currency($amount, $currency);
-            if (config::load()->notice()->getDonationCrediting()) {
+            if (config::load()->notice()->isDonationCrediting()) {
                 $msg = sprintf("Пользователь %s (%s) пополнил баланс на %s %s.\nДобавлено %0.1f внутренней валюты.\nСистема: %s",
                     user::getUserId($customId)->getEmail(), user::getUserId($customId)->getName(), $_POST['OutSum'], $currency, $amount_r, get_called_class());
                 telegram::sendTelegramMessage($msg);

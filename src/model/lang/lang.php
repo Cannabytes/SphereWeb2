@@ -21,6 +21,7 @@ class lang
     private ?string $isActiveLang = null;
 
     private array $phrasesData = [];
+    private array $phrasesDataOther = [];
 
     private array $allowLanguages = ['en', 'ru'];
 
@@ -121,6 +122,7 @@ class lang
     public function package(): void
     {
         $lang = $_SESSION['lang'] ?? $this->default;
+        $this->isActiveLang = $lang;
         $langFile = fileSys::get_dir("/data/languages/{$lang}.php");
         $defaultLangFile = fileSys::get_dir("/data/languages/en.php");
         try {
@@ -138,6 +140,36 @@ class lang
             error_log("Failed to load language file: " . $e->getMessage());
             $this->phrasesData = require $defaultLangFile;
         }
+    }
+
+    public function getOtherPhrase($lang = null, $phrase = null, ...$values)
+    {
+        if($lang==null){
+            return "no lang {$lang}";
+        }
+        if($lang == $this->isActiveLang){
+            return $this->getPhrase($phrase, ...$values);
+        }
+        if($this->phrasesDataOther == []){
+            $file = fileSys::get_dir("/data/languages/{$lang}.php");
+            if (file_exists($file)) {
+                $this->phrasesDataOther = require $file;
+                $customLangFile = fileSys::get_dir("/data/languages/custom/{$lang}.php");
+                if (file_exists($customLangFile)) {
+                    $customData = require $customLangFile;
+                    $this->phrasesDataOther = array_replace($this->phrasesDataOther, $customData);
+                }
+            }else{
+                return "no lang {$lang}";
+            }
+        }
+        if (isset($this->phrasesDataOther[$phrase])) {
+            $missing_values_count = max(0, substr_count($phrase, '%s') - count($values));
+            $default_values       = array_fill(0, $missing_values_count, '');
+            $values = array_merge($values, $default_values);
+            return vsprintf($this->phrasesDataOther[$phrase], $values);
+        }
+        return "[no phrase {$phrase}]";
     }
 
 

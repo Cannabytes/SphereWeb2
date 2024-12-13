@@ -3,8 +3,11 @@
 namespace Ofey\Logan22\controller\account\characters;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
+use Ofey\Logan22\controller\admin\telegram;
+use Ofey\Logan22\model\user\user;
 
 class relocation
 {
@@ -30,6 +33,15 @@ class relocation
         ])->show()->getResponse();
 
         if(isset($sphere['ok'])){
+            if (\Ofey\Logan22\controller\config\config::load()->notice()->isSendPlayerToVillage()) {
+                $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_relocation');
+                $msg = strtr($template, [
+                    '{email}' => user::self()->getEmail(),
+                    '{player}' => $player,
+                    '{itemsToWarehouse}' => $itemsToWarehouse ? 'Yes' : 'No',
+                ]);
+                telegram::sendTelegramMessage($msg);
+            }
             board::success("Relocation success");
         }
 

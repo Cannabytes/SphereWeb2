@@ -1521,19 +1521,136 @@
                                         Какие уведомления присылать в телеграмм бот
                                     </h6>
 
+                                    <div class="text-center">
+                                        <h4>Язык уведомлений</h4>
+                                        <div id="noticeLang" class="col-xl-12">
+                                            {% for lang in getLangList() %}
+                                            <div class="form-check form-check-inline">
+                                                <input {% if config().notice().getNoticeLang() == lang.lang %}checked=""{% endif %} class="form-check-input" type="radio" name="noticeLang" id="notice_lang_{{lang.lang}}" value="{{lang.lang}}">
+                                                <label class="form-check-label" for="notice_lang_{{lang.lang}}">{{lang.name}}</label>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+
+
+
+
                                     <div class="row mt-2">
+
+
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().getTechnicalSupport() %}checked=""{% endif %} id="technicalSupport" name="technicalSupport" type="checkbox">
-                                                <label for="technicalSupport" class="label-success"></label><span class="ms-3">Новые сообщения тех.поддержки</span>
+                                                <input {% if config().notice().isTechnicalSupport() %}checked=""{% endif %} id="isTechnicalSupport" name="isTechnicalSupport" type="checkbox">
+                                                <label for="isTechnicalSupport" class="label-success"></label><span class="ms-3">Новые сообщения тех.поддержки</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().getDonationCrediting() %}checked=""{% endif %} id="donationCrediting" name="donationCrediting" type="checkbox">
-                                                <label for="donationCrediting" class="label-success"></label><span class="ms-3">При зачислении пожертвования</span>
+                                                <input {% if config().notice().isDonationCrediting() %}checked=""{% endif %} id="isDonationCrediting" name="isDonationCrediting" type="checkbox">
+                                                <label for="isDonationCrediting" class="label-success"></label><span class="ms-3">При зачислении пожертвования</span>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isTranslationGame() %}checked=""{% endif %} id="isTranslationGame" name="isTranslationGame" type="checkbox">
+                                                <label for="isTranslationGame" class="label-success"></label><span class="ms-3">Перевод <img class='avatar avatar-xs rounded' src='/uploads/images/icon/etc_coins_gold_i00.webp'> в игру</span>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isRegistrationUser() %}checked=""{% endif %} id="isRegistrationUser" name="isRegistrationUser" type="checkbox">
+                                                <label for="isRegistrationUser" class="label-success"></label><span class="ms-3">Регистрация пользователя</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isRegistrationAccount() %}checked=""{% endif %} id="isRegistrationAccount" name="isRegistrationAccount" type="checkbox">
+                                                <label for="isRegistrationAccount" class="label-success"></label><span class="ms-3">Регистрация аккаунта</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isForgetPassword() %}checked=""{% endif %} id="isForgetPassword" name="isForgetPassword" type="checkbox">
+                                                <label for="isForgetPassword" class="label-success"></label><span class="ms-3">Восстановление пароля</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isChangeAccountPassword() %}checked=""{% endif %} id="isChangeAccountPassword" name="isChangeAccountPassword" type="checkbox">
+                                                <label for="isChangeAccountPassword" class="label-success"></label><span class="ms-3">Смена пароля аккаунту</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isChangeUserPassword() %}checked=""{% endif %} id="isChangeUserPassword" name="isChangeUserPassword" type="checkbox">
+                                                <label for="isChangeUserPassword" class="label-success"></label><span class="ms-3">Смена пароля профиля</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isSyncAccount() %}checked=""{% endif %} id="isSyncAccount" name="isSyncAccount" type="checkbox">
+                                                <label for="isSyncAccount" class="label-success"></label><span class="ms-3">Синхронизация аккаунта</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isAddStream() %}checked=""{% endif %} id="isAddStream" name="isAddStream" type="checkbox">
+                                                <label for="isAddStream" class="label-success"></label><span class="ms-3">Добавление стрима</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isUseWheel() %}checked=""{% endif %} id="isUseWheel" name="isUseWheel" type="checkbox">
+                                                <label for="isUseWheel" class="label-success"></label><span class="ms-3">Использовании рулетки</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isUseBonusCode() %}checked=""{% endif %} id="isUseBonusCode" name="isUseBonusCode" type="checkbox">
+                                                <label for="isUseBonusCode" class="label-success"></label><span class="ms-3">Использование Бонус-Кода</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isBuyStartPack() %}checked=""{% endif %} id="isBuyStartPack" name="isBuyStartPack" type="checkbox">
+                                                <label for="isBuyStartPack" class="label-success"></label><span class="ms-3">Покупка стартового набора</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isBuyShop() %}checked=""{% endif %} id="isBuyShop" name="isBuyShop" type="checkbox">
+                                                <label for="isBuyShop" class="label-success"></label><span class="ms-3">Покупка в магазине</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isSendWarehouseToGame() %}checked=""{% endif %} id="isSendWarehouseToGame" name="isSendWarehouseToGame" type="checkbox">
+                                                <label for="isSendWarehouseToGame" class="label-success"></label><span class="ms-3">Отправка из склада в игру</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4">
+                                            <div class="custom-toggle-switch d-flex align-items-center mb-4">
+                                                <input {% if config().notice().isSendPlayerToVillage() %}checked=""{% endif %} id="isSendPlayerToVillage" name="isSendPlayerToVillage" type="checkbox">
+                                                <label for="isSendPlayerToVillage" class="label-success"></label><span class="ms-3">Отправка персонажа в город</span>
                                             </div>
                                         </div>
 
@@ -1606,9 +1723,24 @@
         $("#saveNotice").on("click", function () {
             let formData = {
                 __config_name__: '__config_notice__',
+                noticeLang:  $('#noticeLang input[name="noticeLang"]:checked').val(),
                 telegramTokenApi: $("#telegramTokenApi").val(),
-                technicalSupport: $('#technicalSupport').prop('checked'),
-                donationCrediting: $('#donationCrediting').prop('checked'),
+                isTechnicalSupport: $('#isTechnicalSupport').prop('checked'),
+                isDonationCrediting: $('#isDonationCrediting').prop('checked'),
+                isTranslationGame: $('#isTranslationGame').prop('checked'),
+                isRegistrationUser: $('#isRegistrationUser').prop('checked'),
+                isRegistrationAccount: $('#isRegistrationAccount').prop('checked'),
+                isForgetPassword: $('#isForgetPassword').prop('checked'),
+                isChangeAccountPassword: $('#isChangeAccountPassword').prop('checked'),
+                isChangeUserPassword: $('#isChangeUserPassword').prop('checked'),
+                isSyncAccount: $('#isSyncAccount').prop('checked'),
+                isAddStream: $('#isAddStream').prop('checked'),
+                isUseWheel: $('#isUseWheel').prop('checked'),
+                isUseBonusCode: $('#isUseBonusCode').prop('checked'),
+                isBuyStartPack: $('#isBuyStartPack').prop('checked'),
+                isBuyShop: $('#isBuyShop').prop('checked'),
+                isSendWarehouseToGame: $('#isSendWarehouseToGame').prop('checked'),
+                isSendPlayerToVillage: $('#isSendPlayerToVillage').prop('checked'),
             };
             AjaxSend('/admin/config/save', 'POST', formData, false);
         })

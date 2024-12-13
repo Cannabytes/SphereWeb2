@@ -6,6 +6,7 @@ use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\log\logTypes;
@@ -97,6 +98,7 @@ class bonus
             }
 
             $bonusNames = "";
+            $bonusNamesTxt = "";
             foreach ($bonuses as $bonus) {
                 // Проверка даты бонуса
                 if (time() < strtotime($bonus['start_date_code'])) {
@@ -127,10 +129,21 @@ class bonus
 
                 $name       = $enchant . $itemInfo->getAddName() . " " . $itemInfo->getItemName();
                 $bonusNames = "<img src='" . $itemInfo->getIcon() . "' width='16' height='16'> " . $name . "({$count}),  " . $bonusNames;
+                $bonusNamesTxt .= $name . " ({$count}), ";
                 user::self()->addLog(logTypes::LOG_BONUS_CODE, 'LOG_BONUS_CODE', [$code, $name, $count]);
             }
 
             sql::commit();
+
+            if (\Ofey\Logan22\controller\config\config::load()->notice()->isUseBonusCode()) {
+                $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_use_bonus_code');
+                $bonusNamesTxt = rtrim(trim($bonusNamesTxt), ',');
+                $msg = strtr($template, [
+                    '{email}' => user::self()->getEmail(),
+                    '{bonusNames}' => $bonusNamesTxt,
+                ]);
+                telegram::sendTelegramMessage($msg);
+            }
 
             $message = lang::get_phrase("bonus_code_success", $bonusNames);
             board::success($message);

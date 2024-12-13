@@ -3,8 +3,11 @@
 namespace Ofey\Logan22\controller\stream;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\component\request\url;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
@@ -68,6 +71,17 @@ class stream
             time::mysql(),
           ]
         );
+
+
+        if (\Ofey\Logan22\controller\config\config::load()->notice()->isAddStream()) {
+            $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_add_stream');
+            $msg = strtr($template, [
+                '{email}' => user::self()->getEmail(),
+                '{link}' => url::host("/admin/stream"),
+            ]);
+            telegram::sendTelegramMessage($msg);
+        }
+
         board::success("Стрим добавлен. Ожидайте одобрение администратора.");
     }
 

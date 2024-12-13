@@ -739,71 +739,24 @@ return [
 	'680' => 'You are an example of true generosity. Thank you from the bottom of our hearts! 🌹',
 	'5451' => 'Issued +%s SphereCoin for %s (%s)',
 	'5461' => 'Cumulative bonus for donation: +%s',
-	'Insertion disabled' => 'Insertion disabled',
-	'Which category should I move the dialog to?' => 'Which category should I move the dialog to?',
-	'Move' => 'Move',
-	'Send message' => 'Send message',
-	'Private question (visible only to you and moderators)' => 'Private question (visible only to you and moderators)',
-	'Category' => 'Category',
-	'Detailed description of the problem' => '<ol>
-<li>
-<strong>Detailed description of the problem:</strong>
-<ul>
-<li>What exactly is not working?</li>
-<li>Does an error occur? If so, provide its text or code.</li>
-<li>In what context does the problem occur (e.g. when entering the game, during a certain action)?
-</li>
-<li>At what point was the problem noticed?</li>
-</ul>
-</li>
-<li>
-<strong>If the problem is related to the character:</strong>
-<ul>
-<li>Nickname of the character.</li>
-<li>Level, class, or other characteristics of the character, if they may be important.
-</li>
-<li>When did you first notice the problem with the character?</li>
-<li>Does the error repeat when interacting with certain objects
-or NPCs?
-</li>
-</ul>
-</li>
-<li>
-<strong>If you tried to troubleshoot the issue, please tell us what you
-tried:</strong>
-<ul>
-<li>Were standard troubleshooting methods used (restarting the game, clearing the cache, etc.)?
-</li>
-<li>Were any non-standard steps taken (e.g.,
-changing settings, using third-party programs)?
-</li>
-<li>Which of the steps resulted in positive or negative results?
-</li>
-</ul>
-</li>
-</ol>
-
-<h3>Additional:</h3>
-<ul>
-<li>If you have <strong>screenshots or videos</strong> of the issue,
-attach them to the message.
-</li>
-</ul>',
-	'much information as possible' => 'For a faster and more accurate solution to your question, please provide as much information as possible.',
-	'How to describe the problem correctly?' => 'How to describe the problem correctly?',
-	'I ask a question' => 'I ask a question',
-	'Viewing is open' => 'Viewing is open',
-	'Viewing is closed' => 'Viewing is closed',
-	'Select category' => 'Select category',
-	'Setting up moderators' => 'Setting up moderators',
-	'Removal' => 'Removal',
-	'Removing categories' => 'Removing categories',
-	'Phrase ID category name' => 'Phrase ID - category name',
-	'As an administrator/moderator you can use this section' => 'As an administrator/moderator you can use this section',
-	'Technical support is disabled' => 'Technical support is disabled',
-	'Add moderator' => 'Add moderator',
-	'Categories' => 'Categories',
-	'Ask a question' => 'Ask a question',
+	'notice_forget_password_request_error' => 'An error occurred while sending an attempt to recover the password from {email}.<br>Error: {error}',
+	'notice_forget_password_request' => 'User {email} has requested password recovery. A message is being sent to their email.',
+	'notice_relocation' => 'User {email} sent character {player} to town.<br>Sending items to warehouse: {itemsToWarehouse}',
+	'notice_warehouse_to_player' => 'User {email} sent item(s) from their warehouse to character {player}.<br>{items}',
+	'notice_buy_to_player' => 'User {email} bought items from the store and sent them to the character {player}',
+	'notice_buy_warehouse' => 'User {email} purchased items from the store and sent them to the warehouse',
+	'notice_start_pack_to_player' => 'User {email} purchased pack {start_pack_name} and sent it to character {player}',
+	'notice_start_pack_warehouse' => 'User {email} purchased the {start_pack_name} pack and sent it to their warehouse.',
+	'notice_use_bonus_code' => 'User {email} entered Bonus Code and received {bonusNames}',
+	'notice_wheel' => 'User {email} won in Roulette of Fortune {item_enchant} {item_name} [{item_count}]',
+	'notice_add_stream' => 'User {email} has sent a request to add their stream.<br><a href=\'{link}\'>Open streams</a>',
+	'notice_sync_account_error' => 'An error occurred while trying to synchronize account {login} for user {email}: {error}',
+	'notice_sync_account' => 'User {email} has changed their password',
+	'notice_change_user_password' => 'User {email} has changed their password',
+	'notice_change_account_password' => 'User {email} changed password for account {login}',
+	'notice_registration_user' => 'New user {email} registered',
+	'notice_registration_account' => 'User {email} ({name}) created a new game account {login} on server: {server}.',
+	'notice_send_money_to_player' => 'User {email} ({name}) transferred {coins} Donate Coin to character “{player}”',
 	'486_1' => '<span class=\'nav-main-link-badge badge rounded-pill bg-info count_sphere_coin\'>%s</span>',
 	'access_is_denied' => 'Access is denied',
 	'Account added' => 'Account added',
@@ -819,6 +772,7 @@ attach them to the message.
 	'active' => 'Active',
 	'Add Game Server DB' => 'Add Game Server DB',
 	'Add link' => 'Add link',
+	'Add moderator' => 'Add moderator',
 	'Add new login server' => 'Add new login server',
 	'add_category' => 'Add category',
 	'add_channel_link' => 'Add a link to your stream!',
@@ -854,6 +808,8 @@ attach them to the message.
 	'applications_and_active_streams' => 'Applications and active streams',
 	'apply' => 'Apply',
 	'Approximate amount' => 'Approximate amount',
+	'As an administrator/moderator you can use this section' => 'As an administrator/moderator you can use this section',
+	'Ask a question' => 'Ask a question',
 	'attracted_players_count' => 'You have attracted %d players',
 	'authorization' => 'Authorization',
 	'auto update' => 'Auto update',
@@ -902,6 +858,8 @@ attach them to the message.
 	'cancel' => 'Cancel',
 	'captcha' => 'Captcha',
 	'captcha_keys_input_example' => 'Example of entering CAPTCHA keys',
+	'Categories' => 'Categories',
+	'Category' => 'Category',
 	'change' => 'Change',
 	'change_category_name' => 'Change category name',
 	'change_password' => 'Change password',
@@ -984,6 +942,50 @@ attach them to the message.
 	'deny_viewing_characters' => 'Deny viewing your character',
 	'description of Sphere Launcher' => 'Description of Sphere Launcher',
 	'description spin the roulette of luck' => 'The opportunity for users to spin the Roulette of Fortune for Donate Coins and win 1 of 20 items.',
+	'Detailed description of the problem' => '<ol>
+<li>
+<strong>Detailed description of the problem:</strong>
+<ul>
+<li>What exactly is not working?</li>
+<li>Does an error occur? If so, provide its text or code.</li>
+<li>In what context does the problem occur (e.g. when entering the game, during a certain action)?
+</li>
+<li>At what point was the problem noticed?</li>
+</ul>
+</li>
+<li>
+<strong>If the problem is related to the character:</strong>
+<ul>
+<li>Nickname of the character.</li>
+<li>Level, class, or other characteristics of the character, if they may be important.
+</li>
+<li>When did you first notice the problem with the character?</li>
+<li>Does the error repeat when interacting with certain objects
+or NPCs?
+</li>
+</ul>
+</li>
+<li>
+<strong>If you tried to troubleshoot the issue, please tell us what you
+tried:</strong>
+<ul>
+<li>Were standard troubleshooting methods used (restarting the game, clearing the cache, etc.)?
+</li>
+<li>Were any non-standard steps taken (e.g.,
+changing settings, using third-party programs)?
+</li>
+<li>Which of the steps resulted in positive or negative results?
+</li>
+</ul>
+</li>
+</ol>
+
+<h3>Additional:</h3>
+<ul>
+<li>If you have <strong>screenshots or videos</strong> of the issue,
+attach them to the message.
+</li>
+</ul>',
 	'Developer Panel' => 'Developer Panel',
 	'direct_transfer_items' => 'These items are sent directly to the player when transferred via the \'Transfer to game\' function',
 	'directory' => 'Directory',
@@ -1132,6 +1134,7 @@ You can get the CAPTCHA keys here - <a href=\'https://www.google.com/recaptcha/a
 	'History of software updates' => 'History of software updates',
 	'homepage_link' => 'Link to the homepage',
 	'hours' => 'часов',
+	'How to describe the problem correctly?' => 'How to describe the problem correctly?',
 	'how_does_it_work' => 'How does it work?',
 	'how_does_it_work_desc' => '<div class=\'card-body\'>
   <h4 class=\'fw-normal\'><a href=\'javascript:void(0)\'> How does it work?</a></h4>
@@ -1148,6 +1151,7 @@ You can get the CAPTCHA keys here - <a href=\'https://www.google.com/recaptcha/a
 	'how_to_use' => 'How to use?',
 	'html_email_builder' => 'HTML email builder',
 	'html_tags_instructions_icons_link' => 'Use the HTML tag <code>&lt;br&gt;</code> for line breaks and other tags for text formatting. Icons can be <a href=\'https://icons.getbootstrap.com/\' target=\'_blank\'>found here</a>.',
+	'I ask a question' => 'I ask a question',
 	'if not launcher' => 'If you don\'t have a launcher, download it.',
 	'if_enable_and_not_set_ip_and_port_status_server' => 'If the server status (working/not working) is not set, then whether the server is working will be determined online.',
 	'if_not_needed_leave_blank' => 'If not needed, leave it blank',
@@ -1155,6 +1159,7 @@ You can get the CAPTCHA keys here - <a href=\'https://www.google.com/recaptcha/a
 	'incorrect_port' => 'The port is specified incorrectly. Valid values: 1–65535',
 	'increase balance' => 'Increase balance',
 	'info_db_install' => 'To install, you need to connect to the MySQL database.',
+	'Insertion disabled' => 'Insertion disabled',
 	'instagram' => 'Instagram',
 	'install_cannot_continue' => 'Installation cannot continue',
 	'install_db' => 'Install the database',
@@ -1321,6 +1326,8 @@ Icon styles can be chosen here<br>
 	'moderator' => 'Moderator',
 	'month' => 'month',
 	'months' => 'months',
+	'Move' => 'Move',
+	'much information as possible' => 'For a faster and more accurate solution to your question, please provide as much information as possible.',
 	'multiply_displayed_online' => 'Multiply displayed online',
 	'multiply_online_by' => 'Multiply online by',
 	'my_launchers' => 'My launchers',
@@ -1422,6 +1429,7 @@ This corresponds to an online boost coefficient of 3.15.<br>
 	'payment_system_settings' => 'Payment system settings',
 	'percentage' => 'Percentage',
 	'PHP_VERSION' => 'PHP Version',
+	'Phrase ID category name' => 'Phrase ID - category name',
 	'phrase_id_for_user' => 'Specify the ID of the phrase that the user will receive.',
 	'platform' => 'Platform',
 	'Player name not passed' => 'Player name not passed',
@@ -1433,6 +1441,7 @@ This corresponds to an online boost coefficient of 3.15.<br>
 	'posts' => 'Posts',
 	'previous' => 'Previous',
 	'price' => 'Price',
+	'Private question (visible only to you and moderators)' => 'Private question (visible only to you and moderators)',
 	'Proceed to payment' => 'Proceed to payment',
 	'proceed_to_update' => 'Proceed to update',
 	'product' => 'Product',
@@ -1469,7 +1478,9 @@ This corresponds to an online boost coefficient of 3.15.<br>
 	'registration_notification_email' => 'This email will be sent to the user upon registration as a registration notification',
 	'registration_page_background_image' => 'Image for the registration page background',
 	'Registrations per day' => 'Registrations per day',
+	'Removal' => 'Removal',
 	'remove_category' => 'Remove category',
+	'Removing categories' => 'Removing categories',
 	'rename' => 'Rename',
 	'rename_category' => 'Rename category',
 	'req_not_set' => 'Requirements not set.',
@@ -1502,7 +1513,9 @@ Link expiration time: %%expire_time%%',
 	'security_key' => 'Security key',
 	'sel_all_items' => 'Select all items',
 	'sel_payment_sys' => 'Select payment system',
+	'Select category' => 'Select category',
 	'select_user_ticket' => 'Select user ticket',
+	'Send message' => 'Send message',
 	'send_email_address' => 'We will send an email to your address',
 	'send_items' => 'Send items',
 	'send_items_wh' => 'Send items to warehouse',
@@ -1525,6 +1538,7 @@ Link expiration time: %%expire_time%%',
 	'servers' => 'Servers',
 	'service' => 'Service',
 	'set_new_password' => 'and set a new password',
+	'Setting up moderators' => 'Setting up moderators',
 	'setting_applicable_if_auto_login_supported' => 'The setting is applicable only if the game client supports the auto-login feature (without authorization).',
 	'setting_connect_to_db' => 'Setting up the database connection',
 	'settings' => 'Settings',
@@ -1576,6 +1590,7 @@ The Sphere Server API (from Sphere Web) allows you to connect to the game server
 	'sync_accounts_question_missing_account' => 'Synchronization of accounts. Do you have an account that is not in your list of accounts?',
 	'system_phrase' => 'System',
 	'tab' => 'tab',
+	'Technical support is disabled' => 'Technical support is disabled',
 	'technical support' => 'Technical support',
 	'technical support_desc_1' => 'If you encounter a problem and need assistance, there are several ways.',
 	'technical support_desc_10' => 'Supporting Sphere on your project, adding new developments, fixes, etc.',
@@ -1665,6 +1680,8 @@ Password: %%password%%',
 	'username' => 'Username',
 	'users' => 'Users',
 	'verification_code' => 'Verification code',
+	'Viewing is closed' => 'Viewing is closed',
+	'Viewing is open' => 'Viewing is open',
 	'visible_to_everyone' => 'Visible to everyone',
 	'vkontakte' => 'VK',
 	'Wait seconds before next use' => 'Wait %d seconds before next use.',
@@ -1680,6 +1697,7 @@ Password: %%password%%',
  <br>
  We are here to help you!</h6>',
 	'what_use_launcher_for_reminder' => 'What do you want to use this launcher for? - This is a reminder for you only.',
+	'Which category should I move the dialog to?' => 'Which category should I move the dialog to?',
 	'wrong_data' => 'Wrong data',
 	'yes' => 'Yes',
 	'You already have this account' => 'You already have this account',

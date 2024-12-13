@@ -116,7 +116,7 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract
         //Зачисление на пользовательский аккаунт средств
         $amount = donate::currency($_POST['sum'], $_POST['currency']);
 
-        if (config::load()->notice()->getDonationCrediting()) {
+        if (config::load()->notice()->isDonationCrediting()) {
             $msg = sprintf("Пользователь %s (%s) пополнил баланс на %s %s.\nДобавлено %0.1f внутренней валюты.\nСистема: %s",
                 user::getUserId($user_id)->getEmail(), user::getUserId($user_id)->getName(), $amount, $_POST['currency'], $_POST['sum'], get_called_class());
             telegram::sendTelegramMessage($msg);

@@ -6,7 +6,9 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
+use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\controller\config\config;
+use Ofey\Logan22\model\item\item;
 use Ofey\Logan22\model\log\logTypes;
 use Ofey\Logan22\model\user\user;
 
@@ -33,19 +35,6 @@ class inventory
             board::error("Предметы не найдены в складе");
         }
 
-        //Проверяем наличие аккаунта
-        //        if(user::self()->getAccounts($account) === null){
-        //            board::error("Нет такого аккаунта");
-        //        }
-        //        //Проверяем существование игрока в аккаунте
-        //        if (!$playerInfo = user::self()->isPlayer($player)) {
-        //            board::error("Нет такого игрока в аккаунте");
-        //        }
-        // Проверяем что персонаж действительно находится на данном аккаунте
-        //        if($playerInfo->getAccount() !== $account){
-        //            board::error("Данный аккаунт не содержит данного персонажа");
-        //        }
-
         //Все проверки пройдены успешно
         $json = server::send(type::INVENTORY_TO_GAME, [
             'items' => $arrObjectItems,
@@ -54,13 +43,26 @@ class inventory
             'email' => user::self()->getEmail(),
         ])->show()->getResponse();
         if (isset($json['data']) && $json['data'] === true) {
-
+            $itemTxt = "";
             foreach ($arrObjectItems as $item) {
+                $itemData = item::getItem($item['itemId']);
+                $itemTxt .= $itemData->getItemName() . " (" . $item['count'] . ")<br>";
                 user::self()->addLog(logTypes::LOG_INVENTORY_TO_GAME, "LOG_INVENTORY_TO_GAME", [$account, $item['itemId'], $item['count']]);
             }
 
             $objectItems = $json['objects'];
             user::self()->removeWarehouseObjectId($objectItems);
+
+            if (\Ofey\Logan22\controller\config\config::load()->notice()->isSendWarehouseToGame()) {
+                $itemTxt = trim($itemTxt, "<br>");
+                $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_warehouse_to_player');
+                $msg = strtr($template, [
+                    '{email}' => user::self()->getEmail(),
+                    '{player}' => $player,
+                    '{items}' => $itemTxt,
+                ]);
+                telegram::sendTelegramMessage($msg);
+            }
 
             board::alert([
                 "type" => "notice",
@@ -113,7 +115,7 @@ class inventory
         $countItemsToGameTransfer = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getCountItemsToGameTransfer() * $coins / \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getDonateItemToGameTransfer();
 
         if (fmod($countItemsToGameTransfer, 1) !== 0.0) {
-            board::error(lang::get_phrase('Enter a multiple value. For example',  (int)$countItemsToGameTransfer * \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getDonateItemToGameTransfer()));
+            board::error(lang::get_phrase('Enter a multiple value. For example', (int)$countItemsToGameTransfer * \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getDonateItemToGameTransfer()));
         }
 
         if (!user::self()->donateDeduct($coins)) {
@@ -135,6 +137,18 @@ class inventory
             'email' => user::self()->getEmail(),
         ])->show()->getResponse();
         if (isset($json['data']) && $json['data'] === true) {
+
+            if (config::load()->notice()->isTranslationGame()) {
+                $template = lang::get_other_phrase(config::load()->notice()->getNoticeLang(), 'notice_send_money_to_player');
+                $msg = strtr($template, [
+                    '{name}' => user::self()->getName(),
+                    '{email}' => user::self()->getEmail(),
+                    '{coins}' => $coins,
+                    '{player}' => $player,
+                ]);
+                telegram::sendTelegramMessage($msg);
+            }
+
             user::self()->addLog(logTypes::LOG_DONATE_COIN_TO_GAME, "LOG_DONATE_COIN_TO_GAME", [$account, \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getItemIdToGameTransfer(), $countItemsToGameTransfer]);
             board::alert([
                 "type" => "notice",
@@ -142,6 +156,7 @@ class inventory
                 "message" => lang::get_phrase("Transferred to player", $player),
                 'sphereCoin' => user::self()->getDonate(),
             ]);
+
         }
 
         if (isset($json['error']) && $json['error'] !== "") {

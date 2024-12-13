@@ -185,7 +185,7 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
             donate::control_uuid($sign, get_called_class());
             $amount = donate::currency($amount, $currency);
 
-            if (config::load()->notice()->getDonationCrediting()) {
+            if (config::load()->notice()->isDonationCrediting()) {
                 $msg = sprintf("Пользователь %s (%s) пополнил баланс на %s %s.\nДобавлено %0.1f внутренней валюты.\nСистема: %s",
                     user::getUserId($userId)->getEmail(), user::getUserId($userId)->getName(), $_POST['amount'], $currency, $amount, get_called_class());
                 telegram::sendTelegramMessage($msg);

@@ -7,9 +7,11 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\component\request\url;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\log\logTypes;
@@ -214,6 +216,18 @@ class wheel
                 board::error(lang::get_phrase('Insufficient funds'));
             }
 
+            if (\Ofey\Logan22\controller\config\config::load()->notice()->isUseWheel()) {
+                $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_wheel');
+                $enc_lvl = $item['enchant'] == 0 ? "" : " +" . $item['enchant'];
+                $msg = strtr($template, [
+                    '{email}' => user::self()->getEmail(),
+                    '{item_name}' => $item['name'],
+                    '{item_enchant}' => $enc_lvl,
+                    '{item_count}' => $item['count'],
+                ]);
+                telegram::sendTelegramMessage($msg);
+            }
+
             user::self()->addLog(logTypes::LOG_BONUS_CODE, '_LOG_User_Win_Wheel', [$item['item_id'], $item['enchant'], $item['name'], $item['count']]);
             if($item['item_id']==-1){
                 user::self()->donateAdd($item['count']);
@@ -324,6 +338,7 @@ class wheel
 
     public function editName()
     {
+        validation::user_protection("admin");
         $id = $_POST['id'] ?? board::error("no id");
         $old_name = $_POST['old_name'] ?? '';
         $new_name = $_POST['new_name'] ?? '';
@@ -383,6 +398,8 @@ class wheel
 
     public function remove()
     {
+        validation::user_protection("admin");
+
         $id = (int)$_POST['id'] ?? board::error(lang::get_phrase('Failed to get roulette data'));
         $data = [
             'id' => $id,

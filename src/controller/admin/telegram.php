@@ -4,6 +4,7 @@ namespace Ofey\Logan22\controller\admin;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\controller\config\config;
+use Ofey\Logan22\model\user\user;
 
 class telegram
 {
@@ -28,17 +29,16 @@ class telegram
         }
     }
 
-    static public function sendTelegramMessage($message = "")
+    static public function sendTelegramMessage($message = ""): void
     {
-        if (!config::load()->notice()->isTelegramEnable() or !config::load()->notice()->getTechnicalSupport()){
+        if (!config::load()->notice()->isTelegramEnable()){
             return;
         }
 
         $bot = new \Ofey\Logan22\component\telegram\telegram(config::load()->notice()->getTelegramTokenApi());
         $chatId = config::load()->notice()->getTelegramChatID();
         if ($chatId != "") {
-            if ($bot->sendMessage($chatId, $message)) {
-            }
+            $bot->sendMessage($chatId, $message);
         }
 
     }
@@ -51,6 +51,8 @@ class telegram
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         $response = curl_exec($ch);
 

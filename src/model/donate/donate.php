@@ -14,6 +14,7 @@ use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\request\ip;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\log\logTypes;
@@ -166,8 +167,8 @@ class donate
      */
     public static function toWarehouse()
     {
-        $db = sql::instance(); // Получаем экземпляр вашего класса для работы с БД.
-        $db->beginTransaction(); // Начало транзакции
+        $db = sql::instance();
+        $db->beginTransaction();
         try {
             if (auth::get_donate_point() < 0) {
                 board::error(lang::get_phrase('Insufficient funds'));
@@ -260,6 +261,15 @@ class donate
             }
 
             $db->commit();
+
+            if (\Ofey\Logan22\controller\config\config::load()->notice()->isBuyShop()) {
+                $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_buy_warehouse');
+                $msg = strtr($template, [
+                    '{email}' => user::self()->getEmail(),
+                ]);
+                telegram::sendTelegramMessage($msg);
+            }
+
             board::alert([
                 'type' => 'notice',
                 'ok' => true,
@@ -496,6 +506,16 @@ class donate
                 $objectItems = $json['objects'];
                 user::self()->removeWarehouseObjectId($objectItems);
                 $db->commit();
+
+                if (\Ofey\Logan22\controller\config\config::load()->notice()->isBuyShop()) {
+                    $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_buy_to_player');
+                    $msg = strtr($template, [
+                        '{email}' => user::self()->getEmail(),
+                        '{player}' => $playerName,
+                    ]);
+                    telegram::sendTelegramMessage($msg);
+                }
+
                 board::alert([
                     'type' => 'notice',
                     'ok' => true,
@@ -508,10 +528,13 @@ class donate
             }
 
             $db->commit();
+
+
+
             board::alert([
                 'type' => 'notice',
                 'ok' => true,
-                'message' => lang::get_phrase(304),
+                'message' => lang::get_phrase(124),
                 'sphereCoin' => user::self()->getDonate(),
             ]);
         } catch (Exception $e) {

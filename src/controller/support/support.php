@@ -179,7 +179,7 @@ class support
             self::incMessage($section);
             $link = "/support/read/" . $support_thread_id;
 
-            if (!self::isUserModerator() and config::load()->notice()->getTechnicalSupport()) {
+            if (!self::isUserModerator() and config::load()->notice()->isTechnicalSupport()) {
                 $msg = sprintf("Пользователь %s (%s) обратился в техническую поддержку\n<a href='%s'>Открыть ссылку</a>", user::self()->getEmail(), user::self()->getName(), url::host($link));
                 telegram::sendTelegramMessage($msg);
             }
@@ -289,7 +289,7 @@ class support
         sql::run("UPDATE `support_thread` SET `last_message_id` = ?, `last_user_id` = ? WHERE `id` = ?", [
             $support_message_id, \Ofey\Logan22\model\user\user::self()->getId(), $support_thread_id]);
 
-        if (!self::isUserModerator() and config::load()->notice()->getTechnicalSupport()) {
+        if (!self::isUserModerator() and config::load()->notice()->isTechnicalSupport()) {
             $link = "/support/read/" . $support_thread_id;
             $msg = sprintf("Пользователь %s (%s) написал сообщение в техническую поддержку\n<a href='%s'>Открыть ссылку</a>", user::self()->getEmail(), user::self()->getName(), url::host($link));
             telegram::sendTelegramMessage($msg);

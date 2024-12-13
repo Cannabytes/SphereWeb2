@@ -23,6 +23,8 @@ class telegram
      */
     public function sendMessage(string $chatId, string $message, string $parseMode = 'HTML'): bool
     {
+        $message = str_replace('<br>', "\n", $message);
+
         $url = $this->apiUrl . "sendMessage";
         $postData = [
             'chat_id'    => $chatId,
@@ -32,7 +34,6 @@ class telegram
         ];
 
         $response = $this->sendRequest($url, $postData);
-
         if (isset($response['ok']) && $response['ok'] === true) {
             return true;
         }

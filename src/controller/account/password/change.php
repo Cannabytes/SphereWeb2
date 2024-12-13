@@ -11,6 +11,8 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\type;
+use Ofey\Logan22\controller\admin\telegram;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\log\logTypes;
 use Ofey\Logan22\model\user\player\player_account;
@@ -54,6 +56,16 @@ class change
           'password_hide' => $password_hide,
         ])->show()->getResponse();
         if (isset($response['success']) && $response['success'] === true) {
+
+            if (config::load()->notice()->isChangeAccountPassword()) {
+                $template = lang::get_other_phrase(config::load()->notice()->getNoticeLang(), 'notice_change_account_password');
+                $msg = strtr($template, [
+                    '{email}' => user::self()->getEmail(),
+                    '{login}' => $login,
+                ]);
+                telegram::sendTelegramMessage($msg);
+            }
+
             user::self()->addLog(logTypes::LOG_CHANGE_ACCOUNT_PASSWORD, "LOG_CHANGE_ACCOUNT_PASSWORD", [$login]);
             board::success(lang::get_phrase(181));
         }
