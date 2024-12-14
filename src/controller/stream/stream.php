@@ -27,12 +27,10 @@ class stream
                              WHERE confirmed = 1 
                              AND (auto_check_date IS NULL OR auto_check_date >= '$currentDate')
                              ORDER BY `dateUpdate` DESC;");
-
         foreach($streams AS &$stream){
             $stream['platform'] = self::stream_get_platform($stream['channel']);
             $stream['src'] = self::getSrc($stream['channel']);
         }
-
         self::$streams = $streams;
         return self::$streams;
     }
@@ -71,7 +69,6 @@ class stream
             time::mysql(),
           ]
         );
-
 
         if (\Ofey\Logan22\controller\config\config::load()->notice()->isAddStream()) {
             $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_add_stream');
@@ -136,8 +133,13 @@ class stream
                 $channelName = $pathParts[0];
                 $embedUrl    = 'https://player.twitch.tv/?channel=' . $channelName . '&parent=' . $_SERVER['HTTP_HOST'];
             }
+        } elseif (str_contains($link, 'kick.com')) {
+            $parsedUrl = parse_url($link);
+            $path      = trim($parsedUrl['path'], '/');
+            if (!empty($path)) {
+                $embedUrl = 'https://player.kick.com/' . $path;
+            }
         }
-
         return $embedUrl;
     }
 
@@ -148,6 +150,9 @@ class stream
         }
         if (str_contains($link, 'twitch.tv')) {
             return 'twitch';
+        }
+        if (str_contains($link, 'kick.com')) {
+            return 'kick';
         }
         return 'unknown';
     }
