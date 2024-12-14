@@ -28,7 +28,7 @@ class account
         $prefixEnable = config::load()->registration()->getEnablePrefix();
         $prefixType = config::load()->registration()->getPrefixType();
         if ($prefixEnable) {
-            $prefix = $_SESSION['account_prefix'];
+            $prefix = $_SESSION['account_prefix'] ?? "";
             $login = $prefixType == "prefix" ? $prefix . $login : $login . $prefix;
             unset($_SESSION['account_prefix']);
         }

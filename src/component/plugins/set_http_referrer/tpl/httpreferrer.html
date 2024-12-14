@@ -55,5 +55,17 @@
 
 
 {% block js %}
+<script>
+    $(document).ready(function () {
+        $('#responsiveDataTable tbody td a').each(function () {
+            const maxLength = 50;
+            const originalText = $(this).text();
 
+            if (originalText.length > maxLength) {
+                const truncatedText = originalText.substring(0, maxLength) + '...';
+                $(this).text(truncatedText);
+            }
+        });
+    });
+</script>
 {% endblock %}
