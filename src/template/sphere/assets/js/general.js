@@ -73,17 +73,22 @@ function AjaxEvent(url, method, data, response) {
         }, {});
     }
 
-    if(method == "POST") {
-        if(url == "/registration/account") {
+    if(method === "POST") {
+        if(url === "/registration/account") {
             if (response.ok === true) {
-                $("#player_account_list").append("<tr><td>" + data.login + "</td><td>" + data.password + "</td><td><i role='button' class='fe fe-settings btn-change-password' data-account='" + data.login + "' data-bs-toggle='modal' data-bs-effect='effect-slide-in-right' data-bs-target='#changepassword'></i></td></tr>");
+                let prefix = $('.account_prefix').text().trim();
+                let login = prefix + data.login;
+                let password = data.password;
+                if ($('#password_hide').is(':checked') === false) {
+                    password = "* * * * * *";
+                }
+                $("#player_account_list").append("<tr><td>" + login + "</td><td>" + password + "</td><td><i role='button' class='fe fe-settings btn-change-password' data-account='" + login + "' data-bs-toggle='modal' data-bs-effect='effect-slide-in-right' data-bs-target='#changepassword'></i></td></tr>");
               }
         }
-        if(url == "/player/account/change/password") {
+        if(url === "/player/account/change/password") {
             if (response.ok === true) {
-                //Нужно заменить пароль в списке
                 $("#player_account_list").find("tr").each(function() {
-                    if($(this).find("td:nth-child(1)").text() == data.login){
+                    if($(this).find("td:nth-child(1)").text() === data.login){
                         $(this).find("td:nth-child(2)").text(data.password);
                     }
                 });
