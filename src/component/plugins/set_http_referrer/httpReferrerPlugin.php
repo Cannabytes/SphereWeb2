@@ -10,21 +10,36 @@ use Ofey\Logan22\template\tpl;
 class httpReferrerPlugin
 {
 
-    public function show()
+    public function show(): void
     {
         validation::user_protection("admin");
 
         $row = sql::getRow("SELECT `data` FROM server_cache WHERE `type` = 'HTTP_REFERER_VIEWS';");
         $getReferrers = json_decode($row["data"], true);
 
-        foreach ($getReferrers as &$getReferrer) {
+        foreach ($getReferrers as $i=>&$getReferrer) {
+            if($getReferrer['referer'] == "api.sphereweb.com"){
+                unset($getReferrers[$i]);
+                continue;
+            }
             $getReferrer['count'] = count($getReferrer['count']);
-            $getReferrer['user_count']    = sql::getRow("SELECT COUNT(*) AS count FROM `user_variables` WHERE `val` = ?", [$getReferrer['referer']])['count'] ?: 0;
+            $s = sql::getRows("SELECT (SELECT COUNT(DISTINCT user_id) FROM user_variables WHERE var = 'HTTP_REFERER' AND val = ?) AS total_users,
+                                        SUM(dhp.point) AS total_points FROM donate_history_pay dhp
+                                    WHERE dhp.user_id IN ( SELECT `user_id` FROM `user_variables` WHERE `var` = 'HTTP_REFERER' AND `val` = ? );",[
+                $getReferrer['referer'],
+                $getReferrer['referer'],
+            ]);
+            $getReferrer['user_count'] = $s[0]['total_users'];
+            $getReferrer['total_donations'] = $s[0]['total_points'];
         }
 
         $getViews     = $this->getView();
-        foreach ($getReferrers as &$getReferrer) {
+        foreach ($getReferrers as $i=>&$getReferrer) {
             foreach ($getViews as $getView) {
+                if($getViews['referer'] == "api.sphereweb.com"){
+                    unset($getViews[$i]);
+                    continue;
+                }
                 if ($getReferrer['referer'] == $getView['referer']) {
                     $totalCount           = array_sum(array_values($getView['count']));
                     $getReferrer['views'] = $totalCount;
@@ -32,7 +47,7 @@ class httpReferrerPlugin
             }
         }
         tpl::addVar([
-          "getReferrers" => $getReferrers,
+            "getReferrers" => $getReferrers,
         ]);
         tpl::displayPlugin("/set_http_referrer/tpl/httpreferrer.html");
     }
@@ -75,13 +90,13 @@ class httpReferrerPlugin
         if ($dateStart and $dateEnd) {
             if($dateStart == $dateEnd){
                 return sql::getRows(
-                  "SELECT `user_id`, `date_create` FROM `user_variables` WHERE `val` = ? AND DATE(`date_create`) = ?;",
-                  [$referer_name, $dateStart]
+                    "SELECT `user_id`, `date_create` FROM `user_variables` WHERE `val` = ? AND DATE(`date_create`) = ?;",
+                    [$referer_name, $dateStart]
                 );
             }
             return sql::getRows(
-              "SELECT `user_id`, `date_create` FROM `user_variables` WHERE `val` = ? AND `date_create` BETWEEN ? AND ?",
-              [$referer_name, $dateStart, $dateEnd]
+                "SELECT `user_id`, `date_create` FROM `user_variables` WHERE `val` = ? AND `date_create` BETWEEN ? AND ?",
+                [$referer_name, $dateStart, $dateEnd]
             );
         }
         return sql::getRows("SELECT `user_id`, `date_create` FROM `user_variables` WHERE `val` = ?", [$referer_name]);

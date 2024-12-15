@@ -1,47 +1,45 @@
 {% extends 'struct.html' %}
 
-{% block title %}qwe{% endblock %}
+{% block title %}Источник траффика{% endblock %}
 
 {% block content %}
 
-    <div class="container-fluid">
+<div class="container-fluid">
 
-
-        <div class="row">
-            <div class="col-xl-12">
-
-
-                <div class="card custom-card">
-
-                    <div class="card-body">
-                        <table id="responsiveDataTable" class="table table-bordered text-nowrap w-100">
-                            <thead>
-                            <tr>
-                                <th>HTTP REFERRER</th>
-                                <th>Click</th>
-                                <th>Count Registration</th>
-                                <th>Donate</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-
-                            {% for referrer in getReferrers %}
-                            <tr>
-                                <td><a href="/admin/statistic/http/referral/{{ referrer.referer }}">{{ referrer.referer }}</a></td>
-                                <td>{{ referrer.views }}</td>
-                                <td>{{ referrer.user_count }}</td>
-                                <td>{{ referrer.total_donations ?? "-" }}</td>
-                            </tr>
-                            {% endfor %}
-
-                            </tbody>
-                        </table>
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <a href="/admin" class="avatar border text-muted me-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
+                    </a>
+                    <div class="card-title">
+                        Источники переходов
                     </div>
+                </div>
+                <div class="card-body">
+                    <div id="grid-sorting"></div>
                 </div>
             </div>
         </div>
-
     </div>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">Диаграмма переходов</div>
+                </div>
+                <div class="card-body">
+                    <div id="echart-pie" class="echart-charts"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
 
 {% endblock %}
 
@@ -50,22 +48,155 @@
 
 
 {% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/gridjs/theme/mermaid.min.css">
 
 {% endblock %}
 
 
 {% block js %}
-<script>
-    $(document).ready(function () {
-        $('#responsiveDataTable tbody td a').each(function () {
-            const maxLength = 50;
-            const originalText = $(this).text();
+<script src="{{template}}/assets/libs/gridjs/gridjs.umd.js"></script>
+<script src="{{template}}/assets/libs/echarts/echarts.min.js"></script>
 
-            if (originalText.length > maxLength) {
-                const truncatedText = originalText.substring(0, maxLength) + '...';
-                $(this).text(truncatedText);
-            }
-        });
+
+<script>
+    new gridjs.Grid({
+            pagination: true,
+            search: true,
+            sort: true,
+            columns: [
+                {
+                    name: "Refferer",
+                    width: "250px",
+                    formatter: (cell) => gridjs.html(cell)
+                },
+                {
+                    name: "Views",
+                    width: "150px",
+                    sort: {
+                        compare: (a, b) => parseInt(a) - parseInt(b) // Сортируем как числа
+                    }
+                },
+                {
+                    name: "Registration",
+                    width: "100px",
+                    sort: {
+                        compare: (a, b) => parseInt(a) - parseInt(b) // Аналогично
+                    }
+                },
+                {
+                    name: "Donate",
+                    width: "100px",
+                    sort: {
+                        compare: (a, b) => parseFloat(a) - parseFloat(b) // Если вдруг есть дробные
+                    }
+                }
+            ],
+            data: [
+                {% for referrer in getReferrers %}
+            ['<a href="/admin/statistic/http/referral/{{ referrer.referer }}">{{ referrer.referer }}</a>', "{{ referrer.views }}", "{{ referrer.user_count ?? 0 }}", '{{ referrer.total_donations ?? "0" }}'],
+        {% endfor %}
+    ],
+    }).render(document.getElementById("grid-sorting"));
+
+
+    var dom = document.getElementById('echart-pie');
+    var myChart = echarts.init(dom, null, {
+        renderer: 'canvas',
+        useDirtyRect: false
     });
+    var app = {};
+    var option;
+
+    // Пример данных — замени на реальные вызовы getReferrers
+    var getReferrers = [
+        {% for referrer in getReferrers %}
+    {
+        referer: "{{referrer.referer}}",
+            views: {{referrer.views ?? 0}},
+        total_donations: {{referrer.total_donations ?? 0}},
+        user_count: {{referrer.user_count ?? 0}}
+    },
+    {% endfor %}
+    ];
+
+    // Получаем топ-10 рефереров
+    var topReferrers = getReferrers.slice(0, 15);
+    // Считаем общее количество для "Прочее"
+    var otherData = getReferrers.slice(10);
+    var otherCount = otherData.reduce((sum, ref) => sum + ref.views, 0);
+    var otherDonations = otherData.reduce((sum, ref) => sum + ref.total_donations, 0);
+    var otherUserCount = otherData.reduce((sum, ref) => sum + ref.user_count, 0);
+
+    // Формируем данные для графика
+    var data = topReferrers.map(referrer => ({
+        value: referrer.views ?? 0,
+        name: referrer.referer.length > 20 ? referrer.referer.substring(0, 20) + '...' : referrer.referer,
+        total_donations: referrer.total_donations ?? 0,
+        user_count: referrer.user_count ?? 0
+    }));
+
+    // Добавляем "Прочее", если есть остаток
+    if (otherCount > 0) {
+        data.push({
+            value: otherCount,
+            name: 'Other',
+            total_donations: otherDonations,
+            user_count: otherUserCount
+        });
+    }
+
+    option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: function (params) {
+                // Используем параметры из data для отображения
+                return `
+                <strong>${params.seriesName}</strong><br/>
+                ${params.name}: ${params.value} (${params.percent}%)<br/>
+                Donations: ${params.data.total_donations ?? 0}<br/>
+                Users: ${params.data.user_count ?? 0}
+            `;
+            }
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            textStyle: {
+                color: '#777'
+            }
+        },
+        series: [
+            {
+                name: 'Info',
+                type: 'pie',
+                radius: '100%',
+                data: data,
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ],
+        color: [
+            "#6c5ffc", "#05c3fb", "#f7b731", "#e82646", "#49b6f5",
+            "#9b59b6", "#34495e", "#95a5a6", "#16a085", "#e74c3c",
+            "#2ecc71", "#f39c12", "#8e44ad", "#d35400", "#7f8c8d",
+            "#29b535", "#c0392b", "#f1c40f", "#c2bc36", "#868337"
+        ]
+    };
+
+    // Устанавливаем опцию
+    if (option && typeof option === 'object') {
+        myChart.setOption(option);
+    }
+
+    // Делаем график адаптивным
+    window.addEventListener('resize', myChart.resize);
+
 </script>
+
+
 {% endblock %}

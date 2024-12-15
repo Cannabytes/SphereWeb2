@@ -60,6 +60,15 @@ class session
             $host = $url;
         }
 
+        $host = str_replace('www.', '', $host);
+        $host = str_replace('http://', '', $host);
+        $host = str_replace('https://', '', $host);
+        $host = mb_strtolower($host);
+
+        if($host=="api.sphereweb.com"){
+            return "";
+        }
+
         $date = date("Y-m-d");
         $data = sql::getRow("SELECT `data` FROM server_cache WHERE `type` = 'HTTP_REFERER_VIEWS';");
 
