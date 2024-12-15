@@ -94,7 +94,6 @@ class user
         }
 
         $content = trim(config::load()->lang()->getPhrase(config::load()->registration()->getPhraseRegistrationDownloadFile())) ?? "";
-        $serverInfo = server::getDefault();
 
         if (config::load()->notice()->isRegistrationUser()) {
             $template = lang::get_other_phrase(config::load()->notice()->getNoticeLang(), 'notice_registration_user');
@@ -103,7 +102,10 @@ class user
         }
 
         if (config::load()->registration()->getEnableLoadFileRegistration()) {
-            $content = str_replace(["%site_server%", "%server_name%", "%rate_exp%", "%chronicle%", "%email%", "%login%", "%password%",], [$_SERVER['SERVER_NAME'], $serverInfo->getName(), "x" . $serverInfo->getRateExp(), $serverInfo->getChronicle(), $email, $account_name, $password,], $content);
+            $serverInfo = server::getDefault();
+            if($serverInfo!=null){
+                $content = str_replace(["%site_server%", "%server_name%", "%rate_exp%", "%chronicle%", "%email%", "%login%", "%password%",], [$_SERVER['SERVER_NAME'], $serverInfo->getName(), "x" . $serverInfo->getRateExp(), $serverInfo->getChronicle(), $email, $account_name, $password,], $content);
+            }
         }
 
         board::response("notice_registration", ["ok" => true, "message" => lang::get_phrase(207), "isDownload" => config::load()->registration()->getEnableLoadFileRegistration(), "title" => $_SERVER['SERVER_NAME'] . " - " . $email . ".txt", "content" => $content, "redirect" => fileSys::localdir("/main"),]);
