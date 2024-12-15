@@ -61,7 +61,7 @@ class notice
 
     public function getTelegramTokenApi(): ?string
     {
-        return trim($this->telegramTokenApi);
+        return $this->telegramTokenApi !== null ? trim($this->telegramTokenApi) : null;
     }
 
     public function getTelegramChatID(): string

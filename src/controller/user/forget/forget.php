@@ -7,6 +7,7 @@ use Ofey\Logan22\component\account\generation;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\mail\mail;
+use Ofey\Logan22\component\request\url;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\page\error;
@@ -46,7 +47,7 @@ class forget
         }
 
         $code = generation::password(mt_rand(8, 32), false);
-        $link = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"] . "/forget/password/reset/" . $code;
+        $link = url::host("/forget/password/reset/" . $code);
 
         $lang = user::self()->getLang();
 
