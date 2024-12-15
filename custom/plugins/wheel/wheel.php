@@ -138,25 +138,31 @@ class wheel
             ]
         );
         $arrStories = [];
-        foreach ($stories as $i=>$story) {
+
+        foreach ($stories as $i => $story) {
             $time = $story['time'];
-            $_story = json_decode($story['variables']);
-            $item_id = $_story[0];
+            $_story = json_decode($story['variables'], true); // Убедимся, что массив
+            $item_id = $_story[0] ?? null;
             $enchant = $_story[1] ?? "";
-            $count = $_story[3] ?? "";
-            $info = clone client_icon::get_item_info($item_id);
-            $info->setCount($count);
+            $count = $_story[3] ?? 0; // Если не задано, пусть будет 0
+            // Проверяем, что метод get_item_info не вернул null или нечто неподходящее
+            $info = client_icon::get_item_info($item_id);
+            if (!is_object($info)) {
+                error_log("Invalid item info for ID: {$item_id}");
+                continue;
+            }
+            $info = clone $info;
+            $info->setCount((int)$count); // Принудительно приводим к числу
             $info->setEnchant($enchant);
             $info->setDate($time);
             $arrStories[] = $info;
         }
-        $stories = $arrStories;
 
+        $stories = $arrStories;
         $response = server::send(type::GET_WHEELS)->show()->getResponse();
         if (isset($response['success']) and !$response['success'] or !$response['success']) {
             redirect::location('/main');
         }
-
         foreach ($response['wheels'] AS $row){
             if($row['name']==$name){
                 $response = $row;
@@ -228,19 +234,19 @@ class wheel
                 telegram::sendTelegramMessage($msg);
             }
 
+            $_SESSION['last_wheel_spin'] = time();
+
+            board::alert([
+                'success' => true,
+                'wheel' => $response['wheel'],
+            ], true);
+
             user::self()->addLog(logTypes::LOG_BONUS_CODE, '_LOG_User_Win_Wheel', [$item['item_id'], $item['enchant'], $item['name'], $item['count']]);
             if($item['item_id']==-1){
                 user::self()->donateAdd($item['count']);
             }else{
                 user::self()->addToWarehouse(0, $item['item_id'], $item['count'], $item['enchant'], 'lucky_wheel');
             }
-
-            $_SESSION['last_wheel_spin'] = time();
-
-            board::alert([
-                'success' => true,
-                'wheel' => $response['wheel'],
-            ]);
 
         } else {
             board::error($response['message']);

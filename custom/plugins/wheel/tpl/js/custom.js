@@ -94,13 +94,24 @@ $(document).on('click', '[data-win-modal]', function () {
 });
 
 function ItemWinModal(item, heading, mod) {
-  let enchant = item.enchant > 0 ? '+' + item.enchant : '';
-  let count = item.count > 1 ? '<span class="color-accent-2">x' + item.count + '</span>' : '';
-  let add_name = item.add_name ? '<span class="color-brown">(' + item.add_name + ')</span>' : '';
 
-  name = `${enchant} ${add_name} ${item.name} ${count}`;
+  if (item.item_id === -1) {
+    name = item.name;
+    winphrase = __win_message_balance
+        .replace(/\^1\^/g, name)
+        .replace(/\^2\^/g, item.count || 0);
 
-  let winphrase = __win_message.replace(/\^1\^/g, name)
+    animateCounter(".count_sphere_coin", item.count);
+
+  } else {
+    let enchant = item.enchant > 0 ? '+' + item.enchant : '';
+    let count = item.count > 1 ? '<span class="color-accent-2">x' + item.count + '</span>' : '';
+    let add_name = item.add_name ? '<span class="color-brown">(' + item.add_name + ')</span>' : '';
+
+    name = `${enchant} ${add_name} ${item.name} ${count}`;
+    winphrase = __win_message.replace(/\^1\^/g, name);
+
+  }
 
   Swal.fire({
     title: __win_congratulations,
@@ -113,3 +124,18 @@ function ItemWinModal(item, heading, mod) {
   return false;
 }
 
+function animateCounter(selector, increment) {
+  let $element = $(selector);
+  let currentValue = parseInt($element.text(), 10) || 0;
+  let targetValue = currentValue + increment; // Куда бежим
+  let speed = 37;
+  let step = Math.ceil(Math.abs(increment) / 50);
+  let interval = setInterval(() => {
+    currentValue += step;
+    if ((increment > 0 && currentValue >= targetValue) || (increment < 0 && currentValue <= targetValue)) {
+      currentValue = targetValue;
+      clearInterval(interval);
+    }
+    $element.text(currentValue);
+  }, speed);
+}
