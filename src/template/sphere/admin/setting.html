@@ -1501,20 +1501,25 @@
                                         spherenotice321_bot, noticeinfo51_bot<br>
                                         5. Скопируйте Token API и перейдите по ссылке вашего бота и нажмите запустить
                                         бота. Это необходимо для активации.<br>
+                                        * Если бота вы добавляете в группу, то укажите Chat ID группы.<br>
                                     </p>
                                     <div class="mb-5">
-                                        <div class="input-group">
-                                            <input id="telegramTokenApi" type="text"
-                                                   class="form-control form-control-sm"
-                                                   placeholder="Telegram Token API" aria-label="Token API"
-                                                   aria-describedby="Token API"
-                                                   value="{{ config().notice().getTelegramTokenApi() }}"
-                                                >
-                                            <button type="button" class="btn btn-primary input-group-text"
-                                                    id="checkSendTelegramNotice">Проверить уведомление
-                                            </button>
 
+                                        <div class="input-group mb-3">
+                                            <input id="telegramTokenApi" type="text" class="form-control w-50" placeholder="Telegram Token API"
+                                                   aria-label="Telegram Token API"
+                                                   value="{{ config().notice().getTelegramTokenApi() }}">
+                                            <input id="telegramChatID" type="text" class="form-control w-25" placeholder="Chat ID"
+                                                   aria-label="Chat ID"
+                                                   value="{{ config().notice().getTelegramChatId() }}">
+                                            <div class="input-group-append ">
+                                                <button type="button" class="btn btn-primary" id="checkSendTelegramNotice">
+                                                    Проверить уведомление
+                                                </button>
+                                            </div>
                                         </div>
+
+
                                     </div>
 
                                     <h6 class="fw-semibold mb-1  text-center">
@@ -1715,7 +1720,7 @@
 <script>
 
     $("#checkSendTelegramNotice").on("click", function () {
-        AjaxSend("/telegram/notice/test", "POST", {tokenApi: $("#telegramTokenApi").val()}, false)
+        AjaxSend("/telegram/notice/test", "POST", {tokenApi: $("#telegramTokenApi").val(), chatID: $("#telegramChatID").val()}, false)
     })
 
     $(document).ready(function () {

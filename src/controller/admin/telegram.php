@@ -4,7 +4,6 @@ namespace Ofey\Logan22\controller\admin;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\controller\config\config;
-use Ofey\Logan22\model\user\user;
 
 class telegram
 {
@@ -15,8 +14,11 @@ class telegram
     static public function testSendNotice(): void
     {
         $tokenAPI = $_POST['tokenApi'] ?? "";
+        $chatId = $_POST['chatID'] ?? "";
         $bot = new \Ofey\Logan22\component\telegram\telegram($tokenAPI);
-        $chatId = \Ofey\Logan22\controller\admin\telegram::getChatID($tokenAPI);
+        if ($chatId == "") {
+            $chatId = \Ofey\Logan22\controller\admin\telegram::getChatID($tokenAPI);
+        }
         if ($chatId != "") {
             $message = "Привет, это тестовое сообщение от SphereWeb";
             if ($bot->sendMessage((string)$chatId, $message)) {
@@ -29,25 +31,9 @@ class telegram
         }
     }
 
-    static public function sendTelegramMessage($message = ""): void
-    {
-        if (!config::load()->notice()->isTelegramEnable()){
-            return;
-        }
-
-        $bot = new \Ofey\Logan22\component\telegram\telegram(config::load()->notice()->getTelegramTokenApi());
-        $chatId = config::load()->notice()->getTelegramChatID();
-        if ($chatId != "") {
-            $bot->sendMessage($chatId, $message);
-        }
-
-    }
-
     static public function getChatID($token = ""): string|int
     {
         $url = "https://api.telegram.org/bot{$token}/getUpdates";
-
-        // Отправляем GET-запрос к API Telegram
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -65,10 +51,9 @@ class telegram
 
         // Декодируем JSON-ответ
         $data = json_decode($response, true);
-        if (!isset($data['result']) || empty($data['result'])) {
+        if (empty($data['result'])) {
             return "";
         }
-
         // Проверяем первый элемент массива обновлений
         $firstUpdate = $data['result'][0] ?? null;
         if (isset($firstUpdate['message']['chat']['id'])) {
@@ -76,6 +61,20 @@ class telegram
         }
 
         return "";
+    }
+
+    static public function sendTelegramMessage($message = ""): void
+    {
+        if (!config::load()->notice()->isTelegramEnable()) {
+            return;
+        }
+
+        $bot = new \Ofey\Logan22\component\telegram\telegram(config::load()->notice()->getTelegramTokenApi());
+        $chatId = config::load()->notice()->getTelegramChatID();
+        if ($chatId != "") {
+            $bot->sendMessage($chatId, $message);
+        }
+
     }
 
 }
