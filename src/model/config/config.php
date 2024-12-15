@@ -77,12 +77,11 @@ class config
         }
 
         if($configName=='__config_notice__'){
-            //Проверка телеграмма и получения chat_id
-            if(!empty($_POST['telegramTokenApi'])){
-               $chatId = \Ofey\Logan22\controller\admin\telegram::getChatID($_POST['telegramTokenApi']);
-               if($chatId != ""){
-                   $_POST['telegramChatID'] = $chatId;
-               }
+            if(!empty($_POST['telegramTokenApi']) and !empty($_POST['telegramChatID'])){
+                $chatId = \Ofey\Logan22\controller\admin\telegram::getChatID($_POST['telegramTokenApi']);
+                if($chatId != ""){
+                    $_POST['telegramChatID'] = $chatId;
+                }
             }
         }
 
