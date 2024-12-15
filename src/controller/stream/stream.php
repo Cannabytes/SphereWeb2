@@ -47,7 +47,7 @@ class stream
 
         $link = self::stream_get_platform($_POST['channel']);
         if($link == 'unknown'){
-            board::error("Поддерживается только стримы сайтов Youtube и Twitch");
+            board::error("Поддерживается только стримы сайтов Youtube и Twitch, Kick, Trovo");
         }
 
         $rows = sql::getRows("SELECT * FROM `streams` WHERE `user_id` = ?", [user::self()->getId()]);
@@ -153,6 +153,9 @@ class stream
         }
         if (str_contains($link, 'kick.com')) {
             return 'kick';
+        }
+        if (str_contains($link, 'trovo.live')) {
+            return 'trovo';
         }
         return 'unknown';
     }

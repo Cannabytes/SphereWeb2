@@ -12,7 +12,13 @@
 
       {% for stream in streams() %}
       <div class="swiper-slide">
-          <iframe class="stream" src="{{stream.src}}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"  ></iframe>
+        {% if stream_get_platform(stream.channel) == 'trovo' %}
+          <a href="{{stream.channel}}" target="_blank" >
+            <img src="uploads/images/stream/trovo.jpg" class="stream" >
+          </a>
+        {% else %}
+           <iframe class="stream" src="{{stream.src}}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"  ></iframe>
+        {% endif %}
       </div>
       {% endfor %}
 
