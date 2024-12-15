@@ -106,15 +106,10 @@ class user
             if($serverInfo!=null){
                 $content = str_replace(["%site_server%", "%server_name%", "%rate_exp%", "%chronicle%", "%email%", "%login%", "%password%",], [$_SERVER['SERVER_NAME'], $serverInfo->getName(), "x" . $serverInfo->getRateExp(), $serverInfo->getChronicle(), $email, $account_name, $password,], $content);
             }
+            board::response("notice_registration", ["ok" => true, "message" => lang::get_phrase(207), "isDownload" => config::load()->registration()->getEnableLoadFileRegistration(), "title" => $_SERVER['SERVER_NAME'] . " - " . $email . ".txt", "content" => $content, "redirect" => fileSys::localdir("/main"),]);
         }
 
-        board::response("notice_registration", ["ok" => true, "message" => lang::get_phrase(207), "isDownload" => config::load()->registration()->getEnableLoadFileRegistration(), "title" => $_SERVER['SERVER_NAME'] . " - " . $email . ".txt", "content" => $content, "redirect" => fileSys::localdir("/main"),]);
-
-//        board::response("notice", [
-//          "ok"       => true,
-//          "message"  => lang::get_phrase(177),
-//          "redirect" => fileSys::localdir("/main"),
-//        ]);
+       board::response("notice_registration", ["ok" => true, "message" => lang::get_phrase(207), "redirect" => fileSys::localdir("/main"),]);
     }
 
     public static function show($ref_name = null): void
