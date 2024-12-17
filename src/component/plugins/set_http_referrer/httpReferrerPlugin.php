@@ -34,13 +34,13 @@ class httpReferrerPlugin
         }
 
         $getViews     = $this->getView();
-        foreach ($getReferrers as $i=>&$getReferrer) {
+        foreach ($getReferrers as $i => &$getReferrer) {
             foreach ($getViews as $getView) {
-                if($getViews['referer'] == "api.sphereweb.com"){
+                if (isset($getView['referer']) && $getView['referer'] === "api.sphereweb.com") {
                     unset($getViews[$i]);
                     continue;
                 }
-                if ($getReferrer['referer'] == $getView['referer']) {
+                if (isset($getReferrer['referer'], $getView['referer']) && $getReferrer['referer'] === $getView['referer']) {
                     $totalCount           = array_sum(array_values($getView['count']));
                     $getReferrer['views'] = $totalCount;
                 }
