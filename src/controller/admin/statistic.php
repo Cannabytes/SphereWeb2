@@ -66,7 +66,11 @@ ORDER BY day DESC;");
             }
         }
 
-        $dollars = $donatePoint * (config::load()->donate()->getRatioUSD() / config::load()->donate()->getSphereCoinCost());
+        if (\Ofey\Logan22\model\server\server::get_count_servers()==0){
+            $dollars = $donatePoint;
+        }else{
+            $dollars = $donatePoint * (config::load()->donate()->getRatioUSD() / config::load()->donate()->getSphereCoinCost());
+        }
 
         tpl::addVar([
             'dollars' => $dollars,

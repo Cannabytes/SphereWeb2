@@ -168,7 +168,6 @@
           } else {
             let newBalance = userBalance + countInt;
             $("#user_id_count_" + userid).attr("data-user-balance", newBalance);
-            console.log(newBalance);
             $('#user_id_count_' + userid).text(newBalance);
             $('.sendToBalance[data-user-id="'+userid+'"]').attr("data-user-balance", newBalance);
             $('#user-balance-show').text(newBalance);

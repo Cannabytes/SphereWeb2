@@ -11,6 +11,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\request\request;
 use Ofey\Logan22\component\request\request_config;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\template\async;
@@ -99,6 +100,19 @@ class donate {
             user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  "Administrator", id_admin_pay: user::self()->getId());
             if($addBonus) {
                 \Ofey\Logan22\model\donate\donate::addUserBonus($user_id, $amount);
+            }
+
+            if (config::load()->notice()->isDonationCrediting()) {
+                $template = lang::get_other_phrase(config::load()->notice()->getNoticeLang(), 'notice_add_donate_point');
+                // Администратор %s (%s) добавил пользователю %s (%s) %s Balance Coin
+                $msg = strtr($template, [
+                    '{name_admin}' => user::self()->getName(),
+                    '{email_admin}' => user::self()->getEmail(),
+                    '{name}' => $user->getName(),
+                    '{email}' => $user->getEmail(),
+                    '{amount}' => $amount,
+                ]);
+                telegram::sendTelegramMessage($msg);
             }
             board::alert([
                 "ok" => true,
