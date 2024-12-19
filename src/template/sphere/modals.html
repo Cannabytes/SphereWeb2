@@ -19,7 +19,7 @@
               class="ri-star-s-fill text-success fs-8"></i></sup></label>
             <select name="timezone" class="form-control" id="change_u_timezone">
               {% for timezone in timezone_list() %}
-              <option {% if getUser().getTimezone()== timezone %}selected{% endif %}value="{{timezone}}">{{timezone}}</option>
+              <option {% if getUser().getTimezone() == timezone %}selected {% endif %}value="{{timezone}}">{{timezone}}</option>
               {% endfor %}
             </select>
           </div>
@@ -27,11 +27,11 @@
           <i class="border-top d-block my-3"></i>
           <div class="col-xl-6 mb-2">
             <label for="old_u_password" class="form-label text-dark fw-semibold">{{ phrase('old_password') }}</label>
-            <input name="password" type="password" class="form-control" id="old_u_password">
+            <input name="password" type="password" class="form-control" id="old_u_password" autocomplete="new-password">
           </div>
           <div class="col-xl-6 mb-2">
             <label for="new_u_password" class="form-label text-dark fw-semibold">{{ phrase(60) }}</label>
-            <input name="new_password" type="password" class="form-control" id="new_u_password">
+            <input name="new_password" type="password" class="form-control" id="new_u_password" autocomplete="new-password">
           </div>
         </div>
       </div>

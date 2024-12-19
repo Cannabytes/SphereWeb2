@@ -1361,7 +1361,7 @@ Icon styles can be chosen here<br>
 	'notice_sync_account' => 'User {email} has changed their password',
 	'notice_sync_account_error' => 'An error occurred while trying to synchronize account {login} for user {email}: {error}',
 	'notice_use_bonus_code' => 'User {email} entered Bonus Code and received {bonusNames}',
-	'notice_user_donate' => 'User {email} ({name}) has topped up their balance by {invoice_amount} {currency}.<br>Added {amount} of internal currency.\\nSystem: {paySystem}',
+	'notice_user_donate' => 'User {email} ({name}) has topped up their balance by {invoice_amount} {currency}.<br>Added {amount} of internal currency.<br>System: {paySystem}',
 	'notice_warehouse_to_player' => 'User {email} sent item(s) from their warehouse to character {player}.<br>{items}',
 	'notice_wheel' => 'User {email} won in Roulette of Fortune {item_enchant} {item_name} [{item_count}]',
 	'notification' => 'Notifications',

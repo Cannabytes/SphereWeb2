@@ -31,6 +31,7 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
         });
     } else {
         $userAccessLevel = user::self()->getAccessLevel();
+        date_default_timezone_set(user::self()->getTimezone() ?? config::load()->other()->getTimezone());
         $routes = route::getRoutes($userAccessLevel);
         foreach ($routes as $dbRoute) {
             if (route::getDisabledRoutes($dbRoute['pattern'])) {
