@@ -17,11 +17,7 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract
     //Включить только для true
     protected static bool $forAdmin = false;
 
-    private array $allowIP = [
-      '136.243.38.108',
-      '37.1.217.38',
-      '186.2.162.11',
-    ];
+    private array $allowIP = [];
 
     /*
      * Список IP адресов, от которых может прити уведомление от платежной системы.
