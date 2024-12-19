@@ -82,7 +82,22 @@
             </div>
           </div>
 
-          <div class="m-lg-1 border-top border-block-start-dashed d-sm-flex justify-content-end">
+
+        </div>
+
+        <div class="card-body ">
+          <label for="serverPromo" class="form-label">Для какого сервера можно использовать промокод</label>
+          <select id="serverPromo" name="serverPromo" class="form-select">
+              <option value="0">Все сервера</option>
+            {% for server in getServerAll() %}
+              <option {% if getUser().getServerId() == server.getId() %}selected{% endif %} value="{{server.getId()}}" >{{server.getName()}} x{{server.getRateExp()}}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="card-body">
+
+          <div class=" border-top border-block-start-dashed d-sm-flex justify-content-end">
             <button class="btn btn-primary-light m-1 add_bonus_inputs">{{phrase('add_field')}}<i class="bi bi-plus-lg ms-2"></i>
             </button>
             <button id="generate_codes" class="btn btn-success-light m-1">{{phrase('generate_codes')}}<i
@@ -141,7 +156,7 @@
   $('#generate_codes').click(function () {
     var startDate = $('#startdatetime').val();
     var endDate = $('#enddatetime').val();
-    if (startDate == '' || endDate == '') {
+    if (startDate === '' || endDate === '') {
       noticeError("{{phrase('bonus_dates_not_entered')}}");
       return;
     }
@@ -157,6 +172,7 @@
     });
 
     AjaxSend('/admin/bonuscode/create', 'POST', {
+      server: $('#serverPromo').val(),
       count_codes : $('#count_codes').val(),
       items: items,
       start_date_code: startDate,

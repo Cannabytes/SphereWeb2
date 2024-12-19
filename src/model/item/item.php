@@ -60,11 +60,6 @@ use Ofey\Logan22\component\image\client_icon;
         return $this;
     }
 
-    public function getServerId(): int
-    {
-        return $this->serverId;
-    }
-
     private int $itemId = 0;
     private int $count = 0;
     private int $cost = 0;
@@ -76,7 +71,7 @@ use Ofey\Logan22\component\image\client_icon;
 
     public function getAddName(): ?string
     {
-        return $this->add_name;
+        return $this->add_name ?? "";
     }
 
     public function setAddName(?string $add_name): item
@@ -87,7 +82,7 @@ use Ofey\Logan22\component\image\client_icon;
 
     public function getDescription(): ?string
     {
-        return $this->description;
+        return $this->description ?? "";
     }
 
     public function setDescription(?string $description): item
@@ -96,9 +91,9 @@ use Ofey\Logan22\component\image\client_icon;
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getPrice(): int
     {
-        return $this->price;
+        return $this->price ?? 0;
     }
 
     public function setPrice(bool $price): item
@@ -107,9 +102,9 @@ use Ofey\Logan22\component\image\client_icon;
         return $this;
     }
 
-    public function getIsTradable(): ?string
+    public function getIsTradable(): bool
     {
-        return $this->is_tradable;
+        return $this->is_tradable ?? false;
     }
 
     public function setIsTradable(bool $is_tradable): item

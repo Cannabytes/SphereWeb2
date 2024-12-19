@@ -41,7 +41,7 @@ class bonus
           "Не указана конечная дата действия кода"
         );
 
-        $server_id = user::self()->getServerId();
+        $server_id = $_POST['server'] ?? user::self()->getServerId();
         $codesReg  = [];
 
         for ($i = 0; $i < $countGenBonusCode; $i++) {
@@ -111,8 +111,12 @@ class bonus
                 }
 
                 $serverId = $bonus['server_id'];
-                if ($serverId != user::self()->getServerId()) {
-                    throw new Exception("Этот код создан для другого сервера");
+                if($serverId == 0){
+                    $serverId = user::self()->getServerId();
+                }else{
+                    if ($serverId != user::self()->getServerId()) {
+                        throw new Exception("Этот код создан для другого сервера");
+                    }
                 }
 
                 $itemId  = $bonus['item_id'];
