@@ -85,14 +85,8 @@
 
                 <script defer>
                   $('#bonusCode').on('click', function() {
-                     AjaxSend('/bonus/code', 'POST', {code:$('#form-code').val()}, true).then(function(response) {
-                        $('#bonusCodePanel').dropdown('hide');
-                        if (response.ok) {
-                           noticeSuccess(response.message);
-                        } else {
-                           noticeError(response.message);
-                        }
-                     })
+                    $('#bonusCodePanel').dropdown('hide')
+                     AjaxSend('/bonus/code', 'POST', {code:$('#form-code').val()})
                   })
 
                 </script>

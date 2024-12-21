@@ -137,10 +137,50 @@ function response(response, form){
     responseAnalysis(response, form)
 }
 
+/**
+ * Анимирует изменение значения счетчика.
+ * @param {number} targetValue - Новое значение счетчика.
+ * @param {number} duration - Длительность анимации в миллисекундах (по умолчанию 500).
+ */
+function animateCounter(targetValue, duration = 1500) {
+    const $counter = $(".count_sphere_coin");
+
+    // Парсим текущее значение как число с плавающей точкой, игнорируя все нецифровые символы
+    let currentValue = parseFloat($counter.text().replace(/[^\d.-]/g, '')) || 0;
+    if (currentValue === targetValue) return;
+
+    // Если целевое значение отрицательное, вычитаем это значение из текущего
+    targetValue = currentValue + targetValue;
+
+
+    // Если текущее значение уже равно целевому, не запускаем анимацию
+
+    // Анимируем изменение от текущего значения к целевому
+    $({ value: currentValue }).animate(
+        { value: targetValue },
+        {
+            duration: duration,
+            easing: "swing",
+            step: function (now) {
+                $counter.text(now.toFixed(1)); // Округляем до одного знака после запятой
+            },
+            complete: function () {
+                $counter.text(targetValue.toFixed(1)); // В конце точно ставим целевое значение
+            }
+        }
+    );
+}
+
+
+
+
 function responseAnalysis(response, form) {
     //Если существует переменная count_sphere_coin то обновляем счетчик class .count_sphere_coin
-    if (response.sphereCoin !== undefined){
-        $(".count_sphere_coin").text(response.sphereCoin)
+    console.log(response)
+    let sphereCoin;
+    if (response.sphereCoin !== undefined) {
+        sphereCoin = $(".count_sphere_coin").text();
+        animateCounter(response.sphereCoin-sphereCoin)
     }
     if (response.type === "notice") {
         ResponseNotice(response)

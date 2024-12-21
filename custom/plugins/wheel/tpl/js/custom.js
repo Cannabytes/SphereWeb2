@@ -101,7 +101,7 @@ function ItemWinModal(item, heading, mod) {
         .replace(/\^1\^/g, name)
         .replace(/\^2\^/g, item.count || 0);
 
-    animateCounter(".count_sphere_coin", item.count);
+        animateCounter(item.count);
 
   } else {
     let enchant = item.enchant > 0 ? '+' + item.enchant : '';
@@ -122,20 +122,4 @@ function ItemWinModal(item, heading, mod) {
   });
 
   return false;
-}
-
-function animateCounter(selector, increment) {
-  let $element = $(selector);
-  let currentValue = parseInt($element.text(), 10) || 0;
-  let targetValue = currentValue + increment; // Куда бежим
-  let speed = 37;
-  let step = Math.ceil(Math.abs(increment) / 50);
-  let interval = setInterval(() => {
-    currentValue += step;
-    if ((increment > 0 && currentValue >= targetValue) || (increment < 0 && currentValue <= targetValue)) {
-      currentValue = targetValue;
-      clearInterval(interval);
-    }
-    $element.text(currentValue);
-  }, speed);
 }

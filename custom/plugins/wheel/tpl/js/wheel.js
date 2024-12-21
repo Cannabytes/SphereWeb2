@@ -37,8 +37,12 @@ function wheelInit() {
         AjaxSend('/fun/wheel/callback', 'POST', {
             id: cfg.id,
         }, true, 5).then(function (data) {
-            responseAnalysis(data);
-            console.log(data);
+            let cost;
+            if (data.sphereCoin) {
+                cost = data.sphereCoin - $(".count_sphere_coin").text();
+                animateCounter(cost)
+            }
+
             if (data.success !== true) {
                 console.log('Что-то пошло не так');
                 /* Разрешаем запустить приложение вновь */
@@ -70,21 +74,6 @@ function wheelInit() {
 
             }, 1000);
         })
-
-        /* Отправляем запрос */
-        // $.ajax({
-        //     url: cfg.url, // куда отправляем
-        //     type: "post", // метод передачи
-        //     dataType: "json", // тип передачи данных
-        //     data: { // что отправляем
-        //         "name": "бонусы"
-        //     },
-        //     // после получения ответа сервера
-        //     success: function (data) {
-        //
-        //
-        //     }
-        // });
 
     });
 

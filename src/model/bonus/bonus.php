@@ -124,17 +124,23 @@ class bonus
                 $enchant = $bonus['enchant'] ?? 0;
                 $phrase  = $bonus['phrase'];
 
-                user::self()->addToWarehouse($serverId, $itemId, $count, $enchant, $phrase);
-
-                $itemInfo = client_icon::get_item_info($bonus['item_id'], false);
                 sql::sql("DELETE FROM bonus_code WHERE id = ?", [$bonus['id']]);
+                $itemInfo = client_icon::get_item_info($bonus['item_id'], false);
 
-                $enchant = ($enchant > 0) ? "+{$bonus['enchant']} " : "";
-
-                $name       = $enchant . $itemInfo->getAddName() . " " . $itemInfo->getItemName();
-                $bonusNames = "<img src='" . $itemInfo->getIcon() . "' width='16' height='16'> " . $name . "({$count}),  " . $bonusNames;
-                $bonusNamesTxt .= $name . " ({$count}), ";
+                //Для зачисления доната в лк на личный счёт
+                if($itemId == -1){
+                    user::self()->donateAdd($count);
+                    $name       = $itemInfo->getItemName();
+                    $bonusNamesTxt .= $name . " ({$count}), ";
+                }else{
+                    user::self()->addToWarehouse($serverId, $itemId, $count, $enchant, $phrase);
+                    $enchant = ($enchant > 0) ? "+{$bonus['enchant']} " : "";
+                    $name       = $enchant . $itemInfo->getAddName() . " " . $itemInfo->getItemName();
+                    $bonusNames = "<img src='" . $itemInfo->getIcon() . "' width='16' height='16'> " . $name . "({$count}),  " . $bonusNames;
+                    $bonusNamesTxt .= $name . " ({$count}), ";
+                }
                 user::self()->addLog(logTypes::LOG_BONUS_CODE, 'LOG_BONUS_CODE', [$code, $name, $count]);
+
             }
 
             sql::commit();

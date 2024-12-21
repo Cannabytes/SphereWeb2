@@ -132,7 +132,7 @@ class wheel
         $stories = sql::getRows(
             "SELECT `id`, `time`, `variables` FROM `logs_all` WHERE type=? AND user_id = ? AND server_id = ? ORDER BY id DESC",
             [
-                logTypes::LOG_BONUS_CODE->value,
+                logTypes::LOG_WHEEL_WIN->value,
                 user::self()->getId(),
                 user::self()->getServerId(),
             ]
@@ -152,12 +152,11 @@ class wheel
                 continue;
             }
             $info = clone $info;
-            $info->setCount((int)$count); // Принудительно приводим к числу
+            $info->setCount((int)$count);
             $info->setEnchant($enchant);
             $info->setDate($time);
             $arrStories[] = $info;
         }
-
         $stories = $arrStories;
         $response = server::send(type::GET_WHEELS)->show()->getResponse();
         if (isset($response['success']) and !$response['success'] or !$response['success']) {
@@ -168,7 +167,6 @@ class wheel
                 $response = $row;
             }
         }
-
         foreach ($response['items'] as &$item) {
             $itemData = client_icon::get_item_info($item['item_id']);
             $item['icon'] = $itemData->getIcon();
@@ -241,7 +239,7 @@ class wheel
                 'wheel' => $response['wheel'],
             ], true);
 
-            user::self()->addLog(logTypes::LOG_BONUS_CODE, '_LOG_User_Win_Wheel', [$item['item_id'], $item['enchant'], $item['name'], $item['count']]);
+            user::self()->addLog(logTypes::LOG_WHEEL_WIN, '_LOG_User_Win_Wheel', [$item['item_id'], $item['enchant'], $item['name'], $item['count']]);
             if($item['item_id']==-1){
                 user::self()->donateAdd($item['count']);
             }else{
