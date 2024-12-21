@@ -161,7 +161,6 @@
                         <strong>Ник:</strong> ${details.TopOwnerName}<br>
                         <strong>Кол-во:</strong> ${formatNumber(details.TopOwnerItemCount)}<br>
                         <strong>Player ID:</strong> ${details.TopOwnerId}<br>
-                        <strong>IP:</strong> ${details.TopOwnerIp}<br>
                     </div>`;
                 }
             }
@@ -179,8 +178,7 @@
             details: {
                 TopOwnerId: entry.TopOwnerId,
                 TopOwnerName: entry.TopOwnerName,
-                TopOwnerItemCount: entry.TopOwnerItemCount,
-                TopOwnerIp: entry.TopOwnerIp
+                TopOwnerItemCount: entry.TopOwnerItemCount
             }
         }));
 

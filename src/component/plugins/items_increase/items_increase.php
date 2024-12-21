@@ -33,7 +33,6 @@ class items_increase
                 'TopOwnerId' => $item['TopOwnerId'],
                 'TopOwnerName' => $item['TopOwnerName'],
                 'TopOwnerItemCount' => $item['TopOwnerItemCount'],
-                'TopOwnerIp' => $item['TopOwnerIp'],
             ];
         }
 
