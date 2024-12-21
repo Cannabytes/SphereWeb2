@@ -1019,17 +1019,34 @@
         $('#' + tableId + ' tbody tr').each(function () {
             let row = $(this);
             let obj = {};
+            let isValidRow = true; // Флаг для проверки строки.
+
             $('#' + tableId + ' thead th').each(function (index) {
                 let dataName = $(this).data('name');
                 if (dataName) {
-                    let cellValue = row.find(index === 0 ? 'th:eq(' + index + ')' : 'td:eq(' + (index - 1) + ')').text().trim();
-                    obj[dataName] = cellValue;
+                    let cell = row.find(index === 0 ? 'th:eq(' + index + ')' : 'td:eq(' + (index - 1) + ')');
+                    let input = cell.find('input');
+                    let value = input.length ? input.val().trim() : cell.text().trim();
+
+                    if (!value) {
+                        // Если значение пустое, отмечаем строку как невалидную.
+                        isValidRow = false;
+                    }
+
+                    obj[dataName] = value;
                 }
             });
-            data.push(obj);
+
+            if (isValidRow) {
+                // Добавляем строку в массив, только если она валидна.
+                data.push(obj);
+            }
         });
+
         return data;
     }
+
+
 
 
     function gatherTableData(tabPaneId) {
