@@ -109,11 +109,11 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
               self::getConfigValue('shop_id')
             );
             $invoice = $invoice['data'];
-            $amount   = $invoice['invoice_amount'];
+            $amount   = $invoice['amount'];
             $currency = $invoice['currency'];
             $amount   = donate::currency($amount, $currency);
 
-            self::telegramNotice(user::getUserId($user_id), $invoice['invoice_amount'], $currency, $amount, get_called_class());
+            self::telegramNotice(user::getUserId($user_id), $invoice['amount'], $currency, $amount, get_called_class());
             \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
             user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, message: null, pay_system:  get_called_class(), input: $input);
             donate::addUserBonus($user_id, $amount);
