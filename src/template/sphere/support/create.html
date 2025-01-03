@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div class="container-fluid">
+<div class="container-fluid row">
 
     <div class="main-mail-container gap-4 d-flex">
         <div class="mails-information">
@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            <div class="mail-info-body p-4" id="mail-info-body">
+            <div class="p-4">
 
                 <div class="accordion accordion-customicon1 accordion-primary accordions-items-seperate mb-2"
                      id="accordionFAQ1">
@@ -64,13 +64,14 @@
                         </label>
                     </div>
 
-                    <div id="mail-reply-editor"></div>
+                    <div id="message-editor"></div>
                 </div>
             </div>
-            <div class="mail-info-footer d-xl-flex align-items-center justify-content-between">
+
+            <div class="mail-info-footer mt-3 d-xl-flex align-items-center justify-content-between">
                 <div>
 
-                    <div id="screens" class="mt-2 row"></div>
+                    <div id="screens" class="mt-2 mb-2 d-flex flex-wrap"></div>
 
                     <button id="createSupportRequest" aria-label="button" type="button"
                             class="btn btn-success d-inline-flex">
@@ -149,23 +150,63 @@
 <script src="{{template}}/assets/libs/quill/quill.min.js"></script>
 
 <script>
+    $(document).ready(function() {
     var quill; // Глобальное объявление переменной
 
     $(function () {
         var toolbarOptions = [
-            [{'header': [1, 2, 3, 4, 5, 6, false]}],
-            [{'font': []}],
             ['bold', 'italic', 'underline', 'strike'],
-            [{'header': 1}, {'header': 2}],
+            [{'list': 'ordered'}, {'list': 'bullet'}],
             ['clean']
         ];
 
-        quill = new Quill('#mail-reply-editor', {
+        quill = new Quill('#message-editor', {
             modules: {
                 toolbar: toolbarOptions
             },
             theme: 'snow'
         });
+    });
+
+    const editor = document.querySelector('#message-editor');
+
+    const modalTriggerButton = document.querySelector('[data-bs-target="#modalLoadImgPanel"]');
+
+    // Отслеживаем событие dragover (когда изображение над областью)
+    editor.addEventListener('dragover', (event) => {
+        event.preventDefault(); // Это необходимо для разрешения перетаскивания
+        if (!document.querySelector('.modal.show')) {
+            modalTriggerButton.click(); // Открываем модальное окно
+        }
+    });
+
+    // Перехватываем drop событие
+    editor.addEventListener('drop', (event) => {
+        event.preventDefault();
+        const files = event.dataTransfer.files;
+
+        if (files && files[0] && files[0].type.startsWith('image/')) {
+            console.log('Изображение перетащено:', files[0]);
+
+            // Сразу открываем модальное окно для загрузки изображения
+            const modalTriggerButton = document.querySelector('[data-bs-target="#modalLoadImgPanel"]');
+            modalTriggerButton.click();
+        }
+    });
+
+
+    // Перехватываем paste событие (вставка изображения через буфер обмена)
+    editor.addEventListener('paste', (event) => {
+        const clipboardData = event.clipboardData || window.clipboardData;
+        const items = clipboardData.items;
+
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.startsWith('image/')) {
+                event.preventDefault();
+                console.log('Изображение вставлено через буфер обмена:', items[i].getAsFile());
+                modalTriggerButton.click();
+            }
+        }
     });
 
 
@@ -194,11 +235,7 @@
     });
 
 
-</script>
 
-<script>
-    (function () {
-        'use strict';
         let pond;
         let controllers = [];
 
@@ -215,12 +252,11 @@
             }
 
             // Добавляем изображение
-            $(screensElement).append(` <div class="col-lg-1 col-md-1 col-sm-6 col-12">
-                            <a href="${response.screen}" class="glightbox card" data-gallery="gallery1">
-                                <img src="${response.screen}" alt="image">
+            $(screensElement).append(` <div class="p-2">
+                            <a href="${response.screen}" class="glightbox" data-gallery="gallery1">
+                                <img src="${response.thumbnail}" alt="image">
                             </a>
                         </div>`);
-
             // Инициализация Glightbox для новых элементов
             const lightbox = GLightbox({
                 selector: '.glightbox',
@@ -285,7 +321,9 @@
         } else {
             console.error("Элемент '.multiple-filepond' не найден.");
         }
-    })();
+
+    });
+
 </script>
 
 {% endblock %}

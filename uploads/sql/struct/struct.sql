@@ -748,4 +748,12 @@ INSERT INTO `support_thread_name` (`id`, `thread_name`, `moderators`, `thread_co
 (5, 'Complaints about players', NULL, 0, 0),
 (6, 'other', NULL, 0, 0);
 
+DROP TABLE IF EXISTS `support_thread_name`;
+CREATE TABLE `support_read_topics` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `topic_id` int(11) NOT NULL,
+  `read_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 SET FOREIGN_KEY_CHECKS = 1;

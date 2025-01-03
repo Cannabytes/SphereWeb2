@@ -87,7 +87,7 @@ class support
     private static function getThreads($id = null): array
     {
         if ($id != null) {
-            return sql::getRows("
+            $threads = sql::getRows("
                                 SELECT 
                                     st.id, 
                                     st.thread_id, 
@@ -120,9 +120,21 @@ class support
                                 ORDER BY 
                                     st.date_update DESC;
                             ", [$id]);
-
+        } else {
+            $threads = sql::getRows("SELECT st.id, st.thread_id, st.owner_id, ( SELECT sm.user_id FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS last_user_id, st.date_update, ( SELECT SUBSTRING(sm.message, 1, 200)  FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS message, st.private, st.is_close FROM support_thread st ORDER BY st.date_update DESC; ");
         }
-        return sql::getRows("SELECT st.id, st.thread_id, st.owner_id, ( SELECT sm.user_id FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS last_user_id, st.date_update, ( SELECT SUBSTRING(sm.message, 1, 200)  FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS message, st.private, st.is_close FROM support_thread st ORDER BY st.date_update DESC; ");
+
+        $threadsRead = sql::getRows("SELECT topic_id FROM `support_read_topics` WHERE user_id = ?", [
+            user::self()->getId(),
+        ]);
+
+        $readIds = array_column($threadsRead, 'topic_id');
+
+        foreach ($threads as &$thread) {
+            $thread['is_read'] = in_array($thread['id'], $readIds);
+        }
+
+        return $threads;
     }
 
     public static function getSection(int $threadId): ?array
@@ -146,6 +158,9 @@ class support
             board::error("Отправка сообщений не чаще чем раз в 10 сек.");
         }
         $message = self::postMessage();
+        if ($message == "") {
+            board::error("Нельзя отправить пустое сообщение");
+        }
         $section = (int)$_POST['section'] ?? 1;
         $private = filter_input(INPUT_POST, 'private', FILTER_VALIDATE_BOOL);
         $screens = null;
@@ -219,11 +234,7 @@ class support
         }
         $allowedTags = '<b><i><strong><em><u><p><br><ul><ol><li><p><br></p>';
         $message = str_replace(['<p><br></p>'], '', $message);
-        $message = strip_tags($message, $allowedTags);
-        if ($message == "") {
-            board::error("Нельзя отправить пустое сообщение");
-        }
-        return $message;
+        return strip_tags($message, $allowedTags);
     }
 
     private static function incMessage($section): void
@@ -237,9 +248,10 @@ class support
      * @url /support
      * @return void
      */
-    static function show(): void
+    public static function show(): void
     {
         self::isEnable();
+
         tpl::addVar([
             'main' => true,
             'sections' => self::sections(),
@@ -276,6 +288,10 @@ class support
             $screens = json_encode($screens);
         }
 
+        if ($screens == null and $message == "") {
+            board::error("Нельзя отправить пустое сообщение");
+        }
+
         if (!self::isSendMessage($owner_id, $support_thread)) {
             board::error("У Вас нет прав отвечать в данном диалоге");
         }
@@ -286,8 +302,8 @@ class support
             time::mysql(), time::mysql(),
         ]);
         $support_message_id = sql::lastInsertId();
-        sql::run("UPDATE `support_thread` SET `last_message_id` = ?, `last_user_id` = ? WHERE `id` = ?", [
-            $support_message_id, \Ofey\Logan22\model\user\user::self()->getId(), $support_thread_id]);
+        sql::run("UPDATE `support_thread` SET `last_message_id` = ?, `last_user_id` = ?, `date_update` = ? WHERE `id` = ?", [
+            $support_message_id, \Ofey\Logan22\model\user\user::self()->getId(), time::mysql(), $support_thread_id]);
 
         if (!self::isUserModerator() and config::load()->notice()->isTechnicalSupport()) {
             $link = "/support/read/" . $support_thread_id;
@@ -477,19 +493,21 @@ class support
         if (isset($_FILES['filepond'])) {
             $manager = ImageManager::gd();
 
-            $time = time() - 600;
-            $row = sql::getRow("SELECT count(*) AS `count` FROM `support_message_screen` WHERE date_create > ? AND user_id = ?", [
-                date('Y-m-d H:i:s', $time),
-                user::self()->getId(),
-            ]);
-            if ($row['count'] > 6) {
-                echo json_encode([
-                    'type' => 'notice',
-                    'ok' => false,
-                    'status' => 'error',
-                    'message' => 'Вы загрузили больше 6 изображений за последние 10 минут.'
+            if (!user::self()->isAdmin()) {
+                $time = time() - 600;
+                $row = sql::getRow("SELECT count(*) AS `count` FROM `support_message_screen` WHERE date_create > ? AND user_id = ?", [
+                    date('Y-m-d H:i:s', $time),
+                    user::self()->getId(),
                 ]);
-                exit;
+                if ($row['count'] > 6) {
+                    echo json_encode([
+                        'type' => 'notice',
+                        'ok' => false,
+                        'status' => 'error',
+                        'message' => 'Вы загрузили больше 6 изображений за последние 10 минут.'
+                    ]);
+                    exit;
+                }
             }
 
             // Преобразование структуры $_FILES для удобной обработки
@@ -516,11 +534,9 @@ class support
                 if ($error == 0) {
                     $image = $manager->read($tmpName);
 
-                    // Изменение размера изображения
-                    $image->resize(1800, 1200, function ($constraint) {
-                        $constraint->aspectRatio();
-                        $constraint->upsize();
-                    });
+                    // Получаем исходные размеры изображения
+                    $originalWidth = $image->width();
+                    $originalHeight = $image->height();
 
                     // Генерация уникального имени для основного файла
                     $screen = mt_rand(1, PHP_INT_MAX) . '.png';
@@ -533,8 +549,15 @@ class support
                     // Сохранение основного изображения
                     $success = $image->save('uploads/support/' . $screen);
                     if ($success) {
+                        $thumbImage = $image;
+
                         // Создание миниатюры
-                        $thumbImage = $image->resize(300, 200); // Размер миниатюры 300x200
+                        if ($originalHeight > 300 ) {
+                            $thumbImage = $image->scale(height: 300);
+                        }
+                        if ($originalWidth > 300) {
+                            $thumbImage = $image->scale(width: 300);
+                        }
                         $thumb = pathinfo($screen, PATHINFO_FILENAME) . '_thumb.png'; // Имя миниатюры с суффиксом _thumb
 
                         // Сохранение миниатюры
@@ -599,6 +622,14 @@ class support
     static function read($id = null): void
     {
         self::isEnable();
+
+        if (!user::self()->isGuest()) {
+            sql::run("INSERT IGNORE INTO `support_read_topics` (`user_id`, `topic_id`, `read_at`) VALUES (?, ?, CURRENT_TIMESTAMP);", [
+                user::self()->getId(),
+                $id
+            ]);
+        }
+
         $support_thread = sql::getRow('SELECT `owner_id`, `private`, `is_close` FROM `support_thread` WHERE id = ?', [$id]);
         if (!$support_thread) {
             redirect::location("/support");

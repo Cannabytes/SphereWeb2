@@ -157,7 +157,7 @@
                             {% for screen in post.screens|json_decode %}
                             {% set imgPath = screen|split('.') %}
                             <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                                <a href="{{screen}}" class="glightbox card" data-gallery="gallery_{{screen.id}}">
+                                <a href="{{screen}}" class="glightbox" data-gallery="gallery_{{screen.id}}">
                                     <img src="{{imgPath[0]}}_thumb.{{imgPath[1]}}" class="img-fluid rounded"
                                          alt="image">
                                 </a>
@@ -179,9 +179,9 @@
 
                 <div class="">
 
-                    <div id="screens" class="mt-2 row"></div>
+                    <div id="screens" class="mt-2 mb-2 d-flex flex-wrap"></div>
 
-                    <button id="toReply" aria-label="button" type="button" class="btn btn-success  d-inline-flex">
+                    <button id="toReply" aria-label="button" type="button" class="btn btn-success d-inline-flex">
                         <i class="ri-reply-all-line me-1 align-middle"></i>{{ phrase(364) }}
                     </button>
 
@@ -300,31 +300,52 @@
             theme: 'snow'
         });
 
-
-        quill.clipboard.addMatcher('img', function (node, delta) {
-            return new Delta();
-        });
-
-        quill.root.addEventListener('paste', function (e) {
-            const clipboardData = e.clipboardData || window.clipboardData;
+        // Отслеживаем drop событий
+        const editor = document.querySelector('#reply .ql-editor');
 
 
-            if (clipboardData.files && clipboardData.files.length > 0) {
-                e.preventDefault();
-                noticeError("{{ phrase('Insertion disabled') }}")
+        const modalTriggerButton = document.querySelector('[data-bs-target="#exampleModalScrollable2"]');
+
+        // Отслеживаем событие dragover (когда изображение над областью)
+        editor.addEventListener('dragover', (event) => {
+            event.preventDefault(); // Это необходимо для разрешения перетаскивания
+            if (!document.querySelector('.modal.show')) {
+                modalTriggerButton.click(); // Открываем модальное окно
             }
         });
 
+        // Перехватываем drop событие
+        editor.addEventListener('drop', (event) => {
+            event.preventDefault();
+            const files = event.dataTransfer.files;
+
+            if (files && files[0] && files[0].type.startsWith('image/')) {
+                console.log('Изображение перетащено:', files[0]);
+
+                // Сразу открываем модальное окно для загрузки изображения
+                const modalTriggerButton = document.querySelector('[data-bs-target="#exampleModalScrollable2"]');
+                modalTriggerButton.click();
+            }
+        });
+
+        // Перехватываем paste событие (вставка изображения через буфер обмена)
+        editor.addEventListener('paste', (event) => {
+            const clipboardData = event.clipboardData || window.clipboardData;
+            const items = clipboardData.items;
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.startsWith('image/')) {
+                    event.preventDefault();
+                    console.log('Изображение вставлено через буфер обмена:', items[i].getAsFile());
+                    modalTriggerButton.click();
+                }
+            }
+        });
 
         $('#toReply').on('click', function () {
             let screens = [];
 
             let editorContent = quill.root.innerHTML;
-
-            if ($.trim(editorContent) === '<p><br></p>') {
-                alert('{{ phrase(502) }}');
-                return;
-            }
 
             $('#screens .glightbox').each(function () {
                 let href = $(this).attr('href');
@@ -334,6 +355,13 @@
                 }
             });
 
+            // Если массив скриншотов пуст, тогда проверяем содержимое сообщений
+            if (screens.length === 0) {
+                if ($.trim(editorContent) === '<p><br></p>') {
+                    alert('{{ phrase(502) }}');
+                    return;
+                }
+            }
             AjaxSend("/support/reply/request", "POST", {
                 message: editorContent,
                 id: "{{id}}",
@@ -367,9 +395,9 @@
             }
 
             // Добавляем изображение
-            $(screensElement).append(` <div class="col-lg-1 col-md-1 col-sm-6 col-12">
-                            <a href="${response.screen}" class="glightbox card" data-gallery="gallery1">
-                                <img src="${response.screen}" alt="image">
+            $(screensElement).append(` <div class="p-2">
+                            <a href="${response.screen}" class="glightbox" data-gallery="gallery1">
+                                <img src="${response.thumbnail}" alt="image">
                             </a>
                         </div>`);
 
