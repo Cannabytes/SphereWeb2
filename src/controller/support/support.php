@@ -624,6 +624,7 @@ class support
         self::isEnable();
 
         if (!user::self()->isGuest()) {
+            sql::run("DELETE FROM `support_read_topics` WHERE `topic_id` = ?;", [$id]);
             sql::run("INSERT IGNORE INTO `support_read_topics` (`user_id`, `topic_id`, `read_at`) VALUES (?, ?, CURRENT_TIMESTAMP);", [
                 user::self()->getId(),
                 $id
