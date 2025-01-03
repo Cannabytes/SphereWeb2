@@ -5,6 +5,7 @@ use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\model\admin\userlog;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 
 class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
 
@@ -14,7 +15,6 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
      * $secret_key - секретный ключ
      */
     private $receiver = '';
-    private $secret_key = '';
 
     public static function inputs(): array
     {
@@ -36,25 +36,25 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
      * Генерируем ссылку для перехода на сайт оплаты
      */
     function create_link(): void {
-        auth::get_is_auth() ?: board::notice(false, lang::get_phrase(234));
+        user::self()->isAuth() ?: board::notice(false, lang::get_phrase(234));
         donate::isOnlyAdmin(self::class);
+
+        if(empty(self::getConfigValue('shopId')) OR empty(self::getConfigValue('secretKey'))){
+            board::error("Yoomoney token is empty");
+        }
 
         filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT) ?: board::notice(false, "Введите сумму цифрой");
 
-        if(empty($this->receiver) OR empty($this->secret_key)){
-            board::error("No set token");
+        $donate = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
+
+        if ($_POST['count'] < $donate->getMinSummaPaySphereCoin()) {
+            board::notice(false, "Минимальное пополнение: " . $donate->getMinSummaPaySphereCoin());
+        }
+        if ($_POST['count'] > $donate->getMaxSummaPaySphereCoin()) {
+            board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        $donate = __config__donate;
-
-        if ($_POST['count'] < $donate['min_donate_bonus_coin']) {
-            board::notice(false, "Минимальное пополнение: " . $donate['min_donate_bonus_coin']);
-        }
-        if ($_POST['count'] > $donate['max_donate_bonus_coin']) {
-            board::notice(false, "Максимальная пополнение: " . $donate['max_donate_bonus_coin']);
-        }
-
-        $order_amount = $_POST['count'] * ($donate['coefficient']['RUB'] / $donate['quantity']);
+        $order_amount = $_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost());
         $params = [
             'receiver' => $this->receiver,
             'sum' => (string)$order_amount,
@@ -81,16 +81,17 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
         $sender = $_POST['sender'] ?? "";
         $codepro = $_POST['codepro'] ?? "";
         $user_id = $_POST['label'] ?? "";
-        $notification_secret = $this->secret_key;
+        $notification_secret = self::getConfigValue('secretKey');
         $hash = sha1("{$notification_type}&{$operation_id}&{$amount}&{$currency}&{$datetime}&{$sender}&{$codepro}&{$notification_secret}&{$user_id}");
         if($hash !== $request_hash){
             exit();
         }
         donate::control_uuid($operation_id, get_called_class());
         \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
-        $amount = donate::currency($withdraw_amount, $this->currency_default);
-        auth::change_donate_point($user_id, $amount, get_called_class());
-        donate::AddDonateItemBonus($user_id, $amount);
+        self::telegramNotice(user::getUserId($user_id), $_POST['amount'], $currency, $amount, get_called_class());
+        $amount = donate::currency($withdraw_amount, $currency);
+        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
+        donate::addUserBonus($user_id, $amount);
         exit();
     }
 }
