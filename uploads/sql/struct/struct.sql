@@ -750,6 +750,7 @@ INSERT INTO `support_thread_name` (`id`, `thread_name`, `moderators`, `thread_co
 (5, 'Complaints about players', NULL, 0, 0),
 (6, 'other', NULL, 0, 0);
 
+DROP TABLE IF EXISTS `support_read_topics`;
 CREATE TABLE `support_read_topics` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
