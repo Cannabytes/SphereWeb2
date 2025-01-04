@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'CREATE TABLE `support_read_topics` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `topic_id` int(11) NOT NULL,
-  `read_at` datetime DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    'ALTER TABLE `support_read_topics`
+  -- Удаляем текущий первичный ключ, если он есть
+  DROP PRIMARY KEY,
+  -- Добавляем автоинкремент и первичный ключ на `id`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY (`id`);
 ',
 ];

@@ -697,13 +697,14 @@ CREATE TABLE `items_increase` (
 
 DROP TABLE IF EXISTS `support_message`;
 CREATE TABLE `support_message` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `thread_id` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
   `message` mediumtext,
   `screens` varchar(1000) NOT NULL,
   `date_update` datetime DEFAULT NULL,
-  `date_create` datetime DEFAULT NULL
+  `date_create` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `support_message_screen`;
@@ -720,13 +721,13 @@ CREATE TABLE `support_thread` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `thread_id` int(11) DEFAULT NULL,
   `owner_id` int(11) DEFAULT NULL COMMENT 'создатель вопроса',
-  `last_user_id` int(11) DEFAULT NULL COMMENT 'ID последний ответ',
-  `last_message_id` int(11) NOT NULL,
+  `last_user_id` int(11) DEFAULT NULL COMMENT 'ID последнего ответа',
+  `last_message_id` int(11) DEFAULT NULL COMMENT 'ID последнего сообщения',
   `private` int(11) NOT NULL DEFAULT '0',
   `is_close` int(11) NOT NULL DEFAULT '0',
   `date_update` datetime DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
@@ -740,6 +741,7 @@ CREATE TABLE `support_thread_name` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
+DROP TABLE IF EXISTS `support_thread_name`;
 INSERT INTO `support_thread_name` (`id`, `thread_name`, `moderators`, `thread_count`, `weight`) VALUES
 (1, 'account', NULL, 0, 0),
 (2, 'Client, crash', NULL, 0, 0),
@@ -748,12 +750,12 @@ INSERT INTO `support_thread_name` (`id`, `thread_name`, `moderators`, `thread_co
 (5, 'Complaints about players', NULL, 0, 0),
 (6, 'other', NULL, 0, 0);
 
-DROP TABLE IF EXISTS `support_thread_name`;
 CREATE TABLE `support_read_topics` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `topic_id` int(11) NOT NULL,
-  `read_at` datetime DEFAULT CURRENT_TIMESTAMP
+  `read_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 SET FOREIGN_KEY_CHECKS = 1;
