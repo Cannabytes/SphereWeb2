@@ -741,7 +741,6 @@ CREATE TABLE `support_thread_name` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
-DROP TABLE IF EXISTS `support_thread_name`;
 INSERT INTO `support_thread_name` (`id`, `thread_name`, `moderators`, `thread_count`, `weight`) VALUES
 (1, 'account', NULL, 0, 0),
 (2, 'Client, crash', NULL, 0, 0),
