@@ -50,7 +50,11 @@ class options
                     "id" => (int)$sid,
                 ])->show()->getResponse();
                 if ($response['success']) {
-                    sql::run("DELETE FROM `servers` WHERE `id` = ?", [$sid]);
+                    try {
+                        sql::run("DELETE FROM `servers` WHERE `id` = ?", [$sid]);
+                    } catch (\Exception $e) {
+                        board::error($e->getMessage());
+                    }
                     board::redirect("/admin/server/list");
                     board::success("Сервер удален");
                 }

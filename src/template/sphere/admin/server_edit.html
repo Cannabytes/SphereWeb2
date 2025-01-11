@@ -206,7 +206,7 @@
                                                         <div id="logindblist">
 
                                                             {% for loginserver in loginservers %}
-                                                            <div class="form-check form-switch mb-2">
+                                                             <div class="form-check form-switch mb-2">
                                                                 <input class="form-check-input" type="radio"
                                                                        {% if loginserver.default %}checked{% endif %}
                                                                        name="loginserver" value="{{loginserver.id}}"
@@ -215,6 +215,7 @@
                                                                        for="logindb_{{loginserver.id}}">
                                                                     {{loginserver.host}}@{{loginserver.name}}
                                                                 </label>
+                                                                 <a class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ phrase('count_accounts_in_login_server', loginserver.accountsCount ?? 0) }}" href="#">[{{loginserver.accountsCount}}]</a>
                                                             </div>
                                                             {% endfor %}
 
@@ -565,6 +566,9 @@
 
                     // Ставим галочку для нового радио
                     $(`#logindb_${response.id}`).prop("checked", true);
+
+                    $('#add_new_login_server_panel').collapse('hide')
+
                 }
             })
             .catch(function (error) {

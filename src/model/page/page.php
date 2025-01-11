@@ -122,7 +122,9 @@ class page {
         }
 
         foreach ($news as &$item) {
-            $item['description'] = strip_tags($item['description'], '<br>');
+            if(mb_strlen($item['description']) >= $max_desc_len) {
+                $item['description'] = mb_substr( strip_tags($item['description'], "<li><p><br><strong><span>"), 0, $max_desc_len - 3) . '...';
+            }
         }
 
         return $news;

@@ -18,7 +18,7 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
     plugin::loading();
     $route           = new Ofey\Logan22\route\Route();
     date_default_timezone_set(config::load()->other()->getTimezone());
-    //Проверка что сайт отключен
+    //Проверка, что сайт отключен
     if (config::load()->other()->getEnableTechnicalWork() AND ! user::self()->isAdmin()) {
         $route->get("/admin", function () {
             tpl::display('sign-in.html');

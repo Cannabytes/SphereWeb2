@@ -82,6 +82,7 @@ enum type
     case GET_LOGIN_SERVERS; //DEPRECATED
     case GET_LOGIN_SERVERS_DATA;
     case DELETE_LOGINSERVER;
+    case UPDATE_LOGINSERVER;
 
     // Супер пользователь
     case CREATE_SUPER_USER_EMAIL_CHECK;
@@ -144,6 +145,7 @@ enum type
             self::CLEAR_ERRORS => '/api/server/errors/clear',
 
             self::DELETE_LOGINSERVER => '/api/server/delete/loginservers',
+            self::UPDATE_LOGINSERVER => '/api/server/update/loginserver',
 
             self::SYNCHRONIZATION => '/api/user/accounts/synchronization',
             self::SERVER_STATISTIC_ONLINE => '/api/server/statistic/online',

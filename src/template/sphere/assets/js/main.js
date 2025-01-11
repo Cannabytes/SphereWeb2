@@ -260,7 +260,7 @@
       html.setAttribute("data-bg-img", value);
     }
   }
-  localStorageBackup();
+  // localStorageBackup();
 })();
 
 function addtooltip() {}

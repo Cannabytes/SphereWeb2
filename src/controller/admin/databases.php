@@ -5,7 +5,6 @@ namespace Ofey\Logan22\controller\admin;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\template\tpl;
-use ZipArchive;
 
 class databases
 {
@@ -19,10 +18,44 @@ class databases
         }
 
         \Ofey\Logan22\component\sphere\server::setShowError(true);
-        $data = \Ofey\Logan22\component\sphere\server::downloadFile(type::DOWNLOAD_ACCOUNTS, [
+        $data = \Ofey\Logan22\component\sphere\server::send(type::DOWNLOAD_ACCOUNTS, [
             'loginId' => (int)$data['loginId'],
-        ]);
+        ])->show()->getResponse();
         echo json_encode($data);
+    }
+
+    static public function show()
+    {
+        $servers = \Ofey\Logan22\model\server\server::getServerAll();
+        $database = \Ofey\Logan22\component\sphere\server::send(type::GET_DATABASE_LIST)->show()->getResponse();
+
+        $defaultDB = $database['defaultDB'];
+        $gameServers = $database['gameservers'];
+        $loginServers = $database['loginservers'];
+
+        foreach ($defaultDB as $db) {
+            foreach ($servers as &$server) {
+                if ($db['id'] == $server->getId()) {
+                    foreach ($loginServers as &$loginServer) {
+                        if ($loginServer['id'] == $db['loginServerID']) {
+                            $loginServer['default'] = true;
+                        }
+                    }
+                    foreach ($gameServers as &$gameserver) {
+                        if ($gameserver['id'] == $db['gameServerID']) {
+                            $gameserver['default'] = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        tpl::addVar([
+            'defaultDB' => $defaultDB,
+            'gameServers' => $gameServers,
+            'loginServers' => $loginServers
+        ]);
+        tpl::display("/admin/databases.html");
     }
 
     public static function deleteImportFile(): void
@@ -63,56 +96,56 @@ class databases
 
     public static function loadAccounts(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
-            $file = $_FILES['file'];
-            $loginId = $_POST['loginId'];
-            // Убедимся, что файл имеет правильное расширение
-            $allowedExtensions = ['zip', 'json'];
-            $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $file = $_POST['file'] ?? board::error("Not accounts");
+            $loginId = $_POST['loginId'] ?? board::error("Not loginId");
+            $encrypt = "sphere";
 
-            if (in_array($fileExtension, $allowedExtensions)) {
-                // Папка для сохранения загруженных файлов
-                $uploadDir = 'uploads/';
-                $uploadFile = $uploadDir . basename($file['name']);
+            $lines = explode("\n", trim($file));
+            $parsedData = [];
 
-                // Если это JSON файл, архивируем его в ZIP
-                if ($fileExtension == 'json') {
-                    $zipFile = $uploadDir . pathinfo($file['name'], PATHINFO_FILENAME) . '.zip';
+            foreach ($lines as $line) {
+                $parts = explode(':', trim($line));
+                if (count($parts) === 3) {
+                    list($email, $account, $password) = $parts;
 
-                    // Создаём новый архив
-                    $zip = new ZipArchive();
-                    if ($zip->open($zipFile, ZipArchive::CREATE) === TRUE) {
-                        // Добавляем файл JSON в архив
-                        $zip->addFile($file['tmp_name'], basename($file['name']));
-                        $zip->close();
-
-                        // Удаляем исходный JSON файл после архивации
-                        unlink($file['tmp_name']);
-                        $uploadFile = $zipFile;
-//                        echo json_encode(['status' => 'success', 'message' => 'Файл JSON успешно загружен и заархивирован в ZIP']);
-                    } else {
-                        echo json_encode(['status' => 'error', 'message' => 'Не удалось создать ZIP архив']);
+                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        board::error("Некорректный email: $email");
+                        continue;
                     }
+
+                    if (strlen($account) < 1) {
+                        board::error("Некорректный account: $account");
+                        continue;
+                    }
+
+                    if (strlen($password) < 1) {
+                        board::error("Некорректный password: $password");
+                        continue;
+                    }
+
+                    // Добавляем в результирующий массив
+                    $parsedData[] = [
+                        'email' => $email,
+                        'login' => $account,
+                        'password' => $password
+                    ];
                 } else {
-                    // Для файлов ZIP просто перемещаем их в папку
-                    if (move_uploaded_file($file['tmp_name'], $uploadFile)) {
-//                        echo json_encode(['status' => 'success', 'message' => 'Файл успешно загружен']);
-                    } else {
-                        echo json_encode(['status' => 'error', 'message' => 'Не удалось загрузить файл']);
-                    }
+                    board::error("Некорректная строка: $line");
                 }
-
-                $data = \Ofey\Logan22\component\sphere\server::uploadFile($uploadFile, type::LOAD_ACCOUNTS, [
-                    'loginId' => (int)$loginId,
-                ]);
-                var_dump($data);exit();
-
-            } else {
-                echo json_encode(['status' => 'error', 'message' => 'Неверный формат файла']);
             }
+
+            $data = \Ofey\Logan22\component\sphere\server::send(type::LOAD_ACCOUNTS, [
+                'loginId' => (int)$loginId,
+                'encrypt' => $encrypt,
+                'accounts' => $parsedData,
+            ])->show()->getResponse();
+
+            echo json_encode($data);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Неверный формат файла']);
         }
     }
-
 
     static public function delete()
     {
@@ -125,43 +158,9 @@ class databases
         board::success("Удалено");
     }
 
-    static public function show()
-    {
-        $servers = \Ofey\Logan22\model\server\server::getServerAll();
-        $database = \Ofey\Logan22\component\sphere\server::send(type::GET_DATABASE_LIST)->show()->getResponse();
-
-        $defaultDB = $database['defaultDB'];
-        $gameServers = $database['gameservers'];
-        $loginServers = $database['loginservers'];
-
-
-        foreach ($defaultDB as $db) {
-            foreach ($servers as &$server) {
-                if ($db['id'] == $server->getId()) {
-                    foreach ($loginServers as &$loginServer) {
-                        if ($loginServer['id'] == $db['loginServerID']) {
-                            $loginServer['default'] = true;
-                        }
-                    }
-                    foreach ($gameServers as &$gameserver) {
-                        if ($gameserver['id'] == $db['gameServerID']) {
-                            $gameserver['default'] = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        tpl::addVar([
-            'defaultDB' => $defaultDB,
-            'gameServers' => $gameServers,
-            'loginServers' => $loginServers
-        ]);
-        tpl::display("/admin/databases.html");
-    }
-
 
     // Оценка качества соединения с БД
+
     public static function connectionQualityCheck(): void
     {
         $type = filter_input(INPUT_POST, 'type') ?? board::error('No set type');
@@ -214,6 +213,27 @@ class databases
             $pingTime < 1000 => "Удовлетворительное соединение",
             default => "Плохое соединение",
         };
+    }
+
+    public static function updateLoginserver(): void
+    {
+        $loginId = filter_input(INPUT_POST, 'loginId', FILTER_VALIDATE_INT) ?? board::error("No loginId");
+        $host = filter_input(INPUT_POST, 'host') ?? board::error("No host");
+        $port = filter_input(INPUT_POST, 'port', FILTER_VALIDATE_INT) ?? board::error("No port");
+        $user = filter_input(INPUT_POST, 'user') ?? board::error("No user");
+        $password = filter_input(INPUT_POST, 'password') ?? board::error("No password");
+        $name = filter_input(INPUT_POST, 'name') ?? board::error("No name");
+        $response = \Ofey\Logan22\component\sphere\server::send(type::UPDATE_LOGINSERVER, [
+            'loginId' => $loginId,
+            'host' => $host,
+            'port' => $port,
+            'user' => $user,
+            'password' => $password,
+            'name' => $name
+        ])->show(true)->getResponse();
+        var_dump($response);
+        exit;
+        echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
 
 }

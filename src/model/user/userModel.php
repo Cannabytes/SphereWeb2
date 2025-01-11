@@ -27,6 +27,7 @@ use PDOStatement;
 
 class userModel
 {
+    private const ONLINE_THRESHOLD_MINUTES = 15;
 
     private string $email = '', $password = '';
 
@@ -60,20 +61,22 @@ class userModel
 
     private ?string $lang = null;
 
+    private ?DateTime $lastActivity = null;
+
     public function __construct(?int $userId = null)
     {
         if ($userId == null) {
             return $this;
         }
         $user = sql::getRow(
-            "SELECT `id`, `email`, `password`, `name`, `signature`, `ip`, `date_create`, `date_update`, `access_level`, `donate_point`, `avatar`, `avatar_background`, `timezone`, `country`, `city`, `server_id`, `lang` FROM `users` WHERE id = ? LIMIT 1",
+            "SELECT `id`, `email`, `password`, `name`, `signature`, `ip`, `date_create`, `date_update`, `access_level`, `donate_point`, `avatar`, `avatar_background`, `timezone`, `country`, `city`, `server_id`, `lang`, `last_activity` FROM `users` WHERE id = ? LIMIT 1",
             [$userId]
         );
 
         if ($user) {
             if ($user['server_id'] === null) {
                 $server_id = server::getDefaultServer();
-                if($server_id!=null){
+                if ($server_id != null) {
                     $this->changeServerId($server_id, $user['id']);
                     $user['server_id'] = $server_id;
                 }
@@ -94,7 +97,6 @@ class userModel
                     }
                 }
             }
-
             if (isset($_SESSION['id'])) {
                 if ($_SESSION['id'] == $user['id']) {
                     if (!password_verify($_SESSION['password'], $user['password'])) {
@@ -121,17 +123,86 @@ class userModel
             $this->city = $user['city'];
             $this->serverId = $user['server_id'];
             $this->lang = $user['lang'];
+            $this->lastActivity = $user['last_activity'] ? new DateTime($user['last_activity']) : null;
+
+            if ($_SESSION['id'] == $this->getId()) {
+                if ($this->lastActivity == null) {
+                    $this->lastActivity = new DateTime();
+                    $this->updateLastActivity();
+                }
+                $now = new DateTime();
+                $diff = $now->getTimestamp() - $this->lastActivity->getTimestamp();
+                if ($diff < (self::ONLINE_THRESHOLD_MINUTES * 60)) {
+                    $this->updateLastActivity();
+                }
+            }
+
 
             \Ofey\Logan22\component\sphere\server::setUser($this);
             $this->warehouse = $this->warehouse() ?? null;
             $this->accounts = null;
 
-            //            $this->players   = $this->getCharacters();
-
             return $this;
         }
 
         return null;
+    }
+
+
+    /**
+     * Обновляет время последней активности пользователя
+     */
+    public function updateLastActivity(): void
+    {
+
+        if (!$this->isAuth()) {
+            return;
+        }
+        sql::run("UPDATE `users` SET `last_activity` = ? WHERE `id` = ?", [time::mysql(), $this->getId()]);
+        $this->lastActivity = new DateTime();
+    }
+
+    /**
+     * Проверяет, онлайн ли пользователь
+     */
+    public function isOnline(): bool
+    {
+        if ($this->lastActivity === null) {
+            return false;
+        }
+
+        $now = new DateTime();
+        $diff = $now->getTimestamp() - $this->lastActivity->getTimestamp();
+        return $diff < (self::ONLINE_THRESHOLD_MINUTES * 60);
+    }
+
+    /**
+     * Форматирует время последней активности для отображения
+     */
+    public function getLastActivityFormatted(): string
+    {
+        if ($this->lastActivity === null) {
+            return "Никогда не был на сайте";
+        }
+
+        if ($this->isOnline()) {
+            return "Онлайн";
+        }
+
+        $now = new DateTime();
+        $diff = $now->getTimestamp() - $this->lastActivity->getTimestamp();
+
+        if ($diff < 3600) {
+            $minutes = floor($diff / 60);
+            return "{$minutes} мин. назад";
+        }
+
+        if ($diff < 86400) {
+            $hours = floor($diff / 3600);
+            return "{$hours} ч. назад";
+        }
+
+        return $this->lastActivity->format('d.m.Y H:i');
     }
 
     private function changeServerId(int $serverId, int $user_id): void
@@ -237,13 +308,13 @@ class userModel
 
     public function AddHistoryDonate(float|int $amount, string $message = null, string $pay_system = "sphereBonus", null|int $id_admin_pay = null, $input = null): void
     {
-        if ($message == null){
+        if ($message == null) {
             $message = payMessage::getRandomPhrase();
         }
         $isSphereSystem = in_array($pay_system, ["sphereBonus", "cumulativeBonus", "oneTimeBonus"]) ? 1 : 0;
 
         if ($isSphereSystem == 0) {
-            if ( $input == null ) {
+            if ($input == null) {
                 $input = json_encode($_REQUEST, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             }
             \Ofey\Logan22\component\sphere\server::send(type::DONATE_STATISTIC, [

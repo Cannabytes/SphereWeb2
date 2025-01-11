@@ -2502,4 +2502,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  180 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/api/server/update/loginserver',
+    'func' => 'controller\\admin\\databases::updateLoginserver',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

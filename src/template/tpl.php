@@ -943,8 +943,8 @@ class tpl
         }));
 
         //Список последних новостей
-        $twig->addFunction(new TwigFunction('last_news', function ($last_thread = 10) {
-            return page::show_news_short(300, $last_thread, false);
+        $twig->addFunction(new TwigFunction('last_news', function ($last_thread = 10, $max_length = 300) {
+            return page::show_news_short($max_length, $last_thread, false);
         }));
 
         $twig->addFunction(new TwigFunction('getPageLink', function ($news) {
