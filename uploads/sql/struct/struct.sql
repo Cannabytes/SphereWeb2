@@ -552,7 +552,7 @@ CREATE TABLE `user_variables`  (
   `date_create` datetime NULL DEFAULT current_timestamp,
   `date_update` datetime NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`, `user_id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user_variables
@@ -562,26 +562,28 @@ CREATE TABLE `user_variables`  (
 -- Table structure for users
 -- ----------------------------
 DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `signature` varchar(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `ip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `date_create` timestamp NOT NULL DEFAULT current_timestamp,
-  `date_update` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
-  `access_level` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT 'user',
-  `donate_point` float NULL DEFAULT 0,
-  `avatar` varchar(62) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT 'none.jpeg',
-  `avatar_background` varchar(62) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT 'none.jpeg',
-  `timezone` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `country` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `city` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `server_id` int NULL DEFAULT NULL,
-  `lang` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+CREATE TABLE IF NOT EXISTS `users` (
+                                       `id` int(11) NOT NULL AUTO_INCREMENT,
+    `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `signature` varchar(400) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `ip` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `date_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `date_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `access_level` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT 'user',
+    `donate_point` float DEFAULT '0',
+    `avatar` varchar(62) COLLATE utf8mb4_unicode_ci DEFAULT 'none.jpeg',
+    `avatar_background` varchar(62) COLLATE utf8mb4_unicode_ci DEFAULT 'none.jpeg',
+    `timezone` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `country` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `city` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `server_id` int(11) DEFAULT NULL,
+    `lang` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `last_activity` datetime DEFAULT NULL,
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `idx_last_activity` (`last_activity`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of users
