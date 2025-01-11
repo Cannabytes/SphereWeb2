@@ -4,6 +4,7 @@
 namespace Ofey\Logan22\model\user;
 
 use DateTime;
+use DateTimeZone;
 use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
@@ -27,7 +28,7 @@ use PDOStatement;
 
 class userModel
 {
-    private const ONLINE_THRESHOLD_MINUTES = 15;
+    private const ONLINE_THRESHOLD_MINUTES = 3;
 
     private string $email = '', $password = '';
 
@@ -123,16 +124,16 @@ class userModel
             $this->city = $user['city'];
             $this->serverId = $user['server_id'];
             $this->lang = $user['lang'];
-            $this->lastActivity = $user['last_activity'] ? new DateTime($user['last_activity']) : null;
+            $this->initLastActivity($user['last_activity']);
 
+            //Обновляем время когда селф-пользователь был в онлайне (т.е. сейчас)
             if ($_SESSION['id'] == $this->getId()) {
                 if ($this->lastActivity == null) {
-                    $this->lastActivity = new DateTime();
                     $this->updateLastActivity();
                 }
                 $now = new DateTime();
                 $diff = $now->getTimestamp() - $this->lastActivity->getTimestamp();
-                if ($diff < (self::ONLINE_THRESHOLD_MINUTES * 60)) {
+                if ($diff > (self::ONLINE_THRESHOLD_MINUTES * 60)) {
                     $this->updateLastActivity();
                 }
             }
@@ -152,35 +153,75 @@ class userModel
     /**
      * Обновляет время последней активности пользователя
      */
-    public function updateLastActivity(): void
-    {
-
+    public function updateLastActivity(): void {
         if (!$this->isAuth()) {
             return;
         }
-        sql::run("UPDATE `users` SET `last_activity` = ? WHERE `id` = ?", [time::mysql(), $this->getId()]);
-        $this->lastActivity = new DateTime();
+
+        // Устанавливаем часовой пояс UTC для записи в БД
+        sql::run("SET time_zone = '+00:00'");
+        sql::run("UPDATE `users` SET `last_activity` = UTC_TIMESTAMP() WHERE `id` = ?", [$this->getId()]);
+
+        // Возвращаем системный часовой пояс
+        sql::run("SET time_zone = @@global.time_zone");
+
+        // Обновляем локальное свойство
+        $utcNow = new DateTime('now', new DateTimeZone('UTC'));
+        $this->lastActivity = $this->convertUtcToUserTime($utcNow);
+    }
+
+    /**
+     * Инициализация времени последней активности из БД
+     */
+    private function initLastActivity(?string $lastActivityStr): void {
+        if ($lastActivityStr === null) {
+            $this->lastActivity = null;
+            return;
+        }
+
+        // Создаем DateTime объект в UTC из значения в БД
+        $utcTime = new DateTime($lastActivityStr, new DateTimeZone('UTC'));
+
+        // Конвертируем в часовой пояс пользователя
+        $this->lastActivity = $this->convertUtcToUserTime($utcTime);
+    }
+
+    private function convertUtcToUserTime(DateTime $utcTime): DateTime {
+        $userTimezone = new DateTimeZone($this->getTimezone());
+        $userTime = clone $utcTime;
+        $userTime->setTimezone($userTimezone);
+        return $userTime;
     }
 
     /**
      * Проверяет, онлайн ли пользователь
      */
-    public function isOnline(): bool
-    {
+    public function isOnline(): bool {
         if ($this->lastActivity === null) {
             return false;
         }
 
-        $now = new DateTime();
-        $diff = $now->getTimestamp() - $this->lastActivity->getTimestamp();
+        $userNow = new DateTime('now', new DateTimeZone($this->getTimezone()));
+        $diff = $userNow->getTimestamp() - $this->lastActivity->getTimestamp();
         return $diff < (self::ONLINE_THRESHOLD_MINUTES * 60);
+    }
+
+    private function convertToServerTime(DateTime $userTime): DateTime {
+        $serverTimezone = new \DateTimeZone(date_default_timezone_get());
+
+        // Создаем копию времени
+        $serverTime = clone $userTime;
+
+        // Конвертируем в серверный часовой пояс
+        $serverTime->setTimezone($serverTimezone);
+
+        return $serverTime;
     }
 
     /**
      * Форматирует время последней активности для отображения
      */
-    public function getLastActivityFormatted(): string
-    {
+    public function getLastActivityFormatted(): string {
         if ($this->lastActivity === null) {
             return "Никогда не был на сайте";
         }
@@ -189,8 +230,8 @@ class userModel
             return "Онлайн";
         }
 
-        $now = new DateTime();
-        $diff = $now->getTimestamp() - $this->lastActivity->getTimestamp();
+        $userNow = new DateTime('now', new DateTimeZone($this->getTimezone()));
+        $diff = $userNow->getTimestamp() - $this->lastActivity->getTimestamp();
 
         if ($diff < 3600) {
             $minutes = floor($diff / 60);
