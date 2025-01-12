@@ -237,7 +237,7 @@ class wheel
             board::alert([
                 'success' => true,
                 'wheel' => $response['wheel'],
-            ], true);
+            ], next: true);
 
             user::self()->addLog(logTypes::LOG_WHEEL_WIN, '_LOG_User_Win_Wheel', [$item['item_id'], $item['enchant'], $item['name'], $item['count']]);
             if($item['item_id']==-1){
