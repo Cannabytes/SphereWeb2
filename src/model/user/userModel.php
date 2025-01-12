@@ -126,18 +126,19 @@ class userModel
             $this->lang = $user['lang'];
             $this->initLastActivity($user['last_activity']);
 
-            //Обновляем время когда селф-пользователь был в онлайне (т.е. сейчас)
-            if ($_SESSION['id'] == $this->getId()) {
-                if ($this->lastActivity == null) {
-                    $this->updateLastActivity();
-                }
-                $now = new DateTime();
-                $diff = $now->getTimestamp() - $this->lastActivity->getTimestamp();
-                if ($diff > (self::ONLINE_THRESHOLD_MINUTES * 60)) {
-                    $this->updateLastActivity();
+            if (isset($_SESSION['id'])) {
+                // Обновляем время, когда селф-пользователь был в онлайне (т.е. сейчас)
+                if ($_SESSION['id'] == $this->getId()) {
+                    if ($this->lastActivity == null) {
+                        $this->updateLastActivity();
+                    }
+                    $now = new DateTime();
+                    $diff = $now->getTimestamp() - $this->lastActivity->getTimestamp();
+                    if ($diff > (self::ONLINE_THRESHOLD_MINUTES * 60)) {
+                        $this->updateLastActivity();
+                    }
                 }
             }
-
 
             \Ofey\Logan22\component\sphere\server::setUser($this);
             $this->warehouse = $this->warehouse() ?? null;
