@@ -9,13 +9,6 @@ use Ofey\Logan22\model\user\user;
 
 class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
 
-    /**
-     * Конфигурация
-     * $receiver - Номер кошелька ЮMoney, на который нужно зачислять деньги отправителей.
-     * $secret_key - секретный ключ
-     */
-    private $receiver = '';
-
     public static function inputs(): array
     {
         return [
@@ -56,7 +49,7 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
 
         $order_amount = $_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost());
         $params = [
-            'receiver' => $this->receiver,
+            'receiver' => self::getConfigValue('shopId'),
             'sum' => (string)$order_amount,
             "quickpay-form" => 'donate',
             'label' => auth::get_id(),
