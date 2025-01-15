@@ -7,8 +7,12 @@ const wsclient = {
     connect() {
         return new Promise((resolve, reject) => {
             this.ws = new WebSocket('ws://localhost:17580/ws');
-            this.ws.onopen = () => { resolve() }
-            this.ws.onerror = e => { reject(e) }
+            this.ws.onopen = () => {
+                resolve()
+            }
+            this.ws.onerror = e => {
+                reject(e)
+            }
         });
     },
     onmessage(callback) {
@@ -37,15 +41,15 @@ const wsclient = {
 function reconnectionLauncher() {
     const delay = 1000
 
-    fetch('http://127.0.0.1:17580/ajax', { method: 'POST', body: JSON.stringify({ command: 'is_connect' }) })
+    fetch('http://127.0.0.1:17580/ajax', {method: 'POST', body: JSON.stringify({command: 'is_connect'})})
         .then((response) => {
             response.json().then((data) => {
                 wsclient.connect().then(() => {
-                    if(isDebug){
+                    if (isDebug) {
                         console.log("Connected...")
                     }
                     $("#modal-start-launcher").modal('hide')
-                    if(clickToStartLauncher){
+                    if (clickToStartLauncher) {
                         clickToStartLauncher = false
                     }
                     isConnectSocket = true
@@ -119,12 +123,12 @@ function firstRequest() {
 }
 
 function sendToLauncher(obj) {
-	if (!wsclient.isConnected()) {
-		errorMessage(getPhrase("need_start_launcher"))
-		return
-	}
-	
-	wsclient.send(obj);
+    if (!wsclient.isConnected()) {
+        errorMessage(getPhrase("need_start_launcher"))
+        return
+    }
+
+    wsclient.send(obj);
 }
 
 function getPathDirectoryChronicle() {
@@ -139,7 +143,7 @@ function getPathDirectoryChronicle() {
 
 function responseMessage(data) {
     let response = JSON.parse(data);
-    if(isDebug){
+    if (isDebug) {
         console.log(response)
     }
     ResponseStatus(response);
@@ -200,7 +204,7 @@ function ResponseFilesList(response) {
         if (all.trim() === "") {
             all = ""
         }
-        $("#fileslist").val( all + file);
+        $("#fileslist").val(all + file);
     })
 }
 
@@ -250,13 +254,13 @@ function ResponseStatus(response) {
             $("#loadedFiles").text(response.loaded)
             $("#filesTotal").text(response.filesTotal)
             $('#processName').text(getPhrase("file_upload"));
-            $('#processRunLevel').text( percent + "%");
+            $('#processRunLevel').text(percent + "%");
 
             updateChart(percent, getPhrase("file_upload"));
 
             $('title').text("Launcher" + " " + chronicle + " (" + percent + "%)");
 
-            for (let index = 0; index <= countStream-1; index++) {
+            for (let index = 0; index <= countStream - 1; index++) {
                 if (typeof response.boot[index] !== 'undefined') {
                     resp = response.boot[index]
                     filename = resp.filename;
@@ -275,7 +279,7 @@ function ResponseStatus(response) {
         }
     } else if (response.status === 4) {
         setUpdateClient(false);
-        if(isDebug){
+        if (isDebug) {
             console.log("Загрузка завершена")
         }
         updateChart(100, "Завершено");
@@ -290,26 +294,25 @@ function ResponseStatus(response) {
         setUpdateClient(false);
         $('#processRunLevel').text("0%");
         $('#processName').text(getPhrase("cancel_update"));
-        if(isDebug){
+        if (isDebug) {
             console.log("Загрузка отменена")
         }
         // resetLoadPanel()
     } else if (response.status === 5) {
         setUpdateClient(false);
         $('#processName').text(getPhrase("error"));
-        if(isDebug){
+        if (isDebug) {
             console.log("Произошла ошибка при загрузке")
         }
     } else if (response.status === 6) {
         $('#processName').text(getPhrase("token_api_error"));
         setUpdateClient(false);
-        if(isDebug){
+        if (isDebug) {
             console.log("Ошибка ввода токена")
         }
     }
 
 }
-
 
 
 function ResponseEvent(response) {
@@ -338,23 +341,74 @@ function ResponseEventsLog(response) {
     }
 }
 
+function updateCreateFolderPanelVisibility() {
+    const spans = $("#dirfullpath").find("span.linkdir");
+    const panelCreateDir = $(".panelCreateDir");
+
+    // Проверяем наличие span элементов и их содержимое
+    let hasValidPath = false;
+
+    if (spans.length > 0) {
+        spans.each(function() {
+            const path = $(this).attr('data-all-path');
+            if (path && path.trim() !== '') {
+                hasValidPath = true;
+                return false; // Прерываем цикл each, если нашли валидный путь
+            }
+        });
+    }
+
+    // Показываем или скрываем панель в зависимости от наличия валидного пути
+    if (hasValidPath) {
+        panelCreateDir.removeClass('d-none');
+        // Сбрасываем состояние панели ввода имени папки
+        $("#panelCreateDir").addClass('d-none');
+        $("#createDirName").val('');
+    } else {
+        panelCreateDir.addClass('d-none');
+    }
+}
+
+// Добавляем обработчик для обновления при изменении пути
+$(document).on("click", ".linkdir", function() {
+    setTimeout(updateCreateFolderPanelVisibility, 100); // Небольшая задержка для обновления DOM
+});
+
+// Модифицируем функцию ResponseDirection
 function ResponseDirection(response) {
     if (response.command !== "directry") return;
-    $("#dirfullpath").text(response.directory)
-    $('.saveDirClient').attr('data-client-dir-path', response.directory)
-    $("#dirlist").html("")
-    $("#dirfullpath").html(parsePathToLinks(response.directory))
-    image = "folder"
-    if (response.directory === "") {
-        image = "local_disk"
+
+    const isEmptyPath = !response.directory || response.directory.trim() === "";
+
+    $("#dirfullpath").text(response.directory);
+    $('.saveDirClient').attr('data-client-dir-path', response.directory);
+    $("#dirlist").html("");
+
+    if (isEmptyPath) {
+        $('.saveDirClient').addClass('disabled').prop('disabled', true);
+    } else {
+        $('.saveDirClient').removeClass('disabled').prop('disabled', false);
     }
+
+    $("#dirfullpath").html(parsePathToLinks(response.directory));
+
+    let image = isEmptyPath ? "local_disk" : "folder";
+
     if (response.folders != null) {
         response.folders.forEach(function (elem) {
-            $('#dirlist').append('<figure data-all-path="' + (elem) + '" class="cursor-pointer highlight direction"><img src="/custom/plugins/launcher/tpl/img/' + image + '.png" style="width: 80px;" alt="Folder Icon"><figcaption class="name">' + dirname(elem) + '</figcaption></figure>');
+            $('#dirlist').append(
+                '<figure data-all-path="' + (elem) + '" class="cursor-pointer highlight direction">' +
+                '<img src="/custom/plugins/launcher/tpl/img/' + image + '.png" style="width: 80px;" alt="Folder Icon">' +
+                '<figcaption class="name">' + dirname(elem) + '</figcaption>' +
+                '</figure>'
+            );
         });
     } else {
-        $("#dirlist").html(getPhrase("not_dir"))
+        $("#dirlist").html(getPhrase("not_dir"));
     }
+
+    // Вызываем функцию проверки видимости панели создания папки
+    updateCreateFolderPanelVisibility();
 }
 
 function ResponseSaveDirectory(response) {
@@ -362,26 +416,193 @@ function ResponseSaveDirectory(response) {
 
 }
 
-//Имеется ли директории для данных хроник
+
+// Функция для создания кастомного выпадающего списка
+function createCustomSelect() {
+    const originalSelect = $('#selectClient');
+    const inputGroup = originalSelect.closest('.input-group');
+
+    // Создаем структуру нового селекта
+    const customSelect = $('<div>', {
+        class: 'input-group-select flex-grow-1'
+    });
+
+    // Создаем скрытое поле для хранения значения
+    const hiddenInput = $('<input>', {
+        type: 'hidden',
+        id: 'selectClient',
+        name: 'selectClient'
+    });
+
+    // Создаем кнопку для открытия списка
+    const selectButton = $('<button>', {
+        class: 'btn btn-light -light dropdown-toggle w-100 text-start',
+        type: 'button',
+        'data-bs-toggle': 'dropdown',
+        'aria-expanded': 'false',
+        text: getPhrase('select_directory')
+    }).on('click', function(e) {
+        const dropdownMenu = $(this).siblings('.dropdown-menu');
+        const itemCount = dropdownMenu.children('li').length;
+        if (itemCount === 0) {
+            e.preventDefault();
+            e.stopPropagation();
+            $("#selectDirClient").modal('show');
+        }
+    });
+
+    // Создаем выпадающий список
+    const dropdownMenu = $('<ul>', {
+        class: 'dropdown-menu dropmenu-success-light'
+    });
+
+    // Собираем структуру
+    customSelect.append(hiddenInput).append(selectButton).append(dropdownMenu);
+
+    // Заменяем оригинальный select
+    originalSelect.replaceWith(customSelect);
+
+    // Добавляем стили
+    if (!$('#customSelectStyles').length) {
+        $('head').append(`
+            <style id="customSelectStyles">
+                .input-group-select {
+                    position: relative;
+                }
+                .input-group > .input-group-select {
+                    position: relative;
+                    flex: 1 1 auto;
+                    width: 1%;
+                    min-width: 0;
+                }
+                .dropdown-menu {
+                    width: 100%;
+                }
+                .dropdown-item {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 0.5rem 1rem;
+                }
+                .dropdown-item .delete-btn {
+                    visibility: hidden;
+                    margin-left: 10px;
+                    padding: 2px 5px;
+                }
+                .dropdown-item:hover .delete-btn {
+                    visibility: visible;
+                }
+            </style>
+        `);
+    }
+
+    return customSelect;
+}
+
+// Модифицируем функцию ResponseGetChronicleDirectory
 function ResponseGetChronicleDirectory(response) {
     if (response.command !== "getChronicleDirectory") return;
+
+    let dropdownMenu;
+    if (!$('.input-group-select').length) {
+        const customSelect = createCustomSelect();
+        dropdownMenu = customSelect.find('.dropdown-menu');
+    } else {
+        dropdownMenu = $('.dropdown-menu');
+    }
+
+    dropdownMenu.empty();
+
     if (response.clients !== "null") {
-        $('#selectClient').empty();
         var clients = JSON.parse(response.clients);
         if (Array.isArray(clients)) {
-            clients.forEach(function (elem) {
-                var newOption = $('<option>', {
-                    value: elem.id, text: elem.dir
+            clients.forEach(function(elem) {
+                const item = $('<li>');
+                const itemLink = $('<a>', {
+                    class: 'dropdown-item' + (elem.is_default === 1 ? ' active' : ''),
+                    href: 'javascript:void(0);',
+                    'data-value': elem.id
                 });
+
+                const textSpan = $('<span>', {
+                    text: elem.dir
+                });
+
+                const deleteBtn = $('<button>', {
+                    class: 'btn btn-light btn-sm delete-btn',
+                    html: '<i class="fe fe-trash"></i>',
+                    'data-id': elem.id
+                });
+
+                itemLink.append(textSpan).append(deleteBtn);
+                item.append(itemLink);
+                dropdownMenu.append(item);
+
                 if (elem.is_default === 1) {
-                    newOption.prop('selected', true);
+                    $('.dropdown-toggle').text(elem.dir);
+                    $('#selectClient').val(elem.id);
                 }
-                $('#selectClient').append(newOption);
             });
-        } else {
+
+            // Обработчик выбора элемента
+            $('.dropdown-item').off('click').on('click', function(e) {
+                if (!$(e.target).closest('.delete-btn').length) {
+                    const value = $(this).data('value');
+                    const text = $(this).find('span').text();
+
+                    $('.dropdown-toggle').text(text);
+                    $('.dropdown-item').removeClass('active');
+                    $(this).addClass('active');
+
+                    // Обновляем значение скрытого поля
+                    $('#selectClient').val(value);
+
+                    // Вызываем ту же функцию, что и для стандартного select
+                    let obj = {
+                        command: 'setDefaultServer',
+                        id: parseInt(value),
+                        chronicle: chronicle,
+                        domain: domain,
+                        serverID: serverID,
+                    }
+                    sendToLauncher(obj);
+                }
+            });
+
+            // Обработчик удаления
+            $('.delete-btn').off('click').on('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                const id = $(this).data('id');
+                const dirName = $(this).closest('.dropdown-item').find('span').text();
+
+                if (confirm(getPhrase('confirm_delete_directory'))) {
+                    let obj = {
+                        command: 'removeClientDir',
+                        id: parseInt(id),
+                        chronicle: chronicle,
+                    };
+                    sendToLauncher(obj);
+
+                    const item = $(this).closest('li');
+                    const wasActive = item.find('.dropdown-item').hasClass('active');
+                    item.remove();
+                    if (wasActive) {
+                        const firstItem = $('.dropdown-item').first();
+                        if (firstItem.length) {
+                            const firstValue = firstItem.data('value');
+                            const firstText = firstItem.find('span').text();
+                            $('.dropdown-toggle').text(firstText);
+                            firstItem.addClass('active');
+                            $('#selectClient').val(firstValue);
+                        } else {
+                            $('.dropdown-toggle').text(getPhrase('select_directory'));
+                            $('#selectClient').val('');
+                        }
+                    }
+                }
+            });
         }
-    } else {
-        $('#selectClient').empty();
     }
 }
 
@@ -405,9 +626,9 @@ function ResponseGetVersionLauncher(response) {
     $(".launcherVersion").text(response.version);
     $(".lastLauncherVersion").text(response.actualVersion);
 
-    if(response.actualVersion > response.version){
+    if (response.actualVersion > response.version) {
         $("#msgUpdLauncher").removeClass("d-none");
-    }else {
+    } else {
         if (!$("#msgUpdLauncher").hasClass("d-none")) {
             $("#msgUpdLauncher").addClass("d-none");
         }
@@ -427,7 +648,7 @@ function ResponseNeedClientUpdate(response) {
 
 //Начать обновление
 function startUpdate() {
-    if (wsclient.isConnected()===false){
+    if (wsclient.isConnected() === false) {
         return errorMessage(getPhrase("need_start_launcher"))
     }
     if ($("#selectClient").val() !== null) {
@@ -463,7 +684,7 @@ function setUpdateClient(loadupdate) {
         isUpdateClient = false;
         $("#startUpdateGame").text(getPhrase("start_update"))
     }
-    for (let index = 0; index <= countStream-1; index++) {
+    for (let index = 0; index <= countStream - 1; index++) {
         $("#download_status_filename_size_" + (index)).text("0 MB")
         $("#download_status_filename_" + (index)).attr('data-original-title', formatBytes(0));
         $("#download_status_filename_" + (index)).text(getPhrase("no_download"))

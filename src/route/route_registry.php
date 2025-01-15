@@ -37,12 +37,10 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
             if (route::getDisabledRoutes($dbRoute['pattern'])) {
                 continue;
             }
-
             $access  = $dbRoute['access'];
             $method  = $dbRoute['method'];
             $pattern = $dbRoute['pattern'];
             $func    = $dbRoute['func'];
-
             if ( ! $func) {
                 $func = function (...$data) use ($dbRoute) {
                     foreach ($data as $key => $value) {

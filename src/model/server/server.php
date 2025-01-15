@@ -81,7 +81,6 @@ class server
         if (isset(self::$server_info[$id])) {
             return self::$server_info[$id];
         }
-
         // Если self::$server_info не null и запрашиваемый ID не передан, возвращаем текущий сервер
         if (self::$server_info !== null && $id === null) {
             $server = current(self::$server_info);
@@ -152,7 +151,6 @@ class server
             }
             return self::$server_info[$id] ?? (end(self::$server_info) instanceof serverModel ? end(self::$server_info) : null);
         }
-
         // Если self::$server_info не пуст, возвращаем первый сервер, иначе null
         return !empty(self::$server_info) ? current(self::$server_info) : null;
     }

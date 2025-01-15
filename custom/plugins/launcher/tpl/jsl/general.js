@@ -271,6 +271,7 @@ $(document).on('click', '#logClear', function () {
 });
 
 $(document).on('click', '.saveDirClient', function () {
+  console.log($(this).attr('data-client-dir-path'))
   $("#selectDirectoryModal").modal("hide");
   obj = {
     command: 'saveDirectoryClient',
@@ -446,15 +447,39 @@ $(document).on("click", ".launcherAccountsPlayer", function () {
   }
 });
 
-$(document).on("click", "#createDir", function (){
+$(document).on("click", "#createDir", function() {
   if (wsclient.isConnected() === false) {
-    errorMessage(getPhrase("need_start_launcher"))
+    errorMessage(getPhrase("need_start_launcher"));
     return;
   }
+
+  const currentPath = $('.saveDirClient').attr('data-client-dir-path');
+  const newDirName = $("#createDirName").val().trim();
+
+  // Проверяем наличие пути и имени новой папки
+  if (!currentPath || currentPath.trim() === '') {
+    errorMessage(getPhrase("select_directory_first"));
+    return;
+  }
+
+  if (!newDirName) {
+    errorMessage(getPhrase("enter_folder_name"));
+    return;
+  }
+
+  // Проверяем на недопустимые символы в имени папки
+  const invalidChars = /[<>:"/\\|?*\x00-\x1F]/;
+  if (invalidChars.test(newDirName)) {
+    errorMessage(getPhrase("invalid_folder_name"));
+    return;
+  }
+
   obj = {
     command: 'createDir',
-    name: $("#createDirName").val(),
-    path: $(".saveDirClient").attr('data-client-dir-path'),
-  }
-  sendToLauncher(obj)
-})
+    name: newDirName,
+    path: currentPath
+  };
+
+  sendToLauncher(obj);
+  $("#panelCreateDir").addClass("d-none");
+});

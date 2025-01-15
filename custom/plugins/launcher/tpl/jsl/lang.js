@@ -174,7 +174,7 @@ let phrase = {
         "no_update_needed" : "Обновление не требуется.",
         "launcher version" : "Последняя версия лаунчера",
         "launcher last version" : "Последняя версия лаунчера",
-
+        "select_directory" : "Выберите папку игры",
 
     },
     "en": {
@@ -319,6 +319,7 @@ let phrase = {
         "no_update_needed" : "No update is needed.",
         "launcher version" : "Your launcher version",
         "launcher last version" : "The latest version of the launcher",
+        "select_directory" : "Select the game folder",
 
 },
 

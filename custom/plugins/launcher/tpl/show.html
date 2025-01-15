@@ -390,7 +390,7 @@
                 </div>
 
                 <div class="card-footer">
-                  <div class="d-flex mt-0">
+                  <div class="d-flex mt-0 panelCreateDir">
 
                     <a class="btn btn-sm btn-teal-light btn-wave waves-effect waves-light" id="showInputFolder">
                       <i class="ri ri-folder-2-fill"></i> {{ phrase('create folder') }}
@@ -506,6 +506,7 @@
 {% endblock %}
 
 {% block js %}
+
 <script>
 
   $(document).ready(function () {
@@ -536,9 +537,9 @@
 </script>
 
 
-<script src="{{template_plugin}}/tpl/jsl/lang.js?v=0.0.2"></script>
-<script src="{{template_plugin}}/tpl/jsl/general.js?v=0.0.5"></script>
-<script src="{{template_plugin}}/tpl/jsl/weblauncher.js?v=0.0.4"></script>
+<script src="{{template_plugin}}/tpl/jsl/lang.js?v=0.0.3"></script>
+<script src="{{template_plugin}}/tpl/jsl/general.js?v=0.0.7"></script>
+<script src="{{template_plugin}}/tpl/jsl/weblauncher.js?v=0.1.2"></script>
 
 
 <script src="{{template}}/assets/libs/echarts/echarts.min.js"></script>
@@ -620,6 +621,5 @@
   $("#showInputFolder").click(function () {
     $("#panelCreateDir").toggleClass("d-none");
   });
-
 </script>
 {% endblock %}
