@@ -9,12 +9,12 @@
       <div class="header-element">
         <div class="horizontal-logo">
           <a href="/" class="header-logo">
-            <img src="{{config().logo().getFavicon()}}" alt="logo" class="desktop-logo ">
-            <img src="{{config().logo().getFavicon()}}" alt="logo" class="toggle-logo ">
-            <img src="{{config().logo().getFavicon()}}" alt="logo" class="desktop-dark  ">
-            <img src="{{config().logo().getFavicon()}}" alt="logo" class="toggle-dark  ">
-            <img src="{{config().logo().getFavicon()}}" alt="logo" class="desktop-white  ">
-            <img src="{{config().logo().getFavicon()}}" alt="logo" class="toggle-white  ">
+            <img src="{{config().logo().getLogo()}}" alt="logo" class="desktop-logo ">
+            <img src="{{config().logo().getLogo()}}" alt="logo" class="toggle-logo ">
+            <img src="{{config().logo().getLogo()}}" alt="logo" class="desktop-dark  ">
+            <img src="{{config().logo().getLogo()}}" alt="logo" class="toggle-dark  ">
+            <img src="{{config().logo().getLogo()}}" alt="logo" class="desktop-white  ">
+            <img src="{{config().logo().getLogo()}}" alt="logo" class="toggle-white  ">
           </a>
         </div>
       </div>
@@ -58,56 +58,6 @@
           <span class="fs-14 fw-semibold text-info">{{phrase('donate_coin_to_game')|raw}}</span>
         </a>
       </div>
-
-
-
-
-      <div class="header-element message-dropdown enable_bonus_code "  {% if config().enabled().isEnableBonusCode()== false %}style="display: none;" {% endif %}>
-        <!-- Start::header-link|dropdown-toggle -->
-        <a id="bonusCodePanel" href="javascript:void(0);" class="header-link dropdown-toggle bg-dark-transparent " data-bs-auto-close="outside" data-bs-toggle="dropdown">
-          <i class="fe fe-shopping-cart header-link-icon"></i>
-          <span class="fs-14 fw-semibold text-info">{{phrase('code_bonus')}}</span>
-        </a>
-
-        <div class="main-header-dropdown dropdown-menu dropdown-menu-end" data-popper-placement="none">
-          <div><hr class="dropdown-divider"></div>
-
-            <div class="m-3">
-
-              <div class="card-body">
-
-
-                {% if getUser().isAuth() %}
-                <form action="/bonus/code" method="post">
-                <div class="mb-3">
-                  <label for="form-code" class="form-label fs-14 text-dark">{{phrase('enter_bonus_code')}}</label>
-                  <input name="code" type="text" class="form-control" id="form-code" placeholder="{{phrase('code_bonus')}}">
-                </div>
-                <button id="bonusCode" class="btn btn-primary" type="button">{{phrase('receive')}}</button>
-                </form>
-
-                <script defer>
-                  $('#bonusCode').on('click', function() {
-                    $('#bonusCodePanel').dropdown('hide')
-                     AjaxSend('/bonus/code', 'POST', {code:$('#form-code').val()})
-                  })
-
-                </script>
-
-                {% else %}
-                 {{phrase('need_auth_for_bonus_code')|raw}}
-                {% endif %}
-
-              </div>
-
-          </div>
-
-        </div>
-        </div>
-
-
-
-
 
       {% if getCountLang() >= 2 %}
       <div class="header-element country-selector">

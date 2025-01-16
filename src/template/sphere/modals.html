@@ -448,3 +448,69 @@
   });
 </script>
 {% endif %}
+
+
+
+{% if config().enabled().isEnableBonusCode() %}
+<div class="modal modal-lg fade" id="bonusCodeModal" tabindex="-1" aria-labelledby="bonusCodeModalLabel" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="bonusCodeModalLabel">{{phrase('code_bonus')}}</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body px-4">
+        <div class="row">
+          {% if getUser().isAuth() %}
+          <div class="col-xl-12 mb-3">
+            <label for="form-code" class="form-label text-dark fw-semibold">{{phrase('enter_bonus_code')}}<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
+            <input type="text" class="form-control" id="form-code" placeholder="{{phrase('code_bonus')}}">
+          </div>
+          {% else %}
+          <div class="col-xl-12">
+            {{phrase('need_auth_for_bonus_code')|raw}}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="modal-footer">
+        {% if getUser().isAuth() %}
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase('cancel')}}</button>
+        <button type="button" class="btn btn-primary" id="bonusCode">{{phrase('receive')}}</button>
+        {% else %}
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase('close')}}</button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function() {
+    // Очистка поля ввода при открытии модального окна
+    $('#bonusCodeModal').on('show.bs.modal', function() {
+      $('#form-code').val('');
+    });
+
+    $('#bonusCode').on('click', function() {
+      let code = $('#form-code').val();
+
+      if (!code) {
+        return;
+      }
+
+      // Отправляем AJAX запрос
+      AjaxSend('/bonus/code', 'POST', {code: code})
+              .then(function(response) {
+                // После успешной отправки закрываем модальное окно
+                var modal = bootstrap.Modal.getInstance(document.getElementById('bonusCodeModal'));
+                modal.hide();
+              })
+              .catch(function(error) {
+                console.error('Ошибка:', error);
+              });
+    });
+  });
+</script>
+{% endif %}
+
+
