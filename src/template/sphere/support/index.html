@@ -48,8 +48,13 @@
 
                 {% if getUser().isAdmin() %}
                 <div class="card-footer text-center">
-                    <a href="/support/admin/add/section" data-bs-toggle="modal" data-bs-target="#add-section" class="btn btn-sm btn-primary-light m-1"><i class="ri-bar-chart-horizontal-line me-2 align-middle d-inline-block"></i>{{ phrase('Categories') }}</a>
-                    <a href="/support/admin/add/moderator" data-bs-toggle="modal" data-bs-target="#add-moderator" class="btn btn-sm btn-success-light m-1"><i class="ri-group-line me-2 align-middle d-inline-block"></i>{{ phrase('Add moderator') }}</a>
+                    <a href="/support/admin/add/section" data-bs-toggle="modal" data-bs-target="#add-section"
+                       class="btn btn-sm btn-primary-light m-1"><i
+                            class="ri-bar-chart-horizontal-line me-2 align-middle d-inline-block"></i>{{
+                        phrase('Categories') }}</a>
+                    <a href="/support/admin/add/moderator" data-bs-toggle="modal" data-bs-target="#add-moderator"
+                       class="btn btn-sm btn-success-light m-1"><i
+                            class="ri-group-line me-2 align-middle d-inline-block"></i>{{ phrase('Add moderator') }}</a>
                 </div>
                 {% endif %}
 
@@ -57,7 +62,8 @@
 
         </div>
 
-        <div class="modal modal-lg fade" id="add-section" tabindex="-1" aria-labelledby="add-sectionLabel" aria-hidden="true">
+        <div class="modal modal-lg fade" id="add-section" tabindex="-1" aria-labelledby="add-sectionLabel"
+             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -68,11 +74,16 @@
                     <div class="modal-body px-4">
                         <div class="row">
                             <div class="col-xl-6 mb-2">
-                                <label for="phraseId" class="form-label"><a target="_blank" href="/admin/phrases/custom">{{ phrase('Phrase ID category name') }}</a><sup><i class="ri-star-s-fill text-danger fs-8"></i></sup></label>
+                                <label for="phraseId" class="form-label"><a target="_blank"
+                                                                            href="/admin/phrases/custom">{{
+                                    phrase('Phrase ID category name') }}</a><sup><i
+                                        class="ri-star-s-fill text-danger fs-8"></i></sup></label>
                                 <input type="text" class="form-control" id="phraseId" value="">
-                                <button id="add_section" type="button" class="btn btn-sm btn-success mt-2"><i class="ri-stack-line me-2"></i> {{ phrase(438) }}</button>
+                                <button id="add_section" type="button" class="btn btn-sm btn-success mt-2"><i
+                                        class="ri-stack-line me-2"></i> {{ phrase(438) }}
+                                </button>
                                 <script>
-                                    $("#add_section").on("click", function (){
+                                    $("#add_section").on("click", function () {
                                         phraseId = $("#phraseId").val();
                                         AjaxSend("/support/admin/add/section", "POST", {phraseId: phraseId}, false);
                                     })
@@ -85,7 +96,8 @@
 
                                     {% for section in sections %}
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="{{section.id}}" id="remove_section_{{section.id}}">
+                                        <input class="form-check-input" type="checkbox" value="{{section.id}}"
+                                               id="remove_section_{{section.id}}">
                                         <label class="form-check-label" for="remove_section_{{section.id}}">
                                             {{phrase(section.thread_name)}}
                                         </label>
@@ -94,7 +106,9 @@
 
                                 </div>
 
-                                <button id="delete_section" type="button" class="btn btn-sm btn-danger mt-2"><i class="ri-delete-bin-line me-2"></i> {{ phrase('Removal') }}</button>
+                                <button id="delete_section" type="button" class="btn btn-sm btn-danger mt-2"><i
+                                        class="ri-delete-bin-line me-2"></i> {{ phrase('Removal') }}
+                                </button>
                                 <script>
                                     $("#delete_section").on("click", function () {
                                         let ids = [];
@@ -105,7 +119,7 @@
                                             noticeError("Нет выбранных элементов")
                                             return;
                                         }
-                                        AjaxSend("/support/admin/delete/section", "POST", {ids:ids}, false)
+                                        AjaxSend("/support/admin/delete/section", "POST", {ids: ids}, false)
                                     });
                                 </script>
 
@@ -115,13 +129,15 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light"
-                                data-bs-dismiss="modal">{{ phrase('close') }}</button>
+                                data-bs-dismiss="modal">{{ phrase('close') }}
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="modal modal-lg fade" id="add-moderator" tabindex="-1" aria-labelledby="add-moderatorLabel" aria-hidden="true">
+        <div class="modal modal-lg fade" id="add-moderator" tabindex="-1" aria-labelledby="add-moderatorLabel"
+             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -133,16 +149,19 @@
                         <div class="row">
 
                             <div class="col-xl-6 mb-2">
-                                <label for="selectEmailToModerator" class="form-label">{{ phrase('user') }}<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
+                                <label for="selectEmailToModerator" class="form-label">{{ phrase('user') }}<sup><i
+                                        class="ri-star-s-fill text-success fs-8"></i></sup></label>
                                 <select class="form-control" name="toMail" id="selectEmailToModerator">
                                     {% for user in getUsers() %}
-                                    <option value="{{user.getEmail()}}" >{{user.getEmail()}}</option>
+                                    <option value="{{user.getEmail()}}">{{user.getEmail()}}</option>
                                     {% endfor %}
                                 </select>
-                                <button id="add_moderator" type="button" class="btn btn-sm btn-primary me-2">{{ phrase('Add moderator') }}</button>
+                                <button id="add_moderator" type="button" class="btn btn-sm btn-primary me-2">{{
+                                    phrase('Add moderator') }}
+                                </button>
 
                                 <script>
-                                    $("#add_moderator").on("click", function() {
+                                    $("#add_moderator").on("click", function () {
                                         // Получаем выбранный email
                                         const selectedEmail = $("#selectEmailToModerator").val();
 
@@ -152,12 +171,12 @@
                                         }
 
                                         // Находим все отмеченные чекбоксы
-                                        $("#section_moderator_list .form-check-input:checked").each(function() {
+                                        $("#section_moderator_list .form-check-input:checked").each(function () {
                                             const sectionId = $(this).val();
                                             const tableId = `#section_moderator_list_${sectionId}`;
 
                                             // Проверяем, есть ли уже такой email в таблице
-                                            const existingEmails = $(`${tableId} tbody tr td.email-cell`).map(function() {
+                                            const existingEmails = $(`${tableId} tbody tr td.email-cell`).map(function () {
                                                 return $(this).text();
                                             }).get();
 
@@ -178,35 +197,38 @@
                                     });
 
                                     // Делегируем событие на удаление, чтобы работало для новых строк
-                                    $(document).on("click", ".remove-moderator", function() {
+                                    $(document).on("click", ".remove-moderator", function () {
                                         $(this).closest("tr").remove();
                                     });
                                 </script>
 
 
-
-
                             </div>
 
                             <div class="col-xl-6 mb-2">
-                                <label for="section_moderator_list" class="form-label">{{ phrase('Select category') }}<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
+                                <label for="section_moderator_list" class="form-label">{{ phrase('Select category')
+                                    }}<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
                                 <div class="card-body" id="section_moderator_list">
 
                                     {% for section in sections %}
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="{{section.id}}" id="moderator_section_{{section.id}}">
+                                        <input class="form-check-input" type="checkbox" value="{{section.id}}"
+                                               id="moderator_section_{{section.id}}">
                                         <label class="form-check-label" for="moderator_section_{{section.id}}">
                                             {{phrase(section.thread_name)}}
                                         </label>
 
                                         <div class="table-responsive">
-                                            <table data-section-id="{{section.id}}" id="section_moderator_list_{{section.id}}" class="table table-sm table-bordered table-hover text-nowrap">
+                                            <table data-section-id="{{section.id}}"
+                                                   id="section_moderator_list_{{section.id}}"
+                                                   class="table table-sm table-bordered table-hover text-nowrap">
                                                 <tbody>
                                                 {% for moderator in section.moderators %}
                                                 <tr>
                                                     <td class="email-cell">{{moderator}}</td>
                                                     <td class="action-cell">
-                                                        <button type="button" class="btn btn-sm btn-danger remove-moderator">
+                                                        <button type="button"
+                                                                class="btn btn-sm btn-danger remove-moderator">
                                                             Удалить
                                                         </button>
                                                     </td>
@@ -224,7 +246,9 @@
 
                         </div>
                         <div class="d-flex justify-content-center align-items-center">
-                            <button id="update_moderator" type="button" class="btn btn-sm btn-success">{{ phrase(271) }}</button>
+                            <button id="update_moderator" type="button" class="btn btn-sm btn-success">{{ phrase(271)
+                                }}
+                            </button>
                         </div>
 
                         <script>
@@ -259,28 +283,32 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light"
-                                data-bs-dismiss="modal">{{phrase('close')}}</button>
+                                data-bs-dismiss="modal">{{phrase('close')}}
+                        </button>
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
 
         <div class="total-mails mt-5 mt-lg-0">
             <div class="p-1 d-flex align-items-center border-bottom">
-                  <div class="mail-option-read d-md-flex d-block">
-                      {% if main %}
-                          <a aria-label="anchor" href="javascript:location.reload();" class="vertical-phone" data-bs-toggle="tooltip" data-bs-original-title="Refresh">
-                              <i class="bx bx-refresh"></i>
-                          </a>
-                      {% else %}
-                        <a aria-label="anchor" href="/support" class="vertical-phone" data-bs-toggle="tooltip" data-bs-original-title="Back to inbox">
-                            <i class="bx bx-left-arrow-alt"></i>
-                        </a>
-                      <a aria-label="anchor" href="javascript:location.reload();" class="vertical-phone" data-bs-toggle="tooltip" data-bs-original-title="Refresh">
-                          <i class="bx bx-refresh"></i>
-                      </a>
-                      {% endif %}
-                  </div>
+                <div class="mail-option-read d-md-flex d-block">
+                    {% if main %}
+                    <a aria-label="anchor" href="javascript:location.reload();" class="vertical-phone"
+                       data-bs-toggle="tooltip" data-bs-original-title="Refresh">
+                        <i class="bx bx-refresh"></i>
+                    </a>
+                    {% else %}
+                    <a aria-label="anchor" href="/support" class="vertical-phone" data-bs-toggle="tooltip"
+                       data-bs-original-title="Back to inbox">
+                        <i class="bx bx-left-arrow-alt"></i>
+                    </a>
+                    <a aria-label="anchor" href="javascript:location.reload();" class="vertical-phone"
+                       data-bs-toggle="tooltip" data-bs-original-title="Refresh">
+                        <i class="bx bx-refresh"></i>
+                    </a>
+                    {% endif %}
+                </div>
 
             </div>
             <div class="mail-messages" id="mail-messages">
@@ -290,49 +318,66 @@
                     <li class="{% if thread.is_read == false %}active{% endif %}">
                         {% set sectionInfo = get_support_thread_name(thread.thread_id) %}
 
-                          <div class="d-flex align-items-top">
+                        <div class="d-flex align-items-top">
                             <div class="me-2 lh-1">
-                                <a aria-label="anchor" href="javascript:void(0);" class="main-mail-star  d-inline-block">
-                                    {% if thread.is_close %}
-                                        <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('is_close') }}" class="bi bi-lock"></i>
-                                    {% else %}
-                                        <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('is_open') }}" class="bi bi-unlock"></i>
-                                    {% endif %}
-                                </a>
-                                <a aria-label="anchor" href="javascript:void(0);" class="main-mail-star  d-inline-block">
-                                    {% if thread.private %}
-                                    <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('Viewing is closed') }}" class="bi bi-eye-slash"></i>
-                                    {% else %}
-                                    <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('Viewing is open') }}" class="bi bi-eye"></i>
-                                    {% endif %}
-                                </a>
 
+                                <a aria-label="anchor" href="javascript:void(0);" class="main-mail-star">
+                                    {% if thread.is_close %}
+                                    <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('is_close') }}"
+                                       class="bi bi-lock"></i>
+                                    {% else %}
+                                    <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('is_open') }}"
+                                       class="bi bi-unlock"></i>
+                                    {% endif %}
+                                </a>
+                                <a aria-label="anchor" href="javascript:void(0);" class="main-mail-star">
+                                    {% if thread.private %}
+                                    <i data-bs-toggle="tooltip"
+                                       data-bs-original-title="{{ phrase('Viewing is closed') }}"
+                                       class="bi bi-eye-slash"></i>
+                                    {% else %}
+                                    <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('Viewing is open') }}"
+                                       class="bi bi-eye"></i>
+                                    {% endif %}
+                                </a>
                             </div>
 
-                            <div class="flex-fill ms-2 subject-container">
-{% if thread.owner_id == getUser().getId() or getUser().isAdmin() or isUserModerator or thread.private == false %}<a href="/support/read/{{thread.id}}">{% endif %}
-                                    <div class="d-flex align-items-center subject-container">
-                                        <span class="avatar avatar-lg me-2">
-                                            <img src="{{getUser(thread.last_user_id).getAvatar()}}" alt="img">
-                                        </span>
-                                        <div class="text-truncate">
-                                            <span class="d-block mb-0 fw-semibold fs-16">
-                                                <span class="badge rounded-pill bg-light-transparent text-dark">
-                                                    {{ phrase(sectionInfo.thread_name) }}
-                                                </span>
-                                                от {{getUser(thread.owner_id).getName()}}
-                                            </span>
-                                                 <span class="fs-12 text-muted">
-                                                    {{getUser(thread.last_user_id).getName()}}: {% if thread.private and thread.owner_id != getUser().getId() and getUser().isAdmin() == false and isUserModerator == false %}<i class="bi bi-eye-slash"></i>{% else %}{{strip_html_tags(thread.message)}}{% endif %}
-                                                 </span>
+
+                            <div class="flex-fill ms-0">
+                                {% if thread.owner_id == getUser().getId() or getUser().isAdmin() or isUserModerator or thread.private == false %}
+                                <a href="/support/read/{{thread.id}}" class="text-decoration-none">{% endif %}
+                                    <div class="d-flex align-items-center">
+            <span class="avatar avatar-lg me-1">
+                <img src="{{getUser(thread.last_user_id).getAvatar()}}" alt="img">
+            </span>
+                                        <!-- Основной контейнер с фиксированной шириной -->
+                                        <div class="w-75"> <!-- Используем w-75 для ширины 75% -->
+                                            <span class="d-block mb-0">
+                    <!-- Имя треда с обрезкой -->
+                    <span class="text-muted d-inline-block text-truncate w-75">
+                        {{ phrase(sectionInfo.thread_name) }}
+                        от
+                        {{getUser(thread.owner_id).getName()}}
+                    </span>
+                </span>
+                                            <!-- Сообщение с обрезкой -->
+                                            <div class="text-muted small d-block text-truncate">
+                                                {{getUser(thread.last_user_id).getName()}}:
+                                                {% if thread.private and thread.owner_id != getUser().getId() and getUser().isAdmin() == false and isUserModerator == false %}
+                                                <i class="bi bi-eye-slash"></i>
+                                                {% else %}
+                                                {{strip_html_tags(thread.message)}}
+                                                {% endif %}
+                                            </div>
+                                            <!-- Дата -->
+                                            <div class="text-muted">
+                                                <div class="fw-normal fs-11">
+                                                    {{thread.date_update|date("H:m d.m.Y")}}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-{% if thread.owner_id == getUser().getId() or getUser().isAdmin() or isUserModerator %}</a>{% endif %}
-                            </div>
-
-                            <div class="icons-mail">
-                                <div class="float-end text-muted fw-normal fs-11">{{thread.date_update|date("H:m d.m.Y")}}</div>
-
+                                    {% if thread.owner_id == getUser().getId() or getUser().isAdmin() or isUserModerator %}</a>{% endif %}
                             </div>
 
                         </div>
@@ -350,6 +395,12 @@
 {% endblock %}
 
 {% block css %}
+<style>
+    .main-mail-star {
+        display: block;
+        margin-bottom: 5px;
+    }
+</style>
 {% endblock %}
 
 {% block js %}

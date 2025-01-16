@@ -9,17 +9,18 @@
       <div class="header-element">
         <div class="horizontal-logo">
           <a href="/" class="header-logo">
-            <img src="{{config().logo().getLogo()}}" alt="logo" class="desktop-logo">
-            <img src="{{config().logo().getLogo()}}" alt="logo" class="toggle-logo">
-            <img src="{{config().logo().getLogo()}}" alt="logo" class="desktop-dark">
-            <img src="{{config().logo().getLogo()}}" alt="logo" class="toggle-dark">
-            <img src="{{config().logo().getLogo()}}" alt="logo" class="desktop-white">
-            <img src="{{config().logo().getLogo()}}" alt="logo" class="toggle-white">
+            <img src="{{config().logo().getFavicon()}}" alt="logo" class="desktop-logo ">
+            <img src="{{config().logo().getFavicon()}}" alt="logo" class="toggle-logo ">
+            <img src="{{config().logo().getFavicon()}}" alt="logo" class="desktop-dark  ">
+            <img src="{{config().logo().getFavicon()}}" alt="logo" class="toggle-dark  ">
+            <img src="{{config().logo().getFavicon()}}" alt="logo" class="desktop-white  ">
+            <img src="{{config().logo().getFavicon()}}" alt="logo" class="toggle-white  ">
           </a>
         </div>
       </div>
 
-      <div class="header-element">
+
+      <div class="header-element ">
         <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle" data-bs-toggle="sidebar" href="javascript:void(0);"><span></span></a>
       </div>
 
@@ -59,7 +60,9 @@
       </div>
 
 
-      <div class="header-element cart-dropdown enable_bonus_code"  {% if config().enabled().isEnableBonusCode()== false %}style="display: none;" {% endif %}>
+
+
+      <div class="header-element message-dropdown enable_bonus_code "  {% if config().enabled().isEnableBonusCode()== false %}style="display: none;" {% endif %}>
         <!-- Start::header-link|dropdown-toggle -->
         <a id="bonusCodePanel" href="javascript:void(0);" class="header-link dropdown-toggle bg-dark-transparent " data-bs-auto-close="outside" data-bs-toggle="dropdown">
           <i class="fe fe-shopping-cart header-link-icon"></i>
@@ -101,6 +104,7 @@
 
         </div>
         </div>
+
 
 
 

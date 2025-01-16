@@ -26,10 +26,12 @@ class logo
     public function getFavicon($size = null): string
     {
         if ($size == null) {
-            return $this->favicon;
+            if (is_array($this->favicon)) {
+                return $this->favicon[16];
+            }
+            return (string) $this->favicon;
         }
         $path_parts = pathinfo($this->favicon);
-
         return $path_parts['dirname'] . '/' . $path_parts['filename'] . $size . '.' . $path_parts['extension'];
     }
 
