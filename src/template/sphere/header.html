@@ -68,7 +68,7 @@
         <ul class="main-header-dropdown dropdown-menu dropdown-menu-end" data-popper-placement="none">
           {% for lang in getAllowLang(false) %}
           <li>
-            <a class="dropdown-item d-flex align-items-center" href="{{action('user_lang', [lang.lang])}}">
+            <a class="dropdown-item d-flex align-items-center" href="/user/change/lang/{{lang.lang }}">
               <span class="avatar avatar-xs lh-1 me-2">
                 <img src="/uploads/images/flags/{{lang.lang}}.png" alt="img">
               </span>

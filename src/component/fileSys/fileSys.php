@@ -33,7 +33,9 @@ class fileSys {
                 $dir = "/" . $dir;
             }
         }
-        $dirname = self::$root_dir . $dir;
+        return ltrim($dir, "/");
+        /*
+        $dirname = self::$root_dir . $dir;*/
         return $dirname;
     }
 

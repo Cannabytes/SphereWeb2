@@ -42,7 +42,7 @@ class user
         }
 
         $password = request::setting('password', new request_config(max: 32));
-        $account_name = $_POST['account'] ?? null;
+        $account_name = isset($_POST['account']) && trim($_POST['account']) !== '' ? trim($_POST['account']) : null;
         if ($account_name != null) {
             player_account::valid_login($account_name);
             player_account::valid_password($password);
@@ -58,7 +58,7 @@ class user
             sql::run('INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)', [0, $_SESSION['id'], "HTTP_REFERER", session::get("HTTP_REFERER"),]);
         }
 
-        if (server::get_count_servers() > 0) {
+        if (server::get_count_servers() > 0 and $account_name != null) {
 
             $user = \Ofey\Logan22\model\user\user::getUserId($_SESSION['id']);
 
@@ -101,7 +101,7 @@ class user
             telegram::sendTelegramMessage($msg);
         }
 
-        if (config::load()->registration()->getEnableLoadFileRegistration()) {
+        if (config::load()->registration()->getEnableLoadFileRegistration() and $account_name != null) {
             $serverInfo = server::getDefault();
             if($serverInfo!=null){
                 $content = str_replace(["%site_server%", "%server_name%", "%rate_exp%", "%chronicle%", "%email%", "%login%", "%password%",], [$_SERVER['SERVER_NAME'], $serverInfo->getName(), "x" . $serverInfo->getRateExp(), $serverInfo->getChronicle(), $email, $account_name, $password,], $content);

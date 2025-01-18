@@ -210,7 +210,9 @@ class tpl
         }
 
         self::$allTplVars['dir']       = fileSys::localdir();
-        $self                          = url::host() . $relativePath . self::$templatePath;
+//        $self                          = url::host() . $relativePath . self::$templatePath;
+        $self                          = self::$templatePath;
+
         self::$allTplVars['protocol']  = url::scheme();
         self::$allTplVars['path']      = $relativePath;
         self::$allTplVars['template']  = $self;
@@ -248,10 +250,14 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('template', function ($var = null) {
-            return str_replace([
+/*            return str_replace([
               "//",
               "\\",
-            ], "/", fileSys::localdir(self::$templatePath . $var));
+            ], "/", fileSys::localdir(self::$templatePath . $var)); */
+            return str_replace([
+                "//",
+                "\\",
+            ], "/", (self::$templatePath . $var));
         }));
 
         $twig->addFunction(new TwigFunction('getUser', function ($id = null): ?userModel {

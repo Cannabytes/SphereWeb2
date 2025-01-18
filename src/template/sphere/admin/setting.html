@@ -105,6 +105,18 @@
                                     </div>
 
                                     <div class="col-xl-6">
+
+                                        <div class="form-check">
+                                            <input {% if config().lang().isDetectBrowserLang() %}checked=""{% endif %} name="detectBrowserLang" class="form-check-input" type="checkbox" id="detectBrowserLang">
+                                            <label class="form-check-label" for="detectBrowserLang">
+                                                {{ phrase('site browser language') }}
+                                            </label>
+                                        </div>
+
+                                        <div class="alert alert-secondary" role="alert">
+                                            {{ phrase('site browser language desc') }}
+                                        </div>
+
                                         <label class="form-label">{{ phrase('default_site_language') }} :</label>
                                         <select class="form-control" data-trigger name="default" id="langDefault">
                                             {% for lang in getLangList() %}
@@ -113,6 +125,9 @@
                                             </option>
                                             {% endfor %}
                                         </select>
+
+
+
                                     </div>
 
                                 </div>
@@ -1839,9 +1854,11 @@
             $('input[name="list[]"]:checked').each(function () {
                 languages.push(this.id.replace('lang_', ''));
             });
+            let detectBrowserLang = $('#detectBrowserLang').is(':checked');
             let defaultLanguage = $('#langDefault').val();
             let formData = {
                 __config_name__: '__config_lang__',
+                detectBrowserLang: detectBrowserLang,
                 allow: languages,
                 default: defaultLanguage,
             };

@@ -734,7 +734,6 @@ class userModel
             return [];
         }
         $this->accounts = $this->getLoadAccounts();
-//        var_dump($this->getServerId(), $this->accounts);exit();
         if ($this->accounts === null or $this->accounts == []) {
             return [];
         }
@@ -830,6 +829,9 @@ class userModel
             return [];
         }
         foreach ($sphere as $player) {
+            if($player['login']==""){
+                continue;
+            }
             $account = new accountModel();
             $account->setAccount($player['login']);
             $account->setPassword($player['password']);
@@ -946,10 +948,12 @@ class userModel
 
     function saveAccounts()
     {
+
         sql::run('DELETE FROM `player_accounts` WHERE `email` = ? AND `server_id` = ?;', [
             $this->getEmail(),
             $this->getServerId(),
         ]);
+
 
         $sql = 'INSERT INTO `player_accounts` (`login`, `password`, `email`, `server_id`, `characters`, `date_update_characters`, `password_hide`) VALUES (?, ?, ?, ?, ?, ?, ?);';
         foreach ($this->account as $account) {
