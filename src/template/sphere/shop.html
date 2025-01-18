@@ -61,7 +61,7 @@
               {% endfor %}
             </table>
             <div class="bd-example mb-0">
-              <div class="d-flex mb-0">
+              <div class="d-flex flex-column flex-sm-row mb-0">
                 <div class="p-2">
                   {% set isStackable = true %}
                   {% for i, product in products %}
@@ -71,20 +71,22 @@
                   {% endfor %}
 
                   {% if isStackable == true %}
-                  <div class="input-group border rounded flex-nowrap ">
+                  <div class="input-group border rounded flex-nowrap">
                     <input min="1" type="number"
                            class="form-control form-control-sm border-0 text-center w-100 quantity"
                            aria-label="quantity" value="1">
                   </div>
                   {% endif %}
-
                 </div>
-                <div class="ms-auto p-2 d-grid  col-2 ">
-                  <button data-isStackable="{{isStackable}}" data-count-buy="1"
+
+                <div class="p-2 d-grid d-sm-block col-sm-auto">
+                  <button data-isStackable="{{isStackable}}"
+                          data-count-buy="1"
                           data-cost="{{ sumGetValue(products, 'getCost') }}"
-                          data-object-id="{{objectId}}" data-bs-target="#openShop"
+                          data-object-id="{{objectId}}"
+                          data-bs-target="#openShop"
                           data-bs-toggle="modal"
-                          class="btn w-100 btn-sm btn-success shadow-success btn-wave waves-effect waves-light showSelectBuy">
+                          class="btn btn-sm btn-success shadow-success btn-wave waves-effect waves-light showSelectBuy">
                     {{phrase('buy_for')}} {{ sumGetValue(products, 'getCost') }}
                   </button>
                 </div>
