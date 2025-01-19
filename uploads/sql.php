@@ -1,7 +1,5 @@
 <?php
 
 return [
-    'ALTER TABLE `users` 
-     ADD COLUMN `last_activity` DATETIME DEFAULT NULL,
-     ADD INDEX `idx_last_activity` (`last_activity`);',
+    "ALTER TABLE `bonus_code` ADD `disposable` INT NOT NULL DEFAULT '1' AFTER `end_date_code`; ",
 ];
