@@ -404,12 +404,6 @@
                       </li>
                       {% endfor %}
 
-                      <li class="nav-item ms-auto" role="presentation">
-                        <button id="playersRefresh" class="btn btn-outline-success btn-wave waves-effect waves-light">
-                          {{phrase('refresh')}}
-                        </button>
-                      </li>
-
                     </ul>
                     <div class="tab-content">
 
@@ -848,12 +842,6 @@
       account: account,
     }).then(function (response) {
       $('.warehouseInventory:checked').closest('.col-xl-2').remove();
-      console.log(response);
-    });
-  });
-
-  $(document).on('click', '#playersRefresh', function () {
-    AjaxSend('/player/account/reload', 'POST', {}).then(function (response) {
       console.log(response);
     });
   });

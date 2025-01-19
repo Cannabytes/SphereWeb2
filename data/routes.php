@@ -628,21 +628,6 @@ return array (
     'page' => 'sendtogame.html',
     'comment' => '',
   ),
-  47 => 
-  array (
-    'enable' => 1,
-    'method' => 'POST',
-    'pattern' => '/player/account/reload',
-    'func' => 'controller\\account\\characters\\reload::reload',
-    'access' => 
-    array (
-      0 => 'admin',
-      1 => 'user',
-    ),
-    'weight' => 0,
-    'page' => '',
-    'comment' => '',
-  ),
   48 => 
   array (
     'enable' => 1,
