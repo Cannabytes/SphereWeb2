@@ -23,6 +23,7 @@ use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\component\time\microtime;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
+use Ofey\Logan22\component\webserver\info\advancedWebServerInfo;
 use Ofey\Logan22\controller\admin\startpack;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\stream\stream;
@@ -668,8 +669,9 @@ class tpl
             return launcher::get_launcher_info($server_id);
         }));
 
-        $twig->addFunction(new TwigFunction('get_user_in_list', function ($user_id) {
-            return other::get_user_in_list($user_id);
+        $twig->addFunction(new TwigFunction('getAdvancedServerInfo', function () {
+            $serverInfo = new advancedWebServerInfo();
+            return $serverInfo->getInfo();
         }));
 
         $twig->addFunction(new TwigFunction('lang_user_default', function () {
