@@ -818,7 +818,7 @@ return [
 	'bonus for one-time donation' => 'Issuing %s%% bonus (+%s) for one-time donation',
 	'bonus' => 'Bonus',
 	'bonus_code_start_date' => 'Bonus code start date',
-	'bonus_code_success' => 'Bonus code successfully created',
+	'bonus_code_success' => 'Congratulations, you have received a reward for using the code',
 	'bonus_codes' => 'Bonus Codes',
 	'bonus_dates_not_entered' => 'Start and end dates for the bonus are not entered',
 	'bonus_donate_coins_for_referral_completion' => 'Number of bonus Donate Coins the player will receive for completing the referral',

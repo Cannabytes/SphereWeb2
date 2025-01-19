@@ -999,6 +999,29 @@ class userModel
         );
     }
 
+    public function getLogs(logTypes $type): array
+    {
+
+        $query = "SELECT `id`, `user_id`, `time`, `type`, `phrase`, `variables`, `server_id`, `request`, `method`, `action`, `file`, `line` 
+              FROM `logs_all`
+              WHERE `user_id` = ? AND type = ?
+              ORDER BY `time` DESC";
+
+        $results = sql::run($query, [
+            $this->getId(),
+            $type->value,
+        ])->fetchAll();
+
+        // Преобразуем данные обратно, если нужно
+        foreach ($results as &$result) {
+            $result['variables'] = json_decode($result['variables'], true);
+            $result['request'] = json_decode($result['request'], true);
+        }
+
+        return $results;
+    }
+
+
     /**
      * Добавить предмето пользователю в склад
      *

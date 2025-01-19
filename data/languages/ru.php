@@ -821,7 +821,7 @@ return [
 	'bonus for one-time donation' => 'Выдача %s%% бонуса (+%s) за одноразовый донат',
 	'bonus' => 'Бонус',
 	'bonus_code_start_date' => 'Дата начала работы бонус-кода',
-	'bonus_code_success' => 'Бонус-код успешно созданы',
+	'bonus_code_success' => 'Поздравляем. Вы получили награду за использование кода',
 	'bonus_codes' => 'Бонус Коды',
 	'bonus_dates_not_entered' => 'Не введены даты начала и окончания бонуса',
 	'bonus_donate_coins_for_referral_completion' => 'Кол-во бонусных Donate Coin, которые получит игрок за завершения реферала',
