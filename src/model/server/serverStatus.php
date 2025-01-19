@@ -68,6 +68,9 @@ class serverStatus
 
     public function getGameServer(): bool
     {
+        if ($this->getOnline() > 0 ){
+            $this->gameServer = true;
+        }
         return $this->gameServer;
     }
 
