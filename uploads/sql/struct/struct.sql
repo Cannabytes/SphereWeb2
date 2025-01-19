@@ -35,6 +35,7 @@ CREATE TABLE `bonus_code`  (
   `phrase` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `start_date_code` datetime NULL DEFAULT NULL,
   `end_date_code` datetime NULL DEFAULT NULL,
+  `disposable` int(11) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
