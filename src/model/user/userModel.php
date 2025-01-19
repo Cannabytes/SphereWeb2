@@ -753,96 +753,89 @@ class userModel
      */
     public function getLoadAccounts($need_reload = false): ?array
     {
+        // Проверяем базовые условия
+        if (server::get_count_servers() == 0 || $this->getServerId() === null || !$this->isAuth()) {
+            return null;
+        }
+
+        // Возвращаем кешированные аккаунты, если они есть
+        if ($this->accounts !== null) {
+            return $this->accounts;
+        }
+
+        // Получаем время последнего обновления из сессии для текущего сервера
+        $lastUpdateTime = $_SESSION['accounts_last_update_time'][$this->getServerId()] ?? 0;
         $currentTime = time();
-        $needUpdate = true;
+        $updateInterval = 5; // Интервал обновления в секундах
 
-        if (server::get_count_servers() == 0) {
-            $this->accounts = [];
-        }
-        if ($this->getServerId() == null) {
-            return null;
-        }
-        if (!$this->isAuth()) {
-            return null;
-        }
-        if ($this->accounts != null) {
-            return $this->accounts;
-        }
+        // Определяем необходимость обновления
+        $needUpdate = $need_reload || ($currentTime - $lastUpdateTime) >= $updateInterval;
 
-        $accounts = sql::getRows(
-            "SELECT `id`, `login`, `password`, `password_hide`, `email`, `ip`, `server_id`, `characters`, `date_update_characters` FROM `player_accounts` WHERE email = ? AND server_id = ?;",
-            [
-                $this->getEmail(),
-                $this->getServerId(),
-            ]
-        );
-
-        if ($accounts) {
-            foreach ($accounts as $account) {
-                if ($account['date_update_characters'] == null) {
-                    $needUpdate = true;
-                    break;
-                }
-                $accountUpdateTime = strtotime($account['date_update_characters']);
-                if (($currentTime - $accountUpdateTime) < 5) {
-                    $needUpdate = false;
-                    break;
-                }
-            }
-        } else {
-            $needUpdate = true;
-        }
-        if ($need_reload) {
-            $needUpdate = true;
-        }
-
-        //Если обновление не требуется, выводим данные ранее сохраненные
         if (!$needUpdate) {
-            $this->accounts = [];
-            foreach ($accounts as $player) {
-                $account = new accountModel();
-                $account->setAccount($player['login']);
-                $account->setPassword($player['password']);
-                $account->setPasswordHide($player['password_hide']);
+            // Загружаем данные из базы данных
+            $accounts = sql::getRows(
+                "SELECT `id`, `login`, `password`, `password_hide`, `email`, `ip`, `server_id`, `characters` 
+             FROM `player_accounts` 
+             WHERE email = ? AND server_id = ?;",
+                [$this->getEmail(), $this->getServerId()]
+            );
 
-                if ($player['characters'] == null or $player['characters'] == '' or $player['characters'] == '[]') {
-                    $account->setCharacters();
-                } else {
-                    $characters = json_decode($player['characters'], true);
-                    $account->setCharacters($characters);
+            if ($accounts) {
+                $this->accounts = [];
+                foreach ($accounts as $player) {
+                    $account = new accountModel();
+                    $account->setAccount($player['login']);
+                    $account->setPassword($player['password']);
+                    $account->setPasswordHide($player['password_hide']);
+
+                    if (empty($player['characters']) || $player['characters'] === '[]') {
+                        $account->setCharacters();
+                    } else {
+                        $characters = json_decode($player['characters'], true);
+                        $account->setCharacters($characters);
+                    }
+
+                    $this->accounts[] = $account;
                 }
-
-                $this->accounts[] = $account;
+                return $this->accounts;
             }
-            $_SESSION['last_update_accounts_list'] = $currentTime; // Установка времени обновления
-            return $this->accounts;
         }
 
-
+        // Получаем данные через API
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::ACCOUNT_PLAYERS, [
             'forced' => $need_reload,
             'email' => $this->getEmail(),
         ])->show(false)->getResponse();
-        if (isset($sphere['error']) or !$sphere) {
-            $_SESSION['last_update_accounts_list'] = $currentTime;
-            $this->accounts[] = [];
+
+        if (isset($sphere['error']) || !$sphere) {
+            $this->accounts = [];
+            $_SESSION['accounts_last_update_time'][$this->getServerId()] = $currentTime;
             return [];
         }
+
+        $this->accounts = [];
         foreach ($sphere as $player) {
-            if($player['login']==""){
+            if (empty($player['login'])) {
                 continue;
             }
+
             $account = new accountModel();
             $account->setAccount($player['login']);
             $account->setPassword($player['password']);
             $account->setPasswordHide($player['is_password_hide'] ?? false);
             $account->setCharacters($player['characters']);
-            $this->account[] = $account;
+            $this->accounts[] = $account;
         }
+
+        // Сохраняем время обновления в сессии
+        $_SESSION['accounts_last_update_time'][$this->getServerId()] = $currentTime;
+
+        // Сохраняем аккаунты в базу данных
         $this->saveAccounts();
-        $_SESSION['last_update_accounts_list'] = $currentTime;
-        return $this->account;
+
+        return $this->accounts;
     }
+
 
     public function getServerId(): ?int
     {

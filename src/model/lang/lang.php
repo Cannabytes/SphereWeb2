@@ -51,7 +51,10 @@ class lang
      */
     public function getConfig($setting): void
     {
-        $this->detectBrowserLang = filter_var($setting['detectBrowserLang'], FILTER_VALIDATE_BOOLEAN) ?? false;
+        $this->detectBrowserLang = filter_var(
+            $setting['detectBrowserLang'] ?? false,
+            FILTER_VALIDATE_BOOLEAN
+        );
         $this->allowLanguages = $setting['allow'] ?? $this->allowLanguages;
         $this->default = $setting['default'] ?? $this->default;
     }
