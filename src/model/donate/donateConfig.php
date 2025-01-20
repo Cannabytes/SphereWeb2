@@ -60,7 +60,6 @@ class donateConfig
         ]);
         $this->existConfig = true;
         $this->parse($configData['setting']);
-
     }
 
     private function parse($json)
