@@ -1245,10 +1245,6 @@ class tpl
             return plugin::getSetting($name);
         }));
 
-        $twig->addFunction(new TwigFunction("ticket_get_count", function () {
-            return ticket::getCount();
-        }));
-
         $twig->addFunction(new TwigFunction("get_self_notification", function () {
             return notification::get_self_notification();
         }));

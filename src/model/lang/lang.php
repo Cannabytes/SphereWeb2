@@ -3,6 +3,7 @@
 namespace Ofey\Logan22\model\lang;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\cache\dir;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
@@ -368,7 +369,7 @@ class lang
         // Обработка пользовательских плагинов
         $customs = fileSys::dir_list("custom/plugins");
         foreach ($customs as $custom) {
-            $file = ("custom/plugins/{$custom}/lang/{$this->lang_user_default()}.php");
+            $file = fileSys::get_dir("custom/plugins/{$custom}/lang/{$this->lang_user_default()}.php");
 
             // Проверяем наличие файла
             if (file_exists($file)) {
@@ -382,8 +383,7 @@ class lang
         // Обработка компонентов плагинов
         $components = fileSys::dir_list("src/component/plugins");
         foreach ($components as $component) {
-            $file = ("data/languages/{$component}/lang/{$this->lang_user_default()}.php");
-
+            $file = fileSys::get_dir("/src/component/plugins/{$component}/lang/{$this->lang_user_default()}.php");
             // Проверяем наличие файла
             if (file_exists($file)) {
                 $langArray = include $file;
@@ -392,7 +392,6 @@ class lang
                 }
             }
         }
-
         // Проверяем кэш плагинов на наличие ключа после обновления
         if (!empty($this->pluginCache) && array_key_exists($key, $this->pluginCache)) {
             return $this->pluginCache[$key];

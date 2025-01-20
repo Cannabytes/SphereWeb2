@@ -14,4 +14,5 @@ return [
     '_hour' => 'час',
     '_hourI' => 'часа',
     '_status' => 'Статус',
+    'lucera_traders' => 'Торговцы',
 ];
