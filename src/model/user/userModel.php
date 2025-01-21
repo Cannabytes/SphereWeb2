@@ -1180,40 +1180,62 @@ class userModel
         return (bool)$this->getAccessLevel("guest");
     }
 
-    public function addVar(string $name, mixed $data, $server = null)
-    {
+    // Добавляем приватное свойство для кэша
+    private array $varCache = [];
+
+    // Обновляем метод addVar чтобы он очищал кэш при добавлении новых данных
+    public function addVar(string $name, mixed $data, $server = null) {
         if ($server === null) {
             $server = $this->getServerId();
         }
 
-        sql::run('DELETE FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?', [
-            $server,
-            $this->getId(),
-            $name,
-        ]);
+        sql::run(
+            'DELETE FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?',
+            [$server, $this->getId(), $name]
+        );
 
-        return sql::run('INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)', [
-            $server,
-            $this->getId(),
-            $name,
-            $data,
-        ]);
+        $result = sql::run(
+            'INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)',
+            [$server, $this->getId(), $name, $data]
+        );
+
+        // Очищаем кэш при добавлении новых данных
+        $this->clearVarCache();
+
+        return $result;
     }
 
-    public function getVar(string $name, $serverId = null)
-    {
-        if ($serverId !== null) {
-            return sql::getRow('SELECT `val` FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?', [
-                $serverId,
-                $this->getId(),
-                $name,
-            ]);
+    public function getVar(string $name, $serverId = null) {
+        // Формируем ключ кэша
+        $cacheKey = $serverId === null ? "user_{$this->getId()}_$name" : "user_{$this->getId()}_server_{$serverId}_$name";
+
+        // Проверяем наличие данных в кэше
+        if (isset($this->varCache[$cacheKey])) {
+            return $this->varCache[$cacheKey];
         }
 
-        return sql::getRow('SELECT `val` FROM `user_variables` WHERE `user_id` = ? AND `var` = ?', [
-            $this->getId(),
-            $name,
-        ]);
+        // Если данных нет в кэше, получаем их из БД
+        if ($serverId !== null) {
+            $result = sql::getRow(
+                'SELECT `val` FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?',
+                [$serverId, $this->getId(), $name]
+            );
+        } else {
+            $result = sql::getRow(
+                'SELECT `val` FROM `user_variables` WHERE `user_id` = ? AND `var` = ?',
+                [$this->getId(), $name]
+            );
+        }
+
+        // Сохраняем результат в кэш
+        $this->varCache[$cacheKey] = $result;
+
+        return $result;
+    }
+
+    // Добавляем метод для очистки кэша
+    public function clearVarCache(): void {
+        $this->varCache = [];
     }
 
     public function toArray(): array
