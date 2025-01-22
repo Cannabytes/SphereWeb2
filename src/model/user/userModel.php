@@ -12,6 +12,7 @@ use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\userlog;
 use Ofey\Logan22\model\db\sql;
@@ -182,25 +183,30 @@ class userModel
 
         // Создаем DateTime объект в UTC из значения в БД
         $utcTime = new DateTime($lastActivityStr, new DateTimeZone('UTC'));
-
         // Конвертируем в часовой пояс пользователя
         $this->lastActivity = $this->convertUtcToUserTime($utcTime);
     }
 
+    private static $validTimezones = null;
+
     private function convertUtcToUserTime(DateTime $utcTime): DateTime {
         try {
             $timezone = $this->getTimezone();
-            // Проверяем, что часовой пояс не пустой
-            if (empty($timezone)) {
-                $timezone = 'UTC'; // или другой дефолтный часовой пояс, например 'Europe/Kiev'
-            }
 
+            // Ленивая инициализация списка часовых поясов
+            if (self::$validTimezones === null) {
+                self::$validTimezones = DateTimeZone::listIdentifiers();
+            }
+            // Проверяем валидность часового пояса
+            if (empty($timezone) || !in_array($timezone, self::$validTimezones)) {
+                $timezone = 'UTC';
+                $this->setTimezone($timezone);
+            }
             $userTimezone = new DateTimeZone($timezone);
             $userTime = clone $utcTime;
             $userTime->setTimezone($userTimezone);
             return $userTime;
         } catch (Exception $e) {
-            // Если возникла ошибка с часовым поясом, используем UTC
             $userTimezone = new DateTimeZone('UTC');
             $userTime = clone $utcTime;
             $userTime->setTimezone($userTimezone);
