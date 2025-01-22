@@ -7,22 +7,25 @@
 {% set page =  get_page(get_0) %}
 {% if page == null %} <h1>404</h1> {% else %}
 
-{% set pathImg = path("uploads/images/news/" ~ page.poster) %}
-{% if page.poster == null %}
-{% set pathImg = template ~ "assets/images/logo_news_d.jpg" %}
-{% endif %}
+
 <div class="container-fluid">
   <div class="row">
     <div class="col-xl-12">
       <div class="card">
+
+
+        {% if page.is_news %}
+        {% set pathImg = path("uploads/images/news/" ~ page.poster) %}
+        {% if page.poster == null %}
+        {% set pathImg = template ~ "assets/images/logo_news_d.jpg" %}
+        {% endif %}
         <img class="card-img-top " src="{{pathImg}}" alt="Card image cap">
+        {% endif %}
+
         <div class="card-body border-bottom">
           <div class="d-md-flex justify-content-between align-items-center">
             <a href="javascript:void(0);" class="d-flex me-1 mb-sm-0 mb-1">
-            <span class=" bg-secondary-transparent text-secondary avatar">
-                <i class="fe fe-calendar"></i>
-            </span>
-              <span class="my-auto ms-2 text-muted fw-semibold">{{page.date_create|date("F d, Y")}}</span>
+              <div class="card-title">{{ page.name }}</div>
             </a>
             {% if getUser().isAdmin() %}
             <a class="btn btn-sm btn-success" href="/admin/pages/edit/{{page.id}}">{{ phrase('edit') }}</a>
@@ -30,8 +33,7 @@
           </div>
         </div>
         <div class="card-body">
-          <h4 class="fw-normal"><a href="javascript:void(0)"> {{page.name|raw}}</a></h4>
-          <p class="card-text"> {{page.description|raw}}</p>
+          <p class="card-text">{{page.description|raw}}</p>
         </div>
       </div>
     </div>
