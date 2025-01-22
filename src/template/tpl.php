@@ -971,6 +971,26 @@ class tpl
             return page::getPage($id);
         }));
 
+        $twig->addFunction(new TwigFunction('include', function ($template) use ($twig) {
+            // Получаем информацию о пути файла
+            $pathInfo = pathinfo($template);
+            $customTemplate = $pathInfo['dirname'] . '/' .
+                $pathInfo['filename'] .
+                '_custom.' .
+                $pathInfo['extension'];
+
+            // Проверяем существование кастомного шаблона
+            $customTemplatePath = fileSys::get_dir(self::$templatePath . '/' . $customTemplate);
+            $originalTemplatePath = fileSys::get_dir(self::$templatePath . '/' . $template);
+
+            if(file_exists($customTemplatePath)) {
+                return $twig->render($customTemplate);
+            }
+
+            return $twig->render($template);
+        }, ['is_safe' => ['html']]));
+
+
         $twig->addFunction(new TwigFunction('news_poster', function ($image, $full = false) {
             $uploadsPath = "uploads/images/news/";
             if ( ! $full) {

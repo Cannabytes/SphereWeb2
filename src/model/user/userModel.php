@@ -188,10 +188,24 @@ class userModel
     }
 
     private function convertUtcToUserTime(DateTime $utcTime): DateTime {
-        $userTimezone = new DateTimeZone($this->getTimezone());
-        $userTime = clone $utcTime;
-        $userTime->setTimezone($userTimezone);
-        return $userTime;
+        try {
+            $timezone = $this->getTimezone();
+            // Проверяем, что часовой пояс не пустой
+            if (empty($timezone)) {
+                $timezone = 'UTC'; // или другой дефолтный часовой пояс, например 'Europe/Kiev'
+            }
+
+            $userTimezone = new DateTimeZone($timezone);
+            $userTime = clone $utcTime;
+            $userTime->setTimezone($userTimezone);
+            return $userTime;
+        } catch (Exception $e) {
+            // Если возникла ошибка с часовым поясом, используем UTC
+            $userTimezone = new DateTimeZone('UTC');
+            $userTime = clone $utcTime;
+            $userTime->setTimezone($userTimezone);
+            return $userTime;
+        }
     }
 
     /**

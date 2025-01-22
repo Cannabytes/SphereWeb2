@@ -40,9 +40,9 @@
           <h6 class="card-title fw-semibold">{{short.name}}</h6>
           <p class="card-text text-muted">{{short.description|raw|replace({'<p>': '', '</p>': '', '<b>': '', '</b>': '', '<br>': ''})|raw}}</p>
           {% if short.link %}
-          <a target="_blank" class="btn btn-primary" href="{{short.link}}">{{phrase('follow_the_link')}}</a>
+            <a target="_blank" class="btn btn-primary" href="{{short.link}}">{{phrase('follow_the_link')}}</a>
           {% else %}
-          <a class="btn btn-primary" href="/page/{{short.id}}">{{ phrase('open') }}</a>
+            <a class="btn btn-primary" href="/page/{{short.id}}">{{ phrase('open') }}</a>
           {% endif %}
           <a href="/admin/pages/edit/{{short.id}}" class="btn btn-primary">{{ phrase('change') }}</a>
         </div>

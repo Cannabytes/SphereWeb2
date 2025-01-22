@@ -80,15 +80,15 @@
 
 <body>
 
-{% include 'modals.html' %}
+{{ include('modals.html') }}
 
 
 <div class="page">
   <!-- app-header -->
-  {% include 'header.html' %}
+  {{ include('header.html') }}
 
   <!-- Start::app-sidebar -->
-  {% include 'sidebar.html' %}
+  {{ include('sidebar.html') }}
 
   <!-- Start::app-content -->
   <div class="main-content app-content">
@@ -105,11 +105,11 @@
 </div>
 <div id="responsive-overlay"></div>
 
-{% include 'notice_toast.html' %}
+{{ include('notice_toast.html') }}
 
 
 
-{% include 'struct_js.html' %}
+{{ include('struct_js.html') }}
 
 
 <script>
