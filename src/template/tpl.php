@@ -983,11 +983,17 @@ class tpl
             $customTemplatePath = fileSys::get_dir(self::$templatePath . '/' . $customTemplate);
             $originalTemplatePath = fileSys::get_dir(self::$templatePath . '/' . $template);
 
-            if(file_exists($customTemplatePath)) {
-                return $twig->render($customTemplate);
+            try {
+                if(file_exists($customTemplatePath)) {
+                    $template = $twig->load($customTemplate);
+                } else {
+                    $template = $twig->load($template);
+                }
+                // Передаем все переменные из основного шаблона
+                return $template->render(self::$allTplVars);
+            } catch (Exception $e) {
+                return "Error loading template: " . $e->getMessage();
             }
-
-            return $twig->render($template);
         }, ['is_safe' => ['html']]));
 
 
