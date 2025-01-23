@@ -27,10 +27,19 @@
             </div>
             {% else %}
 
+
+
             {% if self_last_commit != sphere_last_commit %}
             <div class="card custom-card">
                 <div class="p-4 border-bottom border-block-end-dashed">
                     <p class="fw-semibold mb-2 text-danger">{{ phrase('sphereweb_update_detected') }}</p>
+
+                    {% if config().other().autoUpdate() == false %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ phrase('auto_update_is_disabled') }}
+                    </div>
+                    {% endif %}
+
                     <a href="/admin/sphere/update" class="btn btn-light btn-wave btn-sm ms-auto">{{
                         phrase('proceed_to_update')
                         }}</a>
@@ -71,7 +80,8 @@
                                class="btn btn-icon btn-sm btn-light" aria-expanded="false"><i
                                     class="ti ti-dots"></i></a>
                             <ul class="dropdown-menu" style="">
-                                <li><a href="/admin/balance/faq" class="dropdown-item">{{ phrase('frequently asked questions') }}</a></li>
+                                <li><a href="/admin/balance/faq" class="dropdown-item">{{ phrase('frequently asked
+                                    questions') }}</a></li>
                                 <li><a href="/admin/balance" class="dropdown-item">{{ phrase('refill') }}</a></li>
                             </ul>
                         </div>

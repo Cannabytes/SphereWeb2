@@ -848,6 +848,24 @@
                                     </div>
                                 </li>
 
+
+                                <li class="list-group-item">
+                                    <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                                        <div>
+                                            <p class="fs-14 mb-1 fw-semibold">{{ phrase('Automatic code update') }}</p>
+                                            <p class="fs-12 mb-0 text-muted">{{ phrase('automatic_update_code_desc')|raw }}</p>
+                                        </div>
+                                        <div>
+                                            <div class="custom-toggle-switch float-sm-end">
+                                                <input id="autoUpdate" name="autoUpdate" type="checkbox" {%
+                                                       if
+                                                       config().other().autoUpdate() %}checked="" {% endif %}>
+                                                <label for="autoUpdate" class="label-success mb-1"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
                                 <li class="list-group-item">
                                     <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                                         <div>

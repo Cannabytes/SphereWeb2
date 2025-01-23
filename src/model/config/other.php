@@ -41,6 +41,8 @@ class other
 
     private string $contactAdmin = "";
 
+    private bool $autoUpdate = true;
+
     public function __construct($setting)
     {
         $this->openPassword = filter_var($setting['saveOpenPassword'] ?? false, FILTER_VALIDATE_BOOLEAN);
@@ -59,6 +61,18 @@ class other
         $this->linkMainPage = $setting['linkMainPage'] ?? $this->linkMainPage;
         $this->maxAccount = (int)(is_array($setting) ? ($setting['max_account'] ?? $this->maxAccount) : $this->maxAccount);
         $this->contactAdmin = $setting['contactAdmin'] ?? $this->contactAdmin;
+        $this->autoUpdate = filter_var($setting['autoUpdate'] ?? true, FILTER_VALIDATE_BOOLEAN);
+
+    }
+
+    public function isAutoUpdate(): bool
+    {
+        return $this->autoUpdate;
+    }
+
+    public function setAutoUpdate(bool $autoUpdate): void
+    {
+        $this->autoUpdate = $autoUpdate;
     }
 
     public function getLinkMainPage(): string
