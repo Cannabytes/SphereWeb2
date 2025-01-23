@@ -66,7 +66,7 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
         $auth_url = $this->api_mode === 'LIVE' ? "https://api-m.paypal.com/v1/oauth2/token" : "https://api-m.sandbox.paypal.com/v1/oauth2/token";
 
         // Расчет суммы заказа
-        $order_amount = $count * ($donate->getRatioUSD() / $donate->getSphereCoinCost());
+        $order_amount = $count * ($donate->getRatioUSD() * $donate->getSphereCoinCost());
 
         // Запрос для получения токена
         $ch = curl_init();

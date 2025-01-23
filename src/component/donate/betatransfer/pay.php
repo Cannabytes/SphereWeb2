@@ -126,7 +126,7 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
 
         $donate = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
 
-        $amount = $_POST['count'] * ($donate->getRatioUAH() / $donate->getSphereCoinCost());
+        $amount = $_POST['count'] * ($donate->getRatioUAH() * $donate->getSphereCoinCost());
 
         if ($amount < 300) {
             board::notice(false, "Минимальное пополнение от 300 UAH");

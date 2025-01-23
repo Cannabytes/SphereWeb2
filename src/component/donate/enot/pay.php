@@ -50,7 +50,7 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
         if ($_POST['count'] > $donate->getMaxSummaPaySphereCoin()) {
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
-        $order_amount = $_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost());
+        $order_amount = $_POST['count'] * ($donate->getRatioRUB() * $donate->getSphereCoinCost());
         $shop_id      = self::getConfigValue('shop_id');
         $email        = user::self()->getEmail();
         $secret_word  = self::getConfigValue('secret_key');

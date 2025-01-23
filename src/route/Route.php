@@ -153,7 +153,11 @@ class Route extends Router {
                 return null;
             }
             foreach ($routes as $route) {
-                include_once $dir . $plugin . "/" . $route['file'];
+                if(isset($route['file'])){
+                    if(file_exists($dir . $plugin . "/" . $route['file'])) {
+                        include_once $dir . $plugin . "/" . $route['file'];
+                    }
+                }
                 $method = "POST";
                 if ($route['method'] == "GET") {
                     $method = "GET";
