@@ -29,8 +29,16 @@ class update
             }
             $data = json_decode($json, true);
             if (__TOKEN__ == $data['token']) {
-                $this->__TOKEN__ = __TOKEN__;
+
+                //Проверка на явное отключение
                 include "src/model/db/sql.php";
+                if($this->isDisabled()){
+                    http_response_code(418);
+                    echo 'Disabled';
+                    die();
+                }
+
+                $this->__TOKEN__ = __TOKEN__;
                 $this->checkNewCommit();
 
                 include "uploads/update_sql.php";
@@ -44,11 +52,38 @@ class update
         }
     }
 
+    private const CONFIG_KEY = '__config_other__';
+    private const AUTO_UPDATE_KEY = 'autoUpdate';
+    /**
+     * Проверяет, отключена ли функция автоматического обновления
+     *
+     * @throws JsonException При ошибке декодирования JSON
+     * @return bool true если автообновление отключено, false в противном случае
+     */
+    private function isDisabled(): bool
+    {
+        try {
+            $data = \Ofey\Logan22\model\db\sql::getRow(
+                sprintf("SELECT setting FROM settings WHERE `key` = '%s'", self::CONFIG_KEY)
+            );
+            if (!$data || !isset($data['setting'])) {
+                return false;
+            }
+            $settings = json_decode($data['setting'], true, 512, JSON_THROW_ON_ERROR);
+            if(!$settings){
+                return false;
+            }
+            return isset($settings[self::AUTO_UPDATE_KEY]) && !filter_var($settings[self::AUTO_UPDATE_KEY], FILTER_VALIDATE_BOOLEAN);
+        } catch (JsonException $e) {
+            return false;
+        }
+    }
+
     private function checkNewCommit(): void
     {
         try {
             $sphere = $this->send("/api/github/commit/files", [
-              'last_commit' => $this->getLastCommit(),
+                'last_commit' => $this->getLastCommit(),
             ]);
             $sphere = json_decode($sphere, true);
             if ($sphere['status']) {
@@ -56,19 +91,19 @@ class update
                 return;
             }
 
-            if ( ! $sphere['status']) {
+            if (!$sphere['status']) {
                 set_time_limit(600);
                 $last_commit_now = $sphere['last_commit_now'];
                 foreach ($sphere['data'] as $data) {
-                    $file   = $data['file'];
+                    $file = $data['file'];
                     $status = $data['status'];
-                    $link   = $data['link'];
+                    $link = $data['link'];
 
                     if ($status == 'added' || $status == 'modified') {
                         $this->ensureDirectoryExists($file);
 
                         $curlResponse = self::getContentUsingCurl($link);
-                        if ( ! $curlResponse['success']) {
+                        if (!$curlResponse['success']) {
                             return;
                         }
 
@@ -99,13 +134,13 @@ class update
 
     private function send($url, $arr = [])
     {
-        $link    = "api.sphereweb.net";
-        $json    = json_encode($arr) ?? "";
-        $url     = $link . $url;
-        $ch      = curl_init();
+        $link = "api.sphereweb.net";
+        $json = json_encode($arr) ?? "";
+        $url = $link . $url;
+        $ch = curl_init();
         $headers = [
-          'Content-Type: application/json',
-          'Authorization: BoberKurwa',
+            'Content-Type: application/json',
+            'Authorization: BoberKurwa',
         ];
 
         $headers[] = "User-Id: " . 0;
@@ -114,14 +149,14 @@ class update
         $headers[] = "IP: " . $_SERVER['REMOTE_ADDR'];
 
         $headers[] = "Token: " . $this->__TOKEN__;
-        $host      = $_SERVER['HTTP_HOST'];
-        if (empty($host) || ! $this->is_valid_domain(parse_url($host, PHP_URL_HOST))) {
+        $host = $_SERVER['HTTP_HOST'];
+        if (empty($host) || !$this->is_valid_domain(parse_url($host, PHP_URL_HOST))) {
             $host = $_SERVER['SERVER_NAME'];
         }
 
         $parsedHost = parse_url($host, PHP_URL_HOST) ?: $host;
         $parsedHost = preg_replace('/:\d+$/', '', $parsedHost);
-        $headers[]  = "Domain: " . $parsedHost;
+        $headers[] = "Domain: " . $parsedHost;
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -154,7 +189,7 @@ class update
     private function ensureDirectoryExists($filePath)
     {
         $directory = dirname($filePath);
-        if ( ! is_dir($directory)) {
+        if (!is_dir($directory)) {
             mkdir($directory, 0777, true);
         }
     }
@@ -185,12 +220,12 @@ class update
     private function addLastCommit($last_commit_now): void
     {
         sql::run("INSERT INTO `github_updates` (`sha`, `author`, `url`, `message`, `date`, `date_update`) VALUES (?, ?, ?, ?, ?, ?)", [
-          $last_commit_now,
-          "Cannabytes",
-          "https://github.com/Cannabytes/SphereWeb2/commit/" . $last_commit_now,
-          "Autoupdated",
-          date('Y-m-d H:i:s'),
-          date('Y-m-d H:i:s'),
+            $last_commit_now,
+            "Cannabytes",
+            "https://github.com/Cannabytes/SphereWeb2/commit/" . $last_commit_now,
+            "Autoupdated",
+            date('Y-m-d H:i:s'),
+            date('Y-m-d H:i:s'),
         ]);
     }
 
