@@ -47,7 +47,7 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        $order_amount = $_POST['count'] * ($donate->getRatioRUB() * $donate->getSphereCoinCost());
+        $order_amount = $_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost());
         $params = [
             'receiver' => self::getConfigValue('shopId'),
             'sum' => (string)$order_amount,

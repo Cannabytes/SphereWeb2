@@ -58,7 +58,7 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        $sum  = $_POST['count'] * ($donate->getRatioRUB() * $donate->getSphereCoinCost());
+        $sum  = $_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost());
         $data = [
           'action'     => 'initPayment',
           'project'    => self::getConfigValue('project_id'),
