@@ -18,6 +18,7 @@ use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\links\action;
+use Ofey\Logan22\component\links\http;
 use Ofey\Logan22\component\request\url;
 use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\component\time\microtime;
@@ -1233,26 +1234,7 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('HTTP_HOST', function ($fullUrl = false) {
-            // Если не передан параметр, то возвращаем только имя хоста
-
-            // Если передан параметр, то возвращаем полный URL
-            $scheme = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https" : "http";
-
-            // Получаем имя хоста
-            $host = $_SERVER['HTTP_HOST'];
-
-            // Получаем путь страницы
-            $requestUri = $_SERVER['REQUEST_URI'];
-
-            if ($fullUrl) {
-                $currentUrl = $scheme . "://" . $host . $requestUri;
-            } else {
-                $currentUrl = $scheme . "://" . $host;
-            }
-
-            // Собираем полный URL
-
-            return $currentUrl;
+            return http::getHost($fullUrl);
         }));
 
         $twig->addFunction(new TwigFunction('action', function ($name, array $params = []) {

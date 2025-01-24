@@ -159,36 +159,8 @@ class startpack
         user::self()->donateDeduct($totalPrice);
 
         $items = json_decode($row['items'], true);
-        $playerName = $_POST['player'] ?? null;
-        if ($playerName == null) {
-            board::notice(false, lang::get_phrase(148));
-        }
-
-        $account = $_POST['account'] ?? null;
-        if ($account == null) {
-            board::notice(false, lang::get_phrase(148));
-        }
-
-        $foundAccount = false;
-        foreach (user::self()->getAccounts() as $accountObj) {
-            if ($accountObj->getAccount() == $account) {
-                $foundAccount = true;
-            }
-        }
-        if (!$foundAccount) {
-            board::notice(false, "Аккаунт не найден");
-        }
-
-        $foundPlayer = false;
-        foreach (user::self()->getAccounts() as $accountObj) {
-            foreach ($accountObj->getCharacters() as $player) {
-                if ($player->getPlayerName() == $playerName) {
-                    $foundPlayer = true;
-                }
-            }
-        }
-        if (!$foundPlayer) {
-            board::notice(false, "Персонаж не найден");
+        if(!$items){
+            board::error("Ошибка парсинга items");
         }
 
         foreach ($items as $item) {

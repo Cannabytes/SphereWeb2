@@ -751,7 +751,7 @@ return array (
     'access' => 
     array (
       0 => 'admin',
-      1 => 'guest',
+      1 => 'user',
     ),
     'weight' => 0,
     'page' => '',
