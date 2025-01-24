@@ -156,7 +156,9 @@ class startpack
             board::error(sprintf("Для покупки у Вас нехватает %s SphereCoin", $totalPrice - user::self()->getDonate()));
         }
 
-        user::self()->donateDeduct($totalPrice);
+        if (!user::self()->donateDeduct($totalPrice)) {
+            board::error(lang::get_phrase('An error occurred while writing off'));
+        }
 
         $items = json_decode($row['items'], true);
         if(!$items){
