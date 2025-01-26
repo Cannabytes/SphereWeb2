@@ -80,7 +80,7 @@ class user
 
         $mailTemplate = mail::getTemplates();
 
-        if ($mailTemplate['send_notice_for_registration']) {
+        if (filter_var($mailTemplate['send_notice_for_registration'], FILTER_VALIDATE_BOOLEAN)) {
 
             $config = config::load()->email();
             if (!empty($config->getHost()) || !empty($config->getUsername()) || !empty($config->getPassword()) || !empty($config->getPort()) || !empty($config->isSmtpAuth()) || !empty($config->getProtocol())) {

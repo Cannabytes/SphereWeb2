@@ -73,16 +73,27 @@ class user
         return null;
     }
 
+
+    private static bool $isLoaded = false;
+
     /**
      * @return \Ofey\Logan22\model\user\userModel[]|null
      */
-    public static function getUsers(): ?array
+    public static function getUsers(): array
     {
-        $users = sql::getRows("SELECT * FROM `users`");
-        foreach ($users as $user) {
-            self::$users[$user['id']] = new userModel(null);
-            self::$users[$user['id']]->setUser($user);
+        if (self::$isLoaded) {
+            return self::$users;
         }
+
+        $rows = sql::getRows("SELECT * FROM users");
+
+        foreach ($rows as $row) {
+            $user = new userModel();
+            $user->setUser($row);
+            self::$users[$row['id']] = $user;
+        }
+
+        self::$isLoaded = true;
 
         return self::$users;
     }

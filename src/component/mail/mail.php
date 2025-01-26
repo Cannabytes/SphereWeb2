@@ -345,7 +345,6 @@ class mail
               $config->getPort()
               ) || empty($config->isSmtpAuth()) || empty($config->getProtocol())) {
                 board::error("Не заполнены данные для отправки почты.");
-
                 return;
             }
 

@@ -283,7 +283,7 @@ class userModel
         return $_SERVER['REMOTE_ADDR'];
     }
 
-    public function setUser($user)
+    public function setUser($user, bool $loadWarehouse = false)
     {
         if ($user['server_id'] === null) {
             $lastServer = server::getLastServer();
@@ -313,13 +313,10 @@ class userModel
         $this->city = $user['city'];
         $this->serverId = $user['server_id'];
         $this->lang = $user['lang'];
-
-        $this->warehouse = $this->warehouse() ?? null;
+        if($loadWarehouse) {
+            $this->warehouse = $this->warehouse() ?? null;
+        }
         $this->accounts = false;
-        //        $this->accounts  = $this->getLoadAccounts();
-
-        //        $this->players     = $this->getCharacters();
-
         return $this;
     }
 
@@ -1206,7 +1203,7 @@ class userModel
     // Обновляем метод addVar чтобы он очищал кэш при добавлении новых данных
     public function addVar(string $name, mixed $data, $server = null) {
         if ($server === null) {
-            $server = $this->getServerId();
+            $server = 0;
         }
 
         sql::run(
@@ -1226,12 +1223,9 @@ class userModel
     }
 
     public function getVar(string $name, $serverId = null) {
-        // Формируем ключ кэша
-        $cacheKey = $serverId === null ? "user_{$this->getId()}_$name" : "user_{$this->getId()}_server_{$serverId}_$name";
-
         // Проверяем наличие данных в кэше
-        if (isset($this->varCache[$cacheKey])) {
-            return $this->varCache[$cacheKey];
+        if (isset($this->varCache[$name])) {
+            return $this->varCache[$name];
         }
 
         // Если данных нет в кэше, получаем их из БД
@@ -1248,7 +1242,7 @@ class userModel
         }
 
         // Сохраняем результат в кэш
-        $this->varCache[$cacheKey] = $result;
+        $this->varCache[$name] = $result;
 
         return $result;
     }

@@ -1253,6 +1253,14 @@ class tpl
             return plugin::getSetting($name);
         }));
 
+        $twig->addFunction(new TwigFunction("getDirPlugin", function ($setting) {
+            $ads = "/src/component/plugins/";
+            if($setting['isCustom']){
+                $ads = "/custom/plugins/";
+            }
+            return $ads . $setting['PLUGIN_DIR_NAME'];
+        }));
+
         $twig->addFunction(new TwigFunction("get_self_notification", function () {
             return notification::get_self_notification();
         }));
@@ -1397,9 +1405,15 @@ class tpl
         }
     }
 
-    public static function displayPlugin($tplName)
+    public static function displayPlugin($tplName): void
     {
-        $pluginDirName = basename(dirname(dirname($tplName)));
+        $parts = explode('/', trim($tplName, '/')); // Убираем ведущий и завершающий слэши, затем разбиваем строку
+
+        if (isset($parts[0]) && $parts[0] !== '') {
+            $pluginDirName = $parts[0];
+        } else {
+            echo "Первая папка не найдена.";exit;
+        }
         $plugin_type   = Route::get_plugin_type($pluginDirName);
         if ($plugin_type == "component") {
             self::addVar("template_plugin", ("/src/component/plugins/{$pluginDirName}"));

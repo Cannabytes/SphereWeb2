@@ -381,22 +381,24 @@ class support
 
         foreach ($rows as $row) {
             $screens = json_decode($row['screens']);
-            foreach ($screens as $screen) {
-                // Получаем базовое имя файла
-                $screenBaseName = basename($screen);
+            if($screens){
+                foreach ($screens as $screen) {
+                    // Получаем базовое имя файла
+                    $screenBaseName = basename($screen);
 
-                // Удаляем запись из базы данных
-                sql::run("DELETE FROM support_message_screen WHERE `filename` = ?", [$screenBaseName]);
+                    // Удаляем запись из базы данных
+                    sql::run("DELETE FROM support_message_screen WHERE `filename` = ?", [$screenBaseName]);
 
-                $fullPath = realpath(ltrim($screen, '/'));
-                if ($fullPath && file_exists($fullPath)) {
-                    unlink($fullPath);
-                    $lastDotPos = mb_strrpos($fullPath, '.');
-                    if ($lastDotPos !== false) {
-                        $baseName = substr($fullPath, 0, $lastDotPos); // Часть до точки
-                        $extension = substr($fullPath, $lastDotPos + 1); // Часть после точки
-                        $thumbnailPath = $baseName . '_thumb.' . $extension;
-                        unlink($thumbnailPath);
+                    $fullPath = realpath(ltrim($screen, '/'));
+                    if ($fullPath && file_exists($fullPath)) {
+                        unlink($fullPath);
+                        $lastDotPos = mb_strrpos($fullPath, '.');
+                        if ($lastDotPos !== false) {
+                            $baseName = substr($fullPath, 0, $lastDotPos); // Часть до точки
+                            $extension = substr($fullPath, $lastDotPos + 1); // Часть после точки
+                            $thumbnailPath = $baseName . '_thumb.' . $extension;
+                            unlink($thumbnailPath);
+                        }
                     }
                 }
             }
