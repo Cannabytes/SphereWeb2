@@ -12,7 +12,7 @@ var clickToStartLauncher = false;
 
 $(".chronicle").text(chronicle)
 
-var domain = window.location.hostname;
+var domain = window.location.host.replace(/^www\./, "");
 var url = new URL("https://" + domain);
 $(".mainDomain").text(url.hostname);
 $('title').text("Launcher" + " " + chronicle);

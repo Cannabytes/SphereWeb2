@@ -175,7 +175,7 @@ let phrase = {
         "launcher version" : "Последняя версия лаунчера",
         "launcher last version" : "Последняя версия лаунчера",
         "select_directory" : "Выберите папку игры",
-
+        "confirm_delete_directory" : "Удалить этот путь?"
     },
     "en": {
         "registration_account": "Registration account",
@@ -320,6 +320,7 @@ let phrase = {
         "launcher version" : "Your launcher version",
         "launcher last version" : "The latest version of the launcher",
         "select_directory" : "Select the game folder",
+        "confirm_delete_directory" : "Delete this path?"
 
 },
 

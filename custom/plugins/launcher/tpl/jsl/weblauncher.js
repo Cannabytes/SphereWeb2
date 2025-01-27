@@ -508,7 +508,8 @@ function ResponseGetChronicleDirectory(response) {
         const customSelect = createCustomSelect();
         dropdownMenu = customSelect.find('.dropdown-menu');
     } else {
-        dropdownMenu = $('.dropdown-menu');
+        // Изменяем селектор, чтобы искать только внутри input-group-select
+        dropdownMenu = $('.input-group-select .dropdown-menu');
     }
 
     dropdownMenu.empty();
@@ -539,25 +540,28 @@ function ResponseGetChronicleDirectory(response) {
                 dropdownMenu.append(item);
 
                 if (elem.is_default === 1) {
-                    $('.dropdown-toggle').text(elem.dir);
+                    // Изменяем селекторы, чтобы искать только внутри input-group-select
+                    $('.input-group-select .dropdown-toggle').text(elem.dir);
                     $('#selectClient').val(elem.id);
                 }
             });
 
-            // Обработчик выбора элемента
-            $('.dropdown-item').off('click').on('click', function(e) {
+            // Изменяем обработчик выбора элемента
+            $('.input-group-select .dropdown-item').off('click').on('click', function(e) {
                 if (!$(e.target).closest('.delete-btn').length) {
                     const value = $(this).data('value');
                     const text = $(this).find('span').text();
 
-                    $('.dropdown-toggle').text(text);
-                    $('.dropdown-item').removeClass('active');
+                    // Находим ближайший .dropdown-toggle внутри .input-group-select
+                    $(this).closest('.input-group-select').find('.dropdown-toggle').text(text);
+
+                    // Обновляем активный элемент только в текущем dropdown
+                    $(this).closest('.dropdown-menu').find('.dropdown-item').removeClass('active');
                     $(this).addClass('active');
 
                     // Обновляем значение скрытого поля
                     $('#selectClient').val(value);
 
-                    // Вызываем ту же функцию, что и для стандартного select
                     let obj = {
                         command: 'setDefaultServer',
                         id: parseInt(value),
@@ -569,8 +573,8 @@ function ResponseGetChronicleDirectory(response) {
                 }
             });
 
-            // Обработчик удаления
-            $('.delete-btn').off('click').on('click', function(e) {
+            // Изменяем обработчик удаления
+            $('.input-group-select .delete-btn').off('click').on('click', function(e) {
                 e.stopPropagation();
                 e.preventDefault();
                 const id = $(this).data('id');
@@ -587,16 +591,20 @@ function ResponseGetChronicleDirectory(response) {
                     const item = $(this).closest('li');
                     const wasActive = item.find('.dropdown-item').hasClass('active');
                     item.remove();
+
                     if (wasActive) {
-                        const firstItem = $('.dropdown-item').first();
+                        // Ищем первый элемент только внутри текущего .input-group-select
+                        const container = $(this).closest('.input-group-select');
+                        const firstItem = container.find('.dropdown-item').first();
+
                         if (firstItem.length) {
                             const firstValue = firstItem.data('value');
                             const firstText = firstItem.find('span').text();
-                            $('.dropdown-toggle').text(firstText);
+                            container.find('.dropdown-toggle').text(firstText);
                             firstItem.addClass('active');
                             $('#selectClient').val(firstValue);
                         } else {
-                            $('.dropdown-toggle').text(getPhrase('select_directory'));
+                            container.find('.dropdown-toggle').text(getPhrase('select_directory'));
                             $('#selectClient').val('');
                         }
                     }
