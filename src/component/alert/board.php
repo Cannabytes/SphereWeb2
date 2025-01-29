@@ -18,6 +18,7 @@ class board
     private static $redirectUrl = null;
 
     private static ?bool $reload = null;
+    private static bool $reloadIsNow = false;
 
     public static function success(string $message = null, int $flags = 0, bool $next = false): self
     {
@@ -43,6 +44,9 @@ class board
             }
             if (self::$reload) {
                 $data['reload'] = self::$reload;
+            }
+            if (self::$reloadIsNow) {
+                $data['reloadIsNow'] = self::$reloadIsNow;
             }
             self::alert($data, $flags);
         }
@@ -107,8 +111,9 @@ class board
         }
     }
 
-    public static function reload()
+    public static function reload($isNow = false)
     {
+        self::$reloadIsNow = $isNow;
         self::$reload = true;
     }
 

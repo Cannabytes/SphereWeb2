@@ -40,8 +40,8 @@ function AjaxSend(url, method, data, isReturn = false, timeout = 5, funcName = n
                 if (isReturn) {
                     resolve(response);
                 } else {
-
-                    if(response===null){
+                    if (response === null) {
+                        resolve(null);
                         return;
                     }
 
@@ -52,18 +52,37 @@ function AjaxSend(url, method, data, isReturn = false, timeout = 5, funcName = n
                         }
                     }
 
-                    if (funcName) {
+                    if (funcName && typeof window[funcName] === 'function') {
                         window[funcName](response);
                     }
 
                     responseAnalysis(response);
                     AjaxEvent(url, method, data, response);
-                    resolve();
+                    resolve(response); // Возвращаем response вместо пустого resolve
                 }
             },
             error: function (xhr, status, error) {
-                console.error('Ошибка при выполнении AJAX-запроса:', error);
-                reject(error);
+                console.error('Ошибка при выполнении AJAX-запроса:', {
+                    status: status,
+                    error: error,
+                    response: xhr.responseText
+                });
+
+                // Пытаемся распарсить ответ сервера, если он есть
+                try {
+                    const errorResponse = xhr.responseText ? JSON.parse(xhr.responseText) : null;
+                    reject(errorResponse || {
+                        ok: false,
+                        message: 'Произошла ошибка при выполнении запроса',
+                        error: error
+                    });
+                } catch (e) {
+                    reject({
+                        ok: false,
+                        message: 'Произошла ошибка при выполнении запроса',
+                        error: error
+                    });
+                }
             }
         });
     });
@@ -276,11 +295,14 @@ function ResponseNotice(response) {
     if(response.reloadCaptcha){
         get_captcha()
     }
-
+    let timeout = 1000;
+    if (response.reloadIsNow === true) {
+        timeout = response.reloadIsNow;
+    }
     if (response.reload === true){
         setTimeout(function() {
             window.location.reload();
-        }, 1000);
+        }, timeout);
     }
     if (response.redirect !== undefined) {
         setTimeout(function() {
@@ -289,7 +311,7 @@ function ResponseNotice(response) {
             } else {
                 window.location.href = response.redirect;
             }
-        }, 1000);
+        }, timeout);
     }
 
     return response.ok;

@@ -237,8 +237,12 @@ class tpl
         \Ofey\Logan22\controller\config\config::load()->lang()->load_template_lang_packet($tpl);
     }
 
-    private static function generalfunc(Environment $twig = null): Environment
+    private static function generalfunc(?Environment $twig): Environment
     {
+        if ($twig === null) {
+            throw new \InvalidArgumentException('Twig environment cannot be null');
+        }
+
         $twig->addFilter(new TwigFilter('html_entity_decode', 'html_entity_decode'));
         $twig->addFilter(new TwigFilter('file_exists', function ($filePath) {
             return file_exists($filePath);
@@ -252,10 +256,6 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('template', function ($var = null) {
-/*            return str_replace([
-              "//",
-              "\\",
-            ], "/", fileSys::localdir(self::$templatePath . $var)); */
             return str_replace([
                 "//",
                 "\\",
@@ -1338,8 +1338,12 @@ class tpl
         return self::$pluginsAllCustomAndComponents;
     }
 
-    private static function user_var_func(Environment $twig = null): Environment
+    private static function user_var_func(?Environment $twig = null): Environment
     {
+        if ($twig === null) {
+            throw new \InvalidArgumentException('Twig environment cannot be null');
+        }
+
         $twig->addFunction(new TwigFunction('get_user_variables', function ($varName) {
             return auth::get_user_variables($varName);
         }));
