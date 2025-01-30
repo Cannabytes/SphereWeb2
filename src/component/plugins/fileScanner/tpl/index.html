@@ -187,8 +187,9 @@
         }
 
         function updateStartButtonState() {
-            const hasCheckedFiles = $('.file-checkbox:checked').length > 0;
-            $startUpdate.prop('disabled', !hasCheckedFiles);
+            const checkedFiles = $('.file-checkbox:checked').length;
+            console.log('Checked files:', checkedFiles); // Для отладки
+            $startUpdate.prop('disabled', checkedFiles === 0);
         }
 
         // Обработчик начала сканирования
@@ -207,7 +208,7 @@
         });
 
         // Обработчик выбора всех файлов
-        $selectAll.change(function() {
+        $selectAll.on('change', function() {
             const isChecked = $(this).prop('checked');
             $('.file-checkbox').prop('checked', isChecked);
             updateStartButtonState();
@@ -223,6 +224,8 @@
                         setTimeout(() => {
                             $('#scanning-animation').fadeOut(() => {
                                 displayFiles(response);
+                                // Явно вызываем обновление состояния кнопки
+                                setTimeout(updateStartButtonState, 500);
                             });
                         }, 1500);
                     } else {
@@ -253,38 +256,47 @@
                 return;
             }
 
-            // Отображаем измененные файлы с анимацией
             changedFiles.forEach(function(file, index) {
                 setTimeout(() => {
                     const row = $(`
-                        <tr style="opacity: 0">
-                            <td class="text-center">
-                                <input type="checkbox" class="form-check-input file-checkbox" checked>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <i class="ri-file-code-line me-2 text-warning"></i>
-                                    ${file.path}
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge bg-warning-transparent">
-                                    Требует обновления
-                                </span>
-                            </td>
-                        </tr>
-                    `).appendTo($filesList);
+                <tr style="opacity: 0">
+                    <td class="text-center">
+                        <input type="checkbox" class="form-check-input file-checkbox"
+                               data-file="${file.path}" checked>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <i class="ri-file-code-line me-2 text-warning"></i>
+                            ${file.path}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-warning-transparent">
+                            Требует обновления
+                        </span>
+                    </td>
+                </tr>
+            `).appendTo($filesList);
 
-                    row.animate({ opacity: 1 }, 300);
+                    row.animate({ opacity: 1 }, 300, function() {
+                        updateStartButtonState(); // Вызываем после анимации каждой строки
+                    });
                 }, index * 100);
             });
 
             $('#files-table-block').fadeIn();
-            updateStartButtonState();
+            updateStartButtonState(); // Вызываем сразу после добавления всех строк
         }
 
         // Обработчик изменения состояния чекбоксов файлов
-        $(document).on('change', '.file-checkbox', updateStartButtonState);
+        $(document).on('change', '.file-checkbox', function() {
+            updateStartButtonState();
+
+            // Обновляем состояние selectAll
+            const allChecked = $('.file-checkbox:checked').length === $('.file-checkbox').length;
+            $selectAll.prop('checked', allChecked);
+        });
+
 
         // Обработчик начала обновления
         $startUpdate.click(function() {

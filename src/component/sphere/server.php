@@ -87,6 +87,11 @@ class server
         self::$installLink = $link;
     }
 
+    private static int $timeout = 5;
+    static public function setTimeout(int $timeout = 5): void
+    {
+        self::$timeout = $timeout;
+    }
     static public function send(type $type, array $arr = []): self
     {
         self::isOffline();
@@ -144,7 +149,7 @@ class server
         curl_setopt($ch, CURLOPT_POST, true); // Указываем, что это POST запрос
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json); // Передаем JSON данные
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Возвращаем результат в переменную
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, self::$timeout);
         curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
         self::$countRequest++;
         $response = curl_exec($ch);

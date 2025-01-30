@@ -38,6 +38,7 @@ class instance {
                     'hash' => $hash,
                 ];
             }
+            server::setTimeout(30);
             $response = server::send(type::FILE_SCANNER, $dataFiles)->show()->getResponse();
             echo json_encode($response);
         } catch (\Exception $e) {
