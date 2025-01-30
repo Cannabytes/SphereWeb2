@@ -1,0 +1,354 @@
+{% extends 'struct.html' %}
+
+{% block title %}Обновление системы{% endblock %}
+
+{% block content %}
+<style>
+    .scan-loader {
+        width: 100px;
+        height: 100px;
+        border: 3px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 3px solid #3498db;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .scanning-text {
+        text-align: center;
+        color: #3498db;
+        font-size: 1.2rem;
+        margin-top: 15px;
+    }
+
+    .pulse-animation {
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="card-title">
+                        <a href="/admin" class="avatar border text-muted me-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                            </svg>
+                        </a>
+                        Обновление системы
+                    </div>
+                </div>
+
+                <div class="card-body" id="penala">
+                    <!-- Блок для уведомлений -->
+                    <div id="notifications"></div>
+
+                    <div class="row mb-4">
+                        <div class="col-xl-12">
+                            <div class="alert alert-info" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="ri-information-line me-2 fs-16"></i>
+                                    <div>Вы можете проверить все файлы проекта, на предмет отсутствия или если они были изменены</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Блок со статистикой -->
+                    <div id="stats-block" class="row mb-4" style="display: none;">
+                        <div class="col-xl-6">
+                            <div class="card custom-card bg-primary-transparent">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <span class="avatar avatar-lg bg-primary">
+                                                <i class="ri-file-list-3-line fs-20"></i>
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Всего файлов</h6>
+                                            <span class="text-muted" id="total-files">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-6">
+                            <div class="card custom-card bg-success-transparent">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <span class="avatar avatar-lg bg-success">
+                                                <i class="ri-refresh-line fs-20"></i>
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Требуют обновления</h6>
+                                            <span class="text-muted" id="update-required">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопка сканирования -->
+                    <div class="row mb-4" id="scan-button-block">
+                        <div class="col-xl-12 text-center">
+                            <button id="startScan" class="btn btn-primary btn-lg pulse-animation">
+                                <i class="ri-search-line me-2"></i>Начать сканирование файлов
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Анимация сканирования -->
+                    <div id="scanning-animation" style="display: none;">
+                        <div class="scan-loader"></div>
+                        <div class="scanning-text">Сканирование файлов...</div>
+                    </div>
+
+                    <!-- Сообщение об отсутствии файлов для обновления -->
+                    <div id="no-files-message" class="alert alert-success" style="display: none;">
+                        <div class="d-flex align-items-center">
+                            <i class="ri-checkbox-circle-line me-2 fs-16"></i>
+                            <div>Все файлы системы актуальны. Обновление не требуется.</div>
+                        </div>
+                    </div>
+
+                    <!-- Таблица файлов -->
+                    <div class="row" id="files-table-block" style="display: none;">
+                        <div class="col-xl-12">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAll" checked>
+                                    <label class="form-check-label" for="selectAll">
+                                        Выбрать все файлы
+                                    </label>
+                                </div>
+                                <button id="startUpdate" class="btn btn-success" disabled>
+                                    <i class="ri-download-cloud-2-line me-2"></i>Начать обновление
+                                </button>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: 40px;"></th>
+                                        <th>Файл</th>
+                                        <th style="width: 120px;">Статус</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="filesList">
+                                    <!-- Сюда будут добавляться файлы -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function() {
+        const $startUpdate = $('#startUpdate');
+        const $selectAll = $('#selectAll');
+        const $filesList = $('#filesList');
+        const $notifications = $('#notifications');
+
+        function showNotification(message, type = 'success') {
+            const alertClass = `alert-${type}`;
+            const alertHtml = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            $notifications.html(alertHtml);
+        }
+
+        function updateStartButtonState() {
+            const hasCheckedFiles = $('.file-checkbox:checked').length > 0;
+            $startUpdate.prop('disabled', !hasCheckedFiles);
+        }
+
+        // Обработчик начала сканирования
+        $('#startScan').click(function() {
+            $('#scan-button-block').hide();
+            $('#scanning-animation').fadeIn();
+            $('#no-files-message').hide();
+            $('#files-table-block').hide();
+            $notifications.empty();
+
+            setTimeout(() => {
+                $('#stats-block').fadeIn();
+            }, 500);
+
+            startScanning();
+        });
+
+        // Обработчик выбора всех файлов
+        $selectAll.change(function() {
+            const isChecked = $(this).prop('checked');
+            $('.file-checkbox').prop('checked', isChecked);
+            updateStartButtonState();
+        });
+
+        function startScanning() {
+            $.ajax({
+                url: '/admin/filescanner/scan',
+                method: 'POST',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.changed_files !== undefined) {
+                        setTimeout(() => {
+                            $('#scanning-animation').fadeOut(() => {
+                                displayFiles(response);
+                            });
+                        }, 1500);
+                    } else {
+                        showNotification('Некорректный ответ от сервера', 'danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showNotification('Произошла ошибка при сканировании: ' + error, 'danger');
+                    $('#scanning-animation').hide();
+                    $('#scan-button-block').show();
+                }
+            });
+        }
+
+        function displayFiles(response) {
+            $filesList.empty();
+            const totalFiles = response.user_files_len;
+            const changedFiles = response.changed_files;
+            const changedFilesLen = changedFiles.length;
+
+            $('#total-files').text(totalFiles);
+            $('#update-required').text(changedFilesLen);
+
+            if (changedFilesLen === 0) {
+                $('#no-files-message').fadeIn();
+                $('#files-table-block').hide();
+                $startUpdate.prop('disabled', true);
+                return;
+            }
+
+            // Отображаем измененные файлы с анимацией
+            changedFiles.forEach(function(file, index) {
+                setTimeout(() => {
+                    const row = $(`
+                        <tr style="opacity: 0">
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input file-checkbox" checked>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="ri-file-code-line me-2 text-warning"></i>
+                                    ${file.path}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-warning-transparent">
+                                    Требует обновления
+                                </span>
+                            </td>
+                        </tr>
+                    `).appendTo($filesList);
+
+                    row.animate({ opacity: 1 }, 300);
+                }, index * 100);
+            });
+
+            $('#files-table-block').fadeIn();
+            updateStartButtonState();
+        }
+
+        // Обработчик изменения состояния чекбоксов файлов
+        $(document).on('change', '.file-checkbox', updateStartButtonState);
+
+        // Обработчик начала обновления
+        $startUpdate.click(function() {
+            const selectedFiles = [];
+            $('.file-checkbox:checked').each(function() {
+                selectedFiles.push($(this).closest('tr').find('td:eq(1)').text().trim());
+            });
+
+            if (selectedFiles.length === 0) {
+                showNotification('Не выбрано ни одного файла для обновления', 'warning');
+                return;
+            }
+
+            $startUpdate.prop('disabled', true);
+
+            $.ajax({
+                url: '/admin/filescanner/update',
+                method: 'POST',
+                data: { files: selectedFiles },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        response.results.forEach(function(result) {
+                            const row = $(`td:contains("${result.file}")`).closest('tr');
+                            const statusCell = row.find('td:last');
+
+                            if (result.status) {
+                                statusCell.html(`
+                                    <span class="badge bg-success-transparent">
+                                        Обновлено
+                                    </span>
+                                `);
+                            } else {
+                                const errorMessage = result.message +
+                                    (result.debug ? `<br><small class="text-muted">URL: ${result.debug.api_url}</small>` : '');
+
+                                statusCell.html(`
+                                    <span class="badge bg-danger-transparent">
+                                        Ошибка: ${errorMessage}
+                                    </span>
+                                `);
+                            }
+                        });
+
+                        showNotification('Обновление файлов успешно завершено');
+                    } else {
+                        const errorMessage = response.error || 'Произошла ошибка при обновлении файлов';
+                        showNotification(errorMessage +
+                            (response.trace ? '<br><small class="text-muted">Подробности в консоли браузера</small>' : ''),
+                            'danger'
+                        );
+                        if (response.trace) {
+                            console.log('Error trace:', response.trace);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showNotification('Произошла ошибка при обновлении: ' + error, 'danger');
+                },
+                complete: function() {
+                    updateStartButtonState();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
