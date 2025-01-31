@@ -2501,4 +2501,32 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  181 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/server/setting/get',
+    'func' => 'controller\\admin\\setDonateServer::getDonateSetting',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  182 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/server/set/enabled',
+    'func' => 'controller\\admin\\enabled::setEnabled',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );
