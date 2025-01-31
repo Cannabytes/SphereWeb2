@@ -17,9 +17,10 @@ class instance {
         header('Content-Type: application/json');
 
         try {
+
             $scanner = new scannerSystem(
-                [],
-                []
+                ['php', 'js', 'html', 'htm', 'css', 'json', 'cur', 'tpl', 'png', 'jpg', 'jpeg', 'gif', 'ico', 'webp', 'svg', 'md', 'mp3', 'hbs', 'ttf', 'eot', 'woff', 'woff2', 'sql', 'htaccess', 'txt'],
+                ['/custom', '/uploads/cache', '/uploads/images', '/uploads/logs', '/data/languages/custom']
             );
 
             $files = $scanner->scan("./");

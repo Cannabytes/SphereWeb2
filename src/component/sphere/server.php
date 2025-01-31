@@ -79,7 +79,7 @@ class server
 
     static public function tokenDisable(bool $on = true): void
     {
-        self::$tokenDisable = $on;
+         self::$tokenDisable = $on;
     }
 
     public static function setInstallLink(string $link): void
