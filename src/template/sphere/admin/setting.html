@@ -107,7 +107,9 @@
                                     <div class="col-xl-6">
 
                                         <div class="form-check">
-                                            <input {% if config().lang().isDetectBrowserLang() %}checked=""{% endif %} name="detectBrowserLang" class="form-check-input" type="checkbox" id="detectBrowserLang">
+                                            <input {% if config().lang().isDetectBrowserLang() %}checked="" {% endif %}
+                                                   name="detectBrowserLang" class="form-check-input" type="checkbox"
+                                                   id="detectBrowserLang">
                                             <label class="form-check-label" for="detectBrowserLang">
                                                 {{ phrase('site browser language') }}
                                             </label>
@@ -125,7 +127,6 @@
                                             </option>
                                             {% endfor %}
                                         </select>
-
 
 
                                     </div>
@@ -439,19 +440,17 @@
 
                                 <div class="card-body">
 
-                                    <div class="d-sm-flex d-block align-items-top justify-content-between mt-1">
-                                        <div>
-                                            <div class="custom-toggle-switch float-sm-end">
-                                                <input id="isEnableOnlineCheaters" name="isEnableOnlineCheaters"
-                                                       type="checkbox" {% if
-                                                       config().onlineCheating().isEnabled() %}checked="" {%endif%}>
-                                                <label for="isEnableOnlineCheaters" class="label-success mb-1"></label>
-                                            </div>
-                                            <p class="fs-14 mb-1 fw-semibold">{{phrase('enable_online_boost')}}</p>
-                                            <p class="fs-12 mb-0 text-muted"></p>
+                                    <div class="d-flex align-items-center mt-1">
+                                        <div class="custom-toggle-switch me-2">
+                                            <input id="isEnableOnlineCheaters" name="isEnableOnlineCheaters"
+                                                   type="checkbox" {% if config().onlineCheating().isEnabled() %}checked="" {% endif %}>
+                                            <label for="isEnableOnlineCheaters" class="label-success mb-0"></label>
                                         </div>
-
+                                        <p class="fs-14 mb-0 fw-semibold" style="line-height: 1;">{{phrase('enable_online_boost')}}</p>
                                     </div>
+                                    <p class="fs-12 text-muted mt-4 mb-0"></p>
+
+
 
                                     {{phrase('min_max_online_display_if_zero')|raw}}
 
@@ -518,7 +517,7 @@
                                                 <div class="accordion-body">
                                                     <div class="row-container">
                                                         {% for time in data %}
-                                                        <div class="row">
+                                                        <div class="row onlinesettingdata">
                                                             <div class="col-xl-2">
                                                                 <input value="{{time.getTime()}}"
                                                                        class="form-control time-format-2"
@@ -531,6 +530,12 @@
                                                                 <input min="1" value="{{time.getMultiplier()}}"
                                                                        step="0.1" type="number"
                                                                        class="form-control" placeholder="1">
+                                                            </div>
+                                                            <div class="col-xl-1">
+                                                                <button type="button"
+                                                                        class="btn btn-danger remove-time">
+                                                                    <i class="bi bi-trash"></i>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                         {% endfor %}
@@ -835,7 +840,8 @@
                                 <li class="list-group-item">
                                     <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                                         <div>
-                                            <p class="fs-14 mb-1 fw-semibold">{{ phrase('Receive the current exchange rate automatically') }}</p>
+                                            <p class="fs-14 mb-1 fw-semibold">{{ phrase('Receive the current exchange
+                                                rate automatically') }}</p>
                                             <p class="fs-12 mb-0 text-muted">{{phrase('openexchangerates')}}</p>
                                         </div>
                                         <div>
@@ -853,7 +859,8 @@
                                     <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                                         <div>
                                             <p class="fs-14 mb-1 fw-semibold">{{ phrase('Automatic code update') }}</p>
-                                            <p class="fs-12 mb-0 text-muted">{{ phrase('automatic_update_code_desc')|raw }}</p>
+                                            <p class="fs-12 mb-0 text-muted">{{ phrase('automatic_update_code_desc')|raw
+                                                }}</p>
                                         </div>
                                         <div>
                                             <div class="custom-toggle-switch float-sm-end">
@@ -1517,19 +1524,24 @@
                                         * Если бота вы добавляете в группу, то укажите Chat ID группы.<br>
                                         <br>
                                         Чтобы узнать CHAT ID группы или канала:<br>
-                                        Добавьте <a class="text-success" href="https://telegram.me/myidbot" target="_blank">@myidbot</a> в группу/канал с правами админа и отправьте команду /getgroupid<br>
+                                        Добавьте <a class="text-success" href="https://telegram.me/myidbot"
+                                                    target="_blank">@myidbot</a> в группу/канал с правами админа и
+                                        отправьте команду /getgroupid<br>
                                     </p>
                                     <div class="mb-5">
 
                                         <div class="input-group mb-3">
-                                            <input id="telegramTokenApi" type="text" class="form-control w-50" placeholder="Telegram Token API"
+                                            <input id="telegramTokenApi" type="text" class="form-control w-50"
+                                                   placeholder="Telegram Token API"
                                                    aria-label="Telegram Token API"
                                                    value="{{ config().notice().getTelegramTokenApi() }}">
-                                            <input id="telegramChatID" type="text" class="form-control w-25" placeholder="Chat ID"
+                                            <input id="telegramChatID" type="text" class="form-control w-25"
+                                                   placeholder="Chat ID"
                                                    aria-label="Chat ID"
                                                    value="{{ config().notice().getTelegramChatId() }}">
                                             <div class="input-group-append ">
-                                                <button type="button" class="btn btn-primary" id="checkSendTelegramNotice">
+                                                <button type="button" class="btn btn-primary"
+                                                        id="checkSendTelegramNotice">
                                                     Проверить уведомление
                                                 </button>
                                             </div>
@@ -1547,7 +1559,10 @@
                                         <div id="noticeLang" class="col-xl-12">
                                             {% for lang in getLangList() %}
                                             <div class="form-check form-check-inline">
-                                                <input {% if config().notice().getNoticeLang() == lang.lang %}checked=""{% endif %} class="form-check-input" type="radio" name="noticeLang" id="notice_lang_{{lang.lang}}" value="{{lang.lang}}">
+                                                <input {% if config().notice().getNoticeLang()== lang.lang %}checked=""
+                                                       {% endif %} class="form-check-input" type="radio"
+                                                       name="noticeLang" id="notice_lang_{{lang.lang}}"
+                                                       value="{{lang.lang}}">
                                                 <label class="form-check-label" for="notice_lang_{{lang.lang}}">{{lang.name}}</label>
                                             </div>
                                             {% endfor %}
@@ -1555,123 +1570,161 @@
                                     </div>
 
 
-
-
                                     <div class="row mt-2">
 
 
-
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isTechnicalSupport() %}checked=""{% endif %} id="isTechnicalSupport" name="isTechnicalSupport" type="checkbox">
-                                                <label for="isTechnicalSupport" class="label-success"></label><span class="ms-3">Новые сообщения тех.поддержки</span>
+                                                <input {% if config().notice().isTechnicalSupport() %}checked="" {%
+                                                       endif %} id="isTechnicalSupport" name="isTechnicalSupport"
+                                                       type="checkbox">
+                                                <label for="isTechnicalSupport" class="label-success"></label><span
+                                                    class="ms-3">Новые сообщения тех.поддержки</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isDonationCrediting() %}checked=""{% endif %} id="isDonationCrediting" name="isDonationCrediting" type="checkbox">
-                                                <label for="isDonationCrediting" class="label-success"></label><span class="ms-3">При зачислении пожертвования</span>
+                                                <input {% if config().notice().isDonationCrediting() %}checked="" {%
+                                                       endif %} id="isDonationCrediting" name="isDonationCrediting"
+                                                       type="checkbox">
+                                                <label for="isDonationCrediting" class="label-success"></label><span
+                                                    class="ms-3">При зачислении пожертвования</span>
                                             </div>
                                         </div>
 
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isTranslationGame() %}checked=""{% endif %} id="isTranslationGame" name="isTranslationGame" type="checkbox">
-                                                <label for="isTranslationGame" class="label-success"></label><span class="ms-3">Перевод <img class='avatar avatar-xs rounded' src='/uploads/images/icon/etc_coins_gold_i00.webp'> в игру</span>
+                                                <input {% if config().notice().isTranslationGame() %}checked="" {% endif
+                                                       %} id="isTranslationGame" name="isTranslationGame"
+                                                       type="checkbox">
+                                                <label for="isTranslationGame" class="label-success"></label><span
+                                                    class="ms-3">Перевод <img class='avatar avatar-xs rounded'
+                                                                              src='/uploads/images/icon/etc_coins_gold_i00.webp'> в игру</span>
                                             </div>
                                         </div>
 
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isRegistrationUser() %}checked=""{% endif %} id="isRegistrationUser" name="isRegistrationUser" type="checkbox">
-                                                <label for="isRegistrationUser" class="label-success"></label><span class="ms-3">Регистрация пользователя</span>
+                                                <input {% if config().notice().isRegistrationUser() %}checked="" {%
+                                                       endif %} id="isRegistrationUser" name="isRegistrationUser"
+                                                       type="checkbox">
+                                                <label for="isRegistrationUser" class="label-success"></label><span
+                                                    class="ms-3">Регистрация пользователя</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isRegistrationAccount() %}checked=""{% endif %} id="isRegistrationAccount" name="isRegistrationAccount" type="checkbox">
-                                                <label for="isRegistrationAccount" class="label-success"></label><span class="ms-3">Регистрация аккаунта</span>
+                                                <input {% if config().notice().isRegistrationAccount() %}checked="" {%
+                                                       endif %} id="isRegistrationAccount" name="isRegistrationAccount"
+                                                       type="checkbox">
+                                                <label for="isRegistrationAccount" class="label-success"></label><span
+                                                    class="ms-3">Регистрация аккаунта</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isForgetPassword() %}checked=""{% endif %} id="isForgetPassword" name="isForgetPassword" type="checkbox">
-                                                <label for="isForgetPassword" class="label-success"></label><span class="ms-3">Восстановление пароля</span>
+                                                <input {% if config().notice().isForgetPassword() %}checked="" {% endif
+                                                       %} id="isForgetPassword" name="isForgetPassword" type="checkbox">
+                                                <label for="isForgetPassword" class="label-success"></label><span
+                                                    class="ms-3">Восстановление пароля</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isChangeAccountPassword() %}checked=""{% endif %} id="isChangeAccountPassword" name="isChangeAccountPassword" type="checkbox">
-                                                <label for="isChangeAccountPassword" class="label-success"></label><span class="ms-3">Смена пароля аккаунту</span>
+                                                <input {% if config().notice().isChangeAccountPassword() %}checked="" {%
+                                                       endif %} id="isChangeAccountPassword"
+                                                       name="isChangeAccountPassword" type="checkbox">
+                                                <label for="isChangeAccountPassword" class="label-success"></label><span
+                                                    class="ms-3">Смена пароля аккаунту</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isChangeUserPassword() %}checked=""{% endif %} id="isChangeUserPassword" name="isChangeUserPassword" type="checkbox">
-                                                <label for="isChangeUserPassword" class="label-success"></label><span class="ms-3">Смена пароля профиля</span>
+                                                <input {% if config().notice().isChangeUserPassword() %}checked="" {%
+                                                       endif %} id="isChangeUserPassword" name="isChangeUserPassword"
+                                                       type="checkbox">
+                                                <label for="isChangeUserPassword" class="label-success"></label><span
+                                                    class="ms-3">Смена пароля профиля</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isSyncAccount() %}checked=""{% endif %} id="isSyncAccount" name="isSyncAccount" type="checkbox">
-                                                <label for="isSyncAccount" class="label-success"></label><span class="ms-3">Синхронизация аккаунта</span>
+                                                <input {% if config().notice().isSyncAccount() %}checked="" {% endif %}
+                                                       id="isSyncAccount" name="isSyncAccount" type="checkbox">
+                                                <label for="isSyncAccount" class="label-success"></label><span
+                                                    class="ms-3">Синхронизация аккаунта</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isAddStream() %}checked=""{% endif %} id="isAddStream" name="isAddStream" type="checkbox">
-                                                <label for="isAddStream" class="label-success"></label><span class="ms-3">Добавление стрима</span>
+                                                <input {% if config().notice().isAddStream() %}checked="" {% endif %}
+                                                       id="isAddStream" name="isAddStream" type="checkbox">
+                                                <label for="isAddStream" class="label-success"></label><span
+                                                    class="ms-3">Добавление стрима</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isUseWheel() %}checked=""{% endif %} id="isUseWheel" name="isUseWheel" type="checkbox">
-                                                <label for="isUseWheel" class="label-success"></label><span class="ms-3">Использовании рулетки</span>
+                                                <input {% if config().notice().isUseWheel() %}checked="" {% endif %}
+                                                       id="isUseWheel" name="isUseWheel" type="checkbox">
+                                                <label for="isUseWheel" class="label-success"></label><span
+                                                    class="ms-3">Использовании рулетки</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isUseBonusCode() %}checked=""{% endif %} id="isUseBonusCode" name="isUseBonusCode" type="checkbox">
-                                                <label for="isUseBonusCode" class="label-success"></label><span class="ms-3">Использование Бонус-Кода</span>
+                                                <input {% if config().notice().isUseBonusCode() %}checked="" {% endif %}
+                                                       id="isUseBonusCode" name="isUseBonusCode" type="checkbox">
+                                                <label for="isUseBonusCode" class="label-success"></label><span
+                                                    class="ms-3">Использование Бонус-Кода</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isBuyStartPack() %}checked=""{% endif %} id="isBuyStartPack" name="isBuyStartPack" type="checkbox">
-                                                <label for="isBuyStartPack" class="label-success"></label><span class="ms-3">Покупка стартового набора</span>
+                                                <input {% if config().notice().isBuyStartPack() %}checked="" {% endif %}
+                                                       id="isBuyStartPack" name="isBuyStartPack" type="checkbox">
+                                                <label for="isBuyStartPack" class="label-success"></label><span
+                                                    class="ms-3">Покупка стартового набора</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isBuyShop() %}checked=""{% endif %} id="isBuyShop" name="isBuyShop" type="checkbox">
+                                                <input {% if config().notice().isBuyShop() %}checked="" {% endif %}
+                                                       id="isBuyShop" name="isBuyShop" type="checkbox">
                                                 <label for="isBuyShop" class="label-success"></label><span class="ms-3">Покупка в магазине</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isSendWarehouseToGame() %}checked=""{% endif %} id="isSendWarehouseToGame" name="isSendWarehouseToGame" type="checkbox">
-                                                <label for="isSendWarehouseToGame" class="label-success"></label><span class="ms-3">Отправка из склада в игру</span>
+                                                <input {% if config().notice().isSendWarehouseToGame() %}checked="" {%
+                                                       endif %} id="isSendWarehouseToGame" name="isSendWarehouseToGame"
+                                                       type="checkbox">
+                                                <label for="isSendWarehouseToGame" class="label-success"></label><span
+                                                    class="ms-3">Отправка из склада в игру</span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
-                                                <input {% if config().notice().isSendPlayerToVillage() %}checked=""{% endif %} id="isSendPlayerToVillage" name="isSendPlayerToVillage" type="checkbox">
-                                                <label for="isSendPlayerToVillage" class="label-success"></label><span class="ms-3">Отправка персонажа в город</span>
+                                                <input {% if config().notice().isSendPlayerToVillage() %}checked="" {%
+                                                       endif %} id="isSendPlayerToVillage" name="isSendPlayerToVillage"
+                                                       type="checkbox">
+                                                <label for="isSendPlayerToVillage" class="label-success"></label><span
+                                                    class="ms-3">Отправка персонажа в город</span>
                                             </div>
                                         </div>
 
@@ -1736,7 +1789,10 @@
 <script>
 
     $("#checkSendTelegramNotice").on("click", function () {
-        AjaxSend("/telegram/notice/test", "POST", {tokenApi: $("#telegramTokenApi").val(), chatID: $("#telegramChatID").val()}, false)
+        AjaxSend("/telegram/notice/test", "POST", {
+            tokenApi: $("#telegramTokenApi").val(),
+            chatID: $("#telegramChatID").val()
+        }, false)
     })
 
     $(document).ready(function () {
@@ -1744,7 +1800,7 @@
         $("#saveNotice").on("click", function () {
             let formData = {
                 __config_name__: '__config_notice__',
-                noticeLang:  $('#noticeLang input[name="noticeLang"]:checked').val(),
+                noticeLang: $('#noticeLang input[name="noticeLang"]:checked').val(),
                 telegramTokenApi: $("#telegramTokenApi").val(),
                 telegramChatID: $("#telegramChatID").val(),
                 isTechnicalSupport: $('#isTechnicalSupport').prop('checked'),
@@ -2022,19 +2078,31 @@
         });
 
         $('.add-time').click(function () {
-            // Определяем контейнер для текущего аккордеона, где была нажата кнопка
             var accordionBody = $(this).closest('.accordion-body');
-            var rowContainer = accordionBody.find('.row-container');
 
-            // Клонируем первую строку
-            var newRow = rowContainer.find('.row:first').clone();
-            newRow.find('input').val(''); // Очищаем значения input-ов в новой строке
+            var newRow = `
+        <div class="row onlinesettingdata">
+            <div class="col-xl-2">
+                <input class="form-control time-format-2" placeholder="hh:mm">
+            </div>
+            <div class="col-xl-2">
+                ${phrase('multiply_online_by')}:
+            </div>
+            <div class="col-xl-2">
+                <input min="1" step="0.1" type="number" class="form-control" placeholder="1">
+            </div>
+            <div class="col-xl-1">
+                <button type="button" class="btn btn-danger remove-time">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>`;
 
-            // Добавляем новую строку в соответствующий контейнер
-            rowContainer.append(newRow);
+            // Добавляем новую строку в текущий accordion-body
+            accordionBody.find('.row-container').append(newRow);
 
-            // Применяем Cleave.js к только что добавленному элементу input
-            newRow.find('.time-format-2').each(function () {
+            // Применяем Cleave.js к новому полю времени
+            accordionBody.find('.row:last-child .time-format-2').each(function () {
                 new Cleave(this, {
                     time: true,
                     timePattern: ['h', 'm'],
@@ -2043,10 +2111,23 @@
         });
 
 
-        $('.add-accordion-item').click(function () {
-            var numItems = $('#players_online_cheating').val();
+    });
 
-            var newAccordionItem = `
+    $(document).on('click', '.remove-time', function() {
+        // Найдем контейнер с настройками
+        var settingRows = $(this).closest('.accordion-body').find('.onlinesettingdata');
+
+        if (settingRows.length > 1) {
+            $(this).closest('.onlinesettingdata').remove();
+        } else {
+            noticeError('Нельзя удалить последнюю строку времени');
+        }
+    });
+
+    $('.add-accordion-item').click(function () {
+        var numItems = $('#players_online_cheating').val();
+
+        var newAccordionItem = `
         <div class="accordion-item">
             <h2 class="accordion-header" id="flush-heading${numItems}">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${numItems}" aria-expanded="false" aria-controls="flush-collapse${numItems}">
@@ -2055,15 +2136,22 @@
             </h2>
             <div id="flush-collapse${numItems}" class="accordion-collapse collapse" aria-labelledby="flush-heading${numItems}" data-bs-parent="#accordionFlushExample">
                 <div class="accordion-body">
-                    <div class="row my-2">
-                        <div class="col-xl-2">
-                            <input class="form-control time-format-2" placeholder="hh:mm">
-                        </div>
-                        <div class="col-xl-3">
-                            В это время онлайн умножить онлайн на:
-                        </div>
-                        <div class="col-xl-2">
-                            <input value="1" step="0.1" type="number" class="form-control" placeholder="1">
+                    <div class="row-container">
+                        <div class="row onlinesettingdata">
+                            <div class="col-xl-2">
+                                <input class="form-control time-format-2" placeholder="hh:mm">
+                            </div>
+                            <div class="col-xl-2">
+                                В это время онлайн умножить онлайн на:
+                            </div>
+                            <div class="col-xl-2">
+                                <input value="1" step="0.1" type="number" class="form-control" placeholder="1">
+                            </div>
+                            <div class="col-xl-1">
+                                <button type="button" class="btn btn-danger remove-time">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2073,56 +2161,48 @@
             </div>
         </div>`;
 
-            $('.accordionFlushExample').append(newAccordionItem);
-            new Cleave(`#flush-collapse${numItems} .time-format-2`, {
+        $('.accordionFlushExample').append(newAccordionItem);
+
+        // Применяем Cleave.js к новому полю времени
+        $(`#flush-collapse${numItems} .time-format-2`).each(function () {
+            new Cleave(this, {
                 time: true,
                 timePattern: ['h', 'm'],
             });
-            $(`#flush-collapse${numItems} .add-time`).click(function () {
-                var newRow = $(this).closest('.accordion-collapse').find('.accordion-body .row:first').clone();
-                newRow.find('input').val('');
-                $(this).closest('.accordion-collapse').find('.accordion-body').append(newRow);
-                newRow.find('.time-format-2').each(function () {
-                    new Cleave(this, {
-                        time: true,
-                        timePattern: ['h', 'm'],
-                    });
-                });
+        });
+    });
+
+
+    // Функция для сбора данных
+    function collectData() {
+        var data = {
+            isEnableOnlineCheaters: $('#isEnableOnlineCheaters').is(':checked'),
+            minOnlineShow: $('#minOnlineShow').val(),
+            maxOnlineShow: $('#maxOnlineShow').val(),
+            cheatingDetails: {},
+        };
+
+        // Сбор данных из аккордеона
+        $('.accordion-item').each(function () {
+            var online = $(this).find('.accordion-button').text().match(/\d+/)[0]; // Извлекаем число онлайн игроков из заголовка
+            var times = [];
+
+            $(this).find('.accordion-body div.row').each(function () {
+                var time = $(this).find('.time-format-2').val();
+                var multiplier = $(this).find('input[type="number"]').last().val();
+                times.push({time: time, multiplier: multiplier});
             });
+            data.__config_name__ = '__config_cheating__';
+            data.cheatingDetails[online] = times; // Добавляем времена и множители под ключом онлайн игроков
         });
 
-        // Функция для сбора данных
-        function collectData() {
-            var data = {
-                isEnableOnlineCheaters: $('#isEnableOnlineCheaters').is(':checked'),
-                minOnlineShow: $('#minOnlineShow').val(),
-                maxOnlineShow: $('#maxOnlineShow').val(),
-                cheatingDetails: {},
-            };
+        return data;
+    }
 
-            // Сбор данных из аккордеона
-            $('.accordion-item').each(function () {
-                var online = $(this).find('.accordion-button').text().match(/\d+/)[0]; // Извлекаем число онлайн игроков из заголовка
-                var times = [];
-
-                $(this).find('.accordion-body div.row').each(function () {
-                    var time = $(this).find('.time-format-2').val();
-                    var multiplier = $(this).find('input[type="number"]').last().val();
-                    times.push({time: time, multiplier: multiplier});
-                });
-                data.__config_name__ = '__config_cheating__';
-                data.cheatingDetails[online] = times; // Добавляем времена и множители под ключом онлайн игроков
-            });
-
-            return data;
-        }
-
-        // Подключение обработчика кнопки сохранения
-        $('#saveCheatingOnline').click(function () {
-            var collectedData = collectData();
-            AjaxSend('/admin/config/save', 'POST', collectedData, false);
-        });
-
+    // Подключение обработчика кнопки сохранения
+    $('#saveCheatingOnline').click(function () {
+        var collectedData = collectData();
+        AjaxSend('/admin/config/save', 'POST', collectedData, false);
     });
 
 
