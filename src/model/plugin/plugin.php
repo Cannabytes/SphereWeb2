@@ -25,24 +25,31 @@ class plugin
 
     static public function loading(): void
     {
-        if(server::get_count_servers()==0){
+   /*     if(server::get_count_servers()==0){
             return;
-        }
+        }*/
         $pluginList = [];
         $configData = sql::getRow(
           "SELECT * FROM `settings` WHERE `key` = '__PLUGIN__'"
         );
         $serverId = user::self()->getServerId();
-
         if ($configData) {
             $plugins = json_decode($configData['setting'], true);
             if (!empty($plugins)) {
                 $pluginKeys = array_map(fn($plugin) => "'__PLUGIN__{$plugin}'", $plugins);
                 $inClause = implode(',', $pluginKeys);
+                $selectDefaultSetting = "";
+                if($serverId != 0){
+                    $selectDefaultSetting = " OR `serverId` = 0";
+                }
+                if($serverId == null){
+                    $serverId = 0;
+                }
                 $settings = sql::getRows(
-                  "SELECT * FROM `settings` WHERE `key` IN ($inClause) AND serverId = ?",
+                  "SELECT * FROM `settings` WHERE `key` IN ($inClause) AND serverId = ? {$selectDefaultSetting}",
                   [$serverId]
                 );
+
                 $settingsMap = [];
                 foreach ($settings as $setting) {
                     $plugin = str_replace('__PLUGIN__', '', $setting['key']);
@@ -102,12 +109,14 @@ class plugin
 
     public static function get(string $getNameClass): DynamicPluginSetting
     {
+        $serverId = isset($_POST['serverId']) && $_POST['serverId'] == 0 ? 0 : user::self()->getServerId();
+
         if (self::$plugins[$getNameClass]) {
             return self::$plugins[$getNameClass];
         }
         $pl                 = new DynamicPluginSetting();
         $pl->pluginName     = $getNameClass;
-        $pl->pluginServerId = user::self()->getServerId();
+        $pl->pluginServerId = $serverId;
 
         return $pl;
     }
@@ -118,14 +127,12 @@ class plugin
         $setting    = $_POST['setting'] ?? null;
         $value      = $_POST['value'] ?? null;
 
+
         if ( ! $pluginName || ! $setting) {
             return;
         }
 
-        $serverId = user::self()->getServerId();
-        if ($serverId == null) {
-            board::error("У Вас нет выбранного сервера");
-        }
+        $serverId = isset($_POST['serverId']) && $_POST['serverId'] == 0 ? 0 : user::self()->getServerId();
 
         if ($setting === 'enablePlugin') {
             $isEnabled = filter_var($value, FILTER_VALIDATE_BOOL);

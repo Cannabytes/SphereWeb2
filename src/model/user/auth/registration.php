@@ -50,12 +50,13 @@ class registration {
         }
 
 
-        $insertUserSQL = "INSERT INTO `users` (`email`, `password`, `ip`, `timezone`) VALUES (?, ?, ?, ?)";
+        $insertUserSQL = "INSERT INTO `users` (`email`, `password`, `ip`, `timezone`, `last_activity`) VALUES (?, ?, ?, ?, ?)";
         $insertArrays = [
             $email,
             password_hash($password, PASSWORD_BCRYPT),
             $_SERVER['REMOTE_ADDR'],
             $timezone,
+            time::mysql(),
         ];
 
         /**
@@ -65,7 +66,7 @@ class registration {
         if ($timezone == null) {
             $get_timezone_ip = timezone::get_timezone_ip($_SERVER['REMOTE_ADDR']);
             if ($get_timezone_ip != null) {
-                $insertUserSQL = "INSERT INTO `users` (`email`, `password`, `name`, `ip`, `timezone`, `country`, `city`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $insertUserSQL = "INSERT INTO `users` (`email`, `password`, `name`, `ip`, `timezone`, `country`, `city`, `last_activity`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 $insertArrays = [
                     $email,
                     password_hash($password, PASSWORD_BCRYPT),
@@ -74,11 +75,13 @@ class registration {
                     $get_timezone_ip['timezone'],
                     $get_timezone_ip['country'],
                     $get_timezone_ip['city'],
+                    time::mysql(),
                 ];
             }
         }
         $insert = sql::run($insertUserSQL, $insertArrays);
         $userID = sql::lastInsertId();
+
         if ($insert) {
             if ($user_referral_leader != null) {
                 referral::add($userID, $user_referral_leader->getId());

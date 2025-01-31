@@ -40,7 +40,6 @@ class user
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             board::notice(false, lang::get_phrase(213));
         }
-
         $password = request::setting('password', new request_config(max: 32));
         $account_name = isset($_POST['account']) && trim($_POST['account']) !== '' ? trim($_POST['account']) : null;
         if ($account_name != null) {
@@ -61,7 +60,6 @@ class user
         if (server::get_count_servers() > 0 and $account_name != null) {
 
             $user = \Ofey\Logan22\model\user\user::getUserId($_SESSION['id']);
-
             \Ofey\Logan22\component\sphere\server::setUser($user);
 
             $prefixEnable = config::load()->registration()->getEnablePrefix();
