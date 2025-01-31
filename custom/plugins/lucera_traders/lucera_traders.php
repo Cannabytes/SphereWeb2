@@ -38,6 +38,7 @@ class lucera_traders
 
     public function include(): void
     {
+
         tpl::addVar([
           "selllist" => $this->getSellList(),
         ]);
@@ -178,6 +179,9 @@ class lucera_traders
 
     public function show(): void
     {
+        if (\Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->isDisabled()){
+            redirect::location("/main");
+        }
         if ( ! plugin::getPluginActive($this->getNameClass())) {
             redirect::location("/main");
         }
