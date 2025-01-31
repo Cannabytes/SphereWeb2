@@ -19,16 +19,16 @@ class client
         validation::user_protection("admin");
 
         $chronicle_name = trim($_POST['chronicle_name']);
-        $protocols      = self::get_protocol($chronicle_name);
-        if ( ! $protocols) {
+        $protocols = self::get_protocol($chronicle_name);
+        if (!$protocols) {
             board::notice(false, "Not find client");
         }
         $collections = \Ofey\Logan22\component\sphere\server::send(type::SERVER_COLLECTIONS, [
-          'protocols' => $protocols,
+            'protocols' => $protocols,
         ])->getResponse();
         board::alert([
-          'ok'          => true,
-          'collections' => $collections,
+            'ok' => true,
+            'collections' => $collections,
         ]);
 
         board::notice(false, "Not find class");
@@ -44,261 +44,269 @@ class client
     static public function all()
     {
         return [
-          [
-            'protocol' => [377],
-            'name'     => "Prelude",
-          ],
-          [
-            'protocol' => [419],
-            'name'     => "Harbingers of War",
-          ],
-          [
-            'protocol' => [478],
-            'name'     => "Age of Splendor",
-          ],
-          [
-            'protocol' => [530],
-            'name'     => "Rise of Darkness",
-          ],
-          [
-            'protocol' => [656],
-            'name'     => "Scions of Destiny",
-          ],
-          [
-            'protocol' => [693],
-            'name'     => "Oath of Blood",
-          ],
-          [
-            'protocol' => [
-              737,
-              740,
-              744,
-              746,
+            [
+                'protocol' => [377],
+                'name' => "Prelude",
             ],
-            'name'     => "Interlude",
-          ],
-          [
-            'protocol' => [828],
-            'name'     => "The Kamael",
-          ],
-          [
-            'protocol' => [831],
-            'name'     => "The Kamael Hellbound",
-          ],
-          [
-            'protocol' => [
-              851,
-              19,
+            [
+                'protocol' => [419],
+                'name' => "Harbingers of War",
             ],
-            'name'     => "Gracia Part 1",
-          ],
-          [
-            'protocol' => [
-              12,
-              17,
-              20,
+            [
+                'protocol' => [478],
+                'name' => "Age of Splendor",
             ],
-            'name'     => "Gracia Part 2",
-          ],
-          [
-            'protocol' => [
-              83,
-              87,
-              83,
+            [
+                'protocol' => [530],
+                'name' => "Rise of Darkness",
             ],
-            'name'     => "Gracia Final",
-          ],
-          [
-            'protocol' => [
-              148,
-              152,
-              146,
+            [
+                'protocol' => [656],
+                'name' => "Scions of Destiny",
             ],
-            'name'     => "Epilogue",
-          ],
-          [
-            'protocol' => [216],
-            'name'     => "Freya (High Five)",
-          ],
-          [
-            'protocol' => [
-              267,
-              268,
-              271,
-              273,
-              253,
-              268,
+            [
+                'protocol' => [693],
+                'name' => "Oath of Blood",
             ],
-            'name'     => "High Five",
-          ],
-          [
-            'protocol' => [
-              404,
-              414,
-              415,
+            [
+                'protocol' => [
+                    737,
+                    740,
+                    744,
+                    746,
+                ],
+                'name' => "Interlude",
             ],
-            'name'     => "Awakening",
-          ],
-          [
-            'protocol' => [
-              410,
-              411,
+            [
+                'protocol' => [828],
+                'name' => "The Kamael",
             ],
-            'name'     => "Harmony",
-          ],
-          [
-            'protocol' => [
-              448,
-              449,
+            [
+                'protocol' => [831],
+                'name' => "The Kamael Hellbound",
             ],
-            'name'     => "Tauti",
-          ],
-          [
-            'protocol' => [
-              479,
-              480,
-              488,
+            [
+                'protocol' => [
+                    851,
+                    19,
+                ],
+                'name' => "Gracia Part 1",
             ],
-            'name'     => "Glory Days",
-          ],
-          [
-            'protocol' => [
-              531,
-              532,
-              533,
-              557,
-              558,
+            [
+                'protocol' => [
+                    12,
+                    17,
+                    20,
+                ],
+                'name' => "Gracia Part 2",
             ],
-            'name'     => "Lindvior",
-          ],
-          [
-            'protocol' => [
-              575,
-              578,
-              580,
-              581,
-              583,
+            [
+                'protocol' => [
+                    83,
+                    87,
+                    83,
+                ],
+                'name' => "Gracia Final",
             ],
-            'name'     => "Valliance",
-          ],
-          [
-            'protocol' => [
-              603,
-              606,
-              607,
-              610,
+            [
+                'protocol' => [
+                    148,
+                    152,
+                    146,
+                ],
+                'name' => "Epilogue",
             ],
-            'name'     => "Ertheia",
-          ],
-          [
-            'protocol' => [24],
-            'name'     => "[EP2.0] Infinite Odyssey: Shadows of Light",
-          ],
-          [
-            'protocol' => [28],
-            'name'     => "[EP2.5] Infinite Odyssey: Underground",
-          ],
-          [
-            'protocol' => [64],
-            'name'     => "[EP3.0] Helios: Lord of Bifrost",
-          ],
-          [
-            'protocol' => [83],
-            'name'     => "Helios: Arena (MOBA)",
-          ],
-          [
-            'protocol' => [
-              109,
-              110,
+            [
+                'protocol' => [216],
+                'name' => "Freya (High Five)",
             ],
-            'name'     => "Grand Crusade",
-          ],
-          [
-            'protocol' => [140],
-            'name'     => "Salvation: First Chapter",
-          ],
-          [
-            'protocol' => [140],
-            'name'     => "Salvation: Arena (MOBA)",
-          ],
-          [
-            'protocol' => [152],
-            'name'     => "Salvation: The Gathering / Orfen",
-          ],
-          [
-            'protocol' => [
-              166,
-              196,
+            [
+                'protocol' => [
+                    267,
+                    268,
+                    271,
+                    273,
+                    253,
+                    268,
+                ],
+                'name' => "High Five",
             ],
-            'name'     => "Fafurion",
-          ],
-          [
-            'protocol' => [228],
-            'name'     => "Prelude Of War",
-          ],
-          [
-            'protocol' => [
-              235,
-              236,
+            [
+                'protocol' => [
+                    404,
+                    414,
+                    415,
+                ],
+                'name' => "Awakening",
             ],
-            'name'     => "Prelude Of War Ch. 2",
-          ],
-          [
-            'protocol' => [245],
-            'name'     => "Prelude Of War Ch. 3",
-          ],
-          [
-            'protocol' => [272],
-            'name'     => "Homunculus",
-          ],
-          [
-            'protocol' => [286],
-            'name'     => "Homunculus Ch. 2",
-          ],
-          [
-            'protocol' => [306],
-            'name'     => "Return Of The Queen Ant",
-          ],
-          [
-            'protocol' => [311],
-            'name'     => "Return Of The Queen Ant: Ch. 2",
-          ],
-          [
-            'protocol' => [338],
-            'name'     => "Master Class",
-          ],
-          [
-            'protocol' => [362],
-            'name'     => "Master Class Ch. 2",
-          ],
-          [
-            'protocol' => [388],
-            'name'     => "Master Class Ch. 3",
-          ],
-          [
-            'protocol' => [418],
-            'name'     => "The Source of Flame",
-          ],
-          [
-            'protocol' => [439],
-            'name'     => "Age of Magic",
-          ],
-          [
-            'protocol' => [447],
-            'name'     => "Shine Maker",
-          ],
-          [
-            'protocol' => [464],
-            'name'     => "Path of a Rogue",
-          ],
-          [
-            'protocol' => [474],
-            'name'     => "Shield of The Kingdom",
-          ],
-          [
-            'protocol' => [502],
-            'name'     => "Superion",
-          ],
+            [
+                'protocol' => [
+                    410,
+                    411,
+                ],
+                'name' => "Harmony",
+            ],
+            [
+                'protocol' => [
+                    448,
+                    449,
+                ],
+                'name' => "Tauti",
+            ],
+            [
+                'protocol' => [
+                    479,
+                    480,
+                    488,
+                ],
+                'name' => "Glory Days",
+            ],
+            [
+                'protocol' => [
+                    531,
+                    532,
+                    533,
+                    557,
+                    558,
+                ],
+                'name' => "Lindvior",
+            ],
+            [
+                'protocol' => [
+                    575,
+                    578,
+                    580,
+                    581,
+                    583,
+                ],
+                'name' => "Valliance",
+            ],
+            [
+                'protocol' => [
+                    603,
+                    606,
+                    607,
+                    610,
+                ],
+                'name' => "Ertheia",
+            ],
+            [
+                'protocol' => [24],
+                'name' => "[EP2.0] Infinite Odyssey: Shadows of Light",
+            ],
+            [
+                'protocol' => [28],
+                'name' => "[EP2.5] Infinite Odyssey: Underground",
+            ],
+            [
+                'protocol' => [64],
+                'name' => "[EP3.0] Helios: Lord of Bifrost",
+            ],
+            [
+                'protocol' => [83],
+                'name' => "Helios: Arena (MOBA)",
+            ],
+            [
+                'protocol' => [
+                    109,
+                    110,
+                ],
+                'name' => "Grand Crusade",
+            ],
+            [
+                'protocol' => [140],
+                'name' => "Salvation: First Chapter",
+            ],
+            [
+                'protocol' => [140],
+                'name' => "Salvation: Arena (MOBA)",
+            ],
+            [
+                'protocol' => [152],
+                'name' => "Salvation: The Gathering / Orfen",
+            ],
+            [
+                'protocol' => [
+                    166,
+                    196,
+                ],
+                'name' => "Fafurion",
+            ],
+            [
+                'protocol' => [228],
+                'name' => "Prelude Of War",
+            ],
+            [
+                'protocol' => [
+                    235,
+                    236,
+                ],
+                'name' => "Prelude Of War Ch. 2",
+            ],
+            [
+                'protocol' => [245],
+                'name' => "Prelude Of War Ch. 3",
+            ],
+            [
+                'protocol' => [272],
+                'name' => "Homunculus",
+            ],
+            [
+                'protocol' => [286],
+                'name' => "Homunculus Ch. 2",
+            ],
+            [
+                'protocol' => [306],
+                'name' => "Return Of The Queen Ant",
+            ],
+            [
+                'protocol' => [311],
+                'name' => "Return Of The Queen Ant: Ch. 2",
+            ],
+            [
+                'protocol' => [338],
+                'name' => "Master Class",
+            ],
+            [
+                'protocol' => [362],
+                'name' => "Master Class Ch. 2",
+            ],
+            [
+                'protocol' => [388],
+                'name' => "Master Class Ch. 3",
+            ],
+            [
+                'protocol' => [418],
+                'name' => "The Source of Flame",
+            ],
+            [
+                'protocol' => [439],
+                'name' => "Age of Magic",
+            ],
+            [
+                'protocol' => [447],
+                'name' => "Shine Maker",
+            ],
+            [
+                'protocol' => [464],
+                'name' => "Path of a Rogue",
+            ],
+            [
+                'protocol' => [474],
+                'name' => "Shield of The Kingdom",
+            ],
+            [
+                'protocol' => [474],
+                'name' => "Heart Of Volcano",
+            ],
+            [
+                'protocol' => [502],
+                'name' => "Barkas",
+            ],
+            [
+                'protocol' => [502],
+                'name' => "Superion",
+            ],
 
         ];
     }

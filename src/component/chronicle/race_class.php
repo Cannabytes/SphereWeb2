@@ -170,6 +170,65 @@ class race_class {
         215 => 'Death Knight',
         216 => 'Sigel Death Knight',
 
+        231 => 'Dwarf Maker',
+        232 => 'Earth Maker',
+        233 => 'Wind Maker',
+        234 => 'Soul Maker',
+        235 => 'Shine Maker',
+
+        // Essence
+        192 => 'Jin Kamael Soldier',
+        193 => 'Soul Finder',
+        194 => 'Soul Breaker',
+        195 => 'Soul Hound',
+
+        196 => 'Death Pilgrim',
+        197 => 'Death Blade',
+        198 => 'Death Messenger',
+        199 => 'Death Knight',
+
+        200 => 'Death Pilgrim',
+        201 => 'Death Blade',
+        202 => 'Death Messenger',
+        203 => 'Death Knight',
+
+        204 => 'Death Pilgrim',
+        205 => 'Death Blade',
+        206 => 'Death Messenger',
+        207 => 'Death Knight',
+
+        208 => 'Sylph Gunner',
+        209 => 'Sharpshooter',
+        210 => 'Wind Sniper',
+        211 => 'Storm Blaster',
+
+        217 => 'Orc Lancer',
+        218 => 'Rider',
+        219 => 'Dragoon',
+        220 => 'Vanguard Rider',
+
+        221 => 'Assassin Male',
+        222 => 'Assassin Male',
+        223 => 'Assassin Male',
+        224 => 'Assassin Male',
+
+        225 => 'Assassin Female',
+        226 => 'Assassin Female',
+        227 => 'Assassin Female',
+        228 => 'Assassin Female',
+
+//Essence High Elf
+        236 => 'Element Weaver',
+        237 => 'Element Weaver',
+        238 => 'Element Weaver',
+        239 => 'Element Weaver',
+
+        240 => 'Divine Templar',
+        241 => 'Divine Templar',
+        242 => 'Divine Templar',
+        243 => 'Divine Templar',
+
+
     ];
 
     static public function get_class($class_id) {
@@ -232,6 +291,15 @@ class race_class {
         179 => 'Aeore Cardinal',
         167 => 'Feoh Soultaker',
         171 => 'Iss Hierophant',
+        196 => 'Death Pilgrim',
+        197 => 'Death Blade',
+        198 => 'Death Messenger',
+        199 => 'Death Knight',
+
+        221 => 'Assassin Male',
+        222 => 'Assassin Male',
+        223 => 'Assassin Male',
+        224 => 'Assassin Male',
 
         212 => 'Death Soldier',
         213 => 'Death Warrior',
@@ -268,6 +336,20 @@ class race_class {
         177 => 'Wynn Elemental Master',
         180 => 'Aeore Eva\'s Saint',
         146 => 'Aeore Healer',
+        200 => 'Death Pilgrim',
+        201 => 'Death Blade',
+        202 => 'Death Messenger',
+        203 => 'Death Knight',
+
+        236 => 'Element Weaver',
+        237 => 'Element Weaver',
+        238 => 'Element Weaver',
+        239 => 'Element Weaver',
+        240 => 'Divine Templar',
+        241 => 'Divine Templar',
+        242 => 'Divine Templar',
+        243 => 'Divine Templar',
+
     ];
     static private array $dark_elven_id = [
         31  => 'Dark Fighter',
@@ -300,6 +382,16 @@ class race_class {
         178 => 'Wynn Spectral Master',
         181 => 'Aeore Shillien Saint',
         145 => 'Wynn Summoner',
+        204 => 'Death Pilgrim',
+        205 => 'Death Blade',
+        206 => 'Death Messenger',
+        207 => 'Death Knight',
+
+        225 => 'Assassin Female',
+        226 => 'Assassin Female',
+        227 => 'Assassin Female',
+        228 => 'Assassin Female',
+
     ];
     static private array $orc_id        = [
         44  => 'Orc Fighter',
@@ -321,6 +413,11 @@ class race_class {
         174 => 'Iss Dominator',
         175 => 'Iss Doomcryer',
         144 => 'Iss Enchanter',
+        217 => 'Orc Lancer',
+        218 => 'Rider',
+        219 => 'Dragoon',
+        220 => 'Vanguard Rider',
+
     ];
     static private array $dwarf_id      = [
         53  => 'Dwarf Fighter',
@@ -351,6 +448,11 @@ class race_class {
         157 => 'Tyrr Doombringer',
         165 => 'Yul Trickster',
         170 => 'Feoh Soulhounds',
+        192 => 'Jin Kamael Soldier',
+        193 => 'Soul Finder',
+        194 => 'Soul Breaker',
+        195 => 'Soul Hound',
+
     ];
     static private array $ertheia_id    = [
         182 => 'Ertheia Fighter',
@@ -361,13 +463,18 @@ class race_class {
         187 => 'Stratomancer',
         188 => 'Eviscerator',
         189 => 'Sayha\'s Seer',
+        208 => 'Sylph Gunner',
+        209 => 'Sharpshooter',
+        210 => 'Wind Sniper',
+        211 => 'Storm Blaster',
+
     ];
     static private array $shinemaker_id    = [
-      231 => 'Dwarf Maker',
-      232 => 'Earth Maker',
-      233 => 'Wind Maker',
-      234 => 'Soul Make',
-      235 => 'Shine Maker',
+        231 => 'Dwarf Maker',
+        232 => 'Earth Maker',
+        233 => 'Wind Maker',
+        234 => 'Soul Make',
+        235 => 'Shine Maker',
     ];
 
     //Раса по классу

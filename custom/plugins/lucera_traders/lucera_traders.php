@@ -21,6 +21,10 @@ class lucera_traders
 
     public function __construct()
     {
+        if (\Ofey\Logan22\model\server\server::get_count_servers()==0 or (\Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->isDisabled())){
+            redirect::location("/main");
+        }
+
         tpl::addVar([
           'setting'    => plugin::getSetting($this->getNameClass()),
           'pluginName' => $this->getNameClass(),
@@ -179,9 +183,7 @@ class lucera_traders
 
     public function show(): void
     {
-        if (\Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->isDisabled()){
-            redirect::location("/main");
-        }
+
         if ( ! plugin::getPluginActive($this->getNameClass())) {
             redirect::location("/main");
         }
