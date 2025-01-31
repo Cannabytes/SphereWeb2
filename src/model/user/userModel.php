@@ -365,7 +365,7 @@ class userModel
         return $this;
     }
 
-    public function AddHistoryDonate(float|int $amount, string $message = null, string $pay_system = "sphereBonus", null|int $id_admin_pay = null, $input = null): void
+    public function AddHistoryDonate(float|int $amount, ?string $message = null, string $pay_system = "sphereBonus", null|int $id_admin_pay = null, $input = null): void
     {
         if ($message == null) {
             $message = payMessage::getRandomPhrase();
