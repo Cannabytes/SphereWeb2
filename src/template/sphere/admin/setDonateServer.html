@@ -24,6 +24,18 @@
                     <div class="alert alert-primary alert-dismissible fade show custom-alert-icon shadow-sm" role="alert">
                         <svg class="svg-primary" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path></svg>
                         {{ phrase('donate_setting_title') }} {{server.getName()}} x{{server.getRateExp()}}
+
+                        <br>
+
+                        {{ phrase('Load settings from another server') }}
+                        <select id="getSettingServer" class="form-select form-select-sm ms-2">
+                            <option value="">{{ phrase('Select server') }}</option>
+                            {% for selectServerT1 in getServerAll() %}
+                            {% if server.getId() != selectServerT1.getId() %}
+                                <option value="{{selectServerT1.getId()}}">{{selectServerT1.getName()}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="row">
                     <div class="col-xl-6">
@@ -36,11 +48,12 @@
                                         }}</p>
                                 </div>
 
+
                                 <div class="custom-toggle-switch ms-0">
                                     <select class="form-control" data-trigger="" name="paySystemDefault"
                                             id="paySystemDefault">
                                         {% for donate in donateSysNames %}
-                                        <option {% if getServer().donate().getPaySystemDefault()== donate.name %}selected{%
+                                        <option {% if server.donate().getPaySystemDefault()== donate.name %}selected{%
                                                 endif %}
                                                 value="{{donate.name}}">{{donate.name}}
                                         </option>
@@ -59,13 +72,13 @@
                                     <div class="col-xl-3">
                                         <label for="minSummaPaySphereCoin" class="form-label">{{ phrase('min_amount')
                                             }}</label>
-                                        <input value="{{getServer().donate().getMinSummaPaySphereCoin()}}" type="number"
+                                        <input value="{{server.donate().getMinSummaPaySphereCoin()}}" type="number"
                                                class="form-control" id="minSummaPaySphereCoin" placeholder="1">
                                     </div>
                                     <div class="col-xl-3">
                                         <label for="maxSummaPaySphereCoin" class="form-label">{{ phrase('max_amount')
                                             }}</label>
-                                        <input value="{{getServer().donate().getMaxSummaPaySphereCoin()}}" type="number"
+                                        <input value="{{server.donate().getMaxSummaPaySphereCoin()}}" type="number"
                                                class="form-control" id="maxSummaPaySphereCoin" placeholder="999999">
                                     </div>
                                 </div>
@@ -80,7 +93,7 @@
 
                                     <div class="col-xl-3">
                                         <input min="0.01" step="0.01" type="number"
-                                               value="{{getServer().donate().getSphereCoinCost()}}"
+                                               value="{{server.donate().getSphereCoinCost()}}"
                                                class="form-control" id="sphereCoinCost" placeholder="1">
                                     </div>
                                 </div>
@@ -105,22 +118,22 @@
                                         <label for="ratioUSD" class="form-label">USD</label>
                                         <input min="0.01" step="0.01" type="number" class="form-control" disabled
                                                id="ratioUSD"
-                                               value="{{getServer().donate().getRatioUSD()}}" placeholder="1">
+                                               value="{{server.donate().getRatioUSD()}}" placeholder="1">
                                     </div>
                                     <div class="col-xl-2">
                                         <label for="ratioEUR" class="form-label">EUR</label>
                                         <input min="0.01" step="0.01" type="number" class="form-control" id="ratioEUR"
-                                               value="{{getServer().donate().getRatioEUR()}}" placeholder="1.05">
+                                               value="{{server.donate().getRatioEUR()}}" placeholder="1.05">
                                     </div>
                                     <div class="col-xl-2">
                                         <label for="ratioUAH" class="form-label">UAH</label>
                                         <input min="0.01" step="0.01" type="number" class="form-control" id="ratioUAH"
-                                               value="{{getServer().donate().getRatioUAH()}}" placeholder="38.5">
+                                               value="{{server.donate().getRatioUAH()}}" placeholder="38.5">
                                     </div>
                                     <div class="col-xl-2">
                                         <label for="ratioRUB" class="form-label">RUB</label>
                                         <input min="0.01" step="0.01" type="number" class="form-control" id="ratioRUB"
-                                               value="{{getServer().donate().getRatioRUB()}}" placeholder="100">
+                                               value="{{server.donate().getRatioRUB()}}" placeholder="100">
                                     </div>
 
                                 </div>
@@ -138,7 +151,7 @@
                                         </p>
                                     </div>
                                     <div class="custom-toggle-switch ms-sm-2 ms-0">
-                                        <input {% if getServer().donate().isEnableCumulativeDiscountSystem() %}checked{%
+                                        <input {% if server.donate().isEnableCumulativeDiscountSystem() %}checked{%
                                                endif %}
                                                id="enableCumulativeDiscountSystem" name="enableCumulativeDiscountSystem"
                                                type="checkbox">
@@ -167,7 +180,7 @@
                                                         <tbody>
 
                                                         {% for table in
-                                                        getServer().donate().getTableCumulativeDiscountSystem() %}
+                                                        server.donate().getTableCumulativeDiscountSystem() %}
                                                         <tr>
                                                             <th scope="row">{{table.coin}}</th>
                                                             <td>{{table.percent}}</td>
@@ -208,7 +221,7 @@
                                         </p>
                                     </div>
                                     <div class="custom-toggle-switch ms-sm-2 ms-0">
-                                        <input {% if getServer().donate().isEnableOneTimeBonus() %}checked{% endif %}
+                                        <input {% if server.donate().isEnableOneTimeBonus() %}checked{% endif %}
                                                id="enableOneTimeBonus" name="enableOneTimeBonus" type="checkbox">
                                         <label for="enableOneTimeBonus" class="label-primary mb-1"></label>
                                     </div>
@@ -232,7 +245,7 @@
                                                         </tr>
                                                         </thead>
                                                         <tbody>
-                                                        {% for table in getServer().donate().getTableEnableOneTimeBonus()
+                                                        {% for table in server.donate().getTableEnableOneTimeBonus()
                                                         %}
                                                         <tr>
                                                             <th data-name="coin" scope="row">{{table.coin}}</th>
@@ -276,7 +289,7 @@
                                         </p>
                                     </div>
                                     <div class="custom-toggle-switch ms-sm-2 ms-0">
-                                        <input {% if getServer().donate().isEnableSystemDiscountsOnItemPurchases()
+                                        <input {% if server.donate().isEnableSystemDiscountsOnItemPurchases()
                                                %}checked{% endif %}
                                                id="enableSystemDiscountsOnItemPurchases"
                                                name="enableSystemDiscountsOnItemPurchases"
@@ -306,7 +319,7 @@
                                                         </thead>
                                                         <tbody>
                                                         {% for table in
-                                                        getServer().donate().getTableSystemDiscountsOnItemPurchases() %}
+                                                        server.donate().getTableSystemDiscountsOnItemPurchases() %}
                                                         <tr>
                                                             <th scope="row">{{table.coin}}</th>
                                                             <td>{{table.percent}}</td>
@@ -350,7 +363,7 @@
                                     </div>
                                     <div class="custom-toggle-switch ms-sm-2 ms-0">
                                         <input {% if
-                                               getServer().donate().isEnableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity()
+                                               server.donate().isEnableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity()
                                                %}checked{% endif %}
                                                id="enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity"
                                                name="enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity"
@@ -380,7 +393,7 @@
                                                         </thead>
                                                         <tbody>
                                                         {% for table in
-                                                        getServer().donate().getTableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity()
+                                                        server.donate().getTableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity()
                                                         %}
                                                         <tr>
                                                             <th scope="row">{{table.count}}</th>
@@ -429,7 +442,7 @@
                                                         <tbody>
 
                                                         {% for table in
-                                                        getServer().donate().getTableListOfItemsForDiscount() %}
+                                                        server.donate().getTableListOfItemsForDiscount() %}
                                                         <tr>
                                                             <th scope="row">{{table.count}}</th>
                                                             <td>{{table.percent}}</td>
@@ -476,7 +489,7 @@
                                                class="form-control form-control-sm"
                                                id="item_id_to_game_transfer"
                                                placeholder="4037"
-                                               value="{{getServer().donate().getItemIdToGameTransfer()}}">
+                                               value="{{server.donate().getItemIdToGameTransfer()}}">
                                     </div>
                                 </div>
 
@@ -487,7 +500,7 @@
                                                class="form-control form-control-sm"
                                                id="donate_item_to_game_transfer"
                                                placeholder="1"
-                                               value="{{getServer().donate().getDonateItemToGameTransfer()}}">
+                                               value="{{server.donate().getDonateItemToGameTransfer()}}">
                                     </div>
                                 </div>
 
@@ -498,7 +511,7 @@
                                                class="form-control form-control-sm"
                                                id="count_items_to_game_transfer"
                                                placeholder="1000"
-                                               value="{{getServer().donate().getCountItemsToGameTransfer()}}">
+                                               value="{{server.donate().getCountItemsToGameTransfer()}}">
                                     </div>
                                 </div>
 
@@ -512,7 +525,7 @@
                                 </div>
                                 <div class="mt-sm-0 mt-2">
                                     <div class="custom-toggle-switch ms-sm-2 ms-0">
-                                        <input {% if getServer().donate().isRewardForDonatingItems()
+                                        <input {% if server.donate().isRewardForDonatingItems()
                                                %}checked{% endif %} id="rewardForDonatingItems"
                                                name="rewardForDonatingItems" type="checkbox">
                                         <label for="rewardForDonatingItems"
@@ -541,7 +554,7 @@
                                 <ul class="nav nav-tabs mb-3 tab-style-6" id="myTab"
                                     role="tablist">
                                     {% set i = 1 %}
-                                    {% for key, table in getServer().donate().getTableItemsBonus() %}
+                                    {% for key, table in server.donate().getTableItemsBonus() %}
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link {% if i==1 %} active{% endif %}"
                                                 id="list_{{i}}" data-bs-toggle="tab"
@@ -558,7 +571,7 @@
 
                                 <div class="tab-content" id="allItemsBonusData">
                                     {% set i = 1 %}
-                                    {% for key, table in getServer().donate().getTableItemsBonus() %}
+                                    {% for key, table in server.donate().getTableItemsBonus() %}
                                     <div class="tab-pane fade p-0 border-bottom-0 {% if i==1 %}show active{% endif %} "
                                          id="list_{{i}}-pane"
                                          role="tabpanel" aria-labelledby="list_{{i}}"
@@ -724,7 +737,7 @@
 
                                     <div class="col-md-8">
                                         <div class="tab-content" id="v-pills-tabContent">
-                                            {% for i, donate in getServer().donate().getDonateSystems() %}
+                                            {% for i, donate in server.donate().getDonateSystems() %}
 
                                             <div class="tab-pane {% if i == 0 %}active show{% endif %} donatePanelWrite"
                                                  id="{{donate.getName()}}" role="tabpanel"
@@ -1098,6 +1111,315 @@
         return systemsData;
     }
 
+
+
+    function loadDonateSettings(serverId) {
+        $.ajax({
+            url: '/admin/server/setting/get',
+            type: 'POST',
+            data: {
+                serverId: serverId
+            },
+            dataType: 'json', // Указываем, что ожидаем JSON
+            success: function(data) {
+                if (data) {
+                    fillFormData(data);
+                } else {
+                    notifyError('Нет данных для загрузки');
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Ошибка загрузки:', textStatus, errorThrown);
+                notifyError('Ошибка при загрузке данных с сервера');
+            }
+        });
+    }
+
+    // Функция заполнения форм данными
+    function fillFormData(data) {
+        // Основные настройки
+        $('#paySystemDefault').val(data.paySystemDefault);
+        $('#minSummaPaySphereCoin').val(data.minSummaPaySphereCoin);
+        $('#maxSummaPaySphereCoin').val(data.maxSummaPaySphereCoin);
+        $('#sphereCoinCost').val(data.sphereCoinCost);
+
+        // Курсы валют
+        $('#ratioUSD').val(data.ratioUSD);
+        $('#ratioEUR').val(data.ratioEUR);
+        $('#ratioUAH').val(data.ratioUAH);
+        $('#ratioRUB').val(data.ratioRUB);
+
+        // Настройки переводов в игру
+        $('#item_id_to_game_transfer').val(data.item_id_to_game_transfer);
+        $('#count_items_to_game_transfer').val(data.count_items_to_game_transfer);
+        $('#donate_item_to_game_transfer').val(data.donate_item_to_game_transfer);
+
+        // Чекбоксы систем - конвертируем строковые "true"/"false" в булевы значения
+        $('#enableCumulativeDiscountSystem').prop('checked', data.enableCumulativeDiscountSystem === "true");
+        $('#enableOneTimeBonus').prop('checked', data.enableOneTimeBonus === "true");
+        $('#enableSystemDiscountsOnItemPurchases').prop('checked', data.enableSystemDiscountsOnItemPurchases === "true");
+        $('#enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity').prop('checked', data.enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity === "true");
+        $('#rewardForDonatingItems').prop('checked', data.rewardForDonatingItems === "true");
+
+        // Заполнение таблиц
+        fillTable('#table_CumulativeDiscountSystem', data.table_CumulativeDiscountSystem);
+        fillTable('#table_EnableOneTimeBonus', data.table_EnableOneTimeBonus);
+        fillTable('#table_SystemDiscountsOnItemPurchases', data.table_SystemDiscountsOnItemPurchases);
+        fillTable('#table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity', data.table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity);
+        fillTable('#table_ListOfItemsForDiscount', data.table_ListOfItemsForDiscount);
+
+        // Заполнение бонусных предметов
+        if (data.tableItemsBonus) {
+            fillBonusItems(data.tableItemsBonus);
+        }
+
+        // Заполнение настроек платежных систем
+        if (data.donateSystems) {
+            fillPaymentSystems(data.donateSystems);
+        }
+    }
+
+    // Функция заполнения таблицы
+    function fillTable(tableId, data) {
+        if (!data || !Array.isArray(data)) return;
+
+        const $tbody = $(`${tableId} tbody`);
+        $tbody.empty();
+
+        data.forEach(row => {
+            const $tr = $('<tr>');
+
+            // Первая колонка (th)
+            $tr.append($('<th>').attr('scope', 'row').text(row.coin || row.count));
+
+            // Вторая колонка (td)
+            $tr.append($('<td>').text(row.percent));
+
+            // Колонка с кнопками действий
+            const $actions = $('<td>').html(`
+            <div class="hstack gap-2 flex-wrap">
+                <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i class="ri-edit-line"></i></a>
+                <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+            </div>
+        `);
+
+            $tr.append($actions);
+            $tbody.append($tr);
+        });
+    }
+
+    // Функция заполнения бонусных предметов
+    function fillBonusItems(bonusData) {
+        // Очищаем существующие вкладки и контент
+        $('#myTab').empty();
+        $('#allItemsBonusData').empty();
+
+        Object.entries(bonusData).forEach(([key, items], index) => {
+            // Создаем вкладку
+            const tabId = `list_${index + 1}`;
+            const isActive = index === 0;
+
+            const $tab = $(`
+            <li class="nav-item" role="presentation">
+                <button class="nav-link ${isActive ? 'active' : ''}"
+                        id="${tabId}"
+                        data-bs-toggle="tab"
+                        data-bs-target="#${tabId}-pane"
+                        type="button"
+                        role="tab"
+                        aria-controls="${tabId}-pane"
+                        aria-selected="${isActive}">${key}</button>
+            </li>
+        `);
+
+            $('#myTab').append($tab);
+
+            // Создаем контент вкладки
+            const $content = $(`
+            <div class="tab-pane fade ${isActive ? 'show active' : ''}"
+                 id="${tabId}-pane"
+                 role="tabpanel"
+                 aria-labelledby="${tabId}"
+                 tabindex="0">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Количество</th>
+                                <th scope="col">Заточка</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        `);
+
+            // Заполняем таблицу предметами
+            items.forEach(item => {
+                const $row = $(`
+                <tr>
+                    <th scope="row">
+                        <span class="avatar avatar-sm">
+                            <img src="${item.item?.icon || ''}" alt="img">
+                        </span>
+                    </th>
+                    <td>${item.id}</td>
+                    <td>${item.count}</td>
+                    <td>${item.enchant}</td>
+                    <td>
+                        <a href="javascript:void(0);" class="text-danger fs-14 lh-1 removeTableItemsBonus">
+                            <i class="ri-delete-bin-5-line"></i>
+                        </a>
+                    </td>
+                </tr>
+            `);
+
+                $content.find('tbody').append($row);
+            });
+
+            $('#allItemsBonusData').append($content);
+        });
+    }
+
+    // Функция заполнения платежных систем
+    function fillPaymentSystems(systems) {
+        // Очищаем существующие табы и контент
+        $('#v-pills-tab').empty();
+        $('#v-pills-tabContent').empty();
+
+        systems.forEach((system, index) => {
+            const [name, data] = Object.entries(system)[0];
+            const isActive = index === 0;
+
+            // Создаем таб
+            const $tab = $(`
+            <div class="nav-link text-start d-flex justify-content-between align-items-center ${isActive ? 'active' : ''} donatelistSort"
+                 id="${name}-tab"
+                 data-bs-toggle="pill"
+                 data-bs-target="#${name}"
+                 type="button" role="tab"
+                 aria-controls="${name}"
+                 aria-selected="${isActive}"
+                 data-order="${data.sort}"
+                 data-name="${name}">
+                ${name}
+                <div class="ms-auto">
+                    <i class="ri-arrow-down-line move-down" aria-hidden="true" style="cursor: pointer;"></i>
+                    <i class="ri-arrow-up-line move-up" aria-hidden="true" style="cursor: pointer;"></i>
+                </div>
+            </div>
+        `);
+
+            // Создаем контент таба
+            const $content = $(`
+            <div class="tab-pane ${isActive ? 'active show' : ''} donatePanelWrite"
+                 id="${name}" role="tabpanel"
+                 tabindex="0"
+                 aria-labelledby="${name}-tab">
+                <div class="d-sm-flex">
+                    <div data-pay-name="${name}">
+                        <div class="my-md-auto mt-4 ms-md-3">
+                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                                <div>
+                                    <p class="fs-14 mb-1 fw-semibold">Включить платежную систему ${name}</p>
+                                </div>
+                                <div class="custom-toggle-switch ms-sm-2 ms-0">
+                                    <input id="is_enable_${name}"
+                                           name="is_enable_${name}"
+                                           type="checkbox"
+                                           ${data.enable === "true" ? 'checked' : ''}>
+                                    <label for="is_enable_${name}"
+                                           class="label-primary mb-1"></label>
+                                </div>
+                            </div>
+
+                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                                <div>
+                                    <p class="fs-14 mb-1 fw-semibold">Только для админа ${name}</p>
+                                </div>
+                                <div class="custom-toggle-switch ms-sm-2 ms-0">
+                                    <input id="forAdmin_${name}"
+                                           name="forAdmin_${name}"
+                                           type="checkbox"
+                                           ${data.forAdmin === "true" ? 'checked' : ''}>
+                                    <label for="forAdmin_${name}"
+                                           class="label-primary mb-1"></label>
+                                </div>
+                            </div>
+        `);
+
+            // Добавляем инпуты для системы
+            Object.entries(data.inputs || {}).forEach(([key, value]) => {
+                $content.find('.my-md-auto').append(`
+                <div class="form-floating mb-3">
+                    <input data-name="${key}"
+                           value="${value}"
+                           type="text"
+                           class="form-control"
+                           id="donateSys_${key}"
+                           placeholder="">
+                    <label for="donateSys_${key}">${key}</label>
+                </div>
+            `);
+            });
+
+            // Добавляем описание и webhook
+            $content.find('.my-md-auto').append(`
+            <hr>
+            <div class="form-floating mb-3">
+                <input value="${data.description}"
+                       type="text"
+                       class="form-control"
+                       id="description_${name}"
+                       placeholder="">
+                <label for="description_${name}">Описание платежной системы</label>
+            </div>
+
+            <div class="border rounded-3 p-3">
+                <p class="fs-15 fw-semibold mb-2">Webhook</p>
+                <p class="fs-12 text-muted">На сайте платежной системы в качестве уведомлений после успешной оплаты укажите POST запрос на адрес:</p>
+            </div>
+
+            <input type="hidden" value="${data.sort}"
+                   id="sort_${name}" class="sort-input">
+        </div>
+    </div>
+</div>
+        `);
+
+            // Добавляем таб и контент
+            $('#v-pills-tab').append($tab);
+            $('#v-pills-tabContent').append($content);
+        });
+        $(`#description_${name}`).val(data.description);
+        $(`#sort_${name}`).val(data.sort);
+
+        // Заполняем дополнительные поля
+        Object.entries(data.inputs || {}).forEach(([key, value]) => {
+            $(`[data-name="${key}"]`).val(value);
+        });
+    }
+
+    // Функция уведомления об ошибке
+    function notifyError(message) {
+        // Здесь можно добавить вашу логику отображения уведомлений
+        console.error(message);
+    }
+
+    // Добавляем обработчик события для загрузки данных с другого сервера
+    $(document).ready(function() {
+        // Обработчик изменения выбранного сервера
+        $("#getSettingServer").on('change', function() {
+            const serverId = $(this).val();
+            if (serverId) {
+                loadDonateSettings(serverId);
+            }
+        });
+    });
 
 </script>
 {% endblock %}

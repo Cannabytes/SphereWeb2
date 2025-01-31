@@ -2,8 +2,12 @@
 
 namespace Ofey\Logan22\controller\admin;
 
+use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\controller\config\config;
+use Ofey\Logan22\controller\registration\user;
+use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\template\tpl;
 
@@ -87,6 +91,23 @@ class setDonateServer
             }
         }
         return $donateSysNames;
+    }
+
+    public static function getDonateSetting(?int $serverId = null): void
+    {
+        if(!\Ofey\Logan22\model\user\user::self()->isAdmin()){
+            board::error("Access denied");
+        }
+        $serverId = $_POST['serverId'] ?? null;
+        if($serverId == null){
+            board::error("Server id not set");
+        }
+        $row = sql::getRow("SELECT `setting` FROM `settings` WHERE `key` = '__config_donate__' AND serverId = ?", [$serverId]);
+        if($row){
+            echo $row['setting'];
+            return;
+        }
+        board::error("empty");
     }
 
 }

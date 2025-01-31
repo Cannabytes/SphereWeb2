@@ -237,8 +237,12 @@ class config
         return $this->enabled;
     }
 
-    public function donate($id = null)
+    public function donate($id = null): ?donate
     {
+        if($id){
+            $server = server::getServer($id);
+            return $server->getDonateConfig();
+        }
         return server::getServer(user::self()->getServerId())->getDonateConfig();
     }
 

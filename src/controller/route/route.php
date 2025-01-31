@@ -221,76 +221,87 @@ class route
 
     public static function getDirFiles(): void
     {
-        $dir      = $_POST['dir'] ?? __DIR__;
-        $startDir = fileSys::get_dir();
-        $startDir = str_replace('\\', '/', $startDir);
+        // Получаем директорию из POST или используем корневую директорию сайта
+        $dir = $_POST['dir'] ?? '';
 
+        // Получаем корневую директорию сайта
+        $startDir = $_SERVER['DOCUMENT_ROOT'];
+        // Нормализуем слеши
+        $startDir = rtrim(str_replace('\\', '/', $startDir), '/') . '/';
+
+        // Если передан PHP файл, обрабатываем его
         if (pathinfo($dir, PATHINFO_EXTENSION) === 'php') {
-            $fileContent = file_get_contents($startDir . $dir);
+            $fullPath = $startDir . ltrim($dir, '/');
+            if (!file_exists($fullPath)) {
+                echo json_encode(['error' => 'File not found']);
+                return;
+            }
+
+            $fileContent = file_get_contents($fullPath);
             preg_match('/namespace\s+([^;]+);/', $fileContent, $namespaceMatches);
-            $namespace  = $namespaceMatches[1] ?? '';
-            $className  = '';
-            $methods    = [];
-            $tokens     = token_get_all($fileContent);
+            $namespace = $namespaceMatches[1] ?? '';
+            $className = '';
+            $methods = [];
+            $tokens = token_get_all($fileContent);
             $classFound = false;
+
             foreach ($tokens as $key => $token) {
-                if ( ! $classFound && $token[0] === T_CLASS) {
+                if (!$classFound && $token[0] === T_CLASS) {
                     if (isset($tokens[$key + 2]) && $tokens[$key + 2][0] === T_STRING) {
-                        $className  = $tokens[$key + 2][1];
+                        $className = $tokens[$key + 2][1];
                         $classFound = true;
                         continue;
                     }
                 }
                 if ($classFound && $token[0] === T_FUNCTION && isset($tokens[$key + 2]) && $tokens[$key + 2][0] === T_STRING) {
-                    $methodName       = $tokens[$key + 2][1];
-                    $reflectionMethod = new ReflectionMethod($namespace . '\\' . $className, $methodName);
-                    if ($reflectionMethod->isPublic()) {
-                        $methods[] = $methodName;
+                    $methodName = $tokens[$key + 2][1];
+                    try {
+                        $reflectionMethod = new ReflectionMethod($namespace . '\\' . $className, $methodName);
+                        if ($reflectionMethod->isPublic()) {
+                            $methods[] = $methodName;
+                        }
+                    } catch (ReflectionException $e) {
+                        // Пропускаем методы, которые не удалось проанализировать
+                        continue;
                     }
                 }
             }
+
             $namespace = str_replace('Ofey\Logan22\\', '', $namespace);
-            $result    = [
-              'namespace' => $namespace,
-              'className' => $className,
-              'methods'   => $methods,
+            $result = [
+                'namespace' => $namespace,
+                'className' => $className,
+                'methods' => $methods,
             ];
             echo json_encode($result);
-
             return;
         }
 
-        $dir = $startDir . $dir;
-        $f   = glob("$dir/{,.}[!.,!..]*", GLOB_BRACE);
+        // Обработка директории
+        $searchPath = $startDir . ltrim($dir, '/');
+        $files = glob("$searchPath/{,.}[!.,!..]*", GLOB_BRACE);
 
-        // Замена обратных слешей на прямые (Linux-подобные слеши)
-        foreach ($f as $key => $path) {
-            $f[$key] = str_replace('\\', '/', $path);
+        if ($files === false) {
+            echo json_encode(['error' => 'Unable to read directory']);
+            return;
         }
 
-        foreach ($f as $key => $path) {
-            if (is_dir($path)) {
-                // Это директория, оставляем как есть
-            } elseif ( ! str_ends_with($path, '.php')) {
-                // Если файл не заканчивается на .php, удаляем его из массива
-                unset($f[$key]);
+        $result = [];
+        foreach ($files as $path) {
+            $path = str_replace('\\', '/', $path);
+            $relativePath = str_replace($startDir, '', $path);
+
+            // Пропускаем скрытые файлы и директории
+            if (basename($relativePath)[0] === '.') {
+                continue;
+            }
+
+            // Добавляем только директории и PHP файлы
+            if (is_dir($path) || pathinfo($path, PATHINFO_EXTENSION) === 'php') {
+                $result[] = $relativePath;
             }
         }
 
-        // Удаление файлов и папок, имена которых начинаются с точки
-        foreach ($f as $key => $path) {
-            $basename = basename($path);
-            if ($basename[0] === '.') {
-                unset($f[$key]);
-            } else {
-                $f[$key] = str_replace([$startDir], '', $path);
-                if ($basename[0] === '/') {
-                    $f[$key] = ltrim($basename, '/');
-                }
-            }
-        }
-
-        echo json_encode($f);
+        echo json_encode($result);
     }
-
 }
