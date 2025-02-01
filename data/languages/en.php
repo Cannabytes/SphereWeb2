@@ -1088,7 +1088,7 @@ Is your server build not listed when adding?<br>
 If you have a good idea for extending functionality,<br>
 you can always write to the <a class=\'text-info\' href=\'https://t.me/shpereweb\' target=\'_blank\'>Telegram chat of the Sphere project</a>.',
 	'free' => 'Free',
-	'frequently asked questions' => 'Frequently asked questions',
+	'frequently_asked_questions' => 'Frequently asked questions',
 	'friend_nickname_bonus' => 'Enter friend\'s nickname (referral) and receive bonuses',
 	'from' => 'From',
 	'func_emulation_server_desc_enable' => 'Включен режим эмуляции данных.<br> В этом режиме вы последовательно снижаете статистику и данные серверов.<br> Режим эмуляции подходит для настройки шаблонов.<br> Выключить эмуляцию можно в разделе «<a href=\'/admin/setting#functiondata\'>Функции</a>».',

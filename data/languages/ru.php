@@ -1094,7 +1094,7 @@ return [
 Если у Вас есть хорошая идея для расширения функционала.<br>
 Вы всегда можете написать <a class=\'text-info\' href=\'https://t.me/shpereweb\' target=\'_blank\'>телеграмм чатик проекта Sphere</a>.',
 	'free' => 'Бесплатно',
-	'frequently asked questions' => 'Частые вопросы',
+	'frequently_asked_questions' => 'Частые вопросы',
 	'friend_nickname_bonus' => 'Укажи ник друга (реферала) и получайте бонусы',
 	'from' => 'от',
 	'func_emulation_server_desc_enable' => 'Включен режим эмуляции данных.<br>

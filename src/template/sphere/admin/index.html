@@ -28,7 +28,6 @@
             {% else %}
 
 
-
             {% if self_last_commit != sphere_last_commit %}
             <div class="card custom-card">
                 <div class="p-4 border-bottom border-block-end-dashed">
@@ -80,8 +79,8 @@
                                class="btn btn-icon btn-sm btn-light" aria-expanded="false"><i
                                     class="ti ti-dots"></i></a>
                             <ul class="dropdown-menu" style="">
-                                <li><a href="/admin/balance/faq" class="dropdown-item">{{ phrase('frequently asked
-                                    questions') }}</a></li>
+                                <li><a href="/admin/balance/faq" class="dropdown-item">{{
+                                    phrase('frequently_asked_questions') }}</a></li>
                                 <li><a href="/admin/balance" class="dropdown-item">{{ phrase('refill') }}</a></li>
                             </ul>
                         </div>
@@ -182,7 +181,9 @@
                 <div class="card-body p-0 border-bottom">
                     <div class="px-1 py-2 {% if serverInfo.getStatus().getGameServer() == false %}bg-danger{% else %}bg-success{% endif %}">
                         {% if serverInfo.isDisabled() %}
-                        <div class="text-center text-white">{{ phrase('The server has been disabled by the administrator') }}</div>
+                        <div class="text-center text-white">{{ phrase('The server has been disabled by the
+                            administrator') }}
+                        </div>
                         {% endif %}
                     </div>
                     <div class="p-4">
@@ -272,7 +273,8 @@
                                     <a href="/admin/server/edit/{{serverInfo.getId()}}"
                                        class="btn btn-outline-success w-100">{{ phrase('change') }}</a>
                                     <a href="/admin/server/statistic/{{serverInfo.getId()}}"
-                                       class="btn btn-outline-success w-100">{{ phrase('server_online_statistics') }}</a>
+                                       class="btn btn-outline-success w-100">{{ phrase('server_online_statistics')
+                                        }}</a>
                                 </div>
                                 <div class="btn-group btn-group-sm my-1 d-flex" role="group"
                                      aria-label="Small button group">
@@ -337,19 +339,23 @@
                     <h4 class="mb-2 fw-semibold">Рекомендации администраторам</h4>
 
 
-                        <ul class="task-list">
+                    <ul class="task-list">
 
-                            <li class="d-sm-flex">
-                                <div>
-                                    <i class="task-icon bg-success"></i>
-                                    <h6 class="fw-semibold text-success"><a href="https://l2up.host"><img src="{{template}}/assets/images/l2up3.png"></a></h6>
-                                    <p class="text-muted fs-12 mb-0">
-                                        «<a href="javascript:void(0)" class="fw-semibold text-success">L2Up.host</a>» предлагает <strong>хостинг</strong>, <strong>VPS сервера</strong>, <strong>проксирование</strong>, <strong>выделенные сервера</strong>, качественную <strong>защиту от DDoS</strong> атак, что позволит оставатся вашему ресурсу доступным.
-                                    </p>
-                                </div>
-                            </li>
+                        <li class="d-sm-flex">
+                            <div>
+                                <i class="task-icon bg-success"></i>
+                                <h6 class="fw-semibold text-success"><a href="https://l2up.host"><img
+                                        src="{{template}}/assets/images/l2up3.png"></a></h6>
+                                <p class="text-muted fs-12 mb-0">
+                                    «<a href="javascript:void(0)" class="fw-semibold text-success">L2Up.host</a>»
+                                    предлагает <strong>хостинг</strong>, <strong>VPS сервера</strong>, <strong>проксирование</strong>,
+                                    <strong>выделенные сервера</strong>, качественную <strong>защиту от DDoS</strong>
+                                    атак, что позволит оставатся вашему ресурсу доступным.
+                                </p>
+                            </div>
+                        </li>
 
-                        </ul>
+                    </ul>
 
 
                 </div>
@@ -380,7 +386,7 @@
                                                     data-bs-target="#php-tab-pane" type="button" role="tab"
                                                     aria-controls="php-tab-pane" aria-selected="true"><i
                                                     class="bi bi-clipboard2-data me-1 align-middle d-inline-block fs-16"></i>
-                                                    Веб-сервер
+                                                Веб-сервер
                                             </button>
                                         </li>
 
@@ -781,7 +787,8 @@
                                             </div>
 
 
-                                            <h5 class="mb-5 mt-3 fw-semibold text-center">{{ phrase('Developer Panel') }}</h5>
+                                            <h5 class="mb-5 mt-3 fw-semibold text-center">{{ phrase('Developer Panel')
+                                                }}</h5>
 
 
                                             <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
@@ -877,17 +884,21 @@
                                                                                         alt="">
                                                                             </span>
                                                             <div class="mt-2">
-                                                                <p class="mb-0 fw-semibold">{{ phrase('software_update') }}</p>
+                                                                <p class="mb-0 fw-semibold">{{ phrase('software_update')
+                                                                    }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="card-footer text-center">
                                                         <div class="btn-list">
-                                                            <a href="/admin/sphere/update" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
-                                                            <a href="/admin/filescanner" class="btn btn-sm btn-light btn-wave">Сканер файлов</a>
+                                                            <a href="/admin/sphere/update"
+                                                               class="btn btn-sm btn-light btn-wave">{{ phrase('open')
+                                                                }}</a>
+                                                            <a href="/admin/filescanner"
+                                                               class="btn btn-sm btn-light btn-wave">Сканер файлов</a>
                                                         </div>
                                                     </div>
-                                                 </div>
+                                                </div>
                                             </div>
 
 
@@ -935,7 +946,9 @@
                                                                                     <th style="width: 25%">Параметр</th>
                                                                                     <th style="width: 25%">Значение</th>
                                                                                     <th style="width: 15%">Статус</th>
-                                                                                    <th style="width: 35%">Рекомендация</th>
+                                                                                    <th style="width: 35%">
+                                                                                        Рекомендация
+                                                                                    </th>
                                                                                 </tr>
                                                                                 </thead>
                                                                                 <tbody>
@@ -945,7 +958,8 @@
                                                                                         <span class="fw-medium">{{ info.description }}</span>
                                                                                     </td>
                                                                                     <td>
-                                                                                        <code class="bg-light px-2 py-1 rounded">{{ info.value }}</code>
+                                                                                        <code class="bg-light px-2 py-1 rounded">{{
+                                                                                            info.value }}</code>
                                                                                     </td>
                                                                                     <td>
                                                 <span class="badge bg-{{ info.status }} rounded-pill d-inline-flex align-items-center">
@@ -961,7 +975,9 @@
                                                 </span>
                                                                                     </td>
                                                                                     <td>
-                                                                                        <small class="text-muted">{{ info.recommendation }}</small>
+                                                                                        <small class="text-muted">{{
+                                                                                            info.recommendation
+                                                                                            }}</small>
                                                                                     </td>
                                                                                 </tr>
                                                                                 {% endfor %}
@@ -986,34 +1002,42 @@
                                                                     </div>
                                                                     <div class="card-body">
                                                                         <div class="row g-4">
-                                                                            {% set total = {'success': 0, 'warning': 0, 'danger': 0, 'info': 0} %}
+                                                                            {% set total = {'success': 0, 'warning': 0,
+                                                                            'danger': 0, 'info': 0} %}
                                                                             {% for section in serverInfo %}
                                                                             {% for item in section.items %}
-                                                                            {% set total = total|merge({(item.status): total[item.status] + 1}) %}
+                                                                            {% set total = total|merge({(item.status):
+                                                                            total[item.status] + 1}) %}
                                                                             {% endfor %}
                                                                             {% endfor %}
 
                                                                             <div class="col-md-3">
                                                                                 <div class="border rounded p-3 text-center bg-success bg-opacity-10">
-                                                                                    <h3 class="text-success mb-0">{{ total.success }}</h3>
+                                                                                    <h3 class="text-success mb-0">{{
+                                                                                        total.success }}</h3>
                                                                                     <small class="text-muted">Оптимально</small>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-3">
                                                                                 <div class="border rounded p-3 text-center bg-warning bg-opacity-10">
-                                                                                    <h3 class="text-warning mb-0">{{ total.warning }}</h3>
-                                                                                    <small class="text-muted">Требует внимания</small>
+                                                                                    <h3 class="text-warning mb-0">{{
+                                                                                        total.warning }}</h3>
+                                                                                    <small class="text-muted">Требует
+                                                                                        внимания</small>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-3">
                                                                                 <div class="border rounded p-3 text-center bg-danger bg-opacity-10">
-                                                                                    <h3 class="text-danger mb-0">{{ total.danger }}</h3>
-                                                                                    <small class="text-muted">Критические проблемы</small>
+                                                                                    <h3 class="text-danger mb-0">{{
+                                                                                        total.danger }}</h3>
+                                                                                    <small class="text-muted">Критические
+                                                                                        проблемы</small>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-3">
                                                                                 <div class="border rounded p-3 text-center bg-info bg-opacity-10">
-                                                                                    <h3 class="text-info mb-0">{{ total.info }}</h3>
+                                                                                    <h3 class="text-info mb-0">{{
+                                                                                        total.info }}</h3>
                                                                                     <small class="text-muted">Информационные</small>
                                                                                 </div>
                                                                             </div>
@@ -1021,7 +1045,9 @@
 
                                                                         <div class="alert alert-info mt-4 mb-0">
                                                                             <i class="bi bi-info-circle-fill me-2"></i>
-                                                                            <strong>Рекомендация:</strong> Обратите внимание на параметры со статусом "Внимание" и "Проблема" для оптимизации работы сервера.
+                                                                            <strong>Рекомендация:</strong> Обратите
+                                                                            внимание на параметры со статусом "Внимание"
+                                                                            и "Проблема" для оптимизации работы сервера.
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1107,7 +1133,6 @@
 {% block js %}
 <script src="{{template}}/assets/libs/sweetalert2/sweetalert2.min.js?v=0.0.2"></script>
 <script src="{{template}}/assets/js/sweetalertdb.js?v=0.0.3"></script>
-
 
 
 {% endblock %}
