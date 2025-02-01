@@ -66,6 +66,7 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
     $route->post("/install", "Ofey\Logan22\controller\install\install::startInstall");
 }
 $route->set404(function () {
+    http_response_code(404);
     if ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
         \Ofey\Logan22\component\alert\board::error("Запрос отправлен на неизвестный адрес");
     }
