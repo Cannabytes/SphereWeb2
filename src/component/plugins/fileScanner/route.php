@@ -1,6 +1,7 @@
 <?php
 
 use Ofey\Logan22\component\plugins\fileScanner\instance as fileScannerAlias;
+use Ofey\Logan22\model\admin\validation;
 
 $routes = [
     [
@@ -8,6 +9,7 @@ $routes = [
         "pattern" => "/admin/filescanner",
         "file"    => "filescanner.php",
         "call"    => function() {
+            validation::user_protection("admin");
             (new fileScannerAlias())->index();
         },
     ],
@@ -16,6 +18,7 @@ $routes = [
         "pattern" => "/admin/filescanner/scan",
         "file"    => "filescanner.php",
         "call"    => function() {
+            validation::user_protection("admin");
             (new fileScannerAlias())->scan();
         },
     ],
@@ -25,6 +28,7 @@ $routes = [
         "pattern" => "/admin/filescanner/update",
         "file"    => "filescanner.php",
         "call"    => function() {
+            validation::user_protection("admin");
             (new fileScannerAlias())->updateFiles();
         },
     ],
