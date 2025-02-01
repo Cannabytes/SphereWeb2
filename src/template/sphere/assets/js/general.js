@@ -353,6 +353,19 @@ function ResponseNoticeRegistration(response) {
     }
 }
 
+
+$(document).on('click', '.setChangeServer', function(e) {
+    e.preventDefault();
+    const serverId = $(this).data('server-id');
+    AjaxSend('/user/change/server', 'POST', {
+        id: serverId
+    }).then(function(response) {
+        location.reload();
+    }).catch(function(error) {
+        console.error('Произошла ошибка:', error);
+    });
+});
+
 // При изменении выбора в выпадающем списке
 $('.select_default_server').on('change', function() {
     AjaxSend('/user/change/server', 'POST', {

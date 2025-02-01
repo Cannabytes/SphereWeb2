@@ -20,12 +20,16 @@ class default_server {
      */
     static public function change(): void
     {
-        $id = $_POST['id'] ?? board::error("No ID server");
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?: board::notice(false, "No ID server");
         $server = server::getServer($id);
         if(!$server){
             board::error("Server does not exist");
         }
-        \Ofey\Logan22\model\user\user::getUserId()->setServerId($server->getId());
+        if(\Ofey\Logan22\model\user\user::self()->isGuest()){
+            $_SESSION['server_id'] = $id;
+        }else{
+            \Ofey\Logan22\model\user\user::getUserId()->setServerId($server->getId());
+        }
         board::notice(true, lang::get_phrase(254, $server->getName(), $server->getRateExp()));
     }
 }

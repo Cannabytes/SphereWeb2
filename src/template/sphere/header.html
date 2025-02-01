@@ -24,17 +24,68 @@
         <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle" data-bs-toggle="sidebar" href="javascript:void(0);"><span></span></a>
       </div>
 
+
       {% if getServerAll()|length > 1 %}
-      <div class="main-header-center  d-none d-lg-block header-link">
-        <select class="form-select form-select-sm  bg-success-transparent text-success select_default_server" aria-label="Default select example">
+      <div class="header-element main-profile-user cart-dropdown">
+        <!-- Start::header-link|dropdown-toggle -->
+        <a href="#" class="header-link dropdown-toggle server-btn-shadow" id="serverListSelect" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+          <div class="d-flex align-items-center">
+            <div class="my-auto">
+              <h6 class="fw-semibold mb-0 lh-1 fs-14"><i class="bi bi-arrow-right"></i> Сервер: {{ getServer().getName() }}</h6>
+              <span class="op-7 fw-normal d-block fs-12 text-muted">{{ getServer().getChronicle() }} x{{getServer().getRateExp()}}</span>
+            </div>
+          </div>
+        </a>
+
+        <ul class=" dropdown-menu pt-0 header-profile-dropdown "
+            aria-labelledby="serverListSelect"
+            data-bs-popper-placement="start">
           {% for server in getServerAll() %}
-          <option {% if getUser().getServerId()== server.getId() %}selected{% endif %} value="{{server.getId()}}">
-           {{server.getName()}}
-          </option>
+          {% if getServer().getId() != server.getId() %}
+          <li class="dropdown-item">
+            <a class="d-flex w-100 setChangeServer" href="#" data-server-id="{{server.getId()}}">
+              <div class="d-flex flex-column w-100">
+                <span class="fw-semibold">{{server.getName()}}</span>
+                <span class="op-7 fw-normal fs-12 text-muted">x{{server.getRateExp()}} {{ server.getChronicle() }}</span>
+              </div>
+            </a>
+          </li>
+          {% endif %}
           {% endfor %}
-        </select>
+        </ul>
       </div>
+
+      <style>
+        .header-link {
+          text-decoration: none;
+        }
+
+        .server-btn-shadow {
+          padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        [data-bs-theme="dark"] .server-btn-shadow {
+          box-shadow: 0 2px 8px rgba(255, 255, 255, 0.08);
+        }
+
+        .server-btn-shadow:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+          transform: translateY(-1px);
+        }
+
+        [data-bs-theme="dark"] .server-btn-shadow:hover {
+          box-shadow: 0 4px 12px rgba(255, 255, 255, 0.12);
+        }
+
+        .dropdown-item:hover {
+          background-color: transparent;
+        }
+      </style>
       {% endif %}
+
 
     </div>
 
