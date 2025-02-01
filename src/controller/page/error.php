@@ -22,15 +22,13 @@ class error {
         tpl::display("/error/404.html");
     }
 
-    static public function error404($message = null) {
+    static public function error404($message = null): void
+    {
         if($_SERVER['REQUEST_METHOD'] === 'POST') {
             board::notice(false, $message ?? "POST REQUEST NOT FOUND");
         }
-        if($message == null) {
-            $message = lang::get_phrase(239);
-        }
         tpl::addVar("title", "Проблема...");
-        tpl::addVar('message', $message);
+        tpl::addVar('message_error', $message);
         tpl::display("error.html");
     }
 }

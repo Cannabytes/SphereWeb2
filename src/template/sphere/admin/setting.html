@@ -840,8 +840,7 @@
                                 <li class="list-group-item">
                                     <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                                         <div>
-                                            <p class="fs-14 mb-1 fw-semibold">{{ phrase('Receive the current exchange
-                                                rate automatically') }}</p>
+                                            <p class="fs-14 mb-1 fw-semibold">{{ phrase('Receive_the_current_exchange_rate_automatically') }}</p>
                                             <p class="fs-12 mb-0 text-muted">{{phrase('openexchangerates')}}</p>
                                         </div>
                                         <div>
@@ -989,6 +988,24 @@
                                                        config().other().getIsAuthShow()
                                                        %}checked="" {% endif %}>
                                                 <label for="isAuthShow" class="label-success mb-1"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                                        <div>
+                                            <p class="fs-14 mb-1 fw-semibold">
+                                                Показывать страницу 404 ошибки</p>
+                                            <p class="fs-12 mb-0 text-muted">Когда страница не найдена, будет показана страница ошибки, иначе переадресация на главную</p>
+                                        </div>
+                                        <div>
+                                            <div class="custom-toggle-switch float-sm-end">
+                                                <input id="isShow404error" name="isShow404error" type="checkbox" {% if
+                                                       config().other().isShow404error()
+                                                       %}checked="" {% endif %}>
+                                                <label for="isShow404error" class="label-success mb-1"></label>
                                             </div>
                                         </div>
                                     </div>

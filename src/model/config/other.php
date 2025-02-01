@@ -42,6 +42,7 @@ class other
     private string $contactAdmin = "";
 
     private bool $autoUpdate = true;
+    private bool $isShow404error = false;
 
     public function __construct($setting)
     {
@@ -62,6 +63,7 @@ class other
         $this->maxAccount = (int)(is_array($setting) ? ($setting['max_account'] ?? $this->maxAccount) : $this->maxAccount);
         $this->contactAdmin = $setting['contactAdmin'] ?? $this->contactAdmin;
         $this->autoUpdate = filter_var($setting['autoUpdate'] ?? true, FILTER_VALIDATE_BOOLEAN);
+        $this->isShow404error = filter_var($setting['isShow404error'] ?? false, FILTER_VALIDATE_BOOLEAN);
     }
 
     public function isAutoUpdate(): bool
@@ -197,6 +199,11 @@ class other
     public function setRates($rates): void
     {
         $this->exchangeRates = $rates;
+    }
+
+    public function isShow404error()
+    {
+        return $this->isShow404error;
     }
 
 }
