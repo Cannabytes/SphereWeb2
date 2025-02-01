@@ -8,6 +8,7 @@
 namespace Ofey\Logan22\component\time;
 
 use DateTime;
+use Exception;
 use Ofey\Logan22\component\fileSys\fileSys;
 
 class time {
@@ -25,11 +26,28 @@ class time {
      * @return int
      * @throws \Exception
      */
-    public static function diff($datetime1, $datetime2): int {
-        $date1 = new DateTime($datetime1);
-        $date2 = new DateTime($datetime2);
-        $interval = $date1->diff($date2);
-        return $interval->days * 24 * 60 * 60 + $interval->h * 60 * 60 + $interval->i * 60 + $interval->s;
+    public static function diff(?string $datetime1, ?string $datetime2): int
+    {
+        try {
+            // Проверка входных параметров
+            if (empty($datetime1) || empty($datetime2)) {
+                return 0;
+            }
+
+            $date1 = new DateTime($datetime1);
+            $date2 = new DateTime($datetime2);
+
+            $interval = $date1->diff($date2);
+
+            return $interval->days * 24 * 60 * 60 +
+                $interval->h * 60 * 60 +
+                $interval->i * 60 +
+                $interval->s;
+        } catch (Exception $e) {
+            // Логирование ошибки, если необходимо
+            error_log("Time diff error: " . $e->getMessage());
+            return 0;
+        }
     }
 
     /**

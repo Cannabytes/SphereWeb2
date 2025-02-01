@@ -202,15 +202,27 @@ class server
         if (self::$isOfflineServer !== null) {
             return self::$isOfflineServer;
         }
-        $ss = sql::getRow("SELECT `date_create` FROM `server_cache` WHERE `type` = 'sphereServer'");
-        if ($ss === false) {
+
+        $serverCache = sql::getRow("SELECT `date_create` FROM `server_cache` WHERE `type` = 'sphereServer'");
+
+        // Проверяем результат запроса
+        if ($serverCache === false || !isset($serverCache['date_create'])) {
             return self::$isOfflineServer = false;
         }
-        // Проверяем что прошло более 5 сек и если нет, то возвращаем true
-        if (time::diff($ss['date_create'], time::mysql()) < 1) {
+
+        // Защита от null в date_create
+        $dateCreate = $serverCache['date_create'] ?? '';
+        if (empty($dateCreate)) {
+            return self::$isOfflineServer = false;
+        }
+
+        // Проверяем что прошло более 5 сек
+        $timeDiff = time::diff($dateCreate, time::mysql());
+        if ($timeDiff < 1) {
             return self::$isOfflineServer = true;
         }
-        //Если прошло более минуты, тогда удаляем данные из кэша
+
+        // Если прошло более минуты, удаляем данные из кэша
         sql::sql("DELETE FROM `server_cache` WHERE `type` = 'sphereServer'");
 
         return self::$isOfflineServer = false;

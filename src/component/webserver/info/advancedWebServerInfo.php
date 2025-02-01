@@ -4,16 +4,39 @@ namespace Ofey\Logan22\component\webserver\info;
 
 class advancedWebServerInfo
 {
-    /** @var array Хранит все собранные данные о системе */
     private array $systemInfo = [];
-
-    /** @var bool Флаг для определения, является ли система Linux */
     protected bool $isLinux = false;
+    private bool $hasSystemAccess = false;
 
     public function __construct()
     {
         $this->isLinux = PHP_OS_FAMILY === 'Linux';
+        $this->checkSystemAccess();
         $this->initializeSystemInfo();
+    }
+
+
+    /**
+     * Проверка доступа к системным файлам с учетом open_basedir
+     */
+    private function checkSystemAccess(): void
+    {
+        $this->hasSystemAccess = false;
+
+        if ($this->isLinux) {
+            $openBasedir = ini_get('open_basedir');
+            if (empty($openBasedir)) {
+                $this->hasSystemAccess = true;
+            } else {
+                $allowedPaths = explode(':', $openBasedir);
+                foreach ($allowedPaths as $path) {
+                    if (str_starts_with('/proc', $path)) {
+                        $this->hasSystemAccess = true;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -259,6 +282,24 @@ class advancedWebServerInfo
         return $resources;
     }
 
+    private function safeReadFile(string $filepath): ?string
+    {
+        if (!$this->hasSystemAccess) {
+            return null;
+        }
+
+        try {
+            if (!file_exists($filepath)) {
+                return null;
+            }
+            return @file_get_contents($filepath);
+        } catch (\Throwable $e) {
+            error_log("Ошибка при чтении файла {$filepath}: " . $e->getMessage());
+            return null;
+        }
+    }
+
+
     /**
      * Получение специфичной для Linux информации о ресурсах
      * @return array
@@ -267,25 +308,53 @@ class advancedWebServerInfo
     {
         $resources = [];
 
-        // Получение информации о памяти
-        if (file_exists('/proc/meminfo')) {
-            $memInfo = file_get_contents('/proc/meminfo');
-            if ($memInfo !== false) {
+        if ($this->hasSystemAccess) {
+            // Чтение информации о памяти
+            $memInfo = $this->safeReadFile('/proc/meminfo');
+            if ($memInfo !== null) {
                 $resources = array_merge($resources, $this->parseMemInfo($memInfo));
+            } else {
+                $resources['memory_info'] = [
+                    'value' => 'Недоступно',
+                    'status' => 'warning',
+                    'description' => 'Информация о памяти',
+                    'recommendation' => 'Ограничение open_basedir препятствует получению информации'
+                ];
             }
-        }
 
-        // Получение информации о CPU
-        if (file_exists('/proc/cpuinfo')) {
-            $cpuInfo = file_get_contents('/proc/cpuinfo');
-            if ($cpuInfo !== false) {
+            // Чтение информации о CPU
+            $cpuInfo = $this->safeReadFile('/proc/cpuinfo');
+            if ($cpuInfo !== null) {
                 $resources = array_merge($resources, $this->parseCpuInfo($cpuInfo));
+            } else {
+                $resources['cpu_info'] = [
+                    'value' => 'Недоступно',
+                    'status' => 'warning',
+                    'description' => 'Информация о процессоре',
+                    'recommendation' => 'Ограничение open_basedir препятствует получению информации'
+                ];
             }
+        } else {
+            $resources['system_access'] = [
+                'value' => 'Ограничено',
+                'status' => 'warning',
+                'description' => 'Доступ к системной информации',
+                'recommendation' => 'Проверьте настройки open_basedir для доступа к /proc'
+            ];
         }
 
-        // Получение средней нагрузки
+        // Добавление доступной системной информации
         if (function_exists('sys_getloadavg')) {
-            $resources = array_merge($resources, $this->getLoadAverageInfo());
+            try {
+                $resources = array_merge($resources, $this->getLoadAverageInfo());
+            } catch (\Throwable $e) {
+                $resources['load_average'] = [
+                    'value' => 'Ошибка получения данных',
+                    'status' => 'warning',
+                    'description' => 'Средняя нагрузка',
+                    'recommendation' => 'Проверьте права доступа и системные ограничения'
+                ];
+            }
         }
 
         return $resources;
@@ -506,12 +575,27 @@ class advancedWebServerInfo
      */
     private function getCpuCores(): int
     {
-        if ($this->isLinux && file_exists('/proc/cpuinfo')) {
-            $cpuInfo = file_get_contents('/proc/cpuinfo');
-            preg_match_all('/^processor/m', $cpuInfo, $matches);
-            return count($matches[0]);
+        if ($this->isLinux && $this->hasSystemAccess) {
+            $cpuInfo = $this->safeReadFile('/proc/cpuinfo');
+            if ($cpuInfo !== null) {
+                preg_match_all('/^processor/m', $cpuInfo, $matches);
+                return count($matches[0]);
+            }
         }
-        return 1; // Возвращаем 1 если не удалось определить
+
+        // Альтернативный метод определения количества ядер
+        if (function_exists('shell_exec') && function_exists('trim')) {
+            try {
+                $cores = shell_exec('nproc');
+                if ($cores !== null) {
+                    return (int)trim($cores);
+                }
+            } catch (\Throwable $e) {
+                error_log("Ошибка при получении количества ядер CPU: " . $e->getMessage());
+            }
+        }
+
+        return 1;
     }
 
     /**

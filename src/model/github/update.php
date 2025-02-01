@@ -13,30 +13,8 @@ use Ofey\Logan22\model\db\sql;
 
 class update
 {
-
     private static string $shaLastCommit = '';
     private static string $dateLastCommit = '';
-
-    static function update()
-    {
-        $github = new github();
-        $github->update();
-    }
-
-    // Тестируемая функция автоматического старта обновлений
-    static function autoRemoteUpdate(): void
-    {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $json = file_get_contents('php://input');
-            if ($json === false) {
-                return;
-            }
-            $data = json_decode($json, true);
-            if (server::getToken() == $data['token']) {
-                self::checkNewCommit();
-            }
-        }
-    }
 
     static function checkNewCommit(): void
     {
@@ -44,6 +22,10 @@ class update
             $sphere = server::send(type::GET_COMMIT_FILES, [
                 'last_commit' => self::getLastCommit(),
             ])->getResponse();
+
+            if (!isset($sphere['last_commit_now']) || !isset($sphere['status']) || !isset($sphere['data'])) {
+                throw new Exception("Некорректный ответ от сервера");
+            }
 
             if ($sphere['last_commit_now'] == self::getLastCommit()) {
                 board::success("Обновление не требуется");
@@ -56,41 +38,64 @@ class update
                 $totalFiles = count($sphere['data']);
                 $filesStatus = [];
 
+                // Проверяем структуру данных перед обработкой
+                foreach ($sphere['data'] as $file => $fileData) {
+                    if (!isset($fileData['link']) || !isset($fileData['status'])) {
+                        error_log("Некорректные данные для файла: " . print_r($fileData, true));
+                        continue;
+                    }
+                }
+
                 // Скачиваем файлы асинхронно
-                $fileLinks = $sphere['data'];
-                $downloadedFiles = self::downloadFiles($fileLinks);
+                $downloadedFiles = self::downloadFiles($sphere['data']);
 
                 foreach ($downloadedFiles as $file => $content) {
+                    if (!isset($sphere['data'][$file])) {
+                        error_log("Отсутствуют данные для файла: " . $file);
+                        continue;
+                    }
+
+                    $fileData = $sphere['data'][$file];
                     $filePath = fileSys::get_dir($file);
 
-                    if ($fileLinks[$file]['status'] == 'added' || $fileLinks[$file]['status'] == 'modified') {
-                        self::ensureDirectoryExists($filePath);
+                    if (!isset($fileData['status'])) {
+                        error_log("Отсутствует статус для файла: " . $file);
+                        continue;
+                    }
 
-                        if (file_put_contents($filePath, $content) === false) {
-                            throw new Exception("Не удалось записать файл: " . $filePath);
-                        }
+                    try {
+                        if ($fileData['status'] == 'added' || $fileData['status'] == 'modified') {
+                            self::ensureDirectoryExists($filePath);
 
-                        $filesStatus[] = [
-                            'file' => $file,
-                            'status' => 'updated',
-                        ];
-                    } elseif ($fileLinks[$file]['status'] == 'removed') {
-                        if ($file == 'data/db.php') {
-                            continue;
-                        }
-
-                        if (is_dir($filePath)) {
-                            self::deleteDirectory($filePath);
-                        } else {
-                            if (file_exists($filePath) && !unlink($filePath)) {
-                                throw new Exception("Не удалось удалить файл: " . $filePath);
+                            if (file_put_contents($filePath, $content) === false) {
+                                throw new Exception("Не удалось записать файл: " . $filePath);
                             }
-                        }
 
-                        $filesStatus[] = [
-                            'file' => $file,
-                            'status' => 'removed',
-                        ];
+                            $filesStatus[] = [
+                                'file' => $file,
+                                'status' => 'updated',
+                            ];
+                        } elseif ($fileData['status'] == 'removed') {
+                            if ($file == 'data/db.php') {
+                                continue;
+                            }
+
+                            if (is_dir($filePath)) {
+                                self::deleteDirectory($filePath);
+                            } elseif (file_exists($filePath)) {
+                                if (!unlink($filePath)) {
+                                    throw new Exception("Не удалось удалить файл: " . $filePath);
+                                }
+                            }
+
+                            $filesStatus[] = [
+                                'file' => $file,
+                                'status' => 'removed',
+                            ];
+                        }
+                    } catch (Exception $e) {
+                        error_log("Ошибка при обработке файла {$file}: " . $e->getMessage());
+                        continue;
                     }
                 }
 
@@ -106,6 +111,7 @@ class update
                 board::success("Обновление не требуется");
             }
         } catch (Exception $e) {
+            error_log("Ошибка обновления: " . $e->getMessage());
             board::error("Произошла ошибка во время обновления: " . $e->getMessage());
         }
     }
@@ -116,35 +122,32 @@ class update
         $handles = [];
         $results = [];
 
-        foreach ($fileLinks as $data) {
-            $url = $data['link'];  // Получаем URL для загрузки
-            if (empty($url)) {
-                error_log("Пустой URL для файла: " . $data['file']);
-                continue; // Пропускаем файл, если URL пустой
+        foreach ($fileLinks as $file => $data) {
+            if (!isset($data['link']) || empty($data['link'])) {
+                error_log("Пропущен файл {$file}: отсутствует или пустой URL");
+                continue;
             }
 
-            // Логируем URL
-            error_log("Загружаем файл: " . $data['file'] . " с URL: " . $url);
+            $ch = curl_init($data['link']);
 
-            $ch = curl_init($url);
+            if ($ch === false) {
+                error_log("Не удалось инициализировать cURL для файла: " . $file);
+                continue;
+            }
 
-            // Заголовки, чтобы запрос выглядел как браузер
-            $headers = [
-                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Language: en-US,en;q=0.9,ru;q=0.8',
-                'Accept-Encoding: gzip, deflate, br',
-                'Connection: keep-alive',
-                'Upgrade-Insecure-Requests: 1',
-            ];
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 60,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HEADER => false,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_HTTPHEADER => [
+                    'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                    'Accept: */*',
+                ]
+            ]);
 
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);  // Добавляем заголовки
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);  // Следуем за редиректом
-            curl_setopt($ch, CURLOPT_HEADER, true);  // Добавляем заголовки в вывод, чтобы их тоже можно было проверить
-
-            $handles[$data['file']] = $ch;
+            $handles[$file] = $ch;
             curl_multi_add_handle($curlMulti, $ch);
         }
 
@@ -156,29 +159,23 @@ class update
             }
         } while ($active && $status == CURLM_OK);
 
-        // Собираем результаты
+        // Обработка результатов
         foreach ($handles as $file => $ch) {
-            $response = curl_multi_getcontent($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 
-            // Логируем код ответа и тип контента
-            error_log("Получен ответ для файла " . $file . ": HTTP статус " . $httpCode . ", Content-Type: " . $contentType);
-
-            if ($httpCode != 200 && $httpCode != 301 && $httpCode != 302) {
-                error_log("Ошибка загрузки файла: " . $file . " (HTTP Status Code: " . $httpCode . ")");
-                continue;
+            if ($httpCode == 200) {
+                $content = curl_multi_getcontent($ch);
+                if ($content !== false) {
+                    $results[$file] = $content;
+                } else {
+                    error_log("Не удалось получить содержимое для файла: " . $file);
+                }
+            } else {
+                error_log("Ошибка загрузки файла {$file}: HTTP код {$httpCode}");
             }
 
-            // Проверяем, что пришёл не HTML
-            if (strpos($contentType, 'html') !== false) {
-                error_log("Получен HTML вместо файла: " . $file . " (URL: " . curl_getinfo($ch, CURLINFO_EFFECTIVE_URL) . ")");
-                error_log("Содержимое полученного HTML: " . substr($response, 0, 500)); // Логируем первые 500 символов
-                continue;
-            }
-
-            $results[$file] = $response;
             curl_multi_remove_handle($curlMulti, $ch);
+            curl_close($ch);
         }
 
         curl_multi_close($curlMulti);
