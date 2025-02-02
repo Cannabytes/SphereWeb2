@@ -45,38 +45,108 @@ class scannerSystem {
     }
 
 
-    private function getFileCRC32(string $filePath): string {
-        try {
-            if (!file_exists($filePath)) {
-                throw new RuntimeException("Файл не существует: {$filePath}");
-            }
-            if (!is_readable($filePath)) {
-                throw new RuntimeException("Файл не доступен для чтения: {$filePath}");
-            }
-
-            // Читаем весь файл сразу
-            $content = file_get_contents($filePath);
-            if ($content === false) {
-                throw new RuntimeException("Не удалось прочитать файл: {$filePath}");
-            }
-
-            // Для текстовых файлов выполняем нормализацию
-            $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-            $textExtensions = ['php', 'js', 'css', 'html', 'htm', 'xml', 'json', 'md', 'txt', 'svg', 'tpl'];
-
-            if (in_array($ext, $textExtensions)) {
-                // Нормализация текстового содержимого
-                $content = str_replace(["\r\n", "\r"], "\n", $content);
-                $content = rtrim($content);
-            }
-
-            // Вычисляем хеш напрямую через crc32
-            return sprintf("%08x", crc32($content));
-
-        } catch (Exception $e) {
-            throw $e;
+    function getFileCRC32(string $filePath): string|false {
+        // Открываем файл
+        $content = @file_get_contents($filePath);
+        if ($content === false) {
+            return false;
         }
+
+        // Сохраняем оригинальные данные
+        $originalContent = $content;
+
+        // ✅ Оригинальный CRC32
+        $originalHash = hash('crc32b', $content);
+
+        // Проверяем расширение файла
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        $binaryExts = [
+            // Изображения
+            'jpg' => true, 'jpeg' => true, 'png' => true,
+            'gif' => true, 'ico' => true, 'webp' => true,
+            'apng' => true, 'avif' => true, 'tiff' => true,
+            'bmp' => true, 'psd' => true, 'ai' => true,
+            'eps' => true, 'raw' => true, 'cr2' => true,
+            'nef' => true, 'heic' => true, 'heif' => true,
+            'jxr' => true, 'hdp' => true,
+
+            // Шрифты
+            'ttf' => true, 'woff' => true, 'woff2' => true,
+            'eot' => true, 'otf' => true, 'pfb' => true,
+            'pfm' => true,
+
+            // Аудио
+            'mp3' => true, 'wav' => true, 'ogg' => true,
+            'm4a' => true, 'aac' => true, 'wma' => true,
+            'flac' => true, 'alac' => true, 'aiff' => true,
+            'opus' => true, 'mid' => true, 'midi' => true,
+
+            // Видео
+            'mp4' => true, 'webm' => true, 'avi' => true,
+            'mov' => true, 'wmv' => true, 'flv' => true,
+            'mkv' => true, 'm4v' => true, 'mpeg' => true,
+            'mpg' => true, '3gp' => true, '3g2' => true,
+            'ts' => true, 'mts' => true, 'vob' => true,
+
+            // Документы
+            'pdf' => true, 'doc' => true, 'docx' => true,
+            'xls' => true, 'xlsx' => true, 'ppt' => true,
+            'pptx' => true, 'odt' => true, 'ods' => true,
+            'odp' => true, 'pages' => true, 'numbers' => true,
+            'key' => true,
+
+            // Архивы
+            'zip' => true, 'rar' => true, '7z' => true,
+            'tar' => true, 'gz' => true, 'bz2' => true,
+            'xz' => true, 'iso' => true, 'dmg' => true,
+            'cab' => true,
+
+            // Исполняемые и библиотеки
+            'exe' => true, 'dll' => true, 'so' => true,
+            'dylib' => true, 'app' => true, 'apk' => true,
+            'deb' => true, 'rpm' => true,
+
+            // Базы данных
+            'db' => true, 'sqlite' => true, 'mdb' => true,
+            'accdb' => true, 'fdb' => true,
+
+            // 3D и CAD
+            'obj' => true, 'stl' => true, 'fbx' => true,
+            '3ds' => true, 'blend' => true, 'dwg' => true,
+            'dxf' => true,
+
+            // Adobe и дизайн
+            'indd' => true, 'prproj' => true, 'aep' => true,
+            'psb' => true, 'xd' => true,
+
+            // Другие специфические форматы
+            'swf' => true, 'fla' => true, 'sketch' => true,
+            'fig' => true, 'xcf' => true, 'cdr' => true,
+        ];
+
+        if (!isset($binaryExts[$ext])) {
+            // Проверяем наличие BOM
+            $hasBOM = strncmp($content, "\xEF\xBB\xBF", 3) === 0;
+
+            // Нормализуем переносы строк
+            $content = str_replace(["\r\n", "\r"], "\n", $content);
+
+            // Восстанавливаем BOM если он был
+            if ($hasBOM && strncmp($content, "\xEF\xBB\xBF", 3) !== 0) {
+                $content = "\xEF\xBB\xBF" . $content;
+            }
+        }
+
+        // Если контент был изменен, возвращаем новый хеш
+        if ($content !== $originalContent) {
+            return hash('crc32b', $content);
+        }
+
+        // Иначе возвращаем оригинальный хеш
+        return $originalHash;
     }
+
     public function scan(string $directory): array {
         $directory = $this->normalizePath($directory);
 
