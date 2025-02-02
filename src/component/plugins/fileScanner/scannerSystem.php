@@ -40,22 +40,32 @@ class scannerSystem {
     }
 
     private function getFileCRC32(string $filePath): string {
-        $handle = fopen($filePath, 'rb');
-        if ($handle === false) {
-            throw new RuntimeException("Не удалось открыть файл: {$filePath}");
+        if (!is_readable($filePath)) {
+            throw new RuntimeException("Файл не доступен для чтения: {$filePath}");
         }
 
-        $hash = hash_init('crc32b'); // Используем crc32b для совместимости с Go
-
-        while (!feof($handle)) {
-            $buffer = fread($handle, $this->bufferSize);
-            hash_update($hash, $buffer);
+        // Читаем файл и нормализуем окончания строк
+        $content = file_get_contents($filePath);
+        if ($content === false) {
+            throw new RuntimeException("Ошибка чтения файла: {$filePath}");
         }
 
-        fclose($handle);
+        // Нормализуем окончания строк перед вычислением хэша
+        $content = preg_replace('~\R~u', "\n", $content);
+        error_log(sprintf(
+            "File: %s\nOriginal size: %d\nNormalized size: %d\n",
+            $filePath,
+            strlen($content),
+            strlen($normalizedContent)
+        ));
+        // Вычисляем CRC32
+        $crc = crc32($content);
 
-        // Получаем хэш и форматируем его как 8 символов в нижнем регистре
-        return sprintf('%08x', hexdec(hash_final($hash)));
+        // Преобразуем в беззнаковое 32-битное число
+        $crc = $crc & 0xFFFFFFFF;
+
+        // Форматируем как в Go
+        return sprintf('%08x', $crc);
     }
 
     public function scan(string $directory): array {
