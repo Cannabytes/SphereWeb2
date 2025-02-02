@@ -37,7 +37,7 @@ class Route extends Router {
         $dir = fileSys::get_dir("src/component/donate/");
         $payments = fileSys::file_list($dir);
         foreach ($payments as $payment) {
-            if (file_exists($dir . $payment . "/route.php")) {
+            if (file_exists($dir . $payment . "/route.php") or file_exists($dir . $payment . "/pay.php")) {
                 include_once $dir . $payment . "/route.php";
                 foreach ($routes as $route) {
                     include_once $dir . $payment . "/" . $route['file'];

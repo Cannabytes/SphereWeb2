@@ -244,18 +244,22 @@
             $filesList.empty();
             const totalFiles = response.user_files_len;
             const changedFiles = response.changed_files;
+            const missingFiles = response.missing_files;
             const changedFilesLen = changedFiles.length;
+            const missingFilesLen = missingFiles.length;
+            const totalUpdatesRequired = changedFilesLen + missingFilesLen;
 
             $('#total-files').text(totalFiles);
-            $('#update-required').text(changedFilesLen);
+            $('#update-required').text(totalUpdatesRequired);
 
-            if (changedFilesLen === 0) {
+            if (totalUpdatesRequired === 0) {
                 $('#no-files-message').fadeIn();
                 $('#files-table-block').hide();
                 $startUpdate.prop('disabled', true);
                 return;
             }
 
+            // Отображаем измененные файлы
             changedFiles.forEach(function(file, index) {
                 setTimeout(() => {
                     const row = $(`
@@ -278,16 +282,40 @@
                 </tr>
             `).appendTo($filesList);
 
-                    row.animate({ opacity: 1 }, 300, function() {
-                        updateStartButtonState(); // Вызываем после анимации каждой строки
-                    });
+                    row.animate({ opacity: 1 }, 300);
                 }, index * 100);
             });
 
-            $('#files-table-block').fadeIn();
-            updateStartButtonState(); // Вызываем сразу после добавления всех строк
-        }
+            // Отображаем отсутствующие файлы
+            missingFiles.forEach(function(file, index) {
+                setTimeout(() => {
+                    const row = $(`
+                <tr style="opacity: 0">
+                    <td class="text-center">
+                        <input type="checkbox" class="form-check-input file-checkbox"
+                               data-file="${file.path}" checked>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <i class="ri-file-warning-line me-2 text-danger"></i>
+                            ${file.path}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-danger-transparent">
+                            Отсутствует
+                        </span>
+                    </td>
+                </tr>
+            `).appendTo($filesList);
 
+                    row.animate({ opacity: 1 }, 300);
+                }, (changedFiles.length + index) * 100);
+            });
+
+            $('#files-table-block').fadeIn();
+            setTimeout(updateStartButtonState, (changedFiles.length + missingFiles.length) * 100 + 300);
+        }
         // Обработчик изменения состояния чекбоксов файлов
         $(document).on('change', '.file-checkbox', function() {
             updateStartButtonState();

@@ -66,12 +66,17 @@
               </div>
               <div class="col-xl-12 mb-2">
                 <label for="signin-password" class="form-label text-default d-block">{{ phrase('password') }}<i class="text-danger">*</i>
-                  <a href="#" tabindex="0" class=" float-end text-info password-popover" role="button"
-                     data-bs-toggle="popover" data-bs-placement="right" title="Пароли"
-                     data-bs-content="
-                     {% for i, word in generation_words_password(10) %}
-                     {{i + 1}}. <a href='#' class='thisPassword'>{{word}}</a><br>
-                     {% endfor %}">{{ phrase('help_create_password') }}</a></label>
+                  <a href="#"
+                     tabindex="0"
+                     class="float-end text-info password-popover"
+                     role="button"
+                     data-bs-toggle="popover"
+                     data-bs-placement="right"
+                     data-bs-html="true"
+                     data-bs-content="{% for i, word in generation_words_password(10) %}
+   {{i + 1}}. <a href='#' class='thisPassword'>{{word}}</a><br>
+   {% endfor %}">{{ phrase('help_create_password') }}</a>
+                </label>
                 <div class="input-group">
                   <input name="password" type="password" class="form-control form-control-lg" id="signin-password"
                          placeholder="password" required>
@@ -200,22 +205,28 @@
 </script>
 {% endif %}
 <script>
-  $(document).on('click', '.thisPassword', function() {
-    $('#signin-password').val($(this).text());
-    $('#signin-password').attr('type', 'text');
-    $('.align-middle').removeClass('ri-eye-off-line');
-    $('.align-middle').addClass('ri-eye-line');
-  });
-
-  $(document).on('click', '#add_referral', function() {
-    $('#add_referral').hide();
-    $('#referralinput').removeClass('d-none');
-  });
-
   $(document).ready(function() {
-    $('.password-popover').popover({
-      container: 'body',
-      html: true,
+    // Инициализация всех popover'ов на странице
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl, {
+        html: true,
+        sanitize: false
+      });
+    });
+
+    // Обработчик для генерации паролей
+    $(document).on('click', '.thisPassword', function() {
+      $('#signin-password').val($(this).text());
+      $('#signin-password').attr('type', 'text');
+      $('.align-middle').removeClass('ri-eye-off-line');
+      $('.align-middle').addClass('ri-eye-line');
+    });
+
+    // Остальные обработчики
+    $(document).on('click', '#add_referral', function() {
+      $('#add_referral').hide();
+      $('#referralinput').removeClass('d-none');
     });
 
     $(document).on('click', '.account_prefix', function() {

@@ -1,5 +1,6 @@
 <?php
 
+// Второй файл instance.php
 namespace Ofey\Logan22\component\plugins\fileScanner;
 
 use Ofey\Logan22\component\sphere\server;
@@ -7,25 +8,41 @@ use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\template\tpl;
 
 class instance {
+
+    private const ALLOWED_EXTENSIONS = [
+        'php', 'dist', 'scss', 'sfk', 'webm', 'fig', 'xml', 'jsx', 'zip',
+        'ts', 'svelte', 'mp4', 'otf', 'mjs', 'rst', 'crt', 'npm',
+        'gitignore', 'gitattributes', 'editorconfig', 'yml', 'map',
+        'flow', 'js', 'html', 'htm', 'css', 'json', 'cur', 'tpl',
+        'png', 'jpg', 'jpeg', 'gif', 'ico', 'webp', 'svg', 'md',
+        'mp3', 'hbs', 'ttf', 'eot', 'woff', 'woff2', 'sql',
+        'htaccess', 'txt',
+        'dockerfile', 'makefile', 'license', 'readme', 'changelog',
+        'gitignore', 'npmignore', 'npmrc', 'babelrc', 'env',
+        'editorconfig', 'eslintrc', 'prettierrc', 'npm',
+    ];
+
+    private const EXCLUDED_PATHS = [
+        '/custom',
+        '/uploads/cache',
+        '/uploads/images',
+        '/uploads/logs',
+        '/data/languages/custom'
+    ];
+
     public function index(): void {
         tpl::displayPlugin("/fileScanner/tpl/index.html");
     }
 
     public function scan(): void {
-
-        // Установим заголовок для JSON-ответа
         header('Content-Type: application/json');
 
         try {
-
-            $scanner = new scannerSystem(
-                ['php', 'js', 'html', 'htm', 'css', 'json', 'cur', 'tpl', 'png', 'jpg', 'jpeg', 'gif', 'ico', 'webp', 'svg', 'md', 'mp3', 'hbs', 'ttf', 'eot', 'woff', 'woff2', 'sql', 'htaccess', 'txt'],
-                ['/custom', '/uploads/cache', '/uploads/images', '/uploads/logs', '/data/languages/custom']
-            );
+            $scanner = new scannerSystem(self::ALLOWED_EXTENSIONS, self::EXCLUDED_PATHS);
+            $scanner->setBufferSize(64 * 1024);
 
             $files = $scanner->scan("./");
             $totalFiles = count($files);
-
 
             $dataFiles = [
                 'success' => true,
@@ -39,6 +56,7 @@ class instance {
                     'hash' => $hash,
                 ];
             }
+
             server::setTimeout(30);
             $response = server::send(type::FILE_SCANNER, $dataFiles)->show()->getResponse();
             echo json_encode($response);
@@ -62,41 +80,29 @@ class instance {
             $results = [];
             foreach ($files as $file) {
                 $result = $this->downloadAndUpdateFile($file);
-
-                // Добавляем отладочную информацию
-                $debug = [
-                    'file' => $file,
-                    'api_url' => "http://167.235.239.166:443/api/file/update/" . ltrim($file, '/'),
-                    'result' => $result
-                ];
-
                 $results[] = [
                     'file' => $file,
                     'status' => $result['success'],
-                    'message' => $result['message'],
-                    'debug' => $debug
+                    'message' => $result['message']
                 ];
             }
 
             echo json_encode([
                 'success' => true,
                 'results' => $results
-            ], JSON_PRETTY_PRINT);
+            ]);
 
         } catch (\Exception $e) {
             echo json_encode([
                 'success' => false,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ], JSON_PRETTY_PRINT);
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
     private function downloadAndUpdateFile(string $file): array {
-        // Формируем URL для GitHub, используя raw content
         $githubUrl = "https://raw.githubusercontent.com/Cannabytes/SphereWeb2/master/" . ltrim($file, '/');
 
-        // Создаём контекст с заголовками для GitHub
         $context = stream_context_create([
             'http' => [
                 'method' => 'GET',
@@ -114,21 +120,9 @@ class instance {
         if ($content === false) {
             $error = error_get_last();
             $errorMessage = $error ? $error['message'] : 'Неизвестная ошибка';
-
-            $responseHeaders = $http_response_header ?? [];
-            $httpCode = null;
-            foreach ($responseHeaders as $header) {
-                if (preg_match('#HTTP/\d\.\d\s+(\d+)#', $header, $matches)) {
-                    $httpCode = intval($matches[1]);
-                    break;
-                }
-            }
-
             return [
                 'success' => false,
-                'message' => "Ошибка загрузки файла ($errorMessage). HTTP код: $httpCode",
-                'url' => $githubUrl,
-                'headers' => $responseHeaders
+                'message' => "Ошибка загрузки файла: $errorMessage"
             ];
         }
 
@@ -141,14 +135,8 @@ class instance {
                 }
             }
 
-            // Проверяем права на запись
-            if (file_exists($localPath)) {
-                if (!is_writable($localPath)) {
-                    throw new \Exception("Нет прав на запись в файл: $localPath");
-                }
-                // Создаем резервную копию перед заменой
-                $backupPath = $localPath . '.bak';
-                @copy($localPath, $backupPath);
+            if (file_exists($localPath) && !is_writable($localPath)) {
+                throw new \Exception("Нет прав на запись в файл: $localPath");
             }
 
             $writeResult = @file_put_contents($localPath, $content);
@@ -162,17 +150,10 @@ class instance {
             ];
 
         } catch (\Exception $e) {
-            // Если есть резервная копия и произошла ошибка, восстанавливаем её
-            if (isset($backupPath) && file_exists($backupPath)) {
-                @copy($backupPath, $localPath);
-                @unlink($backupPath);
-            }
-
             return [
                 'success' => false,
                 'message' => $e->getMessage()
             ];
         }
     }
-
 }
