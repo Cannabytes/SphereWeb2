@@ -52,12 +52,7 @@ class scannerSystem {
 
         // Нормализуем окончания строк перед вычислением хэша
         $content = preg_replace('~\R~u', "\n", $content);
-        error_log(sprintf(
-            "File: %s\nOriginal size: %d\nNormalized size: %d\n",
-            $filePath,
-            strlen($content),
-            strlen($normalizedContent)
-        ));
+
         // Вычисляем CRC32
         $crc = crc32($content);
 
