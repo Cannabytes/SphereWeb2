@@ -44,6 +44,7 @@ class scannerSystem {
         return $normalized ?: '/';
     }
 
+
     private function getFileCRC32(string $filePath): string {
         try {
             if (!file_exists($filePath)) {
@@ -53,31 +54,29 @@ class scannerSystem {
                 throw new RuntimeException("Файл не доступен для чтения: {$filePath}");
             }
 
-            $fullPath = fileSys::get_dir($filePath);
-
-            $handle = fopen($fullPath, 'rb');
-            if ($handle === false) {
-                throw new RuntimeException("Не удалось открыть файл: {$filePath}");
+            // Читаем весь файл сразу
+            $content = file_get_contents($filePath);
+            if ($content === false) {
+                throw new RuntimeException("Не удалось прочитать файл: {$filePath}");
             }
 
-            $ctx = hash_init('crc32b');
-            while (!feof($handle)) {
-                $buffer = fread($handle, $this->bufferSize);
-                if ($buffer === false) {
-                    fclose($handle);
-                    throw new RuntimeException("Ошибка чтения файла: {$filePath}");
-                }
-                hash_update($ctx, $buffer);
-            }
-            fclose($handle);
+            // Для текстовых файлов выполняем нормализацию
+            $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+            $textExtensions = ['php', 'js', 'css', 'html', 'htm', 'xml', 'json', 'md', 'txt', 'svg', 'tpl'];
 
-            return hash_final($ctx);
+            if (in_array($ext, $textExtensions)) {
+                // Нормализация текстового содержимого
+                $content = str_replace(["\r\n", "\r"], "\n", $content);
+                $content = rtrim($content);
+            }
+
+            // Вычисляем хеш напрямую через crc32
+            return sprintf("%08x", crc32($content));
 
         } catch (Exception $e) {
             throw $e;
         }
     }
-
     public function scan(string $directory): array {
         $directory = $this->normalizePath($directory);
 
