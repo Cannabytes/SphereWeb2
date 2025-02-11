@@ -352,42 +352,40 @@ CREATE TABLE `forum_user_thread_tracks` (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;"
         ];
 
+        $tableOrder = [
+            'forum_categories',     // Нет внешних зависимостей
+            'forum_clans',         // Нет внешних зависимостей
+            'forum_threads',       // Зависит от categories
+            'forum_polls',         // Зависит от threads
+            'forum_poll_options',  // Зависит от polls
+            'forum_posts',        // Зависит от threads
+            'forum_attachments',   // Зависит от posts
+            'forum_clan_members',  // Зависит от clans
+            'forum_clan_chat',    // Зависит от clans
+            'forum_clan_posts',   // Зависит от clans
+            'forum_clan_post_images', // Зависит от clan_posts
+            'forum_clan_requests', // Зависит от clans
+            'forum_moderator_log', // Зависит от threads и posts
+            'forum_moderators',    // Зависит от categories
+            'forum_notifications', // Зависит от threads и posts
+            'forum_poll_votes',    // Зависит от polls и poll_options
+            'forum_post_likes',    // Зависит от posts
+            'forum_thread_views',  // Зависит от threads
+            'forum_user_activity', // Нет внешних зависимостей
+            'forum_user_thread_tracks' // Зависит от threads и posts
+        ];
+
+        // Получаем существующие таблицы
         $tablesResult = sql::getRows("SHOW TABLES;");
         $existingTables = array_map(fn($row) => reset($row), $tablesResult);
 
-        $tableFind = [
-            'forum_attachments',
-            'forum_categories',
-            'forum_clan_chat',
-            'forum_clan_members',
-            'forum_clan_post_images',
-            'forum_clan_posts',
-            'forum_clan_requests',
-            'forum_clans',
-            'forum_moderator_log',
-            'forum_moderators',
-            'forum_notifications',
-            'forum_poll_options',
-            'forum_poll_votes',
-            'forum_polls',
-            'forum_post_likes',
-            'forum_posts',
-            'forum_thread_views',
-            'forum_threads',
-            'forum_user_activity',
-            'forum_user_thread_tracks',
-        ];
-        $tableNotFound = [];
-
-        foreach ($tableFind as $table) {
+        foreach ($tableOrder as $table) {
             if (!in_array($table, $existingTables)) {
-                $tableNotFound[] = $table;
-            }
-        }
-
-        if (!empty($tableNotFound)) {
-            foreach ($tableNotFound as $table) {
-                sql::run($tables[$table]);
+                try {
+                    sql::run($tables[$table]);
+                } catch (\Exception $e) {
+                    throw $e; // Перебрасываем исключение дальше
+                }
             }
         }
 
