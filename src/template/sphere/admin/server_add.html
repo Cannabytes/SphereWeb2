@@ -59,8 +59,7 @@
                                                 <select class="form-control" data-trigger name="version_client"
                                                         id="version_client">
                                                     {% for client in client_list_default %}
-                                                    <option {% if client[
-                                                    'name'] == 'Interlude' %}selected{% endif %}>{{
+                                                    <option data-protocol="{{client.protocol|json_encode}}" {% if client['name'] == server.getChronicle() %}selected{% endif %}>{{
                                                     client['name'] }}</option>
                                                     {% endfor %}
                                                 </select>
@@ -505,14 +504,6 @@
 
 {% block js %}
 
-<!-- Custom-Switcher JS -->
-<script src="{{template}}/assets/js/custom-switcher.min.js"></script>
-
-<!-- Internal Add Products JS -->
-<script src="{{template}}/assets/js/add-products.js"></script>
-
-<!-- Custom JS -->
-<script src="{{template}}/assets/js/custom.js"></script>
 
 <script src="{{template}}/assets/libs/simplebar/simplebar.min.js"></script>
 <script src="{{template}}/assets/js/simplebar.js"></script>
@@ -531,6 +522,78 @@
 </script>
 
 <script>
+    const collectionInfo = JSON.parse('{{collections|raw}}');
+
+
+
+    $(document).ready(function() {
+        // Функция для проверки пересечения массивов
+        function hasCommonElement(arr1, arr2) {
+            return arr1.some(item => arr2.includes(Number(item)));
+        }
+
+        // Функция обновления списка сборок
+        function updateCollections(selectedProtocols) {
+            // Очищаем текущий список
+            $('#collection').empty();
+
+            // Преобразуем строку протоколов в массив чисел
+            const protocols = selectedProtocols.map(Number);
+
+            // Фильтруем доступные сборки
+            const availableCollections = collectionInfo.filter(collection =>
+                  hasCommonElement(protocols, collection.protocols)
+            );
+
+            // Добавляем опции в select
+            if (availableCollections.length > 0) {
+                availableCollections.forEach(collection => {
+                    $('#collection').append(
+                          $('<option>', {
+                              value: collection.name,
+                              text: collection.name
+                          })
+                    );
+                });
+            } else {
+                // Если нет доступных сборок, добавляем placeholder
+                $('#collection').append(
+                      $('<option>', {
+                          value: '',
+                          text: 'Нет доступных сборок',
+                          disabled: true,
+                          selected: true
+                      })
+                );
+            }
+        }
+
+        // Обработчик изменения выбранной хроники
+        $('#version_client').on('change', function() {
+            const selectedOption = $(this).find('option:selected');
+            const protocolsStr = selectedOption.data('protocol');
+
+            // Проверяем, является ли значение строкой и преобразуем его в массив
+            const protocols = typeof protocolsStr === 'string'
+                  ? JSON.parse(protocolsStr.replace(/[\[\]]/g, '').split(','))
+                  : protocolsStr;
+
+            updateCollections(protocols);
+        });
+
+        // Инициализация при загрузке страницы
+        const initialProtocols = $('#version_client option:selected').data('protocol');
+        if (initialProtocols) {
+            const protocols = typeof initialProtocols === 'string'
+                  ? JSON.parse(initialProtocols.replace(/[\[\]]/g, '').split(','))
+                  : initialProtocols;
+
+            updateCollections(protocols);
+        }
+    });
+
+
+
     //Добавление логин-сервера
     $("#add_new_login_server").on("click", function () {
         let host = $("#login_host").val();
@@ -684,48 +747,6 @@
             }
         })
     });
-
-    get_collection();
-    $(document).on('change', '#version_client', function (event) {
-        get_collection();
-    });
-
-    function get_collection() {
-        let chronicle_name = $('#version_client').val();
-        let base_source = $("#collection").data("base_source");
-        $.ajax({
-            type: "POST",
-            url: "/admin/options/server/client/protocol",
-            dataType: "json",
-            data: {
-                chronicle_name: chronicle_name,
-            },
-            success: function (result) {
-                console.log(result)
-                if (result.ok) {
-                    $('#collection').empty();
-                    if (result.collections === false) {
-                        $('#collection').append(`<option value="" disabled selected>Not your chronicle SQL base</option>`);
-                        return;
-                    }
-                    result.collections.forEach(function (collection, index) {
-                        collection_class = collection.replace("\\\\", "\\");
-                        collection = basename(collection);
-                        if (base_source == collection_class) {
-                            $('#collection').append(`<option selected value="${collection_class}">${collection}</option>`);
-                        } else {
-                            $('#collection').append(`<option value="${collection_class}">${collection}</option>`);
-                        }
-                    });
-                } else {
-                    noticeError(result.message);
-                }
-            },
-            error: function (result) {
-                noticeError(result.message);
-            }
-        });
-    }
 
 </script>
 

@@ -618,6 +618,7 @@ class options
         validation::user_protection("admin");
         $gameServers = \Ofey\Logan22\component\sphere\server::send(type::GET_GAME_SERVERS)->show()->getResponse();
         $loginServers = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS)->show()->getResponse();
+        $collections = \Ofey\Logan22\component\sphere\server::sendCustom("/api/server/collection/get")->getResponse();
         tpl::addVar([
             'gameservers' => $gameServers,
             'loginservers' => $loginServers,
@@ -626,6 +627,7 @@ class options
             'timezone_list_default' => timezone::all(),
             "title" => lang::get_phrase(221),
             "chronicleBaseList" => fileSys::dir_list("src/component/image/icon/items"),
+            "collections" => json_encode($collections['collections']),
         ]);
         tpl::display("/admin/server_add.html");
     }

@@ -61,7 +61,6 @@
                                                     <option data-protocol="{{client.protocol|json_encode}}" {% if client['name'] == server.getChronicle() %}selected{% endif %}>{{
                                                     client['name'] }}</option>
                                                     {% endfor %}
-
                                                 </select>
                                             </div>
 
@@ -71,6 +70,8 @@
                                                         name="collection">
                                                 </select>
                                             </div>
+
+
 
 
                                             <hr class="hr">
@@ -534,6 +535,7 @@
 
     const collectionInfo = JSON.parse('{{collections|raw}}');
 
+
     //Добавление логин-сервера
     $("#add_new_login_server").on("click", function () {
         let host = $("#login_host").val();
@@ -690,37 +692,39 @@
 
         // Функция обновления списка сборок
         function updateCollections(selectedProtocols) {
-            // Очищаем текущий список
+            const currentValue = $('#collection').val(); // Сохраняем текущее значение
             $('#collection').empty();
 
-            // Преобразуем строку протоколов в массив чисел
             const protocols = selectedProtocols.map(Number);
 
-            // Фильтруем доступные сборки
             const availableCollections = collectionInfo.filter(collection =>
-                hasCommonElement(protocols, collection.protocols)
+                  hasCommonElement(protocols, collection.protocols)
             );
 
-            // Добавляем опции в select
             if (availableCollections.length > 0) {
                 availableCollections.forEach(collection => {
                     $('#collection').append(
-                        $('<option>', {
-                            value: collection.id,
-                            text: collection.name
-                        })
+                          $('<option>', {
+                              value: collection.name,
+                              text: collection.name,
+                              selected: collection.name === "{{server.getCollection()}}" // Устанавливаем selected для нужной опции
+                          })
                     );
                 });
             } else {
-                // Если нет доступных сборок, добавляем placeholder
                 $('#collection').append(
-                    $('<option>', {
-                        value: '',
-                        text: 'Нет доступных сборок',
-                        disabled: true,
-                        selected: true
-                    })
+                      $('<option>', {
+                          value: '',
+                          text: 'Нет доступных сборок',
+                          disabled: true,
+                          selected: true
+                      })
                 );
+            }
+
+            // Восстанавливаем значение, если оно было
+            if (currentValue) {
+                $('#collection').val(currentValue);
             }
         }
 
@@ -739,13 +743,21 @@
 
         // Инициализация при загрузке страницы
         const initialProtocols = $('#version_client option:selected').data('protocol');
+        const serverCollection = "{{server.getCollection()}}";
+
         if (initialProtocols) {
             const protocols = typeof initialProtocols === 'string'
-                ? JSON.parse(initialProtocols.replace(/[\[\]]/g, '').split(','))
-                : initialProtocols;
+                  ? JSON.parse(initialProtocols.replace(/[\[\]]/g, '').split(','))
+                  : initialProtocols;
 
             updateCollections(protocols);
+
+            // После обновления списка коллекций, устанавливаем выбранное значение
+            if (serverCollection) {
+                $('#collection').val(serverCollection);
+            }
         }
+
     });
 
 </script>
