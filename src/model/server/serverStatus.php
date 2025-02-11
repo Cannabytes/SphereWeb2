@@ -46,7 +46,6 @@ class serverStatus
             'loginServerIP' => $this->getLoginIPStatusServer(),
             'loginServerPort' => $this->getLoginPortStatusServer(),
         ];
-
         $jsonData = json_encode($data);
         sql::sql("INSERT INTO `server_cache` ( `server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
             $this->getServerId(),

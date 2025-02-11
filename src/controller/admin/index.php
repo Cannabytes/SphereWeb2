@@ -62,6 +62,8 @@ class index
                 "servers" => $info['servers'],
                 "sphere_last_commit" => $info['last_commit'],
                 "registrationLimit" => $info['registrationLimit'],
+                "forumInfo" => $info['forumInfo'],
+                "serverTime" => $info['serverTime'],
             ]);
         }
 

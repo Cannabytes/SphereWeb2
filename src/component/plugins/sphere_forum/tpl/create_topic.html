@@ -1,0 +1,371 @@
+{% extends 'struct.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+        <div class="card custom-card">
+            <div class="card-header">
+                <a href="/forum/{{transliterateToEn(categoryTitle)}}.{{categoryId}}"
+                   class="avatar border text-muted me-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                         fill="currentColor">
+                        <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                    </svg>
+                </a>
+
+                <div class="card-title">Создание новой темы</div>
+            </div>
+            <div class="card-body">
+                <div class="row gy-3">
+                    <div class="col-xl-12">
+                        <label for="topic_title" class="form-label">Название темы</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="topic_title"
+                                   placeholder="Краткое содержимое темы"
+                                   maxlength="60">
+                            <span class="input-group-text">
+            <span id="title-counter">0/60</span>
+        </span>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-12">
+                        <label class="form-label">Содержимое</label>
+                        <div id="message-post"></div>
+                    </div>
+                    <div class="col-xl-12 blog-images-container">
+                        <label class="form-label">Загрузка изображений</label>
+                        <input type="file" class="multiple-filepond" name="filepond" multiple data-allow-reorder="true"
+                               data-max-file-size="3MB" data-max-files="6">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card-body">
+                <!-- Existing topic creation fields -->
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="enablePoll">
+                    <label class="form-check-label" for="enablePoll">
+                        Добавить опрос к теме
+                    </label>
+                </div>
+
+                <div id="pollSection" style="display: none;">
+                    <div class="card mb-3">
+                        <div class="card-header">Настройки опроса</div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="pollQuestion" class="form-label">Вопрос опроса</label>
+                                <input type="text" class="form-control" id="pollQuestion"
+                                       placeholder="Введите вопрос опроса">
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="multipleChoice">
+                                    <label class="form-check-label" for="multipleChoice">
+                                        Разрешить выбор нескольких вариантов
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="pollExpiration" class="form-label">Дата окончания голосования</label>
+                                <input type="datetime-local" class="form-control" id="pollExpiration">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Варианты ответов</label>
+                                <div id="pollOptionsContainer">
+                                    <!-- Динамически добавляемые варианты -->
+                                </div>
+                                <button type="button" class="btn btn-outline-primary" onclick="addPollOption()">
+                                    <i class="ri-add-line"></i> Добавить вариант
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                $(document).ready(function() {
+                    $('#enablePoll').change(function() {
+                        $('#pollSection').toggle($(this).is(':checked'));
+                        if ($(this).is(':checked')) {
+                            addPollOption();
+                            addPollOption();
+                        }
+                    });
+                });
+            </script>
+
+            <div class="card-footer">
+                <div class="btn-list text-end">
+                    <button type="button" class="btn btn-primary" id="create_topic">Создать тему</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond/filepond.min.css">
+<link rel="stylesheet"
+      href="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.snow.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.bubble.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/glightbox/css/glightbox.min.css">
+
+<style>
+    .input-group-text {
+        min-width: 60px;
+        justify-content: center;
+    }
+
+    #title-counter {
+        transition: color 0.3s ease;
+    }
+
+    #title-counter.text-warning {
+        color: #ffc107 !important;
+    }
+
+    #title-counter.text-danger {
+        color: #dc3545 !important;
+    }
+
+    /* Анимация при достижении лимита */
+    .shake {
+        animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+    }
+
+    @keyframes shake {
+        10%, 90% {
+            transform: translate3d(-1px, 0, 0);
+        }
+        20%, 80% {
+            transform: translate3d(2px, 0, 0);
+        }
+        30%, 50%, 70% {
+            transform: translate3d(-2px, 0, 0);
+        }
+        40%, 60% {
+            transform: translate3d(2px, 0, 0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+<!-- Базовые библиотеки -->
+<script src="{{template}}/assets/libs/filepond/filepond.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-exif-orientation/filepond-plugin-image-exif-orientation.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script src="{{template}}/assets/libs/quill/quill.min.js"></script>
+<script src="{{template}}/assets/libs/glightbox/js/glightbox.min.js"></script>
+
+<!-- Общая библиотека форумного редактора -->
+<script src="{{template_plugin}}/tpl/js/forum-editor.js?v=8"></script>
+
+<script>
+
+
+    // Добавление динамических полей для опроса
+    function addPollOption() {
+        const container = $('#pollOptionsContainer');
+        const optionCount = container.children('.poll-option').length;
+
+        if (optionCount >= 10) {
+            noticeError('Максимум 10 вариантов ответа');
+            return;
+        }
+
+        const optionHtml = `
+        <div class="poll-option input-group mb-2">
+            <input type="text" class="form-control poll-option-input"
+                   placeholder="Вариант ответа ${optionCount + 1}">
+            <button class="btn btn-danger remove-poll-option" type="button">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+    `;
+        container.append(optionHtml);
+    }
+
+    $(document).ready(function() {
+        const defaultExpirationDate = new Date();
+        defaultExpirationDate.setDate(defaultExpirationDate.getDate() + 7);
+
+        // Format date for datetime-local input
+        const formatDateForInput = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        };
+
+        $('#pollExpiration').val(formatDateForInput(defaultExpirationDate));
+    });
+
+    // Сбор данных опроса при создании темы
+    function collectPollData() {
+        const isPollEnabled = $('#enablePoll').is(':checked');
+        if (!isPollEnabled) return null;
+
+        const question = $('#pollQuestion').val().trim();
+        const isMultiple = $('#multipleChoice').is(':checked');
+        const expiresAt = $('#pollExpiration').val()
+            ? new Date($('#pollExpiration').val()).toISOString().slice(0, 19).replace('T', ' ')
+            : null;
+
+        const options = $('.poll-option-input')
+            .map(function() {
+                return $(this).val().trim();
+            })
+            .get()
+            .filter(option => option !== '');
+
+        if (options.length < 2) {
+            noticeError('Минимум 2 варианта ответа');
+            return false;
+        }
+
+        return {
+            question,
+            isMultiple,
+            expiresAt,
+            options
+        };
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Инициализация форумного редактора
+        const editor = ForumEditor.initialize('#message-post');
+
+        // Инициализация GLightbox для предпросмотра изображений
+        const lightbox = GLightbox({
+            selector: '.glightbox'
+        });
+
+        // Обработчик счётчика символов для заголовка
+        const titleInput = $('#topic_title');
+        const titleCounter = $('#title-counter');
+
+        titleInput.on('input', function () {
+            const currentLength = this.value.length;
+            titleCounter.text(`${currentLength}/60`);
+
+            // Визуальная индикация при приближении к лимиту
+            if (currentLength >= 50) {
+                titleCounter.removeClass('text-danger').addClass('text-warning');
+            } else {
+                titleCounter.removeClass('text-warning text-danger');
+            }
+
+            if (currentLength >= 60) {
+                titleCounter.removeClass('text-warning').addClass('text-danger');
+                // Добавляем анимацию тряски при превышении лимита
+                titleCounter.addClass('shake');
+                setTimeout(() => titleCounter.removeClass('shake'), 500);
+            }
+        });
+
+        // Обработчик создания темы
+        $("#create_topic").on('click', async function () {
+            // Валидация заголовка
+            const title = titleInput.val().trim();
+
+            const pollData = collectPollData();
+            if (pollData === false) return;
+
+            if (title.length === 0) {
+                noticeError("Введите название темы");
+                titleInput.focus();
+                return;
+            }
+
+            if (title.length > 60) {
+                noticeError("Название темы не может быть длиннее 60 символов");
+                titleInput.focus();
+                return;
+            }
+
+            if (title.length < 3) {
+                noticeError("Название темы должно содержать минимум 3 символа");
+                titleInput.focus();
+                return;
+            }
+
+            // Получаем контент из редактора
+            const content = ForumEditor.getContent();
+
+            // Проверка содержимого
+            const error = ForumEditor.validateContent(content);
+            if (error) {
+                noticeError(error);
+                editor.quill.focus();
+                return;
+            }
+
+            // Получение дополнительных параметров
+            const categoryId = "{{categoryId}}";
+
+            try {
+                // Отправка данных на сервер
+                const response = await AjaxSend("/forum/topic/create", "POST", {
+                    title: title,
+                    content: ForumEditor.getContent(),
+                    categoryId: categoryId,
+                    attachments: ForumEditor.getUploadedAttachments(),
+                    poll: pollData
+                }, true);
+
+                if (response.ok) {
+                    if (response.redirect) {
+                        window.location.href = response.redirect;
+                    } else {
+                        noticeSuccess("Тема успешно создана");
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } else {
+                    noticeError(response.message || "Произошла ошибка при создании темы");
+                }
+            } catch (error) {
+                console.error('Ошибка при создании темы:', error);
+                noticeError("Произошла ошибка при создании темы. Пожалуйста, попробуйте позже.");
+            }
+        });
+
+
+        // Добавляем обработку клавиши Enter для создания темы
+        $(document).on('keydown', function (e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                $("#create_topic").click();
+            }
+        });
+
+
+        // Добавляем подсказку о горячей клавише
+        $("#create_topic").attr('title', 'Нажмите кнопку или используйте Ctrl+Enter');
+
+        // Инициализация Bootstrap tooltips
+        const tooltips = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltips.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                trigger: 'hover'
+            });
+        });
+    });
+</script>
+{% endblock %}

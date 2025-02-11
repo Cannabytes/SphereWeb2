@@ -166,32 +166,21 @@
 
 
                     <form action="/registration/account" method="POST">
-
-
                       <div class="row mb-0">
-
                         <div class="input-group mb-3">
-
                           <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between">
                             {{ phrase(40) }}
-
                             <span data-bs-toggle="modal" data-bs-target="#syncAccount" >
                               <label role="button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Synchronization of accounts. Do you have an account that is not in your list of accounts?">
                               {{ phrase('Do you already have an account?') }}
                               </label>
                             </span>
-
                           </div>
-
                         </div>
 
-
-
                         <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>
-
                         <div class="col-sm-4">
                           <div class="input-group mb-3">
-
                             {% if config().registration().getEnablePrefix() and config().registration().getPrefixType()
                             == 'prefix' %}
                             <button class="btn btn-light account_prefix" type="button">
@@ -207,14 +196,11 @@
                               {{config().registration().genPrefix()}}
                             </button>
                             {% endif %}
-
                           </div>
                         </div>
-
                       </div>
 
                       <div class="row mb-0">
-
 
                         <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
                         <div class="col-sm-4">

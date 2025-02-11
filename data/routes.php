@@ -2529,4 +2529,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  183 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/balance/pay/pack',
+    'func' => 'controller\\admin\\swbalance::buyPack',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

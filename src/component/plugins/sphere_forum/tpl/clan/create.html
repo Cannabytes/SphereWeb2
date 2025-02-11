@@ -1,0 +1,450 @@
+{% extends 'struct.html' %}
+
+{% block title %}Создание клана{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="ri-team-line me-2"></i>Создание клана
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form id="createClanForm" enctype="multipart/form-data">
+                        <!-- Название и цвет клана -->
+                        <div class="row mb-4">
+                            <div class="col-lg-4">
+                                <label for="clanName" class="form-label">Название клана <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="clanName" name="clanName" maxlength="16"
+                                           required>
+                                    <span class="input-group-text"><span id="nameCounter">0/16</span></span>
+                                </div>
+                                <small class="text-muted">Название клана должно содержать от 2 до 16 символов</small>
+                            </div>
+
+                            <!-- Описание клана -->
+                            <div class="col-lg-8">
+                                    <label for="clanDescription" class="form-label">Описание клана <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="clanDescription" name="clanDescription"
+                                           maxlength="64" required>
+                                    <div class="text-end mt-1">
+                                        <small class="text-muted"><span id="descCounter">0</span>/64 символов</small>
+                                    </div>
+                            </div>
+
+
+                            <div class="col-lg-12">
+                                <div class="accordion custom-accordion" id="colorAccordion">
+
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#transparentColors">
+                                                Цвет названия клана
+                                            </button>
+                                        </h2>
+                                        <div id="transparentColors" class="accordion-collapse collapse"
+                                             data-bs-parent="#colorAccordion">
+                                            <div class="accordion-body">
+                                                <div class="d-flex flex-wrap gap-3 color-picker">
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-golden">Текст</span>
+                                                        <small class="d-block text-muted">Золотой</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-emerald">Текст</span>
+                                                        <small class="d-block text-muted">Изумрудный</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-neon-blue">Текст</span>
+                                                        <small class="d-block text-muted">Неоновый синий</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-fiery">Текст</span>
+                                                        <small class="d-block text-muted">Огненный</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-purple">Текст</span>
+                                                        <small class="d-block text-muted">Фиолетовый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-crimson">Текст</span>
+                                                        <small class="d-block text-muted">Малиновый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-lime">Текст</span>
+                                                        <small class="d-block text-muted">Лаймовый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-marine">Текст</span>
+                                                        <small class="d-block text-muted">Морской</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-pink">Текст</span>
+                                                        <small class="d-block text-muted">Розовый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-icy">Текст</span>
+                                                        <small class="d-block text-muted">Ледяной</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-orange">Текст</span>
+                                                        <small class="d-block text-muted">Оранжевый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-salad">Текст</span>
+                                                        <small class="d-block text-muted">Салатовый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-turquoise">Текст</span>
+                                                        <small class="d-block text-muted">Бирюзовый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-coral">Текст</span>
+                                                        <small class="d-block text-muted">Коралловый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-amethyst">Текст</span>
+                                                        <small class="d-block text-muted">Аметистовый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-amber">Текст</span>
+                                                        <small class="d-block text-muted">Янтарный</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-sapphire">Текст</span>
+                                                        <small class="d-block text-muted">Сапфировый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-ruby">Текст</span>
+                                                        <small class="d-block text-muted">Рубиновый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-ultramarine">Текст</span>
+                                                        <small class="d-block text-muted">Ультрамарин</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-pearl">Текст</span>
+                                                        <small class="d-block text-muted">Перламутровый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-cosmic">Текст</span>
+                                                        <small class="d-block text-muted">Космический</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-sunset">Текст</span>
+                                                        <small class="d-block text-muted">Закатное солнце</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-aurora">Текст</span>
+                                                        <small class="d-block text-muted">Северное сияние</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-electric">Текст</span>
+                                                        <small class="d-block text-muted">Электрический</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-purple-haze">Текст</span>
+                                                        <small class="d-block text-muted">Пурпурная дымка</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-bronze">Текст</span>
+                                                        <small class="d-block text-muted">Бронзовый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-moonlight">Текст</span>
+                                                        <small class="d-block text-muted">Лунный свет</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-acid">Текст</span>
+                                                        <small class="d-block text-muted">Кислотный</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-crimson">Текст</span>
+                                                        <small class="d-block text-muted">Багровый</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-aquamarine">Текст</span>
+                                                        <small class="d-block text-muted">Аквамарин</small>
+                                                    </div>
+
+                                                    <div class="color-option">
+                                                        <span class="text-clan color-preview text-clan-magic">Текст</span>
+                                                        <small class="d-block text-muted">Магический</small>
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" id="selectedNameColor" name="nameColor" value="primary">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Тип принятия -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <label class="form-label">Тип принятия в клан <span class="text-danger">*</span></label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="acceptance" id="automatic" value="1"
+                                           checked>
+                                    <label class="btn btn-outline-primary" for="automatic">
+                                        <i class="ri-user-add-line me-1"></i>Автоматическое принятие
+                                    </label>
+                                    <input type="radio" class="btn-check" name="acceptance" id="manual" value="2">
+                                    <label class="btn btn-outline-primary" for="manual">
+                                        <i class="ri-user-follow-line me-1"></i>По согласию лидера
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Логотип и фон клана -->
+                        <div class="row">
+                            <div class="col-lg-6 mb-4">
+                                <label class="form-label">Логотип клана</label>
+                                <div class="preview-container position-relative">
+                                    <div class="avatar avatar-xxl">
+                                        <img src="{{ template_plugin }}/tpl/img/avatar_clan_default.png" id="logoPreview" class="rounded-3"
+                                             alt="Логотип клана">
+                                    </div>
+                                    <input type="file" class="form-control mt-3" id="clanLogo" name="clanLogo"
+                                           accept="image/*">
+                                    <small class="text-muted d-block mt-1">Рекомендуемый размер: 256x256 пикселей. Макс:
+                                        2MB</small>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 mb-4">
+                                <label class="form-label">Фон клана</label>
+                                <div class="preview-container position-relative">
+                                    <div class="background-preview rounded-3">
+                                        <img src="{{ template_plugin }}/tpl/img/background_default.png" id="backgroundPreview"
+                                             class="w-100 rounded-3" alt="Фон клана">
+                                    </div>
+                                    <input type="file" class="form-control mt-3" id="clanBackground"
+                                           name="clanBackground" accept="image/*">
+                                    <small class="text-muted d-block mt-1">Рекомендуемый размер: 1920x300 пикселей.
+                                        Макс: 2MB</small>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-end">
+                    <button type="button" class="btn btn-danger me-2" onclick="window.history.back()">Отмена</button>
+                    <button type="button" class="btn btn-primary" id="createClanBtn">
+                        <i class="ri-team-line me-1"></i>Создать клан
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{template_plugin}}/tpl/css/style_clan_name.css">
+
+<style>
+    .avatar-xxl {
+        width: 128px;
+        height: 128px;
+    }
+
+    .avatar-xxl img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .background-preview {
+        width: 100%;
+        height: 128px;
+        overflow: hidden;
+    }
+
+    .background-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    #clanDescription {
+        resize: vertical;
+    }
+
+    .color-picker {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .color-option {
+        padding: 0.5rem 1rem;
+        border: 2px solid transparent;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .color-option:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .color-option.selected {
+        border-color: var(--bs-primary);
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+    }
+
+    .preview-container {
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function () {
+        // Счетчик символов для названия
+        $('#clanName').on('input', function () {
+            const length = $(this).val().length;
+            $('#nameCounter').text(`${length}/16`);
+
+            if (length > 16) {
+                $(this).val($(this).val().substring(0, 16));
+            }
+        });
+
+        // Счетчик символов для описания
+        $('#clanDescription').on('input', function () {
+            const length = $(this).val().length;
+            $('#descCounter').text(length);
+
+            if (length > 255) {
+                $(this).val($(this).val().substring(0, 255));
+            }
+        });
+
+        $('.color-option').each(function() {
+            // Получаем класс цвета из span внутри color-option
+            const colorClass = $(this).find('.color-preview').attr('class').split(' ')
+                .find(cls => cls.startsWith('text-clan-'));
+
+            if (colorClass) {
+                // Убираем префикс 'text-' из класса
+                const colorValue = colorClass.replace('text-', '');
+                $(this).attr('data-color', colorValue);
+            }
+        });
+
+        $('.color-option').on('click', function() {
+            $('.color-option').removeClass('selected');
+            $(this).addClass('selected');
+            const color = $(this).data('color');
+            $('#selectedNameColor').val(color);
+
+            // Обновляем цвет текста в поле ввода названия
+            $('#clanName').removeClass().addClass(`form-control ${color}`);
+        });
+
+        // Предпросмотр логотипа
+        function previewImage(input, previewId, maxSize) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+
+                if (file.size > maxSize) {
+                    noticeError(`Размер файла превышает ${maxSize / (1024 * 1024)}MB`);
+                    input.value = '';
+                    return false;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    $(`#${previewId}`).attr('src', e.target.result);
+                }
+                reader.readAsDataURL(file);
+                return true;
+            }
+        }
+
+        // Обработчики загрузки изображений
+        $('#clanLogo').on('change', function () {
+            previewImage(this, 'logoPreview', 2 * 1024 * 1024);
+        });
+
+        $('#clanBackground').on('change', function () {
+            previewImage(this, 'backgroundPreview', 2 * 1024 * 1024);
+        });
+
+        // Обработка создания клана
+        $('#createClanBtn').on('click', function() {
+            // Create a new FormData object
+            const formData = new FormData($('#createClanForm')[0]);
+
+            // Send the form data via AJAX
+            $.ajax({
+                url: '/forum/clan/create',
+                type: 'POST',
+                data: formData,
+                processData: false,  // Prevent jQuery from processing the data
+                contentType: false,  // Let the browser set the content type
+                success: function(response) {
+                    responseAnalysis(response);
+                },
+                error: function(xhr, status, error) {
+                    // Handle errors
+                    noticeError('Ошибка при создании клана: ' + error);
+                }
+            });
+        });
+
+        // Инициализация первого цвета
+        $('.color-option:first').click();
+    });
+
+</script>
+{% endblock %}
+

@@ -107,6 +107,8 @@ enum type
 
     case FILE_SCANNER;
 
+    case BUY_BALANCE_PACK;
+
     static function url(type $type): string
     {
         return match ($type) {
@@ -190,6 +192,8 @@ enum type
             self::ITEM_INCREASE_PAY => '/api/item/increase/pay',
 
             self::FILE_SCANNER => '/api/file/scanner',
+
+            self::BUY_BALANCE_PACK => '/api/balance/buy/pack',
 
             default => null,
         };

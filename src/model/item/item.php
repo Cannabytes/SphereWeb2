@@ -14,7 +14,19 @@ use Ofey\Logan22\component\image\client_icon;
 
     private int $enchant = 0;
 
+    private bool $exists = false;
+
     private string|DateTime|null $date = null;
+
+    public function isExists(): bool
+    {
+        return $this->exists;
+    }
+
+    public function setExists(bool $exists): void
+    {
+        $this->exists = $exists;
+    }
 
     public function getId(): int
     {
@@ -238,8 +250,16 @@ use Ofey\Logan22\component\image\client_icon;
         $file = client_icon::includeFileByRange($id, dbVersion: $dbVersion);
 
         if (!$file) {
-            return null;
+            $itemObject = new item();
+            $itemObject->setItemId($id);
+            $itemObject->setType("etcitem");
+            $itemObject->setItemName("NoItemName[id:$id]");
+            $itemObject->setIcon("etc_l2_i00.webp");
+            $itemObject->setExists(false);
+            self::$arrItems[$id] = $itemObject;
+            return $itemObject;
         }
+
         $itemArr = require $file;
         if (isset($itemArr[$id])) {
             $item = $itemArr[$id];
@@ -257,10 +277,13 @@ use Ofey\Logan22\component\image\client_icon;
             $itemObject->setIsDepositable($item['is_depositable'] ?? false);
             $itemObject->setPrice($item['price'] ?? 0);
             $itemObject->setIcon($item['icon']??null);
+            $itemObject->setExists(true);
             self::$arrItems[$id] = $itemObject;
             return $itemObject;
         }
+
         return null;
+
     }
 
     public function toArray(): array
@@ -282,6 +305,7 @@ use Ofey\Logan22\component\image\client_icon;
             'isSellable' => $this->is_sellable,
             'isDepositable' => $this->is_depositable,
             'isStackable' => $this->is_stackable,
+            'isExists' => $this->exists,
         ];
     }
 

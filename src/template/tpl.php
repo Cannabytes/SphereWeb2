@@ -10,6 +10,7 @@ use Ofey\Logan22\component\account\generation;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\alert\logs;
 use Ofey\Logan22\component\captcha\google;
+use Ofey\Logan22\component\chronicle\client;
 use Ofey\Logan22\component\chronicle\race_class;
 use Ofey\Logan22\component\estate\castle;
 use Ofey\Logan22\component\estate\clanhall;
@@ -69,7 +70,7 @@ class tpl
 
     private static array $allTplVars = [];
 
-    private static string $templatePath;
+    private static string $templatePath = "/src/template/sphere/";
 
     private static ?bool $isAjax = null;
 
@@ -118,7 +119,8 @@ class tpl
         board::alert($anyn->getArray());
     }
 
-    private static function preload(string $tplName): Environment
+
+    private static function preload(): Environment
     {
         self::$ajaxLoad = false;
         if ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
@@ -126,7 +128,6 @@ class tpl
         }
         $relativePath = str_replace($_SERVER['DOCUMENT_ROOT'], '', dirname($_SERVER["SCRIPT_FILENAME"]));
 
-        self::$templatePath = "/src/template/sphere/";
         if (self::$categoryCabinet) {
             self::$templatePath = "/template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName();
             self::lang_template_load(fileSys::get_dir(self::$templatePath . "/lang.php"));
@@ -610,6 +611,10 @@ class tpl
             return date("H:i d.m.Y", (int)substr($var, 0, 10));
         }));
 
+        $twig->addFunction(new TwigFunction('get_chronicles_by_protocol', function ($protocol) {
+            return client::get_chronicles_by_protocol($protocol);
+        }));
+
         $twig->addFunction(new TwigFunction('sex', function ($v) {
             return $v == 0 ? 'male' : 'female';
         }));
@@ -1023,7 +1028,7 @@ class tpl
                 return preg_replace('/\.php$/', '', $item);
             },
               array_filter($languages, function ($item) {
-                  return substr($item, -4) === '.php';
+                  return str_ends_with($item, '.php');
               }));
 
             $combinedArray = [];
@@ -1367,9 +1372,31 @@ class tpl
         self::display($template);
     }
 
-    public static function display($tplName)
-    {
-        $twig = self::preload($tplName);
+    static function customizeFilePath(string $filePath, bool $relativePath = false): string {
+        $pathInfo = pathinfo($filePath);
+        if (!isset($pathInfo['dirname'], $pathInfo['filename'], $pathInfo['extension'])) {
+            return $filePath;
+        }
+        $customFileName = 'custom_' . $pathInfo['filename'] . '.' . $pathInfo['extension'];
+        if ($filePath[0] === '/') {
+            return $pathInfo['dirname'] . '/' . $customFileName;
+        }
+        if($relativePath) {
+            return ltrim(self::$templatePath . $pathInfo['dirname'], "/") . '/' . $customFileName;
+        }else{
+            return ltrim($pathInfo['dirname'], '/') . '/' . $customFileName;
+        }
+    }
+
+public static function display($tplName) {
+
+        //Проверка, есть ли кастомный файл вместо стандартного
+        if (file_exists(self::customizeFilePath($tplName, true))) {
+            $tplName = self::customizeFilePath($tplName, false);
+        }
+
+        $twig = self::preload();
+
         try {
             // Если загрузка идет через аякс, то возвращаем только контент, используется при переходе по ссылкам
             if (self::$ajaxLoad) {

@@ -1,0 +1,9 @@
+{% if getPluginActive('sphere_forum') %}
+
+{% set setting = getPluginSetting('sphere_forum') %}
+{% if setting.showMainPage %}
+
+{% include "/sphere_forum/tpl/categories.html" %}
+
+{% endif %}
+{% endif %}

@@ -199,7 +199,7 @@ class fileSys {
      * Список файлов в папке
      */
     public static function file_list($dir, $fileFormats = []): false|array {
-        if ($dir == null) {
+        if ($dir === null || !is_dir($dir)) {
             return false;
         }
 

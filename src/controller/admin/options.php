@@ -232,6 +232,8 @@ class options
             }
         }
 
+        $collections = \Ofey\Logan22\component\sphere\server::sendCustom("/api/server/collection/get")->getResponse();
+
         tpl::addVar([
             'defaultDB' => $defaultDB,
             'gameservers' => $gameServers,
@@ -241,7 +243,8 @@ class options
             'client_list_default' => client::all(),
             'timezone_list_default' => timezone::all(),
 
-            "server" => $server
+            "server" => $server,
+            "collections" => json_encode($collections['collections']),
         ]);
         tpl::display("/admin/server_edit.html");
     }

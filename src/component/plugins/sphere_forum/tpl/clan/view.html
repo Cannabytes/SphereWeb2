@@ -1,0 +1,1177 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{ clan.getName() }} - Информация о клане{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Информация о клане -->
+        <div class="col-xl-12">
+            <div class="card custom-card overflow-hidden">
+                <div class="card-header p-0">
+                    <div class="clan-banner position-relative">
+                        <img src="{% if clan.getBackgroundLogo() %}/uploads/clans/{{ clan.getBackgroundLogo() }}{% else %}{{template_plugin}}/tpl/img/backgraund_default.png{% endif %}"
+                             alt="Баннер клана" class="w-100">
+                        <div class="clan-overlay"></div>
+                        <div class="clan-info position-absolute bottom-0 start-0 p-4 text-white">
+                            <div class="d-flex align-items-center">
+                                <div class="clan-logo me-4">
+                                    <img src="{% if clan.getLogo() %}/uploads/clans/{{ clan.getLogo() }}{% else %}{{template_plugin}}/tpl/img/avatar_clan_default.png{% endif %}"
+                                         alt="Логотип клана">
+                                </div>
+                                <div>
+                                    <h2 class="text-{{ clan.getTextColor() }} mb-1"> <i class="bi bi-patch-check text-success"></i> {{ clan.getName() }}</h2>
+                                    <p class="text-muted mb-0">{{ clan.getDesc() }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Левая колонка - Информация о клане -->
+                        <div class="col-md-3">
+                            <div class="clan-stats">
+                                <h5 class="mb-3">
+                                    <a href="/forum" class="text-muted me-1">
+                                    <i class="fe fe-home"></i>
+                                    </a>
+                                    Информация о клане</h5>
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Лидер
+                                        <span class="d-flex align-items-center">
+                                            <img src="{{ getUser(clan.getOwnerId()).getAvatar() }}"
+                                                 class="avatar avatar-xs me-2">
+                                            {{ getUser(clan.getOwnerId()).getName() }}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Название клана в игре
+                                        <span role="button" data-bs-toggle="modal" data-bs-target="#selectPlayerClans" class="text-primary">
+                                            {% if clan.getClanNameGame() %}
+                                                {{ clan.getClanNameGame() }}
+                                            {% else %}
+                                                Не установлено
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Участников
+                                        <span class="badge bg-primary rounded-pill">{{ clan.getMembersCount() }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Тип принятия
+                                        {% if clan.getAcceptance() == 1 %}
+                                        <span class="badge bg-success">Автоматическое</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">По согласию лидера</span>
+                                        {% endif %}
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Дата создания
+                                        <span>{{ clan.getCreatedAt()|date("d.m.Y") }}</span>
+                                    </li>
+                                </ul>
+
+                                {% if getUser().isAuth() %}
+                                {% if clan.getOwnerId() == getUser().getId() %}
+
+                                <div class="modal fade" id="selectPlayerClans" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Выберите клан</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="card-body">
+
+                                                {% set clanList = [] %}
+                                                {% for account in getUser().getAccounts() %}
+                                                {% for player in account.getCharacters() %}
+                                                {% if player.getClanName() is not empty %}
+                                                {% set clanList = clanList|merge([player.getClanName()]) %}
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endfor %}
+
+                                                <select class="form-select" id="selectClan">
+                                                    <option selected="">Пока не выбирать клан</option>
+                                                    {% for name in clanList %}
+                                                    <option {% if clan.getClanNameGame() == name %}selected{% endif %} value="{{ name }}">{{ name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                                <button type="button" class="btn btn-primary" id="saveSelectClan">Сохранить</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if clan.getOwnerId() == getUser().getId() %}
+                                <a href="/forum/clan/edit/{{ clan.getName() }}" class="btn btn-primary w-100 mt-3">
+                                    <i class="ri-edit-2-line me-1"></i>Редактировать клан
+                                </a>
+                                {% elseif not isMember %}
+                                {% if clan.getAcceptance() == 1 %}
+                                <button class="btn btn-success w-100 mt-3" id="joinClanBtn">
+                                    <i class="ri-user-add-line me-1"></i>Вступить в клан
+                                </button>
+                                {% else %}
+                                <button class="btn btn-warning w-100 mt-3" id="requestJoinBtn">
+                                    <i class="ri-user-follow-line me-1"></i>Подать заявку
+                                </button>
+                                {% endif %}
+                                {% else %}
+                                <button class="btn btn-danger w-100 mt-3" id="leaveClanBtn">
+                                    <i class="ri-door-open-line me-1"></i>Покинуть клан
+                                </button>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Правая колонка - Участники и чат -->
+                        <div class="col-md-9">
+                            <!-- Вкладки -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#about" role="tab">
+                                        <i class="ri-information-line me-1"></i>Описание
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " data-bs-toggle="tab" href="#members" role="tab">
+                                        <i class="ri-team-line me-1"></i>Участники
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="chatClanTab" data-bs-toggle="tab" href="#chat" role="tab">
+                                        <i class="ri-message-3-line me-1"></i>Чат клана
+                                    </a>
+                                </li>
+                                {% if clan.getOwnerId() == getUser().getId() and clan.getAcceptance() == 2 %}
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#requests" role="tab">
+                                        <i class="ri-user-follow-line me-1"></i>Заявки
+                                        {% if clan.getPendingRequestsCount() > 0 %}
+                                        <span class="badge bg-danger">{{ clan.getPendingRequestsCount() }}</span>
+                                        {% endif %}
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+
+                            <!-- Контент вкладок -->
+                            <div class="tab-content p-3 border border-top-0">
+
+                                <div class="tab-pane fade show active" id="about" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="card-title">О нашем клане</h5>
+                                                        {% if clan.getOwnerId() == getUser().getId() %}
+                                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDescriptionModal">
+                                                            <i class="ri-edit-2-line me-1"></i>Изменить описание
+                                                        </button>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="clan-description mt-3">
+                                                        {{ clan.getDescFull()|nl2br|raw }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {% if clan.getOwnerId() == getUser().getId() %}
+                                        <div class="modal fade" id="editDescriptionModal" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Редактирование описания клана</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form id="clanDescriptionForm">
+                                                            <div class="mb-3">
+                                                                <textarea class="form-control" id="clanDescriptionEditor" rows="10">{{ clan.getDescFull() }}</textarea>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                                        <button type="button" class="btn btn-primary" id="saveDescription">Сохранить</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+
+                                <!-- Список участников -->
+                                <div class="tab-pane fade " id="members" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th>Участник</th>
+                                                <th>Роль</th>
+                                                <th>Дата вступления</th>
+                                                <th>Прайм-тайм</th>
+                                                {% if clan.getOwnerId() == getUser().getId() and user.getId() !=
+                                                clan.getOwnerId() %}
+                                                <th>Действия</th>
+                                                {% endif %}
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for member in clan.getMembers() %}
+                                            {% set user = getUser(member.user_id) %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="{{ user.getAvatar() }}" class="avatar avatar-sm me-2">
+                                                        <span>{{ user.getName() }}</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    {% if user.getId() == clan.getOwnerId() %}
+                                                    <span class="badge bg-primary">Лидер</span>
+                                                    {% else %}
+                                                    <span class="badge bg-secondary">Участник</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ user.getJoinDate()|date("d.m.Y") }}</td>
+                                                <td>Играю по вечерам</td>
+
+                                                {% if clan.getOwnerId() == getUser().getId() and user.getId() !=
+                                                clan.getOwnerId() %}
+                                                <td>
+                                                    <button class="btn btn-sm btn-danger kick-member"
+                                                            data-member-id="{{ user.getId() }}">
+                                                        <i class="ri-delete-bin-line"></i>
+                                                    </button>
+                                                </td>
+                                                {% endif %}
+
+
+                                            </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Чат клана -->
+                                <div class="tab-pane fade" id="chat" role="tabpanel">
+                                    {% if isMember or clan.getOwnerId() == getUser().getId() %}
+                                    <div class="chat-container" style="height: 400px;">
+                                        <div class="chat-messages" id="clanChat">
+                                        </div>
+                                        <div class="chat-input">
+                                            <div id="chatInputContainer" class="d-flex">
+                                                <input type="text" class="form-control me-2" id="chatMessageInput" placeholder="Введите сообщение...">
+                                                <button type="button" class="btn btn-primary" id="chatSendButton">
+                                                    <i class="ri-send-plane-line"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary ms-2" id="chatSoundToggle" title="Звуковые уведомления">
+                                                    <i class="ri-notification-off-line"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-center py-5">
+                                        <i class="ri-lock-line fs-1 text-muted"></i>
+                                        <p class="mt-2">Чат доступен только для участников клана</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Заявки на вступление -->
+                                {% if clan.getOwnerId() == getUser().getId() and clan.getAcceptance() == 2 %}
+                                <div class="tab-pane fade" id="requests" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>Пользователь</th>
+                                                <th>Дата заявки</th>
+                                                <th>Действия</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for request in clan.getPendingRequests() %}
+                                            {% set user = getUser(request.user_id) %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="{{ user.getAvatar() }}" class="avatar avatar-sm me-2">
+                                                        <span>{{ user.getName() }}</span>
+                                                    </div>
+                                                </td>
+                                                <td>{{ request.getCreatedAt()|date("d.m.Y H:i") }}</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-success accept-request"
+                                                            data-request-id="{{ request.id }}">
+                                                        <i class="ri-check-line"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-danger reject-request"
+                                                            data-request-id="{{ request.id }}">
+                                                        <i class="ri-close-line"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Сообщения клана</h5>
+        </div>
+        <div class="card-body">
+            <div class="clan-messages">
+                {% if clan.getOwnerId() == getUser().getId() or isMember %}
+                <div class="message-form mb-4">
+                    <!-- В разделе "Сообщения клана" меняем id -->
+                    <div id="clanMessageForm" class="d-flex gap-2">
+                        <div class="flex-grow-1">
+                            <textarea id="messageTextWall" class="form-control" rows="3" placeholder="Напишите сообщение..."></textarea>
+                            <div id="imagePreview" class="d-flex flex-wrap gap-2 mt-2"></div>
+                        </div>
+                        <div class="d-flex flex-column gap-2">
+                            <button type="button" class="btn btn-outline-primary" id="attachImage">
+                                <i class="ri-image-add-line"></i>
+                            </button>
+                            <button type="button" class="btn btn-primary" id="sendMessage">
+                                <i class="ri-send-plane-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="messages-list">
+                    {% for post in clanPosts %}
+                    <div class="message-item mb-3" data-post-id="{{ post.id }}">
+                        <div class="d-flex">
+                            <img src="/uploads/avatar/{{ post.avatar }}" class="avatar avatar-sm me-3" alt="{{ post.name }}">
+                            <div class="flex-grow-1">
+                                <div class="message-header d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">{{ post.name }}</h6>
+                                        <small class="text-muted">
+                                            {{ post.created_at|date("d.m.Y H:i") }}
+                                            {% if post.updated_at %}
+                                            <span class="text-muted ms-2">(изменено)</span>
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    {% if post.user_id == getUser().getId() or clan.getOwnerId() == getUser().getId() %}
+                                    <div class="dropdown">
+                                        <div class=" dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            <i class="ri-more-2-fill"></i>
+                                        </div>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item edit-post" href="#" data-post-id="{{ post.id }}">
+                                                <i class="ri-edit-line me-2"></i>Редактировать</a></li>
+                                            <li><a class="dropdown-item delete-post" href="#" data-post-id="{{ post.id }}">
+                                                <i class="ri-delete-bin-line me-2"></i>Удалить</a></li>
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="message-content mt-2">
+                                    <p class="message-text">{{ post.message }}</p>
+                                    {% if post.post_images %}
+                                    {% set images = post.post_images %}
+                                    <div class="message-images mt-2">
+                                        <div class="d-flex flex-wrap gap-2">
+                                            {% for imageObj in images %}
+                                                {% if imageObj %}
+                                                    <div class="message-image">
+                                                        <a class="glightbox card" data-gallery="gallery1" href="/uploads/clans/{{ imageObj.image }}" target="_blank">
+                                                            <img src="/uploads/clans/{{ imageObj.image }}" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;" >
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{template_plugin}}/tpl/css/style_clan_name.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/glightbox/css/glightbox.min.css">
+<style>
+
+    .message-item {
+        position: relative;
+    }
+
+    .message-item .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .message-item.loading .overlay {
+        display: flex;
+    }
+
+    .message-item:hover {
+    }
+    .message-image img {
+        max-width: 100%;
+        height: auto;
+        max-height: 300px; /* Новое */
+        object-fit: contain; /* Новое */
+    }
+    .edit-message-form textarea {
+        min-height: 100px; /* Новое */
+    }
+    .dropdown-toggle::after {
+        display: none; /* Новое */
+    }
+    #imagePreview img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px; /* Новое */
+    }
+    #attachImage {
+        width: 42px;
+        height: 42px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .clan-banner {
+        width: 100%;
+        height: 300px;
+        overflow: hidden;
+        background-size: cover; /* Для фона */
+        background-position: center; /* Центрирование */
+    }
+    .clan-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Подгонка изображения */
+    }
+    .clan-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+    }
+    .clan-logo img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+    }
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+    }
+    .message {
+        display: flex;
+        margin-bottom: 0.3rem;
+        align-items: flex-start;
+    }
+    .message-out {
+        flex-direction: row;
+    }
+    .message-out .message-avatar {
+        margin-right: 10px;
+        margin-left: 0;
+    }
+    .message-out .message-header {
+        text-align: left;
+    }
+    .message-out .message-content {
+        margin-left: 0;
+    }
+
+    .avatar-xs {
+        width: 24px;
+        height: 24px;
+    }
+    .avatar-sm {
+        width: 32px;
+        height: 32px;
+    }
+    .avatar {
+        object-fit: cover;
+        border-radius: 50%;
+    }
+</style>
+
+{% endblock %}
+
+{% block js %}
+<script src="{{template}}/assets/libs/glightbox/js/glightbox.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        const currentUserId = "{{ getUser().getId() }}";
+        const clanId = "{{ clan.getId() }}";
+        const isOwner = '{{ clan.getOwnerId() }}' === currentUserId;
+        const isMemberOrOwner = {{ isMember ? 'true' : 'false' }} || isOwner;
+
+        let originalTitle = document.title;
+        let isTabActive = !document.hidden;
+        let lastMessageId = 0;
+        const notificationSound = new Audio('{{template_plugin}}/tpl/audio/new_message.mp3');
+        let unreadMessages = 0;
+        const chatTab = $('#chatClanTab');
+        let initialLoadComplete = false;
+        let isSoundEnabled = false;
+
+        let chatMessageInput, chatSendButton, chatSoundToggle;
+
+        // Инициализация элементов чата только для членов клана
+        if (isMemberOrOwner) {
+            chatMessageInput = document.getElementById('chatMessageInput');
+            chatSendButton = document.getElementById('chatSendButton');
+            chatSoundToggle = document.getElementById('chatSoundToggle');
+        }
+
+        const saveDescriptionBtn = $('#saveDescription');
+        const descriptionEditor = $('#clanDescriptionEditor');
+
+        document.addEventListener('visibilitychange', function() {
+            isTabActive = !document.hidden;
+            if (isTabActive && $('#chat').is(':visible')) {
+                unreadMessages = 0;
+                updateTitle();
+                updateTabCounter(0);
+            }
+        });
+
+        function updateTitle() {
+            document.title = unreadMessages > 0 ?
+                `${originalTitle} (${unreadMessages})` : originalTitle;
+        }
+
+        function updateTabCounter(count) {
+            chatTab.find('.message-counter').remove();
+            if (count > 0) {
+                chatTab.append(`<span class="badge bg-danger ms-1 message-counter">${count}</span>`);
+            }
+        }
+
+        // Функционал чата только для членов клана
+        if (isMemberOrOwner) {
+            // Отправка сообщения
+            chatSendButton.addEventListener('click', sendChatMessage);
+            chatMessageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendChatMessage();
+                }
+            });
+
+            // Переключение звука
+            chatSoundToggle.addEventListener('click', function() {
+                isSoundEnabled = !isSoundEnabled;
+                const icon = this.querySelector('i');
+
+                if (isSoundEnabled) {
+                    icon.classList.replace('ri-notification-off-line', 'ri-notification-line');
+                    this.classList.replace('btn-outline-secondary', 'btn-primary');
+                    playNotification();
+                } else {
+                    icon.classList.replace('ri-notification-line', 'ri-notification-off-line');
+                    this.classList.replace('btn-primary', 'btn-outline-secondary');
+                }
+
+                localStorage.setItem('chatSoundEnabled', isSoundEnabled);
+            });
+        }
+
+        function sendChatMessage() {
+            const messageText = chatMessageInput.value.trim();
+
+            if (!messageText) return;
+
+            $.ajax({
+                url: '/forum/clan/chat/send',
+                type: 'POST',
+                data: {
+                    clan_id: clanId,
+                    message: messageText
+                },
+                success: function(response) {
+                    chatMessageInput.value = '';
+                    if (response.id) {
+                        appendMessage(response);
+                        lastMessageId = Math.max(lastMessageId, response.id);
+                        loadChatMessages();
+                    }
+                },
+                error: function(xhr) {
+                    noticeError('Ошибка при отправке сообщения');
+                }
+            });
+        }
+
+        // Загрузка сообщений чата только для членов клана
+        if ($('#clanChat').length && isMemberOrOwner) {
+            loadChatMessages();
+            setInterval(loadChatMessages, 3000 + Math.random() * 2000);
+        }
+
+        function loadChatMessages() {
+            $.ajax({
+                url: '/forum/clan/chat/messages',
+                type: 'POST',
+                data: {
+                    clan_id: clanId,
+                    last_message_id: lastMessageId
+                },
+                dataType: 'json',
+                success: function(messages) {
+                    if (messages?.length > 0) {
+                        messages.forEach(message => {
+                            appendMessage(message);
+                            lastMessageId = Math.max(lastMessageId, message.id);
+
+                            if (initialLoadComplete && message.user_id !== currentUserId) {
+                                const chatTabVisible = $('#chat').is(':visible');
+                                if (!isTabActive || !chatTabVisible) {
+                                    unreadMessages++;
+                                    if (isSoundEnabled) {
+                                        notificationSound.play().catch(e => console.log('Ошибка звука:', e));
+                                    }
+                                    updateTitle();
+                                    updateTabCounter(unreadMessages);
+                                }
+                            }
+                        });
+                    }
+
+                    if (!initialLoadComplete) {
+                        initialLoadComplete = true;
+                        initSoundState();
+                    }
+                }
+            });
+        }
+
+        function initSoundState() {
+            const savedState = localStorage.getItem('chatSoundEnabled');
+            if (savedState === 'true' && chatSoundToggle) {
+                chatSoundToggle.click();
+            }
+        }
+
+        function playNotification() {
+            if (Notification.permission === 'granted' && isSoundEnabled) {
+                notificationSound.play().catch(e => console.log('Ошибка воспроизведения:', e));
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted' && isSoundEnabled) {
+                        notificationSound.play().catch(e => console.log('Ошибка воспроизведения:', e));
+                    }
+                });
+            }
+        }
+
+        function appendMessage(message) {
+            const isCurrentUser = message.user_id == currentUserId;
+            const html = `
+            <div class="message ${isCurrentUser ? 'message-out' : 'message-in'}" data-message-id="${message.id}">
+                <div class="alert alert-${isCurrentUser ? 'success' : 'info'} bg-opacity-75">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="message-avatar">
+                            <img src="/uploads/avatar/${message.avatar}" class="avatar avatar-sm">
+                        </div>
+                        <div class="d-flex flex-column">
+                            <strong>${escapeHtml(message.name)}</strong>
+                            <small class="text-muted">${formatDateTime(message.created_at)}</small>
+                        </div>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">
+                            ${escapeHtml(message.message)}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+            $('#clanChat').append(html);
+            scrollChatToBottom();
+        }
+
+        function scrollChatToBottom() {
+            const chatContainer = $('#clanChat');
+            if (chatContainer.length) {
+                chatContainer.scrollTop(chatContainer[0].scrollHeight);
+            }
+        }
+
+        // Управление стеной сообщений
+        let uploadedFiles = [];
+
+        if (isMemberOrOwner) {
+            $('#sendMessage').on('click', function() {
+                const messageText = $('#messageTextWall').val().trim();
+                const formData = new FormData();
+
+                formData.append('message', messageText);
+                formData.append('clan_id', clanId);
+
+                uploadedFiles.forEach((file, index) => {
+                    formData.append(`images[]`, file);
+                });
+
+                if (!messageText && uploadedFiles.length === 0) {
+                    noticeError('Введите сообщение или прикрепите изображение');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/forum/clan/post/create',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response && response.success) {
+                            $('#messageTextWall').val('');
+                            $('#imagePreview').empty();
+                            uploadedFiles = [];
+                            noticeSuccess(response.message || 'Сообщение опубликовано');
+                            setTimeout(() => window.location.reload(), 1000);
+                        } else {
+                            noticeError(response.error || 'Ошибка при отправке сообщения');
+                        }
+                    },
+                    error: function(xhr) {
+                        noticeError(xhr.responseJSON?.error || 'Ошибка при отправке сообщения');
+                    }
+                });
+            });
+
+            // Прикрепление изображений
+            $('#attachImage').click(function() {
+                $('<input type="file" name="images[]" multiple accept="image/*" style="display:none">')
+                    .appendTo('#clanMessageForm')
+                    .on('change', function() {
+                        const files = Array.from(this.files);
+                        const maxFiles = 10;
+                        const currentCount = uploadedFiles.length;
+
+                        if (currentCount + files.length > maxFiles) {
+                            noticeError(`Можно загрузить не более ${maxFiles} изображений`);
+                            return;
+                        }
+
+                        files.forEach(file => {
+                            if (file.size > 5 * 1024 * 1024) {
+                                noticeError(`Файл ${file.name} превышает 5MB`);
+                                return;
+                            }
+
+                            uploadedFiles.push(file);
+
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const previewId = 'preview_' + Date.now() + Math.random().toString(36).substr(2, 9);
+                                $('#imagePreview').append(`
+                                <div class="position-relative" id="${previewId}">
+                                    <img src="${e.target.result}" class="img-fluid rounded" style="max-height: 150px">
+                                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 remove-image"
+                                            data-preview-id="${previewId}">
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                </div>
+                            `);
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    })
+                    .click();
+            });
+
+            // Удаление предпросмотра изображения
+            $(document).on('click', '.remove-image', function() {
+                const previewId = $(this).data('preview-id');
+                $(`#${previewId}`).remove();
+                // Удаляем файл из массива
+                const index = uploadedFiles.findIndex(file =>
+                    file.previewId === previewId
+                );
+                if (index > -1) {
+                    uploadedFiles.splice(index, 1);
+                }
+            });
+
+            // Удаление сообщения
+            $(document).on('click', '.delete-post', function(e) {
+                e.preventDefault();
+                const postId = $(this).data('post-id');
+
+                if (confirm('Вы уверены, что хотите удалить это сообщение?')) {
+                    $.ajax({
+                        url: '/forum/clan/post/delete',
+                        type: 'POST',
+                        data: {
+                            clan_id: clanId,
+                            post_id: postId
+                        },
+                        success: function(response) {
+                            responseAnalysis(response);
+                        },
+                        error: function(xhr) {
+                            noticeError(xhr.responseJSON?.error || 'Ошибка при удалении сообщения');
+                        }
+                    });
+                }
+            });
+
+        }
+
+
+
+        // Обработчики для всех пользователей
+        $('#joinClanBtn').on('click', function () {
+            $.ajax({
+                url: '/forum/clan/join',
+                type: 'POST',
+                data: {clan_id: clanId},
+                success: function () {
+                    noticeSuccess('Вы вступили в клан');
+                    setTimeout(() => window.location.reload(), 1500);
+                },
+                error: function (xhr) {
+                    noticeError(xhr.responseJSON?.message || 'Ошибка вступления');
+                }
+            });
+        });
+
+        $('#requestJoinBtn').on('click', function () {
+            $.ajax({
+                url: '/forum/clan/join',
+                type: 'POST',
+                data: {clan_id: clanId},
+                success: function () {
+                    noticeSuccess('Заявка отправлена');
+                    setTimeout(() => window.location.reload(), 1500);
+                },
+                error: function (xhr) {
+                    noticeError(xhr.responseJSON?.message || 'Ошибка отправки заявки');
+                }
+            });
+        });
+
+        $('#leaveClanBtn').on('click', function () {
+            if (confirm('Вы уверены, что хотите покинуть клан?')) {
+                $.ajax({
+                    url: '/forum/clan/leave',
+                    type: 'POST',
+                    data: {clan_id: clanId},
+                    success: function () {
+                        noticeSuccess('Вы покинули клан');
+                        setTimeout(() => window.location.reload(), 1500);
+                    },
+                    error: function (xhr) {
+                        noticeError('Ошибка при выходе из клана: ' + xhr.responseJSON?.message);
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.edit-post', function(e) {
+            e.preventDefault();
+            const postId = $(this).data('post-id');
+            const messageItem = $(`.message-item[data-post-id="${postId}"]`);
+            const messageText = messageItem.find('.message-text').text().trim();
+            const editId = `edit-message-${postId}`;
+
+            messageItem.find('.message-content').html(`
+        <div class="edit-message-container" id="${editId}">
+            <div class="form-group mb-2">
+                <textarea class="form-control edit-message-textarea"
+                    id="textarea-${editId}">${messageText}</textarea>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary btn-sm save-edit"
+                    data-edit-id="${editId}">Сохранить</button>
+                <button type="button" class="btn btn-secondary btn-sm cancel-edit"
+                    data-edit-id="${editId}">Отмена</button>
+            </div>
+        </div>
+    `);
+        });
+
+        $(document).on('click', '.save-edit', function() {
+            const editId = $(this).data('edit-id');
+            const container = $(`#${editId}`);
+            const messageItem = container.closest('.message-item');
+            const postId = messageItem.data('post-id');
+            const message = container.find('.edit-message-textarea').val().trim();
+
+            if (!message) {
+                noticeError('Сообщение не может быть пустым');
+                return;
+            }
+
+            $.ajax({
+                url: '/forum/clan/post/update',
+                type: 'POST',
+                data: {
+                    clan_id: clanId,
+                    post_id: postId,
+                    message: message
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        loadPosts();
+                    } else {
+                        noticeError(response.error || 'Ошибка при обновлении сообщения');
+                    }
+                },
+                error: function(xhr) {
+                    noticeError(xhr.responseJSON?.error || 'Ошибка при обновлении сообщения');
+                }
+            });
+        });
+
+        $(document).on('click', '.cancel-edit', function() {
+            loadPosts();
+        });
+
+        $(document).on('submit', '.edit-message-form', function(e) {
+            e.preventDefault();
+            const messageItem = $(this).closest('.message-item');
+            const postId = messageItem.data('post-id');
+            const message = $(this).find('textarea').val();
+
+            $.ajax({
+                url: '/forum/clan/post/update',
+                type: 'POST',
+                data: {
+                    clan_id: clanId,
+                    post_id: postId,
+                    message: message
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        loadPosts();
+                    } else {
+                        noticeError(response.error || 'Ошибка при обновлении сообщения');
+                    }
+                },
+                error: function(xhr) {
+                    noticeError(xhr.responseJSON?.error || 'Ошибка при обновлении сообщения');
+                }
+            });
+        });
+
+        $('#saveSelectClan').on('click', function() {
+            const selectedClanName = $('#selectClan').val();
+
+            // Если выбрано "Пока не выбирать клан", отправляем null
+            const clanNameGame = selectedClanName === "Пока не выбирать клан" ? null : selectedClanName;
+
+            $.ajax({
+                url: '/forum/clan/update-game-name',
+                type: 'POST',
+                data: {
+                    clan_id: clanId,
+                    clan_name_game: clanNameGame
+                },
+                dataType: 'json',
+                success: function(response) {
+                    console.log(response)
+                    if (response.success) {
+                        location.reload(); // Перезагружаем страницу для обновления информации
+                    } else {
+                        noticeError(response.error || 'Ошибка при обновлении названия клана');
+                    }
+                },
+                error: function(xhr) {
+                    noticeError(xhr.responseJSON?.error || 'Произошла ошибка при обновлении');
+                }
+            });
+
+            $('#selectPlayerClans').modal('hide');
+        });
+
+        function showLoading() {
+            $('.loading-spinner').removeClass('d-none');
+        }
+
+        function hideLoading() {
+            $('.loading-spinner').addClass('d-none');
+        }
+
+        function loadPosts() {
+            showLoading();
+            $.ajax({
+                url: '/forum/clan/posts',
+                type: 'POST',
+                data: { clan_id: clanId },
+                dataType: 'json',
+                success: function(response) {
+                    if (response && response.success) {
+                        $('.messages-list').empty();
+                        if (Array.isArray(response.posts)) {
+                            response.posts.forEach(function(post) {
+                                appendPost(post);
+                            });
+                        }
+                    } else {
+                        console.error('Invalid response format:', response);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading posts:', error);
+                    noticeError('Ошибка при загрузке сообщений');
+                },
+                complete: function() {
+                    hideLoading();
+                }
+            });
+        }
+
+        function appendPost(post) {
+            if (!post) return;
+
+            const canEdit = post.user_id == currentUserId || isOwner;
+            const editButtons = canEdit ? `
+        <div class="dropdown">
+            <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="ri-more-2-fill"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item edit-post" href="#" data-post-id="${post.id}">
+                    <i class="ri-edit-line me-2"></i>Редактировать</a></li>
+                <li><a class="dropdown-item delete-post" href="#" data-post-id="${post.id}">
+                    <i class="ri-delete-bin-line me-2"></i>Удалить</a></li>
+            </ul>
+        </div>` : '';
+
+            // Формируем HTML для изображений
+            let imagesHtml = '';
+            if (post.post_images && Array.isArray(post.post_images) && post.post_images.length > 0) {
+                imagesHtml = `
+        <div class="message-images mt-2">
+            <div class="d-flex flex-wrap gap-2">
+                ${post.post_images.map(imageObj => {
+                    if (imageObj && imageObj.image) {
+                        return `
+                            <div class="message-image">
+                                <a class="glightbox card" data-gallery="gallery1" href="/uploads/clans/${imageObj.image}" target="_blank">
+                                    <img src="/uploads/clans/${imageObj.image}" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">
+                                </a>
+                            </div>`;
+                    }
+                    return '';
+                }).join('')}
+            </div>
+        </div>`;
+            }
+
+            const updatedText = post.updated_at ? `<span class="text-muted ms-2">(изменено)</span>` : '';
+
+            const html = `
+        <div class="message-item mb-3" data-post-id="${post.id}">
+            <div class="d-flex">
+                <img src="/uploads/avatar/${post.avatar}" class="avatar avatar-sm me-3" alt="${post.name}">
+                <div class="flex-grow-1">
+                    <div class="message-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">${escapeHtml(post.name)}</h6>
+                            <small class="text-muted">
+                                ${formatDateTime(post.created_at)}${updatedText}
+                            </small>
+                        </div>
+                        ${editButtons}
+                    </div>
+                    <div class="message-content mt-2">
+                        <p class="message-text">${escapeHtml(post.message)}</p>
+                        ${imagesHtml}
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+            $('.messages-list').prepend(html);
+
+            // Реинициализация лайтбокса для новых изображений
+            GLightbox({
+                selector: '.glightbox'
+            });
+        }
+
+
+        // Вспомогательные функции
+        function formatDateTime(datetime) {
+            return new Date(datetime).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Инициализация лайтбокса
+        const lightboxVideo = GLightbox({
+            selector: '.glightbox'
+        });
+    });
+</script>
+{% endblock %}

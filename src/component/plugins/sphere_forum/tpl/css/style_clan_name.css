@@ -1,0 +1,458 @@
+/* Общие стили для текста */
+.text-clan {
+    -webkit-text-fill-color: none;
+    display: inline-block;
+}
+
+/* Золотой */
+.text-clan-golden {
+    text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700, 0 0 15px #ffcc00, 0 0 20px #ffcc00, 0 0 25px #ffcc00;
+    color: #ffffff !important;
+}
+
+/* Изумрудный */
+.text-clan-emerald {
+    text-shadow: 0 0 5px #00ff9d, 0 0 10px #00ff9d, 0 0 15px #00cc7a, 0 0 20px #00cc7a, 0 0 25px #00cc7a;
+    color: #ffffff !important;
+}
+
+/* Неоновый синий */
+.text-clan-neon-blue {
+    text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #0099ff, 0 0 25px #0099ff;
+    color: #ffffff !important;
+}
+
+/* Огненный */
+.text-clan-fiery {
+    text-shadow: 0 0 5px #ff4400, 0 0 10px #ff4400, 0 0 15px #ff3300, 0 0 20px #ff3300, 0 0 25px #ff3300;
+    color: #ffffff !important;
+}
+
+/* Фиолетовый */
+.text-clan-purple {
+    text-shadow: 0 0 5px #9933ff, 0 0 10px #9933ff, 0 0 15px #7700ff, 0 0 20px #7700ff, 0 0 25px #7700ff;
+    color: #ffffff !important;
+}
+
+/* Малиновый */
+.text-clan-crimson {
+    text-shadow: 0 0 5px #ff0066, 0 0 10px #ff0066, 0 0 15px #cc0052, 0 0 20px #cc0052, 0 0 25px #cc0052;
+    color: #ffffff !important;
+}
+
+/* Лаймовый */
+.text-clan-lime {
+    text-shadow: 0 0 5px #ccff00, 0 0 10px #ccff00, 0 0 15px #99cc00, 0 0 20px #99cc00, 0 0 25px #99cc00;
+    color: #000000 !important;
+}
+
+/* Морской */
+.text-clan-marine {
+    text-shadow: 0 0 5px #00ccff, 0 0 10px #00ccff, 0 0 15px #0099cc, 0 0 20px #0099cc, 0 0 25px #0099cc;
+    color: #ffffff !important;
+}
+
+/* Розовый */
+.text-clan-pink {
+    text-shadow: 0 0 5px #ff66b3, 0 0 10px #ff66b3, 0 0 15px #ff3399, 0 0 20px #ff3399, 0 0 25px #ff3399;
+    color: #ffffff !important;
+}
+
+/* Ледяной */
+.text-clan-icy {
+    text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #99ffff, 0 0 20px #99ffff, 0 0 25px #99ffff;
+    color: #000000 !important;
+}
+
+/* Оранжевый */
+.text-clan-orange {
+    text-shadow: 0 0 5px #ff9933, 0 0 10px #ff9933, 0 0 15px #ff8000, 0 0 20px #ff8000, 0 0 25px #ff8000;
+    color: #ffffff !important;
+}
+
+/* Салатовый */
+.text-clan-salad {
+    text-shadow: 0 0 5px #99ff33, 0 0 10px #99ff33, 0 0 15px #80ff00, 0 0 20px #80ff00, 0 0 25px #80ff00;
+    color: #000000 !important;
+}
+
+/* Бирюзовый */
+.text-clan-turquoise {
+    text-shadow: 0 0 5px #33ffcc, 0 0 10px #33ffcc, 0 0 15px #00ffcc, 0 0 20px #00ffcc, 0 0 25px #00ffcc;
+    color: #000000 !important;
+}
+
+/* Коралловый */
+.text-clan-coral {
+    text-shadow: 0 0 5px #ff6666, 0 0 10px #ff6666, 0 0 15px #ff4d4d, 0 0 20px #ff4d4d, 0 0 25px #ff4d4d;
+    color: #ffffff !important;
+}
+
+/* Аметистовый */
+.text-clan-amethyst {
+    text-shadow: 0 0 5px #cc66ff, 0 0 10px #cc66ff, 0 0 15px #b84dff, 0 0 20px #b84dff, 0 0 25px #b84dff;
+    color: #ffffff !important;
+}
+
+/* Янтарный */
+.text-clan-amber {
+    text-shadow: 0 0 5px #ffbf00, 0 0 10px #ffbf00, 0 0 15px #ffa500, 0 0 20px #ffa500, 0 0 25px #ffa500;
+    color: #000000 !important;
+}
+
+/* Сапфировый */
+.text-clan-sapphire {
+    text-shadow: 0 0 5px #0066cc, 0 0 10px #0066cc, 0 0 15px #004d99, 0 0 20px #004d99, 0 0 25px #004d99;
+    color: #ffffff !important;
+}
+
+/* Рубиновый */
+.text-clan-ruby {
+    text-shadow: 0 0 5px #cc0000, 0 0 10px #cc0000, 0 0 15px #990000, 0 0 20px #990000, 0 0 25px #990000;
+    color: #ffffff !important;
+}
+
+/* Ультрамарин */
+.text-clan-ultramarine {
+    text-shadow: 0 0 5px #4d4dff, 0 0 10px #4d4dff, 0 0 15px #3333ff, 0 0 20px #3333ff, 0 0 25px #3333ff;
+    color: #ffffff !important;
+}
+
+/* Перламутровый */
+.text-clan-pearl {
+    text-shadow: 0 0 5px #ffccff, 0 0 10px #ffccff, 0 0 15px #ff99ff, 0 0 20px #ff99ff, 0 0 25px #ff99ff;
+    color: #000000 !important;
+}
+
+/* Космический */
+.text-clan-cosmic {
+    text-shadow: 0 0 5px #8a2be2, 0 0 10px #8a2be2, 0 0 15px #4b0082, 0 0 20px #4b0082, 0 0 30px #4b0082, 0 0 40px #4b0082;
+    color: #ffffff !important;
+}
+
+/* Закатное солнце */
+.text-clan-sunset {
+    text-shadow: 0 0 5px #ff6b35, 0 0 10px #ff6b35, 0 0 15px #ff4500, 0 0 20px #ff4500, 0 0 30px #ff4500;
+    color: #ffffff !important;
+}
+
+/* Северное сияние */
+.text-clan-aurora {
+    text-shadow: 0 0 5px #00ff87, 0 0 10px #00ff87, 0 0 15px #00bf6f, 0 0 20px #00bf6f, 0 0 30px #00bf6f, 0 0 40px #00bf6f;
+    color: #000000 !important;
+}
+
+/* Электрический */
+.text-clan-electric {
+    text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #00ccff, 0 0 30px #0099ff, 0 0 40px #0066ff;
+    color: #ffffff !important;
+}
+
+/* Пурпурная дымка */
+.text-clan-purple-haze {
+    text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 15px #cc00cc, 0 0 20px #cc00cc, 0 0 30px #990099;
+    color: #ffffff !important;
+}
+
+/* Бронзовый */
+.text-clan-bronze {
+    text-shadow: 0 0 5px #cd7f32, 0 0 10px #cd7f32, 0 0 15px #a0522d, 0 0 20px #a0522d, 0 0 30px #8b4513;
+    color: #ffffff !important;
+}
+
+/* Лунный свет */
+.text-clan-moonlight {
+    text-shadow: 0 0 5px #e6e6fa, 0 0 10px #e6e6fa, 0 0 15px #c8c8fa, 0 0 20px #c8c8fa, 0 0 30px #9370db;
+    color: #000000 !important;
+}
+
+/* Кислотный */
+.text-clan-acid {
+    text-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14, 0 0 15px #32cd32, 0 0 20px #32cd32, 0 0 30px #228b22, 0 0 40px #228b22;
+    color: #000000 !important;
+}
+
+/* Багровый */
+.text-clan-crimson {
+    text-shadow: 0 0 5px #dc143c, 0 0 10px #dc143c, 0 0 15px #b22222, 0 0 20px #b22222, 0 0 30px #8b0000;
+    color: #ffffff !important;
+}
+
+/* Аквамарин */
+.text-clan-aquamarine {
+    text-shadow: 0 0 5px #7fffd4, 0 0 10px #7fffd4, 0 0 15px #48d1cc, 0 0 20px #48d1cc, 0 0 30px #20b2aa;
+    color: #000000 !important;
+}
+
+/* Магический */
+.text-clan-magic {
+    text-shadow: 0 0 5px #ff1493, 0 0 10px #ff1493, 0 0 15px #ff69b4, 0 0 20px #ff69b4, 0 0 30px #db7093, 0 0 40px #db7093;
+    color: #ffffff !important;
+}
+
+/* Призрачный */
+.text-clan-ghost {
+    text-shadow: 0 0 5px #f8f8ff, 0 0 10px #f8f8ff, 0 0 15px #e6e6fa, 0 0 20px #e6e6fa, 0 0 30px #dcd0ff, 0 0 40px #b8a9c9;
+    color: #000000 !important;
+}
+
+/* Кровавый */
+.text-clan-blood {
+    text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 15px #cc0000, 0 0 20px #cc0000, 0 0 30px #8b0000, 0 0 40px #8b0000;
+    color: #ffffff !important;
+}
+
+/* Радужный */
+.text-clan-rainbow {
+    text-shadow: 0 0 5px #ff0000, 0 0 10px #ff7f00, 0 0 15px #ffff00, 0 0 20px #00ff00, 0 0 30px #0000ff, 0 0 40px #8b00ff;
+    color: #ffffff !important;
+}
+
+/* Платиновый */
+.text-clan-platinum {
+    text-shadow: 0 0 5px #e5e4e2, 0 0 10px #e5e4e2, 0 0 15px #c0c0c0, 0 0 20px #c0c0c0, 0 0 30px #a9a9a9;
+    color: #000000 !important;
+}
+
+/* Глубинный */
+.text-clan-deep {
+    text-shadow: 0 0 5px #000080, 0 0 10px #000080, 0 0 15px #00008b, 0 0 20px #00008b, 0 0 30px #191970, 0 0 40px #191970;
+    color: #ffffff !important;
+}
+
+/* Песочный */
+.text-clan-sand {
+    text-shadow: 0 0 5px #f4a460, 0 0 10px #f4a460, 0 0 15px #daa520, 0 0 20px #daa520, 0 0 30px #cd853f;
+    color: #000000 !important;
+}
+
+/* Галактический */
+.text-clan-galactic {
+    text-shadow: 0 0 5px #9400d3, 0 0 10px #9400d3, 0 0 15px #8a2be2, 0 0 20px #8a2be2, 0 0 30px #9370db, 0 0 40px #8b008b;
+    color: #ffffff !important;
+}
+
+/* Медный */
+.text-clan-copper {
+    text-shadow: 0 0 5px #b87333, 0 0 10px #b87333, 0 0 15px #cd7f32, 0 0 20px #cd7f32, 0 0 30px #a0522d;
+    color: #ffffff !important;
+}
+
+/* Хромовый */
+.text-clan-chrome {
+    text-shadow: 0 0 5px #dcdcdc, 0 0 10px #dcdcdc, 0 0 15px #c0c0c0, 0 0 20px #a8a8a8, 0 0 30px #808080, 0 0 40px #696969;
+    color: #ffffff !important;
+}
+
+/* Кристальный */
+.text-clan-crystal {
+    text-shadow: 0 0 5px #ffffff, 0 0 10px #e6f2ff, 2px 2px 15px #99ccff, -2px -2px 15px #99ccff, 4px 4px 20px #3399ff, -4px -4px 20px #3399ff;
+    transform: perspective(100px) rotateX(5deg);
+    color: #ffffff !important;
+}
+
+/* Плазменный */
+.text-clan-plasma {
+    text-shadow: 0 0 5px #ff3300, 2px 0 10px #ff6600, -2px 0 10px #ff6600, 0 2px 15px #ff9900, 0 -2px 15px #ff9900, 0 0 25px #ffcc00;
+    animation: plasma 2s infinite;
+    color: #ffffff !important;
+}
+
+/* Голографический */
+.text-clan-holographic {
+    text-shadow: 3px 3px 5px #ff00ff, -3px -3px 5px #00ffff, 5px 5px 15px #ff00ff, -5px -5px 15px #00ffff, 0 0 20px #ffffff;
+    transform: perspective(200px) rotateY(10deg);
+    color: #ffffff !important;
+}
+
+/* Звёздный путь */
+.text-clan-star-path {
+    text-shadow: 0 0 5px #ffffff, 2px 2px 10px #ffff00, -2px -2px 10px #ffff00, 4px 4px 15px #ff9900, -4px -4px 15px #ff9900, 0 0 25px #ff6600, 0 0 40px #ff3300;
+    transform: perspective(150px) rotateX(-5deg);
+    color: #ffffff !important;
+}
+
+/* Энергетический вихрь */
+.text-clan-energy-vortex {
+    text-shadow: 3px 0 5px #00ff00, -3px 0 5px #00ff00, 0 3px 10px #33ff00, 0 -3px 10px #33ff00, 5px 5px 15px #66ff00, -5px -5px 15px #66ff00, 0 0 25px #99ff00;
+    transform: perspective(120px) rotateZ(2deg);
+    color: #000000 !important;
+}
+
+/* Магическая аура */
+.text-clan-magic-aura {
+    text-shadow: 2px 2px 5px #9966ff, -2px -2px 5px #9966ff, 4px 4px 10px #6600ff, -4px -4px 10px #6600ff, 0 0 15px #3300ff, 0 0 25px #000099;
+    transform: perspective(180px) rotateY(-8deg);
+    color: #ffffff !important;
+}
+
+/* Драконье пламя */
+.text-clan-dragon-fire {
+    text-shadow: 0 0 5px #ff3300, 2px 2px 10px #ff6600, -2px -2px 10px #ff6600, 4px 4px 15px #ff9900, -4px -4px 15px #ff9900, 0 0 25px #ffcc00, 3px 3px 35px #ff0000;
+    transform: perspective(140px) rotateX(8deg);
+    color: #ffffff !important;
+}
+
+/* Квантовый */
+.text-clan-quantum {
+    text-shadow: 2px 2px 5px #00ffcc, -2px -2px 5px #00ffcc, 4px 4px 10px #00ccff, -4px -4px 10px #00ccff, 0 0 15px #0099ff, 0 0 25px #0066ff, 0 0 35px #003399;
+    transform: perspective(160px) rotateY(5deg) rotateX(-5deg);
+    color: #ffffff !important;
+}
+
+/* Астральный */
+.text-clan-astral {
+    text-shadow: 2px 2px 5px #ff99cc, -2px -2px 5px #ff99cc, 4px 4px 10px #ff66cc, -4px -4px 10px #ff66cc, 6px 6px 15px #ff33cc, -6px -6px 15px #ff33cc, 0 0 25px #ff00cc;
+    transform: perspective(200px) rotateZ(-2deg) rotateY(10deg);
+    color: #ffffff !important;
+}
+
+/* Хроматический */
+.text-clan-chromatic {
+    text-shadow: 2px 0 5px #ff0000, -2px 0 5px #00ff00, 0 2px 5px #0000ff, 0 -2px 5px #ffff00, 4px 4px 10px #ff00ff, -4px -4px 10px #00ffff;
+    transform: perspective(170px) rotateX(5deg) rotateY(5deg);
+    color: #ffffff !important;
+}
+
+/* Радужная призма */
+.text-clan-rainbow-prism {
+    text-shadow: 2px 0 5px #ff0000, -2px 0 5px #00ff00, 3px 3px 8px #0000ff, -3px -3px 8px #ffff00, 4px 4px 12px #ff00ff, -4px -4px 12px #00ffff, 0 0 20px #ffffff;
+    transform: perspective(150px) rotateX(8deg) rotateY(-5deg);
+    color: #ffffff !important;
+}
+
+/* Спектральный */
+.text-clan-spectral {
+    text-shadow: 2px 2px 5px #ff3300, -2px -2px 5px #33ff00, 4px 4px 10px #0033ff, -4px -4px 10px #ff0099, 0 0 15px #9900ff, 0 0 20px #00ffff;
+    transform: perspective(180px) rotateY(10deg);
+    color: #ffffff !important;
+}
+
+/* Неоновый микс */
+.text-clan-neon-mix {
+    text-shadow: 2px 0 5px #ff00ff, -2px 0 5px #00ffff, 0 2px 8px #ffff00, 0 -2px 8px #00ff00, 4px 4px 12px #ff0066, -4px -4px 12px #0066ff;
+    transform: perspective(160px) rotateX(-5deg);
+    color: #ffffff !important;
+}
+
+/* Калейдоскоп */
+.text-clan-kaleidoscope {
+    text-shadow: 3px 0 5px #ff3399, -3px 0 5px #33ff99, 0 3px 8px #9933ff, 0 -3px 8px #ff9933, 5px 5px 15px #33ff33, -5px -5px 15px #3333ff;
+    transform: perspective(170px) rotateZ(2deg);
+    color: #ffffff !important;
+}
+
+/* Цветовая волна */
+.text-clan-color-wave {
+    text-shadow: 2px 2px 5px #ff0066, -2px -2px 5px #0066ff, 4px 4px 10px #66ff00, -4px -4px 10px #ff6600, 6px 6px 15px #00ff66, -6px -6px 15px #6600ff;
+    transform: perspective(190px) rotateX(5deg) rotateY(-8deg);
+    color: #ffffff !important;
+}
+
+/* Мультихром */
+.text-clan-multichrome {
+    text-shadow: 2px 0 5px #ff3366, -2px 0 5px #33ff66, 3px 3px 8px #6633ff, -3px -3px 8px #ff6633, 0 0 12px #66ff33, 0 0 16px #3366ff;
+    transform: perspective(200px) rotateY(12deg);
+    color: #ffffff !important;
+}
+
+/* Цветочная аура */
+.text-clan-floral-aura {
+    text-shadow: 2px 2px 5px #ff99cc, -2px -2px 5px #99ffcc, 4px 4px 10px #cc99ff, -4px -4px 10px #ffcc99, 6px 6px 15px #99ccff, -6px -6px 15px #ff99cc;
+    transform: perspective(140px) rotateX(-8deg) rotateY(5deg);
+    color: #ffffff !important;
+}
+
+/* Световой поток */
+.text-clan-light-stream {
+    text-shadow: 2px 0 5px #ffff00, -2px 0 5px #00ffff, 3px 3px 8px #ff00ff, -3px -3px 8px #00ff00, 4px 4px 12px #0000ff, -4px -4px 12px #ff0000, 0 0 20px #ffffff;
+    transform: perspective(160px) rotateZ(-3deg);
+    color: #ffffff !important;
+}
+
+/* Энергетический спектр */
+.text-clan-energy-spectrum {
+    text-shadow: 2px 2px 5px #ff3300, -2px -2px 5px #00ff33, 4px 4px 10px #3300ff, -4px -4px 10px #ff3300, 6px 6px 15px #00ff33, -6px -6px 15px #3300ff, 0 0 20px #ffffff;
+    transform: perspective(180px) rotateX(10deg) rotateY(-5deg);
+    color: #ffffff !important;
+}
+
+/* Цветовой вихрь */
+.text-clan-color-vortex {
+    text-shadow: 2px 0 5px #ff66cc, -2px 0 5px #66ccff, 3px 3px 8px #ccff66, -3px -3px 8px #ff66cc, 4px 4px 12px #66ccff, -4px -4px 12px #ccff66, 0 0 16px #ffffff;
+    transform: perspective(170px) rotateY(-8deg) rotateX(5deg);
+    color: #ffffff !important;
+}
+
+/* Пульсирующий */
+.text-clan-pulsating {
+    animation: pulse 2s infinite;
+    transform: perspective(150px) rotateX(5deg);
+    color: #ffffff !important;
+}
+
+/* Радужное сияние */
+.text-clan-rainbow-glow {
+    animation: rainbow 8s infinite;
+    color: #ffffff !important;
+}
+
+/* Электрический разряд */
+.text-clan-electric-discharge {
+    animation: electric 0.5s infinite;
+    color: #ffffff !important;
+}
+
+/* Цветовая вспышка */
+.text-clan-color-flash {
+    animation: colorFlash 6s infinite;
+    color: #ffffff !important;
+}
+
+/* Мерцающий */
+.text-clan-blinking {
+    animation: blink 1s infinite;
+    color: #ffffff !important;
+}
+
+/* Неоновый пульс */
+.text-clan-neon-pulse {
+    animation: neonPulse 2s infinite;
+    color: #ffffff !important;
+}
+
+/* Космическая пыль */
+.text-clan-space-dust {
+    animation: spaceDust 4s infinite;
+    color: #ffffff !important;
+}
+
+/* Огненный пульс */
+.text-clan-fire-pulse {
+    animation: firePulse 1.5s infinite;
+    color: #ffffff !important;
+}
+
+/* Интерактивный */
+.text-clan-interactive {
+    transition: all 0.3s ease;
+    text-shadow: 0 0 5px #ff00ff, 0 0 10px #00ffff, 0 0 15px #ffff00;
+    color: #ffffff !important;
+}
+
+.text-clan-interactive:hover {
+    text-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff, 0 0 30px #ffff00;
+    transform: scale(1.1) rotate(2deg);
+}
+
+/* Трансформация */
+.text-clan-transform {
+    transition: all 0.5s ease;
+    text-shadow: 0 0 5px #ff0000, 0 0 10px #00ff00, 0 0 15px #0000ff;
+    color: #ffffff !important;
+}
+
+.text-clan-transform:hover {
+    text-shadow: 0 0 10px #ff0000, 0 0 20px #00ff00, 0 0 30px #0000ff;
+    transform: perspective(100px) rotateY(10deg) scale(1.1);
+}

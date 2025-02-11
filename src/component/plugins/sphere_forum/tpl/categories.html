@@ -1,0 +1,1567 @@
+{# Необходимо для того чтоб сгенерировать ссылку верную на месторасположение плагина
+   потому что если мы инклюдим на главной странице, то шаблон не получает переменную template_plugin,
+   по этому мы вручную его создадим в шаблоне #}
+
+{% if setting != null %}
+    {% set template_plugin = getDirPlugin(setting) %}
+{% endif %}
+
+{% set clan = getForumClanInfo( getUser().getVar('clanId').val ) %}
+
+<div class="row">
+    <div class="col-xl-9">
+        {% if getUser().isAdmin() %}
+        <div class="sortable-categories">
+            {% endif %}
+
+            {% for category in getCategoriesForum() %}
+            <div class="card custom-card" data-category-id="{{ category.getId() }}">
+                <div class="card-header justify-content-between">
+                    <div class="card-title d-flex align-items-center">
+
+                        {% if getUser().isAdmin() %}
+                        <span class="drag-handle me-2"><i class="ri-drag-move-fill"></i></span>
+                        <div class="dropdown-toggle" data-bs-toggle="dropdown" style="text-transform: none;">
+                            <span class="text-{{ category.getTitleColor() }}">{{ category.getName() }}</span>
+                        </div>
+                        <ul class="dropdown-menu" style="">
+
+                            <li>
+                                <a data-category-id="{{ category.getId() }}"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#create-section"
+                                   class="dropdown-item" href="#">
+                                    <i class="ri-add-line"></i> Добавить раздел
+                                </a>
+                            </li>
+
+
+                            <li>
+                                <a data-category-id="{{ category.getId() }}"
+                                   data-category-name="{{ category.getName() }}"
+                                   data-category-description="{{ category.getDescription() }}"
+                                   data-category-color="{{ category.getTitleColor() }}"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#renameModal"
+                                   class="dropdown-item" href="#">
+                                    <i class="ri-refresh-fill"></i> Редактировать
+                                </a>
+                            </li>
+                            <li><a data-category-id="{{ category.getId() }}" data-bs-toggle="modal"
+                                   data-bs-target="#moveModal" class="dropdown-item" href="#">Переместить</a></li>
+                            <li><a data-category-id="{{ category.getId() }}" data-bs-toggle="modal"
+                                   data-bs-target="#deleteModal" class="dropdown-item" href="#">Удалить</a></li>
+                        </ul>
+                        {% else %}
+                        <span class="text-reset">{{ category.getName() }}</span>
+                        {% endif %}
+
+                    </div>
+
+                    {% if category.getDescription() %}
+                    <div class="text-muted">{{category.getDescription()}}</div>
+                    {% endif %}
+
+                </div>
+                <div class="card-body">
+                    <ul class="list-group sortable-subcategories" data-category-id="{{ category.getId() }}">
+
+                        {% for section in category.getSubcategories() %}
+                        <li class="list-group-item" data-section-id="{{ section.getId() }}">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    {% if getUser().isAdmin() %}
+                                    <span class="drag-handle-section me-2"><i class="ri-drag-move-fill text-muted"></i></span>
+                                    {% endif %}
+
+                                    {% if section.getIconSvg() %}
+                                    <div class="avatar avatar-sm">
+                                        {{ section.getIconSvg()|raw }}
+                                    </div>
+                                    {% else %}
+                                    <div class="avatar avatar-sm">
+                                        {% if section.getLink() %}
+                                        {# Если пользователь указал что этот топик - ссылка указываем иконку в виде
+                                        ссылки
+                                        #}
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32"
+                                             height="32"
+                                             fill="rgba(245,2,2,1)">
+                                            <path d="M13.0607 8.11097L14.4749 9.52518C17.2086 12.2589 17.2086 16.691 14.4749 19.4247L14.1214 19.7782C11.3877 22.5119 6.95555 22.5119 4.22188 19.7782C1.48821 17.0446 1.48821 12.6124 4.22188 9.87874L5.6361 11.293C3.68348 13.2456 3.68348 16.4114 5.6361 18.364C7.58872 20.3166 10.7545 20.3166 12.7072 18.364L13.0607 18.0105C15.0133 16.0578 15.0133 12.892 13.0607 10.9394L11.6465 9.52518L13.0607 8.11097ZM19.7782 14.1214L18.364 12.7072C20.3166 10.7545 20.3166 7.58872 18.364 5.6361C16.4114 3.68348 13.2456 3.68348 11.293 5.6361L10.9394 5.98965C8.98678 7.94227 8.98678 11.1081 10.9394 13.0607L12.3536 14.4749L10.9394 15.8891L9.52518 14.4749C6.79151 11.7413 6.79151 7.30911 9.52518 4.57544L9.87874 4.22188C12.6124 1.48821 17.0446 1.48821 19.7782 4.22188C22.5119 6.95555 22.5119 11.3877 19.7782 14.1214Z"></path>
+                                        </svg>
+                                        {% else %}
+                                        <svg width="64px" height="64px" viewBox="0 0 24 24" fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                               stroke-linejoin="round"></g>
+                                            <g id="SVGRepo_iconCarrier">
+                                                <path d="M17.98 10.79V14.79C17.98 15.05 17.97 15.3 17.94 15.54C17.71 18.24 16.12 19.58 13.19 19.58H12.79C12.54 19.58 12.3 19.7 12.15 19.9L10.95 21.5C10.42 22.21 9.56 22.21 9.03 21.5L7.82999 19.9C7.69999 19.73 7.41 19.58 7.19 19.58H6.79001C3.60001 19.58 2 18.79 2 14.79V10.79C2 7.86001 3.35001 6.27001 6.04001 6.04001C6.28001 6.01001 6.53001 6 6.79001 6H13.19C16.38 6 17.98 7.60001 17.98 10.79Z"
+                                                      stroke="#ff0000" stroke-width="1.5" stroke-miterlimit="10"
+                                                      stroke-linecap="round" stroke-linejoin="round"></path>
+                                                <path d="M21.98 6.79001V10.79C21.98 13.73 20.63 15.31 17.94 15.54C17.97 15.3 17.98 15.05 17.98 14.79V10.79C17.98 7.60001 16.38 6 13.19 6H6.79004C6.53004 6 6.28004 6.01001 6.04004 6.04001C6.27004 3.35001 7.86004 2 10.79 2H17.19C20.38 2 21.98 3.60001 21.98 6.79001Z"
+                                                      stroke="#ff0000" stroke-width="1.5" stroke-miterlimit="10"
+                                                      stroke-linecap="round" stroke-linejoin="round"></path>
+                                                <path d="M13.4955 13.25H13.5045" stroke="#ff0000" stroke-width="2"
+                                                      stroke-linecap="round" stroke-linejoin="round"></path>
+                                                <path d="M9.9955 13.25H10.0045" stroke="#ff0000" stroke-width="2"
+                                                      stroke-linecap="round" stroke-linejoin="round"></path>
+                                                <path d="M6.4955 13.25H6.5045" stroke="#ff0000" stroke-width="2"
+                                                      stroke-linecap="round" stroke-linejoin="round"></path>
+                                            </g>
+                                        </svg>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="ms-2 fw-semibold">
+                                        <div>
+                                            {% if section.getLink() %}
+                                            <a href="{{ section.getLink() }}"
+                                               {% if not (section.getLink() starts with '/' or section.getLink() starts
+                                            with
+                                            HTTP_HOST()) %}
+                                            target="_blank" rel="noopener noreferrer"
+                                            {% endif %}
+                                            >
+                                            {{section.getName()}}
+                                            </a>
+                                            {% else %}
+                                            <a href="/forum/{{ transliterateToEn( section.getName() ) }}.{{ section.getId() }}">
+                                                <span class="text-{{ section.getTitleColor() }}">{{ section.getName() }}</span>
+                                            </a>
+                                            {% endif %}
+
+                                            {% if section.getDescription() %}
+                                            <i class='fe fe-help-circle' data-bs-toggle="tooltip"
+                                               data-bs-placement="top"
+                                               data-bs-original-title="{{ section.getDescription() }}"></i>
+                                            {% endif %}
+
+                                            {% if section.getLink() and getUser().isAdmin() %}
+
+                                            <i class='fe fe-settings edit-link-section' role="button"
+                                               data-bs-original-title="{{ section.getDescription() }}"
+                                               data-section-id="{{ section.getId() }}"
+                                               data-section-name="{{ section.getName() }}"
+                                               data-section-link="{{ section.getLink() }}"
+
+                                               data-section-icon="{{ section.getIconSvg() }}"
+
+                                               data-bs-toggle="modal"
+                                               data-bs-target="#editLinkSectionModal"
+                                            ></i>
+
+                                            {% endif %}
+
+                                        </div>
+                                        <div class="ps-2">
+
+                                            {% if section.getSubcategories() %}
+                                            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision"
+                                                 text-rendering="geometricPrecision" image-rendering="optimizeQuality"
+                                                 fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 18 18.424"
+                                                 width="18"
+                                                 height="18.424">
+                                                <path fill="#b5b5b5" stroke="#000" stroke-width="0.5"
+                                                      fill-rule="nonzero"
+                                                      d="m9.72 5.273.591 3.866c-1.727-.156-3.671-.562-5.309-1.718C3.229 6.17 1.796 4.02 1.355.317A.36.36 0 0 0 .65.27C.255 1.453.051 2.571.009 3.617c-.118 2.862.952 5.199 2.531 6.98 1.568 1.768 3.641 2.988 5.545 3.628.783.263 1.542.43 2.227.497l-.59 3.28a.359.359 0 0 0 .581.339l7.568-6.26a.36.36 0 0 0 .048-.506l-.041-.042-7.566-6.592a.36.36 0 0 0-.59.331m1.371 4.207-.513-3.351 6.506 5.67-6.485 5.365.493-2.757a.36.36 0 0 0-.345-.372c-.721-.03-1.559-.194-2.436-.489-1.8-.605-3.757-1.755-5.235-3.423C1.611 8.467.617 6.299.726 3.645q.03-.773.193-1.601c.66 2.96 2.03 4.807 3.671 5.965 1.914 1.351 4.18 1.748 6.112 1.882l.086-.003a.36.36 0 0 0 .302-.409"/>
+                                            </svg>
+
+                                            {% for subcategory in section.getSubcategories() %}
+                                            <a href="/forum/{{ transliterateToEn( subcategory.getName() ) }}.{{ subcategory.getId() }}"
+                                               class="badge border bg-primary-transparent rounded-1 me-2 text-{{ subcategory.getTitleColor() }}">
+                                                <span class=""> {{ subcategory.getName() }} </span>
+                                            </a>
+                                            {% endfor %}
+
+                                            {% endif %}
+
+                                        </div>
+
+
+                                        {% if not section.shouldHideLastTopic() and section.getLastReplyUserId() %}
+                                        <small class="d-flex align-items-center">
+                                            <i class='bx bx-right-arrow-alt'></i>
+                                            <a href="/forum/topic/{{ transliterateToEn( section.getLastThread().getTitle() ) }}.{{ section.getLastThread().getId() }}"
+                                               class="ms-1 me-1">{{ section.getLastThread().getTitle() }}</a> от
+                                            <span class="avatar avatar-sm avatar-rounded mx-1 d-inline-block">
+                                            <img src="{{ getUser(section.getLastReplyUserId()).getAvatar() }}" alt="img"
+                                                 class="rounded-circle">
+                                        </span>
+                                            <span class="">{{ getUser(section.getLastReplyUserId()).getName() }}</span>
+                                        </small>
+                                        {% endif %}
+
+                                    </div>
+
+
+                                </div>
+                                {% if section.getLink() == false %}
+                                <div>
+                                    <small>Тем: <strong>{{section.getThreadCount()}}</strong></small><br>
+                                    <small>Сообщений: <strong>{{section.getPostCount()}}</strong></small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </li>
+                        {% endfor %}
+
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if getUser().isAdmin() %}
+        </div>
+        {% endif %}
+
+    </div>
+
+    <div class="col-xl-3">
+
+        {% if getUser().isAdmin() %}
+
+        <div class="card custom-card">
+            <div class="card-header">
+                <div class="card-title">Управление форумом</div>
+            </div>
+
+            <div class="card-body">
+                <ul class="list-group followers-list">
+                    <li class="list-group-item">
+                        <div class="d-grid gap-2 col-9 mx-auto">
+                            <button data-bs-toggle="modal" data-bs-target="#create-category"
+                                    class="btn btn-light  btn-sm waves-effect waves-light">Создать категорию
+                            </button>
+                            {% if getCategoriesForum() %}
+                            <button data-bs-toggle="modal" data-bs-target="#create-section"
+                                    class="btn btn-light  btn-sm waves-effect waves-light">Создать раздел
+                            </button>
+                            {% endif %}
+                        </div>
+                    </li>
+
+                    <li class="list-group-item">
+                        <div class="d-grid gap-2 col-9 mx-auto">
+                            <a href="/forum/moderators" class="btn btn-light btn-wave btn-sm waves-effect waves-light">Модераторы
+                            </a>
+                        </div>
+                    </li>
+
+
+                </ul>
+
+            </div>
+
+        </div>
+
+
+        <div class="modal modal-lg fade" id="create-category" tabindex="-1" aria-labelledby="create-categoryLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="mail-ComposeLabel">Добавление новой категории</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body px-4">
+                        <div class="row">
+                            <div class="col-xl-4 mb-2">
+                                <label for="newCategoryName" class="form-label">Название<sup><i
+                                        class="ri-star-s-fill text-danger fs-8"></i></sup></label>
+                                <input type="text" class="form-control" id="newCategoryName" value="">
+                            </div>
+                            <div class="col-xl-8 mb-2">
+                                <label for="newCategoryDesc" class="form-label">Описание</label>
+                                <input type="text" class="form-control" id="newCategoryDesc" placeholder="">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="createNewCategory" type="button" class="btn btn-success btn-sm">Создать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $('#createNewCategory').on('click', function () {
+                let name = $('#newCategoryName').val();
+                let description = $('#newCategoryDesc').val();
+
+                AjaxSend("/forum/category/create", "POST", {
+                    name: name,
+                    description: description,
+                });
+            });
+        </script>
+
+        <div class="modal modal-lg fade" id="create-section" tabindex="-1" aria-labelledby="create-sectionLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="nameSection">Добавление нового раздела</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body px-4">
+                        <div class="row">
+                            <div class="col-xl-4 mb-2">
+                                <label for="createNameSection" class="form-label">Название<sup><i
+                                        class="ri-star-s-fill text-danger fs-8"></i></sup></label>
+                                <input type="text" class="form-control" id="createNameSection" value="">
+                            </div>
+
+                            <div class="col-xl-8 mb-2">
+                                <label for="createDescSection" class="form-label">Описание</label>
+                                <input type="text" class="form-control" id="createDescSection" placeholder="">
+                            </div>
+
+
+                            <style>
+                                .color-picker {
+                                    display: flex;
+                                    flex-wrap: wrap;
+                                    gap: 1rem;
+                                }
+
+                                .color-option {
+                                    padding: 0.5rem 1rem;
+                                    border: 2px solid transparent;
+                                    border-radius: 0.5rem;
+                                    cursor: pointer;
+                                    transition: all 0.2s ease;
+                                }
+
+                                .color-option:hover {
+                                    background-color: rgba(0,0,0,0.05);
+                                }
+
+                                .color-option.selected {
+                                    border-color: var(--bs-primary);
+                                    background-color: rgba(var(--bs-primary-rgb), 0.1);
+                                }
+
+                                .color-preview {
+                                    display: block;
+                                    font-size: 1rem;
+                                    margin-bottom: 0.25rem;
+                                }
+                            </style>
+
+
+                            <div class="col-xl-12 mb-3">
+                                <label class="form-label">Цвет названия</label>
+                                <div class="d-flex flex-wrap gap-3 color-picker">
+                                    <div class="color-option" data-color="primary">
+                                        <span class="color-preview text-primary fw-bold">Текст</span>
+                                        <small class="d-block text-muted">.text-primary</small>
+                                    </div>
+                                    <div class="color-option" data-color="secondary">
+                                        <span class="color-preview text-secondary fw-bold">Текст</span>
+                                        <small class="d-block text-muted">.text-secondary</small>
+                                    </div>
+                                    <div class="color-option" data-color="warning">
+                                        <span class="color-preview text-warning fw-bold">Текст</span>
+                                        <small class="d-block text-muted">.text-warning</small>
+                                    </div>
+                                    <div class="color-option" data-color="info">
+                                        <span class="color-preview text-info fw-bold">Текст</span>
+                                        <small class="d-block text-muted">.text-info</small>
+                                    </div>
+                                    <div class="color-option" data-color="success">
+                                        <span class="color-preview text-success fw-bold">Текст</span>
+                                        <small class="d-block text-muted">.text-success</small>
+                                    </div>
+                                    <div class="color-option" data-color="danger">
+                                        <span class="color-preview text-danger fw-bold">Текст</span>
+                                        <small class="d-block text-muted">.text-danger</small>
+                                    </div>
+                                    <div class="color-option" data-color="light">
+                                        <span class="color-preview text-light fw-bold bg-dark">Текст</span>
+                                        <small class="d-block text-muted">.text-light</small>
+                                    </div>
+                                    <div class="color-option" data-color="dark">
+                                        <span class="color-preview text-dark fw-bold">Текст</span>
+                                        <small class="d-block text-muted">.text-dark</small>
+                                    </div>
+                                    <div class="color-option" data-color="muted">
+                                        <span class="color-preview text-muted fw-bold">Текст</span>
+                                        <small class="d-block text-muted">.text-muted</small>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="selectedTitleColor" value="dark">
+                            </div>
+
+                            <div class="col-sm-12">
+                                <label for="parent" class="form-label">Категория</label>
+                                <select class="form-select" id="parent">
+                                    {% for category in getCategoriesForum() %}
+                                    <option value="{{category.getId()}}">{{ category.getName() }}</option>
+                                    {% for section in category.getSubcategories() %}
+                                    <option value="{{section.getId()}}">->{{ section.getName() }}</option>
+                                    {% endfor %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-xl-12 mt-2">
+                                <label for="createIconSection" class="form-label">Иконка (svg или html)</label>
+                                <textarea class="form-control" id="createIconSection" placeholder=""></textarea>
+                                <div class="mt-2">
+                                    <label class="form-label">Предварительный просмотр:</label>
+                                    <div id="createIconPreview" class="border p-2 text-center">
+                                        <small class="text-muted">Предварительный просмотр появится здесь</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-12 mt-2">
+                                <label for="createNameSection" class="form-label">Ссылка
+                                    <sub>(при клике будет переходить по указанной ссылке)</sub></label>
+                                <input type="text" class="form-control" id="createLinkSection" value="">
+                            </div>
+
+                            <div class="col-xl-12 mt-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="isHidden">
+                                    <label class="form-check-label" for="isHidden">
+                                        Скрыть раздел для всех кроме администраторов и модераторов?
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="canCreateTopics" checked>
+                                    <label class="form-check-label" for="canCreateTopics">
+                                        Можно создавать темы пользователям?
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="canReplyTopics" checked>
+                                    <label class="form-check-label" for="canReplyTopics">
+                                        Можно пользователям отвечать в темах?
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="canViewTopics" checked>
+                                    <label class="form-check-label" for="canViewTopics">
+                                        Могут пользователи просматривать чужие темы?
+                                    </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="isModerated">
+                                    <label class="form-check-label" for="isModerated">
+                                        Требовать одобрения темы модератором перед публикацией?
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="canUsersDeleteOwnThreads">
+                                    <label class="form-check-label" for="canUsersDeleteOwnThreads">
+                                        Разрешить пользователям удалять свои темы?
+                                    </label>
+                                </div>
+
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="canUsersDeleteOwnPosts">
+                                    <label class="form-check-label" for="canUsersDeleteOwnPosts">
+                                        Позволить пользователям удалять свои сообщения?
+                                    </label>
+                                </div>
+
+                                <div class="form-group mt-2" id="postDeleteTimeoutGroup" style="display: none;">
+                                    <label for="postDeleteTimeoutMinutes">Время на удаление сообщения (в
+                                        минутах)</label>
+                                    <input type="number" class="form-control" id="postDeleteTimeoutMinutes"
+                                           value="30" min="1" max="10080">
+                                    <small class="form-text text-muted">После истечения этого времени пользователи не
+                                        смогут удалить свои сообщения. Максимум - 7 дней (10080 минут)</small>
+                                </div>
+
+
+                                <div class="form-group mt-2">
+                                    <label for="maxPostLength">Максимальное количество символов в сообщении</label>
+                                    <input type="number" class="form-control" id="maxPostLength"
+                                           value="20000" min="1" max="300000">
+                                    <small class="form-text text-muted">Минимум - 1, максимум - 300.000 символов</small>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="hideLastTopic">
+                                    <label class="form-check-label" for="hideLastTopic">
+                                        Не показывать последнюю тему раздела
+                                    </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="notifyTelegram">
+                                    <label class="form-check-label" for="notifyTelegram">
+                                        Уведомлять в Telegram при новых темах?
+                                    </label>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="createNewSection" type="button" class="btn btn-success btn-sm">Создать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endif %}
+
+        {% if getUser().isAdmin() or isModerator(getUser().getId()) %}
+        {% set awaitingThreads = getAwaitingModerationThreads() %}
+        {% if awaitingThreads %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Темы на модерации</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for thread in awaitingThreads %}
+                    <div class="list-group-item">
+                        <div class="d-flex">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <a href="/forum/topic/{{ transliterateToEn(thread.title) }}.{{ thread.id }}">
+                                        {{ thread.title }}
+                                    </a>
+                                </h6>
+                                <div class="text-muted small mb-2 ">
+                                    Категория: {{ thread.category.name }}<br>
+                                    Автор:
+                                    <span class="avatar avatar-xs avatar-rounded">
+                                                        <img src="{{getUser(thread.author.id).getAvatar()}}" alt=""
+                                                             id="profile-img">
+                                                    </span>
+                                    {{ thread.author.name }}<br>
+                                    Создано: {{ thread.created_at|date("d.m.Y H:i") }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        {% if getUser().isAuth() %}
+        <div class="card">
+            <div class="accordion accordions-items-separate" id="accordionFAQ1">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingcustomicon1One">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapsecustomicon1One" aria-expanded="true"
+                                aria-controls="collapsecustomicon1One">
+                            Персональные настройки
+                        </button>
+                    </h2>
+                    <div id="collapsecustomicon1One" class="accordion-collapse collapse"
+                         aria-labelledby="headingcustomicon1One" data-bs-parent="#accordionFAQ1">
+                        {# В блоке настроек #}
+                        <div class="accordion-body">
+                            {# Получаем текущие настройки пользователя #}
+                            {% set userSettings = getForumUserSettings(getUser().getId()) %}
+                            <form>
+                                <div class="form-check form-switch ">
+                                    <input class="form-check-input profileForumSetting" type="checkbox" id="showCharacters"
+                                           {% if getForumUserSettings(getUser().getId()).showCharacters %}checked{% endif %}>
+                                    <label class="form-check-label" for="showCharacters">
+                                        Показывать Ваших персонажей
+                                    </label>
+                                </div>
+
+                                <div class="form-check form-switch ">
+                                    <input class="form-check-input profileForumSetting" type="checkbox" id="showPvPPK"
+                                           {% if getForumUserSettings(getUser().getId()).showPvPPK %}checked{% endif %}>
+                                    <label class="form-check-label" for="showPvPPK">
+                                        Показывать кол-во PvP/PK
+                                    </label>
+                                </div>
+
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input profileForumSetting" type="checkbox" id="showGameTime"
+                                           {% if getForumUserSettings(getUser().getId()).showGameTime %}checked{% endif %}>
+                                    <label class="form-check-label" for="showGameTime">
+                                        Показывать сколько времени в игре
+                                    </label>
+                                </div>
+
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input profileForumSetting" type="checkbox" id="showFlagCountry"
+                                           {% if getForumUserSettings(getUser().getId()).showFlagCountry %}checked{% endif %}>
+                                    <label class="form-check-label" for="showFlagCountry">
+                                        Показывать Ваш флаг
+                                    </label>
+                                </div>
+
+                            </form>
+
+                            <script>
+                                $(document).ready(function() {
+                                    $('.profileForumSetting').on('change', function() {
+                                        const setting = $(this).attr('id');
+                                        const value = $(this).is(':checked');
+                                        AjaxSend('/forum/user/settings/update', 'POST', {
+                                            setting: setting,
+                                            value: value
+                                        });
+                                    });
+                                });
+                            </script>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {# Кланы форума #}
+        <div class="card custom-card">
+            <div class="card-header">
+                <div class="card-title"><a href="/forum/clans">Кланы</a></div>
+                <div class="ms-auto  ">
+                    {% if clan %}
+                    <a href="/forum/clan/{{clan.name}}" class="btn btn-sm  btn-info-light ">{{clan.name}}</a>
+                    {% else %}
+                    <a href="/forum/clan/create" class="btn btn-sm  btn-info-light ">Создать клан</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                {% for clan in getClanList() %}
+                <div class="d-flex overflow-visible mb-2">
+                    <img class="avatar bradius avatar-xl me-3" src="{% if clan.getLogo() %}/uploads/clans/{{ clan.getLogo() }}{% else %}{{template_plugin}}/tpl/img/avatar_clan_default.png{% endif %}" alt="avatar-img">
+                    <div class="media-body valign-middle">
+                        <a href="/forum/clan/{{ clan.getName() }}" class="fw-semibold text-dark"> {{ clan.getName() }}</a>
+                        <p class="text-muted mb-0"> {{ clan.getDesc() }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+
+        {% if getUser().isAuth() %}
+        <div class="card custom-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-title">
+                    <i class="ri-notification-3-line me-2"></i>Уведомления форума
+                    {% set unreadCount = getForumUnreadNotificationsCount() %}
+                    {% if unreadCount > 0 %}
+                    <span class="badge bg-danger">{{ unreadCount }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% set notifications = getForumLatestNotifications(5) %}
+                    {% if notifications|length > 0 %}
+                    {% for notification in notifications %}
+                    {% set user = getUser(notification.from_user_id) %}
+                    <a href="/forum/topic/{{ transliterateToEn(notification.thread_title) }}.{{ notification.thread_id }}{% if notification.post_id != notification.first_post_id %}#post-{{ notification.post_id }}{% endif %}"
+                       class="list-group-item list-group-item-action {% if not notification.is_read %}unread bg-light{% endif %}">
+                        <div class="d-flex align-items-center">
+                            <div class="notification-icon me-2">
+                                {% if notification.notification_type == 'reply_to_post' %}
+                                <i class="ri-reply-line text-primary"></i>
+                                {% else %}
+                                <i class="ri-message-2-line text-success"></i>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold d-flex align-items-center">
+                                    <span class="avatar avatar-xs {% if user.isOnline() %}online{%else%}offline{% endif %} me-1  ">
+                                            <img src="{{user.getAvatar()}}" alt="" class="">
+                                    </span>
+                                    {{ user.getName() }}
+                                    {% if notification.notification_type == 'reply_to_post' %}
+                                    ответил на ваше сообщение
+                                    {% else %}
+                                    оставил сообщение
+                                    {% endif %}
+                                </div>
+                                <div class="text-muted small">
+                                    в теме "{{ notification.thread_title }}"
+                                </div>
+                                <div class="notification-preview text-muted small">
+                                    {{ notification.post_preview|striptags|slice(0, 100) }}...
+                                </div>
+                                <div class="text-muted small mt-1">
+                                    {{ notification.created_at|date("d.m.Y H:i") }}
+                                </div>
+                            </div>
+                            {% if not notification.is_read %}
+                            <div class="ms-2">
+                                <span class="badge bg-primary">Новое</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </a>
+                    {% endfor %}
+                    {% else %}
+                    <div class="list-group-item text-center text-muted py-3">
+                        <i class="ri-inbox-line me-2"></i>Нет новых уведомлений
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% if notifications|length > 0 %}
+            <div class="card-footer text-center">
+                <button type="button" class="btn btn-sm btn-light mark-all-read">
+                    <i class="ri-check-double-line me-1"></i>Отметить все как прочитанные
+                </button>
+            </div>
+            {% endif %}
+
+            <script>
+                $(document).ready(function() {
+                    $('.mark-all-read').on('click', function() {
+                        AjaxSend('/forum/notifications/mark-all-read', 'POST', {}, true)
+                            .then(function(response) {
+                                if (response.ok) {
+                                    $('.unread').removeClass('unread bg-light');
+                                    $('.badge').remove();
+                                }
+                            });
+                    });
+                });
+            </script>
+
+        </div>
+        {% endif %}
+
+
+        <div class="card custom-card">
+            <div class="card-body">
+                <ul class="nav nav-tabs mb-3 nav-justified nav-style-1 d-sm-flex d-block" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" role="tab" href="#last-messages"
+                           aria-selected="false">Сообщения</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" role="tab" href="#last-topics"
+                           aria-selected="false">Темы</a>
+                    </li>
+
+
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane show active text-muted" id="last-messages" role="tabpanel">
+                        {% for i, lastMessage in getLastMessagesForum() %}
+                        {% set user = getUser(lastMessage.getUserId()) %}
+                        <div class="message-block border-0 bg-transparent mb-2">
+                            <div class="d-flex">
+                                <div class="me-3">
+                <span class="avatar avatar-md avatar-rounded bg-light text-muted">
+                    <img src="{{user.getAvatar()}}" alt="img">
+                </span>
+                                </div>
+                                <div class="flex-fill overflow-hidden"> <!-- добавлен класс overflow-hidden -->
+                                    <a href="/forum/topic/{{transliterateToEn(lastMessage.getTitle())}}.{{lastMessage.getThreadId()}}"
+                                       class="text-primary ">
+                                        <p class="{% if lastMessage.hasUnread %}fw-semibold{% endif %} mb-0 fs-14 text-break">
+                                            {% if thread.is_pinned %}<i class="ri-pushpin-line me-1"></i>{% endif %}
+                                            {% if thread.is_closed %}<i class="ri-lock-line me-1"></i>{% endif %}
+                                            {% if lastMessage.hasUnread %}
+                                            <i data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Новое сообщение" class="bi bi-envelope-plus text-success"></i>
+                                            {% endif %}
+                                            {{lastMessage.getTitle()}}
+                                        </p>
+                                    </a>
+                                    <span class="fs-12">От <a href="javascript:void(0);"
+                                                              class="font-weight-semibold text-primary">{{user.getName()}}</a> - {{lastMessage.getUpdatedAt() | date("d F - H:i")}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="tab-pane text-muted" id="last-topics" role="tabpanel">
+                        {% for thread in getLastThreadsForum() %}
+                        {% set user = getUser(thread.author.id) %}
+                        <div class="message-block border-0 bg-transparent mb-2">
+                            <div class="d-flex">
+                                <div class="me-3">
+                <span class="avatar avatar-md avatar-rounded bg-light text-muted">
+                    <img src="{{user.getAvatar()}}" alt="img">
+                </span>
+                                </div>
+                                <div class="flex-fill overflow-hidden">
+                                    <a href="/forum/topic/{{transliterateToEn(thread.title)}}.{{thread.id}}"
+                                       class="text-primary">
+                                        <p class="{% if thread.hasUnread %}fw-semibold{% endif %} mb-0 fs-14 text-break">
+                                            {% if thread.is_pinned %}<i class="ri-pushpin-line me-1"></i>{% endif %}
+                                            {% if thread.is_closed %}<i class="ri-lock-line me-1"></i>{% endif %}
+                                            {% if thread.hasUnread %}
+                                            <i  class="bi bi-envelope-plus text-success"></i>
+                                            {% endif %}
+                                            {{thread.title}}
+                                        </p>
+                                    </a>
+                                    <span class="fs-12">
+                    <a href="/forum/{{transliterateToEn(thread.category.name)}}.{{thread.category.id}}"
+                       class="font-weight-semibold text-primary">{{thread.category.name}}</a>
+                    от <a href="javascript:void(0);"
+                          class="font-weight-semibold text-primary">{{user.getName()}}</a>
+                </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        {% set forumStatistic = getStatisticForum() %}
+        <div class="card custom-card">
+            <div class="card-header">
+                <div class="card-title"><i class="fe fe-bar-chart-2 me-2"></i> Статистика форума</div>
+            </div>
+            <div class="card-body px-0 py-2">
+                <div class="list-group">
+                    <a class="list-group-item list-group-item-action border-0 py-2" href="javascript:void(0)"><span><i
+                            class="fe fe-chevron-right transform-arrow d-inline-flex lh-sm"></i> Темы</span><span
+                            class="badge float-end bg-light text-dark">{{forumStatistic.topics}}</span></a>
+                    <a class="list-group-item list-group-item-action border-0 py-2" href="javascript:void(0)"><span><i
+                            class="fe fe-chevron-right transform-arrow d-inline-flex lh-sm"></i> Сообщения</span><span
+                            class="badge float-end bg-light text-dark">{{forumStatistic.messages}}</span></a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% if getUser().isAdmin() %}
+
+<div class="modal fade" id="renameModal" tabindex="-1" aria-labelledby="renameModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="renameModalLabel">Редактирование категории</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Название категории -->
+                <div class="mb-3">
+                    <label for="renameCategoryName" class="form-label">Название категории:</label>
+                    <input type="text" class="form-control" id="renameCategoryName" placeholder="Введите название">
+                </div>
+
+                <!-- Добавляем выбор цвета -->
+                <div class="mb-3">
+                    <label class="form-label">Цвет названия</label>
+                    <div class="d-flex flex-wrap gap-3 color-picker-edit">
+                        <div class="color-option-edit" data-color="primary">
+                            <span class="color-preview text-primary fw-bold">Текст</span>
+                            <small class="d-block text-muted">.text-primary</small>
+                        </div>
+                        <div class="color-option-edit" data-color="secondary">
+                            <span class="color-preview text-secondary fw-bold">Текст</span>
+                            <small class="d-block text-muted">.text-secondary</small>
+                        </div>
+                        <div class="color-option-edit" data-color="warning">
+                            <span class="color-preview text-warning fw-bold">Текст</span>
+                            <small class="d-block text-muted">.text-warning</small>
+                        </div>
+                        <div class="color-option-edit" data-color="info">
+                            <span class="color-preview text-info fw-bold">Текст</span>
+                            <small class="d-block text-muted">.text-info</small>
+                        </div>
+                        <div class="color-option-edit" data-color="success">
+                            <span class="color-preview text-success fw-bold">Текст</span>
+                            <small class="d-block text-muted">.text-success</small>
+                        </div>
+                        <div class="color-option-edit" data-color="danger">
+                            <span class="color-preview text-danger fw-bold">Текст</span>
+                            <small class="d-block text-muted">.text-danger</small>
+                        </div>
+                        <div class="color-option-edit" data-color="light">
+                            <span class="color-preview text-light fw-bold bg-dark">Текст</span>
+                            <small class="d-block text-muted">.text-light</small>
+                        </div>
+                        <div class="color-option-edit" data-color="dark">
+                            <span class="color-preview text-dark fw-bold">Текст</span>
+                            <small class="d-block text-muted">.text-dark</small>
+                        </div>
+                        <div class="color-option-edit" data-color="muted">
+                            <span class="color-preview text-muted fw-bold">Текст</span>
+                            <small class="d-block text-muted">.text-muted</small>
+                        </div>
+                    </div>
+                    <input type="hidden" id="editSelectedTitleColor" value="dark">
+                </div>
+
+                <!-- Описание категории -->
+                <div class="mb-3">
+                    <label for="renameCategoryDescription" class="form-label">Описание категории:</label>
+                    <textarea class="form-control" id="renameCategoryDescription" rows="3"
+                              placeholder="Введите описание категории"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button id="saveRenameCategory" data-category-id="" type="button" class="btn btn-primary">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Добавляем стили -->
+<style>
+    .color-picker-edit {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .color-option-edit {
+        padding: 0.5rem 1rem;
+        border: 2px solid transparent;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .color-option-edit:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    .color-option-edit.selected {
+        border-color: var(--bs-primary);
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+    }
+
+    .color-preview {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+</style>
+
+<div class="modal fade" id="moveModal" tabindex="-1" aria-labelledby="moveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="moveModalLabel">Переместить</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="saveMoveCategorySelect" class="form-label">Выберите папку назначения:</label>
+                    <select class="form-select" id="saveMoveCategorySelect">
+                        {% for category in getCategoriesForum() %}
+                        <option value="{{category.getId()}}">{{ category.getName() }}</option>
+                        {% for section in category.getSubcategories() %}
+                        <option value="{{section.getId()}}">->{{ section.getName() }}</option>
+                        {% endfor %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button id="saveMoveCategory" data-category-id="" type="button" class="btn btn-primary">Переместить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Удаление категории</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Вы действительно хотите удалить эту категорию?</p>
+
+                <div class="mb-3">
+                    <label for="threadAction" class="form-label">Действие для тем категории:</label>
+                    <select class="form-select" id="threadAction">
+                        <option value="delete">Удалить темы</option>
+                        <option value="move">Переместить в другую категорию</option>
+                    </select>
+                </div>
+
+                <div id="categorySelect" class="mb-3" style="display: none;">
+                    <label for="destinationCategory" class="form-label">Выберите категорию для перемещения:</label>
+                    <select class="form-select" id="destinationCategory">
+                        {% for category in getCategoriesForum() %}
+                        {% if category.getId() != currentCategory.getId() %}
+                        <option value="{{category.getId()}}">{{ category.getName() }}</option>
+                        {% for section in category.getSubcategories() %}
+                        {% if section.getId() != currentCategory.getId() %}
+                        <option value="{{section.getId()}}">→ {{ section.getName() }}</option>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-danger" id="categoryDelete">Удалить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="editLinkSectionModal" tabindex="-1" aria-labelledby="editLinkSectionModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editLinkSectionModalLabel">Редактирование ссылки и иконки</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="editLinkSectionName" class="form-label">Название:</label>
+                            <input type="text" class="form-control" id="editLinkSectionName"
+                                   placeholder="Введите название">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editLinkSectionUrl" class="form-label">Ссылка:</label>
+                            <input type="url" class="form-control" id="editLinkSectionUrl" placeholder="Введите URL">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="editLinkSectionIcon" class="form-label">
+                                SVG Иконка
+                                <small class="text-muted">(HTML или SVG код)</small>
+                            </label>
+                            <textarea
+                                    class="form-control"
+                                    id="editLinkSectionIcon"
+                                    rows="5"
+                                    placeholder="Вставьте SVG код иконки"
+                            ></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Предварительный просмотр:</label>
+                            <div id="iconPreview" class="border p-2 text-center">
+                                <small class="text-muted">Предварительный просмотр появится здесь</small>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button id="saveLinkSection" data-section-id="" type="button" class="btn btn-primary">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+
+        // Обработчик открытия модального окна редактирования ссылки
+        $(document).on('click', '.edit-link-section', function (e) {
+            e.preventDefault();
+
+            // Получаем данные из кнопки
+            const sectionId = $(this).data('section-id');
+            const sectionName = $(this).data('section-name');
+            const sectionLink = $(this).data('section-link');
+            const sectionIcon = $(this).data('section-icon') || '';
+
+            // Находим модальное окно
+            const modal = $('#editLinkSectionModal');
+
+            // Обновляем data-section-id в кнопке "Сохранить"
+            modal.find('#saveLinkSection').attr('data-section-id', sectionId);
+
+            // Заполняем поля текущими значениями
+            modal.find('#editLinkSectionName').val(sectionName);
+            modal.find('#editLinkSectionUrl').val(sectionLink);
+            modal.find('#editLinkSectionIcon').val(sectionIcon);
+
+            updateSvgPreview(sectionIcon, '#iconPreview');
+        });
+
+
+
+        // Сохранение изменений для ссылки
+        $(document).on('click', '#saveLinkSection', function (e) {
+            e.preventDefault();
+
+            const sectionId = $(this).data('section-id');
+            const newName = $('#editLinkSectionName').val().trim();
+            const newLink = $('#editLinkSectionUrl').val().trim();
+            const newIcon = $('#editLinkSectionIcon').val().trim();
+
+            // Базовая валидация
+            if (newName === '') {
+                noticeError('Название не может быть пустым');
+                return;
+            }
+
+            if (newLink === '' || !isValidUrl(newLink)) {
+                noticeError('Введите корректный URL');
+                return;
+            }
+
+            AjaxSend('/forum/section/update', 'POST', {
+                sectionId: sectionId,
+                name: newName,
+                link: newLink,
+                icon: newIcon
+            }, false);
+        });
+
+        // Функция проверки URL
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+    });
+</script>
+
+{% endif %}
+
+<script>
+    $(document).ready(function () {
+
+
+        $(document).on('click', '[data-bs-target="#create-section"]', function (e) {
+            e.preventDefault();
+            const categoryId = $(this).data('category-id');
+
+            // Устанавливаем выбранную категорию в селекте
+            $('#parent').val(categoryId);
+
+            // Если селект скрыт (например, через Bootstrap classes), показываем его
+            $('#parent').closest('.col-sm-12').show();
+        });
+
+        // Показ/скрытие полей для времени удаления
+        $('#canUsersDeleteOwnThreads').change(function () {
+            $('#threadDeleteTimeoutGroup').toggle(this.checked);
+        });
+
+        $('#canUsersDeleteOwnPosts').change(function () {
+            $('#postDeleteTimeoutGroup').toggle(this.checked);
+        });
+
+// Обработка выбора цвета
+        $('.color-option').on('click', function() {
+            $('.color-option').removeClass('selected');
+            $(this).addClass('selected');
+            $('#selectedTitleColor').val($(this).data('color'));
+
+            // Обновляем предпросмотр названия
+            const color = $(this).data('color');
+            const title = $('#createNameSection').val() || 'Название раздела';
+            $('#createNameSection').attr('class', `form-control text-${color}`);
+        });
+
+// Обновляем цвет при вводе названия
+        $('#createNameSection').on('input', function() {
+            const color = $('#selectedTitleColor').val();
+            $(this).attr('class', `form-control text-${color}`);
+        });
+
+        $('#createNewSection').on('click', function () {
+            let name = $('#createNameSection').val();
+            let description = $('#createDescSection').val();
+            let titleColor = $('#selectedTitleColor').val();
+
+            let parent = $('#parent').val();
+            let icon = $('#createIconSection').val();
+            let link = $('#createLinkSection').val();
+
+            let isHidden = $('#isHidden').is(':checked');
+            let canCreateTopics = $('#canCreateTopics').is(':checked');
+            let canReplyTopics = $('#canReplyTopics').is(':checked');
+            let canViewTopics = $('#canViewTopics').is(':checked');
+            let isModerated = $('#isModerated').is(':checked');
+
+            let editTimeoutMinutes = $('#editTimeoutMinutes').val();
+            let notifyTelegram = $('#notifyTelegram').is(':checked');
+
+            // Настройки удаления тем
+            let canUsersDeleteOwnThreads = $('#canUsersDeleteOwnThreads').is(':checked');
+            let threadDeleteTimeoutMinutes = canUsersDeleteOwnThreads ?
+                Math.min(Math.max(1, parseInt($('#threadDeleteTimeoutMinutes').val()) || 30), 10080) : 30;
+
+            // Настройки удаления сообщений
+            let canUsersDeleteOwnPosts = $('#canUsersDeleteOwnPosts').is(':checked');
+            let postDeleteTimeoutMinutes = canUsersDeleteOwnPosts ?
+                Math.min(Math.max(1, parseInt($('#postDeleteTimeoutMinutes').val()) || 30), 10080) : 30;
+
+            // Валидация значения
+            if (threadDeleteTimeoutMinutes < 1) threadDeleteTimeoutMinutes = 1;
+            if (threadDeleteTimeoutMinutes > 10080) threadDeleteTimeoutMinutes = 10080;
+
+            let maxPostLength = Math.min(Math.max(100,
+                parseInt($('#maxPostLength').val()) || 10000), 50000);
+
+            let hideLastTopic = $('#hideLastTopic').is(':checked');
+
+            AjaxSend("/forum/section/create", "POST", {
+                name: name,
+                description: description,
+                parent: parent,
+                icon: icon,
+                link: link,
+                isHidden: isHidden,
+                canCreateTopics: canCreateTopics,
+                canReplyTopics: canReplyTopics,
+                canViewTopics: canViewTopics,
+                isModerated: isModerated,
+                canUsersDeleteOwnThreads: canUsersDeleteOwnThreads,
+                canUsersDeleteOwnPosts: canUsersDeleteOwnPosts,
+                editTimeoutMinutes: editTimeoutMinutes,
+                notifyTelegram: notifyTelegram,
+                threadDeleteTimeoutMinutes: threadDeleteTimeoutMinutes,
+                postDeleteTimeoutMinutes: postDeleteTimeoutMinutes,
+                maxPostLength: maxPostLength,
+                hideLastTopic: hideLastTopic,
+                titleColor: titleColor,
+            });
+        });
+
+        // Сброс формы при закрытии модального окна
+        $('#create-section').on('hidden.bs.modal', function () {
+            $('#createNameSection').val('');
+            $('#createDescSection').val('');
+            $('#createIconSection').val('');
+            $('#createLinkSection').val('');
+            // Сброс чекбоксов на дефолтные значения
+            $('#isHidden').prop('checked', false);
+            $('#canCreateTopics').prop('checked', true);
+            $('#canReplyTopics').prop('checked', true);
+            $('#canViewTopics').prop('checked', true);
+            $('#isModerated').prop('checked', true);
+            $('#notifyTelegram').prop('checked', false);
+
+            // Сброс настроек удаления тем
+            $('#canUsersDeleteOwnThreads').prop('checked', false);
+            $('#threadDeleteTimeoutMinutes').val('30');
+            $('#threadDeleteTimeoutGroup').hide();
+
+            // Сброс настроек удаления сообщений
+            $('#canUsersDeleteOwnPosts').prop('checked', false);
+            $('#postDeleteTimeoutMinutes').val('30');
+            $('#postDeleteTimeoutGroup').hide();
+
+            $('#maxPostLength').val('20000');
+            $('#hideLastTopic').prop('checked', false);
+
+        });
+
+
+        let categoryToDelete = null;
+
+// Показываем/скрываем селект категорий при изменении действия
+        $('#threadAction').on('change', function () {
+            if ($(this).val() === 'move') {
+                $('#categorySelect').show();
+            } else {
+                $('#categorySelect').hide();
+            }
+        });
+
+        // При открытии модального окна
+        $(document).on('click', '[data-bs-target="#deleteModal"]', function (e) {
+            e.preventDefault();
+            categoryToDelete = $(this).data('category-id');
+        });
+
+        // При подтверждении удаления
+        $('#categoryDelete').on('click', function () {
+            if (!categoryToDelete) return;
+
+            const action = $('#threadAction').val();
+            const destinationCategoryId = action === 'move' ? $('#destinationCategory').val() : null;
+
+            AjaxSend('/forum/category/delete', 'POST', {
+                categoryId: categoryToDelete,
+                action: action,
+                destinationCategoryId: destinationCategoryId
+            }).then(function (response) {
+                if (response.ok) {
+                    $('#deleteModal').modal('hide');
+                    if (response.redirect) {
+                        window.location.href = response.redirect;
+                    } else {
+                        window.location.reload();
+                    }
+                }
+            });
+        });
+
+
+        $(document).on('click', '[data-bs-target="#moveModal"]', function (e) {
+            e.preventDefault();
+            const categoryId = $(this).data('category-id');
+            $('#moveModal').find('#saveMoveCategory').attr('data-category-id', categoryId);
+        });
+
+        $(document).on('click', '#saveMoveCategory', function (e) {
+            e.preventDefault();
+            const categoryId = $(this).data('category-id');
+            const saveMoveCategorySelect = $('#saveMoveCategorySelect').val();
+            AjaxSend('/forum/category/move', 'POST', {
+                categoryId: categoryId,
+                toMoveCategory: saveMoveCategorySelect
+            }, false);
+        });
+
+            // При открытии модального окна редактирования
+            $(document).on('click', '[data-bs-target="#renameModal"]', function(e) {
+                e.preventDefault();
+
+                // Получаем данные из элемента
+                const categoryId = $(this).data('category-id');
+                const categoryName = $(this).data('category-name');
+                const categoryDesc = $(this).data('category-description');
+                const titleColor = $(this).data('category-color') || 'dark'; // Добавляем получение цвета
+
+                // Находим модальное окно
+                const modal = $('#renameModal');
+
+                // Устанавливаем значения
+                modal.find('#saveRenameCategory').attr('data-category-id', categoryId);
+                modal.find('#renameCategoryName')
+                    .val(categoryName)
+                    .attr('class', `form-control text-${titleColor}`); // Добавляем класс цвета
+                modal.find('#renameCategoryDescription').val(categoryDesc);
+                modal.find('#editSelectedTitleColor').val(titleColor);
+
+                // Выделяем текущий цвет
+                modal.find('.color-option-edit').removeClass('selected');
+                modal.find(`.color-option-edit[data-color="${titleColor}"]`).addClass('selected');
+            });
+
+            // Обработка выбора цвета
+            $('.color-option-edit').on('click', function() {
+                const modal = $('#renameModal');
+                modal.find('.color-option-edit').removeClass('selected');
+                $(this).addClass('selected');
+
+                const color = $(this).data('color');
+                $('#editSelectedTitleColor').val(color);
+
+                // Обновляем цвет названия в поле ввода
+                modal.find('#renameCategoryName').attr('class', `form-control text-${color}`);
+            });
+
+            // Обработчик сохранения
+            $(document).on('click', '#saveRenameCategory', function(e) {
+                e.preventDefault();
+
+                const categoryId = $(this).data('category-id');
+                const newName = $('#renameCategoryName').val().trim();
+                const newDescription = $('#renameCategoryDescription').val().trim();
+                const titleColor = $('#editSelectedTitleColor').val(); // Добавляем цвет
+
+                // Валидация названия
+                if (newName === '') {
+                    noticeError('Название категории не может быть пустым');
+                    return;
+                }
+
+                // Отправляем запрос
+                AjaxSend('/forum/category/rename', 'POST', {
+                    categoryId: categoryId,
+                    newName: newName,
+                    newDescription: newDescription,
+                    titleColor: titleColor  // Добавляем цвет в запрос
+                }, false);
+            });
+
+    });
+
+    function updateSvgPreview(svgCode, previewElement) {
+        const preview = $(previewElement);
+
+        // Очистка предыдущего содержимого
+        preview.empty();
+
+        // Проверка на пустой ввод
+        if (!svgCode.trim()) {
+            preview.html('<small class="text-muted">Предварительный просмотр появится здесь</small>');
+            return;
+        }
+
+        // Попытка вставить SVG
+        try {
+            // Создаем временный контейнер для проверки SVG
+            const tempDiv = $('<div>').html(svgCode);
+            const svgElement = tempDiv.find('svg');
+
+            // Проверяем, что это действительно SVG
+            if (svgElement.length > 0) {
+                // Добавляем класс для унификации размера
+                svgElement.addClass('img-fluid');
+                preview.html(svgElement);
+            } else {
+                preview.html('<small class="text-danger">Некорректный SVG код</small>');
+            }
+        } catch (error) {
+            preview.html('<small class="text-danger">Ошибка при отображении иконки</small>');
+        }
+    }
+
+    $('#createIconSection').on('input', function() {
+        updateSvgPreview($(this).val(), '#createIconPreview');
+    });
+
+    // Для окна редактирования (существующий код)
+    $('#editLinkSectionIcon').on('input', function() {
+        updateSvgPreview($(this).val(), '#iconPreview');
+    });
+
+    // Очистка предпросмотра при закрытии модальных окон
+    $('#create-section, #editLinkSectionModal').on('hidden.bs.modal', function() {
+        const previewId = this.id === 'create-section' ? '#createIconPreview' : '#iconPreview';
+        $(previewId).html('<small class="text-muted">Предварительный просмотр появится здесь</small>');
+    });
+</script>
+
+
+{% if getUser().isAdmin() %}
+<style>
+    .sortable-categories .card.ui-sortable-helper,
+    .sortable-subcategories .list-group-item.ui-sortable-helper {
+        background: white;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .drag-handle,
+    .drag-handle-section {
+        cursor: move;
+        color: #666;
+        opacity: 0.5;
+        transition: opacity 0.2s;
+    }
+
+    .drag-handle:hover,
+    .drag-handle-section:hover {
+        opacity: 1;
+    }
+
+    .ui-sortable-placeholder {
+        visibility: visible !important;
+        background: #f5f5f5;
+        border: 2px dashed #ccc;
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+    }
+
+    .list-group-item.ui-sortable-placeholder {
+        margin-bottom: 0.5rem;
+        height: 60px !important;
+    }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.sortable-categories').sortable({
+            handle: '.drag-handle',
+            placeholder: 'ui-sortable-placeholder',
+            tolerance: 'pointer',
+
+            update: function (event, ui) {
+                const orders = {};
+                $('.sortable-categories .card').each(function (index) {
+                    orders[$(this).data('category-id')] = index;
+                });
+
+                AjaxSend('/forum/category/move-order', 'POST', {
+                    orders: orders,
+                    type: 'category'
+                });
+            },
+
+            start: function (event, ui) {
+                ui.placeholder.height(ui.item.height());
+            }
+        });
+
+        // Инициализация сортировки для подкатегорий
+        $('.sortable-subcategories').sortable({
+            handle: '.drag-handle-section',
+            placeholder: 'ui-sortable-placeholder',
+            tolerance: 'pointer',
+            connectWith: '.sortable-subcategories', // Разрешаем перетаскивание между списками
+
+            update: function (event, ui) {
+                // Проверяем, что это финальное обновление (для connectWith)
+                if (this === ui.item.parent()[0]) {
+                    const orders = {};
+                    const newCategoryId = $(this).data('category-id');
+
+                    $(this).find('.list-group-item').each(function (index) {
+                        orders[$(this).data('section-id')] = {
+                            order: index,
+                            categoryId: newCategoryId
+                        };
+                    });
+
+                    AjaxSend('/forum/category/move-order', 'POST', {
+                        orders: orders,
+                        type: 'subcategory'
+                    });
+                }
+            },
+
+            start: function (event, ui) {
+                ui.placeholder.height(ui.item.height());
+            }
+        });
+    });
+
+
+    const userSettings = `{{getForumUserSettings(getUser().getId())|json_encode|raw}}`;
+
+    // Устанавливаем начальные значения чекбоксов
+    $('#showCharacters').prop('checked', userSettings.showCharacters);
+    $('#showPvPPK').prop('checked', userSettings.showPvPPK);
+    $('#showGameTime').prop('checked', userSettings.showGameTime);
+    $('#showFlagCountry').prop('checked', userSettings.showFlagCountry);
+
+</script>
+{% endif %}
+

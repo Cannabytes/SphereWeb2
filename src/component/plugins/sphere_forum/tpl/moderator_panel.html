@@ -1,0 +1,328 @@
+{% extends 'struct.html' %}
+
+{% block title %}Управление модераторами{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Управление модераторами</h5>
+                    <button class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#addModeratorModal">
+                        <i class="ri-add-line"></i> Добавить модератора
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Модератор</th>
+                                <th>Категория</th>
+                                <th>Права</th>
+                                <th>Назначен</th>
+                                <th>Действия</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for moderator in moderators %}
+                            <tr>
+                                <td>{{moderator.getName()}}</td>
+                                <td>{{moderator.getCategoryName() ?: 'Все категории'}}</td>
+                                <td>
+                                    {% if moderator.isCanDeleteThreads() %}<span class="badge rounded-pill bg-dark text-white">Удаление тем</span>{% endif %}
+                                    {% if moderator.isCanDeletePosts() %}<span class="badge rounded-pill bg-dark text-white">Удаление сообщений</span>{% endif %}
+                                    {% if moderator.isCanEditPosts() %}<span class="badge rounded-pill bg-dark text-white">Редактирование</span>{% endif %}
+                                    {% if moderator.isCanMoveThreads() %}<span class="badge rounded-pill bg-dark text-white">Перемещение</span>{% endif %}
+                                    {% if moderator.isCanPinThreads() %}<span class="badge rounded-pill bg-dark text-white">Закрепление</span>{% endif %}
+                                    {% if moderator.isCanCloseThreads() %}<span class="badge rounded-pill bg-dark text-white">Закрытие</span>{% endif %}
+                                    {% if moderator.isCanApproveThreads() %}<span class="badge rounded-pill bg-dark text-white">Одобрение</span>{% endif %}
+                                </td>
+                                <td>{{moderator.getCreatedAt()|date("d.m.Y H:i")}}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning edit-moderator"
+                                            data-moderator="{{moderator|json_encode}}"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editModeratorModal">
+                                        <i class="ri-edit-2-line"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger delete-moderator"
+                                            data-id="{{moderator.id}}">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно добавления модератора -->
+<div class="modal fade" id="addModeratorModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить модератора</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addModeratorForm">
+                    <div class="mb-3">
+                        <label class="form-label">Пользователь</label>
+                        <input type="text" class="form-control" id="moderatorUsername" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Категория</label>
+                        <select class="form-select" id="moderatorCategory">
+                            <option value="">Все категории</option>
+                            {% for category in categories %}
+                            <option value="{{category.getId()}}">{{category.getName()}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Права</label>
+                        <div class="permissions-list">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="canDeleteThreads">
+                                <label class="form-check-label">Удаление тем</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="canDeletePosts">
+                                <label class="form-check-label">Удаление сообщений</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="canEditPosts">
+                                <label class="form-check-label">Редактирование сообщений</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="canMoveThreads">
+                                <label class="form-check-label">Перемещение тем</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="canPinThreads">
+                                <label class="form-check-label">Закрепление тем</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="canCloseThreads">
+                                <label class="form-check-label">Закрытие тем</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="canApproveThreads">
+                                <label class="form-check-label">Одобрение тем</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="saveNewModerator">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModeratorModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Редактирование прав модератора</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editModeratorForm">
+                    <input type="hidden" id="editModeratorId">
+                    <div class="mb-3">
+                        <label class="form-label">Модератор</label>
+                        <input type="text" class="form-control" id="editModeratorUsername" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Категория</label>
+                        <select class="form-select" id="editModeratorCategory">
+                            <option value="">Все категории</option>
+                            {% for category in categories %}
+                            <option value="{{category.getId()}}">{{category.getName()}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Права</label>
+                        <div class="permissions-list">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="editCanDeleteThreads">
+                                <label class="form-check-label">Удаление тем</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="editCanDeletePosts">
+                                <label class="form-check-label">Удаление сообщений</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="editCanEditPosts">
+                                <label class="form-check-label">Редактирование сообщений</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="editCanMoveThreads">
+                                <label class="form-check-label">Перемещение тем</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="editCanPinThreads">
+                                <label class="form-check-label">Закрепление тем</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="editCanCloseThreads">
+                                <label class="form-check-label">Закрытие тем</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="editCanApproveThreads">
+                                <label class="form-check-label">Одобрение тем</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="saveEditModerator">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function() {
+        // Обработка формы добавления модератора
+        $('#saveNewModerator').on('click', function() {
+            const username = $('#moderatorUsername').val();
+            const categoryId = $('#moderatorCategory').val() || null;
+
+            const permissions = {
+                canDeleteThreads: $('#canDeleteThreads').is(':checked'),
+                canDeletePosts: $('#canDeletePosts').is(':checked'),
+                canEditPosts: $('#canEditPosts').is(':checked'),
+                canMoveThreads: $('#canMoveThreads').is(':checked'),
+                canPinThreads: $('#canPinThreads').is(':checked'),
+                canCloseThreads: $('#canCloseThreads').is(':checked'),
+                canApproveThreads: $('#canApproveThreads').is(':checked')
+            };
+
+            if (!username) {
+                noticeError('Укажите имя пользователя');
+                return;
+            }
+
+            AjaxSend('/forum/moderator/add', 'POST', {
+                username: username,
+                categoryId: categoryId,
+                permissions: JSON.stringify(permissions) // Явно преобразуем в JSON строку
+            }, true).then(function(response) {
+                if (response.ok) {
+                    $('#addModeratorModal').modal('hide');
+                    location.reload();
+                }else{
+                    $('#addModeratorModal').modal('hide');
+                    noticeError(response.message)
+                }
+            });
+        });
+
+        // Обработка кнопки редактирования
+        $('.edit-moderator').on('click', function() {
+            const moderator = $(this).data('moderator');
+
+            $('#editModeratorId').val(moderator.id);
+            $('#editModeratorUsername').val(moderator.userName);
+            $('#editModeratorCategory').val(moderator.categoryId || '');
+
+            // Устанавливаем права
+            $('#editCanDeleteThreads').prop('checked', moderator.canDeleteThreads);
+            $('#editCanDeletePosts').prop('checked', moderator.canDeletePosts);
+            $('#editCanEditPosts').prop('checked', moderator.canEditPosts);
+            $('#editCanMoveThreads').prop('checked', moderator.canMoveThreads);
+            $('#editCanPinThreads').prop('checked', moderator.canPinThreads);
+            $('#editCanCloseThreads').prop('checked', moderator.canCloseThreads);
+            $('#editCanApproveThreads').prop('checked', moderator.canApproveThreads);
+        });
+
+        // Сохранение отредактированных прав
+        $('#saveEditModerator').on('click', function() {
+            const moderatorId = $('#editModeratorId').val();
+            const categoryId = $('#editModeratorCategory').val() || null;
+
+            const permissions = {
+                canDeleteThreads: $('#editCanDeleteThreads').is(':checked'),
+                canDeletePosts: $('#editCanDeletePosts').is(':checked'),
+                canEditPosts: $('#editCanEditPosts').is(':checked'),
+                canMoveThreads: $('#editCanMoveThreads').is(':checked'),
+                canPinThreads: $('#editCanPinThreads').is(':checked'),
+                canCloseThreads: $('#editCanCloseThreads').is(':checked'),
+                canApproveThreads: $('#editCanApproveThreads').is(':checked')
+            };
+
+            AjaxSend('/forum/moderator/edit', 'POST', {
+                moderatorId: moderatorId,
+                categoryId: categoryId,
+                permissions: permissions
+            }, true).then(function(response) {
+                if (response.ok) {
+                    $('#editModeratorModal').modal('hide');
+                    location.reload();
+                }
+            });
+        });
+
+        // Обработка удаления модератора
+        $('.delete-moderator').on('click', function() {
+            const moderatorId = $(this).data('id');
+
+            if (confirm('Вы уверены, что хотите удалить этого модератора?')) {
+                AjaxSend('/forum/moderator/delete', 'POST', {
+                    moderatorId: moderatorId
+                }, true).then(function(response) {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block css %}
+<style>
+.permissions-list {
+max-height: 300px;
+overflow-y: auto;
+padding: 10px;
+border: 1px solid #dee2e6;
+border-radius: 4px;
+}
+
+.permissions-list .form-check {
+margin-bottom: 10px;
+padding-left: 2rem;
+}
+
+.permissions-list .form-check:last-child {
+margin-bottom: 0;
+}
+
+.permissions-list .form-check-input {
+margin-left: -2rem;
+}
+
+.table td .badge {
+margin: 2px;
+}
+</style>
+{% endblock %}

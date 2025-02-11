@@ -6,166 +6,399 @@
 
 <div class="container-fluid">
 
-  <div class="row">
+    <div class="row">
 
-    <div class="col-xl-3">
-      <div class="card custom-card  text-fixed-white">
-        <div class="card-body p-0">
-          <div class="d-flex align-items-top p-4 flex-wrap">
-            <div class="me-3 lh-1">
+        <div class="col-xl-3">
+            <div class="card custom-card  text-fixed-white">
+                <div class="card-body p-0">
+                    <div class="d-flex align-items-top p-4 flex-wrap">
+                        <div class="me-3 lh-1">
                                         <span class="avatar avatar-md avatar-rounded bg-white text-primary shadow-sm">
                                             <i class="ti ti-coin fs-18"></i>
                                         </span>
+                        </div>
+                        <div class="flex-fill">
+                            <a href="/admin/balance/pay"><h5 class="fw-semibold mb-1 text-danger">{{ phrase(69) }}</h5>
+                            </a>
+                            <p class="op-7 mb-0 fs-12">{{ phrase('increase balance') }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="flex-fill">
-              <a href="/admin/balance/pay"><h5 class="fw-semibold mb-1 text-danger">{{ phrase(69) }}</h5></a>
-              <p class="op-7 mb-0 fs-12">{{ phrase('increase balance') }}</p>
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
 
 
-    <div class="col-xl-9">
-      <div class="card custom-card">
-        <div class="card-body p-0">
-          <div class="row">
+        <div class="col-xl-9">
+            <div class="card custom-card">
+                <div class="card-body p-0">
+                    <div class="row">
 
-            <div class="col-xl-4 border-end border-inline-end-dashed">
-              <div class="d-flex flex-wrap align-items-top p-4">
-                <div class="me-3 lh-1">
+                        <div class="col-xl-4 border-end border-inline-end-dashed">
+                            <div class="d-flex flex-wrap align-items-top p-4">
+                                <div class="me-3 lh-1">
                                                 <span class="avatar avatar-md avatar-rounded bg-primary shadow-sm">
                                                     <i class="ti ti-currency-dollar fs-18"></i>
                                                 </span>
-                </div>
-                <div class="flex-fill">
-                  <h5 class="fw-semibold mb-1 sphereBalance">${{balance}}</h5>
-                  <p class="text-muted mb-0 fs-12">{{ phrase('on account') }}</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-xl-4 border-end border-inline-end-dashed">
-              <div class="d-flex flex-wrap align-items-top p-4">
-                <div class="me-3 lh-1">
+                                </div>
+                                <div class="flex-fill">
+                                    <h5 class="fw-semibold mb-1 sphereBalance">${{balance}}</h5>
+                                    <p class="text-muted mb-0 fs-12">{{ phrase('on account') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 border-end border-inline-end-dashed">
+                            <div class="d-flex flex-wrap align-items-top p-4">
+                                <div class="me-3 lh-1">
                                                 <span class="avatar avatar-md avatar-rounded bg-secondary shadow-sm">
                                                     <i class="ti ti-rocket fs-18"></i>
                                                 </span>
-                </div>
-                <div class="flex-fill">
-                  <h5 class="fw-semibold mb-1">{{ phrase('menu_launcher') }}</h5>
-                  {% if launcher.isActive %}
-                  <p class="text-muted mb-0 fs-12">{{ phrase('activated until') }} <span class="launcherDate">{{launcher.dateTimeout|date('d.m.Y H:i', getUser().getTimezone())}}</span>
-                  </p>
-                  {% else %}
-                  <p class="text-muted mb-0 fs-12">{{ phrase('not_active') }}</p>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
+                                </div>
+                                <div class="flex-fill">
+                                    <h5 class="fw-semibold mb-1">{{ phrase('menu_launcher') }}</h5>
+                                    {% if launcher.isActive %}
+                                    <p class="text-muted mb-0 fs-12">{{ phrase('activated until') }} <span
+                                          class="launcherDate">{{launcher.dateTimeout|date('d.m.Y H:i', getUser().getTimezone())}}</span>
+                                    </p>
+                                    {% else %}
+                                    <p class="text-muted mb-0 fs-12">{{ phrase('not_active') }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
 
-          </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+
+    </div>
+    <div class="celebration-text">Ура! Спасибо за покупку! 🎉</div>
+        <div aria-labelledby="pricing-monthly1" class="tab-pane show active p-0 border-0"
+             id="pricing-monthly1-pane" role="tabpanel" tabindex="0">
+        <div class="row justify-content-center">
+            <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <div class="card custom-card overflow-hidden">
+                    <div class="card-body p-0">
+                        <div class="p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex">
+                                    <i class="ti ti-free-rights fs-24 text-primary me-1"></i>
+                                    <div class="fs-18 fw-semibold ">Бесплатно</div>
+                                </div>
+                                <div>
+                                    <span class="badge bg-success-transparent">Для ознакомления</span>
+                                </div>
+                            </div>
+                            <div class="fs-25 fw-bold mb-1">$0<sub class="text-muted fw-semibold fs-11">/ в месяц</sub>
+                            </div>
+                            <ul class="list-unstyled mb-0">
+
+                                <li class="d-flex align-items-center mb-3">
+                                    <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
+                                    <span><strong class="me-1">2 сервера</strong> - кол-во подключаемых серверов</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                    <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
+                                        <span><strong class="me-1">20 регистраций</strong> - игровых аккаунтов в день</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                    <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
+                                    <span><strong class="me-1">Sphere-Launcher</strong> - программа для обновления игры</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                     <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
+                                    <span><strong class="me-1">Рулетка Удачи</strong> - возможность добавить розыгрыш предметов</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                     <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
+                                    <span>Отслеживание возрастающего кол-ва предметов</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                     <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
+                                    <span>Форум</span>
+                                </li>
+
+                                <li class="d-grid">
+                                    <button class="btn btn-light btn-wave" disabled type="button">Переключение автоматически</button>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <div class="card custom-card overflow-hidden">
+                    <div class="card-body p-0">
+                        <div class="p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex">
+                                    <i class="ti ti-api-app  fs-24 text-primary me-1"></i>
+                                    <div class="fs-18 fw-semibold">Любительский</div>
+                                </div>
+                                <div>
+                                                                <span class="badge bg-success-transparent">
+                                                                    Для серверов однодневок
+                                                                </span>
+                                </div>
+                            </div>
+                            <div class="fs-25 fw-bold mb-1">$12<sub class="text-muted fw-semibold fs-11">/ месяц</sub></div>
+                            <ul class="list-unstyled mb-0">
+                                <li class="d-flex align-items-center mb-3">
+                                    <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
+                                    <span><strong class="me-1">10 серверов</strong> - кол-во подключаемых серверов</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                    <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
+                                        <span><strong class="me-1">10000 регистраций</strong> - игровых аккаунтов в день</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                    <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
+                                    <span><strong class="me-1">Sphere-Launcher</strong> - программа для обновления игры</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                     <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
+                                    <span><strong class="me-1">Рулетка Удачи</strong> - возможность добавить розыгрыш предметов</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                     <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
+                                    <span>Отслеживание возрастающего кол-ва предметов</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                     <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
+                                    <span>Форум</span>
+                                </li>
+
+                                <li class="d-grid">
+                                    <button class="btn btn-info btn-wave" type="button">Оплатить</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <div class="custom-card  border border-primary rounded card">
+                    <div class="d-flex flex-column p-0">
+                        <div class="card-body p-0">
+                            <div class="p-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="d-flex">
+                                        <i class="ti ti-businessplan text-primary fs-24 me-1"></i>
+                                        <div class="fs-18 fw-semibold">Профессиональный</div>
+                                    </div>
+                                    <div>
+                                                                    <span class="badge bg-primary-transparent">
+                                                                        Для уникальных легенд
+                                                                    </span>
+                                    </div>
+                                </div>
+                                <div class="fs-25 fw-bold mb-1">$20<sub class="text-muted fw-semibold fs-11">/ месяц</sub></div>
+                            <ul class="list-unstyled mb-0">
+
+                                <li class="d-flex align-items-center mb-3">
+                                    <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
+                                    <span><strong class="me-1">10 серверов</strong> - кол-во подключаемых серверов</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                    <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
+                                        <span><strong class="me-1">10000 регистраций</strong> - игровых аккаунтов в день</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                    <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success op-3"></i></span>
+                                    <span><strong class="me-1">Sphere-Launcher</strong> - программа для обновления игры</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                     <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success op-3"></i></span>
+                                    <span><strong class="me-1">Рулетка Удачи</strong> - возможность добавить розыгрыш предметов</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                     <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success op-3"></i></span>
+                                    <span>Отслеживание возрастающего кол-ва предметов</span>
+                                </li>
+
+                                <li class="d-flex align-items-center mb-3">
+                                     <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success op-3"></i></span>
+                                    <span><strong class="me-1">Форум</strong></span>
+                                </li>
+
+                                <li class="d-grid">
+                                    <button id="buyprofessional" class="btn btn-info btn-wave buy-button" type="button">Оплатить</button>
+                                    <script>
+                                        $("#buyprofessional").on("click", function () {
+                                            AjaxSend("/admin/balance/pay/pack", "POST", {
+                                                type: "professional",
+                                                months: 1
+                                            }, true).then(function (response) {
+                                                responseAnalysis(response);
+                                                if (response.ok) {
+                                                    $(this).prop('disabled', true);
+                                                    $('.rainbow-border').css('opacity', 1);
+                                                    createSuccessCircle();
+                                                    gsap.to('.celebration-text', {
+                                                        duration: 0.5,
+                                                        opacity: 1,
+                                                        scale: 1.2,
+                                                        ease: 'back.out',
+                                                        onComplete: function() {
+                                                            setTimeout(function() {
+                                                                gsap.to('.celebration-text', {
+                                                                    duration: 0.5,
+                                                                    opacity: 0,
+                                                                    scale: 0.8
+                                                                });
+                                                            }, 4500);
+                                                        }
+                                                    });
+                                                    const windowWidth = $(window).width();
+                                                    const windowHeight = $(window).height();
+                                                    for (let i = 0; i < 8; i++) {
+                                                        setTimeout(function() {
+                                                            const x = Math.random() * windowWidth;
+                                                            const y = Math.random() * (windowHeight * 0.7);
+                                                            createFirework(x, y);
+                                                        }, i * 200);
+                                                    }
+                                                    for (let i = 0; i < 20; i++) {
+                                                        setTimeout(createStar, i * 100);
+                                                    }
+                                                    for (let i = 0; i < 50; i++) {
+                                                        setTimeout(createConfetti, i * 50);
+                                                    }
+                                                    for (let i = 0; i < 15; i++) {
+                                                        setTimeout(() => {
+                                                            const x = Math.random() * windowWidth;
+                                                            const y = windowHeight * 0.7;
+                                                            createEmoji(x, y);
+                                                        }, i * 150);
+                                                    }
+                                                    setTimeout(() => {
+                                                        $(this).prop('disabled', false);
+                                                        $('.rainbow-border').css('opacity', 0);
+                                                    }, 4000);
+                                                }
+                                            });
+                                        });
+                                    </script>
+                                </li>
+                            </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-  </div>
 
+    <h5 class="fw-semibold text-center"> Вы можете некоторые услуги подключить отдельно </h5>
 
+    <!-- Start::row-1 -->
+    <div class="row">
 
-  <!-- Start::row-1 -->
-  <div class="row">
+        <div class="col-xl-6">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="d-flex align-items-center w-100">
+                        <div class="card-title">
+                            <div class="fs-15 fw-semibold">SphereWeb</div>
 
-    <div class="col-xl-4">
-      <div class="card custom-card">
-        <div class="card-header justify-content-between">
-          <div class="d-flex align-items-center w-100">
-            <div class="card-title">
-              <div class="fs-15 fw-semibold">SphereWeb</div>
-
-            </div>
-            <div class="ms-auto prism-toggle">
+                        </div>
+                        <div class="ms-auto prism-toggle">
               <span class="text-{% if info.licenseActive %}success{% else %}danger{% endif %}">
                 {% if info.licenseActive == false %}<i class="bi bi-x-circle"></i> {% endif %}
                 {{info.license|date('d.m.Y H:i', getUser().getTimezone())}}
               </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {{ phrase('you can help show gratitude and support to the developer for SphereWeb, just top up your balance.') }}
+                    <div class="col-xl-12 mt-2">
+                        <label class="form-label" for="renewmonths">{{ phrase('for how many months should I renew SphereWeb?') }}</label>
+                        <select class="form-control" id="renewmonths" name="renewmonths">
+                            <option value="1">1 {{ phrase('month') }} - $12.5</option>
+                            <option value="2">2 {{ phrase('months') }} - $24</option>
+                            <option value="3">3 {{ phrase('months') }} - $35</option>
+                            <option value="6">6 {{ phrase('months') }} - $70</option>
+                            <option value="12">12 {{ phrase('months') }} - $140</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-success label-btn label-end" id="renewLicense">
+                            {{ phrase('extend use') }}
+                            <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
+                        </button>
+                        <script>
+                            $("#renewLicense").on("click", function () {
+                                AjaxSend("/admin/balance/pay/renewlicense", "POST", {
+                                    months: $("#renewmonths").val()
+                                }, false);
+                            });
+                        </script>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-        <div class="card-body">
-          {{ phrase('you can help show gratitude and support to the developer for SphereWeb, just top up your balance.') }}
-          <div class="col-xl-12 mt-2">
-            <label for="renewmonths" class="form-label">{{ phrase('for how many months should I renew SphereWeb?') }}</label>
-            <select class="form-control" name="renewmonths" id="renewmonths">
-              <option value="1">1 {{ phrase('month') }} - $12.5</option>
-              <option value="2">2 {{ phrase('months') }} - $24</option>
-              <option value="3">3 {{ phrase('months') }} - $35</option>
-              <option value="6">6 {{ phrase('months') }} - $70</option>
-              <option value="12">12 {{ phrase('months') }} - $140</option>
-            </select>
-          </div>
 
-        </div>
-        <div class="card-footer">
-          <div class="d-flex justify-content-between">
-            <button class="btn btn-success label-btn label-end" id="renewLicense">
-              {{ phrase('extend use') }}
-              <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
-            </button>
-            <script>
-              $("#renewLicense").on("click", function () {
-                  AjaxSend("/admin/balance/pay/renewlicense", "POST", {
-                    months: $("#renewmonths").val()
-                  }, false);
-              });
-            </script>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="col-xl-4">
-      <div class="card custom-card">
-      <div class="card-header justify-content-between">
-        <div class="d-flex align-items-center w-100">
-          <div class="card-title">
-            <div class="fs-15 fw-semibold">Sphere Launcher</div>
-          </div>
-          <div class="ms-auto prism-toggle">
-            {% if launcher.isActive %}
-             <span class="text-success">{{launcher.dateTimeout|date('d.m.Y H:i', getUser().getTimezone())}}</span>
-            {% else %}
-              <span class="text-danger">{{ phrase('not_active') }}</span>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-        <div class="card-body">
-
-              <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
-                      data-bs-target="#collapseWidthExample" aria-expanded="false"
-                      aria-controls="collapseWidthExample">
-                {{ phrase('description of Sphere Launcher') }}
-              </button>
-              <div class="collapse collapse-horizontal" id="collapseWidthExample">
-                  <div class="fs-14 text-muted">
-                    {{ phrase('launcher_full_desc')|raw }}
-                  </div>
+        <div class="col-xl-6">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="d-flex align-items-center w-100">
+                        <div class="card-title">
+                            <div class="fs-15 fw-semibold">Sphere Launcher</div>
+                        </div>
+                        <div class="ms-auto prism-toggle">
+                            {% if launcher.isActive %}
+                            <span class="text-success">{{launcher.dateTimeout|date('d.m.Y H:i', getUser().getTimezone())}}</span>
+                            {% else %}
+                            <span class="text-danger">{{ phrase('not_active') }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
+                <div class="card-body">
 
-            <ul class="list-unstyled order-details-list">
+                    <button aria-controls="collapseWidthExample" aria-expanded="false" class="btn btn-primary"
+                            data-bs-target="#collapseWidthExample" data-bs-toggle="collapse"
+                            type="button">
+                        {{ phrase('description of Sphere Launcher') }}
+                    </button>
+                    <div class="collapse collapse-horizontal" id="collapseWidthExample">
+                        <div class="fs-14 text-muted">
+                            {{ phrase('launcher_full_desc')|raw }}
+                        </div>
+                    </div>
 
-              <li>
-                <div class="fs-14 text-muted">
-                  <a href="/admin/launcher">{{ phrase('go to launcher settings') }}</a>
-                </div>
-              </li>
+                    <ul class="list-unstyled order-details-list">
 
-            </ul>
+                        <li>
+                            <div class="fs-14 text-muted">
+                                <a href="/admin/launcher">{{ phrase('go to launcher settings') }}</a>
+                            </div>
+                        </li>
 
-              <span class="my-auto  text-muted fw-semibold">
-                                            <select class="form-control " name="launcherMonth" id="launcherMonth">
+                    </ul>
+
+                    <span class="my-auto  text-muted fw-semibold">
+                                            <select class="form-control " id="launcherMonth" name="launcherMonth">
                                                   <option value="1">1 {{ phrase('month') }} / $5 </option>
                                                   <option value="2">2 {{ phrase('months') }} / $9 </option>
                                                   <option value="3">3 {{ phrase('months') }} / $13 </option>
@@ -174,116 +407,120 @@
                                               </select>
                                         </span>
 
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-success" id="updateTime" type="button">{{ phrase('extend Launcher') }}
+                        </button>
+                    </div>
+                </div>
+                <div id="successPayLauncher"></div>
+            </div>
         </div>
-        <div class="card-footer">
-          <div class="d-flex justify-content-between">
-            <button type="button" id="updateTime" class="btn btn-success">{{ phrase('extend Launcher') }}</button>
-          </div>
+
+        <div class="col-xl-6">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="d-flex align-items-center w-100">
+                        <div class="card-title">
+                            <div class="fs-15 fw-semibold">{{ phrase('lucky_wheel') }}</div>
+                        </div>
+                        <div class="ms-auto prism-toggle">
+                            {% if info.rouletteActive %}
+                            <span class="text-success">{{info.roulette|date('d.m.Y H:i', getUser().getTimezone())}}</span>
+                            {% else %}
+                            <span class="text-danger">{{ phrase('not_active') }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {{ phrase('description spin the roulette of luck') }}
+
+                    <div class="col-xl-12 mt-2">
+                        <label class="form-label" for="rouletteMonths">{{ phrase('extend the Roulette of Luck')
+                            }}</label>
+                        <select class="form-control" id="rouletteMonths" name="rouletteMonths">
+                            <option value="1">1 {{ phrase('month') }} / $5</option>
+                            <option value="2">2 {{ phrase('months') }} / $9</option>
+                            <option value="3">3 {{ phrase('months') }} / $13</option>
+                            <option value="6">6 {{ phrase('months') }} / $25</option>
+                            <option value="12">12 {{ phrase('months') }} / 45$</option>
+                        </select>
+                    </div>
+
+
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-success label-btn label-end" id="clickRouletteMonths">
+                            {{ phrase('extend use') }}
+                            <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
+                        </button>
+                        <script>
+                            $("#clickRouletteMonths").on("click", function () {
+                                AjaxSend("/admin/balance/pay/roulette", "POST", {
+                                    months: $("#rouletteMonths").val()
+                                }, false);
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id="successPayLauncher"></div>
-      </div>
+
+        <div class="col-xl-6">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="d-flex align-items-center w-100">
+                        <div class="card-title">
+                            <div class="fs-15 fw-semibold">{{ phrase('Tracking the number of items') }}</div>
+                        </div>
+                        <div class="ms-auto prism-toggle">
+                            {% if info.isActiveTopFarmStats %}
+                            <span class="text-success">{{info.topFarmStats|date('d.m.Y H:i', getUser().getTimezone())}}</span>
+                            {% else %}
+                            <span class="text-danger">{{ phrase('not_active') }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {{ phrase('Plugin for collecting top farm') }}
+
+                    <div class="col-xl-12 mt-2">
+                        <label class="form-label" for="itemsIncreaseMonths">{{ phrase('For how many months should the collection of information on the number of items be extended') }}</label>
+                        <select class="form-control" id="itemsIncreaseMonths" name="itemsIncreaseMonths">
+                            <option value="1">1 {{ phrase('month') }} / $3</option>
+                            <option value="2">2 {{ phrase('months') }} / $5.6</option>
+                            <option value="3">3 {{ phrase('months') }} / $7.8</option>
+                            <option value="6">6 {{ phrase('months') }} / $14.4</option>
+                            <option value="12">12 {{ phrase('months') }} / $24</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-success label-btn label-end" id="clickItemsIncreaseMonths">
+                            {{ phrase('extend use') }}
+                            <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
+                        </button>
+                        <script>
+                            $("#clickItemsIncreaseMonths").on("click", function () {
+                                AjaxSend("/admin/balance/pay/item/increase", "POST", {
+                                    months: $("#increaseMonths").val()
+                                }, false);
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div class="col-xl-4">
-      <div class="card custom-card">
-      <div class="card-header justify-content-between">
-        <div class="d-flex align-items-center w-100">
-          <div class="card-title">
-            <div class="fs-15 fw-semibold">{{ phrase('lucky_wheel') }}</div>
-          </div>
-          <div class="ms-auto prism-toggle">
-            {% if info.rouletteActive %}
-              <span class="text-success">{{info.roulette|date('d.m.Y H:i', getUser().getTimezone())}}</span>
-            {% else %}
-              <span class="text-danger">{{ phrase('not_active') }}</span>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-        <div class="card-body">
-          {{ phrase('description spin the roulette of luck') }}
 
-          <div class="col-xl-12 mt-2">
-            <label for="rouletteMonths" class="form-label">{{ phrase('extend the Roulette of Luck') }}</label>
-            <select class="form-control" name="rouletteMonths" id="rouletteMonths">
-              <option value="1">1 {{ phrase('month') }} / $5 </option>
-              <option value="2">2 {{ phrase('months') }} / $9 </option>
-              <option value="3">3 {{ phrase('months') }} / $13 </option>
-              <option value="6">6 {{ phrase('months') }} / $25 </option>
-              <option value="12">12 {{ phrase('months') }} / 45$</option>
-            </select>
-          </div>
-
-
-        </div>
-        <div class="card-footer">
-          <div class="d-flex justify-content-between">
-            <button class="btn btn-success label-btn label-end" id="clickRouletteMonths">
-              {{ phrase('extend use') }}
-              <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
-            </button>
-            <script>
-              $("#clickRouletteMonths").on("click", function () {
-                AjaxSend("/admin/balance/pay/roulette", "POST", {
-                  months: $("#rouletteMonths").val()
-                }, false);
-              });
-            </script>
-          </div>
-        </div>
-      </div>
-      </div>
-
-    <div class="col-xl-4">
-      <div class="card custom-card">
-      <div class="card-header justify-content-between">
-        <div class="d-flex align-items-center w-100">
-          <div class="card-title">
-            <div class="fs-15 fw-semibold">{{ phrase('Tracking the number of items') }}</div>
-          </div>
-          <div class="ms-auto prism-toggle">
-            {% if info.isActiveTopFarmStats %}
-              <span class="text-success">{{info.topFarmStats|date('d.m.Y H:i', getUser().getTimezone())}}</span>
-            {% else %}
-              <span class="text-danger">{{ phrase('not_active') }}</span>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-        <div class="card-body">
-          {{ phrase('Plugin for collecting top farm') }}
-
-          <div class="col-xl-12 mt-2">
-            <label for="itemsIncreaseMonths" class="form-label">{{ phrase('For how many months should the collection of information on the number of items be extended') }}</label>
-            <select class="form-control" name="itemsIncreaseMonths" id="itemsIncreaseMonths">
-              <option value="1">1 {{ phrase('month') }} / $3 </option>
-              <option value="2">2 {{ phrase('months') }} / $5.6 </option>
-              <option value="3">3 {{ phrase('months') }} / $7.8 </option>
-              <option value="6">6 {{ phrase('months') }} / $14.4 </option>
-              <option value="12">12 {{ phrase('months') }} / $24 </option>
-            </select>
-          </div>
-
-        </div>
-        <div class="card-footer">
-          <div class="d-flex justify-content-between">
-            <button class="btn btn-success label-btn label-end" id="clickItemsIncreaseMonths">
-              {{ phrase('extend use') }}
-              <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
-            </button>
-            <script>
-              $("#clickItemsIncreaseMonths").on("click", function () {
-                AjaxSend("/admin/balance/pay/item/increase", "POST", {
-                  months: $("#increaseMonths").val()
-                }, false);
-              });
-            </script>
-          </div>
-        </div>
-      </div>
-      </div>
-
-  </div>
 
 </div>
 
@@ -291,7 +528,142 @@
 
 
 {% block css %}
+    <style>
 
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .buy-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .buy-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .buy-button:active {
+            transform: translateY(1px);
+        }
+
+        .firework {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            background: gold;
+            pointer-events: none;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+        }
+
+        .celebration-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: #333;
+            opacity: 0;
+            z-index: 1000;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-weight: bold;
+        }
+
+        .product-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+            max-width: 350px;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            width: 250px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .price {
+            font-size: 32px;
+            color: #333;
+            margin: 15px 0;
+            font-weight: bold;
+            background: linear-gradient(45deg, #2196F3, #4CAF50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .emoji {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .rainbow-border {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            z-index: -1;
+            filter: blur(5px);
+            animation: glowing 20s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+
+        .success-circle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+    </style>
 {% endblock %}
 
 
@@ -299,86 +671,197 @@
 
 
 <script>
-  $(document).ready(function () {
-    // Функция для пересчета суммы
-    function calculateTotal() {
-      let total = 0;
-      $(".price:checked").each(function () {
-        total += parseFloat($(this).data('cost'));
-      });
-      $(".total-cost").text("$" + total.toFixed(2));
-    }
+    $(document).ready(function () {
+        // Функция для пересчета суммы
+        function calculateTotal() {
+            let total = 0;
+            $(".price:checked").each(function () {
+                total += parseFloat($(this).data('cost'));
+            });
+            $(".total-cost").text("$" + total.toFixed(2));
+        }
 
-    // Запретить снятие галочки с #spherePrice
-    $("#spherePrice").on("click", function (e) {
-      if (!$(this).prop("checked")) {
-        e.preventDefault();
-      }
+        // Запретить снятие галочки с #spherePrice
+        $("#spherePrice").on("click", function (e) {
+            if (!$(this).prop("checked")) {
+                e.preventDefault();
+            }
+        });
+
+        // Пересчитывать сумму при изменении состояния чекбоксов
+        $(".price").on("change", function () {
+            calculateTotal();
+        });
+
+        // Инициализация подсчета суммы при загрузке страницы
+        calculateTotal();
     });
-
-    // Пересчитывать сумму при изменении состояния чекбоксов
-    $(".price").on("change", function () {
-      calculateTotal();
-    });
-
-    // Инициализация подсчета суммы при загрузке страницы
-    calculateTotal();
-  });
 </script>
 
 
 <script>
 
-  $("#updateTime").on("click", function () {
-    $('#updateTime').prop('disabled', true);
-    AjaxSend("/admin/launcher/update/time", "POST", {
-      month: $("#launcherMonth").val()
-    }, true).then(function (response) {
-      $('#updateTime').prop('disabled', false);
-      responseAnalysis(response);
-      if (response.date) {
-        $(".sphereBalance").text("$" + response.balance)
-        $(".launcherDate").text(response.date)
-        $("#successPayLauncher").html("                        <div class=\"alert alert-success d-flex align-items-center rounded-0 shadow-none\" role=\"alert\">\n" +
-          "                            <svg class=\"flex-shrink-0 me-2 svg-success\" xmlns=\"http://www.w3.org/2000/svg\" height=\"1.5rem\" viewBox=\"0 0 24 24\" width=\"1.5rem\" fill=\"#000000\"><path d=\"M0 0h24v24H0V0zm0 0h24v24H0V0z\" fill=\"none\"></path><path d=\"M16.59 7.58L10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"></path></svg>\n" +
-          "                            <div>\n" +
-          "                                <strong>{{ phrase('You have successfully extended the use of the launcher') }} " + response.date + " \n" +
-          "                            </div>\n" +
-          "                        </div>")
-      }
+    $("#updateTime").on("click", function () {
+        $('#updateTime').prop('disabled', true);
+        AjaxSend("/admin/launcher/update/time", "POST", {
+            month: $("#launcherMonth").val()
+        }, true).then(function (response) {
+            $('#updateTime').prop('disabled', false);
+            responseAnalysis(response);
+            if (response.date) {
+                $(".sphereBalance").text("$" + response.balance)
+                $(".launcherDate").text(response.date)
+                $("#successPayLauncher").html("                        <div class=\"alert alert-success d-flex align-items-center rounded-0 shadow-none\" role=\"alert\">\n" +
+                      "                            <svg class=\"flex-shrink-0 me-2 svg-success\" xmlns=\"http://www.w3.org/2000/svg\" height=\"1.5rem\" viewBox=\"0 0 24 24\" width=\"1.5rem\" fill=\"#000000\"><path d=\"M0 0h24v24H0V0zm0 0h24v24H0V0z\" fill=\"none\"></path><path d=\"M16.59 7.58L10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"></path></svg>\n" +
+                      "                            <div>\n" +
+                      "                                <strong>{{ phrase('You have successfully extended the use of the launcher') }} " + response.date + " \n" +
+                      "                            </div>\n" +
+                      "                        </div>")
+            }
+        })
     })
-  })
 
 </script>
 
-<script>
-  (function () {
-    'use strict';
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            const emojis = [
+                '🎉', '🎊', '🎈', '🎀', '🎁', '⭐', '🌟', '✨', '💫', '💥',
+                '😃', '😄', '😁', '😆', '😊', '😇', '🥳', '🤩', '😎', '😻',
+                '🎶', '🎵', '🎸', '🎺', '🥁', '🎷', '🎤', '🎹', '🎼', '🎂',
+                '🍰', '🧁', '🍭', '🍬', '🍫', '🍹', '🍾', '🥂', '🍻', '🍺',
+                '🌈', '☀️', '🌞', '🌅', '💖', '💗', '💝', '💓', '💞', '💕',
+                '💌', '💟', '💜', '💛', '💚', '💙', '🧡', '❤️', '💘', '💎',
+                '🚀', '🎡', '🎢', '🎠', '🏆', '🥇', '🏅', '🎗️', '🏖️', '🏝️'
+            ];
 
-    var termsScroll = document.getElementById('terms-scroll');
-    new SimpleBar(termsScroll, {autoHide: true});
+            function createFirework(x, y) {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ff8800', '#ff0088'];
+                const particles = 40;
 
-    new Choices('#renewmonths', {
-      allowHTML: true,
-      searchEnabled: false,
-      removeItemButton: false,
-      choices: [],
-    });
+                for (let i = 0; i < particles; i++) {
+                    const angle = (i * 360) / particles;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const firework = $('<div>').addClass('firework').css({
+                        'background-color': color,
+                        'left': x + 'px',
+                        'top': y + 'px'
+                    });
 
-    var launcherMonth = new Choices('#launcherMonth', {
-      allowHTML: true,
-      searchEnabled: false,
-      removeItemButton: false,
-      choices: [],
-    });
+                    $('body').append(firework);
 
-    new Choices('#clickRouletteMonths', {
-      allowHTML: true,
-      searchEnabled: false,
-      removeItemButton: false,
-      choices: [],
-    });
+                    gsap.to(firework, {
+                        duration: 1.5 + Math.random(),
+                        x: Math.cos(angle * Math.PI / 180) * (150 + Math.random() * 150),
+                        y: Math.sin(angle * Math.PI / 180) * (150 + Math.random() * 150),
+                        opacity: 0,
+                        ease: 'power1.out',
+                        onComplete: function() {
+                            firework.remove();
+                        }
+                    });
+                }
+            }
 
-  })()
-</script>
+            function createStar() {
+                const star = $('<div>').addClass('star');
+                const startX = Math.random() * window.innerWidth;
+                const startY = window.innerHeight + 50;
+
+                star.css({
+                    left: startX + 'px',
+                    top: startY + 'px',
+                    transform: 'rotate(' + (Math.random() * 360) + 'deg)'
+                });
+
+                $('body').append(star);
+
+                gsap.to(star, {
+                    duration: 2 + Math.random() * 2,
+                    y: -100,
+                    x: startX + (Math.random() * 200 - 100),
+                    rotation: Math.random() * 720 - 360,
+                    opacity: 0,
+                    ease: 'power1.out',
+                    onComplete: function() {
+                        star.remove();
+                    }
+                });
+            }
+
+            function createConfetti() {
+                const confetti = $('<div>').addClass('confetti');
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const startX = Math.random() * window.innerWidth;
+
+                confetti.css({
+                    left: startX + 'px',
+                    top: '-20px',
+                    background: color,
+                    transform: 'rotate(' + (Math.random() * 360) + 'deg)'
+                });
+
+                $('body').append(confetti);
+
+                gsap.to(confetti, {
+                    duration: 3 + Math.random() * 2,
+                    y: window.innerHeight + 100,
+                    x: startX + (Math.random() * 200 - 100),
+                    rotation: Math.random() * 720 - 360,
+                    ease: 'power1.inOut',
+                    onComplete: function() {
+                        confetti.remove();
+                    }
+                });
+            }
+
+            function createEmoji(x, y) {
+                const emoji = $('<div>').addClass('emoji').text(emojis[Math.floor(Math.random() * emojis.length)]);
+                emoji.css({
+                    left: x + 'px',
+                    top: y + 'px'
+                });
+
+                $('body').append(emoji);
+
+                gsap.to(emoji, {
+                    duration: 2,
+                    y: '-=100',
+                    x: '+=' + (Math.random() * 100 - 50),
+                    opacity: 1,
+                    ease: 'power1.out',
+                    onComplete: function() {
+                        emoji.remove();
+                    }
+                });
+            }
+
+            function createSuccessCircle() {
+                const circle = $('<div>').addClass('success-circle');
+                circle.css({
+                    left: '50%',
+                    top: '50%',
+                    width: '10px',
+                    height: '10px',
+                    background: 'rgba(76, 175, 80, 0.2)',
+                    transform: 'translate(-50%, -50%)'
+                });
+
+                $('body').append(circle);
+
+                gsap.to(circle, {
+                    duration: 1,
+                    scale: 100,
+                    opacity: 0,
+                    ease: 'power2.out',
+                    onComplete: function() {
+                        circle.remove();
+                    }
+                });
+            }
+
+        });
+    </script>
 {% endblock %}

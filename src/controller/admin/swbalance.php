@@ -25,6 +25,25 @@ class swbalance
         }
     }
 
+    static public function buyPack(): void
+    {
+        $type = $_POST['type'] ?? "hobby";
+        $months = $_POST['months'] ?? 1;
+        $data = server::send(type::BUY_BALANCE_PACK, [
+            'type' => $type,
+            'months' => (int)$months
+        ])->show()->getResponse();
+        if(isset($data['success']) AND $data['success']){
+            board::reload();
+            board::success('Пак покупен');
+        }else{
+            board::alert([
+                'error' => $data['message']
+            ]);
+        }
+
+    }
+
     static public function pay()
     {
         tpl::display("admin/balance_pay.html");

@@ -125,6 +125,15 @@ class userModel
             $this->city = $user['city'];
             $this->serverId = $user['server_id'];
             $this->lang = $user['lang'];
+
+            if(isset($_SESSION['lang'])){
+                if($this->lang != $_SESSION['lang']){
+                    $_SESSION['lang'] = $this->lang;
+                }
+            }else{
+                $_SESSION['lang'] = $this->lang;
+            }
+
             $this->initLastActivity($user['last_activity']);
 
             if (isset($_SESSION['id'])) {

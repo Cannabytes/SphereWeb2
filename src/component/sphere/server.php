@@ -193,6 +193,107 @@ class server
         return $instance;
     }
 
+    static public function sendCustom(string $url, array $arr = []): self
+    {
+        self::isOffline();
+        $instance = new self();
+        if (self::$isOfflineServer === true) {
+            if (self::$showError) {
+                board::error("Сервер недоступен");
+            }
+            self::$error = 'Sphere Server is offline';
+
+            return $instance;
+        }
+        self::$error = false;
+
+        if (self::$installLink != null) {
+            $link = self::$installLink;
+        } else {
+            $link = config::load()->sphereApi()->getIp() . ':' . config::load()->sphereApi()->getPort();
+        }
+        $json = json_encode($arr) ?? "";
+        $url = $link . $url ?? board::error("Не указан URL запроса");
+        $ch = curl_init();
+        $headers = [
+            'Content-Type: application/json',
+            'Authorization: BoberKurwa',
+        ];
+        if (self::$user !== null) {
+            if (self::$server_id == null) {
+                self::$server_id = self::$user->getServerId();
+            }
+            // Данные для аутентификации
+            $headers[] = "User-Id: " . self::$user->getId();
+            $headers[] = "User-Email: " . self::$user->getEmail();
+            $headers[] = "User-Server-Id: " . self::$server_id;
+            $headers[] = "User-IP: " . self::$user->getIp();
+            $headers[] = "User-isBot: " . 0;
+        } else {
+            $headers[] = "User-Id: " . 0;
+            if (type::SPHERE_INSTALL != $url) {
+                $headers[] = "User-Server-Id: " . \Ofey\Logan22\model\server\server::getLastServer()?->getId();
+            }
+        }
+        $headers[] = "Token: " . self::getToken();
+        $host = $_SERVER['HTTP_HOST'];
+        if (empty($host) || !self::is_valid_domain(parse_url($host, PHP_URL_HOST))) {
+            $host = $_SERVER['SERVER_NAME'];
+        }
+
+        $parsedHost = parse_url($host, PHP_URL_HOST) ?: $host;
+        $parsedHost = preg_replace('/:\d+$/', '', $parsedHost);
+        $headers[] = "Domain: " . $parsedHost;
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true); // Указываем, что это POST запрос
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json); // Передаем JSON данные
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Возвращаем результат в переменную
+        curl_setopt($ch, CURLOPT_TIMEOUT, self::$timeout);
+        curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
+        self::$countRequest++;
+        $response = curl_exec($ch);
+        if ($response === false) {
+            self::$codeError = "sphereapi_unavailable";
+            self::$error = 'Ошибка соединения с Sphere API. Попробуйте еще раз. Возможно сервер на перезагрузке либо указаны неверные данные подключения к Sphere API. Если ошибка повторится, обратитесь в службу поддержки.';
+            self::$isOfflineServer = true;
+
+            return $instance;
+        }
+
+        if (curl_errno($ch)) {
+            sql::sql("DELETE FROM `server_cache` WHERE `type` = 'sphereServer'");
+            sql::sql("INSERT INTO `server_cache` (`server_id`, `type`, `data`, `date_create`) VALUES (0, ?, ?, ?)", [
+                "sphereServer",
+                json_encode(["connect" => false, "error" => "Not connect to Sphere Server"], JSON_UNESCAPED_UNICODE),
+                time::mysql(),
+            ]);
+            self::$isOfflineServer = true;
+
+            return $instance;
+        }
+        curl_close($ch);
+
+        $response = json_decode($response, true) ?? false;
+        $instance->response = $response;
+        if ($response === false) {
+            return $instance;
+        }
+
+        if (isset($response['error'])) {
+            self::$error = $response['error'];
+            if (isset($response['code'])) {
+                self::$codeError = $response['code'];
+            }
+            if (self::$showError) {
+                board::error($response['error']);
+            }
+        }
+
+        return $instance;
+    }
+
     public static function isOffline(): ?bool
     {
         if (self::$tokenDisable) {

@@ -1,0 +1,96 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card custom-card">
+        <div class="card-header justify-content-between">
+            <div class="card-title">
+                <a href="/admin/extensions/paid" class="avatar border text-muted me-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
+                </a>
+                Внутренний форум Sphere
+            </div>
+            <div class="prism-toggle">
+                <div class="custom-toggle-switch d-flex align-items-center ">
+                    <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}" type="checkbox" {% if getPluginActive(pluginName) %}checked=""{% endif %}>
+                    <label for="enablePlugin" class="label-success"></label><span class="ms-3">Активация плагина</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+
+            {% if getPluginActive('sphere_forum') == false %}
+            <div class="alert alert-danger" role="alert">
+                Плагин отключен.<br>
+                Только включенные плагины можно настраивать.
+            </div>
+            {% endif %}
+
+            <div class="alert alert-info" role="alert">
+                Плагин добавит на Ваш сайт внутренний форум.<br>
+                Это форум похож обычный простой форум, только интегрирован в Sphere.<br>
+                Важно понимать: Сфера Форум - не стремиться превзойти или быть аналогом форума XenForo, который разрабатывается командой программистов различных направлений и больше 15 лет активной коммерческой разработки, со стоимостью 140$ и 40$ продление.
+                Этот форум я сделал для тех у кого нет возможности на покупку XenForo или другого продвинутого веб-форума.<br>
+                Сфера форум значительно уступает в юзабилии и Я (разработчик) это знаю.
+            </div>
+
+
+            <div class="form-check">
+                <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value="" id="showMainPage" {% if setting.showMainPage %}checked=""{% endif %}>
+                <label class="form-check-label" for="showMainPage">
+                    Показывать на главной странице
+                </label>
+            </div>
+            <div class="form-check">
+                <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value="" id="addToMenu" {% if setting.addToMenu %}checked=""{% endif %}>
+                <label class="form-check-label" for="addToMenu">
+                    Добавить в меню
+                </label>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function() {
+
+        const pluginName = "{{pluginName}}";
+
+        {% if getPluginActive(pluginName) == false %}
+        $('.pluginSetting').prop('disabled', true);
+        {% endif %}
+
+        // Включение/отключение плагина
+        $('#enablePlugin').on('change', function() {
+            var setting = $(this).attr('id');
+            var value = $(this).is(':checked');
+            AjaxSend("/admin/plugin/save/activator", "POST", {
+                "pluginName": pluginName,
+                "setting": setting,
+                "value" : value,
+                "serverId": 0,
+            }, true).then(function (){
+                window.location.reload();
+            })
+        });
+
+        // Обработка изменения настроек плагина
+        $('.pluginSetting').on('change', function() {
+            var setting = $(this).attr('id');
+            var value = $(this).is(':checked');
+            var dataType = $(this).data('type');
+            AjaxSend("/admin/plugin/save/config", "POST", {
+                "pluginName": pluginName,
+                "setting": setting,
+                "value" : value,
+                "type" : dataType,
+                "serverId": 0,
+            }, false);
+        });
+    });
+</script>
+{% endblock %}

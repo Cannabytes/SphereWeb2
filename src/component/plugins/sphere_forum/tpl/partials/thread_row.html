@@ -1,0 +1,92 @@
+<td width="55%">
+    <div class="d-flex align-items-center">
+        <span class="avatar avatar-lg me-2">
+            <img src="{{ getUser(thread.getAuthorId()).getAvatar() }}" alt="img">
+        </span>
+        <div>
+
+            {% if thread.isClosed() %}
+            <i class="ri-lock-line"></i>
+            {% endif %}
+
+            <a href="/forum/topic/{{ transliterateToEn(thread.getTitle()) }}.{{ thread.getId() }}"
+               class="font-weight-bold text-primary {% if thread.hasUnread %}fw-semibold{% endif %}">
+                {% if thread.hasUnread %}
+                <i class="bi bi-envelope-plus text-success "></i>
+                {% endif %}
+                {{ thread.getTitle() }}
+            </a>
+
+            <div class="text-muted small">
+                Автор: <strong>{{ getUser(thread.getAuthorId()).getName() }}</strong>
+                {% if category.isModerated() and not thread.isApproved() %}
+                <span class="badge badge-warning text-muted small">
+                    Ожидает подтверждения
+                </span>
+                {% endif %}
+            </div>
+
+            {% if thread.getPageCount() > 1 %}
+            <nav aria-label="Thread pagination" class="mt-0">
+                <ul class="pagination pagination-sm  mb-0">
+
+                    {% set pageCount = thread.getPageCount() %}
+                    {% set displayPages = 3 %}
+                    {% set startPage = max(1, pageCount - displayPages + 1) %}
+
+                    {# Первая страница всегда видна #}
+                    <li class="page-item{% if currentPage == 1 %} active{% endif %}">
+                        <a class="page-link" href="/forum/topic/{{ transliterateToEn(thread.getTitle()) }}.{{ thread.getId() }}">1</a>
+                    </li>
+
+                    {% if startPage > 2 %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+
+                    {# Выводим последние несколько страниц #}
+                    {% for p in range(startPage, pageCount) %}
+                    {% if p > 1 %}
+                    <li class="page-item{% if currentPage == p %} active{% endif %}">
+                        <a class="page-link" href="/forum/topic/{{ transliterateToEn(thread.getTitle()) }}.{{ thread.getId() }}?page={{ p }}">{{ p }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</td>
+<td width="15%" class="text-center">
+    <span class="text-muted small">
+        {{ thread.getCreatedAt() | date("d F, Y - H:i") }}
+    </span>
+</td>
+<td width="15%" class="text-center">
+    <span class="badge badge-info text-muted small">
+        {{ thread.getReplies() }} ответа
+    </span><br>
+    <span class="text-muted small">
+        Просмотров: {{ thread.getViews() }}
+    </span>
+</td>
+<td width="15%">
+    <span class="d-flex align-items-center text-muted small">
+        Ответил:
+        <span class="avatar avatar-sm avatar-rounded mx-2"
+              style="width: 24px; height: 24px;">
+            <img src="{{ getUser(thread.getLastReplyUserId()).getAvatar() }}"
+                 alt="img"
+                 class="rounded-circle w-100 h-100">
+        </span>
+        <strong>
+            {{ getUser(thread.getLastReplyUserId()).getName() }}
+        </strong>
+    </span>
+    <span class="text-muted small">
+        {{ thread.getUpdatedAt() | date("d F, Y - H:i") }}
+    </span>
+</td>

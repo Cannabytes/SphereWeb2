@@ -3,6 +3,7 @@
 namespace lucera_traders;
 
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\component\request\clear;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
@@ -22,8 +23,8 @@ class lucera_traders
     public function __construct()
     {
         tpl::addVar([
-          'setting'    => plugin::getSetting($this->getNameClass()),
-          'pluginName' => $this->getNameClass(),
+            'setting' => plugin::getSetting($this->getNameClass()),
+            'pluginName' => $this->getNameClass(),
         ]);
     }
 
@@ -40,7 +41,7 @@ class lucera_traders
     {
 
         tpl::addVar([
-          "selllist" => $this->getSellList(),
+            "selllist" => $this->getSellList(),
         ]);
 
         tpl::displayPlugin("lucera_traders/tpl/include.html");
@@ -48,37 +49,41 @@ class lucera_traders
 
     public function getSellList()
     {
-        $cacheKey     = 'selllist';
-        $data         = sql::getRow("SELECT `data`, `date_create` FROM server_cache WHERE `type` = ? AND server_id = ?;", [
-          $cacheKey,
-          user::self()->getServerId(),
+        $cacheKey = 'selllist';
+        $data = sql::getRow("SELECT `data`, `date_create` FROM server_cache WHERE `type` = ? AND server_id = ?;", [
+            $cacheKey,
+            user::self()->getServerId(),
         ]);
-        $totalSeconds = time::diff(time::mysql(), $data['date_create']);
-        if ($totalSeconds > 60 * 5) {
-            sql::run("DELETE FROM server_cache WHERE `type` = ? AND server_id = ?;", [
-              $cacheKey,
-              user::self()->getServerId(),
-            ]);
-            $data = null;
-        } else {
-            $selllist = json_decode($data['data'], true);
-            if($selllist){
-                foreach ($selllist as &$value) {
-                    foreach ($value['items'] as &$item) {
-                        $itemdata = item::getItem($item['item_id']); // Получаем объект item
-                        if ($itemdata !== null) {
-                            $itemdata->setCount($item['quantity']);
-                            $itemdata->setPrice($item['price']);
-                            $itemdata->setEnchant($item['enchant']);
-                            $item['itemInfo'] = $itemdata;
+        if ($data) {
+            $totalSeconds = time::diff(time::mysql(), $data['date_create']);
+//            if ($totalSeconds > 60 * 5) {
+            if ($totalSeconds > 1 * 1) {
+                sql::run("DELETE FROM server_cache WHERE `type` = ? AND server_id = ?;", [
+                    $cacheKey,
+                    user::self()->getServerId(),
+                ]);
+                $data = null;
+            } else {
+                $selllist = json_decode($data['data'], true);
+                if ($selllist) {
+                    foreach ($selllist as &$value) {
+                        foreach ($value['items'] as &$item) {
+                            $itemdata = item::getItem($item['item_id']); // Получаем объект item
+                            if ($itemdata !== null) {
+                                $itemdata->setCount($item['quantity']);
+                                $itemdata->setPrice($item['price']);
+                                $itemdata->setEnchant($item['enchant']);
+                                $item['itemInfo'] = $itemdata;
+                            }
                         }
                     }
                 }
             }
         }
+
         if ($data == null or empty($data['data'])) {
             $selllist = \Ofey\Logan22\component\sphere\server::send(type::GAME_SERVER_REQUEST, [
-              'query' => 'SELECT
+                'query' => clear::cleanSQLQuery('SELECT
                           characters.obj_id,
                           characters.char_name,
                           cv_selllist.`value`,
@@ -98,11 +103,17 @@ class lucera_traders
                           AND cv_storemode.`value` = 1 
                         WHERE
                           character_subclasses.isBase = 1 
-                          AND characters.`online` = 0;',
-            ])->show()->getResponse();
-            $itemIds  = [];
+                          AND characters.`online` = 0;'),
+            ])->show(false)->getResponse();
+            if (isset($selllist['error'])) {
+                return [];
+            }
+            $selllist = $selllist['rows'];
+            $itemIds = [];
             foreach ($selllist as $key => &$value) {
+
                 $value['items'] = $this->parseDataString($value["value"]);
+
                 unset($value["value"]);
 
                 // Если нет items, пропускаем эту запись
@@ -119,18 +130,21 @@ class lucera_traders
             $storeNames = $this->getStoreName();
 
             $itemIds = array_unique($itemIds);
-            if ( ! empty($itemIds)) {
-                $itemIdsQuery     = implode(',', array_map('intval', $itemIds));
+
+            if (!empty($itemIds)) {
+                $itemIdsQuery = implode(',', array_map('intval', $itemIds));
                 $itemInfoResponse = \Ofey\Logan22\component\sphere\server::send(type::GAME_SERVER_REQUEST, [
-                  'query' => "SELECT
+                    'query' => clear::cleanSQLQuery("SELECT
                     items.item_id,
                     items.item_type,
                     items.enchant
                 FROM
                     items
                 WHERE
-                    items.item_id IN ({$itemIdsQuery})",
+                    items.item_id IN ({$itemIdsQuery})"),
                 ])->show()->getResponse();
+
+                $itemInfoResponse = $itemInfoResponse['rows'];
 
                 $itemInfoMap = [];
                 foreach ($itemInfoResponse as $info) {
@@ -151,8 +165,8 @@ class lucera_traders
                     foreach ($value["items"] as $index => &$item) {
                         $itemObjectID = $item["id"];
                         if (isset($itemInfoMap[$itemObjectID])) {
-                            $item['item_id']  = $itemInfoMap[$itemObjectID]['item_type'];
-                            $item['enchant']  = $itemInfoMap[$itemObjectID]['enchant'];
+                            $item['item_id'] = $itemInfoMap[$itemObjectID]['item_type'];
+                            $item['enchant'] = $itemInfoMap[$itemObjectID]['enchant'];
                             $item['itemInfo'] = item::getItem($item['item_id']);
                         } else {
                             // Удалить элемент, если нет информации о нем
@@ -169,10 +183,10 @@ class lucera_traders
             $jsonData = json_encode(array_values($selllist));
 
             sql::sql("INSERT INTO `server_cache` ( `server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
-              user::self()->getServerId(),
-              $cacheKey,
-              $jsonData,
-              time::mysql(),
+                user::self()->getServerId(),
+                $cacheKey,
+                $jsonData,
+                time::mysql(),
             ]);
         }
 
@@ -181,14 +195,14 @@ class lucera_traders
 
     public function show(): void
     {
-        if (\Ofey\Logan22\model\server\server::get_count_servers()==0 or (\Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->isDisabled())){
+        if (\Ofey\Logan22\model\server\server::get_count_servers() == 0 or (\Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->isDisabled())) {
             redirect::location("/main");
         }
-        if ( ! plugin::getPluginActive($this->getNameClass())) {
+        if (!plugin::getPluginActive($this->getNameClass())) {
             redirect::location("/main");
         }
         tpl::addVar([
-          "selllist" => $this->getSellList(),
+            "selllist" => $this->getSellList(),
         ]);
         tpl::displayPlugin("lucera_traders/tpl/traders.html");
     }
@@ -211,9 +225,9 @@ class lucera_traders
 
             // Добавляем данные в массив
             $result[] = [
-              'id'       => $id,
-              'quantity' => $quantity,
-              'price'    => $price,
+                'id' => $id,
+                'quantity' => $quantity,
+                'price' => $price,
             ];
         }
 
@@ -222,8 +236,7 @@ class lucera_traders
 
     private function getStoreName(): bool|array|null
     {
-        return server::send(type::GAME_SERVER_REQUEST, [
-          'query' => 'SELECT
+        $sql = clear::cleanSQLQuery("SELECT
           character_variables.obj_id, 
           character_variables.`value`
         FROM
@@ -233,7 +246,9 @@ class lucera_traders
           ON 
             character_variables.obj_id = characters.obj_Id
         WHERE
-          character_variables.`name` = "sellstorename";',
+          character_variables.`name` = 'sellstorename';");
+        return server::send(type::GAME_SERVER_REQUEST, [
+            'query' => $sql,
         ])->show()->getResponse();
     }
 

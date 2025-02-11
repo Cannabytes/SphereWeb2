@@ -1,0 +1,1413 @@
+{% extends 'struct.html' %}
+
+{% block title %}Форум — {{category.getName()}}{% endblock %}
+
+{% block content %}
+<div class="container-fluid ">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <div class="d-flex align-items-center">
+                        <a href="/forum" class="avatar border text-muted me-2">
+                            <i class="fe fe-home"></i>
+                        </a>
+
+                        <!-- Стрелка назад для родительской категории -->
+                        {% if parentCategory %}
+                        <a href="/forum/{{transliterateToEn(parentCategory.getName())}}.{{parentCategory.getId()}}"
+                           class="avatar border text-muted me-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                            </svg>
+                        </a>
+                        {% endif %}
+
+                        <!-- Навигационные хлебные крошки -->
+                        <ol class="breadcrumb mb-0">
+                            {% for category in categoryParents %}
+                            {% if not loop.last %} {# Проверяем, что это не последний элемент #}
+                            <li class="breadcrumb-item">
+                                <a class="text-{{ category.getTitleColor() }}" href="/forum/{{ transliterateToEn(category.getName()) }}.{{ category.getId() }}">
+                                    {{ category.getName() }}
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="breadcrumb-item active text-{{ category.getTitleColor() }}" aria-current="page">
+                                {{ category.getName() }}
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                        </ol>
+
+                    </div>
+
+                    <div>
+
+                        <a data-bs-content="
+    Создание тем: {% if category.canCreateTopics() %}Да{% else %}Нет{% endif %}<br>
+    Ответы: {% if category.canReplyTopics() %}Да{% else %}Нет{% endif %}<br>
+    Просмотр чужих тем: {% if category.canViewTopics() %}Да{% else %}Нет{% endif %}<br>
+    Одобрение тем модератором: {% if category.isModerated() %}Да{% else %}Нет{% endif %}<br>
+    {% if category.canUsersDeleteOwnThreads() %}
+        Удаление своих тем: Да ({{ category.getThreadDeleteTimeoutMinutes() }} мин)
+    {% else %}
+        Удаление своих тем: Нет
+    {% endif %}<br>
+    {% if category.canUsersDeleteOwnPosts() %}
+        Удаление своих сообщений: Да ({{ category.getEditTimeoutMinutes() }} мин)
+    {% else %}
+        Удаление своих сообщений: Нет
+    {% endif %}<br>
+    Макс. длина сообщения: {{ category.getMaxPostLength() }} символов
+    "
+                           data-bs-html="true"
+                           data-bs-trigger="focus"
+                           class="me-4"
+                           href="javascript:void(0)"
+                           data-bs-toggle="popover"
+                           data-bs-placement="top"
+                           data-bs-custom-class="only-body">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="svg-primary" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+                                <path d="M0 0h24v24H0V0z" fill="none"></path>
+                                <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
+                            </svg>
+                        </a>
+
+                        {% if getUser().isAdmin() or isModerator(getUser().getId(), category.getId()) %}
+
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-github btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                Управление
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="">
+
+                                {% if getUser().isAdmin() %}
+                                <li>
+                                    <a data-category-id="{{ categoryId }}"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#create-section"
+                                       class="dropdown-item" href="#">
+                                        <i class="ri-add-line"></i> Добавить раздел
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% if getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_edit_posts') %}
+                                <li>
+                                    <a data-category-id="{{ category.getId() }}"
+                                       data-category-name="{{ category.getName() }}"
+                                       data-category-color="{{ category.getTitleColor() }}"
+                                       data-category-icon="{{ category.getIconSvg() }}"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#renameModal"
+                                       class="dropdown-item" href="#">
+                                        <i class="ri-refresh-fill"></i> Переименовать
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% if getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_move_threads') %}
+                                <li>
+                                    <a data-category-id="{{ category.getId() }}"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#moveCategoryModal"
+                                       class="dropdown-item" href="#">
+                                        <i class="ri-drag-move-fill"></i> Переместить
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% if getUser().isAdmin() %}
+                                <li>
+                                    <a class="dropdown-item" href="#"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#permissionsModal"
+                                       data-category-id="{{ category.getId() }}">
+                                        <i class="ri-checkbox-multiple-line"></i> Изменить права
+                                    </a>
+                                </li>
+
+                                <a class="dropdown-item" href="#"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#deleteModal"
+                                   data-category-id="{{ category.getId() }}">
+                                    <i class="ri-delete-bin-line text-danger"></i> Удалить
+                                </a>
+
+                                {% endif %}
+
+                            </ul>
+                        </div>
+
+                        <!-- Добавим модальное окно создания раздела -->
+                        <div class="modal modal-lg fade" id="create-section" tabindex="-1" aria-labelledby="create-sectionLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h6 class="modal-title" id="nameSection">Добавление нового раздела</h6>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body px-4">
+                                        <div class="row">
+                                            <div class="col-xl-4 mb-2">
+                                                <label for="createNameSection" class="form-label">Название<sup><i class="ri-star-s-fill text-danger fs-8"></i></sup></label>
+                                                <input type="text" class="form-control" id="createNameSection" value="">
+                                            </div>
+
+                                            <div class="col-xl-8 mb-2">
+                                                <label for="createDescSection" class="form-label">Описание</label>
+                                                <input type="text" class="form-control" id="createDescSection" placeholder="">
+                                            </div>
+
+                                            <style>
+                                                .color-picker {
+                                                    display: flex;
+                                                    flex-wrap: wrap;
+                                                    gap: 1rem;
+                                                }
+
+                                                .color-option {
+                                                    padding: 0.5rem 1rem;
+                                                    border: 2px solid transparent;
+                                                    border-radius: 0.5rem;
+                                                    cursor: pointer;
+                                                    transition: all 0.2s ease;
+                                                }
+
+                                                .color-option:hover {
+                                                    background-color: rgba(0,0,0,0.05);
+                                                }
+
+                                                .color-option.selected {
+                                                    border-color: var(--bs-primary);
+                                                    background-color: rgba(var(--bs-primary-rgb), 0.1);
+                                                }
+
+                                                .color-preview {
+                                                    display: block;
+                                                    font-size: 1rem;
+                                                    margin-bottom: 0.25rem;
+                                                }
+                                            </style>
+
+                                            <div class="col-xl-12 mb-3">
+                                                <label class="form-label">Цвет названия</label>
+                                                <div class="d-flex flex-wrap gap-3 color-picker">
+                                                    <div class="color-option" data-color="primary">
+                                                        <span class="color-preview text-primary fw-bold">Текст</span>
+                                                        <small class="d-block text-muted">.text-primary</small>
+                                                    </div>
+                                                    <div class="color-option" data-color="secondary">
+                                                        <span class="color-preview text-secondary fw-bold">Текст</span>
+                                                        <small class="d-block text-muted">.text-secondary</small>
+                                                    </div>
+                                                    <div class="color-option" data-color="warning">
+                                                        <span class="color-preview text-warning fw-bold">Текст</span>
+                                                        <small class="d-block text-muted">.text-warning</small>
+                                                    </div>
+                                                    <div class="color-option" data-color="info">
+                                                        <span class="color-preview text-info fw-bold">Текст</span>
+                                                        <small class="d-block text-muted">.text-info</small>
+                                                    </div>
+                                                    <div class="color-option" data-color="success">
+                                                        <span class="color-preview text-success fw-bold">Текст</span>
+                                                        <small class="d-block text-muted">.text-success</small>
+                                                    </div>
+                                                    <div class="color-option" data-color="danger">
+                                                        <span class="color-preview text-danger fw-bold">Текст</span>
+                                                        <small class="d-block text-muted">.text-danger</small>
+                                                    </div>
+                                                    <div class="color-option" data-color="light">
+                                                        <span class="color-preview text-light fw-bold bg-dark">Текст</span>
+                                                        <small class="d-block text-muted">.text-light</small>
+                                                    </div>
+                                                    <div class="color-option" data-color="dark">
+                                                        <span class="color-preview text-dark fw-bold">Текст</span>
+                                                        <small class="d-block text-muted">.text-dark</small>
+                                                    </div>
+                                                    <div class="color-option" data-color="muted">
+                                                        <span class="color-preview text-muted fw-bold">Текст</span>
+                                                        <small class="d-block text-muted">.text-muted</small>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="selectedTitleColor" value="dark">
+                                            </div>
+
+                                            <div class="col-sm-12" style="display: none;">
+                                                <label for="parent" class="form-label">Категория</label>
+                                                <select class="form-select" id="parent">
+                                                    {% for category in getCategoriesForum() %}
+                                                    <option value="{{category.getId()}}">{{ category.getName() }}</option>
+                                                    {% for section in category.getSubcategories() %}
+                                                    <option value="{{section.getId()}}">->{{ section.getName() }}</option>
+                                                    {% endfor %}
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+
+                                            <div class="col-xl-12 mt-2">
+                                                <label for="createDescSection" class="form-label">Иконка (svg или html)</label>
+                                                <textarea class="form-control" id="createIconSection" placeholder=""></textarea>
+                                            </div>
+
+                                            <div class="col-xl-12 mt-2">
+                                                <label for="createNameSection" class="form-label">Ссылка<sub>(при клике будет переходить по указанной ссылке)</sub></label>
+                                                <input type="text" class="form-control" id="createLinkSection" value="">
+                                            </div>
+
+                                            <div class="col-xl-12 mt-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="isHidden">
+                                                    <label class="form-check-label" for="isHidden">
+                                                        Скрыть раздел для всех кроме администраторов и модераторов?
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="canCreateTopics" checked>
+                                                    <label class="form-check-label" for="canCreateTopics">
+                                                        Можно создавать темы пользователям?
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="canReplyTopics" checked>
+                                                    <label class="form-check-label" for="canReplyTopics">
+                                                        Можно пользователям отвечать в темах?
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="canViewTopics" checked>
+                                                    <label class="form-check-label" for="canViewTopics">
+                                                        Могут пользователи просматривать чужие темы?
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="isModerated" checked>
+                                                    <label class="form-check-label" for="isModerated">
+                                                        Требовать одобрения темы модератором перед публикацией?
+                                                    </label>
+                                                </div>
+
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="canUsersDeleteOwnThreads">
+                                                    <label class="form-check-label" for="canUsersDeleteOwnThreads">
+                                                        Разрешить пользователям удалять свои темы?
+                                                    </label>
+                                                </div>
+
+                                                <div class="form-group mt-2" id="threadDeleteTimeoutGroup" style="display: none;">
+                                                    <label for="threadDeleteTimeoutMinutes">Время на удаление темы (в минутах)</label>
+                                                    <input type="number" class="form-control" id="threadDeleteTimeoutMinutes"
+                                                           value="30" min="1" max="10080">
+                                                    <small class="form-text text-muted">После истечения этого времени пользователи не смогут удалить свою тему. Максимум - 7 дней (10080 минут)</small>
+                                                </div>
+
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="canUsersDeleteOwnPosts">
+                                                    <label class="form-check-label" for="canUsersDeleteOwnPosts">
+                                                        Позволить пользователям удалять свои сообщения?
+                                                    </label>
+                                                </div>
+                                                <div class="form-group mt-2" id="postDeleteTimeoutGroup" style="display: none;">
+                                                    <label for="postDeleteTimeoutMinutes">Время на удаление сообщения (в минутах)</label>
+                                                    <input type="number" class="form-control" id="postDeleteTimeoutMinutes"
+                                                           value="30" min="1" max="10080">
+                                                    <small class="form-text text-muted">После истечения этого времени пользователи не смогут удалить свои сообщения. Максимум - 7 дней (10080 минут)</small>
+                                                </div>
+
+                                                <div class="form-group mt-2">
+                                                    <label for="maxPostLength">Максимальное количество символов в сообщении</label>
+                                                    <input type="number" class="form-control" id="maxPostLength"
+                                                           value="20000" min="1" max="300000">
+                                                    <small class="form-text text-muted">Минимум - 1, максимум - 300.000 символов</small>
+                                                </div>
+
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="notifyNewTopicsInTelegram">
+                                                    <label class="form-check-label" for="notifyNewTopicsInTelegram">
+                                                        Уведомлять в телеграмм при новых темах?
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="createNewSection" type="button" class="btn btn-success btn-sm">Создать</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="renameModal" tabindex="-1" aria-labelledby="renameModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="renameModalLabel">Редактирование раздела</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <!-- Существующее поле названия -->
+                                                <div class="mb-3">
+                                                    <label for="renameCategoryName" class="form-label">Название раздела:</label>
+                                                    <input type="text" class="form-control" id="renameCategoryName" placeholder="Введите название">
+                                                </div>
+
+                                                <style>
+                                                    .color-picker-edit {
+                                                        display: flex;
+                                                        flex-wrap: wrap;
+                                                        gap: 1rem;
+                                                    }
+
+                                                    .color-option-edit {
+                                                        padding: 0.5rem 1rem;
+                                                        border: 2px solid transparent;
+                                                        border-radius: 0.5rem;
+                                                        cursor: pointer;
+                                                        transition: all 0.2s ease;
+                                                    }
+
+                                                    .color-option-edit:hover {
+                                                        background-color: rgba(0,0,0,0.05);
+                                                    }
+
+                                                    .color-option-edit.selected {
+                                                        border-color: var(--bs-primary);
+                                                        background-color: rgba(var(--bs-primary-rgb), 0.1);
+                                                    }
+                                                </style>
+
+                                                <!-- Добавляем выбор цвета -->
+                                                <div class="mb-3">
+                                                    <label class="form-label">Цвет названия</label>
+                                                    <div class="d-flex flex-wrap gap-3 color-picker-edit">
+                                                        <div class="color-option-edit" data-color="primary">
+                                                            <span class="color-preview text-primary fw-bold">Текст</span>
+                                                            <small class="d-block text-muted">.text-primary</small>
+                                                        </div>
+                                                        <div class="color-option-edit" data-color="secondary">
+                                                            <span class="color-preview text-secondary fw-bold">Текст</span>
+                                                            <small class="d-block text-muted">.text-secondary</small>
+                                                        </div>
+                                                        <div class="color-option-edit" data-color="warning">
+                                                            <span class="color-preview text-warning fw-bold">Текст</span>
+                                                            <small class="d-block text-muted">.text-warning</small>
+                                                        </div>
+                                                        <div class="color-option-edit" data-color="info">
+                                                            <span class="color-preview text-info fw-bold">Текст</span>
+                                                            <small class="d-block text-muted">.text-info</small>
+                                                        </div>
+                                                        <div class="color-option-edit" data-color="success">
+                                                            <span class="color-preview text-success fw-bold">Текст</span>
+                                                            <small class="d-block text-muted">.text-success</small>
+                                                        </div>
+                                                        <div class="color-option-edit" data-color="danger">
+                                                            <span class="color-preview text-danger fw-bold">Текст</span>
+                                                            <small class="d-block text-muted">.text-danger</small>
+                                                        </div>
+                                                        <div class="color-option-edit" data-color="light">
+                                                            <span class="color-preview text-light fw-bold bg-dark">Текст</span>
+                                                            <small class="d-block text-muted">.text-light</small>
+                                                        </div>
+                                                        <div class="color-option-edit" data-color="dark">
+                                                            <span class="color-preview text-dark fw-bold">Текст</span>
+                                                            <small class="d-block text-muted">.text-dark</small>
+                                                        </div>
+                                                        <div class="color-option-edit" data-color="muted">
+                                                            <span class="color-preview text-muted fw-bold">Текст</span>
+                                                            <small class="d-block text-muted">.text-muted</small>
+                                                        </div>
+                                                    </div>
+                                                    <input type="hidden" id="editSelectedTitleColor" value="dark">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <!-- Существующие поля для SVG иконки -->
+                                                <div class="mb-3">
+                                                    <label for="categoryIcon" class="form-label">
+                                                        SVG Иконка
+                                                        <small class="text-muted">(HTML или SVG код)</small>
+                                                    </label>
+                                                    <textarea class="form-control" id="categoryIcon" rows="5" placeholder="Вставьте SVG код иконки"></textarea>
+                                                </div>
+                                                <!-- Предпросмотр иконки -->
+                                                <div class="mb-3">
+                                                    <label class="form-label">Предварительный просмотр:</label>
+                                                    <div id="iconPreview" class="border p-2 text-center">
+                                                        <small class="text-muted">Предварительный просмотр появится здесь</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                        <button id="saveRenameCategory" data-category-id="" type="button" class="btn btn-primary">Сохранить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            $(document).ready(function() {
+                                // При открытии модального окна переименования
+                                $(document).on('click', '[data-bs-target="#renameModal"]', function(e) {
+                                    e.preventDefault();
+
+                                    const categoryId = $(this).data('category-id');
+                                    const categoryName = $(this).data('category-name');
+                                    const categoryIcon = $(this).data('category-icon') || '';
+                                    const titleColor = $(this).data('category-color') || 'dark'; // Добавляем получение цвета
+
+                                    // Находим модальное окно
+                                    const modal = $('#renameModal');
+
+                                    // Устанавливаем значения
+                                    modal.find('.btn-primary').attr('data-category-id', categoryId);
+                                    modal.find('#renameCategoryName').val(categoryName)
+                                        .attr('class', `form-control text-${titleColor}`); // Устанавливаем цвет текста
+                                    modal.find('#categoryIcon').val(categoryIcon);
+                                    modal.find('#editSelectedTitleColor').val(titleColor);
+
+                                    // Выделяем текущий цвет
+                                    modal.find('.color-option-edit').removeClass('selected');
+                                    modal.find(`.color-option-edit[data-color="${titleColor}"]`).addClass('selected');
+
+                                    // Обновляем предпросмотр иконки
+                                    updateIconPreview(categoryIcon);
+                                });
+
+                                // Обработка выбора цвета в окне редактирования
+                                $('.color-option-edit').on('click', function() {
+                                    const modal = $('#renameModal');
+                                    modal.find('.color-option-edit').removeClass('selected');
+                                    $(this).addClass('selected');
+
+                                    const color = $(this).data('color');
+                                    $('#editSelectedTitleColor').val(color);
+
+                                    // Обновляем цвет названия
+                                    const input = modal.find('#renameCategoryName');
+                                    input.attr('class', `form-control text-${color}`);
+                                });
+
+                                // Предпросмотр иконки при вводе
+                                $('#categoryIcon').on('input', function() {
+                                    updateIconPreview($(this).val());
+                                });
+
+                                // Функция обновления предпросмотра иконки
+                                function updateIconPreview(svgCode) {
+                                    const preview = $('#iconPreview');
+
+                                    // Очистка предыдущего содержимого
+                                    preview.empty();
+
+                                    // Проверка на пустой ввод
+                                    if (!svgCode.trim()) {
+                                        preview.html('<small class="text-muted">Предварительный просмотр появится здесь</small>');
+                                        return;
+                                    }
+
+                                    // Попытка вставить SVG
+                                    try {
+                                        // Создаем временный контейнер для проверки SVG
+                                        const tempDiv = $('<div>').html(svgCode);
+                                        const svgElement = tempDiv.find('svg');
+
+                                        // Проверяем, что это действительно SVG
+                                        if (svgElement.length > 0) {
+                                            // Добавляем класс для унификации размера
+                                            svgElement.addClass('img-fluid');
+                                            preview.html(svgElement);
+                                        } else {
+                                            preview.html('<small class="text-danger">Некорректный SVG код</small>');
+                                        }
+                                    } catch (error) {
+                                        preview.html('<small class="text-danger">Ошибка при отображении иконки</small>');
+                                    }
+                                }
+
+                                // При открытии модального окна переименования
+                                $(document).on('click', '[data-bs-target="#renameModal"]', function(e) {
+                                    e.preventDefault();
+                                    const categoryId = $(this).data('category-id');
+                                    const categoryName = $(this).data('category-name');
+
+                                    const modal = $('#renameModal');
+                                    modal.find('.btn-primary').attr('data-category-id', categoryId);
+                                    modal.find('#renameCategoryName').val(categoryName);
+                                });
+
+                                // Обновляем обработчик сохранения
+                                $(document).on('click', '#saveRenameCategory', function(e) {
+                                    e.preventDefault();
+
+                                    const categoryId = $(this).data('category-id');
+                                    const newName = $('#renameCategoryName').val().trim();
+                                    const newIcon = $('#categoryIcon').val().trim();
+                                    const titleColor = $('#editSelectedTitleColor').val(); // Добавляем цвет
+
+                                    // Базовая валидация
+                                    if (newName === '') {
+                                        noticeError('Название не может быть пустым');
+                                        return;
+                                    }
+
+                                    // Отправляем запрос на сервер
+                                    AjaxSend('/forum/category/rename', 'POST', {
+                                        categoryId: categoryId,
+                                        newName: newName,
+                                        icon: newIcon,
+                                        titleColor: titleColor  // Добавляем цвет в запрос
+                                    }, false);
+                                });
+                            });
+                        </script>
+
+                        <div class="modal fade" id="moveCategoryModal" tabindex="-1" aria-labelledby="moveCategoryModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="moveCategoryModalLabel">Переместить категорию</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="moveCategorySelect" class="form-label">Выберите целевую категорию:</label>
+                                            <select class="form-select" id="moveCategorySelect">
+                                                <option value="">Корневой уровень</option>
+                                                {% for category in getCategoriesForum() %}
+                                                {% if category.getId() != currentCategory.getId() %}
+                                                <option value="{{category.getId()}}">{{ category.getName() }}</option>
+                                                {% for section in category.getSubcategories() %}
+                                                {% if section.getId() != currentCategory.getId() %}
+                                                <option value="{{section.getId()}}">→ {{ section.getName() }}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                        <button id="saveMoveCategory" data-category-id="" type="button" class="btn btn-primary">Переместить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            $(document).ready(function() {
+                                // Обработчик открытия модального окна перемещения
+                                $(document).on('click', '[data-bs-target="#moveCategoryModal"]', function(e) {
+                                    e.preventDefault();
+
+                                    // Получаем ID категории
+                                    const categoryId = $(this).data('category-id');
+
+                                    // Находим модальное окно
+                                    const modal = $('#moveCategoryModal');
+
+                                    // Обновляем data-category-id в кнопке "Переместить"
+                                    modal.find('.btn-primary').attr('data-category-id', categoryId);
+
+                                    // Сбрасываем выбор в селекте
+                                    modal.find('#moveCategorySelect').val('');
+                                });
+
+                                // Сохранение перемещения категории
+                                $(document).on('click', '#saveMoveCategory', function(e) {
+                                    e.preventDefault();
+
+                                    const categoryId = $(this).data('category-id');
+                                    const toMoveCategory = $('#moveCategorySelect').val();
+
+                                    // Валидация
+                                    if (categoryId === toMoveCategory) {
+                                        noticeError('Нельзя переместить категорию в ту же категорию');
+                                        return;
+                                    }
+
+                                    AjaxSend('/forum/category/move', 'POST', {
+                                        categoryId: categoryId,
+                                        toMoveCategory: toMoveCategory || null
+                                    }, false);
+                                });
+                            });
+                        </script>
+
+                        <div class="modal fade" id="permissionsModal" tabindex="-1" aria-labelledby="permissionsModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="permissionsModalLabel">Изменить права раздела</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="settings-list">
+                                            <!-- Базовые настройки видимости -->
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="editIsHidden"
+                                                       {% if category.isHidden() %}checked{% endif %}>
+                                                <label class="form-check-label" for="editIsHidden">
+                                                    Скрыть раздел для всех кроме администраторов и модераторов
+                                                </label>
+                                            </div>
+
+                                            <!-- Настройки прав для тем -->
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="editCanCreateTopics"
+                                                       {% if category.canCreateTopics() %}checked{% endif %}>
+                                                <label class="form-check-label" for="editCanCreateTopics">
+                                                    Разрешить создание тем пользователям
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="editCanReplyTopics"
+                                                       {% if category.canReplyTopics() %}checked{% endif %}>
+                                                <label class="form-check-label" for="editCanReplyTopics">
+                                                    Разрешить ответы в темах
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="editCanViewTopics"
+                                                       {% if category.canViewTopics() %}checked{% endif %}>
+                                                <label class="form-check-label" for="editCanViewTopics">
+                                                    Разрешить просмотр чужих тем
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="editIsModerated"
+                                                       {% if category.isModerated() %}checked{% endif %}>
+                                                <label class="form-check-label" for="editIsModerated">
+                                                    Требовать одобрения тем модератором
+                                                </label>
+                                            </div>
+
+                                            <!-- Настройки удаления -->
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="editCanUsersDeleteOwnThreads"
+                                                       {% if category.canUsersDeleteOwnThreads() %}checked{% endif %}>
+                                                <label class="form-check-label" for="editCanUsersDeleteOwnThreads">
+                                                    Разрешить пользователям удалять свои темы
+                                                </label>
+                                            </div>
+
+                                            <div class="form-group mb-3" id="editThreadDeleteTimeoutGroup"
+                                                 style="display: {% if category.canUsersDeleteOwnThreads() %}block{% else %}none{% endif %}">
+                                                <label for="editThreadDeleteTimeoutMinutes">Время на удаление темы (в минутах)</label>
+                                                <input type="number" class="form-control" id="editThreadDeleteTimeoutMinutes"
+                                                       value="{{ category.getThreadDeleteTimeoutMinutes() }}" min="1" max="10080">
+                                                <small class="form-text text-muted">Максимум - 7 дней (10080 минут)</small>
+                                            </div>
+
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="editCanUsersDeleteOwnPosts"
+                                                       {% if category.canUsersDeleteOwnPosts() %}checked{% endif %}>
+                                                <label class="form-check-label" for="editCanUsersDeleteOwnPosts">
+                                                    Разрешить пользователям удалять свои сообщения
+                                                </label>
+                                            </div>
+
+                                            <!-- Дополнительные настройки -->
+                                            <div class="form-group mb-3">
+                                                <label for="editMaxPostLength">Максимальная длина сообщения</label>
+                                                <input type="number" class="form-control" id="editMaxPostLength"
+                                                       value="{{ category.getMaxPostLength() }}" min="100" max="50000">
+                                                <small class="form-text text-muted">От 100 до 50000 символов</small>
+                                            </div>
+
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="editHideLastTopic"
+                                                       {% if category.shouldHideLastTopic() %}checked{% endif %}>
+                                                <label class="form-check-label" for="editHideLastTopic">
+                                                    Не показывать последнюю тему раздела
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="editNotifyTelegram"
+                                                       {% if category.shouldNotifyTelegram() %}checked{% endif %}>
+                                                <label class="form-check-label" for="editNotifyTelegram">
+                                                    Уведомлять в Telegram при новых темах
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                        <button type="button" class="btn btn-primary" id="savePermissions"
+                                                data-category-id="{{ category.getId() }}">Сохранить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel">Удалить категорию <span id="categoryIdDisplay"></span></h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Вы действительно хотите удалить эту категорию?</p>
+                                        <div class="mb-3">
+                                            <label for="topicAction" class="form-label">Действие для содержимого категории:</label>
+                                            <select class="form-select" id="topicAction">
+                                                <option value="delete">Удалить всё содержимое</option>
+                                                <option value="move">Переместить в другую категорию</option>
+                                            </select>
+                                        </div>
+                                        <div id="categorySelect" class="mb-3" style="display: none;">
+                                            <label for="destinationCategory" class="form-label">Выберите категорию для перемещения:</label>
+                                            <select class="form-select" id="destinationCategory">
+                                                {% for category in getCategoriesForum() %}
+                                                {% if category.getId() != currentCategory.getId() %}
+                                                <option value="{{category.getId()}}">{{ category.getName() }}</option>
+                                                {% for section in category.getSubcategories() %}
+                                                {% if section.getId() != currentCategory.getId() %}
+                                                <option value="{{section.getId()}}">→ {{ section.getName() }}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                        <button type="button" class="btn btn-danger" id="categoryDelete">Удалить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% endif %}
+
+                        {% if canCreateTopics %}
+                        {# Если пользователь не авторизован, то ссылка будет вести на авторизацию #}
+                        {% if getUser().isAuth() %}
+                        {% if category.canCreateTopics() or getUser().isAdmin() %}
+                        <a href="/forum/{{transliterateToEn(sectionName)}}.{{sectionId}}/create" type="button" class="btn btn-success btn-sm">
+                            <i class="ri-add-line"></i> Создать тему
+                        </a>
+                        {% endif %}
+                        {% else %}
+                        <a href="/login" type="button" class="btn btn-success btn-sm">
+                            Авторизоваться
+                        </a>
+                        {% endif %}
+
+                        {% else %}
+                        <button type="button" class="btn btn-secondary btn-sm" disabled>
+                            <i class="ri-lock-line"></i> Создание тем запрещено
+                        </button>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+
+
+                        {% if categories %}
+                        <div class="sortable-sections mb-4">
+                            {% for section in categories %}
+                            <li class="list-group-item" data-section-id="{{ section.getId() }}">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        {% if getUser().isAdmin() %}
+                                        <span class="drag-handle-section me-2"><i class="ri-drag-move-fill text-muted"></i></span>
+                                        {% endif %}
+
+                                        {% if section.getIconSvg() %}
+                                        <div class="avatar avatar-sm">
+                                            {{ section.getIconSvg()|raw }}
+                                        </div>
+                                        {% else %}
+                                        <div class="avatar avatar-sm">
+                                            {% if section.getLink() %}
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32"
+                                                 fill="rgba(245,2,2,1)">
+                                                <path d="M13.0607 8.11097L14.4749 9.52518C17.2086 12.2589 17.2086 16.691 14.4749 19.4247L14.1214 19.7782C11.3877 22.5119 6.95555 22.5119 4.22188 19.7782C1.48821 17.0446 1.48821 12.6124 4.22188 9.87874L5.6361 11.293C3.68348 13.2456 3.68348 16.4114 5.6361 18.364C7.58872 20.3166 10.7545 20.3166 12.7072 18.364L13.0607 18.0105C15.0133 16.0578 15.0133 12.892 13.0607 10.9394L11.6465 9.52518L13.0607 8.11097Z"></path>
+                                            </svg>
+                                            {% else %}
+                                            <svg width="64px" height="64px" viewBox="0 0 24 24" fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                <g id="SVGRepo_iconCarrier">
+                                                    <path d="M17.98 10.79V14.79C17.98 15.05 17.97 15.3 17.94 15.54C17.71 18.24 16.12 19.58 13.19 19.58H12.79C12.54 19.58 12.3 19.7 12.15 19.9L10.95 21.5C10.42 22.21 9.56 22.21 9.03 21.5L7.82999 19.9C7.69999 19.73 7.41 19.58 7.19 19.58H6.79001C3.60001 19.58 2 18.79 2 14.79V10.79C2 7.86001 3.35001 6.27001 6.04001 6.04001C6.28001 6.01001 6.53001 6 6.79001 6H13.19C16.38 6 17.98 7.60001 17.98 10.79Z"
+                                                          stroke="#ff0000" stroke-width="1.5" stroke-miterlimit="10"
+                                                          stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M21.98 6.79001V10.79C21.98 13.73 20.63 15.31 17.94 15.54C17.97 15.3 17.98 15.05 17.98 14.79V10.79C17.98 7.60001 16.38 6 13.19 6H6.79004C6.53004 6 6.28004 6.01001 6.04004 6.04001C6.27004 3.35001 7.86004 2 10.79 2H17.19C20.38 2 21.98 3.60001 21.98 6.79001Z"
+                                                          stroke="#ff0000" stroke-width="1.5" stroke-miterlimit="10"
+                                                          stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M13.4955 13.25H13.5045" stroke="#ff0000" stroke-width="2"
+                                                          stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M9.9955 13.25H10.0045" stroke="#ff0000" stroke-width="2"
+                                                          stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M6.4955 13.25H6.5045" stroke="#ff0000" stroke-width="2"
+                                                          stroke-linecap="round" stroke-linejoin="round"></path>
+                                                </g>
+                                            </svg>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+
+                                        <div class="ms-2 fw-semibold">
+                                            <div>
+                                                {% if section.getLink() %}
+                                                <a href="{{ section.getLink() }}"
+                                                   {% if not (section.getLink() starts with '/' or section.getLink() starts with HTTP_HOST()) %}
+                                                target="_blank" rel="noopener noreferrer"
+                                                {% endif %}
+                                                >
+                                                <span class="text-{{ section.getTitleColor() }}">{{section.getName()}}</span>
+
+                                                </a>
+                                                {% else %}
+                                                <a href="/forum/{{ transliterateToEn( section.getName() ) }}.{{ section.getId() }}">
+                                                    <span class="text-{{ section.getTitleColor() }}">{{section.getName()}}</span>
+                                                </a>
+                                                {% endif %}
+
+                                                {% if section.getDescription() %}
+                                                <i class='fe fe-help-circle' data-bs-toggle="tooltip" data-bs-placement="top"
+                                                   data-bs-original-title="{{ section.getDescription() }}"></i>
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="ps-2">
+                                                {% if section.getSubcategories() %}
+                                                <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision"
+                                                     text-rendering="geometricPrecision" image-rendering="optimizeQuality"
+                                                     fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 18 18.424" width="18"
+                                                     height="18.424">
+                                                    <path fill="#b5b5b5" stroke="#000" stroke-width="0.5" fill-rule="nonzero"
+                                                          d="m9.72 5.273.591 3.866c-1.727-.156-3.671-.562-5.309-1.718C3.229 6.17 1.796 4.02 1.355.317A.36.36 0 0 0 .65.27C.255 1.453.051 2.571.009 3.617c-.118 2.862.952 5.199 2.531 6.98 1.568 1.768 3.641 2.988 5.545 3.628.783.263 1.542.43 2.227.497l-.59 3.28a.359.359 0 0 0 .581.339l7.568-6.26a.36.36 0 0 0 .048-.506l-.041-.042-7.566-6.592a.36.36 0 0 0-.59.331m1.371 4.207-.513-3.351 6.506 5.67-6.485 5.365.493-2.757a.36.36 0 0 0-.345-.372c-.721-.03-1.559-.194-2.436-.489-1.8-.605-3.757-1.755-5.235-3.423C1.611 8.467.617 6.299.726 3.645q.03-.773.193-1.601c.66 2.96 2.03 4.807 3.671 5.965 1.914 1.351 4.18 1.748 6.112 1.882l.086-.003a.36.36 0 0 0 .302-.409"/>
+                                                </svg>
+
+                                                {% for subcategory in section.getSubcategories() %}
+                                                <a href="/forum/{{ transliterateToEn( subcategory.getName() ) }}.{{ subcategory.getId() }}"
+                                                   class="badge border bg-primary-transparent rounded-1  me-2">
+                                                    <span class=""> {{ subcategory.getName() }} </span>
+                                                </a>
+                                                {% endfor %}
+                                                {% endif %}
+                                            </div>
+
+                                            {% if not section.shouldHideLastTopic() and section.getLastReplyUserId() %}
+                                            <small class="d-flex align-items-center">
+                                                <i class='bx bx-right-arrow-alt'></i>
+                                                <a href="/forum/topic/{{ transliterateToEn( section.getLastThread().getTitle() ) }}.{{ section.getLastThread().getId() }}"
+                                                   class="ms-1 me-1">{{ section.getLastThread().getTitle() }}</a> от
+                                                <span class="avatar avatar-sm avatar-rounded mx-1 d-inline-block">
+                                <img src="{{ getUser(section.getLastReplyUserId()).getAvatar() }}" alt="img"
+                                     class="rounded-circle">
+                            </span>
+                                                <span class="">{{ getUser(section.getLastReplyUserId()).getName() }}</span>
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    {% if section.getLink() == false %}
+                                    <div>
+                                        <small>Тем: <strong>{{section.getThreadCount()}}</strong></small><br>
+                                        <small>Сообщений: <strong>{{section.getPostCount()}}</strong></small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+
+
+                        {# Сначала выводим закрепленные темы, если они есть #}
+                        {% set pinnedThreads = threads|filter(thread => thread.isPinned()) %}
+                        {% if pinnedThreads|length > 0 %}
+                        <table class="table table-hover table-bordered mb-3">
+                            <thead class="thead-light text-center bg-light">
+                            <tr>
+                                <th colspan="4" class="text-start">
+                                    <i class="ri-pushpin-line me-2"></i>Закрепленные темы
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 55%;">Заголовок</th>
+                                <th style="width: 15%;">Дата создания</th>
+                                <th style="width: 15%;">Ответы / Просмотры</th>
+                                <th style="width: 15%;">Последнее сообщение</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for thread in pinnedThreads %}
+                            {%- set canViewThread =
+                            category.canViewTopics() or
+                            getUser().isAdmin() or
+                            isModerator(getUser().getId(), category.getId()) or
+                            getUser().getId() == thread.getAuthorId()
+                            -%}
+
+                            {%- set showModeratedThread =
+                            not category.isModerated() or
+                            thread.isApproved() or
+                            getUser().isAdmin() or
+                            isModerator(getUser().getId(), category.getId()) or
+                            getUser().getId() == thread.getAuthorId()
+                            -%}
+
+                            {% if canViewThread and showModeratedThread %}
+                            <tr {% if canViewThread %}style="cursor: pointer;"
+                                onclick="location.href = '/forum/topic/{{ transliterateToEn(thread.getTitle()) }}.{{ thread.getId() }}';"
+                                {% endif %}>
+                                {# Содержимое ячеек остается тем же #}
+                                {% include 'sphere_forum/tpl/partials/thread_row.html' %}
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% endif %}
+
+                        {# Затем выводим обычные темы #}
+                        {% set regularThreads = threads|filter(thread => not thread.isPinned()) %}
+                        {% if regularThreads|length > 0 %}
+                        <table class="table table-hover table-bordered mb-0">
+                            <thead class="thead-light text-center">
+                            {% if pinnedThreads|length > 0 %}
+                            <tr>
+                                <th colspan="4" class="text-start">Обычные темы</th>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <th style="width: 55%;">Заголовок</th>
+                                <th style="width: 15%;">Дата создания</th>
+                                <th style="width: 15%;">Ответы / Просмотры</th>
+                                <th style="width: 15%;">Последнее сообщение</th>
+                            </tr>
+                            {% endif %}
+
+                            </thead>
+                            <tbody>
+                            {% for thread in regularThreads %}
+                            {%- set canViewThread =
+                            category.canViewTopics() or
+                            getUser().isAdmin() or
+                            isModerator(getUser().getId(), category.getId()) or
+                            getUser().getId() == thread.getAuthorId()
+                            -%}
+
+                            {%- set showModeratedThread =
+                            not category.isModerated() or
+                            thread.isApproved() or
+                            getUser().isAdmin() or
+                            isModerator(getUser().getId(), category.getId()) or
+                            getUser().getId() == thread.getAuthorId()
+                            -%}
+
+                            {% if canViewThread and showModeratedThread %}
+                            <tr {% if canViewThread %}style="cursor: pointer;"
+                                onclick="location.href = '/forum/topic/{{ transliterateToEn(thread.getTitle()) }}.{{ thread.getId() }}';"
+                                {% endif %}>
+                                {% include 'sphere_forum/tpl/partials/thread_row.html' %}
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if regularThreads|length == 0 and pinnedThreads|length == 0 %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4">
+                                    <div class="text-muted">
+                                        {% if not category.canViewTopics() %}
+                                        В этом разделе отображаются только ваши темы
+                                        {% else %}
+                                        В этом разделе пока нет тем
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function() {
+
+        // Обработчик открытия модального окна создания раздела
+        $('[data-bs-target="#create-section"]').on('click', function(e) {
+            e.preventDefault();
+            const categoryId = $(this).data('category-id');
+
+            // Устанавливаем значение parent в скрытый селект
+            $('#parent').val(categoryId);
+        });
+
+        $('#canUsersDeleteOwnThreads').change(function() {
+            $('#threadDeleteTimeoutGroup').toggle(this.checked);
+        });
+
+        $('#canUsersDeleteOwnPosts').change(function() {
+            $('#postDeleteTimeoutGroup').toggle(this.checked);
+        });
+
+        // Обработка выбора цвета
+        $('.color-option').on('click', function() {
+            $('.color-option').removeClass('selected');
+            $(this).addClass('selected');
+            $('#selectedTitleColor').val($(this).data('color'));
+
+            // Обновляем предпросмотр названия
+            const color = $(this).data('color');
+            const title = $('#createNameSection').val() || 'Название раздела';
+            $('#createNameSection').attr('class', `form-control text-${color}`);
+        });
+
+// Обновляем цвет при вводе названия
+        $('#createNameSection').on('input', function() {
+            const color = $('#selectedTitleColor').val();
+            $(this).attr('class', `form-control text-${color}`);
+        });
+
+        // Обработчик создания раздела
+        // Обработчик кнопки создания раздела
+        $('#createNewSection').on('click', function() {
+            let name = $('#createNameSection').val();
+            if (!name) {
+                noticeError('Укажите название раздела');
+                return;
+            }
+
+            let description = $('#createDescSection').val();
+            let titleColor = $('#selectedTitleColor').val();
+            let parent = $('#parent').val(); // Получаем ID родительской категории
+            let icon = $('#createIconSection').val();
+            let link = $('#createLinkSection').val();
+
+            let isHidden = $('#isHidden').is(':checked');
+            let canCreateTopics = $('#canCreateTopics').is(':checked');
+            let canReplyTopics = $('#canReplyTopics').is(':checked');
+            let canViewTopics = $('#canViewTopics').is(':checked');
+            let isModerated = $('#isModerated').is(':checked');
+            let notifyNewTopicsInTelegram = $('#notifyNewTopicsInTelegram').is(':checked');
+
+            // Настройки удаления тем
+            let canUsersDeleteOwnThreads = $('#canUsersDeleteOwnThreads').is(':checked');
+            let threadDeleteTimeoutMinutes = canUsersDeleteOwnThreads ?
+                Math.min(Math.max(1, parseInt($('#threadDeleteTimeoutMinutes').val()) || 30), 10080) : 30;
+
+            // Настройки удаления сообщений
+            let canUsersDeleteOwnPosts = $('#canUsersDeleteOwnPosts').is(':checked');
+            let postDeleteTimeoutMinutes = canUsersDeleteOwnPosts ?
+                Math.min(Math.max(1, parseInt($('#postDeleteTimeoutMinutes').val()) || 30), 10080) : 30;
+
+            let maxPostLength = Math.min(Math.max(100,
+                parseInt($('#maxPostLength').val()) || 10000), 50000);
+
+            AjaxSend("/forum/section/create", "POST", {
+                name: name,
+                description: description,
+                parent: parent,  // Убедимся, что parent передается
+                titleColor: titleColor, // Добавляем цвет
+                icon: icon,
+                link: link,
+                isHidden: isHidden,
+                canCreateTopics: canCreateTopics,
+                canReplyTopics: canReplyTopics,
+                canViewTopics: canViewTopics,
+                isModerated: isModerated,
+                notifyNewTopicsInTelegram: notifyNewTopicsInTelegram,
+                threadDeleteTimeoutMinutes: threadDeleteTimeoutMinutes,
+                postDeleteTimeoutMinutes: postDeleteTimeoutMinutes,
+                maxPostLength: maxPostLength,
+            });
+        });
+
+        // Сброс формы при закрытии модального окна
+        $('#create-section').on('hidden.bs.modal', function () {
+            $('#createNameSection').val('');
+            $('#createDescSection').val('');
+            $('#createIconSection').val('');
+            $('#createLinkSection').val('');
+
+            $('#isHidden').prop('checked', false);
+            $('#canCreateTopics').prop('checked', true);
+            $('#canReplyTopics').prop('checked', true);
+            $('#canViewTopics').prop('checked', true);
+            $('#isModerated').prop('checked', true);
+            $('#notifyNewTopicsInTelegram').prop('checked', false);
+
+            // Сброс настроек удаления тем
+            $('#canUsersDeleteOwnThreads').prop('checked', false);
+            $('#threadDeleteTimeoutMinutes').val('30');
+            $('#threadDeleteTimeoutGroup').hide();
+
+            // Сброс настроек удаления сообщений
+            $('#canUsersDeleteOwnPosts').prop('checked', false);
+            $('#postDeleteTimeoutMinutes').val('30');
+            $('#postDeleteTimeoutGroup').hide();
+
+            $('#maxPostLength').val('20000');
+
+        });
+
+
+
+
+        let categoryToDelete = null;
+
+        // Показываем/скрываем выбор категории при изменении действия
+        $('#topicAction').on('change', function() {
+            if ($(this).val() === 'move') {
+                $('#categorySelect').show();
+            } else {
+                $('#categorySelect').hide();
+            }
+        });
+
+        // При открытии модального окна удаления
+        $('[data-bs-target="#deleteModal"]').on('click', function(e) {
+            e.preventDefault();
+            categoryToDelete = $(this).data('category-id');
+            $('#categoryIdDisplay').text('(ID: ' + categoryToDelete + ')'); // Отображаем ID в заголовке
+            console.log('Category to delete:', categoryToDelete);
+        });
+
+        // При подтверждении удаления
+        $('#categoryDelete').on('click', function() {
+            if (!categoryToDelete) return;
+
+            const action = $('#topicAction').val();
+            const destinationCategoryId = action === 'move' ? $('#destinationCategory').val() : null;
+
+            AjaxSend('/forum/category/delete', 'POST', {
+                categoryId: categoryToDelete,
+                action: action,
+                destinationCategoryId: destinationCategoryId
+            }).then(function(response) {
+                if (response.ok) {
+                    $('#deleteModal').modal('hide');
+                    if (response.redirect) {
+                        window.location.href = response.redirect;
+                    } else {
+                        window.location.reload();
+                    }
+                }
+            });
+        });
+
+        // При открытии модального окна перемещения
+        $(document).on('click', '[data-bs-target="#moveModal"]', function(e) {
+            e.preventDefault();
+            const categoryId = $(this).data('category-id');
+            $('#moveModal').find('#saveMoveCategory').attr('data-category-id', categoryId);
+        });
+
+        // При подтверждении перемещения
+        $(document).on('click', '#saveMoveCategory', function(e) {
+            e.preventDefault();
+            const categoryId = $(this).data('category-id');
+            const destinationCategoryId = $('#moveThreadSelect').val();
+
+            if (!destinationCategoryId) {
+                noticeError('Выберите категорию назначения');
+                return;
+            }
+
+            AjaxSend('/forum/category/move', 'POST', {
+                categoryId: categoryId,
+                toMoveCategory: destinationCategoryId
+            }).then(function(response) {
+                if (response.ok) {
+                    $('#moveModal').modal('hide');
+                    if (response.redirect) {
+                        window.location.href = response.redirect;
+                    } else {
+                        window.location.reload();
+                    }
+                }
+            });
+        });
+
+
+    });
+</script>
+
+
+
+<style>
+
+
+    .sortable-sections .list-group-item:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.03);
+    }
+
+    .sortable-sections .list-group-item.ui-sortable-helper {
+        background: white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border: 1px solid rgba(var(--bs-primary-rgb), 0.2);
+    }
+
+    .drag-handle-section {
+        cursor: move;
+        color: #666;
+        opacity: 0.5;
+        transition: opacity 0.2s;
+    }
+
+    .drag-handle-section:hover {
+        opacity: 1;
+    }
+
+    .ui-sortable-placeholder {
+        visibility: visible !important;
+        background: rgba(var(--bs-primary-rgb), 0.05);
+        border: 2px dashed rgba(var(--bs-primary-rgb), 0.2);
+        margin-bottom: 0.5rem;
+        border-radius: 0.5rem;
+    }
+
+    /* Анимация при перетаскивании */
+    .sortable-sections .list-group-item {
+        transform-origin: 50% 50%;
+        transition: transform 0.2s;
+    }
+
+    .sortable-sections .list-group-item.ui-sortable-helper {
+        transform: scale(1.02);
+    }
+
+
+</style>
+<style>
+    .pagination-sm .page-link {
+        padding: 0.10rem 0.4rem;
+        font-size: 0.75rem;
+        line-height: 1.5;
+    }
+
+    .pagination-sm .page-item:first-child .page-link {
+        border-top-left-radius: 0.2rem;
+        border-bottom-left-radius: 0.2rem;
+    }
+
+    .pagination-sm .page-item:last-child .page-link {
+        border-top-right-radius: 0.2rem;
+        border-bottom-right-radius: 0.2rem;
+    }
+
+    .pagination .page-link i {
+        line-height: 1;
+        font-size: 1rem;
+        vertical-align: middle;
+        margin-top: -2px;
+    }
+</style>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('.sortable-sections').sortable({
+            handle: '.drag-handle-section',
+            placeholder: 'ui-sortable-placeholder',
+            tolerance: 'pointer',
+
+            start: function(event, ui) {
+                ui.placeholder.height(ui.item.height());
+                ui.item.addClass('shadow-sm');
+            },
+
+            stop: function(event, ui) {
+                ui.item.removeClass('shadow-sm');
+            },
+
+            update: function(event, ui) {
+                const orders = {};
+                const categoryId = "{{ categoryId }}"; // Получаем ID текущей категории
+
+                $(this).find('.list-group-item').each(function(index) {
+                    orders[$(this).data('section-id')] = {
+                        order: index,
+                        categoryId: categoryId
+                    };
+                });
+
+                AjaxSend('/forum/category/move-order', 'POST', {
+                    orders: orders,
+                    type: 'subcategory'
+                });
+            }
+        });
+    });
+
+
+    // Добавьте этот код в topics_list.html после существующего JavaScript
+    $(document).ready(function() {
+
+
+        // Обработчик показа/скрытия поля таймаута удаления
+        $('#editCanUsersDeleteOwnThreads').change(function() {
+            $('#editThreadDeleteTimeoutGroup').toggle(this.checked);
+        });
+
+        // Обработчик сохранения изменений
+        $('#savePermissions').click(function() {
+            const categoryId = $(this).data('category-id');
+
+            const permissions = {
+                is_hidden: $('#editIsHidden').is(':checked'),
+                can_create_topics: $('#editCanCreateTopics').is(':checked'),
+                can_reply_topics: $('#editCanReplyTopics').is(':checked'),
+                can_view_topics: $('#editCanViewTopics').is(':checked'),
+                is_moderated: $('#editIsModerated').is(':checked'),
+                can_users_delete_own_threads: $('#editCanUsersDeleteOwnThreads').is(':checked'),
+                thread_delete_timeout_minutes: $('#editThreadDeleteTimeoutMinutes').val(),
+                can_users_delete_own_posts: $('#editCanUsersDeleteOwnPosts').is(':checked'),
+                max_post_length: $('#editMaxPostLength').val(),
+                hide_last_topic: $('#editHideLastTopic').is(':checked'),
+                notify_telegram: $('#editNotifyTelegram').is(':checked')
+            };
+
+            AjaxSend('/forum/category/update-permissions', 'POST', {
+                categoryId: categoryId,
+                permissions: permissions
+            });
+        });
+    });
+</script>
+{% endblock %}

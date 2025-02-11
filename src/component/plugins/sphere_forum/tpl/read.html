@@ -1,0 +1,1117 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{thread.getName()}}{% endblock %}
+
+{% block content %}
+<style>
+    .post p {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+    }
+
+    .post p:first-child {
+        margin-top: 0;
+    }
+
+    .post p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Адаптивные стили */
+    .user-info {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .user-info img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .user-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .user-details h5 {
+        margin: 0;
+        font-size: 1rem;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .user-details span {
+        font-size: 0.875rem;
+        color: #666;
+    }
+
+    @media (max-width: 768px) {
+        .user-info {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .user-info img {
+            width: 60px;
+            height: 60px;
+        }
+
+        .user-details h5 {
+            font-size: 1.1rem;
+        }
+    }
+
+</style>
+<div class="container-fluid ">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <div class="d-flex align-items-center">
+                        <a href="/forum" class="avatar border text-muted me-2">
+                            <i class="fe fe-home"></i>
+                        </a>
+                        <a href="/forum/{{transliterateToEn(categoryTitle)}}.{{categoryId}}"
+                           class="avatar border text-muted me-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                                 fill="currentColor">
+                                <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                            </svg>
+                        </a>
+
+                        <div>
+                            <ol class="breadcrumb mb-0">
+                                {% for category in categoryParents %}
+                                <li class="breadcrumb-item">
+                                    <a class="text-{{ category.getTitleColor() }}" href="/forum/{{ transliterateToEn( category.getName() ) }}.{{ category.getId() }}">{{category.getName()}}</a>
+                                </li>
+                                {% endfor %}
+
+                                <li class="breadcrumb-item active" aria-current="page">
+                                    {% if thread.isClosed() %} <span class="badge bg-danger me-1" title="Тема закрыта"><i class="ri-lock-line"></i></span>{% endif %}
+                                    {{thread.getName()}}</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div>
+
+                        {% if getUser().isAuth() %}
+                        <button type="button" class="btn btn-sm" id="toggleSubscription">
+                            <i class="ri-notification-line"></i>
+                            <span class="subscription-text">
+                            {% if isSubscribed %}Отписаться от уведомлений{% else %}Подписаться на уведомления{% endif %}
+                        </span>
+                        </button>
+                        <script>
+                            $(document).ready(function() {
+                                $('#toggleSubscription').on('click', function() {
+                                    const $btn = $(this);
+                                    const isCurrentlySubscribed = $btn.find('.subscription-text')
+                                        .text().includes('Отписаться');
+
+                                    AjaxSend('/forum/thread/toggle-subscription', 'POST', {
+                                        threadId: '{{thread.getId()}}',
+                                        subscribed: !isCurrentlySubscribed
+                                    },true).then(function(response) {
+                                        console.log(response)
+                                        if (response.ok) {
+                                            const newText = isCurrentlySubscribed ?
+                                                'Подписаться на уведомления' :
+                                                'Отписаться от уведомлений';
+                                            $btn.find('.subscription-text').text(newText);
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
+                        {% endif %}
+
+                        {% if getUser().isAdmin() or isModerator(getUser().getId(), category.getId()) %}
+
+                        {% if category.isModerated() and thread.isApproved() == false %}
+                        <button id="applyApprove" class="btn btn-success btn-raised-shadow btn-wave waves-effect waves-light btn-sm">Подтвердить тему</button>
+                        <script>
+                            $(document).ready(function () {
+                                $('#applyApprove').on('click', function () {
+                                    AjaxSend("/forum/topic/approve", "POST", {
+                                            threadId: "{{thread.getId()}}"
+                                        }
+                                    );
+                                });
+                            });
+                        </script>
+                        {% endif %}
+
+
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-github btn-sm dropdown-toggle"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                Управление
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="">
+
+
+                                {% if getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_pin_threads') %}
+                                <li>
+                                    <a class="dropdown-item pin-thread" href="#"
+                                       data-thread-id="{{ thread.getId() }}"
+                                       data-current-status="{{ thread.isPinned() ? 'pinned' : 'unpinned' }}">
+                                        <i class="ri-pushpin-line"></i>
+                                        {% if thread.isPinned() %}
+                                        Открепить тему
+                                        {% else %}
+                                        Закрепить тему
+                                        {% endif %}
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% if getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_close_threads') %}
+                                <li>
+                                    <a class="dropdown-item toggle-thread-status" href="#"
+                                       data-thread-id="{{ thread.getId() }}"
+                                       data-current-status="{{ thread.isClosed() ? 'closed' : 'open' }}">
+                                        <i class="ri-lock-line"></i>
+                                        {% if thread.isClosed() %}
+                                        Открыть тему
+                                        {% else %}
+                                        Закрыть тему
+                                        {% endif %}
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% if getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_edit_posts') %}
+                                <li>
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                       data-bs-target="#renameModal">
+                                        <i class="ri-refresh-fill"></i> Переименовать
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_move_threads') %}
+                                <li>
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                       data-bs-target="#moveModal">
+                                        <i class="ri-drag-move-fill"></i> Переместить
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_delete_threads') %}
+                                <li>
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                       data-bs-target="#deleteModal">
+                                        <i class="ri-delete-bin-line text-danger"></i> Удалить
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel">Подтверждение удаления</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Вы действительно хотите удалить эту тему форума?</p>
+                                        {% if isModerator(getUser().getId(), category.getId()) %}
+                                        <div class="form-group">
+                                            <label for="deleteReason">Причина удаления:</label>
+                                            <textarea class="form-control" id="deleteReason" rows="2"></textarea>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                        <button type="button" class="btn btn-danger" id="confirmDelete">Удалить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="moveModal" tabindex="-1" aria-labelledby="moveModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="moveModalLabel">Перемещение темы</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="moveThreadSelect" class="form-label">Выберите раздел для перемещения:</label>
+                                            <select class="form-select" id="moveThreadSelect">
+                                                {% for category in getCategoriesForum() %}
+                                                <option value="{{category.getId()}}">{{ category.getName() }}</option>
+                                                {% for section in category.getSubcategories() %}
+                                                <option value="{{section.getId()}}">-> {{ section.getName() }}</option>
+                                                {% endfor %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                        <button type="button" class="btn btn-primary" id="confirmMove">Переместить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="renameModal" tabindex="-1" aria-labelledby="renameModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="renameModalLabel">Переименование темы</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="newThreadTitle" class="form-label">Новое название:</label>
+                                            <input type="text" class="form-control" id="newThreadTitle" value="{{thread.getTitle()}}">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                        <button type="button" class="btn btn-primary" id="confirmRename">Сохранить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+                </div>
+
+
+
+                <div class="card-body ">
+
+                    {% for i, post in posts %}
+
+                    {% set user = getUser(post.getUserId()) %}
+
+                    {# Получаем инфу о клане пользователя (если вступил) #}
+                    {% if user.getVar('clanId').val %}
+                    {% set clan = getForumClanInfo( user.getVar('clanId').val ) %}
+                    {% endif %}
+
+                    <div class="d-flex flex-column flex-md-row border-bottom {% if i != 0 %} mt-4 {% endif %}">
+                        <div class="col-12 col-md-2 mb-md-0">
+                            <div class="card custom-card overflow-hidden border w-100 p-3"
+                                 {% if clan %}
+                                 style="background-image: url('/uploads/clans/{{clan.getBackgroundLogo()}}'); background-size: cover; background-position: center;"
+                                 {% endif %}>
+                                <div class=" mt-1">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <span class="avatar avatar-xxl {% if user.isOnline() %}online{%else%}offline{% endif %} mb-1">
+                                            <img src="{{user.getAvatar()}}" alt="" class="avatar avatar-xxl">
+                                        </span>
+                                        {% if user.isAdmin() %}
+                                        <span class="badge bg-light text-muted m-1">Администратор</span>
+                                        {% elseif isModerator(user.getId(), category.getId()) %}
+                                        <span class="badge bg-light text-muted m-1">Модератор</span>
+                                        {% else %}
+                                        <span class="{% if clan %}badge bg-{{clan.getTextColor()}}{% else %}badge bg-light{% endif %} text-muted m-1">Пользователь</span>
+                                        {% endif %}
+
+
+                                        {% if user.isAdmin() %}
+                                        <strong data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Administrator" class="badge bg-danger h6 mb-1">{{user.getName()}}</strong>
+                                        {% elseif isModerator(user.getId(), category.getId()) %}
+                                        <strong data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Moderator" class="badge bg-success h6 mb-1">{{user.getName()}}</strong>
+                                        {% else %}
+                                        <h5 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="User" class="fw-semibold mb-1 text-center">
+                                            {% if isForumSettingEnabled(user.getId(), 'showFlagCountry') %}
+                                            <img class="avatar avatar-xs" src="/uploads/images/flags/{{user.getCountry()|lower}}.png">
+                                            {% endif %}
+                                            {{user.getName()}}</h5>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+
+
+                                <div class="card-body p-0 ">
+                                    <div class="position-relative ">
+                                        <div class="position-absolute w-100 h-100 bg-dark opacity-25 border  rounded"></div>
+                                        <div class="position-relative">
+                                            {% if isForumSettingEnabled(user.getId(), 'showPvPPK') %}
+
+                                            {# pvp pk all count #}
+                                            {% set onlineTime = 0 %}
+                                            {% set pvp = 0 %}
+                                            {% set pk = 0 %}
+                                            {% for i, account in getUser(post.getUserId()).getAccounts() %}
+                                            {% for character in account.getCharacters() %}
+                                            {% set pvp = pvp + character.getPvp() %}
+                                            {% set pk = pk + character.getPk() %}
+                                            {% set onlineTime = onlineTime + character.getTimeInGame() %}
+                                            {% endfor %}
+                                            {% endfor %}
+
+                                            <div class="d-flex align-items-center  bg-opacity-10">
+                                                <div class="text-center flex-grow-1">
+                                                    <div  class="text-{{clan.getTextColor()}} fw-bold">{{pvp}} <small class="text-{{clan.getTextColor()}}" >PvP</small></div>
+
+                                                </div>
+                                                <div class="text-center  flex-grow-1">
+                                                    <div class="text-{{clan.getTextColor()}} fw-bold">{{pk}} <small class="text-{{clan.getTextColor()}}">PK</small></div>
+                                                </div>
+                                            </div>
+
+
+                                            {% endif %}
+                                            {% if isForumSettingEnabled(user.getId(), 'showGameTime') %}
+                                            <div class="text-center     bg-opacity-10   ">
+                                   <span class="text-{{clan.getTextColor()}} fw-semibold">
+                                       {{timeHasPassed(onlineTime,true)}}
+                                   </span>
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Characters -->
+                                            {% if isForumSettingEnabled(user.getId(), 'showCharacters') %}
+                                            <div class=" p-1 text-center   bg-opacity-10  ">
+                                                <div class="d-flex justify-content-center gap-1 flex-wrap">
+                                                    {% for i, account in getUser(post.getUserId()).getAccounts() %}
+                                                    {% for character in account.getCharacters() %}
+                                                    <img src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
+                                                         class="rounded-circle avatar avatar-sm {% if character.getOnline() %}border border-success{% else %}opacity-75{% endif %}"
+                                                         data-bs-toggle="tooltip"
+                                                         title="{{character.getPlayerName()}} [{{character.getLevel()}}]"
+                                                         alt="{{character.getPlayerName()}}">
+                                                    {% endfor %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Clan Info -->
+                                            {% if clan %}
+                                            <div class="p-1   bg-opacity-10   ">
+                                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                                    {% if clan.getLogo() %}
+                                                    <img src="/uploads/clans/{{ clan.getLogo() }}"
+                                                         class="avatar avatar-sm rounded-start border border-1 border-{{clan.getTextColor()}}"
+                                                         alt="{{ clan.getName() }}">
+                                                    {% endif %}
+                                                    <a href="/forum/clan/{{ clan.getName() }}" class="text-decoration-none" style="backdrop-filter: blur(8px)">
+                                                        <span class="text-{{clan.getTextColor()}}">{{ clan.getName() }}</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-10 ps-md-3">
+                            <div id="post-{{post.getId()}}" class="col-12">
+                                {% if post.getReplyToId() %}
+                                {% set replyData = post.getReplyData() %}
+                                <div class="reply-info-in-post mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="ri-reply-line me-2"></i>
+                                        <span class="text-muted">
+                                        Ответ на сообщение от
+                                        <strong>{{ replyData.user_name }}</strong>:
+                                    </span>
+                                    </div>
+                                    <div class="ms-4 mt-1 text-muted">
+                                        {{ replyData.content|striptags|slice(0, 100) }}...
+                                    </div>
+                                </div>
+                                {% endif %}
+
+
+                                <div class="post mb-3" >{{post.getContent()|replace({'<p class="mb-0"><br></p>': ''})|replace({'<div><br></div>': ''})|raw}}</div>
+
+                                {% if thread.getPoll() and post.getId() == firstPostId %}
+                                <div class="card border ">
+                                    <div class="card-header">
+                                        <h5>{{ thread.getPoll().getQuestion() }}</h5>
+                                        {% if thread.getPoll().isMultiple() and not thread.getPoll().hasUserVoted(getUser().getId()) %}
+                                        <small class="text-muted">Можно выбрать несколько вариантов</small>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-body">
+                                        {% if not getUser().isAuth() or thread.getPoll().hasUserVoted(getUser().getId()) %}
+                                        {# Результаты опроса #}
+                                        {% set percentages = thread.getPoll().getVotePercentages() %}
+                                        {% for option in thread.getPoll().getOptions() %}
+                                        <div class="mb-2">
+                                            <div class="d-flex justify-content-between">
+                                                <span>{{ option.text }}</span>
+                                                <span>{{ option.votes_count }} голосов ({{ percentages[loop.index0] }}%)</span>
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar"
+                                                     role="progressbar"
+                                                     style="width: {{ percentages[loop.index0] }}%"
+                                                     aria-valuenow="{{ percentages[loop.index0] }}"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% else %}
+                                        {# Форма голосования #}
+                                        <form id="pollVoteForm">
+                                            {% for option in thread.getPoll().getOptions() %}
+                                            <div class="form-check {% if thread.getPoll().isMultiple() %}mb-2{% endif %}">
+                                                <input class="form-check-input"
+                                                       type="{% if thread.getPoll().isMultiple() %}checkbox{% else %}radio{% endif %}"
+                                                       name="pollOption"
+                                                       id="pollOption{{ option.id }}"
+                                                       value="{{ option.id }}">
+                                                <label class="form-check-label" for="pollOption{{ option.id }}">
+                                                    {{ option.text }}
+                                                </label>
+                                            </div>
+                                            {% endfor %}
+                                            <button type="submit" class="btn btn-primary mt-2">Проголосовать</button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                    {% if thread.getPoll().getExpiresAt() %}
+                                    <div class="card-footer text-muted">
+                                        Голосование до: {{ thread.getPoll().getExpiresAt() | date('d.m.Y H:i') }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% if post.getId() == firstPostId %}
+
+                                {% endif %}
+
+                                {% set likes = getPostLikes(post.getId()) %}
+                                <div id="post-buff-{{post.getId()}}"
+                                     data-post-id="{{post.getId()}}"
+                                     class="avatar-list-stacked post-likes {% if likes|length > 0 %}list-group-item list-group-item-light{% endif %}">
+                                    {% for like in likes %}
+                                    <span class="avatar avatar-sm m-2">
+                                    <img src="{{like.like_image}}" alt="img">
+                                </span>
+                                    {% endfor %}
+                                </div>
+
+                                {% if getUser().isAuth() %}
+                                <div class="post-action">
+                                    <div class="d-flex flex-wrap">
+
+                                        <button type="button" class="btn  btn-sm text-muted"><i
+                                                class="ri-time-fill"></i> {{post.getCreatedAt()|date("F d, Y H:i:s")}}
+                                        </button>
+
+                                        {% if getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_delete_posts') %}
+
+                                        <button type="button" class="btn  btn-sm text-muted reply-button"
+                                                data-post-id="{{post.getId()}}"
+                                                data-author-name="{{getUser(post.getUserId()).getName()}}">
+                                            <i class="ri-reply-line"></i> Ответить
+                                        </button>
+
+                                        <a href="/forum/post/edit/{{post.getId()}}/page/{{currentPage}}"
+                                           class="btn  btn-sm text-muted"><i
+                                                class="ri-edit-2-fill"></i> Изменить
+                                        </a>
+
+                                        {% if post.getId() != firstPostId %}
+                                        <button type="button" class="btn  btn-sm text-muted deletePost"
+                                                data-post-id="{{post.getId()}}">
+                                            <i class="ri-delete-bin-line"></i> Удалить
+                                        </button>
+                                        {% endif %}
+
+                                        {% else %}
+
+                                        {% if i == 0 %}
+                                        {% if getUser().isAdmin() or (post.getUserId() == getUser().getId() and category.canUsersDeleteOwnThreads() and thread.canUserDeleteOwnThread(category)) %}
+                                        <button type="button" class="btn  btn-sm text-muted deleteUserTopic"
+                                                data-thread-id="{{thread.getId()}}"
+                                                data-created-at="{{thread.getCreatedAt()}}"
+                                                data-timeout="{{category.getThreadDeleteTimeoutMinutes()}}">
+                                            <i class="ri-delete-bin-line"></i> Удалить тему
+                                        </button>
+                                        {% endif %}
+                                        {% endif %}
+
+                                        {% if category.canUsersDeleteOwnPosts() and
+                                        post.getUserId() == getUser().getId() and
+                                        post.isEditableByTime(category.getEditTimeoutMinutes()) %}
+                                        <button type="button" class="btn  btn-sm text-muted deletePost"
+                                                data-post-id="{{post.getId()}}">
+                                            <i class="ri-delete-bin-line"></i> Удалить
+                                        </button>
+                                        {% endif %}
+
+                                        {# Админу не выводим кнопку пожаловаться #}
+
+                                        <button type="button" class="btn  btn-sm text-muted"><i
+                                                class="ri-reply-line"></i> Пожаловаться
+                                        </button>
+                                        {% endif %}
+
+                                        {% if post.getUserId() != getUser().getId() %}
+                                        <button type="button" class="btn btn-sm text-muted like-button"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#likeModal"
+                                                data-post-id="{{post.getId()}}">
+                                            <i class="ri-thumb-up-line"></i> Мне нравится
+                                        </button>
+                                        {% endif %}
+
+
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                    {% endfor %}
+
+                    {% if getUser().isAuth() %}
+                    {% if thread.isClosed() %}
+                    <div class="alert alert-warning text-center">
+                        <h6 class="mb-0">Тема закрыта для обсуждений</h6>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex mt-3 answer-panel">
+
+                        {% if canReply %}
+                        {% if thread.isClosed() == false or getUser().isAdmin() %}
+
+
+                        <div class="col-2 me-3 ">
+                            <div class="overflow-hidden border ">
+                                <div class="border-bottom mt-1">
+                                    <div class="d-flex flex-column align-items-center">
+                                                <span class="avatar avatar-xxl online mb-1">
+                                                    <img src="{{getUser().getAvatar()}}" alt="" class="avatar avatar-xxl">
+                                                </span>
+                                        <h5 class="fw-semibold mb-1 text-center">{{getUser().getName()}}</h5>
+                                    </div>
+                                </div>
+
+                                {% if user.isUser() %}
+
+                                {% set onlineTime = 0 %}
+                                {% set pvp = 0 %}
+                                {% set pk = 0 %}
+
+                                {% set character = getUser(post.getUserId()).getAccounts() %}
+                                {% set pvp = pvp + character.getPvp() %}
+                                {% set pk = pk + character.getPk() %}
+                                {% set onlineTime = onlineTime + character.getTimeInGame() %}
+
+
+                                <div class="card-body p-0">
+                                    <div class="d-flex align-items-center justify-content-center w-100">
+                                        <div class="text-center py-2   w-100">
+                                            <p class="fw-bold mb-0">{{pvp}}</p>
+                                            <p class="text-muted mb-0 fs-12">PvP</p>
+                                        </div>
+                                        <div class="text-center py-2  border-start w-100">
+                                            <p class="fw-bold mb-0">{{pk}}</p>
+                                            <p class="text-muted mb-0 fs-12">PK</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-center  justify-content-center w-100 ">
+                                        <div class="text-center py-2   border-bottom w-100">
+                                            <div class="avatar-list-stacked">
+                                                {% for i, account in getUser(post.getUserId()).getAccounts() %}
+                                                {% for character in account.getCharacters() %}
+                                                <span
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{character.getPlayerName()}} [{{character.getLevel()}}]"
+                                                        class="avatar avatar-sm avatar-rounded {% if character.getOnline() %} online {% else %} offline {% endif %} ">
+                                                                                <img src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
+                                                                                     alt="img">
+                                                                            </span>
+                                                {% endfor %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                            </div>
+
+                            <div class="col-xl-12 blog-images-container">
+                                <input type="file" class="multiple-filepond" name="filepond" multiple data-allow-reorder="true" data-max-file-size="3MB" data-max-files="6">
+                            </div>
+
+                        </div>
+                        <div class="col-10 ">
+                            <div class="form-group">
+                                <div id="message-post"></div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-1 mb-1">
+                                <button type="submit" id="addMessageTopic" class="btn btn-success btn-sm">
+                                    <i class="ri-send-plane-line"></i> Отправить
+                                </button>
+
+
+                                <button type="button" class="btn btn-danger btn-sm" id="closeReplyButton" style="display: none;">
+                                    <i class="ri-close-line"></i> Закрыть
+                                </button>
+
+
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% else %}
+                        <div class="alert alert-warning text-center col-12">
+                            <h6 class="mb-0">Ответы в этом разделе запрещены</h6>
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+                    {% endif %}
+
+
+                </div>
+
+
+                {% if totalPages > 1 %}
+                <div class="d-flex justify-content-center mt-4">
+                    <div class="btn-group me-2 my-1 pagination-custom" role="group" aria-label="Pagination">
+                        {% if currentPage > 1 %}
+                        <a href="/forum/topic/{{transliterateToEn(thread.getTitle())}}.{{thread.getId()}}?page={{currentPage-1}}"
+                           class="btn btn-outline-secondary">
+                            <i class="ri-arrow-left-line"></i> Назад
+                        </a>
+                        {% endif %}
+
+                        {# Улучшенный расчет диапазона страниц #}
+                        {% set radius = 2 %}
+                        {% set start = max(1, currentPage - radius) %}
+                        {% set end = min(totalPages, currentPage + radius) %}
+
+                        {# Корректировка для сохранения ширины диапазона #}
+                        {% if start > 1 %}
+                        <a href="/forum/topic/{{transliterateToEn(thread.getTitle())}}.{{thread.getId()}}?page=1"
+                           class="btn btn-sm btn-outline-secondary">1</a>
+                        {% if start > 2 %}
+                        <span class="btn btn-sm btn-outline-secondary disabled">...</span>
+                        {% endif %}
+                        {% endif %}
+
+                        {% for i in range(start, end) %}
+                        <a href="/forum/topic/{{transliterateToEn(thread.getTitle())}}.{{thread.getId()}}?page={{i}}"
+                           class="btn btn-sm {% if i == currentPage %}btn-success text-white{% else %}btn-outline-secondary{% endif %}">
+                            {% if i == currentPage %}
+                            <strong>{{i}}</strong>
+                            {% else %}
+                            {{i}}
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+
+                        {% if end < totalPages %}
+                        {% if end < totalPages - 1 %}
+                        <span class="btn btn-sm btn-outline-secondary disabled">...</span>
+                        {% endif %}
+                        <a href="/forum/topic/{{transliterateToEn(thread.getTitle())}}.{{thread.getId()}}?page={{totalPages}}"
+                           class="btn btn-sm btn-outline-secondary">{{totalPages}}</a>
+                        {% endif %}
+
+                        {% if currentPage < totalPages %}
+                        <a href="/forum/topic/{{transliterateToEn(thread.getTitle())}}.{{thread.getId()}}?page={{currentPage+1}}"
+                           class="btn btn-outline-secondary">
+                            Вперёд <i class="ri-arrow-right-line"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+
+                {% if getUser().isAuth() == false %}
+                <div class="col-12">
+                    <blockquote class="blockquote custom-blockquote secondary mb-0 text-center">
+                        <h6>Для ответов на форуме, необходимо авторизоваться</h6>
+                        <h6><a href="/login">Авторизация</a> или <a href="/signup">регистрация</a></h6>
+                        <span class="quote-icon"><i class="ri-information-line"></i></span>
+                    </blockquote>
+                </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="likeModal" tabindex="-1" aria-labelledby="likeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="likeModalLabel">
+                    <i class="ri-emotion-happy-line me-2"></i>Выберите реакцию
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="like-grid">
+                    {% for skill in getLikeBuffList() %}
+                    <div class="like-item-wrapper">
+                        <div class="like-item-select" data-image="/uploads/images/skills/skill{{skill}}.webp">
+                            <img src="/uploads/images/skills/skill{{skill}}.webp" alt="reaction" class="like-select-image">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/glightbox/css/glightbox.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.snow.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.bubble.css">
+<link rel="stylesheet" href="{{template_plugin}}/tpl/css/style_clan_name.css">
+
+
+
+
+<style>
+
+
+
+
+
+    .like-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .like-item-wrapper {
+        aspect-ratio: 1;
+        perspective: 1000px;
+    }
+
+    .like-item-select {
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        padding: 8px;
+        background: rgba(var(--bs-primary-rgb), 0.05);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .like-select-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+    }
+
+    .like-item-select:hover {
+        background: rgba(var(--bs-primary-rgb), 0.1);
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(var(--bs-primary-rgb), 0.2);
+    }
+
+    .like-item-select:hover .like-select-image {
+        transform: scale(1.1);
+    }
+
+    .like-item-select.selected {
+        background: rgba(var(--bs-primary-rgb), 0.15);
+        box-shadow: 0 0 0 3px var(--bs-primary);
+    }
+
+    /* Анимация при добавлении лайка */
+    @keyframes likeAdded {
+        0% { transform: scale(0); opacity: 0; }
+        50% { transform: scale(1.2); opacity: 0.5; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .like-item-new {
+        animation: likeAdded 0.5s ease forwards;
+    }
+</style>
+
+<style>
+    /* Обновляем стили для выделения поста */
+    .post-highlight {
+        position: relative;
+        animation: highlightPost 0.5s ease forwards;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    /* Создаем эффект размытого свечения */
+    .post-highlight:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(var(--bs-primary-rgb), 0.05);
+        border-radius: 12px;
+        box-shadow:
+                0 0 30px 15px rgba(var(--bs-primary-rgb), 0.03),
+                0 0 20px 10px rgba(var(--bs-primary-rgb), 0.02),
+                0 0 10px 5px rgba(var(--bs-primary-rgb), 0.01);
+        z-index: -1;
+        animation: glowEffect 2s infinite alternate ease-in-out;
+    }
+
+    @keyframes glowEffect {
+        0% {
+            box-shadow:
+                    0 0 30px 15px rgba(var(--bs-primary-rgb), 0.03),
+                    0 0 20px 10px rgba(var(--bs-primary-rgb), 0.02),
+                    0 0 10px 5px rgba(var(--bs-primary-rgb), 0.01);
+        }
+        100% {
+            box-shadow:
+                    0 0 40px 20px rgba(var(--bs-primary-rgb), 0.04),
+                    0 0 30px 15px rgba(var(--bs-primary-rgb), 0.03),
+                    0 0 20px 10px rgba(var(--bs-primary-rgb), 0.02);
+        }
+    }
+
+    @keyframes highlightPost {
+        0% {
+            transform: scale(1);
+            background: transparent;
+        }
+        50% {
+            transform: scale(1.002);
+            background: rgba(var(--bs-primary-rgb), 0.08);
+        }
+        100% {
+            transform: scale(1);
+            background: rgba(var(--bs-primary-rgb), 0.05);
+        }
+    }
+
+    /* Обновляем стили для связующей линии */
+    .reply-connection {
+        position: relative;
+        height: 30px;
+        margin: 15px 0;
+        overflow: visible;
+    }
+
+    .reply-line {
+        position: absolute;
+        left: 40px;
+        right: 40px;
+        top: 50%;
+        height: 2px;
+        background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(var(--bs-primary-rgb), 0.3) 20%,
+                rgba(var(--bs-primary-rgb), 0.3) 80%,
+                transparent
+        );
+        transform-origin: left;
+        animation: drawLine 0.5s ease forwards;
+        filter: blur(0.5px);
+    }
+
+    /* Улучшаем стили информационного блока */
+    .reply-info {
+        padding: 1px 15px;
+        border-radius: 5px;
+        background: linear-gradient( 145deg, rgba(var(--bs-primary-rgb), 0.03), rgba(var(--bs-primary-rgb), 0.07) );
+        margin-bottom: 0px;
+        border: 1px solid rgba(var(--bs-primary-rgb), 0.1);
+        box-shadow: 0 2px 4px rgba(var(--bs-primary-rgb), 0.05), 0 0 15px rgba(var(--bs-primary-rgb), 0.03);
+    }
+
+    .reply-info-in-post {
+        padding: 1px 15px;
+        border-radius: 5px;
+        background: linear-gradient( 145deg, rgba(var(--bs-primary-rgb), 0.03), rgba(var(--bs-primary-rgb), 0.07) );
+        margin-bottom: 0px;
+        border: 1px solid rgba(var(--bs-primary-rgb), 0.1);
+        box-shadow: 0 2px 4px rgba(var(--bs-primary-rgb), 0.05), 0 0 15px rgba(var(--bs-primary-rgb), 0.03);
+    }
+</style>
+
+<style>
+    .thread-closed-banner {
+        background-color: rgba(var(--bs-danger-rgb), 0.1);
+        border: 1px solid var(--bs-danger);
+        color: var(--bs-danger);
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+        border-radius: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .thread-closed-banner i {
+        font-size: 1.25rem;
+    }
+
+    /* Анимация для иконки закрытой темы */
+    .badge i {
+        transition: transform 0.3s ease;
+    }
+
+    .badge:hover i {
+        transform: rotate(10deg);
+    }
+</style>
+
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond/filepond.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
+<style>
+    #imageInsertModal img {
+        max-height: 200px;
+        width: auto;
+        margin: 0 auto;
+        display: block;
+        object-fit: contain;
+    }
+    .modal img {
+        max-width: 100%;
+        height: auto;
+    }
+    .ql-editor.dragover {
+        border: 2px dashed #0088cc;
+        background-color: rgba(0, 136, 204, 0.1);
+    }
+</style>
+
+<style>
+    /* Обновляем стили для выделения поста */
+    .post-highlight {
+        position: relative;
+        animation: highlightPost 0.5s ease forwards;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    /* Создаем эффект размытого свечения */
+    .post-highlight:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(var(--bs-primary-rgb), 0.05);
+        border-radius: 12px;
+        box-shadow:
+                0 0 30px 15px rgba(var(--bs-primary-rgb), 0.03),
+                0 0 20px 10px rgba(var(--bs-primary-rgb), 0.02),
+                0 0 10px 5px rgba(var(--bs-primary-rgb), 0.01);
+        z-index: -1;
+        animation: glowEffect 2s infinite alternate ease-in-out;
+    }
+
+    /* Анимация пульсации свечения */
+    @keyframes glowEffect {
+        0% {
+            box-shadow:
+                    0 0 30px 15px rgba(var(--bs-primary-rgb), 0.03),
+                    0 0 20px 10px rgba(var(--bs-primary-rgb), 0.02),
+                    0 0 10px 5px rgba(var(--bs-primary-rgb), 0.01);
+        }
+        100% {
+            box-shadow:
+                    0 0 40px 20px rgba(var(--bs-primary-rgb), 0.04),
+                    0 0 30px 15px rgba(var(--bs-primary-rgb), 0.03),
+                    0 0 20px 10px rgba(var(--bs-primary-rgb), 0.02);
+        }
+    }
+
+    @keyframes highlightPost {
+        0% {
+            transform: scale(1);
+            background: transparent;
+        }
+        50% {
+            transform: scale(1.002);
+            background: rgba(var(--bs-primary-rgb), 0.08);
+        }
+        100% {
+            transform: scale(1);
+            background: rgba(var(--bs-primary-rgb), 0.05);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+<!-- Основные библиотеки -->
+<script src="{{template}}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script src="{{template}}/assets/libs/filepond/filepond.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-exif-orientation/filepond-plugin-image-exif-orientation.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script src="{{template}}/assets/libs/glightbox/js/glightbox.min.js"></script>
+<script src="{{template}}/assets/libs/quill/quill.min.js"></script>
+
+<!-- Конфигурация форума -->
+<script>
+    window.forumConfig = {
+        threadId: "{{thread.getId()}}",
+        categoryId: "{{categoryId}}",
+        isModerated: {% if category.isModerated() %}true{% else %}false{% endif %},
+    isApproved: {% if thread.isApproved() %}true{% else %}false{% endif %},
+    userIsAdmin: {% if getUser().isAdmin() %}true{% else %}false{% endif %},
+    userIsModerator: {% if isModerator(getUser().getId(), category.getId()) %}true{% else %}false{% endif %},
+    currentPage: {{currentPage}},
+    totalPages: {{totalPages}},
+    firstPostId: "{{firstPostId}}"
+    };
+</script>
+
+<!-- Модули форума -->
+<script src="{{template_plugin}}/tpl/js/forum-utils.js?v=0.0.0.8"></script>
+<script src="{{template_plugin}}/tpl/js/forum-ui.js?v=0.0.0.1"></script>
+<script src="{{template_plugin}}/tpl/js/forum-editor.js?v=0.0.0.11"></script>
+<script src="{{template_plugin}}/tpl/js/forum-polls.js?v=0.0.0.1"></script>
+<script src="{{template_plugin}}/tpl/js/forum-posts.js?v=0.0.0.4"></script>
+<script src="{{template_plugin}}/tpl/js/forum-moderation.js?v=0.0.0.3"></script>
+<script src="{{template_plugin}}/tpl/js/forum-main.js?v=0.0.0.3"></script>
+{% endblock %}

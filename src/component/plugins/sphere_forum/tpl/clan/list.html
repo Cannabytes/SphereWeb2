@@ -1,0 +1,127 @@
+{% extends 'struct.html' %}
+
+{% block title %}Список кланов{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="card-title">
+            <i class="ri-team-line me-2"></i>Список кланов
+          </div>
+          {% if getUser().isAuth() %}
+          {% set userClanId = getUser().getVar("clanId")['val'] ?? false %}
+          {% if not userClanId %}
+          <a href="/forum/clan/create" class="btn btn-primary">
+            <i class="ri-add-line me-1"></i>Создать клан
+          </a>
+          {% endif %}
+          {% endif %}
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <th>Название</th>
+                <th>Лидер</th>
+                <th>Участников</th>
+                <th>Тип принятия</th>
+                <th>Дата создания</th>
+                <th>Статус</th>
+                <th>Действия</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for clan in clans %}
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img src="{% if clan.getLogo() %}/uploads/clans/{{ clan.getLogo() }}{% else %}{{template_plugin}}/tpl/img/avatar_clan_default.png{% endif %}"
+                         class="avatar avatar-sm me-2" alt="Логотип клана">
+                    <a href="/forum/clan/{{ clan.getName() }}" class="text-{{ clan.getTextColor() }}">
+                      {{ clan.getName() }}
+                      {% if clan.isVerification() %}
+                      <i class="bi bi-patch-check-fill text-success ms-1" title="Верифицированный клан"></i>
+                      {% endif %}
+                    </a>
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img src="{{ getUser(clan.getOwnerId()).getAvatar() }}"
+                         class="avatar avatar-xs me-2" alt="Аватар лидера">
+                    {{ getUser(clan.getOwnerId()).getName() }}
+                  </div>
+                </td>
+                <td>
+                                        <span class="badge bg-primary rounded-pill">
+                                            {{ clan.getMembersCount() }}
+                                        </span>
+                </td>
+                <td>
+                  {% if clan.getAcceptance() == 1 %}
+                  <span class="badge bg-success">Автоматическое</span>
+                  {% else %}
+                  <span class="badge bg-warning">По согласию лидера</span>
+                  {% endif %}
+                </td>
+                <td>{{ clan.getCreatedAt()|date("d.m.Y") }}</td>
+                <td>
+                  {% if clan.getId() == userClanId %}
+                  <span class="badge bg-info">Ваш клан</span>
+                  {% elseif userClanId %}
+                  <span class="badge bg-secondary">Вы в другом клане</span>
+                  {% else %}
+                  {% if clan.getAcceptance() == 1 %}
+                  <span class="badge bg-success">Открыт для вступления</span>
+                  {% else %}
+                  <span class="badge bg-warning">Требуется заявка</span>
+                  {% endif %}
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="btn-group" role="group">
+                    <a href="/forum/clan/{{ clan.getName() }}" class="btn btn-sm btn-primary" title="Просмотр клана">
+                      <i class="ri-eye-line"></i>
+                    </a>
+                    {% if getUser().isAdmin() %}
+                    <a href="/forum/clan/edit/{{ clan.getName() }}" class="btn btn-sm btn-warning" title="Редактировать (админ)">
+                      <i class="ri-settings-line"></i>
+                    </a>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<style>
+  .avatar {
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  .avatar-xs {
+    width: 24px;
+    height: 24px;
+  }
+  .avatar-sm {
+    width: 32px;
+    height: 32px;
+  }
+  .table td {
+    vertical-align: middle;
+  }
+</style>
+{% endblock %}

@@ -37,6 +37,7 @@ function wheelInit() {
         AjaxSend('/fun/wheel/callback', 'POST', {
             id: cfg.id,
         }, true, 5).then(function (data) {
+            ResponseNotice(data)
             let cost;
             if (data.sphereCoin) {
                 cost = data.sphereCoin - $(".count_sphere_coin").text();

@@ -1,0 +1,147 @@
+{% extends 'struct.html' %}
+
+{% block title %}Изменение сообщения{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
+        <div class="card custom-card">
+            <div class="card-header">
+                <a href="/forum/{{transliterateToEn(categoryTitle)}}.{{categoryId}}"
+                   class="avatar border text-muted me-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                         fill="currentColor">
+                        <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                    </svg>
+                </a>
+                <div class="card-title">Изменение сообщения</div>
+            </div>
+            <div class="card-body">
+                <div class="row gy-3">
+                    <div class="col-xl-12">
+                        <div id="message-post">{{post.getContent()|raw}}</div>
+                    </div>
+                    <div class="col-xl-12 blog-images-container">
+                        <label class="form-label">Загрузка изображений</label>
+                        <input type="file" class="multiple-filepond" name="filepond" multiple data-allow-reorder="true"
+                               data-max-file-size="3MB" data-max-files="6">
+                    </div>
+                </div>
+            </div>
+            <input id="returnPage" type="hidden" name="returnPage" value="{{returnPage}}">
+            <input type="hidden" name="postId" value="{{postId}}">
+            <div class="card-footer">
+
+                {% if thread.getPoll() %}
+                <div id="pollSection" class="card mb-3" >
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Настройки опроса</h5>
+                            {% if not thread.getPoll() %}
+                            <button type="button" class="btn btn-sm btn-primary" id="enablePoll">
+                                <i class="ri-add-line"></i> Добавить опрос
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if thread.getPoll() %}
+                        <input type="hidden" id="pollId" value="{{ thread.getPoll().getId() }}">
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="pollQuestion" class="form-label">Вопрос опроса</label>
+                            <input type="text" class="form-control" id="pollQuestion"
+                                   value="{{ thread.getPoll() ? thread.getPoll().getQuestion() : '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="multipleChoice"
+                                       {% if thread.getPoll() and thread.getPoll().isMultiple() %}checked{% endif %}>
+                                <label class="form-check-label" for="multipleChoice">
+                                    Разрешить выбор нескольких вариантов
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="pollExpiration" class="form-label">Дата окончания голосования</label>
+                            <input type="datetime-local" class="form-control" id="pollExpiration"
+                                   value="{{ thread.getPoll() ? thread.getPoll().getExpiresAt()|date('Y-m-d\\TH:i') : '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Варианты ответов</label>
+                            <div id="pollOptionsContainer">
+                                {% if thread.getPoll() %}
+                                {% for option in thread.getPoll().getOptions() %}
+                                <div class="poll-option input-group mb-2">
+                                    <input type="text" class="form-control poll-option-input"
+                                           value="{{ option.text }}" data-votes="{{ option.votes_count }}">
+                                    <button class="btn btn-danger remove-poll-option" type="button">
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn btn-outline-primary" onclick="addPollOption()">
+                                <i class="ri-add-line"></i> Добавить вариант
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="btn-list text-end">
+                    <button type="button" class="btn btn-primary" id="saveEditMessage">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/filepond/filepond.min.css">
+<link rel="stylesheet"
+      href="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.snow.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.bubble.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/glightbox/css/glightbox.min.css">
+{% endblock %}
+
+{% block js %}
+<!-- Базовые библиотеки -->
+<script src="{{template}}/assets/libs/filepond/filepond.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-exif-orientation/filepond-plugin-image-exif-orientation.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script src="{{template}}/assets/libs/quill/quill.min.js"></script>
+<script src="{{template}}/assets/libs/glightbox/js/glightbox.min.js"></script>
+
+<!-- Общая библиотека форумного редактора -->
+<script src="{{template}}/assets/libs/filepond/filepond.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-image-exif-orientation/filepond-plugin-image-exif-orientation.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
+<script src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script src="{{template}}/assets/libs/quill/quill.min.js"></script>
+<script src="{{template}}/assets/libs/glightbox/js/glightbox.min.js"></script>
+
+<!-- Модули форума -->
+<script src="{{template_plugin}}/tpl/js/forum-editor.js?v=1.0.1"></script>
+<script src="{{template_plugin}}/tpl/js/forum-main.js?v=1.0.1"></script>
+
+<script>
+    // Инициализируем необходимые данные для форума
+    window.forumConfig = {
+        postId: "{{postId}}",
+        categoryId: "{{categoryId}}",
+        returnPage: "{{returnPage}}"
+    };
+</script>
+
+{% endblock %}

@@ -74,11 +74,16 @@ class httpReferrerPlugin
             }
         }
         $user_ids     = array_column($users, "user_id");
-        $user_ids_str = implode(',', $user_ids);
-        $sql          = "SELECT SUM(point) AS total_points FROM donate_history_pay WHERE user_id IN ({$user_ids_str}) ;";
-        $donateHists  = sql::getRow($sql);
 
-        tpl::addVar("countAllDonate", $donateHists['total_points'] ?? 0);
+        if($user_ids == []){
+            tpl::addVar("countAllDonate", 0);
+        }else{
+            $user_ids_str = implode(',', $user_ids);
+            $sql          = "SELECT SUM(point) AS total_points FROM donate_history_pay WHERE user_id IN ({$user_ids_str}) ;";
+            $donateHists  = sql::getRow($sql);
+            tpl::addVar("countAllDonate", $donateHists['total_points'] ?? 0);
+        }
+
         tpl::addVar("views", $views);
         tpl::addVar("users", $users);
         tpl::addVar("refererName", $referer_name);

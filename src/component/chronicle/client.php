@@ -41,7 +41,29 @@ class client
         return $client !== false ? self::all()[$client]['protocol'] : null;
     }
 
-    static public function all()
+    /**
+     * Получает названия хроник по протоколу или массиву протоколов
+     *
+     * @param int|array $protocol Протокол или массив протоколов
+     * @return array Массив названий хроник
+     */
+    static public function get_chronicles_by_protocol($protocol): array
+    {
+        // Преобразуем одиночный протокол в массив для единообразной обработки
+        $protocols = is_array($protocol) ? $protocol : [$protocol];
+
+        $chronicles = [];
+        foreach (self::all() as $chronicle) {
+            // Проверяем пересечение массивов протоколов
+            if (count(array_intersect($chronicle['protocol'], $protocols)) > 0) {
+                $chronicles[] = $chronicle['name'];
+            }
+        }
+
+        return $chronicles;
+    }
+
+    static public function all(): array
     {
         return [
             [

@@ -1,0 +1,438 @@
+{% extends 'struct.html' %}
+
+{% block title %}SQL редактор - {{getCollection.name}}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-12">
+            <!-- Карточка настроек -->
+            <div class="card custom-card mb-4">
+                <div class="card-header">
+                    <div class="card-title mb-3">Настройки сборки</div>
+                    <div class="row g-3">
+                        <!-- Название сборки -->
+                        <div class="col-md-6">
+                            <label class="form-label">Название сборки</label>
+                            <input type="text" class="form-control" id="collectionName" value="{{getCollection.name}}">
+                        </div>
+
+                        <!-- Метод шифрования -->
+                        <div class="col-md-6">
+                            <label class="form-label">Метод шифрования паролей аккаунтов</label>
+                            <select class="form-select" id="hashMethod">
+                                <option value="whirlpool" {% if getCollection.hash == 'whirlpool' %}selected{% endif %}>whirlpool</option>
+                                <option value="sha1" {% if getCollection.hash == 'sha1' %}selected{% endif %}>sha1</option>
+                                <option value="bcrypt" {% if getCollection.hash == 'bcrypt' %}selected{% endif %}>bcrypt</option>
+                                <option value="pbkdf2" {% if getCollection.hash == 'pbkdf2' %}selected{% endif %}>pbkdf2</option>
+                            </select>
+                        </div>
+
+                        <!-- Протоколы -->
+                        <div class="col-md-12">
+                            <label class="form-label">Протоколы</label>
+                            <div class="d-flex gap-2 flex-wrap" id="protocolsList">
+                                {% set currentProtocols = getCollection.protocols %}
+                                {% for client in client_list_default %}
+                                {% for protocol in client.protocol %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="{{protocol}}"
+                                           id="protocol{{protocol}}" {% if protocol in currentProtocols %}checked{% endif %}>
+                                    <label class="form-check-label" for="protocol{{protocol}}">
+                                        {{client.name}} ({{protocol}})
+                                    </label>
+                                </div>
+                                {% endfor %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isTableDelayed"
+                                       {% if getCollection.is_table_delayed %}checked{% endif %}>
+                                <label class="form-check-label" for="isTableDelayed">
+                                    В сборке реализовано выдача предметов через временную таблицу items_delayed (или аналог).<br>
+                                    Если для выдачи требуется чтоб игрок был offline, то не ставьте флажок.
+                                </label>
+                            </div>
+                            <div class="mt-2">
+        <textarea class="form-control" id="tableDescription" maxlength="80" rows="2"
+                  placeholder="Добавьте описание (максимум 80 символов)">{{getCollection.description}}</textarea>
+                                <small class="text-muted">Осталось символов: <span id="charCount">80</span></small>
+                            </div>
+                        </div>
+
+                        <script>
+                            document.getElementById('tableDescription').addEventListener('input', function() {
+                                const remaining = 80 - this.value.length;
+                                document.getElementById('charCount').textContent = remaining;
+                            });
+                        </script>
+
+                        <div class="col-12">
+                            <button class="btn btn-primary" id="saveSettings">Сохранить настройки</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Карточка SQL редактора -->
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="card-title d-flex align-items-center justify-content-between w-100">
+                        <div class="d-flex align-items-center">
+                            <a href="/admin/sql/bases" class="avatar border text-muted me-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                    <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                                </svg>
+                            </a>
+                            <div>
+                                <h5 class="mb-0">SQL редактор</h5>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <select class="form-select" id="serverSelect">
+                                {% for server in getServers() %}
+                                <option value="{{server.getId()}}" {% if server.getId() == getUser().getServerId() %}selected{% endif %}>
+                                    Сервер: {{server.getName()}} x{{server.getRateExp()}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="accordion" id="queryAccordion">
+                        <!-- Login Server Queries -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#loginserver">
+                                    Login Server Queries
+                                </button>
+                            </h2>
+                            <div id="loginserver" class="accordion-collapse collapse show">
+                                <div class="accordion-body">
+                                    {% for query in getCollection.queries %}
+                                    {% if query.type == 'loginserver' %}
+                                    <div class="query-block mb-4" data-query-id="{{query.id}}">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div>
+                                                <h6 class="card-title mb-0">{{query.name}}</h6>
+                                                <small class="text-muted">ID: {{query.id}}</small>
+                                            </div>
+                                            <div class="btn-group">
+                                                <button class="btn btn-primary-light btn-sm checkQuery">
+                                                    <i class="ri-check-line me-1"></i>Проверить
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <textarea data-type="{{query.type}}" class="form-control sql-editor" data-query-id="{{query.id}}">{{query.query}}</textarea>
+                                        <div class="query-result mt-2"></div>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Game Server Queries -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button  " type="button" data-bs-toggle="collapse" data-bs-target="#gameserver">
+                                    Game Server Queries
+                                </button>
+                            </h2>
+
+
+                            <div id="gameserver" class="accordion-collapse collapse show">
+                                <div class="accordion-body">
+                                    {% for query in getCollection.queries %}
+                                    {% if query.type == 'gameserver' %}
+                                    <div class="query-block mb-4" data-query-id="{{query.id}}">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div>
+
+                                                <h6 class="card-title mb-0 {% if get_struct_func(query.name) %}text-info{% endif %}"
+                                                    {% if get_struct_func(query.name) %}role="button"
+                                                    data-bs-toggle="popover" data-bs-html="true" data-bs-placement="top" title="Структура запроса"
+                                                    data-bs-content="Запрос должен содержать строгую очередность полей.<hr>
+{% for struct in get_struct_func(query.name) %}{{struct}}<br>{% endfor %}"{% endif %} >{{query.name}}</h6>
+                                                <small class="text-muted">ID: {{query.id}}</small>
+                                            </div>
+                                            <div class="btn-group">
+                                                <button class="btn btn-primary-light btn-sm checkQuery">
+                                                    <i class="ri-check-line me-1"></i>Проверить
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <textarea data-type="{{query.type}}" class="form-control sql-editor" data-query-id="{{query.id}}">{{query.query}}</textarea>
+                                        <div class="query-result mt-2"></div>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+<style>
+    .CodeMirror {
+        height: auto;
+        min-height: 100px;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+        font-size: 13px;
+    }
+    .query-block { position: relative; }
+    .query-result { display: none; }
+</style>
+{% endblock %}
+
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/sql/sql.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/sql-hint.js"></script>
+
+<!-- Инициализация после полной загрузки всех скриптов -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Проверяем загрузку CodeMirror
+        if (typeof CodeMirror === 'undefined') {
+            console.error('CodeMirror не загружен');
+            return;
+        }
+
+        function extractPlaceholders(query) {
+            return query.match(/[:?]\w*/g) || [];
+        }
+
+        function generateInputs(queryBlock, placeholders) {
+            let inputsContainer = queryBlock.querySelector('.query-inputs');
+            if (!inputsContainer) {
+                inputsContainer = document.createElement('div');
+                inputsContainer.classList.add('query-inputs', 'mt-2');
+                queryBlock.appendChild(inputsContainer);
+            }
+
+            inputsContainer.innerHTML = '';
+            placeholders.forEach((ph, index) => {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.classList.add('form-control', 'mb-2');
+                input.placeholder = ph.startsWith(':') ? ph.substring(1) : `Param ${index + 1}`;
+                input.dataset.param = ph;
+                inputsContainer.appendChild(input);
+            });
+        }
+
+
+
+        // Инициализация редакторов
+        const initializeEditors = () => {
+            document.querySelectorAll('.sql-editor').forEach(function(editor) {
+                const ed = CodeMirror.fromTextArea(editor, {
+                    mode: 'text/x-mysql',
+                    theme: 'monokai',
+                    lineNumbers: true,
+                    autoCloseBrackets: true,
+                    matchBrackets: true,
+                    indentUnit: 4,
+                    lineWrapping: true,
+                    viewportMargin: Infinity,
+                    extraKeys: {"Ctrl-Space": "autocomplete"},
+                    hintOptions: {
+                        tables: {
+                            characters: ["char_name", "account_name", "pvpkills", "pkkills"],
+                            accounts: ["login", "password", "email"],
+                            items: ["item_id", "count", "owner_id"]
+                        }
+                    }
+                });
+                const queryBlock = editor.closest('.query-block');
+                generateInputs(queryBlock, extractPlaceholders(ed.getValue()));
+
+                ed.on('change', function(cm) {
+                    generateInputs(queryBlock, extractPlaceholders(cm.getValue()));
+                });
+
+            });
+        };
+
+        // Инициализируем редакторы
+        initializeEditors();
+
+        // Обработчики событий
+        const setupEventHandlers = () => {
+            // Сохранение настроек
+            document.getElementById('saveSettings').addEventListener('click', function() {
+                // Получаем базовые настройки
+                const protocols = Array.from(document.querySelectorAll('#protocolsList input:checked'))
+                    .map(input => input.value);
+
+                // Собираем данные из всех SQL-редакторов
+                const queries = {};
+
+                document.querySelectorAll('.query-block').forEach(block => {
+                    const editor = block.querySelector('.CodeMirror').CodeMirror;
+                    const queryName = block.querySelector('.card-title').textContent.trim();
+                    queries[queryName] = editor.getValue();
+                });
+                // Формируем полный объект данных
+                const data = {
+                    name: document.getElementById('collectionName').value,
+                    hash: document.getElementById('hashMethod').value,
+                    description: document.getElementById('tableDescription').value,
+                    protocols: protocols,
+                    is_table_delayed: document.getElementById('isTableDelayed').checked,
+                    queries: queries,
+                };
+
+                // Отправляем запрос
+                AjaxSend("/admin/collection/save", "POST", data, false)
+
+            });
+
+            document.querySelectorAll('.checkQuery').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const queryBlock = this.closest('.query-block');
+                    const editor = queryBlock.querySelector('.CodeMirror').CodeMirror;
+
+                    const params = [];
+                    queryBlock.querySelectorAll('.query-inputs input').forEach(input => {
+                        params.push(input.value || '');
+                    });
+
+                    try {
+                        AjaxSend("/admin/collection/check", "POST", {
+                            query: editor.getValue(),
+                            params: params,
+                            base: document.getElementById('collectionName').value,
+                            query_name: queryBlock.querySelector('.card-title').textContent,
+                            server_id: document.getElementById('serverSelect').value
+                        }, true).then(function (response) {
+                            const resultDiv = queryBlock.querySelector('.query-result');
+                            let responseData = typeof response === 'string' ? JSON.parse(response) : response;
+
+                            if (responseData && responseData.columns && responseData.rows) {
+                                // Проверяем наличие структуры для сравнения
+                                const hasStruct = responseData.struct && Array.isArray(responseData.struct);
+
+                                let tableHTML = `
+                    <div class="table-responsive mt-3">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>${responseData.columns.map((col, index) => {
+                                    let className = '';
+                                    if (hasStruct) {
+                                        // Регистронезависимое сравнение
+                                        className = responseData.struct[index]?.toLowerCase() === col.toLowerCase()
+                                            ? 'bg-success-transparent'
+                                            : 'bg-danger-transparent';
+                                    }
+                                    return `<th class="${className}">${col}</th>`;
+                                }).join('')}</tr>
+                            </thead>
+                            <tbody>`;
+
+                                // Добавим информацию о структуре перед таблицей
+                                if (hasStruct) {
+                                    tableHTML = `
+                        <div class="alert alert-info py-2 mb-2">
+                            <i class="ri-information-line me-1"></i>Ожидаемая структура: ${responseData.struct.join(', ')}
+                        </div>
+                        ` + tableHTML;
+                                }
+
+                                responseData.rows.forEach(row => {
+                                    tableHTML += '<tr>';
+                                    responseData.columns.forEach(col => {
+                                        const value = row[col];
+                                        if (value === null) {
+                                            tableHTML += '<td>NULL</td>';
+                                        } else if (typeof value === 'string' &&
+                                            (col.toLowerCase() === 'clan_crest' || col.toLowerCase() === 'alliance_crest')) {
+                                            // Специальная обработка для clan_crest и alliance_crest
+                                            const displayValue = value.length > 16
+                                                ? value.substring(0, 16) + '...'
+                                                : value;
+                                            tableHTML += `<td title="${value}">${displayValue}</td>`;
+                                        } else if (typeof value === 'object') {
+                                            const strValue = JSON.stringify(value);
+                                            tableHTML += `<td title="${strValue}">${strValue.length > 50 ? strValue.substring(0, 47) + '...' : strValue}</td>`;
+                                        } else {
+                                            tableHTML += `<td>${value}</td>`;
+                                        }
+                                    });
+                                    tableHTML += '</tr>';
+                                });
+
+                                tableHTML += `</tbody></table></div>`;
+
+                                resultDiv.innerHTML = `
+                        <div class="alert alert-success py-2 mb-2">
+                            <i class="ri-check-line me-1"></i>Найдено записей: ${responseData.rows.length}
+                        </div>
+                        ${tableHTML}
+                    `;
+                            } else if (responseData && responseData.error) {
+                                resultDiv.innerHTML = `
+                        <div class="alert alert-danger py-2 mb-0">
+                            <i class="ri-error-warning-line me-1"></i>${responseData.error}
+                        </div>
+                    `;
+                            } else {
+                                resultDiv.innerHTML = `
+                        <div class="alert alert-warning py-2 mb-0">
+                            <i class="ri-information-line me-1"></i>Нет данных
+                        </div>
+                    `;
+                            }
+
+                            resultDiv.style.display = 'block';
+                        });
+                    } catch (error) {
+                        console.error('Ошибка при проверке запроса:', error);
+                        const resultDiv = queryBlock.querySelector('.query-result');
+                        resultDiv.innerHTML = `
+                <div class="alert alert-danger py-2 mb-0">
+                    <i class="ri-error-warning-line me-1"></i>Ошибка при выполнении запроса
+                </div>
+            `;
+                        resultDiv.style.display = 'block';
+                    }
+                });
+            });
+
+            // Просмотр результата
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.viewResult')) {
+                    const button = e.target.closest('.viewResult');
+                    const result = JSON.parse(button.dataset.result);
+                    Swal.fire({
+                        title: 'Результат выполнения',
+                        html: `<pre class="text-start">${JSON.stringify(result, null, 2)}</pre>`,
+                        width: '600px'
+                    });
+                }
+            });
+        };
+
+        // Устанавливаем обработчики событий
+        setupEventHandlers();
+    });
+</script>
+{% endblock %}
