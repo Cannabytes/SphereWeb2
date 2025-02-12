@@ -2,6 +2,27 @@
 
 return [
     [
+        'date' => '01:45 12.02.2025',
+        'message' => [
+            'ru' => 'Добавлена возможность создавать кастомные страницы, которые имеют приоритет загрузки. Добавление суффикса custom_(название файла).html',
+            'en' => 'Added the ability to create custom pages that have loading priority. Adding the suffix custom_(file name).html',
+        ]
+    ],
+    [
+        'date' => '23:22 11.02.2025',
+        'message' => [
+            'ru' => 'Добавлен новый плагин форума, можно создавать полноценный форум в личном кабинете.',
+            'en' => 'A new forum plugin has been added, you can create a full-fledged forum in your personal account.',
+        ],
+    ],
+    [
+        'date' => '22:10 11.02.2025',
+        'message' => [
+            'ru' => 'Добавлен новый плагин для редактирования стандартных запросов к серверу.',
+            'en' => 'Added a new plugin for editing standard server requests',
+        ],
+    ],
+    [
         'date' => '23:19 15.12.2024',
         'message' => [
             'ru' => 'В админ-панели вывел данные для просмотра источников трафика на сайт. Там можно узнать кол-во переходов к Вам на сайт (из какого сайта), кол-во тех юзеров сколько зарегалось и сколько их них задонатили.',
