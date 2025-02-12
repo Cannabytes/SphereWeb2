@@ -984,10 +984,14 @@ class forum
 
     private function insertCategory(string $name, string $description): void
     {
-        sql::run(
-            "INSERT INTO `forum_categories` SET `name` = ?, `description` = ?, `parent_id` = ?, `created_at` = ?, `updated_at` = ?",
-            [$name, $description, null, time::mysql(), time::mysql()]
-        );
+        try {
+            sql::run(
+                "INSERT INTO `forum_categories` SET `name` = ?, `description` = ?, `parent_id` = ?, `created_at` = ?, `updated_at` = ?",
+                [$name, $description, null, time::mysql(), time::mysql()]
+            );
+        }catch (Exception $e) {
+            board::error($e->getMessage());
+        }
     }
 
     /**
