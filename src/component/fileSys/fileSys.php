@@ -28,15 +28,13 @@ class fileSys {
     }
 
     public static function get_dir($dir = null): string {
-        if($dir !== null) {
-            if($dir[0] !== "/") {
+        if ($dir !== null) {
+            $dir = (string)$dir;
+            if ($dir[0] !== "/") {
                 $dir = "/" . $dir;
             }
         }
-        return ltrim($dir, "/");
-        /*
-        $dirname = self::$root_dir . $dir;*/
-        return $dir;
+        return ltrim($dir ?? '', "/");
     }
 
     /**

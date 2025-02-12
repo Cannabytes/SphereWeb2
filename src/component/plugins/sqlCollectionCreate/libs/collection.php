@@ -9,12 +9,14 @@ use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\request\clear;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
+use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\template\tpl;
 
 class collection
 {
     public function show(): void
     {
+        validation::user_protection("admin");
         $sqlbases = server::sendCustom("/api/server/collection/get")->getResponse();
         tpl::addVar([
             'sqlbases' => $sqlbases,
@@ -24,6 +26,7 @@ class collection
 
     public function edit($name)
     {
+        validation::user_protection("admin");
         $getCollection = server::sendCustom("/api/server/collection/get/queries", ['collection_name' => $name])->getResponse();
         tpl::addVar([
             'getCollection' => $getCollection,
@@ -34,6 +37,7 @@ class collection
 
     public function checkQuery()
     {
+        validation::user_protection("admin");
         $query = $_POST['query'];
         $params = $_POST['params'] ?? null;
         $query_name = $_POST['query_name'];
@@ -79,6 +83,7 @@ class collection
 
     public function save()
     {
+        validation::user_protection("admin");
         // Проверка name
         if (!isset($_POST['name']) || !preg_match('/^[a-zA-Z0-9_()!№*]+$/', $_POST['name'])) {
             die('Ошибка: Некорректное имя. Разрешены только буквы, цифры и символы _()!№*');
