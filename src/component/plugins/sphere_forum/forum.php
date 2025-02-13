@@ -987,8 +987,8 @@ class forum
     {
         try {
             sql::run(
-                "INSERT INTO `forum_categories` SET `name` = ?, `description` = ?, `parent_id` = ?, `created_at` = ?, `updated_at` = ?",
-                [$name, $description, null, time::mysql(), time::mysql()]
+                "INSERT INTO `forum_categories` SET `name` = ?, `description` = ?, `parent_id` = ?, `created_at` = ?, `updated_at` = ?, `is_close` = ?",
+                [$name, $description, null, time::mysql(), time::mysql(), 0]
             );
         }catch (Exception $e) {
             board::error($e->getMessage());
