@@ -1378,9 +1378,6 @@ class tpl
             return $filePath;
         }
         $customFileName = 'custom_' . $pathInfo['filename'] . '.' . $pathInfo['extension'];
-        if ($filePath[0] === '/') {
-            return $pathInfo['dirname'] . '/' . $customFileName;
-        }
         if($relativePath) {
             return ltrim(self::$templatePath . $pathInfo['dirname'], "/") . '/' . $customFileName;
         }else{

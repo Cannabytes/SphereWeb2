@@ -392,7 +392,7 @@ class forum
             }
             $this->validateThreadAccess($thread);
             sql::beginTransaction();
-            $response = server::sendCustom("/api/plugin/forum/add/count/message")->show()->getResponse();
+            $response = server::sendCustom("/api/plugin/forum/add/count/message")->show(true)->getResponse();
             if(!$response['success']) {
                 throw new Exception($response['message']);
             }

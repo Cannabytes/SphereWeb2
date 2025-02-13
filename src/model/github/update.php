@@ -23,6 +23,12 @@ class update
                 'last_commit' => self::getLastCommit(),
             ])->getResponse();
 
+            if(isset($sphere['status'])){
+                if($sphere['status']){
+                    board::success("Обновление не требуется");
+                }
+            }
+
             if (!isset($sphere['last_commit_now']) || !isset($sphere['status']) || !isset($sphere['data'])) {
                 throw new Exception("Некорректный ответ от сервера");
             }
