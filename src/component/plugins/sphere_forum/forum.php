@@ -777,11 +777,12 @@ class forum
         `category_id` = ?, 
         `user_id` = ?, 
         `title` = ?, 
+        `first_message_id`,
         `created_at` = ?, 
         `updated_at` = ?, 
         `is_closed` = ?,
         `is_approved` = ?",
-            [$categoryId, user::self()->getId(), $title, time::mysql(), time::mysql(), $isClose, $isApproved]
+            [$categoryId, user::self()->getId(), $title, 0, time::mysql(), time::mysql(), $isClose, $isApproved]
         );
         return sql::lastInsertId();
     }
