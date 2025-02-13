@@ -1359,26 +1359,27 @@ class forum
             $titleColor = $_POST['titleColor'] ?? 'dark';
 
             $sql = "INSERT INTO `forum_categories` (
-            `name`, 
-            `description`, 
-            `parent_id`, 
-            `icon_svg`,
-            `link`,
-            `is_hidden`,
-            `can_create_topics`,
-            `can_reply_topics`,
-            `can_view_topics`,
-            `is_moderated`,
-            `can_users_delete_own_threads`,
-            `thread_delete_timeout_minutes`,
-            `edit_timeout_minutes`,
-            `notify_telegram`,
-            `max_post_length`,
-             `hide_last_topic`,
-            `created_at`,
-            `updated_at`,
-            `title_color`
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    `name`, 
+    `description`, 
+    `parent_id`, 
+    `icon_svg`,
+    `link`,
+    `is_hidden`,
+    `can_create_topics`,
+    `can_reply_topics`,
+    `can_view_topics`,
+    `is_moderated`,
+    `can_users_delete_own_threads`,
+    `thread_delete_timeout_minutes`,
+    `edit_timeout_minutes`,
+    `notify_telegram`,
+    `max_post_length`,
+    `hide_last_topic`,
+    `created_at`,
+    `updated_at`,
+    `title_color`,
+    `is_close`
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
             $params = [
                 $name,
@@ -1400,6 +1401,7 @@ class forum
                 time::mysql(),
                 time::mysql(),
                 $titleColor,
+                0,
             ];
 
             $result = sql::run($sql, $params);

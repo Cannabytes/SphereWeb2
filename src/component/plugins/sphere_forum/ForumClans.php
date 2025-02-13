@@ -259,7 +259,7 @@ class ForumClans
                redirect::location("/forum/clan/" . $clan->getName());
            }
         }
-        tpl::displayPlugin("/sphere_forum/tpl/clan/sql_editor.html");
+        tpl::displayPlugin("/sphere_forum/tpl/clan/edit.html");
     }
 
     function getUserOwnerClan(): false|ForumClan
