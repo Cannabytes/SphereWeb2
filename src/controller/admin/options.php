@@ -386,7 +386,6 @@ class options
 
         if(isset($info['servers'])){
             foreach ($info['servers'] as $server) {
-//                var_dump($server);exit();
                 $id = $server['id'];
                 \Ofey\Logan22\model\server\server::loadStatusServer($server);
                 $getServer = \Ofey\Logan22\model\server\server::getServer($id, $server);

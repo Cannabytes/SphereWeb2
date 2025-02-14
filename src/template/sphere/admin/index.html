@@ -286,7 +286,14 @@
                                                                 </span>
                             </li>
 
-                            <li class="d-flex align-items-center mb-3">
+
+
+                                {% if server.getStatus().isEnable() == false %}
+                                <div class="card border-0">
+                                        <div class="alert alert-danger border border-danger mb-0 ">
+                                {{ phrase('Disabled in server settings') }}
+                                {% endif %}
+                            <li class="d-flex align-items-center {% if server.getStatus().isEnable() %}mb-3{% endif %}">
                                 <span class="me-2">  <i
                                       class="{% if server.loginServer %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
                                 <span class="{% if server.loginServer %}text-success{% else %}text-danger{% endif %}">
@@ -304,7 +311,7 @@
                     </span>
                             </li>
 
-                            <li class="d-flex align-items-center mb-3">
+                            <li class="d-flex align-items-center {% if server.getStatus().isEnable() %}mb-3{% endif %}">
                                 <span class="me-2">  <i
                                       class="{% if server.gameServer %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
                                 <span class="{% if server.gameServer %}text-success{% else %}text-danger{% endif %}">
@@ -320,6 +327,10 @@
 
                     <strong class="me-1">{{ phrase('Checking the port') }}</strong> GameServer </span>
                             </li>
+                                {% if server.getStatus().isEnable() == false %}
+                                       </div>
+                                    </div>
+                                {% endif %}
 
 
                             <li class="d-grid">
