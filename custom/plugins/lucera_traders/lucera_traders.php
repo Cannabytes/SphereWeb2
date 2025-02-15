@@ -128,7 +128,10 @@ class lucera_traders
             }
 
             $storeNames = $this->getStoreName();
-
+            if($storeNames === false){
+                return [];
+            }
+            $storeNames = $storeNames['rows'];
             $itemIds = array_unique($itemIds);
 
             if (!empty($itemIds)) {
@@ -157,6 +160,9 @@ class lucera_traders
                     $value['y'] = round(2580 + ($value['y'] - 255420) / 200);
 
                     foreach ($storeNames as $storeName) {
+                        if(!isset($storeName['obj_id'])){
+                            var_dump($storeName);exit;
+                        }
                         if ($storeName['obj_id'] == $value['obj_id']) {
                             $value['storeName'] = trim($storeName['value']);
                         }
