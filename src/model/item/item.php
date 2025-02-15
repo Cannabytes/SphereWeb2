@@ -77,9 +77,9 @@ use Ofey\Logan22\component\image\client_icon;
     private int $cost = 0;
 
     private ?string $icon;
-    private ?string $itemName;
-    private ?string $add_name;
-    private ?string $description;
+    private ?string $itemName = "NoItemName";
+    private ?string $add_name = "";
+    private ?string $description = "";
 
     public function getAddName(): ?string
     {
@@ -169,13 +169,13 @@ use Ofey\Logan22\component\image\client_icon;
         return $this;
     }
 
-    private ?int $price;
-    private bool $is_tradable;
-    private bool $is_dropable;
-    private ?string $type;
-    private bool $is_sellable;
-    private bool $is_depositable;
-    private bool $is_stackable;
+    private ?int $price = 0;
+    private bool $is_tradable = false;
+    private bool $is_dropable = false;
+    private ?string $type = null;
+    private bool $is_sellable  = false;
+    private bool $is_depositable  = false;
+    private bool $is_stackable = true;
     private ?string $crystal_type = null;
 
     public function getCrystalType(): ?string
