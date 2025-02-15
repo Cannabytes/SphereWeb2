@@ -148,7 +148,7 @@ class support
         tpl::addVar([
             'sections' => self::sections(),
         ]);
-        tpl::display("support/sql_editor.html");
+        tpl::display("support/create.html");
     }
 
     public static function requestCreate(): void
