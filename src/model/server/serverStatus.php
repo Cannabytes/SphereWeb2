@@ -14,6 +14,7 @@ class serverStatus
     private int $online = 0;
 
     private bool $gameServer = false;
+    private bool $gameServerRealConnection = false;
 
     private bool $loginServer = false;
 
@@ -40,6 +41,7 @@ class serverStatus
             'loginServerDB' => $this->isEnableLoginServerMySQL(),
             'gameServerDB' => $this->isEnableGameServerMySQL(),
             'gameServer' => $this->getGameServer(),
+            'gameServerRealConnection' => $this->getGameServerRealCollection(),
             'loginServer' => $this->getLoginServer(),
             'gameServerIP' => $this->getGameIPStatusServer(),
             'gameServerPort' => $this->getGamePortStatusServer(),
@@ -71,6 +73,11 @@ class serverStatus
             $this->gameServer = true;
         }
         return $this->gameServer;
+    }
+
+    public function getGameServerRealCollection(): bool
+    {
+        return $this->gameServerRealConnection;
     }
 
     public function setGameServer(bool $status): bool
@@ -193,6 +200,16 @@ class serverStatus
     public function setLoginIPStatusServer($ip = '0.0.0.0'): string
     {
         return $this->loginIPStatusServer = $ip;
+    }
+
+    public function setGameServerRealConnection(mixed $param): void
+    {
+        $this->gameServerRealConnection = $param;
+    }
+
+    public function getGameServerRealConnection(): bool
+    {
+        return $this->gameServerRealConnection;
     }
 
 

@@ -411,7 +411,6 @@ class options
                 }
             }
         }
-
         if (!$sphereAPIError) {
             tpl::addVar([
                 "launcher" => $info['launcher'] ?? null,

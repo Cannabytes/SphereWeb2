@@ -95,7 +95,8 @@ class server
                 $serverStatus = new serverStatus();
                 $serverStatus->setServerId($serverId);
                 $serverStatus->setLoginServer($server['serverStatus']['loginserver']);
-                $serverStatus->setGameServer($server['serverStatus']['loginserver']);
+                $serverStatus->setGameServer($server['serverStatus']['gameServerDB']);
+                $serverStatus->setGameServerRealConnection($server['serverStatus']['gameServerDB']);
                 $serverStatus->setOnline($server['serverStatus']['online'] ?? 200);
                 $serverStatus->setEnable(filter_var($server['serverStatus']['isEnableStatus'] ?? true, FILTER_VALIDATE_BOOLEAN));
 
@@ -108,6 +109,7 @@ class server
             if($servers==[]){
                 return null;
             }
+
             foreach ($servers as $server) {
                 $server = json_decode($server['data'], true);
                 $serverId = $server['id'];
@@ -126,8 +128,8 @@ class server
             if(self::$server_info==[]){
                 return null;
             }
+            self::loadStatusServer(null);
 
-            self::loadStatusServer($serverStatus);
             if (!empty(self::$server_info)) {
                 foreach (self::$server_info as $info) {
                     foreach (self::$arrayStatus as $status) {
@@ -189,6 +191,7 @@ class server
             $serverStatus->setServerId($status['id']);
             $serverStatus->setLoginServer($status['loginServer'] ?? false);
             $serverStatus->setGameServer($status['gameServer'] ?? false);
+            $serverStatus->setGameServerRealConnection($status['gameServer'] ?? false);
             $serverStatus->setEnableLoginServerMySQL($status['loginServerDB'] ?? false);
             $serverStatus->setEnableGameServerMySQL($status['gameServerDB'] ?? false);
             $serverStatus->setOnline($status['online'] ?? 0);
@@ -198,6 +201,7 @@ class server
             $serverStatus->setLoginPortStatusServer($status['loginServerPort'] ?? -1);
             $serverStatus->save();
             self::$arrayStatus[$status['id']] = $serverStatus;
+            return;
         }
         if (self::$firstLoadServer) {
             return;
@@ -210,18 +214,17 @@ class server
              * Если прошло меньше минуты, тогда выводим данные из кэша
              */
             foreach ($serverCache as $cache) {
-                $totalSeconds = time::diff(time::mysql(), $cache['date_create']);
-                if ($totalSeconds >= config::load()->cache()->getStatus()) {
+//                $totalSeconds = time::diff(time::mysql(), $cache['date_create']);
+//                if ($totalSeconds >= config::load()->cache()->getStatus()) {
                     $update = true;
-                    break;
-                }
+//                    break;
+//                }
             }
             if ($update) {
                 $serverStatusAll = \Ofey\Logan22\component\sphere\server::send(type::GET_STATUS_SERVER_ALL, [])->getResponse();
                 if (isset($serverStatusAll['status'])) {
                     $serverStatusAll = $serverStatusAll['status'];
                     sql::sql("DELETE FROM `server_cache` WHERE `type` = 'status'");
-
                     $config = config::load();
                     $onlineCheating = $config->onlineCheating()->isEnabled();
                     $minOnline = $config->onlineCheating()->getMinOnlineShow();
@@ -229,15 +232,15 @@ class server
 
                     foreach ($serverStatusAll as $server_id => $status) {
                         $online = $status['online'] ?? 0;
-
                         if ($onlineCheating && $online == 0) {
                             $online = mt_rand($minOnline, $maxOnline);
                         }
-
                         $serverStatus = new serverStatus();
                         $serverStatus->setServerId($server_id);
+                        $serverStatus->setEnable($status['isEnableStatus']);
                         $serverStatus->setLoginServer($status['loginServer'] ?? false);
                         $serverStatus->setGameServer($status['gameServer'] ?? false);
+                        $serverStatus->setGameServerRealConnection($status['gameServer'] ?? false);
                         $serverStatus->setEnableLoginServerMySQL($status['loginServerDB'] ?? false);
                         $serverStatus->setEnableGameServerMySQL($status['gameServerDB'] ?? false);
                         $serverStatus->setOnline($online);
@@ -255,8 +258,10 @@ class server
                     $cache = json_decode($cache['data'], true);
                     $serverStatus = new serverStatus();
                     $serverStatus->setServerId($server_id);
+                    $serverStatus->setEnable($cache['isEnable']);
                     $serverStatus->setLoginServer($cache['loginServer'] ?? false);
                     $serverStatus->setGameServer($cache['gameServer'] ?? false);
+                    $serverStatus->setGameServerRealConnection($status['gameServerRealConnection'] ?? false);
                     $serverStatus->setEnableLoginServerMySQL($cache['loginServerDB'] ?? false);
                     $serverStatus->setEnableGameServerMySQL($cache['gameServerDB'] ?? false);
                     $serverStatus->setOnline($cache['online'] ?? 0);

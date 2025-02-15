@@ -10,6 +10,7 @@ return [
     "PLUGIN_ADMIN_PAGE" => "/admin/sphere/forum",
     "PLUGIN_ICON" => "bi bi-chat-right-text",
     "PLUGIN_LINK" => "/forum",
+    "PLUGIN_COST" => -1,
 
     "INCLUDES" => [
         "PLACE_IN_SPACE_MAIN_1" => "sphere_forum/tpl/main_include.html",

@@ -104,11 +104,12 @@
                                         <div class="alert alert-danger border border-danger mb-0 ">
                                 {{ phrase('Disabled in server settings') }}
                                 {% endif %}
+ 
 
                                 <li class="d-flex align-items-center {% if server.getStatus().isEnable() %}mb-3{% endif %}">
                                     <span class="me-2">  <i
-                                          class="{% if server.loginServer %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
-                                    <span class="{% if server.loginServer %}text-success{% else %}text-danger{% endif %}">
+                                          class="{% if server.getStatus().getLoginServer() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
+                                    <span class="{% if server.getStatus().getLoginServer() %}text-success{% else %}text-danger{% endif %}">
                                                <svg role="button" data-type="login"
                                                     data-server-id="{{server.getId()}}"
                                                     class="portQualityCheck bi bi-database text-primary"
@@ -124,8 +125,8 @@
 
                                 <li class="d-flex align-items-center {% if server.getStatus().isEnable() %}mb-3{% endif %}">
                                     <span class="me-2">  <i
-                                          class="{% if server.gameServer %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
-                                    <span class="{% if server.gameServer %}text-success{% else %}text-danger{% endif %}">
+                                          class="{% if server.getStatus().getGameServerRealConnection() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>  </span>
+                                    <span class="{% if server.getStatus().getGameServerRealConnection() %}text-success{% else %}text-danger{% endif %}">
 
                                            <svg role="button" data-type="game"
                                                 data-server-id="{{server.getId()}}"

@@ -34,7 +34,15 @@
               <td>
                  {{plugin.PLUGIN_DESCRIPTION}}
               </td>
-              <td>{% if plugin.PLUGIN_COST %} {{plugin.PLUGIN_COST ?? 0 }}$/{{ phrase('month') }} {% else %}{{ phrase('free') }} {% endif %}</td>
+              <td>
+
+                    {% if plugin.PLUGIN_COST == -1 %}
+                      Другое
+                    {% else %}
+                      {% if plugin.PLUGIN_COST ?? 0 %}${{plugin.PLUGIN_COST}}/{{ phrase('month') }}{% else %}{{ phrase('free') }}{% endif %}
+                    {% endif %}
+
+              </td>
 
             </tr>
             {% endfor %}

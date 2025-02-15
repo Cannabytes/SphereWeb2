@@ -85,6 +85,7 @@ class serverModel
 
         $this->donate = new donate($this->id, $this->knowledgeBase);
         $this->referral = new referral($this->id);
+
         return $this;
     }
 
