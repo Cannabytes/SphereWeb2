@@ -72,7 +72,7 @@
         </div>
 
     </div>
-    <div class="celebration-text">Ура! Спасибо за покупку! 🎉</div>
+    <div class="celebration-text" style="display: none">Ура! Спасибо за покупку! 🎉</div>
         <div aria-labelledby="pricing-monthly1" class="tab-pane show active p-0 border-0"
              id="pricing-monthly1-pane" role="tabpanel" tabindex="0">
         <div class="row justify-content-center">
@@ -725,7 +725,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script>
-        $(document).ready(function() {
             const emojis = [
                 '🎉', '🎊', '🎈', '🎀', '🎁', '⭐', '🌟', '✨', '💫', '💥',
                 '😃', '😄', '😁', '😆', '😊', '😇', '🥳', '🤩', '😎', '😻',
@@ -862,6 +861,5 @@
                 });
             }
 
-        });
     </script>
 {% endblock %}
