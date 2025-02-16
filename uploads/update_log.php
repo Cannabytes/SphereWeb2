@@ -2,6 +2,13 @@
 
 return [
     [
+        'date' => '14:48 16.02.2025',
+        'message' => [
+            'ru' => 'Обновлено API платежной системы Freekassa',
+            'en' => 'Freekassa payment system API updated',
+        ]
+    ],
+    [
         'date' => '12:46 14.02.2025',
         'message' => [
             'ru' => 'Добавлены новые проверочные IP для платежной системы pally',

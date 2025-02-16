@@ -68,7 +68,7 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
             'o'         => $order_id,
             'us_userid' => user::self()->getId(),
         ];
-        echo "https://pay.freekassa.com/?" . http_build_query($params);
+        echo "https://pay.fk.money/?" . http_build_query($params);
     }
 
     //Получение информации об оплате
