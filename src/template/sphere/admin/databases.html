@@ -37,13 +37,13 @@
 
                                         <nav class="nav nav-style-6 nav-pills mb-3 nav-justified d-sm-flex d-block" role="tablist">
                                             <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
-                                               href="#nav-db-info" aria-selected="false">Информация о базе данных</a>
+                                               href="#nav-db-info_{{loginServer.id}}" aria-selected="false">Информация о базе данных</a>
                                             <a class="nav-link " data-bs-toggle="tab" role="tab"
-                                               href="#nav-db-reconnect" aria-selected="true">Переподключение к БД <span
+                                               href="#nav-db-reconnect_{{loginServer.id}}" aria-selected="true">Переподключение к БД <span
                                                     class="badge bg-info-transparent ms-1">Full</span></a>
                                         </nav>
                                         <div class="tab-content">
-                                            <div class="tab-pane text-muted show active" id="nav-db-info" role="tabpanel">
+                                            <div class="tab-pane text-muted show active" id="nav-db-info_{{loginServer.id}}" role="tabpanel">
 
                                                 <div class="">
                                                     <div class="card-header">
@@ -63,7 +63,7 @@
                                                                        data-bs-original-title="Кол-во аккаунтов, которые были зарегистрированы или подключены на данный LoginServer (ID:23)"
                                                                        data-bs-toggle="tooltip" data-bs-placement="top">
                                                                         Аккаунтов</p>
-                                                                    <p class="fw-semibold fs-16 mb-0">{{loginServer.accountsCount}}</p>
+                                                                    <p class="fw-semibold fs-16 mb-0">{{loginServer.accountsCount ?? 0}}</p>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -153,7 +153,7 @@
                                                 </div>
                                                 
                                             </div>
-                                            <div class="tab-pane text-muted" id="nav-db-reconnect"
+                                            <div class="tab-pane text-muted" id="nav-db-reconnect_{{loginServer.id}}"
                                                  role="tabpanel">
 
                                                 <div class="row gy-3">
@@ -207,6 +207,21 @@
                             </div>
                         </div>
                     </div>
+
+    <div id="importProgressContainer" class="mt-3" style="display: none;">
+  <div class="mb-1">
+    <span id="importProgressLabel" class="fw-semibold">Импорт аккаунтов: 0%</span>
+  </div>
+  <div class="progress" style="height: 22px;">
+    <div
+          id="importProgressBar"
+          class="progress-bar progress-bar-striped progress-bar-animated"
+          role="progressbar"
+          style="width: 0%; transition: width 0.6s ease;">
+      0%
+    </div>
+  </div>
+</div>
                 </div>
             </div>
         </div>
@@ -343,7 +358,12 @@
 
     </div>
 
+
 </div>
+
+
+
+
 {% endblock %}
 
 {% block css %}
@@ -386,6 +406,7 @@
                     }
                 }
                 panel.fadeOut(500, function () {
+                    location.reload();
                     $(this).remove();
                 });
             })
@@ -420,6 +441,7 @@
 
                 // Добавляем анимацию исчезновения перед удалением
                 panel.fadeOut(500, function () {
+                    location.reload()
                     $(this).remove();
                 });
             })
@@ -513,68 +535,108 @@
 
         $(".loadAccountsToSphere").on("click", function () {
             const loginId = $(this).attr('data-loginserverid');
-
             Swal.fire({
                 title: '<strong>LoginServer Player Accounts</strong>',
                 icon: 'success',
                 html: `
-            <div class="col-xl-12 mb-3">
-                <input type="file" class="form-control mb-2" id="fileInput">
-                <textarea class="form-control" id="import_accounts" rows="14" placeholder="Содержимое файла появится здесь..."></textarea>
-            </div>`,
+      <div class="col-xl-12 mb-3">
+          <input type="file" class="form-control mb-2" id="fileInput">
+          <textarea class="form-control" id="import_accounts" rows="14" placeholder="Содержимое файла появится здесь..."></textarea>
+      </div>
+      <div class="progress">
+          <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+      </div>
+    `,
                 showCloseButton: true,
                 showCancelButton: true,
                 focusConfirm: false,
                 confirmButtonText: '<i class="fe fe-download"></i> Начать импортирование',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    AjaxSend("/admin/database/account/load", "POST", {
-                        loginId: loginId,
-                        file: $("#import_accounts").val()
-                    })
+                    noticeSuccess("Началось загрузка аккаунтов. Ожидайте.");
+                    $.ajax({
+                        url: "/admin/database/account/load",
+                        method: "POST",
+                        data: {
+                            loginId: loginId,
+                            file: $("#import_accounts").val() // содержимое файла/textarea
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            // Как только бекенд ответил, что импорт начался — запускаем опрос
+                            pollProgress();
+                        },
+                        error: function () {
+                            // Обрабатываем ошибку
+                            noticeError("Произошла ошибка при загрузке аккаунтов.");
+                        }
+                    });
                 }
             });
 
-            // Обработчик загрузки файла
-            $(document).on("change", "#fileInput", function () {
-                const file = this.files[0];
-                if (!file) {
-                    Swal.fire('Ошибка!', 'Выберите файл для загрузки.', 'error');
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    $("#import_accounts").val(e.target.result);
-                };
-                reader.onerror = function () {
-                    Swal.fire('Ошибка!', 'Не удалось прочитать файл.', 'error');
-                };
-                reader.readAsText(file);
-            });
         });
 
+        $(document).on("change", "#fileInput", function () {
+            const file = this.files[0];
+            if (!file) {
+                noticeError("Выберите файл для загрузки.");
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                $("#import_accounts").val(e.target.result);
+            };
+            reader.onerror = function () {
+                noticeError("Не удалось прочитать файл.");
+            };
+            reader.readAsText(file);
+        });
 
-        function sendFile(file, loginId) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('loginId', loginId);
+        function pollProgress() {
+            // Показываем контейнер прогресса, если он ещё скрыт
+            $("#importProgressContainer").fadeIn();
 
             $.ajax({
-                url: '/admin/database/account/load',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    console.log(response);
+                url: "/admin/database/account/load/progress",
+                method: "POST",
+                data: {},
+                dataType: "json",
+                success: function (data) {
+                    const total = data.total || 0;
+                    const processed = data.processed || 0;
+                    const percent = total ? ((processed / total) * 100).toFixed(2) : 0;
+
+                    // Обновляем прогресс-бар и текстовую метку
+                    $("#importProgressBar")
+                          .css("width", percent + "%")
+                          .text(percent + "%");
+                    $("#importProgressLabel").text(`Импорт аккаунтов: ${percent}%`);
+
+                    // Если импорт не закончен, продолжаем опрос
+                    if (data.completed === 1) {
+                        setTimeout(pollProgress, 1000);
+                    }
+                    // Когда completed === 2, считаем, что всё готово
+                    else if (data.completed === 2) {
+                        console.log("Импорт завершён");
+                        $("#importProgressBar").css("width", "100%").text("100%");
+                        $("#importProgressLabel").text("Импорт завершён на 100%");
+
+                        // Дополнительно можете скрыть панель или вывести другое сообщение
+                        // Например:
+                        // setTimeout(() => {
+                        //   $("#importProgressContainer").fadeOut();
+                        // }, 3000);
+                    }
                 },
-                error: function(xhr, status, error) {
-                    alert('Произошла ошибка при загрузке файла');
-                    console.error(error);
+                error: function (err) {
+                    console.error("Ошибка опроса прогресса", err);
+                    // В случае ошибки тоже можно повторить опрос через 1-2 секунды, если нужно
+                    setTimeout(pollProgress, 2000);
                 }
             });
         }
+
 
 
     });
@@ -663,7 +725,7 @@
             user: user,
             password: password,
             name: name
-        });
+        },);
     })
 
 </script>

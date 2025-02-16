@@ -214,6 +214,7 @@
                                                                        for="logindb_{{loginserver.id}}">
                                                                     {{loginserver.host}}@{{loginserver.name}}
                                                                 </label>
+                                                                 <a class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ phrase('count_accounts_in_login_server', loginserver.accountsCount ?? 0) }}" href="#">[{{loginserver.accountsCount ?? 0}}]</a>
                                                             </div>
                                                             {% endfor %}
 

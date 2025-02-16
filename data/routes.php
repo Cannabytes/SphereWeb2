@@ -2543,4 +2543,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  184 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/database/account/load/progress',
+    'func' => 'controller\\admin\\databases::pollProgress',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

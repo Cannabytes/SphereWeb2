@@ -617,6 +617,7 @@ class options
         $gameServers = \Ofey\Logan22\component\sphere\server::send(type::GET_GAME_SERVERS)->show()->getResponse();
         $loginServers = \Ofey\Logan22\component\sphere\server::send(type::GET_LOGIN_SERVERS)->show()->getResponse();
         $collections = \Ofey\Logan22\component\sphere\server::sendCustom("/api/server/collection/get")->getResponse();
+
         tpl::addVar([
             'gameservers' => $gameServers,
             'loginservers' => $loginServers,

@@ -96,6 +96,7 @@ enum type
 
     case DOWNLOAD_ACCOUNTS;
     case LOAD_ACCOUNTS;
+    case LOAD_ACCOUNTS_PROGRESS;
     case GET_ERRORS;
 
     case EXCHANGER;
@@ -145,6 +146,7 @@ enum type
             self::GET_LOGIN_SERVERS_DATA => '/api/server/get/loginservers/data',
             self::DOWNLOAD_ACCOUNTS => '/api/server/download/accounts',
             self::LOAD_ACCOUNTS => '/api/server/load/accounts',
+            self::LOAD_ACCOUNTS_PROGRESS => '/api/server/load/accounts/progress',
             self::GET_ERRORS => '/api/server/get/errors',
             self::CLEAR_ERRORS => '/api/server/errors/clear',
 

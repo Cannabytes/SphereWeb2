@@ -94,58 +94,70 @@ class databases
         }
     }
 
-    public static function loadAccounts(): void
+    public static function pollProgress(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $file = $_POST['file'] ?? board::error("Not accounts");
-            $loginId = $_POST['loginId'] ?? board::error("Not loginId");
-            $encrypt = "sphere";
+        // Отправляем запрос на GO-приложение, передавая jobId в параметрах
+        $responseData = \Ofey\Logan22\component\sphere\server::send(type::LOAD_ACCOUNTS_PROGRESS, [
+        ])->show()->getResponse();
 
-            $lines = explode("\n", trim($file));
-            $parsedData = [];
+        // Возвращаем полученные данные в формате JSON
+        echo json_encode($responseData);
+    }
 
-            foreach ($lines as $line) {
-                $parts = explode(':', trim($line));
-                if (count($parts) === 3) {
-                    list($email, $account, $password) = $parts;
+    public static function loadAccounts(): void {
 
-                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                        board::error("Некорректный email: $email");
-                        continue;
-                    }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['status' => 'error', 'message' => 'Неверный формат файла']);
+            return;
+        }
 
-                    if (strlen($account) < 1) {
-                        board::error("Некорректный account: $account");
-                        continue;
-                    }
+        $file    = $_POST['file'] ?? board::error("Not accounts");
+        $loginId = $_POST['loginId'] ?? board::error("Not loginId");
+        $encrypt = "sphere";
 
-                    if (strlen($password) < 1) {
-                        board::error("Некорректный password: $password");
-                        continue;
-                    }
+        $parsedData   = [];
+        $invalidLines = [];
 
-                    // Добавляем в результирующий массив
-                    $parsedData[] = [
-                        'email' => $email,
-                        'login' => $account,
-                        'password' => $password
-                    ];
-                } else {
-                    board::error("Некорректная строка: $line");
-                }
+        // Регулярка сразу извлекает email, account и password с учетом пробелов вокруг
+        $pattern = '/^\s*(?<email>[^:\s]+@[^:\s]+\.[^:\s]+)\s*:\s*(?<account>[^:]+)\s*:\s*(?<password>.+)\s*$/u';
+
+        // Разбиваем на строки, учитывая различные переносы строки
+        $lines = preg_split('/\r\n|\r|\n/', trim($file));
+
+        foreach ($lines as $lineNumber => $line) {
+            if (trim($line) === '') {
+                continue; // пропускаем пустые строки
             }
 
-            $data = \Ofey\Logan22\component\sphere\server::send(type::LOAD_ACCOUNTS, [
-                'loginId' => (int)$loginId,
-                'encrypt' => $encrypt,
-                'accounts' => $parsedData,
-            ])->show()->getResponse();
+            if (preg_match($pattern, $line, $matches)) {
+                // Дополнительная проверка email, если нужна строгая валидация
+                if (!filter_var($matches['email'], FILTER_VALIDATE_EMAIL)) {
+                    $invalidLines[] = "Строка " . ($lineNumber + 1) . " - Некорректный email: {$matches['email']}";
+                    continue;
+                }
 
-            echo json_encode($data);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Неверный формат файла']);
+                $parsedData[] = [
+                    'email'    => $matches['email'],
+                    'login'    => $matches['account'],
+                    'password' => $matches['password']
+                ];
+            } else {
+                $invalidLines[] = "Строка " . ($lineNumber + 1) . " - Некорректный формат: {$line}";
+            }
         }
+
+        $responseData = \Ofey\Logan22\component\sphere\server::send(type::LOAD_ACCOUNTS, [
+            'loginId'  => (int)$loginId,
+            'encrypt'  => $encrypt,
+            'accounts' => $parsedData,
+        ])->show()->getResponse();
+
+        $responseData['invalid'] = $invalidLines;
+
+        echo json_encode($responseData);
     }
+
+
 
     static public function delete()
     {

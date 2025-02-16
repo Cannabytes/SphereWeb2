@@ -216,6 +216,7 @@
 
 
 <script>
+
   function recalculateSphereCoinValue() {
     const maxValue = {{getUser().getDonate() | round(0, 'floor')}};
 
@@ -224,7 +225,7 @@
       muchSphereCoinVal = maxValue;
       $('#muchSphereCoin').val(muchSphereCoinVal);
     }
-    let itemCountGameTransferCount = ($('#itemCountGameTransfer').data('count-items')) / {{ getServer().donate().getDonateItemToGameTransfer() }};
+    let itemCountGameTransferCount = ($('#itemCountGameTransfer').data('count-items')) / {{ getServer().donate().getDonateItemToGameTransfer() ?? 1 }};
     if (!isNaN(muchSphereCoinVal) && !isNaN(itemCountGameTransferCount) && itemCountGameTransferCount > 0) {
       let result = muchSphereCoinVal * itemCountGameTransferCount;
       result = Math.floor(result)
