@@ -214,11 +214,11 @@ class server
              * Если прошло меньше минуты, тогда выводим данные из кэша
              */
             foreach ($serverCache as $cache) {
-//                $totalSeconds = time::diff(time::mysql(), $cache['date_create']);
-//                if ($totalSeconds >= config::load()->cache()->getStatus()) {
+                $totalSeconds = time::diff(time::mysql(), $cache['date_create']);
+                if ($totalSeconds >= config::load()->cache()->getStatus()) {
                     $update = true;
-//                    break;
-//                }
+                    break;
+                }
             }
             if ($update) {
                 $serverStatusAll = \Ofey\Logan22\component\sphere\server::send(type::GET_STATUS_SERVER_ALL, [])->getResponse();
