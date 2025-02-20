@@ -31,6 +31,13 @@
                         <div class="col-xl-9">
                             <div class="tab-content">
                                 {% for i, loginServer in loginServers %}
+                                  {% set found = 0 %}
+                                  {% for server in getServerAll() %}
+                                      {% if server.getLoginId() == loginServer.id %}
+                                        {% set found = 1 %}
+                                      {% endif %}
+                                  {% endfor %}
+
                                 <div class="loginserver_id_{{loginServer.id}} tab-pane text-muted {% if i == 0 %}active show{% endif %}"
                                      id="loginserver_id_{{loginServer.id}}" role="tabpanel">
                                     <div class="col-xl-12">
@@ -40,7 +47,7 @@
                                                href="#nav-db-info_{{loginServer.id}}" aria-selected="false">Информация о базе данных</a>
                                             <a class="nav-link " data-bs-toggle="tab" role="tab"
                                                href="#nav-db-reconnect_{{loginServer.id}}" aria-selected="true">Переподключение к БД <span
-                                                    class="badge bg-info-transparent ms-1">Full</span></a>
+                                                  class="badge bg-info-transparent ms-1">Full</span></a>
                                         </nav>
                                         <div class="tab-content">
                                             <div class="tab-pane text-muted show active" id="nav-db-info_{{loginServer.id}}" role="tabpanel">
@@ -94,7 +101,7 @@
                                                                 Скачать базу аккаунтов логина
                                                             </button>
 
-                                                            <button data-loginserverid="{{loginServer.id}}"  type="button"
+                                                            <button data-connect-server="{{found}}" data-loginserverid="{{loginServer.id}}"  type="button"
                                                                     class="btn btn-info btn-wave waves-effect waves-light loadAccountsToSphere">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                                      viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -125,18 +132,14 @@
                                                             логин-сервер.
                                                         </div>
 
-                                                        {% set found = false %}
-                                                        {% for server in getServerAll() %}
-                                                        {% if server.getLoginId() == loginServer.id %}
-                                                        <div class="fw-semibold fs-14 text-success">
+
+
+                                                        {% if found %}
+                                                            <div class="fw-semibold fs-14 text-success">
                                                             Внимание: Логин-сервер подключен к серверу - {{server.getName()}}
                                                             {{server.getRateExp()}} {{server.getChronicle()}}
-                                                        </div>
-                                                        {% set found = true %}
-                                                        {% endif %}
-                                                        {% endfor %}
-
-                                                        {% if found == false %}
+                                                            </div>
+                                                        {% else %}
                                                         <div class="fw-semibold fs-14 text-danger">
                                                             Внимание: Данный Логин-сервер не используется ни одним из Ваших
                                                             серверов.
@@ -260,7 +263,7 @@
                                                href="#nav-db-info-game_{{gameServer.id}}" aria-selected="false">Информация о базе данных</a>
                                             <a class="nav-link " data-bs-toggle="tab" role="tab"
                                                href="#nav-db-reconnect-game_{{gameServer.id}}" aria-selected="true">Переподключение к БД <span
-                                                    class="badge bg-info-transparent ms-1">Full</span></a>
+                                                  class="badge bg-info-transparent ms-1">Full</span></a>
                                         </nav>
                                         <div class="tab-content">
                                             <div class="tab-pane text-muted show active" id="nav-db-info-game_{{gameServer.id}}" role="tabpanel">
@@ -376,9 +379,34 @@
 {% endblock %}
 
 {% block js %}
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="accountsModal" tabindex="-1" aria-labelledby="accountsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accountsModalLabel">LoginServer Player Accounts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control" id="accounts_list" rows="14"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="copyAccounts" class="btn btn-secondary">
+                    <i class="fe fe-copy"></i> Скопировать
+                </button>
+                <button type="button" id="downloadAccounts" class="btn btn-primary">
+                    <i class="fe fe-download"></i> Скачать
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script src="{{template}}/assets/libs/sweetalert2/sweetalert2.min.js"></script>
 <script>
     $(document).ready(function () {
+        const collectionInfo = JSON.parse('{{collections|raw}}');
 
         $(".deleteGameServer").on("click", function () {
             let gameServerId = $(this).attr("data-game-id");
@@ -448,97 +476,95 @@
         });
 
 
-        $(".downloadAccounts").on("click", function () {
-            const $button = $(this); // Сохраняем кнопку
-            const originalText = $button.html(); // Сохраняем оригинальный HTML кнопки
-
-            // Отключаем кнопку и показываем анимацию загрузки
-            $button.prop("disabled", true).html(`
-        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        Загрузка...
-    `);
-            const loginId = $button.attr('data-loginserverid');
-
-            // Выполняем POST запрос для импорта
-            fetch("/admin/database/account/download", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ loginId: loginId })
-            }).then(response => {
-                if (response.type === "notice" && !ResponseNotice(data)) return;
-                return response.json();
-            }).then(data => {
-                console.log(data);
-
-                $("#accounts_list").text(""); // Очищаем, если вдруг до этого был текст
-
-                Swal.fire({
-                    title: '<strong>LoginServer Player Accounts</strong>',
-                    icon: 'success',
-                    html: `
-        <div class="col-xl-12">
-            <textarea class="form-control" id="accounts_list" rows="14"></textarea>
-        </div>`,
-                    showCloseButton: true,
-                    showCancelButton: true,
-                    focusConfirm: false,
-                    confirmButtonText: '<i class="fe fe-download"></i> Скачать',
-                    cancelButtonText: '<i class="fe fe-copy"></i> Скопировать',
-                }).then((result) => {
-                    const text = $("#accounts_list").val(); // Получаем содержимое textarea
-
-                    if (result.isConfirmed) {
-                        // Если нажали "Скачать"
-                        const blob = new Blob([text], { type: "text/plain" });
-                        const link = document.createElement("a");
-                        link.href = URL.createObjectURL(blob);
-                        link.download = "accounts_list.txt";
-                        link.click();
-                        URL.revokeObjectURL(link.href); // Не забываем зачистить
-                    } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        // Если нажали "Скопировать"
-                        navigator.clipboard.writeText(text).then(() => {
-                            Swal.fire("Успех!", "Текст скопирован в буфер обмена.", "success");
-                        }).catch(() => {
-                            Swal.fire("Ошибка!", "Не удалось скопировать текст.", "error");
-                        });
-                    }
-                });
-
-                // Преобразуем массив объектов в строку и вставляем в textarea.
-                const accountsData = data.map(item =>
-                    `${item.email}:${item.login}:${item.password}`
-                ).join('\n');
-
-                // Находим textarea и добавляем данные.
-                $("#accounts_list").val(accountsData);
-
-                // Проверка типа notice и вызов ResponseNotice
-                if (data.type === "notice" && !ResponseNotice(data)) return;
-
-                if (data.error) {
-                    console.error(data.error);
-                    alert("Ошибка при импорте аккаунтов: " + data.error);
-                }
-            }).then(data => {
-                if (data.type === "notice" && !ResponseNotice(data)) return;
-                if (data.error) console.error("Ошибка удаления файла: " + data.error);
-                else if (data.message) console.log(data.message);
-            }).catch(error => {
-                console.error("Ошибка:", error);
-            }).finally(() => {
-                // Восстанавливаем кнопку после завершения всех операций
-                $button.prop("disabled", false).html(originalText);
+        $("#copyAccounts").on("click", function () {
+            const text = $("#accounts_list").val();
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Текст скопирован в буфер обмена.");
+            }).catch(() => {
+                alert("Не удалось скопировать текст.");
             });
         });
 
 
-        $(".loadAccountsToSphere").on("click", function () {
+        $(".downloadAccounts").on("click", function () {
+            const $button = $(this);
+            const originalText = $button.html();
+            $button.prop("disabled", true).html(`
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Загрузка...
+    `);
+
+            const loginId = $button.attr('data-loginserverid');
+
+            fetch("/admin/database/account/download", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ loginId: loginId })
+            }).then(response => response.json())
+                  .then(data => {
+                      console.log(data);
+
+                      // Заполняем textarea списком аккаунтов
+                      const accountsData = data.map(item =>
+                            `${item.email}:${item.login}:${item.password}`
+                      ).join('\n');
+
+                      $("#accounts_list").val(accountsData);
+
+                      // Открываем модальное окно Bootstrap
+                      let accountsModal = new bootstrap.Modal(document.getElementById('accountsModal'));
+                      accountsModal.show();
+                  })
+                  .catch(error => {
+                      console.error("Ошибка:", error);
+                  })
+                  .finally(() => {
+                      $button.prop("disabled", false).html(originalText);
+                  });
+        });
+
+        $("#downloadAccounts").on("click", function () {
+            const text = $("#accounts_list").val();
+            const blob = new Blob([text], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "accounts_list.txt";
+            link.click();
+            URL.revokeObjectURL(link.href);
+        });
+
+        $(document).on("click", ".loadAccountsToSphere", function () {
+
             const loginId = $(this).attr('data-loginserverid');
-            Swal.fire({
-                title: '<strong>LoginServer Player Accounts</strong>',
-                icon: 'success',
-                html: `
+            const connectServer = $(this).attr('data-connect-server');
+
+            let additionalFields = '';
+            if (connectServer === "0") {
+                additionalFields = `
+                    <div class="mb-3">
+                        <label for="version_client" class="form-label">Chronicle</label>
+                        <select class="form-control" id="version_client">
+                            {% for client in client_list_default %}
+                            <option data-protocol='{{ client.protocol|json_encode }}'>{{ client.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="collection" class="form-label">Сборка сервера</label>
+                        <select class="form-control" id="collection"></select>
+                    </div>
+                `;
+            }
+
+            $(".loadAccountsToSphere").on("click", function () {
+                const loginId = $(this).attr('data-loginserverid');
+                Swal.fire({
+                    title: '<strong>LoginServer Player Accounts</strong>',
+                    icon: 'success',
+                    html: `
+<div id="swal-content">
+                        ${additionalFields}
+                    </div>
       <div class="col-xl-12 mb-3">
           <input type="file" class="form-control mb-2" id="fileInput">
           <textarea class="form-control" id="import_accounts" rows="14" placeholder="Содержимое файла появится здесь..."></textarea>
@@ -547,33 +573,136 @@
           <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
       </div>
     `,
-                showCloseButton: true,
-                showCancelButton: true,
-                focusConfirm: false,
-                confirmButtonText: '<i class="fe fe-download"></i> Начать импортирование',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    noticeSuccess("Началось загрузка аккаунтов. Ожидайте.");
-                    $.ajax({
-                        url: "/admin/database/account/load",
-                        method: "POST",
-                        data: {
-                            loginId: loginId,
-                            file: $("#import_accounts").val() // содержимое файла/textarea
-                        },
-                        dataType: "json",
-                        success: function (response) {
-                            // Как только бекенд ответил, что импорт начался — запускаем опрос
-                            pollProgress();
-                        },
-                        error: function () {
-                            // Обрабатываем ошибку
-                            noticeError("Произошла ошибка при загрузке аккаунтов.");
-                        }
-                    });
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    focusConfirm: false,
+                    confirmButtonText: '<i class="fe fe-download"></i> Начать импортирование',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        noticeSuccess("Началось загрузка аккаунтов. Ожидайте.");
+                        const collection = $("#collection").val();
+                        $.ajax({
+                            url: "/admin/database/account/load",
+                            method: "POST",
+                            data: {
+                                loginId: loginId,
+                                collection: collection,
+                                file: $("#import_accounts").val()
+                            },
+                            dataType: "json",
+                            success: function (response) {
+                                console.log(response)
+                                pollProgress();
+                            },
+                            error: function () {
+                                // Обрабатываем ошибку
+                                noticeError("Произошла ошибка при загрузке аккаунтов.");
+                            }
+                        });
+                    }
+                });
+            });
+
+            });
+
+        function updateCollections(selectedProtocols) {
+            const $collectionSelect = $('#collection');
+
+            if (!$collectionSelect.length) {
+                console.error("Не найден элемент #collection");
+                return;
+            }
+
+            // Проверяем и исправляем видимость селекта
+            if ($collectionSelect.css('display') === 'none') {
+                $collectionSelect.css('display', 'block');
+            }
+
+            // Проверяем все родительские элементы на видимость
+            $collectionSelect.parents().each(function() {
+                if ($(this).css('display') === 'none') {
+                    $(this).css('display', 'block');
                 }
             });
 
+            $collectionSelect.empty();
+
+            if (!selectedProtocols) {
+                console.warn("Не переданы протоколы хроник");
+                return;
+            }
+
+            try {
+                const protocols = JSON.parse(selectedProtocols);
+                console.log("Выбраны протоколы:", protocols);
+
+                const availableCollections = collectionInfo.filter(collection =>
+                      collection.protocols.some(p => protocols.includes(p))
+                );
+
+                if (availableCollections.length > 0) {
+                    const $fragment = $(document.createDocumentFragment());
+
+                    availableCollections.forEach(collection => {
+                        $('<option>', {
+                            value: collection.name,
+                            text: collection.name
+                        }).appendTo($fragment);
+                    });
+
+                    $collectionSelect
+                          .append($fragment)
+                          .trigger('change')
+                          .show(); // Явно показываем селект
+
+                    // Проверяем видимость после обновления
+                    console.log("Селект виден после обновления:", $collectionSelect.is(':visible'));
+                    console.log("Стиль display:", $collectionSelect.css('display'));
+                } else {
+                    $('<option>', {
+                        value: '',
+                        text: 'Нет доступных сборок',
+                        selected: true,
+                        disabled: true
+                    }).appendTo($collectionSelect);
+                }
+
+            } catch (error) {
+                console.error("Ошибка обработки протоколов:", error);
+            }
+        }
+
+
+        // Добавьте эту функцию для проверки всех свойств, влияющих на видимость
+        function checkVisibilityIssues($element) {
+            const styles = {
+                display: $element.css('display'),
+                visibility: $element.css('visibility'),
+                opacity: $element.css('opacity'),
+                height: $element.css('height'),
+                position: $element.css('position'),
+                zIndex: $element.css('z-index')
+            };
+
+            console.log("Стили элемента:", styles);
+
+            // Исправляем возможные проблемы
+            if (styles.visibility === 'hidden') {
+                $element.css('visibility', 'visible');
+            }
+            if (styles.opacity === '0') {
+                $element.css('opacity', '1');
+            }
+            if (styles.height === '0px') {
+                $element.css('height', 'auto');
+            }
+        }
+
+
+
+        $(document).on('change', '#version_client', function() {
+            const protocols = $(this).find('option:selected').attr('data-protocol');
+            updateCollections(protocols);
         });
 
         $(document).on("change", "#fileInput", function () {
@@ -710,7 +839,7 @@
             }
         })
     });
-    
+
     $("#refresh_login_server").on("click", function () {
         let loginId = $(this).attr('data-login-id');
         let host = $("#login_host_" + loginId).val();

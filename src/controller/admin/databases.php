@@ -3,6 +3,7 @@
 namespace Ofey\Logan22\controller\admin;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\chronicle\client;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\template\tpl;
 
@@ -33,27 +34,35 @@ class databases
         $gameServers = $database['gameservers'];
         $loginServers = $database['loginservers'];
 
-        foreach ($defaultDB as $db) {
-            foreach ($servers as &$server) {
-                if ($db['id'] == $server->getId()) {
-                    foreach ($loginServers as &$loginServer) {
-                        if ($loginServer['id'] == $db['loginServerID']) {
-                            $loginServer['default'] = true;
+        if($defaultDB){
+            foreach ($defaultDB as $db) {
+                foreach ($servers as &$server) {
+                    if ($db['id'] == $server->getId()) {
+                        foreach ($loginServers as &$loginServer) {
+                            if ($loginServer['id'] == $db['loginServerID']) {
+                                $loginServer['default'] = true;
+                            }
                         }
-                    }
-                    foreach ($gameServers as &$gameserver) {
-                        if ($gameserver['id'] == $db['gameServerID']) {
-                            $gameserver['default'] = true;
+                        foreach ($gameServers as &$gameserver) {
+                            if ($gameserver['id'] == $db['gameServerID']) {
+                                $gameserver['default'] = true;
+                            }
                         }
                     }
                 }
             }
         }
 
+
+        $collections = \Ofey\Logan22\component\sphere\server::sendCustom("/api/server/collection/get")->getResponse();
+
         tpl::addVar([
             'defaultDB' => $defaultDB,
             'gameServers' => $gameServers,
-            'loginServers' => $loginServers
+            'loginServers' => $loginServers,
+            'client_list_default' => client::all(),
+            "collections" => json_encode($collections['collections']),
+
         ]);
         tpl::display("/admin/databases.html");
     }
@@ -113,6 +122,7 @@ class databases
 
         $file    = $_POST['file'] ?? board::error("Not accounts");
         $loginId = $_POST['loginId'] ?? board::error("Not loginId");
+        $collection = $_POST['collection'];
         $encrypt = "sphere";
 
         $parsedData   = [];
@@ -148,6 +158,7 @@ class databases
 
         $responseData = \Ofey\Logan22\component\sphere\server::send(type::LOAD_ACCOUNTS, [
             'loginId'  => (int)$loginId,
+            'collection' => $collection,
             'encrypt'  => $encrypt,
             'accounts' => $parsedData,
         ])->show()->getResponse();
