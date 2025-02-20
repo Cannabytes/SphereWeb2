@@ -22,6 +22,8 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
         '138.201.53.39',
         '176.9.155.22',
         '2.58.70.63',
+        '213.136.76.226',
+        '213.136.84.70',
     ];
 
     public static function inputs(): array
