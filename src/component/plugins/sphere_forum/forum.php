@@ -53,6 +53,7 @@ class forum
             redirect::location("/main");
         }
         tpl::addVar("template_plugin", "sphere_forum");
+        tpl::addVar("pluginActive", (bool)plugin::getPluginActive("sphere_forum") ?? false);
     }
 
     /**
@@ -777,7 +778,7 @@ class forum
         `category_id` = ?, 
         `user_id` = ?, 
         `title` = ?, 
-        `first_message_id`,
+        `first_message_id` = ?,
         `created_at` = ?, 
         `updated_at` = ?, 
         `is_closed` = ?,

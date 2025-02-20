@@ -26,6 +26,7 @@ class sphere_forum
         tpl::addVar([
             'setting' => plugin::getSetting($this->getNameClass()),
             'pluginName' => $this->getNameClass(),
+            'pluginActive' =>(bool)plugin::getPluginActive($this->getNameClass()) ?? false,
         ]);
     }
 
