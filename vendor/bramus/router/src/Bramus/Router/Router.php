@@ -8,6 +8,8 @@
 
 namespace Bramus\Router;
 
+use Ofey\Logan22\template\tpl;
+
 /**
  * Class Router.
  */
@@ -367,6 +369,7 @@ class Router {
         $ok = boolval(preg_match_all('#^' . $pattern . '$#', $uri, $matches, PREG_OFFSET_CAPTURE));
         $params = [];
         if($ok) {
+             tpl::addVar("__route__", $pattern);
             // Rework matches to only contain the matches, not the orig string
             $matches = array_slice($matches, 1);
 

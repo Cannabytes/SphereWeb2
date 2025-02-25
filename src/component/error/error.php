@@ -202,7 +202,7 @@ class error
 
     public static function init(): void
     {
-        self::$projectRoot = dirname(__DIR__, 3); // Подстрой под свою структуру проекта
+        self::$projectRoot = dirname(__DIR__, 3);
         set_exception_handler([self::class, 'exception_handler']);
         register_shutdown_function([self::class, 'fatal_error_handler']);
         set_exception_handler([self::class, 'exception_handler']);
