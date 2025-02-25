@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Форум — {{category.getName()}}{% endblock %}
+{% block title %}{{phrase('sphere_forum')}} — {{category.getName()}}{% endblock %}
 
 {% block content %}
 <div class="container-fluid ">
@@ -46,21 +46,21 @@
                     <div>
 
                         <a data-bs-content="
-    Создание тем: {% if category.canCreateTopics() %}Да{% else %}Нет{% endif %}<br>
-    Ответы: {% if category.canReplyTopics() %}Да{% else %}Нет{% endif %}<br>
-    Просмотр чужих тем: {% if category.canViewTopics() %}Да{% else %}Нет{% endif %}<br>
-    Одобрение тем модератором: {% if category.isModerated() %}Да{% else %}Нет{% endif %}<br>
+    {{phrase('create_topic')}}: {% if category.canCreateTopics() %}{{phrase('yes')}}{% else %}{{phrase(426)}}{% endif %}<br>
+    {{phrase('responses')}}: {% if category.canReplyTopics() %}{{phrase('yes')}}{% else %}{{phrase(426)}}{% endif %}<br>
+    {{phrase('view_other_topics')}}: {% if category.canViewTopics() %}{{phrase('yes')}}{% else %}{{phrase(426)}}{% endif %}<br>
+    {{phrase('moderator_approval_of_topics')}}: {% if category.isModerated() %}{{phrase('yes')}}{% else %}{{phrase(426)}}{% endif %}<br>
     {% if category.canUsersDeleteOwnThreads() %}
-        Удаление своих тем: Да ({{ category.getThreadDeleteTimeoutMinutes() }} мин)
+        {{phrase('delete_own_topics')}}: {{phrase('yes')}} ({{ category.getThreadDeleteTimeoutMinutes() }} {{phrase('min')}})
     {% else %}
-        Удаление своих тем: Нет
+        {{phrase('delete_own_topics')}}: {{phrase(426)}}
     {% endif %}<br>
     {% if category.canUsersDeleteOwnPosts() %}
-        Удаление своих сообщений: Да ({{ category.getEditTimeoutMinutes() }} мин)
+        {{phrase('delete_own_posts')}}: {{phrase('yes')}} ({{ category.getEditTimeoutMinutes() }} {{phrase('min')}})
     {% else %}
-        Удаление своих сообщений: Нет
+        {{phrase('delete_own_posts')}}: {{phrase(426)}}
     {% endif %}<br>
-    Макс. длина сообщения: {{ category.getMaxPostLength() }} символов
+    {{phrase('max_message_length')}}: {{ category.getMaxPostLength() }} {{phrase('characters_count')}}
     "
                            data-bs-html="true"
                            data-bs-trigger="focus"
@@ -79,7 +79,7 @@
 
                         <div class="btn-group btn-group-sm" role="group">
                             <button type="button" class="btn btn-github btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                Управление
+                                {{phrase('management')}}
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="">
 
@@ -89,7 +89,7 @@
                                        data-bs-toggle="modal"
                                        data-bs-target="#create-section"
                                        class="dropdown-item" href="#">
-                                        <i class="ri-add-line"></i> Добавить раздел
+                                        <i class="ri-add-line"></i> {{phrase('add_section')}}
                                     </a>
                                 </li>
                                 {% endif %}
@@ -103,7 +103,7 @@
                                        data-bs-toggle="modal"
                                        data-bs-target="#renameModal"
                                        class="dropdown-item" href="#">
-                                        <i class="ri-refresh-fill"></i> Переименовать
+                                        <i class="ri-refresh-fill"></i> {{phrase('rename')}}
                                     </a>
                                 </li>
                                 {% endif %}
@@ -114,7 +114,7 @@
                                        data-bs-toggle="modal"
                                        data-bs-target="#moveCategoryModal"
                                        class="dropdown-item" href="#">
-                                        <i class="ri-drag-move-fill"></i> Переместить
+                                        <i class="ri-drag-move-fill"></i> {{phrase('Move')}}
                                     </a>
                                 </li>
                                 {% endif %}
@@ -125,7 +125,7 @@
                                        data-bs-toggle="modal"
                                        data-bs-target="#permissionsModal"
                                        data-category-id="{{ category.getId() }}">
-                                        <i class="ri-checkbox-multiple-line"></i> Изменить права
+                                        <i class="ri-checkbox-multiple-line"></i> {{phrase('change_permissions')}}
                                     </a>
                                 </li>
 
@@ -133,7 +133,7 @@
                                    data-bs-toggle="modal"
                                    data-bs-target="#deleteModal"
                                    data-category-id="{{ category.getId() }}">
-                                    <i class="ri-delete-bin-line text-danger"></i> Удалить
+                                    <i class="ri-delete-bin-line text-danger"></i> {{phrase('delete')}}
                                 </a>
 
                                 {% endif %}
@@ -146,18 +146,18 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h6 class="modal-title" id="nameSection">Добавление нового раздела</h6>
+                                        <h6 class="modal-title" id="nameSection">{{phrase('add_new_section')}}</h6>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body px-4">
                                         <div class="row">
                                             <div class="col-xl-4 mb-2">
-                                                <label for="createNameSection" class="form-label">Название<sup><i class="ri-star-s-fill text-danger fs-8"></i></sup></label>
+                                                <label for="createNameSection" class="form-label">{{phrase(27)}}<sup><i class="ri-star-s-fill text-danger fs-8"></i></sup></label>
                                                 <input type="text" class="form-control" id="createNameSection" value="">
                                             </div>
 
                                             <div class="col-xl-8 mb-2">
-                                                <label for="createDescSection" class="form-label">Описание</label>
+                                                <label for="createDescSection" class="form-label">{{phrase(0)}}</label>
                                                 <input type="text" class="form-control" id="createDescSection" placeholder="">
                                             </div>
 
@@ -193,42 +193,42 @@
                                             </style>
 
                                             <div class="col-xl-12 mb-3">
-                                                <label class="form-label">Цвет названия</label>
+                                                <label class="form-label">{{phrase('title_color')}}</label>
                                                 <div class="d-flex flex-wrap gap-3 color-picker">
                                                     <div class="color-option" data-color="primary">
-                                                        <span class="color-preview text-primary fw-bold">Текст</span>
+                                                        <span class="color-preview text-primary fw-bold">{{phrase('text')}}</span>
                                                         <small class="d-block text-muted">.text-primary</small>
                                                     </div>
                                                     <div class="color-option" data-color="secondary">
-                                                        <span class="color-preview text-secondary fw-bold">Текст</span>
+                                                        <span class="color-preview text-secondary fw-bold">{{phrase('text')}}</span>
                                                         <small class="d-block text-muted">.text-secondary</small>
                                                     </div>
                                                     <div class="color-option" data-color="warning">
-                                                        <span class="color-preview text-warning fw-bold">Текст</span>
+                                                        <span class="color-preview text-warning fw-bold">{{phrase('text')}}</span>
                                                         <small class="d-block text-muted">.text-warning</small>
                                                     </div>
                                                     <div class="color-option" data-color="info">
-                                                        <span class="color-preview text-info fw-bold">Текст</span>
+                                                        <span class="color-preview text-info fw-bold">{{phrase('text')}}</span>
                                                         <small class="d-block text-muted">.text-info</small>
                                                     </div>
                                                     <div class="color-option" data-color="success">
-                                                        <span class="color-preview text-success fw-bold">Текст</span>
+                                                        <span class="color-preview text-success fw-bold">{{phrase('text')}}</span>
                                                         <small class="d-block text-muted">.text-success</small>
                                                     </div>
                                                     <div class="color-option" data-color="danger">
-                                                        <span class="color-preview text-danger fw-bold">Текст</span>
+                                                        <span class="color-preview text-danger fw-bold">{{phrase('text')}}</span>
                                                         <small class="d-block text-muted">.text-danger</small>
                                                     </div>
                                                     <div class="color-option" data-color="light">
-                                                        <span class="color-preview text-light fw-bold bg-dark">Текст</span>
+                                                        <span class="color-preview text-light fw-bold bg-dark">{{phrase('text')}}</span>
                                                         <small class="d-block text-muted">.text-light</small>
                                                     </div>
                                                     <div class="color-option" data-color="dark">
-                                                        <span class="color-preview text-dark fw-bold">Текст</span>
+                                                        <span class="color-preview text-dark fw-bold">{{phrase('text')}}</span>
                                                         <small class="d-block text-muted">.text-dark</small>
                                                     </div>
                                                     <div class="color-option" data-color="muted">
-                                                        <span class="color-preview text-muted fw-bold">Текст</span>
+                                                        <span class="color-preview text-muted fw-bold">{{phrase('text')}}</span>
                                                         <small class="d-block text-muted">.text-muted</small>
                                                     </div>
                                                 </div>
@@ -236,7 +236,7 @@
                                             </div>
 
                                             <div class="col-sm-12" style="display: none;">
-                                                <label for="parent" class="form-label">Категория</label>
+                                                <label for="parent" class="form-label">{{phrase('Category')}}</label>
                                                 <select class="form-select" id="parent">
                                                     {% for category in getCategoriesForum() %}
                                                     <option value="{{category.getId()}}">{{ category.getName() }}</option>
@@ -248,12 +248,12 @@
                                             </div>
 
                                             <div class="col-xl-12 mt-2">
-                                                <label for="createDescSection" class="form-label">Иконка (svg или html)</label>
+                                                <label for="createDescSection" class="form-label">{{phrase('icon_svg_html')}}</label>
                                                 <textarea class="form-control" id="createIconSection" placeholder=""></textarea>
                                             </div>
 
                                             <div class="col-xl-12 mt-2">
-                                                <label for="createNameSection" class="form-label">Ссылка<sub>(при клике будет переходить по указанной ссылке)</sub></label>
+                                                <label for="createNameSection" class="form-label">{{phrase('link')}}<sub>{{phrase('click_redirect_link')}}</sub></label>
                                                 <input type="text" class="form-control" id="createLinkSection" value="">
                                             </div>
 
@@ -261,79 +261,79 @@
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="isHidden">
                                                     <label class="form-check-label" for="isHidden">
-                                                        Скрыть раздел для всех кроме администраторов и модераторов?
+                                                        {{phrase('hide_section_for_non_admins_moderators')}}
                                                     </label>
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="canCreateTopics" checked>
                                                     <label class="form-check-label" for="canCreateTopics">
-                                                        Можно создавать темы пользователям?
+                                                        {{phrase('can_users_create_topics')}}
                                                     </label>
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="canReplyTopics" checked>
                                                     <label class="form-check-label" for="canReplyTopics">
-                                                        Можно пользователям отвечать в темах?
+                                                        {{phrase('can_users_reply_in_topics')}}
                                                     </label>
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="canViewTopics" checked>
                                                     <label class="form-check-label" for="canViewTopics">
-                                                        Могут пользователи просматривать чужие темы?
+                                                        {{phrase('can_users_view_others_topics')}}
                                                     </label>
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="isModerated" checked>
                                                     <label class="form-check-label" for="isModerated">
-                                                        Требовать одобрения темы модератором перед публикацией?
+                                                        {{phrase('require_moderator_approval_for_topic')}}
                                                     </label>
                                                 </div>
 
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="canUsersDeleteOwnThreads">
                                                     <label class="form-check-label" for="canUsersDeleteOwnThreads">
-                                                        Разрешить пользователям удалять свои темы?
+                                                        {{phrase('allow_users_to_delete_own_topics')}}
                                                     </label>
                                                 </div>
 
                                                 <div class="form-group mt-2" id="threadDeleteTimeoutGroup" style="display: none;">
-                                                    <label for="threadDeleteTimeoutMinutes">Время на удаление темы (в минутах)</label>
+                                                    <label for="threadDeleteTimeoutMinutes">{{phrase('time_to_delete_topic_minutes')}}</label>
                                                     <input type="number" class="form-control" id="threadDeleteTimeoutMinutes"
                                                            value="30" min="1" max="10080">
-                                                    <small class="form-text text-muted">После истечения этого времени пользователи не смогут удалить свою тему. Максимум - 7 дней (10080 минут)</small>
+                                                    <small class="form-text text-muted">{{phrase('after_time_users_cannot_delete_topic')}}</small>
                                                 </div>
 
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="canUsersDeleteOwnPosts">
                                                     <label class="form-check-label" for="canUsersDeleteOwnPosts">
-                                                        Позволить пользователям удалять свои сообщения?
+                                                        {{phrase('allow_users_to_delete_own_posts')}}
                                                     </label>
                                                 </div>
                                                 <div class="form-group mt-2" id="postDeleteTimeoutGroup" style="display: none;">
-                                                    <label for="postDeleteTimeoutMinutes">Время на удаление сообщения (в минутах)</label>
+                                                    <label for="postDeleteTimeoutMinutes">{{phrase('time_to_delete_message_in_minutes')}}</label>
                                                     <input type="number" class="form-control" id="postDeleteTimeoutMinutes"
                                                            value="30" min="1" max="10080">
-                                                    <small class="form-text text-muted">После истечения этого времени пользователи не смогут удалить свои сообщения. Максимум - 7 дней (10080 минут)</small>
+                                                    <small class="form-text text-muted">{{phrase('time_limit_for_message_deletion')}}</small>
                                                 </div>
 
                                                 <div class="form-group mt-2">
-                                                    <label for="maxPostLength">Максимальное количество символов в сообщении</label>
+                                                    <label for="maxPostLength">{{phrase('max_characters_in_message')}}</label>
                                                     <input type="number" class="form-control" id="maxPostLength"
                                                            value="20000" min="1" max="300000">
-                                                    <small class="form-text text-muted">Минимум - 1, максимум - 300.000 символов</small>
+                                                    <small class="form-text text-muted">{{phrase('min_max_characters_in_message')}}</small>
                                                 </div>
 
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="notifyNewTopicsInTelegram">
                                                     <label class="form-check-label" for="notifyNewTopicsInTelegram">
-                                                        Уведомлять в телеграмм при новых темах?
+                                                        {{phrase('notify_in_telegram_on_new_topics')}}
                                                     </label>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button id="createNewSection" type="button" class="btn btn-success btn-sm">Создать</button>
+                                        <button id="createNewSection" type="button" class="btn btn-success btn-sm">{{phrase('create')}}</button>
                                     </div>
                                 </div>
                             </div>
@@ -343,7 +343,7 @@
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="renameModalLabel">Редактирование раздела</h5>
+                                        <h5 class="modal-title" id="renameModalLabel">{{phrase('edit_section')}}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
@@ -351,8 +351,8 @@
                                             <div class="col-md-6">
                                                 <!-- Существующее поле названия -->
                                                 <div class="mb-3">
-                                                    <label for="renameCategoryName" class="form-label">Название раздела:</label>
-                                                    <input type="text" class="form-control" id="renameCategoryName" placeholder="Введите название">
+                                                    <label for="renameCategoryName" class="form-label">{{phrase('section_title')}}:</label>
+                                                    <input type="text" class="form-control" id="renameCategoryName" placeholder="{{phrase('enter_title')}}">
                                                 </div>
 
                                                 <style>
@@ -382,42 +382,42 @@
 
                                                 <!-- Добавляем выбор цвета -->
                                                 <div class="mb-3">
-                                                    <label class="form-label">Цвет названия</label>
+                                                    <label class="form-label">{{phrase('title_color')}}</label>
                                                     <div class="d-flex flex-wrap gap-3 color-picker-edit">
                                                         <div class="color-option-edit" data-color="primary">
-                                                            <span class="color-preview text-primary fw-bold">Текст</span>
+                                                            <span class="color-preview text-primary fw-bold">{{phrase('text')}}</span>
                                                             <small class="d-block text-muted">.text-primary</small>
                                                         </div>
                                                         <div class="color-option-edit" data-color="secondary">
-                                                            <span class="color-preview text-secondary fw-bold">Текст</span>
+                                                            <span class="color-preview text-secondary fw-bold">{{phrase('text')}}</span>
                                                             <small class="d-block text-muted">.text-secondary</small>
                                                         </div>
                                                         <div class="color-option-edit" data-color="warning">
-                                                            <span class="color-preview text-warning fw-bold">Текст</span>
+                                                            <span class="color-preview text-warning fw-bold">{{phrase('text')}}</span>
                                                             <small class="d-block text-muted">.text-warning</small>
                                                         </div>
                                                         <div class="color-option-edit" data-color="info">
-                                                            <span class="color-preview text-info fw-bold">Текст</span>
+                                                            <span class="color-preview text-info fw-bold">{{phrase('text')}}</span>
                                                             <small class="d-block text-muted">.text-info</small>
                                                         </div>
                                                         <div class="color-option-edit" data-color="success">
-                                                            <span class="color-preview text-success fw-bold">Текст</span>
+                                                            <span class="color-preview text-success fw-bold">{{phrase('text')}}</span>
                                                             <small class="d-block text-muted">.text-success</small>
                                                         </div>
                                                         <div class="color-option-edit" data-color="danger">
-                                                            <span class="color-preview text-danger fw-bold">Текст</span>
+                                                            <span class="color-preview text-danger fw-bold">{{phrase('text')}}</span>
                                                             <small class="d-block text-muted">.text-danger</small>
                                                         </div>
                                                         <div class="color-option-edit" data-color="light">
-                                                            <span class="color-preview text-light fw-bold bg-dark">Текст</span>
+                                                            <span class="color-preview text-light fw-bold bg-dark">{{phrase('text')}}</span>
                                                             <small class="d-block text-muted">.text-light</small>
                                                         </div>
                                                         <div class="color-option-edit" data-color="dark">
-                                                            <span class="color-preview text-dark fw-bold">Текст</span>
+                                                            <span class="color-preview text-dark fw-bold">{{phrase('text')}}</span>
                                                             <small class="d-block text-muted">.text-dark</small>
                                                         </div>
                                                         <div class="color-option-edit" data-color="muted">
-                                                            <span class="color-preview text-muted fw-bold">Текст</span>
+                                                            <span class="color-preview text-muted fw-bold">{{phrase('text')}}</span>
                                                             <small class="d-block text-muted">.text-muted</small>
                                                         </div>
                                                     </div>
@@ -429,24 +429,24 @@
                                                 <!-- Существующие поля для SVG иконки -->
                                                 <div class="mb-3">
                                                     <label for="categoryIcon" class="form-label">
-                                                        SVG Иконка
-                                                        <small class="text-muted">(HTML или SVG код)</small>
+                                                        {{phrase('svg_icon')}}
+                                                        <small class="text-muted">{{phrase('html_or_svg_code')}}</small>
                                                     </label>
-                                                    <textarea class="form-control" id="categoryIcon" rows="5" placeholder="Вставьте SVG код иконки"></textarea>
+                                                    <textarea class="form-control" id="categoryIcon" rows="5" placeholder="{{phrase('insert_svg_icon_code')}}"></textarea>
                                                 </div>
                                                 <!-- Предпросмотр иконки -->
                                                 <div class="mb-3">
-                                                    <label class="form-label">Предварительный просмотр:</label>
+                                                    <label class="form-label">{{phrase('preview')}}:</label>
                                                     <div id="iconPreview" class="border p-2 text-center">
-                                                        <small class="text-muted">Предварительный просмотр появится здесь</small>
+                                                        <small class="text-muted">{{phrase('preview_will_appear_here')}}</small>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                        <button id="saveRenameCategory" data-category-id="" type="button" class="btn btn-primary">Сохранить</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase(80) }}</button>
+                                        <button id="saveRenameCategory" data-category-id="" type="button" class="btn btn-primary">{{ phrase('create') }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -469,7 +469,7 @@
                                     // Устанавливаем значения
                                     modal.find('.btn-primary').attr('data-category-id', categoryId);
                                     modal.find('#renameCategoryName').val(categoryName)
-                                        .attr('class', `form-control text-${titleColor}`); // Устанавливаем цвет текста
+                                        .attr('class', `form-control text-${titleColor}`); // Устанавливаем цвет {{phrase('text')}}а
                                     modal.find('#categoryIcon').val(categoryIcon);
                                     modal.find('#editSelectedTitleColor').val(titleColor);
 
@@ -509,7 +509,7 @@
 
                                     // Проверка на пустой ввод
                                     if (!svgCode.trim()) {
-                                        preview.html('<small class="text-muted">Предварительный просмотр появится здесь</small>');
+                                        preview.html("<small class='text-muted'>{{phrase('preview_will_appear_here')}}</small>");
                                         return;
                                     }
 
@@ -525,10 +525,10 @@
                                             svgElement.addClass('img-fluid');
                                             preview.html(svgElement);
                                         } else {
-                                            preview.html('<small class="text-danger">Некорректный SVG код</small>');
+                                            preview.html("<small class='text-danger'>{{phrase('invalid_svg_code')}}</small>");
                                         }
                                     } catch (error) {
-                                        preview.html('<small class="text-danger">Ошибка при отображении иконки</small>');
+                                        preview.html("<small class='text-danger'>{{phrase('icon_display_error')}}</small>");
                                     }
                                 }
 
@@ -573,14 +573,14 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="moveCategoryModalLabel">Переместить категорию</h5>
+                                        <h5 class="modal-title" id="moveCategoryModalLabel">{{phrase('move_category')}}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="mb-3">
-                                            <label for="moveCategorySelect" class="form-label">Выберите целевую категорию:</label>
+                                            <label for="moveCategorySelect" class="form-label">{{phrase('select_target_category')}}:</label>
                                             <select class="form-select" id="moveCategorySelect">
-                                                <option value="">Корневой уровень</option>
+                                                <option value="">{{phrase('root_level')}}</option>
                                                 {% for category in getCategoriesForum() %}
                                                 {% if category.getId() != currentCategory.getId() %}
                                                 <option value="{{category.getId()}}">{{ category.getName() }}</option>
@@ -595,8 +595,8 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                        <button id="saveMoveCategory" data-category-id="" type="button" class="btn btn-primary">Переместить</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase(80) }}</button>
+                                        <button id="saveMoveCategory" data-category-id="" type="button" class="btn btn-primary">{{ phrase('Move') }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -645,7 +645,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="permissionsModalLabel">Изменить права раздела</h5>
+                                        <h5 class="modal-title" id="permissionsModalLabel">{{phrase('change_section_permissions')}}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
@@ -655,7 +655,7 @@
                                                 <input class="form-check-input" type="checkbox" id="editIsHidden"
                                                        {% if category.isHidden() %}checked{% endif %}>
                                                 <label class="form-check-label" for="editIsHidden">
-                                                    Скрыть раздел для всех кроме администраторов и модераторов
+                                                    {{phrase('hide_section_for_non_admins_moderators')}}
                                                 </label>
                                             </div>
 
@@ -664,7 +664,7 @@
                                                 <input class="form-check-input" type="checkbox" id="editCanCreateTopics"
                                                        {% if category.canCreateTopics() %}checked{% endif %}>
                                                 <label class="form-check-label" for="editCanCreateTopics">
-                                                    Разрешить создание тем пользователям
+                                                    {{phrase('allow_users_to_create_topics')}}
                                                 </label>
                                             </div>
 
@@ -672,7 +672,7 @@
                                                 <input class="form-check-input" type="checkbox" id="editCanReplyTopics"
                                                        {% if category.canReplyTopics() %}checked{% endif %}>
                                                 <label class="form-check-label" for="editCanReplyTopics">
-                                                    Разрешить ответы в темах
+                                                    {{phrase('allow_replies_in_topics')}}
                                                 </label>
                                             </div>
 
@@ -680,7 +680,7 @@
                                                 <input class="form-check-input" type="checkbox" id="editCanViewTopics"
                                                        {% if category.canViewTopics() %}checked{% endif %}>
                                                 <label class="form-check-label" for="editCanViewTopics">
-                                                    Разрешить просмотр чужих тем
+                                                    {{phrase('allow_viewing_other_topics')}}
                                                 </label>
                                             </div>
 
@@ -688,7 +688,7 @@
                                                 <input class="form-check-input" type="checkbox" id="editIsModerated"
                                                        {% if category.isModerated() %}checked{% endif %}>
                                                 <label class="form-check-label" for="editIsModerated">
-                                                    Требовать одобрения тем модератором
+                                                    {{phrase('require_moderator_approval_for_topics')}}
                                                 </label>
                                             </div>
 
@@ -697,39 +697,39 @@
                                                 <input class="form-check-input" type="checkbox" id="editCanUsersDeleteOwnThreads"
                                                        {% if category.canUsersDeleteOwnThreads() %}checked{% endif %}>
                                                 <label class="form-check-label" for="editCanUsersDeleteOwnThreads">
-                                                    Разрешить пользователям удалять свои темы
+                                                    {{phrase('allow_users_to_delete_own_topics')}}
                                                 </label>
                                             </div>
 
                                             <div class="form-group mb-3" id="editThreadDeleteTimeoutGroup"
                                                  style="display: {% if category.canUsersDeleteOwnThreads() %}block{% else %}none{% endif %}">
-                                                <label for="editThreadDeleteTimeoutMinutes">Время на удаление темы (в минутах)</label>
+                                                <label for="editThreadDeleteTimeoutMinutes">{{phrase('time_to_delete_topic_minutes')}}</label>
                                                 <input type="number" class="form-control" id="editThreadDeleteTimeoutMinutes"
                                                        value="{{ category.getThreadDeleteTimeoutMinutes() }}" min="1" max="10080">
-                                                <small class="form-text text-muted">Максимум - 7 дней (10080 минут)</small>
+                                                <small class="form-text text-muted">{{phrase('max_7_days')}}</small>
                                             </div>
 
                                             <div class="form-check mb-3">
                                                 <input class="form-check-input" type="checkbox" id="editCanUsersDeleteOwnPosts"
                                                        {% if category.canUsersDeleteOwnPosts() %}checked{% endif %}>
                                                 <label class="form-check-label" for="editCanUsersDeleteOwnPosts">
-                                                    Разрешить пользователям удалять свои сообщения
+                                                    {{phrase('allow_users_delete_messages')}}
                                                 </label>
                                             </div>
 
                                             <!-- Дополнительные настройки -->
                                             <div class="form-group mb-3">
-                                                <label for="editMaxPostLength">Максимальная длина сообщения</label>
+                                                <label for="editMaxPostLength">{{phrase('max_message_length')}}</label>
                                                 <input type="number" class="form-control" id="editMaxPostLength"
                                                        value="{{ category.getMaxPostLength() }}" min="100" max="50000">
-                                                <small class="form-text text-muted">От 100 до 50000 символов</small>
+                                                <small class="form-text text-muted">{{phrase('message_length_range')}}</small>
                                             </div>
 
                                             <div class="form-check mb-3">
                                                 <input class="form-check-input" type="checkbox" id="editHideLastTopic"
                                                        {% if category.shouldHideLastTopic() %}checked{% endif %}>
                                                 <label class="form-check-label" for="editHideLastTopic">
-                                                    Не показывать последнюю тему раздела
+                                                    {{phrase('hide_last_topic_in_section')}}
                                                 </label>
                                             </div>
 
@@ -737,15 +737,15 @@
                                                 <input class="form-check-input" type="checkbox" id="editNotifyTelegram"
                                                        {% if category.shouldNotifyTelegram() %}checked{% endif %}>
                                                 <label class="form-check-label" for="editNotifyTelegram">
-                                                    Уведомлять в Telegram при новых темах
+                                                    {{phrase('notify_in_telegram_on_new_topics')}}
                                                 </label>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase(80) }}</button>
                                         <button type="button" class="btn btn-primary" id="savePermissions"
-                                                data-category-id="{{ category.getId() }}">Сохранить</button>
+                                                data-category-id="{{ category.getId() }}">{{ phrase('create') }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -756,20 +756,20 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="deleteModalLabel">Удалить категорию <span id="categoryIdDisplay"></span></h5>
+                                        <h5 class="modal-title" id="deleteModalLabel">{{phrase('delete_category')}} <span id="categoryIdDisplay"></span></h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <p>Вы действительно хотите удалить эту категорию?</p>
+                                        <p>{{phrase('confirm_delete_category')}}</p>
                                         <div class="mb-3">
-                                            <label for="topicAction" class="form-label">Действие для содержимого категории:</label>
+                                            <label for="topicAction" class="form-label">{{phrase('category_content_action')}}:</label>
                                             <select class="form-select" id="topicAction">
-                                                <option value="delete">Удалить всё содержимое</option>
-                                                <option value="move">Переместить в другую категорию</option>
+                                                <option value="delete">{{phrase('delete_all_content')}}</option>
+                                                <option value="move">{{phrase('move_to_another_category')}}</option>
                                             </select>
                                         </div>
                                         <div id="categorySelect" class="mb-3" style="display: none;">
-                                            <label for="destinationCategory" class="form-label">Выберите категорию для перемещения:</label>
+                                            <label for="destinationCategory" class="form-label">{{phrase('select_category_for_moving')}}:</label>
                                             <select class="form-select" id="destinationCategory">
                                                 {% for category in getCategoriesForum() %}
                                                 {% if category.getId() != currentCategory.getId() %}
@@ -785,8 +785,8 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                        <button type="button" class="btn btn-danger" id="categoryDelete">Удалить</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase(80) }}</button>
+                                        <button type="button" class="btn btn-danger" id="categoryDelete">{{ phrase('delete') }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -799,18 +799,18 @@
                         {% if getUser().isAuth() %}
                         {% if category.canCreateTopics() or getUser().isAdmin() %}
                         <a href="/forum/{{transliterateToEn(sectionName)}}.{{sectionId}}/create" type="button" class="btn btn-success btn-sm">
-                            <i class="ri-add-line"></i> Создать тему
+                            <i class="ri-add-line"></i> {{phrase('create_topic')}}
                         </a>
                         {% endif %}
                         {% else %}
                         <a href="/login" type="button" class="btn btn-success btn-sm">
-                            Авторизоваться
+                            {{phrase(234)}}
                         </a>
                         {% endif %}
 
                         {% else %}
                         <button type="button" class="btn btn-secondary btn-sm" disabled>
-                            <i class="ri-lock-line"></i> Создание тем запрещено
+                            <i class="ri-lock-line"></i> {{phrase('topic_creation_forbidden')}}
                         </button>
                         {% endif %}
 
@@ -926,8 +926,8 @@
 
                                     {% if section.getLink() == false %}
                                     <div>
-                                        <small>Тем: <strong>{{section.getThreadCount()}}</strong></small><br>
-                                        <small>Сообщений: <strong>{{section.getPostCount()}}</strong></small>
+                                        <small>{{phrase('topics')}}: <strong>{{section.getThreadCount()}}</strong></small><br>
+                                        <small>{{phrase('messages')}}: <strong>{{section.getPostCount()}}</strong></small>
                                     </div>
                                     {% endif %}
                                 </div>
@@ -945,14 +945,14 @@
                             <thead class="thead-light text-center bg-light">
                             <tr>
                                 <th colspan="4" class="text-start">
-                                    <i class="ri-pushpin-line me-2"></i>Закрепленные темы
+                                    <i class="ri-pushpin-line me-2"></i>{{phrase('pinned_topics')}}
                                 </th>
                             </tr>
                             <tr>
-                                <th style="width: 55%;">Заголовок</th>
-                                <th style="width: 15%;">Дата создания</th>
-                                <th style="width: 15%;">Ответы / Просмотры</th>
-                                <th style="width: 15%;">Последнее сообщение</th>
+                                <th style="width: 55%;">{{phrase('title')}}</th>
+                                <th style="width: 15%;">{{phrase(114)}}</th>
+                                <th style="width: 15%;">{{phrase('replies_views')}}</th>
+                                <th style="width: 15%;">{{phrase('last_post')}}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -992,14 +992,14 @@
                             <thead class="thead-light text-center">
                             {% if pinnedThreads|length > 0 %}
                             <tr>
-                                <th colspan="4" class="text-start">Обычные темы</th>
+                                <th colspan="4" class="text-start">{{phrase('regular_topics')}}</th>
                             </tr>
                             {% else %}
                             <tr>
-                                <th style="width: 55%;">Заголовок</th>
-                                <th style="width: 15%;">Дата создания</th>
-                                <th style="width: 15%;">Ответы / Просмотры</th>
-                                <th style="width: 15%;">Последнее сообщение</th>
+                                <th style="width: 55%;">{{phrase('title')}}</th>
+                                <th style="width: 15%;">{{phrase(114)}}</th>
+                                <th style="width: 15%;">{{phrase('replies_views')}}</th>
+                                <th style="width: 15%;">{{phrase('last_post')}}</th>
                             </tr>
                             {% endif %}
 
@@ -1035,9 +1035,9 @@
                                 <td colspan="4" class="text-center py-4">
                                     <div class="text-muted">
                                         {% if not category.canViewTopics() %}
-                                        В этом разделе отображаются только ваши темы
+                                        {{phrase('only_your_topics_displayed')}}
                                         {% else %}
-                                        В этом разделе пока нет тем
+                                        {{phrase('no_topics_in_section')}}
                                         {% endif %}
                                     </div>
                                 </td>
@@ -1091,7 +1091,7 @@
 
             // Обновляем предпросмотр названия
             const color = $(this).data('color');
-            const title = $('#createNameSection').val() || 'Название раздела';
+            const title = $('#createNameSection').val() || '{{phrase("section_name")}}';
             $('#createNameSection').attr('class', `form-control text-${color}`);
         });
 
@@ -1106,7 +1106,7 @@
         $('#createNewSection').on('click', function() {
             let name = $('#createNameSection').val();
             if (!name) {
-                noticeError('Укажите название раздела');
+                noticeError('{{phrase("enter_section_name")}}');
                 return;
             }
 
@@ -1242,7 +1242,7 @@
             const destinationCategoryId = $('#moveThreadSelect').val();
 
             if (!destinationCategoryId) {
-                noticeError('Выберите категорию назначения');
+                noticeError("{{phrase('select_target_category')}}");
                 return;
             }
 

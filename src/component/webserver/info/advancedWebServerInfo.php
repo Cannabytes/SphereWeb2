@@ -2,6 +2,8 @@
 
 namespace Ofey\Logan22\component\webserver\info;
 
+use Ofey\Logan22\component\lang\lang;
+
 class advancedWebServerInfo
 {
     private array $systemInfo = [];
@@ -46,39 +48,39 @@ class advancedWebServerInfo
     {
         $this->systemInfo = [
             'main' => [
-                'title' => 'Основные параметры PHP',
+                'title' => lang::get_phrase('main_php_parameters'),
                 'items' => $this->getMainParameters()
             ],
             'security' => [
-                'title' => 'Параметры безопасности',
+                'title' => lang::get_phrase('security_parameters'),
                 'items' => $this->getSecurityParameters()
             ],
             'extensions' => [
-                'title' => 'Критические расширения PHP',
+                'title' => lang::get_phrase('critical_php_extensions'),
                 'items' => $this->getExtensionsInfo()
             ],
             'uploads' => [
-                'title' => 'Настройки загрузки файлов',
+                'title' => lang::get_phrase('file_upload_settings'),
                 'items' => $this->getUploadParameters()
             ],
             'sessions' => [
-                'title' => 'Настройки сессий',
+                'title' => lang::get_phrase('session_settings'),
                 'items' => $this->getSessionParameters()
             ],
             'system' => [
-                'title' => 'Системная информация',
+                'title' => lang::get_phrase('system_information'),
                 'items' => $this->getSystemParameters()
             ],
             'system_resources' => [
-                'title' => 'Системные ресурсы',
+                'title' => lang::get_phrase('system_resources'),
                 'items' => $this->getSystemResources()
             ],
             'php_advanced' => [
-                'title' => 'Расширенные настройки PHP',
+                'title' => lang::get_phrase('advanced_php_settings'),
                 'items' => $this->getAdvancedPHPParameters()
             ],
             'network' => [
-                'title' => 'Сетевые настройки',
+                'title' => lang::get_phrase('network_settings'),
                 'items' => $this->getNetworkParameters()
             ]
         ];
@@ -93,22 +95,24 @@ class advancedWebServerInfo
         return [
             'php_version' => [
                 'value' => PHP_VERSION,
-                'status' => version_compare(PHP_VERSION, '7.4.0', '>=') ? 'success' : 'danger',
-                'description' => 'Версия PHP',
-                'recommendation' => version_compare(PHP_VERSION, '7.4.0', '>=') ?
-                    'Версия PHP актуальна' :
-                    'Рекомендуется обновить PHP до версии 7.4 или выше'
+                'status' => version_compare(PHP_VERSION, '8.2.0', '>=') ? 'success' : 'danger',
+                'description' => lang::get_phrase('php_version'),
+                'recommendation' => version_compare(PHP_VERSION, '8.2.0', '>=') ?
+                    lang::get_phrase('php_version_is_up_to_date')
+                    :
+                    lang::get_phrase('php_version_update_recommended')
+
             ],
             'php_sapi' => [
                 'value' => php_sapi_name(),
                 'status' => 'info',
-                'description' => 'Интерфейс PHP',
-                'recommendation' => 'Информационный параметр'
+                'description' => lang::get_phrase('php_interface'),
+                'recommendation' => lang::get_phrase('informational_parameter')
             ],
             'memory_limit' => [
                 'value' => ini_get('memory_limit'),
                 'status' => $this->evaluateMemoryLimit(ini_get('memory_limit')),
-                'description' => 'Лимит памяти PHP',
+                'description' => lang::get_phrase('php_memory_limit'),
                 'recommendation' => $this->getMemoryLimitRecommendation(ini_get('memory_limit'))
             ]
         ];
@@ -122,26 +126,27 @@ class advancedWebServerInfo
     {
         return [
             'expose_php' => [
-                'value' => ini_get('expose_php') ? 'Включено' : 'Выключено',
-                'status' => ini_get('expose_php') ? 'danger' : 'success',
-                'description' => 'Отображение версии PHP',
+                'value' => ini_get('expose_php') ? 'ON' : 'OFF',
+                'status' => ini_get('expose_php') ? 'warning' : 'success',
+                'description' => lang::get_phrase('php_version_display'),
                 'recommendation' => ini_get('expose_php') ?
-                    'Рекомендуется отключить для безопасности' :
-                    'Правильно настроено'
+                    lang::get_phrase('recommended_to_disable_for_security') :
+                    lang::get_phrase('properly_configured')
             ],
             'allow_url_fopen' => [
-                'value' => ini_get('allow_url_fopen') ? 'Включено' : 'Выключено',
+                'value' => ini_get('allow_url_fopen') ? 'ON' : 'OFF',
                 'status' => ini_get('allow_url_fopen') ? 'warning' : 'success',
-                'description' => 'Разрешение URL-врапперов',
-                'recommendation' => 'Отключить, если не используется'
+                'description' => lang::get_phrase('url_wrappers_permission'),
+                'recommendation' => lang::get_phrase('disable_if_not_used')
             ],
             'display_errors' => [
-                'value' => ini_get('display_errors') ? 'Включено' : 'Выключено',
-                'status' => ini_get('display_errors') ? 'danger' : 'success',
-                'description' => 'Отображение ошибок',
+                'value' => ini_get('display_errors') ? 'ON' : 'OFF',
+                'status' => ini_get('display_errors') ? 'warning' : 'success',
+                'description' => lang::get_phrase('error_display'),
                 'recommendation' => ini_get('display_errors') ?
-                    'Отключить на производственном сервере' :
-                    'Правильно настроено'
+                    lang::get_phrase('disable_on_production_server') :
+                    lang::get_phrase('properly_configured')
+
             ]
         ];
     }
@@ -153,11 +158,11 @@ class advancedWebServerInfo
     private function getExtensionsInfo(): array
     {
         $extensions = [
-            'mysql' => ['mysqli', 'MySQL (mysqli)', 'Требуется для работы с MySQL'],
-            'pdo' => ['pdo', 'PDO', 'Требуется для безопасной работы с БД'],
-            'gd' => ['gd', 'GD Library', 'Требуется для работы с изображениями'],
-            'curl' => ['curl', 'cURL', 'Требуется для внешних API запросов'],
-            'openssl' => ['openssl', 'OpenSSL', 'Критично для безопасности']
+            'mysql' => ['mysqli', 'MySQL (mysqli)', lang::get_phrase('required_for_working_with_mysql')],
+            'pdo' => ['pdo', 'PDO', lang::get_phrase('required_for_secure_database_operation')],
+            'gd' => ['gd', 'GD Library', lang::get_phrase('required_for_working_with_images')],
+            'curl' => ['curl', 'cURL', lang::get_phrase('required_for_external_api_requests')],
+            'openssl' => ['openssl', 'OpenSSL', lang::get_phrase('critical_for_security')]
         ];
 
         $result = [];
@@ -166,7 +171,7 @@ class advancedWebServerInfo
             $version = $loaded ? phpversion($ext) : null;
 
             $result[$key] = [
-                'value' => $loaded ? ($version ? "Установлено ($version)" : 'Установлено') : 'Не установлено',
+                'value' => $loaded ? ($version ? lang::get_phrase('installed_t', $version) : lang::get_phrase('installed')) : lang::get_phrase('not_installed'),
                 'status' => $loaded ? 'success' : 'danger',
                 'description' => $name,
                 'recommendation' => $loaded ? 'OK' : $recommendation
@@ -186,20 +191,20 @@ class advancedWebServerInfo
             'upload_max_filesize' => [
                 'value' => ini_get('upload_max_filesize'),
                 'status' => $this->evaluateSize(ini_get('upload_max_filesize'), 10),
-                'description' => 'Максимальный размер файла',
-                'recommendation' => 'Рекомендуется минимум 10MB'
+                'description' => lang::get_phrase('maximum_file_size'),
+                'recommendation' => lang::get_phrase('at_least_10mb_is_recommended')
             ],
             'post_max_size' => [
                 'value' => ini_get('post_max_size'),
                 'status' => $this->evaluateSize(ini_get('post_max_size'), 10),
-                'description' => 'Максимальный размер POST',
-                'recommendation' => 'Должен быть больше upload_max_filesize'
+                'description' => lang::get_phrase('maximum_post_size'),
+                'recommendation' => lang::get_phrase('must_be_greater_than_upload_max_filesize')
             ],
             'max_file_uploads' => [
                 'value' => ini_get('max_file_uploads'),
                 'status' => (intval(ini_get('max_file_uploads')) >= 20) ? 'success' : 'warning',
-                'description' => 'Максимальное количество файлов',
-                'recommendation' => 'Рекомендуется 20 или больше'
+                'description' => lang::get_phrase('maximum_number_of_files'),
+                'recommendation' => lang::get_phrase('20_or_more_is_recommended')
             ]
         ];
     }
@@ -214,14 +219,14 @@ class advancedWebServerInfo
             'session.gc_maxlifetime' => [
                 'value' => ini_get('session.gc_maxlifetime') . ' секунд',
                 'status' => (intval(ini_get('session.gc_maxlifetime')) >= 1440) ? 'success' : 'warning',
-                'description' => 'Время жизни сессии',
-                'recommendation' => 'Рекомендуется 1440 секунд или больше'
+                'description' => lang::get_phrase('session_lifetime'),
+                'recommendation' => lang::get_phrase('1440_seconds_or_more_is_recommended')
             ],
             'session.cookie_secure' => [
-                'value' => ini_get('session.cookie_secure') ? 'Да' : 'Нет',
+                'value' => ini_get('session.cookie_secure') ? 'Yes' : 'No',
                 'status' => ini_get('session.cookie_secure') ? 'success' : 'warning',
-                'description' => 'Безопасные cookie',
-                'recommendation' => !ini_get('session.cookie_secure') ? 'Включить для HTTPS' : 'OK'
+                'description' => lang::get_phrase('secure_cookies'),
+                'recommendation' => !ini_get('session.cookie_secure') ? lang::get_phrase('enable_for_https') : 'OK'
             ]
         ];
     }
@@ -236,20 +241,20 @@ class advancedWebServerInfo
             'os' => [
                 'value' => PHP_OS,
                 'status' => 'info',
-                'description' => 'Операционная система',
-                'recommendation' => 'Информационный параметр'
+                'description' => lang::get_phrase('operating_system'),
+                'recommendation' => lang::get_phrase('informational_parameter')
             ],
             'server_software' => [
-                'value' => $_SERVER['SERVER_SOFTWARE'] ?? 'Неизвестно',
+                'value' => $_SERVER['SERVER_SOFTWARE'] ?? lang::get_phrase('unknown'),
                 'status' => 'info',
-                'description' => 'Веб-сервер',
-                'recommendation' => 'Рекомендуется Apache или Nginx последних версий'
+                'description' => lang::get_phrase('web_server'),
+                'recommendation' => lang::get_phrase('recommended_apache_or_nginx_latest_versions')
             ],
             'architecture' => [
                 'value' => php_uname('m'),
                 'status' => 'info',
-                'description' => 'Архитектура системы',
-                'recommendation' => 'Информационный параметр'
+                'description' => lang::get_phrase('system_architecture'),
+                'recommendation' => lang::get_phrase('informational_parameter')
             ]
         ];
     }
@@ -264,14 +269,14 @@ class advancedWebServerInfo
             'memory_usage' => [
                 'value' => $this->formatBytes(memory_get_usage(true)),
                 'status' => (memory_get_usage(true) < memory_get_peak_usage(true) * 0.75) ? 'success' : 'warning',
-                'description' => 'Использование памяти PHP',
-                'recommendation' => 'Текущее использование памяти скриптом'
+                'description' => lang::get_phrase('php_memory_usage'),
+                'recommendation' => lang::get_phrase('current_memory_usage_by_script')
             ],
             'memory_peak' => [
                 'value' => $this->formatBytes(memory_get_peak_usage(true)),
                 'status' => 'info',
-                'description' => 'Пиковое использование памяти',
-                'recommendation' => 'Максимальное использование памяти скриптом'
+                'description' => lang::get_phrase('peak_memory_usage'),
+                'recommendation' => lang::get_phrase('maximum_memory_usage_by_script')
             ]
         ];
 
@@ -294,7 +299,7 @@ class advancedWebServerInfo
             }
             return @file_get_contents($filepath);
         } catch (\Throwable $e) {
-            error_log("Ошибка при чтении файла {$filepath}: " . $e->getMessage());
+            error_log(lang::get_phrase('error_reading_file') . " {$filepath}: " . $e->getMessage());
             return null;
         }
     }
@@ -317,8 +322,8 @@ class advancedWebServerInfo
                 $resources['memory_info'] = [
                     'value' => 'Недоступно',
                     'status' => 'warning',
-                    'description' => 'Информация о памяти',
-                    'recommendation' => 'Ограничение open_basedir препятствует получению информации'
+                    'description' => lang::get_phrase('memory_information'),
+                    'recommendation' => lang::get_phrase('open_basedir_restriction_prevents_retrieving_information')
                 ];
             }
 
@@ -330,16 +335,16 @@ class advancedWebServerInfo
                 $resources['cpu_info'] = [
                     'value' => 'Недоступно',
                     'status' => 'warning',
-                    'description' => 'Информация о процессоре',
-                    'recommendation' => 'Ограничение open_basedir препятствует получению информации'
+                    'description' => lang::get_phrase('processor_information'),
+                    'recommendation' => lang::get_phrase('open_basedir_restriction_prevents_retrieving_information')
                 ];
             }
         } else {
             $resources['system_access'] = [
-                'value' => 'Ограничено',
+                'value' => lang::get_phrase('limited'),
                 'status' => 'warning',
-                'description' => 'Доступ к системной информации',
-                'recommendation' => 'Проверьте настройки open_basedir для доступа к /proc'
+                'description' => lang::get_phrase('access_to_system_information'),
+                'recommendation' => lang::get_phrase('check_open_basedir_settings_for_access_to_proc')
             ];
         }
 
@@ -349,10 +354,10 @@ class advancedWebServerInfo
                 $resources = array_merge($resources, $this->getLoadAverageInfo());
             } catch (\Throwable $e) {
                 $resources['load_average'] = [
-                    'value' => 'Ошибка получения данных',
+                    'value' => lang::get_phrase('error_retrieving_data'),
                     'status' => 'warning',
-                    'description' => 'Средняя нагрузка',
-                    'recommendation' => 'Проверьте права доступа и системные ограничения'
+                    'description' => lang::get_phrase('average_load'),
+                    'recommendation' => lang::get_phrase('check_permissions_and_system_limits')
                 ];
             }
         }
@@ -372,25 +377,25 @@ class advancedWebServerInfo
                 'status' => extension_loaded('Zend OPcache') && ini_get('opcache.enable') ?
                     'success' : 'warning',
                 'description' => 'OPcache',
-                'recommendation' => 'Рекомендуется включить для повышения производительности'
+                'recommendation' => lang::get_phrase('recommended_to_enable_for_performance_improvement')
             ],
             'max_input_vars' => [
                 'value' => ini_get('max_input_vars'),
                 'status' => (intval(ini_get('max_input_vars')) >= 3000) ? 'success' : 'warning',
-                'description' => 'Максимум входных переменных',
-                'recommendation' => 'Рекомендуется 3000+ для CMS'
+                'description' => lang::get_phrase('maximum_input_variables'),
+                'recommendation' => lang::get_phrase('3000_plus_is_recommended_for_cms')
             ],
             'max_execution_time' => [
                 'value' => ini_get('max_execution_time') . ' сек.',
                 'status' => (intval(ini_get('max_execution_time')) >= 30) ? 'success' : 'warning',
-                'description' => 'Макс. время выполнения',
-                'recommendation' => 'Рекомендуется 30+ секунд'
+                'description' => lang::get_phrase('max_execution_time'),
+                'recommendation' => lang::get_phrase('30_plus_seconds_is_recommended')
             ],
             'error_reporting' => [
                 'value' => $this->getErrorReportingLevel(),
                 'status' => 'info',
-                'description' => 'Уровень отчетов об ошибках',
-                'recommendation' => 'E_ALL рекомендуется для разработки'
+                'description' => lang::get_phrase('error_reporting_level'),
+                'recommendation' => lang::get_phrase('e_all_is_recommended_for_development')
             ]
         ];
     }
@@ -405,14 +410,14 @@ class advancedWebServerInfo
             'default_socket_timeout' => [
                 'value' => ini_get('default_socket_timeout') . ' сек.',
                 'status' => (intval(ini_get('default_socket_timeout')) >= 60) ? 'success' : 'warning',
-                'description' => 'Тайм-аут сокета',
-                'recommendation' => 'Рекомендуется 60+ секунд'
+                'description' => lang::get_phrase('socket_timeout'),
+                'recommendation' => lang::get_phrase('60_plus_seconds_is_recommended')
             ],
             'output_buffering' => [
-                'value' => ini_get('output_buffering') ? 'Включено' : 'Выключено',
+                'value' => ini_get('output_buffering') ? 'ON' : 'OFF',
                 'status' => ini_get('output_buffering') ? 'success' : 'warning',
-                'description' => 'Буферизация вывода',
-                'recommendation' => 'Рекомендуется включить'
+                'description' => lang::get_phrase('output_buffering'),
+                'recommendation' => lang::get_phrase('it_is_recommended_to_enable')
             ]
         ];
     }
@@ -457,12 +462,12 @@ class advancedWebServerInfo
     {
         $value = (int)$memoryLimit;
         if (str_contains($memoryLimit, 'G')) {
-            return 'Отличный лимит памяти';
+            return lang::get_phrase('great_memory_limit');
         }
         if (str_contains($memoryLimit, 'M')) {
-            return $value >= 256 ? 'Достаточно памяти' : 'Рекомендуется увеличить до 256M';
+            return $value >= 256 ? lang::get_phrase('sufficient_memory') : lang::get_phrase('it_is_recommended_to_increase_to_256m');
         }
-        return 'Критически мало памяти, увеличьте лимит';
+        return lang::get_phrase('critical_memory_shortage_increase_limit');
     }
 
     /**
@@ -484,8 +489,8 @@ class advancedWebServerInfo
             $resources['total_memory'] = [
                 'value' => $this->formatBytes($totalMem),
                 'status' => 'info',
-                'description' => 'Общая память системы',
-                'recommendation' => 'Объём физической памяти сервера'
+                'description' => lang::get_phrase('total_system_memory'),
+                'recommendation' => lang::get_phrase('server_physical_memory_size')
             ];
 
             if ($availableMem > 0) {
@@ -494,19 +499,18 @@ class advancedWebServerInfo
                 $resources['available_memory'] = [
                     'value' => $this->formatBytes($availableMem),
                     'status' => ($availableMem > $totalMem * 0.2) ? 'success' : 'warning',
-                    'description' => 'Доступная память',
+                    'description' => lang::get_phrase('available_memory'),
                     'recommendation' => ($availableMem > $totalMem * 0.2) ?
-                        'Достаточно свободной памяти' :
-                        'Рекомендуется освободить память'
+                        lang::get_phrase('sufficient_free_memory') :
+                        lang::get_phrase('it_is_recommended_to_free_up_memory')
                 ];
 
                 $resources['memory_usage_percent'] = [
                     'value' => $memoryUsagePercent . '%',
                     'status' => $memoryUsagePercent < 80 ? 'success' : 'warning',
-                    'description' => 'Использование памяти',
+                    'description' => lang::get_phrase('memory_usage'),
                     'recommendation' => $memoryUsagePercent < 80 ?
-                        'Нормальное использование' :
-                        'Высокая нагрузка на память'
+                        lang::get_phrase('normal_usage') : lang::get_phrase('high_memory_usage')
                 ];
             }
         }
@@ -528,18 +532,18 @@ class advancedWebServerInfo
             $resources['cpu_model'] = [
                 'value' => $matches[1][0],
                 'status' => 'info',
-                'description' => 'Модель процессора',
-                'recommendation' => 'Информация о CPU сервера'
+                'description' => lang::get_phrase('processor_model'),
+                'recommendation' => lang::get_phrase('server_cpu_information')
             ];
 
             $cores = count($matches[1]);
             $resources['cpu_cores'] = [
                 'value' => $cores,
                 'status' => ($cores >= 4) ? 'success' : 'warning',
-                'description' => 'Количество ядер CPU',
+                'description' => lang::get_phrase('number_of_cpu_cores'),
                 'recommendation' => ($cores >= 4) ?
-                    'Достаточно ядер для обработки запросов' :
-                    'Рекомендуется увеличить количество ядер'
+                    lang::get_phrase('sufficient_cores_for_processing_requests') :
+                    lang::get_phrase('it_is_recommended_to_increase_the_number_of_cores')
             ];
         }
 
@@ -561,10 +565,10 @@ class advancedWebServerInfo
                     return number_format($val, 2);
                 }, $load)),
                 'status' => ($load[0] < $cores) ? 'success' : 'warning',
-                'description' => 'Средняя нагрузка (1/5/15 мин)',
+                'description' => lang::get_phrase('average_load_1_5_15_min'),
                 'recommendation' => ($load[0] < $cores) ?
-                    'Нормальная нагрузка на систему' :
-                    'Высокая нагрузка, требуется оптимизация'
+                    lang::get_phrase('normal_system_load') :
+                    lang::get_phrase('high_load_optimization_required')
             ]
         ];
     }
@@ -591,7 +595,7 @@ class advancedWebServerInfo
                     return (int)trim($cores);
                 }
             } catch (\Throwable $e) {
-                error_log("Ошибка при получении количества ядер CPU: " . $e->getMessage());
+                error_log(lang::get_phrase('error_retrieving_cpu_cores_count') . " " . $e->getMessage());
             }
         }
 
@@ -623,9 +627,9 @@ class advancedWebServerInfo
     private function getOpcacheStatus(): string
     {
         if (!extension_loaded('Zend OPcache')) {
-            return 'Не установлен';
+            return lang::get_phrase('not_installed');
         }
-        return ini_get('opcache.enable') ? 'Включен' : 'Установлен, но выключен';
+        return ini_get('opcache.enable') ? lang::get_phrase('enabled') : lang::get_phrase('installed_but_disabled');
     }
 
     /**

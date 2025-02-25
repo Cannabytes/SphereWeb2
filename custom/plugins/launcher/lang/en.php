@@ -1,6 +1,8 @@
 <?php
 
 return [
+  'sphere-launcher' => 'Sphere Launcher',
+  'sphere-launcher_description' => 'A program for downloading client files. Loads at super speed, has a huge arsenal. Uses your server site for updates',
   'launcher settings'        => 'Launcher settings',
   'set path to game'         => 'Specify the path to the game',
   'location folder desc'     => 'Location of the game folder. The patch or updates will be downloaded to it',

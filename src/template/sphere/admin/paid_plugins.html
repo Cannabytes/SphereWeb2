@@ -30,14 +30,14 @@
 
             {% for plugin in show_plugins() %}
             <tr>
-              <td><a href="{{plugin.PLUGIN_ADMIN_PAGE}}" class="btn btn-sm btn-light">{{plugin.PLUGIN_NAME}}</a></td>
+              <td><a href="{{plugin.PLUGIN_ADMIN_PAGE}}" class="btn btn-sm btn-light">{{phrase(plugin.PLUGIN_NAME)}}</a></td>
               <td>
-                 {{plugin.PLUGIN_DESCRIPTION}}
+                 {{phrase(plugin.PLUGIN_DESCRIPTION)}}
               </td>
               <td>
 
                     {% if plugin.PLUGIN_COST == -1 %}
-                      Другое
+                      {{phrase('other')}}
                     {% else %}
                       {% if plugin.PLUGIN_COST ?? 0 %}${{plugin.PLUGIN_COST}}/{{ phrase('month') }}{% else %}{{ phrase('free') }}{% endif %}
                     {% endif %}

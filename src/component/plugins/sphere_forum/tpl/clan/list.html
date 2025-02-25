@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Список кланов{% endblock %}
+{% block title %}{{phrase('clan_list')}}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -9,13 +9,13 @@
       <div class="card custom-card">
         <div class="card-header d-flex justify-content-between align-items-center">
           <div class="card-title">
-            <i class="ri-team-line me-2"></i>Список кланов
+            <i class="ri-team-line me-2"></i>{{phrase('clan_list')}}
           </div>
           {% if getUser().isAuth() %}
           {% set userClanId = getUser().getVar("clanId")['val'] ?? false %}
           {% if not userClanId %}
           <a href="/forum/clan/create" class="btn btn-primary">
-            <i class="ri-add-line me-1"></i>Создать клан
+            <i class="ri-add-line me-1"></i>{{phrase('create_clan')}}
           </a>
           {% endif %}
           {% endif %}
@@ -25,13 +25,13 @@
             <table class="table table-hover">
               <thead>
               <tr>
-                <th>Название</th>
-                <th>Лидер</th>
-                <th>Участников</th>
-                <th>Тип принятия</th>
-                <th>Дата создания</th>
-                <th>Статус</th>
-                <th>Действия</th>
+                <th>{{phrase(27)}}</th>
+                <th>{{phrase(101)}}</th>
+                <th>{{phrase('participants')}}</th>
+                <th>{{phrase('acceptance_type')}}</th>
+                <th>{{phrase(114)}}</th>
+                <th>{{phrase('status')}}</th>
+                <th>{{phrase('actions')}}</th>
               </tr>
               </thead>
               <tbody>
@@ -44,7 +44,7 @@
                     <a href="/forum/clan/{{ clan.getName() }}" class="text-{{ clan.getTextColor() }}">
                       {{ clan.getName() }}
                       {% if clan.isVerification() %}
-                      <i class="bi bi-patch-check-fill text-success ms-1" title="Верифицированный клан"></i>
+                      <i class="bi bi-patch-check-fill text-success ms-1" title="{{phrase('verified_clan')}}"></i>
                       {% endif %}
                     </a>
                   </div>
@@ -63,32 +63,32 @@
                 </td>
                 <td>
                   {% if clan.getAcceptance() == 1 %}
-                  <span class="badge bg-success">Автоматическое</span>
+                  <span class="badge bg-success">{{phrase('automatic')}}</span>
                   {% else %}
-                  <span class="badge bg-warning">По согласию лидера</span>
+                  <span class="badge bg-warning">{{phrase('leader_consent')}}</span>
                   {% endif %}
                 </td>
                 <td>{{ clan.getCreatedAt()|date("d.m.Y") }}</td>
                 <td>
                   {% if clan.getId() == userClanId %}
-                  <span class="badge bg-info">Ваш клан</span>
+                  <span class="badge bg-info">{{phrase('your_clan')}}</span>
                   {% elseif userClanId %}
-                  <span class="badge bg-secondary">Вы в другом клане</span>
+                  <span class="badge bg-secondary">{{phrase('you_are_in_another_clan')}}</span>
                   {% else %}
                   {% if clan.getAcceptance() == 1 %}
-                  <span class="badge bg-success">Открыт для вступления</span>
+                  <span class="badge bg-success">{{phrase('open_for_joining')}}</span>
                   {% else %}
-                  <span class="badge bg-warning">Требуется заявка</span>
+                  <span class="badge bg-warning">{{phrase('application_required')}}</span>
                   {% endif %}
                   {% endif %}
                 </td>
                 <td>
                   <div class="btn-group" role="group">
-                    <a href="/forum/clan/{{ clan.getName() }}" class="btn btn-sm btn-primary" title="Просмотр клана">
+                    <a href="/forum/clan/{{ clan.getName() }}" class="btn btn-sm btn-primary" title="{{phrase('view_clan')}}">
                       <i class="ri-eye-line"></i>
                     </a>
                     {% if getUser().isAdmin() %}
-                    <a href="/forum/clan/edit/{{ clan.getName() }}" class="btn btn-sm btn-warning" title="Редактировать (админ)">
+                    <a href="/forum/clan/edit/{{ clan.getName() }}" class="btn btn-sm btn-warning" title="{{phrase('edit_admin')}}">
                       <i class="ri-settings-line"></i>
                     </a>
                     {% endif %}

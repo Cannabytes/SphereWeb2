@@ -1,0 +1,20 @@
+<?php
+return [
+    'Lucera Traders' => 'Comerciantes',
+    'Lucera Traders Description' => 'El complemento muestra una lista de comerciantes y lo que venden. Solo para Lucera.',
+    'server_is_open' => 'El servidor está abierto',
+    'obt' => 'Pruebas beta abiertas',
+    'cbt' => 'Pruebas beta cerradas',
+    'status_indefined' => 'Indefinido',
+    'status_is_close' => 'El servidor está cerrado',
+    '_min' => 'min',
+    '_sec' => 'seg',
+    '_days' => 'días',
+    '_day' => 'día',
+    '_dayI' => 'días',
+    '_hours' => 'horas',
+    '_hour' => 'hora',
+    '_hourI' => 'horas',
+    '_status' => 'Estado',
+    'lucera_traders' => 'Comerciantes'
+];

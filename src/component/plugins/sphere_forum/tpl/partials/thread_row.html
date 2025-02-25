@@ -21,7 +21,7 @@
                 Автор: <strong>{{ getUser(thread.getAuthorId()).getName() }}</strong>
                 {% if category.isModerated() and not thread.isApproved() %}
                 <span class="badge badge-warning text-muted small">
-                    Ожидает подтверждения
+                    {{phrase('awaiting_confirmation')}}
                 </span>
                 {% endif %}
             </div>
@@ -67,15 +67,15 @@
 </td>
 <td width="15%" class="text-center">
     <span class="badge badge-info text-muted small">
-        {{ thread.getReplies() }} ответа
+        {{ thread.getReplies() }} {{phrase('response')}}
     </span><br>
     <span class="text-muted small">
-        Просмотров: {{ thread.getViews() }}
+        {{phrase('views')}}: {{ thread.getViews() }}
     </span>
 </td>
 <td width="15%">
     <span class="d-flex align-items-center text-muted small">
-        Ответил:
+        {{phrase('answered')}}:
         <span class="avatar avatar-sm avatar-rounded mx-2"
               style="width: 24px; height: 24px;">
             <img src="{{ getUser(thread.getLastReplyUserId()).getAvatar() }}"

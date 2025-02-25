@@ -4,6 +4,7 @@ namespace Ofey\Logan22\model\plugin;
 
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\user\user;
 
 class DynamicPluginSetting
 {
@@ -56,7 +57,7 @@ class DynamicPluginSetting
         $setting = $data['setting'] ?? null;
         $value   = $data['value'] ?? null;
         $type    = $data['type'] ?? 'string';
-
+        $serverId = isset($_POST['serverId']) && $_POST['serverId'] == 0 ? 0 : user::self()->getServerId();
         // Приведение значения к нужному типу
         $value = match ($type) {
             'int', 'integer' => (int) $value,
@@ -72,13 +73,13 @@ class DynamicPluginSetting
 
         sql::sql("DELETE FROM `settings` WHERE `key` = ? AND `serverId` = ?", [
           '__PLUGIN__' . $this->pluginName,
-          $this->pluginServerId,
+            $serverId,
         ]);
 
         sql::run("INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES (?, ?, ?, ?)", [
           '__PLUGIN__' . $this->pluginName,
           json_encode($arr, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE),
-          $this->pluginServerId,
+            $serverId,
           time::mysql(),
         ]);
     }

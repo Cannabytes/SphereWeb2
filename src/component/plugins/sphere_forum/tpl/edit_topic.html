@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Изменение сообщения{% endblock %}
+{% block title %}{{phrase('edit_message')}}{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -14,7 +14,7 @@
                         <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
                     </svg>
                 </a>
-                <div class="card-title">Изменение сообщения</div>
+                <div class="card-title">{{phrase('edit_message')}}</div>
             </div>
             <div class="card-body">
                 <div class="row gy-3">
@@ -22,7 +22,7 @@
                         <div id="message-post">{{post.getContent()|raw}}</div>
                     </div>
                     <div class="col-xl-12 blog-images-container">
-                        <label class="form-label">Загрузка изображений</label>
+                        <label class="form-label">{{phrase('image_upload')}}</label>
                         <input type="file" class="multiple-filepond" name="filepond" multiple data-allow-reorder="true"
                                data-max-file-size="3MB" data-max-files="6">
                     </div>
@@ -36,10 +36,10 @@
                 <div id="pollSection" class="card mb-3" >
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Настройки опроса</h5>
+                            <h5 class="mb-0">{{phrase('poll_settings')}}</h5>
                             {% if not thread.getPoll() %}
                             <button type="button" class="btn btn-sm btn-primary" id="enablePoll">
-                                <i class="ri-add-line"></i> Добавить опрос
+                                <i class="ri-add-line"></i> {{phrase('add_poll')}}
                             </button>
                             {% endif %}
                         </div>
@@ -50,7 +50,7 @@
                         {% endif %}
 
                         <div class="mb-3">
-                            <label for="pollQuestion" class="form-label">Вопрос опроса</label>
+                            <label for="pollQuestion" class="form-label">{{phrase('poll_question')}}</label>
                             <input type="text" class="form-control" id="pollQuestion"
                                    value="{{ thread.getPoll() ? thread.getPoll().getQuestion() : '' }}">
                         </div>
@@ -60,19 +60,19 @@
                                 <input class="form-check-input" type="checkbox" id="multipleChoice"
                                        {% if thread.getPoll() and thread.getPoll().isMultiple() %}checked{% endif %}>
                                 <label class="form-check-label" for="multipleChoice">
-                                    Разрешить выбор нескольких вариантов
+                                    {{phrase('allow_multiple_choices')}}
                                 </label>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="pollExpiration" class="form-label">Дата окончания голосования</label>
+                            <label for="pollExpiration" class="form-label">{{phrase('poll_end_date')}}</label>
                             <input type="datetime-local" class="form-control" id="pollExpiration"
                                    value="{{ thread.getPoll() ? thread.getPoll().getExpiresAt()|date('Y-m-d\\TH:i') : '' }}">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Варианты ответов</label>
+                            <label class="form-label">{{phrase('answer_options')}}</label>
                             <div id="pollOptionsContainer">
                                 {% if thread.getPoll() %}
                                 {% for option in thread.getPoll().getOptions() %}
@@ -87,7 +87,7 @@
                                 {% endif %}
                             </div>
                             <button type="button" class="btn btn-outline-primary" onclick="addPollOption()">
-                                <i class="ri-add-line"></i> Добавить вариант
+                                <i class="ri-add-line"></i> {{phrase('add_option')}}
                             </button>
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                 {% endif %}
 
                 <div class="btn-list text-end">
-                    <button type="button" class="btn btn-primary" id="saveEditMessage">Сохранить</button>
+                    <button type="button" class="btn btn-primary" id="saveEditMessage">{{phrase(89)}}</button>
                 </div>
             </div>
         </div>

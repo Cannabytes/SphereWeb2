@@ -201,7 +201,6 @@ function animateCounter(targetValue, duration = 1500) {
 
 function responseAnalysis(response, form) {
     //Если существует переменная count_sphere_coin то обновляем счетчик class .count_sphere_coin
-    console.log(response)
     let sphereCoin;
     if (response.sphereCoin !== undefined) {
         sphereCoin = $(".count_sphere_coin").text();

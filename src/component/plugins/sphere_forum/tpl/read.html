@@ -95,7 +95,7 @@
                                 {% endfor %}
 
                                 <li class="breadcrumb-item active" aria-current="page">
-                                    {% if thread.isClosed() %} <span class="badge bg-danger me-1" title="Тема закрыта"><i class="ri-lock-line"></i></span>{% endif %}
+                                    {% if thread.isClosed() %} <span class="badge bg-danger me-1" title="{{phrase('topic_closed')}}"><i class="ri-lock-line"></i></span>{% endif %}
                                     {{thread.getName()}}</li>
                             </ol>
                         </div>
@@ -107,7 +107,7 @@
                         <button type="button" class="btn btn-sm" id="toggleSubscription">
                             <i class="ri-notification-line"></i>
                             <span class="subscription-text">
-                            {% if isSubscribed %}Отписаться от уведомлений{% else %}Подписаться на уведомления{% endif %}
+                            {% if isSubscribed %}{{phrase('unsubscribe_notifications')}}{% else %}{{phrase('subscribe_notifications')}}{% endif %}
                         </span>
                         </button>
                         <script>
@@ -124,8 +124,8 @@
                                         console.log(response)
                                         if (response.ok) {
                                             const newText = isCurrentlySubscribed ?
-                                                'Подписаться на уведомления' :
-                                                'Отписаться от уведомлений';
+                                                '{{phrase("subscribe_notifications")}}' :
+                                                '{{phrase("unsubscribe_notifications")}}';
                                             $btn.find('.subscription-text').text(newText);
                                         }
                                     });
@@ -154,7 +154,7 @@
                         <div class="btn-group btn-group-sm" role="group">
                             <button type="button" class="btn btn-github btn-sm dropdown-toggle"
                                     data-bs-toggle="dropdown" aria-expanded="false">
-                                Управление
+                                {{phrase('management')}}
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="">
 
@@ -166,9 +166,9 @@
                                        data-current-status="{{ thread.isPinned() ? 'pinned' : 'unpinned' }}">
                                         <i class="ri-pushpin-line"></i>
                                         {% if thread.isPinned() %}
-                                        Открепить тему
+                                        {{phrase('unpinned_topic')}}
                                         {% else %}
-                                        Закрепить тему
+                                        {{phrase('pinned_topic')}}
                                         {% endif %}
                                     </a>
                                 </li>
@@ -181,9 +181,9 @@
                                        data-current-status="{{ thread.isClosed() ? 'closed' : 'open' }}">
                                         <i class="ri-lock-line"></i>
                                         {% if thread.isClosed() %}
-                                        Открыть тему
+                                          {{phrase('open_topic')}}
                                         {% else %}
-                                        Закрыть тему
+                                          {{phrase('close_topic')}}
                                         {% endif %}
                                     </a>
                                 </li>
@@ -193,7 +193,7 @@
                                 <li>
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal"
                                        data-bs-target="#renameModal">
-                                        <i class="ri-refresh-fill"></i> Переименовать
+                                        <i class="ri-refresh-fill"></i> {{phrase('rename')}}
                                     </a>
                                 </li>
                                 {% endif %}
@@ -201,7 +201,7 @@
                                 <li>
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal"
                                        data-bs-target="#moveModal">
-                                        <i class="ri-drag-move-fill"></i> Переместить
+                                        <i class="ri-drag-move-fill"></i> {{phrase('Move')}}
                                     </a>
                                 </li>
                                 {% endif %}
@@ -209,7 +209,7 @@
                                 <li>
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal"
                                        data-bs-target="#deleteModal">
-                                        <i class="ri-delete-bin-line text-danger"></i> Удалить
+                                        <i class="ri-delete-bin-line text-danger"></i> {{phrase('delete')}}
                                     </a>
                                 </li>
                                 {% endif %}
@@ -220,21 +220,21 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="deleteModalLabel">Подтверждение удаления</h5>
+                                        <h5 class="modal-title" id="deleteModalLabel">{{phrase('confirmation_delete')}}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <p>Вы действительно хотите удалить эту тему форума?</p>
+                                        <p>{{phrase('confirm_delete_topic')}}</p>
                                         {% if isModerator(getUser().getId(), category.getId()) %}
                                         <div class="form-group">
-                                            <label for="deleteReason">Причина удаления:</label>
+                                            <label for="deleteReason">{{phrase('delete_reason')}}:</label>
                                             <textarea class="form-control" id="deleteReason" rows="2"></textarea>
                                         </div>
                                         {% endif %}
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                        <button type="button" class="btn btn-danger" id="confirmDelete">Удалить</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase(80) }}</button>
+                                        <button type="button" class="btn btn-danger" id="confirmDelete">{{ phrase('delete') }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -244,12 +244,12 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="moveModalLabel">Перемещение темы</h5>
+                                        <h5 class="modal-title" id="moveModalLabel">{{phrase('move_topic')}}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="mb-3">
-                                            <label for="moveThreadSelect" class="form-label">Выберите раздел для перемещения:</label>
+                                            <label for="moveThreadSelect" class="form-label">{{phrase('select_section_for_move')}}:</label>
                                             <select class="form-select" id="moveThreadSelect">
                                                 {% for category in getCategoriesForum() %}
                                                 <option value="{{category.getId()}}">{{ category.getName() }}</option>
@@ -261,8 +261,8 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                        <button type="button" class="btn btn-primary" id="confirmMove">Переместить</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase(80) }}</button>
+                                        <button type="button" class="btn btn-primary" id="confirmMove">{{ phrase('Move') }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -272,18 +272,18 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="renameModalLabel">Переименование темы</h5>
+                                        <h5 class="modal-title" id="renameModalLabel">{{phrase('rename_topic')}}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="mb-3">
-                                            <label for="newThreadTitle" class="form-label">Новое название:</label>
+                                            <label for="newThreadTitle" class="form-label">{{phrase('rename_topic')}}:</label>
                                             <input type="text" class="form-control" id="newThreadTitle" value="{{thread.getTitle()}}">
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                        <button type="button" class="btn btn-primary" id="confirmRename">Сохранить</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase(80) }}</button>
+                                        <button type="button" class="btn btn-primary" id="confirmRename">{{ phrase('create') }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -319,11 +319,11 @@
                                             <img src="{{user.getAvatar()}}" alt="" class="avatar avatar-xxl">
                                         </span>
                                         {% if user.isAdmin() %}
-                                        <span class="badge bg-light text-muted m-1">Администратор</span>
+                                        <span class="badge bg-light text-muted m-1">{{phrase('admin')}}</span>
                                         {% elseif isModerator(user.getId(), category.getId()) %}
-                                        <span class="badge bg-light text-muted m-1">Модератор</span>
+                                        <span class="badge bg-light text-muted m-1">{{phrase('moderator')}}</span>
                                         {% else %}
-                                        <span class="{% if clan %}badge bg-{{clan.getTextColor()}}{% else %}badge bg-light{% endif %} text-muted m-1">Пользователь</span>
+                                        <span class="{% if clan %}badge bg-{{clan.getTextColor()}}{% else %}badge bg-light{% endif %} text-muted m-1">{{phrase('user')}}</span>
                                         {% endif %}
 
 
@@ -374,7 +374,7 @@
 
                                             {% endif %}
                                             {% if isForumSettingEnabled(user.getId(), 'showGameTime') %}
-                                            <div class="text-center     bg-opacity-10   ">
+                                            <div class="text-center bg-opacity-10">
                                    <span class="text-{{clan.getTextColor()}} fw-semibold">
                                        {{timeHasPassed(onlineTime,true)}}
                                    </span>
@@ -383,7 +383,7 @@
 
                                             <!-- Characters -->
                                             {% if isForumSettingEnabled(user.getId(), 'showCharacters') %}
-                                            <div class=" p-1 text-center   bg-opacity-10  ">
+                                            <div class=" p-1 text-center bg-opacity-10">
                                                 <div class="d-flex justify-content-center gap-1 flex-wrap">
                                                     {% for i, account in getUser(post.getUserId()).getAccounts() %}
                                                     {% for character in account.getCharacters() %}
@@ -400,7 +400,7 @@
 
                                             <!-- Clan Info -->
                                             {% if clan %}
-                                            <div class="p-1   bg-opacity-10   ">
+                                            <div class="p-1 bg-opacity-10">
                                                 <div class="d-flex align-items-center justify-content-center gap-2">
                                                     {% if clan.getLogo() %}
                                                     <img src="/uploads/clans/{{ clan.getLogo() }}"
@@ -429,7 +429,7 @@
                                     <div class="d-flex align-items-center">
                                         <i class="ri-reply-line me-2"></i>
                                         <span class="text-muted">
-                                        Ответ на сообщение от
+                                        {{phrase('reply_to_message_from')}}
                                         <strong>{{ replyData.user_name }}</strong>:
                                     </span>
                                     </div>
@@ -447,7 +447,7 @@
                                     <div class="card-header">
                                         <h5>{{ thread.getPoll().getQuestion() }}</h5>
                                         {% if thread.getPoll().isMultiple() and not thread.getPoll().hasUserVoted(getUser().getId()) %}
-                                        <small class="text-muted">Можно выбрать несколько вариантов</small>
+                                        <small class="text-muted">{{phrase('multiple_choices_allowed')}}</small>
                                         {% endif %}
                                     </div>
                                     <div class="card-body">
@@ -458,7 +458,7 @@
                                         <div class="mb-2">
                                             <div class="d-flex justify-content-between">
                                                 <span>{{ option.text }}</span>
-                                                <span>{{ option.votes_count }} голосов ({{ percentages[loop.index0] }}%)</span>
+                                                <span>{{ option.votes_count }} {{phrase('votes')}} ({{ percentages[loop.index0] }}%)</span>
                                             </div>
                                             <div class="progress">
                                                 <div class="progress-bar"
@@ -486,13 +486,13 @@
                                                 </label>
                                             </div>
                                             {% endfor %}
-                                            <button type="submit" class="btn btn-primary mt-2">Проголосовать</button>
+                                            <button type="submit" class="btn btn-primary mt-2">{{phrase('vote')}}</button>
                                         </form>
                                         {% endif %}
                                     </div>
                                     {% if thread.getPoll().getExpiresAt() %}
                                     <div class="card-footer text-muted">
-                                        Голосование до: {{ thread.getPoll().getExpiresAt() | date('d.m.Y H:i') }}
+                                        {{phrase('voting_until')}}: {{ thread.getPoll().getExpiresAt() | date('d.m.Y H:i') }}
                                     </div>
                                     {% endif %}
                                 </div>
@@ -525,18 +525,18 @@
                                         <button type="button" class="btn  btn-sm text-muted reply-button"
                                                 data-post-id="{{post.getId()}}"
                                                 data-author-name="{{getUser(post.getUserId()).getName()}}">
-                                            <i class="ri-reply-line"></i> Ответить
+                                            <i class="ri-reply-line"></i> {{phrase('reply')}}
                                         </button>
 
                                         <a href="/forum/post/edit/{{post.getId()}}/page/{{currentPage}}"
                                            class="btn  btn-sm text-muted"><i
-                                                class="ri-edit-2-fill"></i> Изменить
+                                                class="ri-edit-2-fill"></i> {{phrase('change')}}
                                         </a>
 
                                         {% if post.getId() != firstPostId %}
                                         <button type="button" class="btn  btn-sm text-muted deletePost"
                                                 data-post-id="{{post.getId()}}">
-                                            <i class="ri-delete-bin-line"></i> Удалить
+                                            <i class="ri-delete-bin-line"></i> {{phrase('delete')}}
                                         </button>
                                         {% endif %}
 
@@ -548,7 +548,7 @@
                                                 data-thread-id="{{thread.getId()}}"
                                                 data-created-at="{{thread.getCreatedAt()}}"
                                                 data-timeout="{{category.getThreadDeleteTimeoutMinutes()}}">
-                                            <i class="ri-delete-bin-line"></i> Удалить тему
+                                            <i class="ri-delete-bin-line"></i> {{phrase('delete_topic')}}
                                         </button>
                                         {% endif %}
                                         {% endif %}
@@ -558,14 +558,14 @@
                                         post.isEditableByTime(category.getEditTimeoutMinutes()) %}
                                         <button type="button" class="btn  btn-sm text-muted deletePost"
                                                 data-post-id="{{post.getId()}}">
-                                            <i class="ri-delete-bin-line"></i> Удалить
+                                            <i class="ri-delete-bin-line"></i> {{phrase('delete')}}
                                         </button>
                                         {% endif %}
 
                                         {# Админу не выводим кнопку пожаловаться #}
 
                                         <button type="button" class="btn  btn-sm text-muted"><i
-                                                class="ri-reply-line"></i> Пожаловаться
+                                                class="ri-reply-line"></i> {{phrase('report')}}
                                         </button>
                                         {% endif %}
 
@@ -574,7 +574,7 @@
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#likeModal"
                                                 data-post-id="{{post.getId()}}">
-                                            <i class="ri-thumb-up-line"></i> Мне нравится
+                                            <i class="ri-thumb-up-line"></i> {{phrase('i_like')}}
                                         </button>
                                         {% endif %}
 
@@ -593,7 +593,7 @@
                     {% if getUser().isAuth() %}
                     {% if thread.isClosed() %}
                     <div class="alert alert-warning text-center">
-                        <h6 class="mb-0">Тема закрыта для обсуждений</h6>
+                        <h6 class="mb-0">{{phrase('topic_closed')}}</h6>
                     </div>
                     {% endif %}
 
@@ -670,12 +670,12 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-1 mb-1">
                                 <button type="submit" id="addMessageTopic" class="btn btn-success btn-sm">
-                                    <i class="ri-send-plane-line"></i> Отправить
+                                    <i class="ri-send-plane-line"></i> {{phrase('send')}}
                                 </button>
 
 
                                 <button type="button" class="btn btn-danger btn-sm" id="closeReplyButton" style="display: none;">
-                                    <i class="ri-close-line"></i> Закрыть
+                                    <i class="ri-close-line"></i> {{phrase('close')}}
                                 </button>
 
 
@@ -684,7 +684,7 @@
                         {% endif %}
                         {% else %}
                         <div class="alert alert-warning text-center col-12">
-                            <h6 class="mb-0">Ответы в этом разделе запрещены</h6>
+                            <h6 class="mb-0">{{phrase('replies_disabled_in_section')}}</h6>
                         </div>
                         {% endif %}
 
@@ -702,7 +702,7 @@
                         {% if currentPage > 1 %}
                         <a href="/forum/topic/{{transliterateToEn(thread.getTitle())}}.{{thread.getId()}}?page={{currentPage-1}}"
                            class="btn btn-outline-secondary">
-                            <i class="ri-arrow-left-line"></i> Назад
+                            <i class="ri-arrow-left-line"></i> {{phrase(417)}}
                         </a>
                         {% endif %}
 
@@ -742,7 +742,7 @@
                         {% if currentPage < totalPages %}
                         <a href="/forum/topic/{{transliterateToEn(thread.getTitle())}}.{{thread.getId()}}?page={{currentPage+1}}"
                            class="btn btn-outline-secondary">
-                            Вперёд <i class="ri-arrow-right-line"></i>
+                            {{phrase('forward')}} <i class="ri-arrow-right-line"></i>
                         </a>
                         {% endif %}
                     </div>
@@ -753,8 +753,8 @@
                 {% if getUser().isAuth() == false %}
                 <div class="col-12">
                     <blockquote class="blockquote custom-blockquote secondary mb-0 text-center">
-                        <h6>Для ответов на форуме, необходимо авторизоваться</h6>
-                        <h6><a href="/login">Авторизация</a> или <a href="/signup">регистрация</a></h6>
+                        <h6>{{phrase('login_to_reply')}}</h6>
+                        <h6>{{phrase('login_or_signup')|raw}}</h6>
                         <span class="quote-icon"><i class="ri-information-line"></i></span>
                     </blockquote>
                 </div>
@@ -773,7 +773,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="likeModalLabel">
-                    <i class="ri-emotion-happy-line me-2"></i>Выберите реакцию
+                    <i class="ri-emotion-happy-line me-2"></i>{{phrase('select_reaction')}}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -801,15 +801,7 @@
 <link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.bubble.css">
 <link rel="stylesheet" href="{{template_plugin}}/tpl/css/style_clan_name.css">
 
-
-
-
 <style>
-
-
-
-
-
     .like-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));

@@ -2,6 +2,7 @@
 
 namespace Ofey\Logan22\model\server;
 
+use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\config\donate;
 use Ofey\Logan22\model\config\referral;
 use Ofey\Logan22\model\db\sql;
@@ -700,6 +701,38 @@ class serverModel
         $this->checkserver = $checkserver;
 
         return $this;
+    }
+
+    public function setPluginSetting(string $name, array $setting, $serverId = null): void
+    {
+        if ($serverId == null) {
+            $serverId = $this->getId();
+        }
+        sql::run("DELETE FROM `settings` WHERE `key` = ? AND `serverId` = ?", [
+            $name,
+            $serverId,
+        ]);
+        sql::run("INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES (?, ?, ?, ?)", [
+            $name,
+            json_encode($setting, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE),
+            $serverId,
+            time::mysql(),
+        ]);
+    }
+
+    public function getPluginSetting(string $name, $serverId = null)
+    {
+        if ($serverId == null) {
+            $serverId = $this->getId();
+        }
+        $setting = sql::getRow("SELECT `setting` FROM `settings` WHERE `key` = ? AND `serverId` = ?", [
+            $name,
+            $serverId,
+        ]);
+        if (empty($setting)) {
+            return null;
+        }
+        return json_decode($setting['setting'], true);
     }
 
 }

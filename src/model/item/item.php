@@ -244,11 +244,11 @@ use Ofey\Logan22\component\image\client_icon;
 
     public static function getItem($id, $dbVersion = null): ?item
     {
+
         if (isset(self::$arrItems[$id])) {
             return self::$arrItems[$id];
         }
         $file = client_icon::includeFileByRange($id, dbVersion: $dbVersion);
-
         if (!$file) {
             $itemObject = new item();
             $itemObject->setItemId($id);
@@ -261,6 +261,7 @@ use Ofey\Logan22\component\image\client_icon;
         }
 
         $itemArr = require $file;
+
         if (isset($itemArr[$id])) {
             $item = $itemArr[$id];
             $itemObject = new item();

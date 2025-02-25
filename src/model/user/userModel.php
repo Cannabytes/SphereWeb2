@@ -670,6 +670,11 @@ class userModel
         return floor($this->donate * 10) / 10;
     }
 
+    public function getBalance(): int|float
+    {
+        return $this->getDonate();
+    }
+
     /**
      * @param int $donate
      *
@@ -680,6 +685,16 @@ class userModel
         $this->donate = $donate;
 
         return $this;
+    }
+
+    /**
+     * @param int $donate
+     *
+     * @return userModel
+     */
+    public function setBalance(int $donate): userModel
+    {
+        return $this->setDonate($donate);
     }
 
     /**

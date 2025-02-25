@@ -9,14 +9,14 @@
 
 
         <div class="card-header ">
-            <h3 class="card-title" data-phrase="data launcher">Лаунчера данные</h3>
+            <h3 class="card-title">{{phrase('launcher_data')}}</h3>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-lg-6 col-xl-6">
                     <!-- Form Labels on top - Default Style -->
                     <div class="mb-4">
-                        <label class="form-label" for="server"><strong data-phrase="server">Сервер</strong><label class="text-danger">*</label></label>
+                        <label class="form-label" for="server"><strong>{{phrase('server')}}</strong><label class="text-danger">*</label></label>
                         <select class="form-select" id="server" name="server">
                             {% for server in getServerAll() %}
                             <option {% if server.id == launcherInfo.data.server %}selected{% endif %} value="{{server.id}}">{{server.getName()}} x{{server.getRateExp()}} - {{server.getChronicle()}}
@@ -25,15 +25,13 @@
                         </select>
                     </div>
                     <div class="mb-4">
-                        <label class="form-label" for="autoload" data-phrase="autoload_info">Показывать аккаунты для автозагрузки?</label>
-                        <div class="fs-sm fw-medium text-muted mb-0" data-phrase="autoload_info_desc">
-                            Настройка актуальная только если игровой клиент поддерживает функцию автовхода в игру (без
-                            авторизации).
+                        <label class="form-label" for="autoload">{{phrase('show_accounts_for_autoload')}}</label>
+                        <div class="fs-sm fw-medium text-muted mb-0">{{phrase('setting_applicable_if_auto_login_supported')}}
                         </div>
                         <div class="col-2">
                             <select class="form-select mb-4" id="autoload" name="autoload">
-                                <option value="off" {% if launcherInfo.data.autoload == false %}selected{% endif %} data-phrase="no">Нет</option>
-                                <option value="on" {% if launcherInfo.data.autoload == true %}selected{% endif %} data-phrase="yes">Да</option>
+                                <option value="off" {% if launcherInfo.data.autoload == false %}selected{% endif %}>{{ phrase('no') }}</option>
+                                <option value="on" {% if launcherInfo.data.autoload == true %}selected{% endif %}>{{ phrase('yes') }}</option>
                             </select>
                         </div>
                     </div>
@@ -57,7 +55,7 @@
                 </div>
                 <div class="col-lg-6 col-xl-6">
                     <div class="mb-4">
-                        <label class="form-label" for="server"><strong data-phrase="name">Название</strong><label class="text-danger">*</label></label>
+                        <label class="form-label" for="server"><strong >{{ phrase(27) }}</strong><label class="text-danger">*</label></label>
                         <div class="input-group">
                         <span class="input-group-text">
                           https://site.com/launcher/
@@ -69,9 +67,9 @@
 
 
                     <div class="mb-4">
-                        <label class="form-label" for="server" data-phrase="launcher_note">Заметка о лаунчере</label>
-                        <div class="fs-sm fw-medium text-muted mb-0" data-phrase="launcher_note_desc">
-                            Для чего хотите использовать этот лаунчер? - Это напоминание только для Вас.
+                        <label class="form-label" for="server">{{phrase('launcher_note')}}</label>
+                        <div class="fs-sm fw-medium text-muted mb-0">
+                            {{phrase('what_use_launcher_for_reminder')}}
                         </div>
                         <input value="{{launcherInfo.data.note}}" type="text" class="form-control" id="note" name="note"
                                placeholder="">
@@ -80,17 +78,17 @@
                 </div>
                 <div class="mb-4">
                     <label class="form-label" for="tokenApi">Token API<label class="text-danger">*</label></label>
-                    <div class="fs-sm fw-medium text-muted mb-0" data-phrase="tokenApi_desc">
-                        Ключ необходим для безопастности. Его можно получить после генерации патча.
+                    <div class="fs-sm fw-medium text-muted mb-0">
+                        {{ phrase('security_key_info') }}
                     </div>
                     <input value="{{launcherInfo.data.tokenApi}}" type="text" class="form-control" id="tokenApi"
                            name="tokenApi" placeholder="Key">
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label" for="server">Дополнительное описание на странице лаунчера (необязательно)</label>
+                    <label class="form-label" for="server">{{ phrase('launcher_additional_description') }}</label>
                     <div class="fs-sm fw-medium text-muted mb-0">
-                     Вы можете указать запасные ссылки на патч, клиент, лаунчер или любую другую информацию. Разрешены HTML теги.
+                   {{ phrase('backup_links_info')|raw }}
                     </div>
                     <textarea class="form-control" id="notice" name="notice" placeholder="">{{launcherInfo.data.notice}}</textarea>
                 </div>
@@ -106,7 +104,7 @@
         <div class="col-6">
             <div class="card custom-card">
                 <div class="card-header">
-                    <h3 class="card-title"><strong data-phrase="button_start_game">Кнопка запуска игры</strong> #1</h3>
+                    <h3 class="card-title"><strong>{{phrase('game_launch_button')}}</strong> #1</h3>
                 </div>
                 <div class="card-body">
                     <div class="mb-4">
@@ -120,7 +118,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label" for="background_{{i}}" data-phrase="button_img">Изображение кнопки</label>
+                        <label class="form-label" for="background_{{i}}" >{{phrase('button_image')}}</label>
                         <input type="text" class="form-control"
                                value="{{app.background}}" id="background_{{i}}"
                                name="application[background][]" placeholder="background">
@@ -128,13 +126,12 @@
 
                     <hr>
                     <div class="mb-4">
-                        <label class="form-label" for="button_start_ru_{{i}}" data-phrase="button_name_ru">Название кнопки запуска на русском</label>
+                        <label class="form-label" for="button_start_ru_{{i}}">{{phrase('button_name_for_launch_in_russian')}}</label>
                         <input type="text" class="form-control" id="button_start_ru_{{i}}" name="application[button_start_ru][]"
                                value="{{app.button_start_ru}}" placeholder="Запустить игру">
                     </div>
                     <div class="mb-4">
-                        <label class="form-label" for="button_start_en_{{i}}" data-phrase="button_name_en">Название кнопки запуска на
-                            английском</label>
+                        <label class="form-label" for="button_start_en_{{i}}">{{phrase('button_name_for_launch_in_english')}}</label>
                         <input type="text" class="form-control" id="button_start_en_{{i}}" name="application[button_start_en][]"
                                value="{{app.button_start_en}}" placeholder="Start Play">
                     </div>
@@ -150,7 +147,7 @@
     <div class="row text-center">
         <div class="row mb-4">
             <div class="col-sm-12 ms-auto">
-                <button type="submit" id="update_config" class="btn btn-primary" data-phrase="save">Сохранить</button>
+                <button type="submit" id="update_config" class="btn btn-primary">{{phrase(89)}}</button>
             </div>
         </div>
     </div>

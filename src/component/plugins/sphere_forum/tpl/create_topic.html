@@ -15,15 +15,15 @@
                     </svg>
                 </a>
 
-                <div class="card-title">Создание новой темы</div>
+                <div class="card-title">{{phrase('create_topic')}}</div>
             </div>
             <div class="card-body">
                 <div class="row gy-3">
                     <div class="col-xl-12">
-                        <label for="topic_title" class="form-label">Название темы</label>
+                        <label for="topic_title" class="form-label">{{phrase('topic_name')}}</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="topic_title"
-                                   placeholder="Краткое содержимое темы"
+                                   placeholder="{{phrase('topic_short_content')}}"
                                    maxlength="60">
                             <span class="input-group-text">
             <span id="title-counter">0/60</span>
@@ -32,11 +32,11 @@
                     </div>
 
                     <div class="col-xl-12">
-                        <label class="form-label">Содержимое</label>
+                        <label class="form-label">{{phrase('content')}}</label>
                         <div id="message-post"></div>
                     </div>
                     <div class="col-xl-12 blog-images-container">
-                        <label class="form-label">Загрузка изображений</label>
+                        <label class="form-label">{{phrase('image_upload')}}</label>
                         <input type="file" class="multiple-filepond" name="filepond" multiple data-allow-reorder="true"
                                data-max-file-size="3MB" data-max-files="6">
                     </div>
@@ -50,41 +50,41 @@
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" id="enablePoll">
                     <label class="form-check-label" for="enablePoll">
-                        Добавить опрос к теме
+                        {{phrase('add_poll_to_topic')}}
                     </label>
                 </div>
 
                 <div id="pollSection" style="display: none;">
                     <div class="card mb-3">
-                        <div class="card-header">Настройки опроса</div>
+                        <div class="card-header">{{phrase('poll_settings')}}</div>
                         <div class="card-body">
                             <div class="mb-3">
-                                <label for="pollQuestion" class="form-label">Вопрос опроса</label>
+                                <label for="pollQuestion" class="form-label">{{phrase('poll_question')}}</label>
                                 <input type="text" class="form-control" id="pollQuestion"
-                                       placeholder="Введите вопрос опроса">
+                                       placeholder="{{phrase('enter_poll_question')}}">
                             </div>
 
                             <div class="mb-3">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="multipleChoice">
                                     <label class="form-check-label" for="multipleChoice">
-                                        Разрешить выбор нескольких вариантов
+                                        {{phrase('allow_multiple_choices')}}
                                     </label>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="pollExpiration" class="form-label">Дата окончания голосования</label>
+                                <label for="pollExpiration" class="form-label">{{phrase('poll_end_date')}}</label>
                                 <input type="datetime-local" class="form-control" id="pollExpiration">
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Варианты ответов</label>
+                                <label class="form-label">{{phrase('answer_options')}}</label>
                                 <div id="pollOptionsContainer">
                                     <!-- Динамически добавляемые варианты -->
                                 </div>
                                 <button type="button" class="btn btn-outline-primary" onclick="addPollOption()">
-                                    <i class="ri-add-line"></i> Добавить вариант
+                                    <i class="ri-add-line"></i> {{phrase('add_option')}}
                                 </button>
                             </div>
                         </div>
@@ -106,7 +106,7 @@
 
             <div class="card-footer">
                 <div class="btn-list text-end">
-                    <button type="button" class="btn btn-primary" id="create_topic">Создать тему</button>
+                    <button type="button" class="btn btn-primary" id="create_topic">{{phrase('create_topic')}}</button>
                 </div>
             </div>
         </div>
@@ -184,7 +184,7 @@
         const optionCount = container.children('.poll-option').length;
 
         if (optionCount >= 10) {
-            noticeError('Максимум 10 вариантов ответа');
+            noticeError("{{phrase('max_10_options')}}");
             return;
         }
 
@@ -237,7 +237,7 @@
             .filter(option => option !== '');
 
         if (options.length < 2) {
-            noticeError('Минимум 2 варианта ответа');
+            noticeError("{{phrase('min_2_options')}}");
             return false;
         }
 
@@ -290,19 +290,19 @@
             if (pollData === false) return;
 
             if (title.length === 0) {
-                noticeError("Введите название темы");
+                noticeError("{{phrase('enter_topic_title')}}");
                 titleInput.focus();
                 return;
             }
 
             if (title.length > 60) {
-                noticeError("Название темы не может быть длиннее 60 символов");
+                noticeError("{{phrase('topic_title_max_length')}}");
                 titleInput.focus();
                 return;
             }
 
             if (title.length < 3) {
-                noticeError("Название темы должно содержать минимум 3 символа");
+                noticeError("{{phrase('topic_title_min_length')}}");
                 titleInput.focus();
                 return;
             }
@@ -335,15 +335,15 @@
                     if (response.redirect) {
                         window.location.href = response.redirect;
                     } else {
-                        noticeSuccess("Тема успешно создана");
+                        noticeSuccess("{{phrase('topic_created_successfully')}}");
                         setTimeout(() => window.location.reload(), 1000);
                     }
                 } else {
-                    noticeError(response.message || "Произошла ошибка при создании темы");
+                    noticeError(response.message || "{{phrase('topic_creation_error')}}");
                 }
             } catch (error) {
                 console.error('Ошибка при создании темы:', error);
-                noticeError("Произошла ошибка при создании темы. Пожалуйста, попробуйте позже.");
+                noticeError("{{phrase('topic_creation_error_try_later')}}" );
             }
         });
 
@@ -357,7 +357,7 @@
 
 
         // Добавляем подсказку о горячей клавише
-        $("#create_topic").attr('title', 'Нажмите кнопку или используйте Ctrl+Enter');
+        $("#create_topic").attr('title', "{{phrase('press_button_or_use_ctrl_enter')}}");
 
         // Инициализация Bootstrap tooltips
         const tooltips = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));

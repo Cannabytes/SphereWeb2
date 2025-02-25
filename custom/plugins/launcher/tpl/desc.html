@@ -53,9 +53,9 @@
                   <table class="table table-vcenter">
                     <thead>
                     <tr>
-                      <th data-phrase="default">По умолчанию</th>
-                      <th data-phrase="link">Ссылка</th>
-                      <th data-phrase="note">Заметка</th>
+                      <th>{{ phrase('default') }}</th>
+                      <th>{{ phrase('link') }}</th>
+                      <th>{{ phrase('launcher_note') }}</th>
                       <th></th>
                     </tr>
                     </thead>
@@ -67,7 +67,7 @@
                                                    data-server-id="{{key_server_id}}"
                                                    data-element-id="{{launcher.id}}"
                                                    name="launcher_is_default_{{key_server_id}}"></td>
-                      <td><a href="/launcher/{{launcher.data.name}}" data-phrase="to go">Перейти</a></td>
+                      <td><a href="/launcher/{{launcher.data.name}}">{{phrase('follow_the_link')}}</a></td>
                       <td>
                         {{launcher.data.note ?? "-"}}
                       </td>
@@ -76,7 +76,7 @@
                           <a href="/admin/launcher/edit/{{launcher.id}}"
                              class="btn btn-sm btn-secondary js-bs-tooltip-enabled" data-bs-toggle="tooltip"
                              aria-label="Edit" data-bs-original-title="Edit">
-                            <i class="fa fa-pencil-alt"></i> <strong data-phrase="change">Изменить</strong>
+                            <i class="fa fa-pencil-alt"></i> <strong>{{ phrase('change') }}</strong>
                           </a>
                         </div>
 
@@ -85,7 +85,7 @@
                             <input name="remove" value="{{launcher.id}}" type="hidden">
                             <input name="server_id" value="{{launcher.data.server}}" type="hidden">
                             <button type="submit" class="btn btn-sm btn-secondary">
-                              <i class="fa fa-trash-alt "></i> <strong data-phrase="remove">Удалить</strong>
+                              <i class="fa fa-trash-alt "></i> <strong>{{ phrase('delete') }}</strong>
                             </button>
                           </form>
                         </div>

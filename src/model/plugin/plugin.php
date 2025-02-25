@@ -28,9 +28,6 @@ class plugin
 
     static public function loading(): void
     {
-        /*     if(server::get_count_servers()==0){
-                 return;
-             }*/
         $pluginList = [];
         $data = sql::getRows(
             "SELECT * FROM `settings` WHERE `key` = '__PLUGIN__'"
@@ -88,6 +85,7 @@ class plugin
             }
         }
 
+
         self::$plugins = $pluginList;
     }
 
@@ -115,7 +113,6 @@ class plugin
     public static function get(string $getNameClass): DynamicPluginSetting
     {
         $serverId = isset($_POST['serverId']) && $_POST['serverId'] == 0 ? 0 : user::self()->getServerId();
-
         if (isset(self::$plugins[$getNameClass])) {
             return self::$plugins[$getNameClass];
         }
@@ -148,7 +145,6 @@ class plugin
                 } elseif (!$isEnabled && isset(self::$plugins[$pluginName])) {
                     unset(self::$plugins[$pluginName]);
                 }
-
                 $activePlugins = array_keys(self::$plugins);
 
                 // Сначала удаляем старые записи

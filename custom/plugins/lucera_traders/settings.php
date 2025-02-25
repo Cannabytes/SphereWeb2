@@ -7,7 +7,7 @@ return [
     "PLUGIN_VERSION" => "1.0.0",
     "PLUGIN_AUTHOR" => "Logan22",
     "PLUGIN_GITHUB" => "",
-    "PLUGIN_DESCRIPTION" => "Плагин показывает список торгашей и то что продают. Только для Люцеры.",
+    "PLUGIN_DESCRIPTION" => "Lucera Traders Description",
     "PLUGIN_ADMIN_PAGE" => "/admin/plugin/traders/lucera",
     "PLUGIN_ICON" => "bi bi-basket",
     "PLUGIN_LINK" => "/traders",

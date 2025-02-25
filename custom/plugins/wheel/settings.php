@@ -6,7 +6,7 @@ return [
 "PLUGIN_VERSION" => "1.0.0",
 "PLUGIN_AUTHOR" => "Logan22",
 "PLUGIN_GITHUB" => "",
-"PLUGIN_DESCRIPTION" => "Розыгрыш предметов",
+"PLUGIN_DESCRIPTION" => "wheel_description",
 "PLUGIN_ADMIN_PAGE" => "/fun/wheel/admin",
 "PLUGIN_ADMIN_PAGE_NAME" => "Розыгрыш",
 "PLUGIN_ADMIN_PAGE_ICON" => "fa fa-users",

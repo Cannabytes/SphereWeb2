@@ -1,5 +1,5 @@
 {% if get_setting('__config_fun_wheel__') %}
-<li class="slide__category"><span class="category-name">Рулетка</span></li>
+<li class="slide__category"><span class="category-name">{{ phrase('wheel') }}</span></li>
 <li class="slide">
   {% for name in get_setting('__config_fun_wheel__') %}
   <a href="/fun/wheel/{{name}}" class="side-menu__item">

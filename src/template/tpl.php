@@ -312,14 +312,30 @@ class tpl
                 $pluginsAllComponents                = self::processPluginsDir("src/component/plugins/");
                 self::$pluginsAllCustomAndComponents = array_merge($pluginsAllCustom, $pluginsAllComponents);
             }
+
+            // Разделяем плагины с полем SORT и без него
+            $pluginsWithSort = [];
+            $pluginsWithoutSort = [];
+
+            foreach (self::$pluginsAllCustomAndComponents as $plugin) {
+                if (isset($plugin['SORT'])) {
+                    $pluginsWithSort[] = $plugin;
+                } else {
+                    $pluginsWithoutSort[] = $plugin;
+                }
+            }
+
+            // Сортируем плагины с полем SORT по возрастанию
+            usort($pluginsWithSort, function ($a, $b) {
+                return  $b['SORT'] <=> $a['SORT'] ;
+            });
+
+            // Объединяем массивы: сначала отсортированные, затем остальные
+            self::$pluginsAllCustomAndComponents = array_merge($pluginsWithSort, $pluginsWithoutSort);
+
             $templates = [];
-            foreach (self::$pluginsAllCustomAndComponents as $key => $plugin) {
-                if (isset($plugin['INCLUDES'])) {
-                    if (isset($plugin['PLUGIN_ENABLE'])) {
-                        if ( ! $plugin['PLUGIN_ENABLE']) {
-                            continue;
-                        }
-                    }
+            foreach (self::$pluginsAllCustomAndComponents as $plugin) {
+                if (isset($plugin['INCLUDES']) && (!isset($plugin['PLUGIN_ENABLE']) || $plugin['PLUGIN_ENABLE'])) {
                     foreach ($plugin['INCLUDES'] as $name => $file) {
                         if ($name == $includeName) {
                             $templates[] = $file;
@@ -330,6 +346,7 @@ class tpl
 
             return $templates;
         }));
+
 
         $twig->addFunction(new TwigFunction('path', function ($link = "/") {
             $link = sprintf("%s/%s", fileSys::getSubDir(), $link);
@@ -481,6 +498,37 @@ class tpl
         //Аналог get_phrase
         $twig->addFunction(new TwigFunction('phrase', function ($phraseKey, ...$values) {
             return \Ofey\Logan22\controller\config\config::load()->lang()->getPhrase($phraseKey, ...$values);
+        }));
+
+        /**
+         * Возвращает число без ненужных нулей после десятичной точки.
+         * Например, 5.0 -> '5', 5.20 -> '5.2', 7.5 -> '7.5'.
+         *
+         * @param mixed $value Число или строка, которая выглядит как число.
+         * @return string
+         */
+        $twig->addFunction(new TwigFunction('formatFloatToHuman', function ($value) {
+            // Сначала удостоверимся, что у нас есть число
+            if (!is_numeric($value)) {
+                return (string)$value;
+            }
+
+            // Приводим к float
+            $floatValue = (float)$value;
+
+            // Если у числа нет дробной части (7.0 == 7)
+            if (floor($floatValue) == $floatValue) {
+                return (string)(int)$floatValue;
+            }
+
+            // Если дробная часть есть, аккуратно преобразуем в строку
+            // Но при float->string могут быть лишние нули, поэтому лучше воспользоваться sprintf или number_format
+            // Например, чтобы убрать "хвосты" вроде 5.2000000001
+            // Если таких случаев нет, можно оставить просто (string) $floatValue
+
+            // Простой вариант — отсекаем лишние нули до 3-4 знаков после запятой (регулируется по необходимости):
+            return rtrim(rtrim(sprintf('%.4f', $floatValue), '0'), '.');
+
         }));
 
         /**

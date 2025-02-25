@@ -230,11 +230,16 @@ class server
             $headers[] = "User-IP: " . self::$user->getIp();
             $headers[] = "User-isBot: " . 0;
         } else {
+            $server_id = \Ofey\Logan22\model\server\server::getLastServer()?->getId();
+            if(isset($_SESSION['server_id'])){
+                $server_id = $_SESSION['server_id'];
+            }
             $headers[] = "User-Id: " . 0;
             if (type::SPHERE_INSTALL != $url) {
-                $headers[] = "User-Server-Id: " . \Ofey\Logan22\model\server\server::getLastServer()?->getId();
+                $headers[] = "User-Server-Id: " . $server_id;
             }
         }
+
         $headers[] = "Token: " . self::getToken();
         $host = $_SERVER['HTTP_HOST'];
         if (empty($host) || !self::is_valid_domain(parse_url($host, PHP_URL_HOST))) {

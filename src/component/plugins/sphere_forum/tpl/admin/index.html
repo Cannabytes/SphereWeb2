@@ -8,12 +8,12 @@
                 <a href="/admin/extensions/paid" class="avatar border text-muted me-2">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
                 </a>
-                Внутренний форум Sphere
+                {{phrase('internal_sphere_forum')}}
             </div>
             <div class="prism-toggle">
                 <div class="custom-toggle-switch d-flex align-items-center ">
                     <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}" type="checkbox" {% if getPluginActive(pluginName) %}checked=""{% endif %}>
-                    <label for="enablePlugin" class="label-success"></label><span class="ms-3">Активация плагина</span>
+                    <label for="enablePlugin" class="label-success"></label><span class="ms-3">{{phrase('Activating the plugin')}}</span>
                 </div>
             </div>
         </div>
@@ -21,30 +21,25 @@
 
             {% if getPluginActive('sphere_forum') == false %}
             <div class="alert alert-danger" role="alert">
-                Плагин отключен.<br>
-                Только включенные плагины можно настраивать.
+                {{phrase('plugin_disabled_message')|raw}}
             </div>
             {% endif %}
 
             <div class="alert alert-info" role="alert">
-                Плагин добавит на Ваш сайт внутренний форум.<br>
-                Это форум похож обычный простой форум, только интегрирован в Sphere.<br>
-                Важно понимать: Сфера Форум - не стремиться превзойти или быть аналогом форума XenForo, который разрабатывается командой программистов различных направлений и больше 15 лет активной коммерческой разработки, со стоимостью 140$ и 40$ продление.
-                Этот форум я сделал для тех у кого нет возможности на покупку XenForo или другого продвинутого веб-форума.<br>
-                Сфера форум значительно уступает в юзабилии и Я (разработчик) это знаю.
+                {{phrase('plugin_description_sphere_forum')|raw}}
             </div>
 
 
             <div class="form-check">
                 <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value="" id="showMainPage" {% if setting.showMainPage %}checked=""{% endif %}>
                 <label class="form-check-label" for="showMainPage">
-                    Показывать на главной странице
+                    {{ phrase('Show on main page') }}
                 </label>
             </div>
             <div class="form-check">
                 <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value="" id="addToMenu" {% if setting.addToMenu %}checked=""{% endif %}>
                 <label class="form-check-label" for="addToMenu">
-                    Добавить в меню
+                    {{ phrase('Add to menu') }}
                 </label>
             </div>
 

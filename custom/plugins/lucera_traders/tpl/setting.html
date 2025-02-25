@@ -13,7 +13,7 @@
       <div class="prism-toggle">
         <div class="custom-toggle-switch d-flex align-items-center ">
           <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}" type="checkbox" {% if getPluginActive(pluginName) %}checked=""{% endif %}>
-          <label for="enablePlugin" class="label-success"></label><span class="ms-3">Активация плагина</span>
+          <label for="enablePlugin" class="label-success"></label><span class="ms-3">{{phrase('Activating the plugin')}}</span>
         </div>
       </div>
     </div>
@@ -34,13 +34,13 @@
       <div class="form-check">
         <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value="" id="showMainPage" {% if setting.showMainPage %}checked=""{% endif %}>
         <label class="form-check-label" for="showMainPage">
-          Показывать на главной странице
+          {{ phrase('Show on main page') }}
         </label>
       </div>
       <div class="form-check">
         <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value="" id="addToMenu" {% if setting.addToMenu %}checked=""{% endif %}>
         <label class="form-check-label" for="addToMenu">
-          Добавить в меню
+          {{ phrase('Add to menu') }}
         </label>
       </div>
 

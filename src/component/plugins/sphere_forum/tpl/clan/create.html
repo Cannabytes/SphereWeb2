@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Создание клана{% endblock %}
+{% block title %}{{phrase('create_clan')}}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -9,7 +9,7 @@
             <div class="card custom-card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="ri-team-line me-2"></i>Создание клана
+                        <i class="ri-team-line me-2"></i>{{phrase('create_clan')}}
                     </div>
                 </div>
                 <div class="card-body">
@@ -17,24 +17,24 @@
                         <!-- Название и цвет клана -->
                         <div class="row mb-4">
                             <div class="col-lg-4">
-                                <label for="clanName" class="form-label">Название клана <span
+                                <label for="clanName" class="form-label">{{phrase('clan_name')}} <span
                                         class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="clanName" name="clanName" maxlength="16"
                                            required>
                                     <span class="input-group-text"><span id="nameCounter">0/16</span></span>
                                 </div>
-                                <small class="text-muted">Название клана должно содержать от 2 до 16 символов</small>
+                                <small class="text-muted">{{phrase('clan_name_length_error')}}</small>
                             </div>
 
                             <!-- Описание клана -->
                             <div class="col-lg-8">
-                                    <label for="clanDescription" class="form-label">Описание клана <span
+                                    <label for="clanDescription" class="form-label">{{phrase('clan_description')}} <span
                                             class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="clanDescription" name="clanDescription"
                                            maxlength="64" required>
                                     <div class="text-end mt-1">
-                                        <small class="text-muted"><span id="descCounter">0</span>/64 символов</small>
+                                        <small class="text-muted"><span id="descCounter">0</span>/64 {{phrase('characters_count')}}</small>
                                     </div>
                             </div>
 
@@ -46,7 +46,7 @@
                                         <h2 class="accordion-header">
                                             <button class="accordion-button collapsed" type="button"
                                                     data-bs-toggle="collapse" data-bs-target="#transparentColors">
-                                                Цвет названия клана
+                                                {{phrase('clan_name_color')}}
                                             </button>
                                         </h2>
                                         <div id="transparentColors" class="accordion-collapse collapse"
@@ -55,158 +55,158 @@
                                                 <div class="d-flex flex-wrap gap-3 color-picker">
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-golden">Текст</span>
-                                                        <small class="d-block text-muted">Золотой</small>
+                                                        <span class="text-clan color-preview text-clan-golden">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('golden')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-emerald">Текст</span>
-                                                        <small class="d-block text-muted">Изумрудный</small>
+                                                        <span class="text-clan color-preview text-clan-emerald">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('emerald')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-neon-blue">Текст</span>
-                                                        <small class="d-block text-muted">Неоновый синий</small>
+                                                        <span class="text-clan color-preview text-clan-neon-blue">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('neon_blue')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-fiery">Текст</span>
-                                                        <small class="d-block text-muted">Огненный</small>
+                                                        <span class="text-clan color-preview text-clan-fiery">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('fiery')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-purple">Текст</span>
-                                                        <small class="d-block text-muted">Фиолетовый</small>
+                                                        <span class="text-clan color-preview text-clan-purple">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('purple')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-crimson">Текст</span>
-                                                        <small class="d-block text-muted">Малиновый</small>
+                                                        <span class="text-clan color-preview text-clan-crimson">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('crimson')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-lime">Текст</span>
-                                                        <small class="d-block text-muted">Лаймовый</small>
+                                                        <span class="text-clan color-preview text-clan-lime">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('lime')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-marine">Текст</span>
-                                                        <small class="d-block text-muted">Морской</small>
+                                                        <span class="text-clan color-preview text-clan-marine">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('marine')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-pink">Текст</span>
-                                                        <small class="d-block text-muted">Розовый</small>
+                                                        <span class="text-clan color-preview text-clan-pink">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('pink')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-icy">Текст</span>
-                                                        <small class="d-block text-muted">Ледяной</small>
+                                                        <span class="text-clan color-preview text-clan-icy">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('icy')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-orange">Текст</span>
-                                                        <small class="d-block text-muted">Оранжевый</small>
+                                                        <span class="text-clan color-preview text-clan-orange">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('orange')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-salad">Текст</span>
-                                                        <small class="d-block text-muted">Салатовый</small>
+                                                        <span class="text-clan color-preview text-clan-salad">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('salad')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-turquoise">Текст</span>
-                                                        <small class="d-block text-muted">Бирюзовый</small>
+                                                        <span class="text-clan color-preview text-clan-turquoise">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('turquoise')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-coral">Текст</span>
-                                                        <small class="d-block text-muted">Коралловый</small>
+                                                        <span class="text-clan color-preview text-clan-coral">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('coral')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-amethyst">Текст</span>
-                                                        <small class="d-block text-muted">Аметистовый</small>
+                                                        <span class="text-clan color-preview text-clan-amethyst">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('amethyst')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-amber">Текст</span>
-                                                        <small class="d-block text-muted">Янтарный</small>
+                                                        <span class="text-clan color-preview text-clan-amber">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('amber')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-sapphire">Текст</span>
-                                                        <small class="d-block text-muted">Сапфировый</small>
+                                                        <span class="text-clan color-preview text-clan-sapphire">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('sapphire')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-ruby">Текст</span>
-                                                        <small class="d-block text-muted">Рубиновый</small>
+                                                        <span class="text-clan color-preview text-clan-ruby">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('ruby')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-ultramarine">Текст</span>
-                                                        <small class="d-block text-muted">Ультрамарин</small>
+                                                        <span class="text-clan color-preview text-clan-ultramarine">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('ultramarine')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-pearl">Текст</span>
-                                                        <small class="d-block text-muted">Перламутровый</small>
+                                                        <span class="text-clan color-preview text-clan-pearl">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('pearl')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-cosmic">Текст</span>
-                                                        <small class="d-block text-muted">Космический</small>
+                                                        <span class="text-clan color-preview text-clan-cosmic">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('cosmic')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-sunset">Текст</span>
-                                                        <small class="d-block text-muted">Закатное солнце</small>
+                                                        <span class="text-clan color-preview text-clan-sunset">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('sunset')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-aurora">Текст</span>
-                                                        <small class="d-block text-muted">Северное сияние</small>
+                                                        <span class="text-clan color-preview text-clan-aurora">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('aurora')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-electric">Текст</span>
-                                                        <small class="d-block text-muted">Электрический</small>
+                                                        <span class="text-clan color-preview text-clan-electric">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('electric')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-purple-haze">Текст</span>
-                                                        <small class="d-block text-muted">Пурпурная дымка</small>
+                                                        <span class="text-clan color-preview text-clan-purple-haze">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('purple_haze')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-bronze">Текст</span>
-                                                        <small class="d-block text-muted">Бронзовый</small>
+                                                        <span class="text-clan color-preview text-clan-bronze">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('bronze')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-moonlight">Текст</span>
-                                                        <small class="d-block text-muted">Лунный свет</small>
+                                                        <span class="text-clan color-preview text-clan-moonlight">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('moonlight')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-acid">Текст</span>
-                                                        <small class="d-block text-muted">Кислотный</small>
+                                                        <span class="text-clan color-preview text-clan-acid">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('acid')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-crimson">Текст</span>
-                                                        <small class="d-block text-muted">Багровый</small>
+                                                        <span class="text-clan color-preview text-clan-crimson">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('crimson_blood')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-aquamarine">Текст</span>
-                                                        <small class="d-block text-muted">Аквамарин</small>
+                                                        <span class="text-clan color-preview text-clan-aquamarine">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('aquamarine')}}</small>
                                                     </div>
 
                                                     <div class="color-option">
-                                                        <span class="text-clan color-preview text-clan-magic">Текст</span>
-                                                        <small class="d-block text-muted">Магический</small>
+                                                        <span class="text-clan color-preview text-clan-magic">{{phrase('text')}}</span>
+                                                        <small class="d-block text-muted">{{phrase('magic')}}</small>
                                                     </div>
 
 
@@ -223,16 +223,16 @@
                         <!-- Тип принятия -->
                         <div class="row mb-4">
                             <div class="col-12">
-                                <label class="form-label">Тип принятия в клан <span class="text-danger">*</span></label>
+                                <label class="form-label">{{phrase('clan_acceptance_type')}} <span class="text-danger">*</span></label>
                                 <div class="btn-group w-100" role="group">
                                     <input type="radio" class="btn-check" name="acceptance" id="automatic" value="1"
                                            checked>
                                     <label class="btn btn-outline-primary" for="automatic">
-                                        <i class="ri-user-add-line me-1"></i>Автоматическое принятие
+                                        <i class="ri-user-add-line me-1"></i>{{phrase('automatic_acceptance')}}
                                     </label>
                                     <input type="radio" class="btn-check" name="acceptance" id="manual" value="2">
                                     <label class="btn btn-outline-primary" for="manual">
-                                        <i class="ri-user-follow-line me-1"></i>По согласию лидера
+                                        <i class="ri-user-follow-line me-1"></i>{{phrase('leader_consent')}}
                                     </label>
                                 </div>
                             </div>
@@ -243,21 +243,20 @@
                         <!-- Логотип и фон клана -->
                         <div class="row">
                             <div class="col-lg-6 mb-4">
-                                <label class="form-label">Логотип клана</label>
+                                <label class="form-label">{{phrase('clan_logo')}}</label>
                                 <div class="preview-container position-relative">
                                     <div class="avatar avatar-xxl">
                                         <img src="{{ template_plugin }}/tpl/img/avatar_clan_default.png" id="logoPreview" class="rounded-3"
-                                             alt="Логотип клана">
+                                             alt="{{phrase('clan_logo')}}">
                                     </div>
                                     <input type="file" class="form-control mt-3" id="clanLogo" name="clanLogo"
                                            accept="image/*">
-                                    <small class="text-muted d-block mt-1">Рекомендуемый размер: 256x256 пикселей. Макс:
-                                        2MB</small>
+                                    <small class="text-muted d-block mt-1">{{phrase('recommended_size_logo')}}</small>
                                 </div>
                             </div>
 
                             <div class="col-lg-6 mb-4">
-                                <label class="form-label">Фон клана</label>
+                                <label class="form-label">{{phrase('clan_background')}}</label>
                                 <div class="preview-container position-relative">
                                     <div class="background-preview rounded-3">
                                         <img src="{{ template_plugin }}/tpl/img/background_default.png" id="backgroundPreview"
@@ -265,17 +264,16 @@
                                     </div>
                                     <input type="file" class="form-control mt-3" id="clanBackground"
                                            name="clanBackground" accept="image/*">
-                                    <small class="text-muted d-block mt-1">Рекомендуемый размер: 1920x300 пикселей.
-                                        Макс: 2MB</small>
+                                    <small class="text-muted d-block mt-1">{{phrase('recommended_size_background')}}</small>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="card-footer text-end">
-                    <button type="button" class="btn btn-danger me-2" onclick="window.history.back()">Отмена</button>
+                    <button type="button" class="btn btn-danger me-2" onclick="window.history.back()">{{ phrase(80) }}</button>
                     <button type="button" class="btn btn-primary" id="createClanBtn">
-                        <i class="ri-team-line me-1"></i>Создать клан
+                        <i class="ri-team-line me-1"></i>{{phrase('create_clan')}}
                     </button>
                 </div>
             </div>
@@ -386,7 +384,7 @@
             const color = $(this).data('color');
             $('#selectedNameColor').val(color);
 
-            // Обновляем цвет текста в поле ввода названия
+            // Обновляем цвет {{phrase('text')}}а в поле ввода названия
             $('#clanName').removeClass().addClass(`form-control ${color}`);
         });
 
@@ -396,7 +394,8 @@
                 const file = input.files[0];
 
                 if (file.size > maxSize) {
-                    noticeError(`Размер файла превышает ${maxSize / (1024 * 1024)}MB`);
+                    let mb = maxSize / (1024 * 1024);
+                    noticeError(`{{phrase('file_size_exceeds', mb)}}`);
                     input.value = '';
                     return false;
                 }

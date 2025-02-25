@@ -1,0 +1,398 @@
+{% if getPluginActive('winroll') %}
+
+
+{% set winroll = getServer(getUser().getServerId()).getPluginSetting("winroll") %}
+{% if winroll is not null %}
+<style>
+
+h1 {
+    margin: 20px 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* === ОБЛАСТЬ ДЛЯ ГОРИЗОНТАЛЬНОЙ РУЛЕТКИ === */
+.scroller-container {
+    position: relative;
+    height: 120px;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+/* === ЛЕНТА С ПРЕДМЕТАМИ === */
+.items-wrapper {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    position: relative;
+}
+
+.item {
+    min-width: 150px;
+    margin: 0 10px;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px;
+    font-weight: bold;
+    transition: transform 0.2s ease, border 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.item img {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 5px;
+}
+
+.center-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 100%;
+    background-color: rgba(255, 79, 79, 0.4);
+    z-index: 1;
+    animation: lineGlow 2s infinite alternate;
+    box-shadow: 0 0 10px rgba(255, 79, 79, 0.3);
+}
+
+@keyframes lineGlow {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 79, 79, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(255, 79, 79, 0.6);
+    }
+}
+
+.centered {
+    border: 2px solid #ff4f4f;
+}
+
+.winning {
+    animation: highlight 1.5s ease-in-out infinite;
+    border: 2px solid #ff4f4f;
+}
+
+@keyframes highlight {
+    0% {
+        box-shadow: 0 0 10px #ff4f4f;
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 20px #ff4f4f;
+        transform: scale(1.07);
+    }
+    100% {
+        box-shadow: 0 0 10px #ff4f4f;
+        transform: scale(1);
+    }
+}
+</style>
+
+<div class="row">
+  <div class="col-xl-12 col-lg-12 col-sm-12">
+    <div class="card custom-card">
+      <div class="card-body">
+
+        <div class="text-center">
+
+          {{ phrase('winroll_raffa_of_items', winroll.cost, phrase('donate_coin'))|raw }}
+        </div>
+
+        <div style="display: flex;">
+          <div class="scroller-container bg-light border p-1 px-2 rounded ">
+            <div class="center-line"></div>
+            <div class="items-wrapper" id="itemsWrapper"></div>
+          </div>
+          <button {% if winroll.cost >= getUser().getBalance() %}disabled{% endif %} class="btn btn-success ms-3" id="spinBtn" style="height: 120px">{{ phrase('winroll_start') }}</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Новая модалка Bootstrap -->
+<div class="modal fade" id="result-modal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="resultModalLabel">{{phrase("Result of the draw")}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{phrase('close')}}"></button>
+      </div>
+      <div class="modal-body">
+        <p id="result-text" class="fs-5"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Настраиваем переменные
+const baseScrollSpeed = 1.1;
+const maxSpinSpeed = 11;
+const decelerationDelay = 2300;
+let currentOffset = 0;
+let isSpinning = false;
+let isFinalized = false;
+let winningItemId = null;
+let winningReceivedTime = null;
+let winningItemCount = 0; // Переменная для количества
+
+// Массив исходных предметов
+const items = [
+    {% for wr in winroll.items %}
+{% set item = get_item_info(wr.itemId) %}
+{% set enchant = wr.enchant %}
+{
+    id: "{{ wr.id }}",
+          name: "{{ enchant > 0 ? '+' ~ enchant ~ ' ' ~ item.getItemName() : item.getItemName() }}",
+      image: "{{ item.getIcon() }}"
+},
+{% endfor %}
+];
+
+// Ссылки на элементы
+const itemsWrapper = document.getElementById("itemsWrapper");
+const spinBtn = document.getElementById("spinBtn");
+const resultText = document.getElementById("result-text");
+
+let bootstrapModal = null;
+document.addEventListener("DOMContentLoaded", () => {
+    const modalEl = document.getElementById("result-modal");
+     bootstrapModal = new bootstrap.Modal(modalEl, {});
+    modalEl.addEventListener("hidden.bs.modal", () => {
+        isSpinning = false;
+        isFinalized = false;
+        winningItemId = null;
+        winningReceivedTime = null;
+        document.querySelectorAll(".item.winning").forEach(el => el.classList.remove("winning"));
+        requestAnimationFrame(animate);
+    });
+
+});
+
+// Функция форматирования даты и времени в формате "HH:MM / dd.mm.yyyy"
+function formatDateTime(date) {
+  let hours = date.getHours().toString().padStart(2, '0');
+  let minutes = date.getMinutes().toString().padStart(2, '0');
+  let day = date.getDate().toString().padStart(2, '0');
+  let month = (date.getMonth() + 1).toString().padStart(2, '0');
+  let year = date.getFullYear();
+  return `${hours}:${minutes} / ${day}.${month}.${year}`;
+}
+
+// Функция добавления новой строки лога выигрыша в начало таблицы
+function addWinLog(winData) {
+  setTimeout(() => {
+    var logsContainer = document.getElementById('logs');
+    if (logsContainer) {
+      var row = document.createElement('tr');
+      var currentTime = new Date();
+      var timeStr = formatDateTime(currentTime);
+      row.innerHTML = `
+                <td style="width: 100%">
+                  <div class="d-flex align-items-center">
+                    <span class="avatar avatar-xs me-2">
+                      <img src="${winData.item.icon}" alt="icon">
+                    </span>
+                    ${winData.item.addName ? winData.item.addName + ' ' : ''}${winData.item.itemName} x${winData.count}
+                  </div>
+                </td>
+              `;
+      logsContainer.insertBefore(row, logsContainer.firstChild);
+    }
+  }, 3000);
+}
+
+
+
+// Запуск спина по нажатию кнопки
+spinBtn.addEventListener("click", () => {
+    if (isSpinning) return;
+    isSpinning = true;
+    winningItemId = null;
+    winningReceivedTime = null;
+    winningItemCount = 0;
+    AjaxSend('/admin/plugin/winroll/spin', 'POST', {})
+          .then(response => {
+              responseAnalysis(response);
+              if (response.ok === false) {
+                isSpinning = false;
+                requestAnimationFrame(animate);
+                return;
+              }
+              addWinLog(response);
+              winningItemId = parseInt(response.id, 10);
+              winningReceivedTime = performance.now();
+              winningItemCount = parseInt(response.count, 10);
+          })
+          .catch(error => console.error('Ошибка при получении результата:', error));
+});
+
+
+
+// Умножаем список предметов, чтобы лента была «бесконечной»
+const repeatsCount = 6;
+let repeatedItems = [];
+for (let i = 0; i < repeatsCount; i++) {
+    repeatedItems = repeatedItems.concat(items);
+}
+
+// Создаём DOM-элементы для каждого предмета
+repeatedItems.forEach((itemObj) => {
+    const div = document.createElement("div");
+    div.className = "item card-item";
+
+    // Иконка
+    const imgEl = document.createElement("img");
+    imgEl.src = itemObj.image;
+    imgEl.alt = itemObj.name;
+    imgEl.width = 32;
+    imgEl.height = 32;
+
+    // Название
+    const nameEl = document.createElement("div");
+    nameEl.textContent = itemObj.name;
+
+    // Сохраняем важную инфу
+    div.dataset.id = itemObj.id;
+    div.dataset.name = itemObj.name;
+    div.dataset.image = itemObj.image;
+
+    // Добавляем в DOM
+    div.appendChild(imgEl);
+    div.appendChild(nameEl);
+    itemsWrapper.appendChild(div);
+});
+
+let speed = baseScrollSpeed;
+let totalWidth = 0;
+let singleSetWidth = 0;
+
+window.addEventListener("load", () => {
+    totalWidth = itemsWrapper.scrollWidth;
+    singleSetWidth = totalWidth / repeatsCount;
+    requestAnimationFrame(animate);
+});
+
+function animate(time) {
+    if (isFinalized) return; // Если финальное выравнивание завершено, цикл останавливаем
+
+    const container = document.querySelector(".scroller-container");
+    const containerRect = container.getBoundingClientRect();
+    const containerCenterX = containerRect.left + containerRect.width / 2;
+    const itemElements = document.querySelectorAll(".item");
+
+    if (!isSpinning) {
+        // Холостая прокрутка
+        currentOffset -= baseScrollSpeed;
+    } else if (
+          winningItemId === null ||
+          (winningReceivedTime !== null && (time - winningReceivedTime < decelerationDelay))
+    ) {
+        // Пока не пришёл winningItemId или рано замедляться – вращаем быстро
+        currentOffset -= maxSpinSpeed;
+    } else {
+        // После задержки замедляемся к выигрышному
+        let candidate = null;
+        let candidateDistance = Infinity;
+        itemElements.forEach(el => {
+            if (parseInt(el.dataset.id, 10) === winningItemId) {
+                const rect = el.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                if (centerX >= containerCenterX) {
+                    const distance = centerX - containerCenterX;
+                    if (distance < candidateDistance) {
+                        candidateDistance = distance;
+                        candidate = el;
+                    }
+                }
+            }
+        });
+
+        if (candidate) {
+            const rect = candidate.getBoundingClientRect();
+            const candidateCenterX = rect.left + rect.width / 2;
+            const diff = candidateCenterX - containerCenterX;
+            if (Math.abs(diff) < 1) {
+                // Уже почти по центру
+                currentOffset -= diff;
+                itemsWrapper.style.transform = `translateX(${currentOffset}px)`;
+
+                candidate.classList.add("winning");
+                candidate.classList.remove("centered");
+                // Показываем результат
+                const wonItemName = candidate.dataset.name;
+                const wonItemImage = candidate.dataset.image;
+                resultText.innerHTML = `
+          {{ phrase('You won' ) }}:
+          <img src="${wonItemImage}" alt="${wonItemName}" width="32" height="32">
+          <strong>${wonItemName}</strong>
+          <strong> x${winningItemCount}</strong>
+
+       <hr>
+       {{ phrase("sent to warehouse") }}
+        `;
+
+                // Открываем Bootstrap-модалку
+                bootstrapModal.show();
+
+                isFinalized = true;
+                return;
+            } else {
+                // Плавное торможение
+                let factor = 0.1;
+                let computedSpeed = diff * factor;
+                computedSpeed = Math.min(maxSpinSpeed, Math.max(baseScrollSpeed, computedSpeed));
+                currentOffset -= computedSpeed;
+            }
+        } else {
+            // Если нужный предмет уже проскочил, всё равно вращаем
+            currentOffset -= maxSpinSpeed;
+        }
+    }
+
+    fixOffset();
+    itemsWrapper.style.transform = `translateX(${currentOffset}px)`;
+    highlightCenterItem();
+    requestAnimationFrame(animate);
+}
+
+function highlightCenterItem() {
+    const container = document.querySelector(".scroller-container");
+    const containerRect = container.getBoundingClientRect();
+    const centerX = containerRect.left + containerRect.width / 2;
+
+    const itemElements = document.querySelectorAll(".item");
+    itemElements.forEach((el) => {
+        if (el.classList.contains("winning")) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.left <= centerX && rect.right >= centerX) {
+            el.classList.add("centered");
+        } else {
+            el.classList.remove("centered");
+        }
+    });
+}
+
+function fixOffset() {
+    if (singleSetWidth <= 0) return;
+    while (currentOffset <= -singleSetWidth) {
+        currentOffset += singleSetWidth;
+    }
+}
+
+</script>
+
+{% endif %}
+{% endif %}
+

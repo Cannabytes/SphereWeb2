@@ -58,6 +58,8 @@ class index
                 "licenseActive" => $info['licenseActive'] ?? null,
                 "roulette" => $info['roulette'] ?? null,
                 "rouletteActive" => $info['rouletteActive'] ?? false,
+                "winroll" => $info['winroll'] ?? null,
+                "isActiveWinroll" => $info['isActiveWinroll'] ?? false,
                 "balance" => (float)$info['balance'] ?? 0,
                 "servers" => $info['servers'],
                 "sphere_last_commit" => $info['last_commit'],

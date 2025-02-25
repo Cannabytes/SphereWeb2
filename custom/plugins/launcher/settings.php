@@ -6,7 +6,7 @@ return [
     "PLUGIN_VERSION" => "2.0.3",
     "PLUGIN_AUTHOR" => "Logan22",
     "PLUGIN_GITHUB" => "",
-    "PLUGIN_DESCRIPTION" => "Официальный лаунчер проекта Sphere",
+    "PLUGIN_DESCRIPTION" => "sphere-launcher_description",
     "PLUGIN_ADMIN_PAGE" => "/admin/launcher",
     "PLUGIN_ADMIN_PAGE_NAME" => "Лаунчер",
     "PLUGIN_ADMIN_PAGE_ICON" => "fa fa-users",

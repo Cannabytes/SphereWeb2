@@ -129,6 +129,17 @@
                                     </tr>
 
                                     <tr>
+                                        <th scope="row">{{phrase('winroll') }}</th>
+                                        <td>
+                                            {% if isActiveWinroll == false %}
+                                            <span class="text-danger">{{ phrase('not_active') }}</span>
+                                            {% else %}
+                                            <span class="text-success">{{winroll|date('d.m.Y H:i', getUser().getTimezone())}}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+
+                                    <tr>
                                         <th scope="row">{{ phrase(62) }}</th>
                                         <td>
                                             {% if forumInfo.is_active %}
@@ -401,7 +412,7 @@
 
             <div class="card">
                 <div class="card-body">
-                    <h4 class="mb-2 fw-semibold">Рекомендации администраторам</h4>
+                    <h4 class="mb-2 fw-semibold">{{phrase('admin_recommendations')}}</h4>
 
 
                     <ul class="task-list">
@@ -470,7 +481,7 @@
                                                     data-bs-target="#license-tab-pane" data-bs-toggle="tab" id="licence-tab"
                                                     role="tab" type="button"><i
                                                   class="bi bi-cloud-download me-1 align-middle d-inline-block fs-16"></i>
-                                                Лицензия
+                                                {{ phrase('license') }}
                                             </button>
                                         </li>
 
@@ -847,7 +858,8 @@
                                                                                         alt="">
                                                                             </span>
                                                             <div class="mt-2">
-                                                                <p class="mb-0 fw-semibold">Источники трафика</p>
+                                                                <p class="mb-0 fw-semibold">{{ phrase('traffic_sources') }}
+</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -970,7 +982,7 @@
                                                                class="btn btn-sm btn-light btn-wave">{{ phrase('open')
                                                                 }}</a>
                                                             <a href="/admin/filescanner"
-                                                               class="btn btn-sm btn-light btn-wave">Сканер файлов</a>
+                                                               class="btn btn-sm btn-light btn-wave">{{phrase('fileScanner')}}</a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1072,7 +1084,8 @@
                                                                     <div class="card-header bg-light">
                                                                         <h5 class="card-title mb-0">
                                                                             <i class="bi bi-clipboard-data-fill me-2"></i>
-                                                                            Общее резюме
+                                                                            {{ phrase('overall_summary') }}
+
                                                                         </h5>
                                                                     </div>
                                                                     <div class="card-body">
@@ -1090,39 +1103,35 @@
                                                                                 <div class="border rounded p-3 text-center bg-success bg-opacity-10">
                                                                                     <h3 class="text-success mb-0">{{
                                                                                         total.success }}</h3>
-                                                                                    <small class="text-muted">Оптимально</small>
+                                                                                    <small class="text-muted">{{ phrase('optimal') }}</small>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-3">
                                                                                 <div class="border rounded p-3 text-center bg-warning bg-opacity-10">
                                                                                     <h3 class="text-warning mb-0">{{
                                                                                         total.warning }}</h3>
-                                                                                    <small class="text-muted">Требует
-                                                                                        внимания</small>
+                                                                                    <small class="text-muted">{{ phrase('requires_attention') }}</small>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-3">
                                                                                 <div class="border rounded p-3 text-center bg-danger bg-opacity-10">
                                                                                     <h3 class="text-danger mb-0">{{
                                                                                         total.danger }}</h3>
-                                                                                    <small class="text-muted">Критические
-                                                                                        проблемы</small>
+                                                                                    <small class="text-muted">{{ phrase('critical_issues') }}</small>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-3">
                                                                                 <div class="border rounded p-3 text-center bg-info bg-opacity-10">
                                                                                     <h3 class="text-info mb-0">{{
                                                                                         total.info }}</h3>
-                                                                                    <small class="text-muted">Информационные</small>
+                                                                                    <small class="text-muted">{{ phrase('informational') }}</small>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
 
                                                                         <div class="alert alert-info mt-4 mb-0">
                                                                             <i class="bi bi-info-circle-fill me-2"></i>
-                                                                            <strong>Рекомендация:</strong> Обратите
-                                                                            внимание на параметры со статусом "Внимание"
-                                                                            и "Проблема" для оптимизации работы сервера.
+                                                                            {{ phrase('server_optimization_recommendation')|raw }}
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1194,43 +1203,7 @@
 
 
                                                     <div class="container mt-5">
-                                                        <h1 class="text-center mb-4">ЛИЦЕНЗИОННОЕ СОГЛАШЕНИЕ ПО ПРОГРАММНОМУ ОБЕСПЕЧЕНИЮ SPHEREWEB</h1>
-
-                                                        <h2>1. ОБЩИЕ ПОЛОЖЕНИЯ</h2>
-                                                        <p>1.1. Настоящее Лицензионное соглашение (далее – "Соглашение") регулирует использование программного обеспечения SphereWeb (далее – "Программное обеспечение", "ПО").</p>
-                                                        <p>1.2. Использование ПО допускается только при полном согласии с условиями данного Соглашения.</p>
-                                                        <p>1.3. Лицензиар (разработчик) предоставляет лицензиату (пользователю) право использовать ПО на условиях, изложенных в настоящем Соглашении.</p>
-
-                                                        <h2>2. ЛИЦЕНЗИОННЫЕ ПРАВА И ОГРАНИЧЕНИЯ</h2>
-                                                        <p>2.1. Лицензиар предоставляет пользователю неисключительное право использования ПО.</p>
-                                                        <p>2.2. Пользователь не вправе:</p>
-                                                        <ul>
-                                                            <li>Вносить изменения в системные файлы ПО без согласования с Лицензиаром.</li>
-                                                            <li>Обходить или пытаться обойти механизмы защиты ПО, в том числе предназначенные для платных услуг.</li>
-                                                            <li>Изменять, декомпилировать, дизассемблировать или иным образом пытаться получить исходный код ПО.</li>
-                                                            <li>Использовать ПО для незаконных действий, нарушающих законодательство.</li>
-                                                        </ul>
-                                                        <p>2.3. В случае нарушения данных ограничений Лицензиар вправе прекратить обслуживание пользователя и аннулировать его лицензию без возмещения средств.</p>
-
-                                                        <h2>3. ОТКАЗ ОТ ГАРАНТИЙ И ОТВЕТСТВЕННОСТЬ</h2>
-                                                        <p>3.1. ПО предоставляется "как есть". Лицензиар не несёт ответственности за возможные ошибки, сбои или убытки, возникшие в процессе использования ПО.</p>
-                                                        <p>3.2. Лицензиар не гарантирует бесперебойную работу ПО и не несет ответственности за возможные последствия использования или невозможности использования ПО.</p>
-
-                                                        <h2>4. ОБНОВЛЕНИЯ И ПОДДЕРЖКА</h2>
-                                                        <p>4.1. Лицензиар вправе выпускать обновления ПО, которые могут содержать исправления ошибок, новые функции или изменения в механизмах работы.</p>
-                                                        <p>4.2. Лицензиар вправе прекратить предоставление обновлений и технической поддержки в случае нарушения условий данного Соглашения.</p>
-
-                                                        <h2>5. ПРОЧИЕ УСЛОВИЯ</h2>
-                                                        <p>5.1. Лицензиар оставляет за собой право изменять условия данного Соглашения без предварительного уведомления.</p>
-                                                        <p>5.2. Продолжение использования ПО после изменения условий Соглашения означает их принятие.</p>
-                                                        <p>5.3. Все споры, возникающие в связи с данным Соглашением, подлежат урегулированию в соответствии с законодательством страны регистрации Лицензиара.</p>
-
-                                                        <h2>6. ОБРАБОТКА ПЕРСОНАЛЬНЫХ ДАННЫХ</h2>
-                                                        <p>6.1. Лицензиар имеет право собирать и обрабатывать персональные данные пользователей, необходимые для обеспечения корректной работы ПО, в том числе для кэширования и вывода необходимых дополнительных данных.</p>
-                                                        <p>6.2. Обработка персональных данных осуществляется в соответствии с действующим законодательством и направлена исключительно на улучшение качества предоставляемых услуг.</p>
-                                                        <p>6.3. Пользователь имеет право запрашивать информацию об обрабатываемых персональных данных и требовать их обновления или удаления в случаях, предусмотренных законодательством.</p>
-
-                                                        <p class="mt-4 text-center">Приняв данное Соглашение, вы подтверждаете, что ознакомлены с его условиями и соглашаетесь с ними.</p>
+                                                        {{ phrase('license_agreement')|raw }}
                                                     </div>
 
 

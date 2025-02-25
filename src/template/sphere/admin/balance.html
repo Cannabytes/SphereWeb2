@@ -83,48 +83,51 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div class="d-flex">
                                     <i class="ti ti-free-rights fs-24 text-primary me-1"></i>
-                                    <div class="fs-18 fw-semibold ">Бесплатно</div>
+                                    <div class="fs-18 fw-semibold ">{{ phrase('free') }}</div>
                                 </div>
                                 <div>
-                                    <span class="badge bg-success-transparent">Для ознакомления</span>
+                                    <span class="badge bg-success-transparent">{{ phrase('for_review') }}</span>
                                 </div>
                             </div>
-                            <div class="fs-25 fw-bold mb-1">$0<sub class="text-muted fw-semibold fs-11">/ в месяц</sub>
+                            <div class="fs-25 fw-bold mb-1">$0<sub class="text-muted fw-semibold fs-11">/ {{ phrase('per_month') }} </sub>
                             </div>
                             <ul class="list-unstyled mb-0">
 
                                 <li class="d-flex align-items-center mb-3">
                                     <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
-                                    <span><strong class="me-1">2 сервера</strong> - кол-во подключаемых серверов</span>
+                                    <span>{{ phrase('connectable_servers_count')|raw }}</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                     <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
-                                        <span><strong class="me-1">20 регистраций</strong> - игровых аккаунтов в день</span>
+                                        <span>{{ phrase('game_accounts_per_day')|raw }}</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                     <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
-                                    <span><strong class="me-1">Sphere-Launcher</strong> - программа для обновления игры</span>
+                                    <span>{{ phrase('game_updater_program')|raw }}</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                      <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
-                                    <span><strong class="me-1">Рулетка Удачи</strong> - возможность добавить розыгрыш предметов</span>
+                                    <span>{{ phrase('items_raffle_feature')|raw }}
+</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                      <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
-                                    <span>Отслеживание возрастающего кол-ва предметов</span>
+                                    <span>{{ phrase('tracking_increasing_items_count') }}
+</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                      <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
-                                    <span>Форум</span>
+                                    <span>{{phrase('62')}}</span>
                                 </li>
 
                                 <li class="d-grid">
-                                    <button class="btn btn-light btn-wave" disabled type="button">Переключение автоматически</button>
+                                    <button class="btn btn-light btn-wave" disabled type="button">{{ phrase('automatic_switching') }}
+</button>
                                 </li>
 
                             </ul>
@@ -139,48 +142,59 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div class="d-flex">
                                     <i class="ti ti-api-app  fs-24 text-primary me-1"></i>
-                                    <div class="fs-18 fw-semibold">Любительский</div>
+                                    <div class="fs-18 fw-semibold">{{ phrase('amateur') }}
+</div>
                                 </div>
                                 <div>
                                                                 <span class="badge bg-success-transparent">
-                                                                    Для серверов однодневок
+                                                                    {{ phrase('for_server_building_beginners') }}
+
                                                                 </span>
                                 </div>
                             </div>
-                            <div class="fs-25 fw-bold mb-1">$12<sub class="text-muted fw-semibold fs-11">/ месяц</sub></div>
+                            <div class="fs-25 fw-bold mb-1">$12<sub class="text-muted fw-semibold fs-11">/ {{ phrase('per_month') }}</sub></div>
                             <ul class="list-unstyled mb-0">
                                 <li class="d-flex align-items-center mb-3">
                                     <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
-                                    <span><strong class="me-1">10 серверов</strong> - кол-во подключаемых серверов</span>
+                                    <span>{{ phrase('max_connectable_servers_count')|raw }}
+</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                     <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
-                                        <span><strong class="me-1">10000 регистраций</strong> - игровых аккаунтов в день</span>
+                                        <span>{{ phrase('max_game_accounts_per_day')|raw }}
+</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                     <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
-                                    <span><strong class="me-1">Sphere-Launcher</strong> - программа для обновления игры</span>
+                                    <span>{{phrase('game_updater_program')|raw}}</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                      <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
-                                    <span><strong class="me-1">Рулетка Удачи</strong> - возможность добавить розыгрыш предметов</span>
+                                    <span>{{phrase('items_raffle_feature')|raw}}</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                      <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
-                                    <span>Отслеживание возрастающего кол-ва предметов</span>
+                                    <span>{{phrase('tracking_increasing_items_count')}}</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                      <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
-                                    <span>Форум</span>
+                                    <span>{{ phrase(62) }}</span>
                                 </li>
 
                                 <li class="d-grid">
-                                    <button class="btn btn-info btn-wave" type="button">Оплатить</button>
+                                    <button id="amateur" class="btn btn-info btn-wave" type="button">{{ phrase('pay') }}</button>
+                                    <script>
+                                        $("#amateur").on("click", function () {
+                                            AjaxSend("/admin/balance/pay/renewlicense", "POST", {
+                                                months: 1
+                                            }, false);
+                                        });
+                                    </script>
                                 </li>
                             </ul>
                         </div>
@@ -195,49 +209,51 @@
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div class="d-flex">
                                         <i class="ti ti-businessplan text-primary fs-24 me-1"></i>
-                                        <div class="fs-18 fw-semibold">Профессиональный</div>
+                                        <div class="fs-18 fw-semibold">{{ phrase('professional') }}</div>
                                     </div>
                                     <div>
                                                                     <span class="badge bg-primary-transparent">
-                                                                        Для уникальных легенд
+                                                                        {{ phrase('path_to_legend') }}
                                                                     </span>
                                     </div>
                                 </div>
-                                <div class="fs-25 fw-bold mb-1">$20<sub class="text-muted fw-semibold fs-11">/ месяц</sub></div>
+                                <div class="fs-25 fw-bold mb-1">$20<sub class="text-muted fw-semibold fs-11">/ {{ phrase('per_month') }}</sub></div>
                             <ul class="list-unstyled mb-0">
 
                                 <li class="d-flex align-items-center mb-3">
                                     <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
-                                    <span><strong class="me-1">10 серверов</strong> - кол-во подключаемых серверов</span>
+                                    <span>{{ phrase('max_connectable_servers_count')|raw }}
+</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                     <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
-                                        <span><strong class="me-1">10000 регистраций</strong> - игровых аккаунтов в день</span>
+                                        <span>{{ phrase('max_game_accounts_per_day')|raw }}
+</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                     <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success op-3"></i></span>
-                                    <span><strong class="me-1">Sphere-Launcher</strong> - программа для обновления игры</span>
+                                    <span>{{phrase('game_updater_program')|raw}}</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                      <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success op-3"></i></span>
-                                    <span><strong class="me-1">Рулетка Удачи</strong> - возможность добавить розыгрыш предметов</span>
+                                    <span>{{phrase('items_raffle_feature')|raw}}</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                      <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success op-3"></i></span>
-                                    <span>Отслеживание возрастающего кол-ва предметов</span>
+                                    <span>{{phrase('tracking_increasing_items_count')}}</span>
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
                                      <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success op-3"></i></span>
-                                    <span><strong class="me-1">Форум</strong></span>
+                                    <span><strong class="me-1">{{ phrase(62) }}</strong></span>
                                 </li>
 
                                 <li class="d-grid">
-                                    <button id="buyprofessional" class="btn btn-info btn-wave buy-button" type="button">Оплатить</button>
+                                    <button id="buyprofessional" class="btn btn-info btn-wave buy-button" type="button">{{ phrase('pay') }}</button>
                                     <script>
                                         $("#buyprofessional").on("click", function () {
                                             AjaxSend("/admin/balance/pay/pack", "POST", {
@@ -305,7 +321,8 @@
     </div>
 
 
-    <h5 class="fw-semibold text-center"> Вы можете некоторые услуги подключить отдельно </h5>
+    <h5 class="fw-semibold text-center"> {{ phrase('optional_services') }}
+ </h5>
 
     <!-- Start::row-1 -->
     <div class="row">

@@ -1,0 +1,284 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card custom-card  shadow-lg  rounded">
+        <div class="card-header justify-content-between">
+            <div class="card-title">
+                <a href="/admin/extensions/paid" class="avatar border text-muted me-2">
+                    <!-- Ваш SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                         fill="currentColor">
+                        <path
+                              d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z">
+                        </path>
+                    </svg>
+                </a>
+                {{ phrase('Turn on the draw') }}
+            </div>
+            <div class="prism-toggle">
+                <div class="custom-toggle-switch d-flex align-items-center">
+                    <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}"
+                           type="checkbox" {% if pluginActive %}checked{% endif %}>
+                    <label for="enablePlugin" class="label-success"></label>
+                    <span class="ms-3">{{phrase('Activating the plugin')}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+
+            {% if pluginActive == false %}
+            <div class="alert alert-danger" role="alert">
+                {{phrase('plugin_is_disabled_need_active')|raw}}
+            </div>
+            {% endif %}
+
+            <div class="form-check mb-2">
+                <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value=""
+                       id="showMainPage" {% if setting.showMainPage %}checked{% endif %}
+                       {% if pluginActive == false %}disabled{% endif %}>
+                <label class="form-check-label" for="showMainPage">
+                    {{ phrase('Show on main page') }}
+                </label>
+            </div>
+
+            <div class="form-check mb-4">
+                <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value=""
+                       id="addToMenu" {% if setting.addToMenu %}checked{% endif %}
+                       {% if pluginActive == false %}disabled{% endif %}>
+                <label class="form-check-label" for="addToMenu">
+                    {{ phrase('Add to menu') }}
+                </label>
+            </div>
+
+            <div class="mb-3 p-3 border rounded">
+                <h6 class="fw-semibold">{{phrase('List of items for the raffle')}}</h6>
+
+                <div class="table-responsive mb-3">
+                    <table class="table table-bordered align-middle mb-0" id="raffleItemsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 5%">{{phrase(363)}}</th>
+                                <th style="width: 15%">{{phrase('item_id')}}</th>
+                                <th style="width: 15%">{{phrase('min count')}}</th>
+                                <th style="width: 15%">{{phrase('max count')}}</th>
+                                <th style="width: 15%">{{phrase('enchant')}}</th>
+                                <th style="width: 15%">{{phrase('chance')}} (%)</th>
+                                <th style="width: 10%">{{phrase('delete')}}</th>
+                            </tr>
+                        </thead>
+
+<tbody>
+
+    {% if winrolls is defined %}
+        {% for item in winrolls.data.items %}
+        <tr>
+            <td class="text-center">
+                <img class="item-icon" src="{{ get_item_info(item.itemId).getIcon() }}" alt="Item Icon" width="32" height="32">
+            </td>
+            <td>
+                <input type="number" step="1" class="form-control form-control-sm item-id-input" placeholder="ID предмета" value="{{ item.itemId }}">
+            </td>
+            <td>
+                <input type="number" step="1" min="1" class="form-control form-control-sm" placeholder="Мин. кол-во" value="{{ item.minCount }}">
+            </td>
+            <td>
+                <input type="number" step="1" min="1" max="2000000000" class="form-control form-control-sm" placeholder="Макс. кол-во" value="{{ item.maxCount }}">
+            </td>
+            <td>
+                <input type="number" step="1" class="form-control form-control-sm" placeholder="Заточка" value="{{ item.enchant }}">
+            </td>
+            <td>
+                <input type="number" step="0.01" class="form-control form-control-sm inputChance" placeholder="Шанс" value="{{ item.chance }}">
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-danger removeItemBtn">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    {% endif %}
+</tbody>
+
+
+
+                    </table>
+                </div>
+
+
+                <div class="d-flex align-items-center mb-3 ">
+                    <span class="me-2">{{phrase(72)}}:</span>
+<input id="cost" class="form-control form-control-sm w-auto" value="{% if winrolls.data.cost is defined %}{{ winrolls.data.cost }}{% else %}1{% endif %}">
+                </div>
+
+                <button id="addItemBtn" type="button" class="btn btn-sm btn-primary"
+                        {% if pluginActive == false %}disabled{% endif %}>
+                    <i class="bi bi-plus-circle me-1"></i>{{phrase('Add item')}}
+                </button>
+
+
+
+                <button id="saveItemsBtn" type="button" class="btn btn-sm btn-success ms-2"
+                        {% if pluginActive == false %}disabled{% endif %}>
+                    <i class="bi bi-save me-1"></i>{{phrase(89)}}
+                </button>
+
+                 - {{phrase('Overall chance of winning')}} <span class="chance">{{totalChance}}</span>%
+
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script>
+    const pluginName = "{{pluginName}}";
+    const pluginActive = "{{pluginActive}}";
+</script>
+<script src="{{template}}/assets/js/spherePlugin.js?v=0.0.2"></script>
+<script>
+$(document).ready(function() {
+
+    $(document).on('input', '.inputChance', function() {
+        let totalChance = 0;
+        $('.inputChance').each(function() {
+            let chance = parseFloat($(this).val()) || 0;
+            totalChance += chance;
+        });
+        $('.chance').text(totalChance.toFixed(2));
+    });
+
+    $('#addItemBtn').on('click', function() {
+        const rowCount = $('#raffleItemsTable tbody tr').length;
+        if (rowCount >= 50) {
+            alert('{{phrase("limit max count items in raffle")}}');
+            return;
+        }
+
+        const rowId = 'item_' + Date.now();
+        const newRow = `
+        <tr id="${rowId}">
+            <td class="text-center">
+                <img class="item-icon" src="/uploads/images/icon/NOIMAGE.webp" alt="Item Icon" width="32" height="32">
+            </td>
+            <td>
+                <input type="number" step="1" class="form-control form-control-sm item-id-input" placeholder="ID предмета" data-row-id="${rowId}" value="0">
+            </td>
+            <td>
+                <input type="number" step="1" min="1" class="form-control form-control-sm" placeholder="Мин. кол-во" value="1">
+            </td>
+            <td>
+                <input type="number" step="1" min="1" max="2000000000" class="form-control form-control-sm" placeholder="Макс. кол-во" value="1">
+            </td>
+            <td>
+                <input type="number" step="1" class="form-control form-control-sm" placeholder="Заточка" value="0">
+            </td>
+            <td>
+                <input type="number" step="0.01" class="form-control form-control-sm inputChance" placeholder="Шанс" value="0">
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-danger removeItemBtn">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </td>
+        </tr>
+        `;
+        $('#raffleItemsTable tbody').append(newRow);
+     });
+
+
+    $(document).on('click', '.removeItemBtn', function() {
+        $(this).closest('tr').remove();
+    });
+
+    $('#saveItemsBtn').on('click', function() {
+        const items = [];
+        $('#raffleItemsTable tbody tr').each(function() {
+            const itemId = $(this).find('input[type="number"]').eq(0).val();
+            const minCount = $(this).find('input[type="number"]').eq(1).val();
+            const maxCount = $(this).find('input[type="number"]').eq(2).val();
+            const enchant = $(this).find('input[type="number"]').eq(3).val();
+            const chance = $(this).find('input[type="number"]').eq(4).val();
+            items.push({itemId: itemId, minCount: minCount, maxCount: maxCount, enchant: enchant, chance: chance });
+        });
+
+        const cost = $('#cost').val();
+
+        if (!cost) {
+            alert('Введите стоимость');
+            return;
+        }
+
+        if (isNaN(cost)) {
+            alert('Стоимость должна быть числом');
+            return;
+        }
+
+        if (cost < 0) {
+            alert('Стоимость не может быть меньше 0');
+            return;
+        }
+
+        if (items.length === 0) {
+            alert('Нет предметов для розыгрыша');
+            return;
+        }
+
+        if (items.length > 50) {
+            alert('Максимальное количество предметов (50) уже добавлено.');
+            return;
+        }
+
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].itemId <= 0) {
+                alert('ID предмета в строке ' + (i + 1) + ' не может быть меньше или равен 0.');
+                return;
+            }
+        }
+
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].minCount < 1) {
+                alert('Минимальное кол-во в строке ' + (i + 1) + ' не может быть меньше 1.');
+                return;
+            }
+        }
+
+        AjaxSend('/admin/plugin/winroll/setting/save', 'POST', {
+            items: items,
+            cost: cost
+        }, false)
+    });
+
+    $(document).on('input', '.item-id-input', function() {
+        let itemId = $(this).val().trim();
+        let row = $(this).closest('tr');
+        let icon = row.find('.item-icon');
+
+        if (itemId && itemId > 0) {
+            $.ajax({
+                type: 'POST',
+                url: '/admin/client/item/info',
+                dataType: 'json',
+                data: { itemID: itemId },
+                success: function(response) {
+                    if (response.ok && response.item && response.item.icon) {
+                        console.log('Новый URL иконки:', response.item.icon);
+                        icon.attr('src', response.item.icon);
+                    } else {
+                        console.error('Ошибка: некорректный ответ сервера', response);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Произошла ошибка:', error);
+                }
+            });
+        }
+    });
+
+});
+</script>
+{% endblock %}

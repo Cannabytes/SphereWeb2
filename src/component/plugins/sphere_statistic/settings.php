@@ -6,7 +6,7 @@ return [
 "PLUGIN_VERSION" => "1.0.0",
 "PLUGIN_AUTHOR" => "Logan22",
 "PLUGIN_GITHUB" => "",
-"PLUGIN_DESCRIPTION" => "Плагин для отображения статистики пользователей",
+"PLUGIN_DESCRIPTION" => "Statistic description plugin",
 "PLUGIN_ADMIN_PAGE" => "/admin/statistic/registration",
 "PLUGIN_ADMIN_PAGE_NAME" => "Статистика пользователей сферы",
 "PLUGIN_ADMIN_PAGE_ICON" => "fa fa-users",

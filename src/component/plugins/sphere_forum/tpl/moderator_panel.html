@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Управление модераторами{% endblock %}
+{% block title %}{{phrase('moderator_management')}}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -8,9 +8,9 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Управление модераторами</h5>
+                    <h5 class="card-title mb-0">{{phrase('moderator_management')}}</h5>
                     <button class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#addModeratorModal">
-                        <i class="ri-add-line"></i> Добавить модератора
+                        <i class="ri-add-line"></i> {{phrase('add_moderator')}}
                     </button>
                 </div>
                 <div class="card-body">
@@ -68,62 +68,62 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Добавить модератора</h5>
+                <h5 class="modal-title">{{phrase('add_moderator')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="addModeratorForm">
                     <div class="mb-3">
-                        <label class="form-label">Пользователь</label>
+                        <label class="form-label">{{phrase('user')}}</label>
                         <input type="text" class="form-control" id="moderatorUsername" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Категория</label>
+                        <label class="form-label">{{phrase('Category')}}</label>
                         <select class="form-select" id="moderatorCategory">
-                            <option value="">Все категории</option>
+                            <option value="">{{phrase('all_categories')}}</option>
                             {% for category in categories %}
                             <option value="{{category.getId()}}">{{category.getName()}}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Права</label>
+                        <label class="form-label">{{phrase('permissions')}}</label>
                         <div class="permissions-list">
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="canDeleteThreads">
-                                <label class="form-check-label">Удаление тем</label>
+                                <label class="form-check-label">{{phrase('delete_topics')}}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="canDeletePosts">
-                                <label class="form-check-label">Удаление сообщений</label>
+                                <label class="form-check-label">{{phrase('delete_posts')}}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="canEditPosts">
-                                <label class="form-check-label">Редактирование сообщений</label>
+                                <label class="form-check-label">{{phrase('edit_posts')}}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="canMoveThreads">
-                                <label class="form-check-label">Перемещение тем</label>
+                                <label class="form-check-label">{{phrase('move_topics')}}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="canPinThreads">
-                                <label class="form-check-label">Закрепление тем</label>
+                                <label class="form-check-label">{{phrase('pin_topics')}}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="canCloseThreads">
-                                <label class="form-check-label">Закрытие тем</label>
+                                <label class="form-check-label">{{phrase('close_topics')}}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="canApproveThreads">
-                                <label class="form-check-label">Одобрение тем</label>
+                                <label class="form-check-label">{{phrase('approve_topics')}}</label>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <button type="button" class="btn btn-primary" id="saveNewModerator">Сохранить</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{phrase(80)}}</button>
+                <button type="button" class="btn btn-primary" id="saveNewModerator">{{phrase(89)}}</button>
             </div>
         </div>
     </div>
@@ -133,63 +133,63 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Редактирование прав модератора</h5>
+                <h5 class="modal-title">{{phrase('edit_moderator_permissions')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="editModeratorForm">
                     <input type="hidden" id="editModeratorId">
                     <div class="mb-3">
-                        <label class="form-label">Модератор</label>
+                        <label class="form-label">{{phrase('moderator')}}</label>
                         <input type="text" class="form-control" id="editModeratorUsername" disabled>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Категория</label>
+                        <label class="form-label">{{phrase('Category')}}</label>
                         <select class="form-select" id="editModeratorCategory">
-                            <option value="">Все категории</option>
+                            <option value="">{{phrase('all_categories')}}</option>
                             {% for category in categories %}
                             <option value="{{category.getId()}}">{{category.getName()}}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Права</label>
+                        <label class="form-label">{{phrase('permissions')}}</label>
                         <div class="permissions-list">
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="editCanDeleteThreads">
-                                <label class="form-check-label">Удаление тем</label>
+                                <label class="form-check-label">{{phrase('delete_topics')}}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="editCanDeletePosts">
-                                <label class="form-check-label">Удаление сообщений</label>
+                                <label class="form-check-label">{{phrase('delete_posts')}}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="editCanEditPosts">
-                                <label class="form-check-label">Редактирование сообщений</label>
+                                <label class="form-check-label">{{phrase('edit_posts')}}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="editCanMoveThreads">
-                                <label class="form-check-label">Перемещение тем</label>
+                                <label class="form-check-label">{{phrase('move_topics')}}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="editCanPinThreads">
-                                <label class="form-check-label">Закрепление тем</label>
+                                <label class="form-check-label">{{phrase('pin_topics')}}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="editCanCloseThreads">
-                                <label class="form-check-label">Закрытие тем</label>
+                                <label class="form-check-label">{{phrase('close_topics')}}</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="editCanApproveThreads">
-                                <label class="form-check-label">Одобрение тем</label>
+                                <label class="form-check-label">{{phrase('approve_topics')}}</label>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <button type="button" class="btn btn-primary" id="saveEditModerator">Сохранить</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{phrase(80)}}</button>
+                <button type="button" class="btn btn-primary" id="saveEditModerator">{{phrase(89)}}</button>
             </div>
         </div>
     </div>
@@ -216,7 +216,7 @@
             };
 
             if (!username) {
-                noticeError('Укажите имя пользователя');
+                noticeError("{{phrase('enter_username')}}");
                 return;
             }
 
@@ -284,7 +284,7 @@
         $('.delete-moderator').on('click', function() {
             const moderatorId = $(this).data('id');
 
-            if (confirm('Вы уверены, что хотите удалить этого модератора?')) {
+            if (confirm("{{phrase('confirm_delete_moderator')}}")) {
                 AjaxSend('/forum/moderator/delete', 'POST', {
                     moderatorId: moderatorId
                 }, true).then(function(response) {

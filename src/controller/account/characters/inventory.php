@@ -68,7 +68,7 @@ class inventory
                 "type" => "notice",
                 "ok" => true,
                 'sphereCoin' => user::self()->getDonate(),
-                "message" => "Передано игроку " . $player,
+                "message" => lang::get_phrase("Transferred to player", $player),
             ]);
 
         }

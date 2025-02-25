@@ -61,7 +61,7 @@
                     href="/fun/wheel/edit/items/{{wheel.id|lower}}">Изменить предметы</a></span>
                 </td>
                 <td>
-                  <button data-name="{{wheel.name|lower}}" data-wheel-id="{{wheel.id}}" type="button" class="btn btn-danger-light btn-sm btn-wave waves-effect waves-light removeWheel">Удалить</button>
+                  <button data-name="{{wheel.name|lower}}" data-wheel-id="{{wheel.id}}" type="button" class="btn btn-danger-light btn-sm btn-wave waves-effect waves-light removeWheel">{{ phrase('delete') }}</button>
                 </td>
               </tr>
               {% endfor %}
@@ -100,7 +100,7 @@
       </div>
         <input value="" name="wheel_id" type="hidden" id="changeNameWheelId">
       <div class="modal-footer">
-        <button id="changeNameSave" type="submit" class="btn btn-sm btn-success">Сохранить</button>
+        <button id="changeNameSave" type="submit" class="btn btn-sm btn-success">{{ phrase('create') }}</button>
       </div>
     </div>
   </div>

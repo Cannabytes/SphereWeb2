@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}{{ clan.getName() }} - Информация о клане{% endblock %}
+{% block title %}{{ clan.getName() }} - {{phrase('clan_info')}}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -11,13 +11,13 @@
                 <div class="card-header p-0">
                     <div class="clan-banner position-relative">
                         <img src="{% if clan.getBackgroundLogo() %}/uploads/clans/{{ clan.getBackgroundLogo() }}{% else %}{{template_plugin}}/tpl/img/backgraund_default.png{% endif %}"
-                             alt="Баннер клана" class="w-100">
+                             alt="{{phrase('clan_banner')}}" class="w-100">
                         <div class="clan-overlay"></div>
                         <div class="clan-info position-absolute bottom-0 start-0 p-4 text-white">
                             <div class="d-flex align-items-center">
                                 <div class="clan-logo me-4">
                                     <img src="{% if clan.getLogo() %}/uploads/clans/{{ clan.getLogo() }}{% else %}{{template_plugin}}/tpl/img/avatar_clan_default.png{% endif %}"
-                                         alt="Логотип клана">
+                                         alt="{{phrase('clan_logo')}}">
                                 </div>
                                 <div>
                                     <h2 class="text-{{ clan.getTextColor() }} mb-1"> <i class="bi bi-patch-check text-success"></i> {{ clan.getName() }}</h2>
@@ -37,10 +37,10 @@
                                     <a href="/forum" class="text-muted me-1">
                                     <i class="fe fe-home"></i>
                                     </a>
-                                    Информация о клане</h5>
+                                    {{phrase('clan_info')}}</h5>
                                 <ul class="list-group">
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Лидер
+                                        {{phrase('leader')}}
                                         <span class="d-flex align-items-center">
                                             <img src="{{ getUser(clan.getOwnerId()).getAvatar() }}"
                                                  class="avatar avatar-xs me-2">
@@ -48,29 +48,29 @@
                                         </span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Название клана в игре
+                                        {{phrase('clan_name_in_game')}}
                                         <span role="button" data-bs-toggle="modal" data-bs-target="#selectPlayerClans" class="text-primary">
                                             {% if clan.getClanNameGame() %}
                                                 {{ clan.getClanNameGame() }}
                                             {% else %}
-                                                Не установлено
+                                                {{phrase('not_set')}}
                                             {% endif %}
                                         </span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Участников
+                                        {{phrase('participants')}}
                                         <span class="badge bg-primary rounded-pill">{{ clan.getMembersCount() }}</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Тип принятия
+                                        {{phrase('acceptance_type')}}
                                         {% if clan.getAcceptance() == 1 %}
-                                        <span class="badge bg-success">Автоматическое</span>
+                                        <span class="badge bg-success">{{phrase('automatic')}}</span>
                                         {% else %}
-                                        <span class="badge bg-warning">По согласию лидера</span>
+                                        <span class="badge bg-warning">{{phrase('leader_consent')}}</span>
                                         {% endif %}
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Дата создания
+                                        {{phrase(114)}}
                                         <span>{{ clan.getCreatedAt()|date("d.m.Y") }}</span>
                                     </li>
                                 </ul>
@@ -82,7 +82,7 @@
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title">Выберите клан</h5>
+                                                <h5 class="modal-title">{{phrase('select_clan')}}</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="card-body">
@@ -97,15 +97,15 @@
                                                 {% endfor %}
 
                                                 <select class="form-select" id="selectClan">
-                                                    <option selected="">Пока не выбирать клан</option>
+                                                    <option selected="">{{phrase('do_not_select_clan_yet')}}</option>
                                                     {% for name in clanList %}
                                                     <option {% if clan.getClanNameGame() == name %}selected{% endif %} value="{{ name }}">{{ name }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                                <button type="button" class="btn btn-primary" id="saveSelectClan">Сохранить</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase(80) }}</button>
+                                                <button type="button" class="btn btn-primary" id="saveSelectClan">{{ phrase('create') }}</button>
                                             </div>
                                         </div>
                                     </div>
@@ -114,21 +114,21 @@
 
                                 {% if clan.getOwnerId() == getUser().getId() %}
                                 <a href="/forum/clan/edit/{{ clan.getName() }}" class="btn btn-primary w-100 mt-3">
-                                    <i class="ri-edit-2-line me-1"></i>Редактировать клан
+                                    <i class="ri-edit-2-line me-1"></i>{{phrase('edit_clan')}}
                                 </a>
                                 {% elseif not isMember %}
                                 {% if clan.getAcceptance() == 1 %}
                                 <button class="btn btn-success w-100 mt-3" id="joinClanBtn">
-                                    <i class="ri-user-add-line me-1"></i>Вступить в клан
+                                    <i class="ri-user-add-line me-1"></i>{{phrase('join_clan')}}
                                 </button>
                                 {% else %}
                                 <button class="btn btn-warning w-100 mt-3" id="requestJoinBtn">
-                                    <i class="ri-user-follow-line me-1"></i>Подать заявку
+                                    <i class="ri-user-follow-line me-1"></i>{{phrase('submit_application')}}
                                 </button>
                                 {% endif %}
                                 {% else %}
                                 <button class="btn btn-danger w-100 mt-3" id="leaveClanBtn">
-                                    <i class="ri-door-open-line me-1"></i>Покинуть клан
+                                    <i class="ri-door-open-line me-1"></i>{{phrase('leave_clan')}}
                                 </button>
                                 {% endif %}
                                 {% endif %}
@@ -141,23 +141,23 @@
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" data-bs-toggle="tab" href="#about" role="tab">
-                                        <i class="ri-information-line me-1"></i>Описание
+                                        <i class="ri-information-line me-1"></i>{{phrase(0)}}
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link " data-bs-toggle="tab" href="#members" role="tab">
-                                        <i class="ri-team-line me-1"></i>Участники
+                                        <i class="ri-team-line me-1"></i>{{phrase('members')}}
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="chatClanTab" data-bs-toggle="tab" href="#chat" role="tab">
-                                        <i class="ri-message-3-line me-1"></i>Чат клана
+                                        <i class="ri-message-3-line me-1"></i>{{phrase('clan_chat')}}
                                     </a>
                                 </li>
                                 {% if clan.getOwnerId() == getUser().getId() and clan.getAcceptance() == 2 %}
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#requests" role="tab">
-                                        <i class="ri-user-follow-line me-1"></i>Заявки
+                                        <i class="ri-user-follow-line me-1"></i>{{phrase('applications')}}
                                         {% if clan.getPendingRequestsCount() > 0 %}
                                         <span class="badge bg-danger">{{ clan.getPendingRequestsCount() }}</span>
                                         {% endif %}
@@ -175,10 +175,10 @@
                                             <div class="card">
                                                 <div class="card-body">
                                                     <div class="d-flex justify-content-between align-items-center">
-                                                        <h5 class="card-title">О нашем клане</h5>
+                                                        <h5 class="card-title">{{phrase('about_our_clan')}}</h5>
                                                         {% if clan.getOwnerId() == getUser().getId() %}
                                                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDescriptionModal">
-                                                            <i class="ri-edit-2-line me-1"></i>Изменить описание
+                                                            <i class="ri-edit-2-line me-1"></i>{{phrase('edit_description')}}
                                                         </button>
                                                         {% endif %}
                                                     </div>
@@ -194,7 +194,7 @@
                                             <div class="modal-dialog modal-lg">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title">Редактирование описания клана</h5>
+                                                        <h5 class="modal-title">{{phrase('edit_clan_description')}}</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
@@ -205,8 +205,8 @@
                                                         </form>
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                                        <button type="button" class="btn btn-primary" id="saveDescription">Сохранить</button>
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase(80) }}</button>
+                                                        <button type="button" class="btn btn-primary" id="saveDescription">{{ phrase('create') }}</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -222,13 +222,13 @@
                                         <table class="table table-hover">
                                             <thead>
                                             <tr>
-                                                <th>Участник</th>
-                                                <th>Роль</th>
-                                                <th>Дата вступления</th>
-                                                <th>Прайм-тайм</th>
+                                                <th>{{phrase('member')}}</th>
+                                                <th>{{phrase('role')}}</th>
+                                                <th>{{phrase('join_date')}}</th>
+                                                <th>{{phrase('prime_time')}}</th>
                                                 {% if clan.getOwnerId() == getUser().getId() and user.getId() !=
                                                 clan.getOwnerId() %}
-                                                <th>Действия</th>
+                                                <th>{{phrase('actions')}}</th>
                                                 {% endif %}
                                             </tr>
                                             </thead>
@@ -244,9 +244,9 @@
                                                 </td>
                                                 <td>
                                                     {% if user.getId() == clan.getOwnerId() %}
-                                                    <span class="badge bg-primary">Лидер</span>
+                                                    <span class="badge bg-primary">{{phrase('leader')}}</span>
                                                     {% else %}
-                                                    <span class="badge bg-secondary">Участник</span>
+                                                    <span class="badge bg-secondary">{{phrase('member')}}</span>
                                                     {% endif %}
                                                 </td>
                                                 <td>{{ user.getJoinDate()|date("d.m.Y") }}</td>
@@ -278,11 +278,11 @@
                                         </div>
                                         <div class="chat-input">
                                             <div id="chatInputContainer" class="d-flex">
-                                                <input type="text" class="form-control me-2" id="chatMessageInput" placeholder="Введите сообщение...">
+                                                <input type="text" class="form-control me-2" id="chatMessageInput" placeholder="{{phrase('enter_message')}}...">
                                                 <button type="button" class="btn btn-primary" id="chatSendButton">
                                                     <i class="ri-send-plane-line"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-outline-secondary ms-2" id="chatSoundToggle" title="Звуковые уведомления">
+                                                <button type="button" class="btn btn-outline-secondary ms-2" id="chatSoundToggle" title="{{phrase('sound_notifications')}}">
                                                     <i class="ri-notification-off-line"></i>
                                                 </button>
                                             </div>
@@ -291,7 +291,7 @@
                                     {% else %}
                                     <div class="text-center py-5">
                                         <i class="ri-lock-line fs-1 text-muted"></i>
-                                        <p class="mt-2">Чат доступен только для участников клана</p>
+                                        <p class="mt-2">{{phrase('chat_available_for_members_only')}}</p>
                                     </div>
                                     {% endif %}
                                 </div>
@@ -303,9 +303,9 @@
                                         <table class="table">
                                             <thead>
                                             <tr>
-                                                <th>Пользователь</th>
-                                                <th>Дата заявки</th>
-                                                <th>Действия</th>
+                                                <th>{{phrase('user')}}</th>
+                                                <th>{{phrase('application_date')}}</th>
+                                                <th>{{phrase('actions')}}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -347,7 +347,7 @@
 
     <div class="card mt-4">
         <div class="card-header">
-            <h5 class="card-title mb-0">Сообщения клана</h5>
+            <h5 class="card-title mb-0">{{phrase('clan_messages')}}</h5>
         </div>
         <div class="card-body">
             <div class="clan-messages">
@@ -356,7 +356,7 @@
                     <!-- В разделе "Сообщения клана" меняем id -->
                     <div id="clanMessageForm" class="d-flex gap-2">
                         <div class="flex-grow-1">
-                            <textarea id="messageTextWall" class="form-control" rows="3" placeholder="Напишите сообщение..."></textarea>
+                            <textarea id="messageTextWall" class="form-control" rows="3" placeholder="{{phrase('write_message')}}..."></textarea>
                             <div id="imagePreview" class="d-flex flex-wrap gap-2 mt-2"></div>
                         </div>
                         <div class="d-flex flex-column gap-2">
@@ -383,7 +383,7 @@
                                         <small class="text-muted">
                                             {{ post.created_at|date("d.m.Y H:i") }}
                                             {% if post.updated_at %}
-                                            <span class="text-muted ms-2">(изменено)</span>
+                                            <span class="text-muted ms-2">({{phrase('modified')}})</span>
                                             {% endif %}
                                         </small>
                                     </div>
@@ -394,9 +394,9 @@
                                         </div>
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li><a class="dropdown-item edit-post" href="#" data-post-id="{{ post.id }}">
-                                                <i class="ri-edit-line me-2"></i>Редактировать</a></li>
+                                                <i class="ri-edit-line me-2"></i>{{phrase('edit')}}</a></li>
                                             <li><a class="dropdown-item delete-post" href="#" data-post-id="{{ post.id }}">
-                                                <i class="ri-delete-bin-line me-2"></i>Удалить</a></li>
+                                                <i class="ri-delete-bin-line me-2"></i>{{ phrase('delete') }}</a></li>
                                         </ul>
                                     </div>
                                     {% endif %}
@@ -772,7 +772,7 @@
                 });
 
                 if (!messageText && uploadedFiles.length === 0) {
-                    noticeError('Введите сообщение или прикрепите изображение');
+                    noticeError("{{phrase('enter_message_or_attach_image')}}");
                     return;
                 }
 
@@ -788,7 +788,7 @@
                             $('#messageTextWall').val('');
                             $('#imagePreview').empty();
                             uploadedFiles = [];
-                            noticeSuccess(response.message || 'Сообщение опубликовано');
+                            noticeSuccess(response.message || "{{phrase('message_published')}}");
                             setTimeout(() => window.location.reload(), 1000);
                         } else {
                             noticeError(response.error || 'Ошибка при отправке сообщения');
@@ -810,13 +810,13 @@
                         const currentCount = uploadedFiles.length;
 
                         if (currentCount + files.length > maxFiles) {
-                            noticeError(`Можно загрузить не более ${maxFiles} изображений`);
+                            noticeError(`{{phrase('max_files_upload', maxFiles)}}`);
                             return;
                         }
 
                         files.forEach(file => {
                             if (file.size > 5 * 1024 * 1024) {
-                                noticeError(`Файл ${file.name} превышает 5MB`);
+                                noticeError(`{{ phrase('file_exceeds_size_limit', file.name, '5MB') }}`);
                                 return;
                             }
 
@@ -859,7 +859,7 @@
                 e.preventDefault();
                 const postId = $(this).data('post-id');
 
-                if (confirm('Вы уверены, что хотите удалить это сообщение?')) {
+                if (confirm("{{phrase('confirm_delete_message')}}")) {
                     $.ajax({
                         url: '/forum/clan/post/delete',
                         type: 'POST',
@@ -888,7 +888,7 @@
                 type: 'POST',
                 data: {clan_id: clanId},
                 success: function () {
-                    noticeSuccess('Вы вступили в клан');
+                    noticeSuccess("{{phrase('joined_clan')}}");
                     setTimeout(() => window.location.reload(), 1500);
                 },
                 error: function (xhr) {
@@ -903,7 +903,7 @@
                 type: 'POST',
                 data: {clan_id: clanId},
                 success: function () {
-                    noticeSuccess('Заявка отправлена');
+                    noticeSuccess("{{phrase('application_sent')}}");
                     setTimeout(() => window.location.reload(), 1500);
                 },
                 error: function (xhr) {
@@ -913,13 +913,13 @@
         });
 
         $('#leaveClanBtn').on('click', function () {
-            if (confirm('Вы уверены, что хотите покинуть клан?')) {
+            if (confirm("{{phrase('confirm_leave_clan')}}")) {
                 $.ajax({
                     url: '/forum/clan/leave',
                     type: 'POST',
                     data: {clan_id: clanId},
                     success: function () {
-                        noticeSuccess('Вы покинули клан');
+                        noticeSuccess("{{phrase('left_clan')}}");
                         setTimeout(() => window.location.reload(), 1500);
                     },
                     error: function (xhr) {
@@ -944,9 +944,9 @@
             </div>
             <div class="btn-group">
                 <button type="button" class="btn btn-primary btn-sm save-edit"
-                    data-edit-id="${editId}">Сохранить</button>
+                    data-edit-id="${editId}">{{ phrase('create') }}</button>
                 <button type="button" class="btn btn-secondary btn-sm cancel-edit"
-                    data-edit-id="${editId}">Отмена</button>
+                    data-edit-id="${editId}">{{ phrase(80) }}</button>
             </div>
         </div>
     `);
@@ -960,7 +960,7 @@
             const message = container.find('.edit-message-textarea').val().trim();
 
             if (!message) {
-                noticeError('Сообщение не может быть пустым');
+                noticeError("{{phrase('message_cannot_be_empty')}}");
                 return;
             }
 
@@ -1022,7 +1022,7 @@
             const selectedClanName = $('#selectClan').val();
 
             // Если выбрано "Пока не выбирать клан", отправляем null
-            const clanNameGame = selectedClanName === "Пока не выбирать клан" ? null : selectedClanName;
+            const clanNameGame = selectedClanName === "{{phrase('dont_select_clan_yet')}}" ? null : selectedClanName;
 
             $.ajax({
                 url: '/forum/clan/update-game-name',
@@ -1096,9 +1096,9 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item edit-post" href="#" data-post-id="${post.id}">
-                    <i class="ri-edit-line me-2"></i>Редактировать</a></li>
+                    <i class="ri-edit-line me-2"></i>{{phrase('edit')}}</a></li>
                 <li><a class="dropdown-item delete-post" href="#" data-post-id="${post.id}">
-                    <i class="ri-delete-bin-line me-2"></i>Удалить</a></li>
+                    <i class="ri-delete-bin-line me-2"></i>{{ phrase('delete') }}</a></li>
             </ul>
         </div>` : '';
 

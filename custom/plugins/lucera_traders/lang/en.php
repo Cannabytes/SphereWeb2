@@ -1,5 +1,7 @@
 <?php
 return [
+    'Lucera Traders' => 'Traders',
+    'Lucera Traders Description' => 'Plugin shows a list of traders and what they sell. Only for Lucera.',
     'server_is_open' => 'Server is open',
     'obt' => 'Open beta testing',
     'cbt' => 'Closed beta testing',

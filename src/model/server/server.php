@@ -95,8 +95,8 @@ class server
                 $serverStatus = new serverStatus();
                 $serverStatus->setServerId($serverId);
                 $serverStatus->setLoginServer($server['serverStatus']['loginserver']);
-                $serverStatus->setGameServer($server['serverStatus']['gameServerDB']);
-                $serverStatus->setGameServerRealConnection($server['serverStatus']['gameServerDB']);
+                $serverStatus->setGameServer($server['serverStatus']['gameserver']);
+                $serverStatus->setGameServerRealConnection($server['serverStatus']['gameserver']);
                 $serverStatus->setOnline($server['serverStatus']['online'] ?? 200);
                 $serverStatus->setEnable(filter_var($server['serverStatus']['isEnableStatus'] ?? true, FILTER_VALIDATE_BOOLEAN));
 
