@@ -34,14 +34,16 @@ class winroll
     {
         validation::user_protection("admin");
         $winrolls = server::sendCustom("/api/plugin/winroll/get")->show()->getResponse();
-        $chance = array_map(function (array $item): array {
-            return [
-                'chance' => (float)($item['chance'] ?? 0)
-            ];
-        }, $winrolls['data']['items']);
-        $totalChance = array_sum(array_column($chance, 'chance'));
+        if($winrolls['status'] == "ok"){
+            $chance = array_map(function (array $item): array {
+                return [
+                    'chance' => (float)($item['chance'] ?? 0)
+                ];
+            }, $winrolls['data']['items']);
+            $totalChance = array_sum(array_column($chance, 'chance'));
+        }
         tpl::addVar([
-            'winrolls' => $winrolls,
+            'winrolls' => $winrolls ?? [],
             'totalChance' => $totalChance ?? 0
         ]);
         tpl::displayPlugin("winroll/tpl/setting.html");
