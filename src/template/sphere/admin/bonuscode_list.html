@@ -30,7 +30,7 @@
               {% for key, data in codeTable %}
             <tr id="{{key}}">
               <th scope="row">{{ key }}
-                <i data-code="{{ key }}" class="ri-file-copy-2-line copy" role="button"></i>
+                <i data-code="{{ key }}" class="ri-file-copy-2-line copycode" role="button"></i>
               </th>
               <td>
 
@@ -88,7 +88,7 @@
   });
 
 
-  $('.copy').click(function () {
+  $('.copycode').click(function () {
     let code = $(this).data('code')
     navigator.clipboard.writeText(code)
     noticeSuccess("{{ phrase('code_copied_clipboard') }}")

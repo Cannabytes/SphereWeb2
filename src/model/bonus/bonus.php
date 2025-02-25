@@ -29,7 +29,7 @@ class bonus
         $countGenBonusCode = $_POST["count_codes"] ?? 100;
         $items = $_POST['items'];
         $prefix = $_POST['prefix'] ?? '';
-        $disposable = filter_input(INPUT_POST, 'disposable', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+        $disposable = (int) filter_input(INPUT_POST, 'disposable', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
 
         if ($items == null || count($items) == 0) {
             board::notice(false, "Не указаны предметы");
