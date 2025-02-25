@@ -36,7 +36,7 @@ class instance {
 
     public function scan(): void {
         header('Content-Type: application/json');
-
+        ini_set('max_execution_time', 300);
         try {
             $scanner = new scannerSystem(self::ALLOWED_EXTENSIONS, self::EXCLUDED_PATHS);
             $scanner->setBufferSize(64 * 1024);
@@ -70,6 +70,7 @@ class instance {
 
     public function updateFiles(): void {
         header('Content-Type: application/json');
+        ini_set('max_execution_time', 300);
 
         try {
             $files = $_POST['files'] ?? [];
@@ -102,7 +103,35 @@ class instance {
 
     private function downloadAndUpdateFile(string $file): array {
         $githubUrl = "https://raw.githubusercontent.com/Cannabytes/SphereWeb2/master/" . ltrim($file, '/');
+        $localPath = $file;
 
+        // Проверяем и создаем директорию перед скачиванием файла
+        $dir = dirname($localPath);
+        if (!is_dir($dir)) {
+            if (!@mkdir($dir, 0755, true)) {
+                return [
+                    'success' => false,
+                    'message' => "Не удалось создать директорию: $dir. Проверьте права доступа."
+                ];
+            }
+        }
+
+        // Проверяем права на запись перед скачиванием
+        if (file_exists($localPath)) {
+            if (!is_writable($localPath)) {
+                return [
+                    'success' => false,
+                    'message' => "Нет прав на запись в файл: $localPath. Текущие права: " . substr(sprintf('%o', fileperms($localPath)), -4)
+                ];
+            }
+        } elseif (!is_writable($dir)) {
+            return [
+                'success' => false,
+                'message' => "Нет прав на запись в директорию: $dir. Текущие права: " . substr(sprintf('%o', fileperms($dir)), -4)
+            ];
+        }
+
+        // Скачиваем файл
         $context = stream_context_create([
             'http' => [
                 'method' => 'GET',
@@ -126,22 +155,32 @@ class instance {
             ];
         }
 
+        // Запись файла с дополнительными проверками
         try {
-            $localPath = $file;
-            $dir = dirname($localPath);
-            if (!is_dir($dir)) {
-                if (!@mkdir($dir, 0755, true)) {
-                    throw new \Exception("Не удалось создать директорию: $dir");
-                }
+            // Проверяем свободное место на диске
+            $diskFreeSpace = @disk_free_space(dirname($localPath));
+            if ($diskFreeSpace !== false && $diskFreeSpace < strlen($content)) {
+                return [
+                    'success' => false,
+                    'message' => "Недостаточно места на диске для записи файла"
+                ];
             }
 
-            if (file_exists($localPath) && !is_writable($localPath)) {
-                throw new \Exception("Нет прав на запись в файл: $localPath");
+            // Пытаемся создать резервную копию, если файл существует
+            if (file_exists($localPath)) {
+                $backupPath = $localPath . '.bak';
+                @copy($localPath, $backupPath);
             }
 
-            $writeResult = @file_put_contents($localPath, $content);
+            // Записываем содержимое файла
+            $writeResult = @file_put_contents($localPath, $content, LOCK_EX);
             if ($writeResult === false) {
-                throw new \Exception("Не удалось записать данные в файл");
+                throw new \Exception("Не удалось записать данные в файл: " . error_get_last()['message'] ?? 'неизвестная ошибка');
+            }
+
+            // Проверяем, что файл действительно был записан
+            if (!file_exists($localPath) || filesize($localPath) !== strlen($content)) {
+                throw new \Exception("Ошибка верификации записанного файла");
             }
 
             return [
@@ -150,6 +189,12 @@ class instance {
             ];
 
         } catch (\Exception $e) {
+            // Восстанавливаем из резервной копии при неудаче
+            if (isset($backupPath) && file_exists($backupPath)) {
+                @copy($backupPath, $localPath);
+                @unlink($backupPath);
+            }
+
             return [
                 'success' => false,
                 'message' => $e->getMessage()

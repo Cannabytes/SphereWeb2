@@ -158,7 +158,7 @@ class error
                         <li>
                             <span
                                 class="function-name"><?= ($index + 1) ?>. <strong><?= htmlspecialchars($traceItem['function'] ?? 'Неизвестная функция') ?></strong></span>
-                            <?= self::generate_file_link($traceItem['file'], $traceItem['line'] ?? '0') ?>
+                            <?= isset($traceItem['file']) ? self::generate_file_link($traceItem['file'], $traceItem['line'] ?? '0') : 'Файл неизвестен' ?>
                         </li>
                     <?php endforeach; ?>
                 </ul>
