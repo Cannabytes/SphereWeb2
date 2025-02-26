@@ -8,7 +8,7 @@ return [
     "PLUGIN_AUTHOR" => "Logan22",
     "PLUGIN_DESCRIPTION" => "winroll_description_plugin",
     "PLUGIN_ADMIN_PAGE" => "/admin/plugin/winroll",
-    "PLUGIN_ICON" => "bi bi-chat-right-text",
+    "PLUGIN_ICON" => "bi bi-dice-5",
     "PLUGIN_LINK" => "/win/roll",
     "PLUGIN_COST" => -1,
 
