@@ -1900,4 +1900,10 @@ Password: %%password%%',
     'launcher_additional_description' => 'Descrição adicional na página do launcher (opcional)',
     'backup_links_info' => 'Você pode especificar links de backup para o patch, cliente, launcher ou qualquer outra informação. Tags HTML são permitidas.',
     'plugin_disabled_message' => 'Plugin desativado.<br>Somente plugins ativados podem ser configurados.',
+    'isNeonEffect' => 'Ativar efeitos neon ao passar o cursor sobre o menu',
+    'menu style' => 'Estilo de menu',
+    'green color' => 'Cor verde',
+    'red color' => 'Cor vermelha',
+    'blue color' => 'Cor azul',
+
 ];

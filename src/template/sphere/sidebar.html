@@ -26,15 +26,14 @@
       <ul class="main-menu">
 
 
-        <li class="slide__category"><span class="category-name">{{phrase('menu')}}</span></li>
 
-        <li class="slide">
+        <li class="slide glow-element {{classColorMenu()}}">
           <a href="/main" class="side-menu__item">
             <i class="fe fe-home side-menu__icon"></i>
             <span class="side-menu__label">{{phrase('menu_main')}}</span>
           </a>
         </li>
-        <li class="slide enable_news" {% if config().enabled().isEnableNews()== false %}style="display: none;" {% endif
+        <li class="slide enable_news {{classColorMenu()}}" {% if config().enabled().isEnableNews()== false %}style="display: none;" {% endif
             %}>
           <a href="/news" class="side-menu__item">
             <i class="fe fe-layers side-menu__icon"></i>
@@ -42,7 +41,7 @@
           </a>
         </li>
 
-        <li class="slide enable_shop" {% if config().enabled().isEnableShop()== false %}style="display: none;" {% endif
+        <li class="slide enable_shop {{classColorMenu()}}" {% if config().enabled().isEnableShop()== false %}style="display: none;" {% endif
             %}>
           <a href="/shop" class="side-menu__item">
             <i class="fe fe-shopping-cart side-menu__icon"></i>
@@ -51,7 +50,7 @@
         </li>
 
         {% if getUser().isAuth() %}
-        <li class="slide enable_balance" {% if config().enabled().isEnableBalance()== false %}style="display: none;" {%
+        <li class="slide enable_balance {{classColorMenu()}}" {% if config().enabled().isEnableBalance()== false %}style="display: none;" {%
             endif %}>
           <a href="/balance" class="side-menu__item">
             <i class="fe fe-dollar-sign side-menu__icon"></i>
@@ -61,7 +60,7 @@
         </li>
         {% endif %}
 
-        <li class="slide enable_send_balance_game" {% if config().enabled().isEnableSendBalanceGame()== false
+        <li class="slide enable_send_balance_game {{classColorMenu()}}" {% if config().enabled().isEnableSendBalanceGame()== false
             %}style="display: none;" {% endif %}>
           <a href="#" data-bs-toggle="modal" data-bs-target="#sendToPlayer" class="side-menu__item">
             <i class="fe fe-corner-down-right side-menu__icon"></i>
@@ -70,7 +69,7 @@
         </li>
 
 
-        <li class="slide enable_statistic" {% if config().enabled().isEnableStatistic()== false %}style="display: none;"
+        <li class="slide enable_statistic {{classColorMenu()}}" {% if config().enabled().isEnableStatistic()== false %}style="display: none;"
             {% endif %}>
           <a href="/statistic" class="side-menu__item">
             <i class="fe fe-pie-chart side-menu__icon"></i>
@@ -81,7 +80,7 @@
         {% if getUser().isAuth() %}
 
         {% if getServer().getReferral().isEnable() %}
-        <li class="slide enable_referral">
+        <li class="slide enable_referral glow-element {{classColorMenu()}}">
           <a href="/referral" class="side-menu__item">
             <i class="fe fe-users side-menu__icon"></i>
             <span class="side-menu__label">{{phrase(306)}}</span>
@@ -92,7 +91,7 @@
         {% endif %}
 
         {% if config().enabled().isEnableSupport() %}
-        <li class="slide enable_support" {% if config().enabled().isEnableSupport() == false
+        <li class="slide enable_support {{classColorMenu()}}" {% if config().enabled().isEnableSupport() == false
             %}style="display: none;" {% endif %}>
             <a href="/support" class="side-menu__item">
             <i class="bi bi-question-circle side-menu__icon"></i>
@@ -102,7 +101,7 @@
         {% endif %}
 
 
-        <li class="slide enable_stream" {% if config().enabled().isEnableStream() == false
+        <li class="slide enable_stream {{classColorMenu()}}" {% if config().enabled().isEnableStream() == false
             %}style="display: none;" {% endif %}>
           <a href="/stream" class="side-menu__item">
             <i class="bi bi-camera-reels side-menu__icon"></i>
@@ -110,7 +109,7 @@
           </a>
         </li>
 
-        <li class="slide enable_bonus_code" {% if config().enabled().isEnableBonusCode() == false
+        <li class="slide enable_bonus_code {{classColorMenu()}}" {% if config().enabled().isEnableBonusCode() == false
             %}style="display: none;" {% endif %}>
           <a href="javascript:void(0);" class="side-menu__item" data-bs-toggle="modal" data-bs-target="#bonusCodeModal">
             <i class="fe fe-shopping-cart side-menu__icon"></i>
@@ -134,7 +133,7 @@
         {% for plugin in getPluginActive() %}
         {% set plugin = getPluginSetting(plugin.pluginName) %}
         {% if plugin.addToMenu %}
-           <li class="slide">
+           <li class="slide glow-element {{classColorMenu()}}">
             <a href="{{plugin.PLUGIN_LINK}}" class="side-menu__item">
               <i class="{{plugin.PLUGIN_ICON}} side-menu__icon"></i>
               <span class="side-menu__label">{{phrase(plugin.PLUGIN_PHRASE_ID)}}</span>
@@ -144,7 +143,7 @@
         {% endfor %}
 
         {% for menu in config().menu().get() %}
-        <li class="slide">
+        <li class="slide glow-element {{classColorMenu()}}">
           <a href="{{menu.phraseLink}}" class="side-menu__item">
             {% if menu.icon %}
             <i class="{{menu.icon}} side-menu__icon"></i>
@@ -154,7 +153,7 @@
         </li>
         {% endfor %}
 
-        <li class="slide">
+        <li class="slide glow-element {{classColorMenu()}}">
           <a href="{{ config().other().getLinkMainPage() }}" class="side-menu__item">
             <i class="fe fe-corner-down-left side-menu__icon"></i>
             <span class="side-menu__label">{{phrase('return_demo_page')}}</span>
@@ -171,7 +170,7 @@
 
         {% if getUser().isAdmin() %}
 
-        <li class="slide">
+        <li class="slide glow-element {{classColorMenu()}}">
           <a href="/admin" class="side-menu__item">
             <i class="fe fe-grid side-menu__icon"></i>
             <span class="side-menu__label">{{phrase(221)}}</span>

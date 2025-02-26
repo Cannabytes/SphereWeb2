@@ -1424,7 +1424,7 @@
                             </div>
                         </div>
                         <div class="tab-pane p-0" id="addMenu" role="tabpanel">
-                            <div class="card-body " id="menuItems">
+                            <div class="card-body" id="menuItems">
 
                                 {{phrase('menu_links_instructions')|raw}}
 
@@ -1467,15 +1467,63 @@
                                 </div>
                                 {% endfor %}
 
+                                <hr>
+                                <div class="settings-section mb-4">
+                                    <div class="form-check form-check-lg d-flex align-items-center mb-3">
+                                        <input {% if config().menu().isNeonEffects() %} checked {% endif %} class="form-check-input me-2" id="neon-effects" type="checkbox">
+                                        <label class="form-check-label" for="neon-effects">
+                                            {{ phrase('isNeonEffect') }}
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <label class="form-label fw-bold mb-3">{{phrase('menu style')}}</label>
+
+
+                                    <div class="menu-style-options d-flex flex-wrap gap-3">
+                                        <div class="menu-style-option">
+                                            <div class="form-check form-check-inline mb-2">
+                                                <input {% if config().menu().getMenuStyle() == 'green' %}checked{% endif %} class="form-check-input" id="menuGreen" name="menuStyle" type="radio" value="green">
+                                                <label class="form-check-label" for="menuGreen">{{phrase('green color')}}</label>
+                                            </div>
+                                            <div class="menu-preview">
+                                                <img alt="Зеленое меню" class="img-thumbnail" src="{{template}}/assets/images/menu-green.png">
+                                            </div>
+                                        </div>
+
+                                        <div class="menu-style-option">
+                                            <div class="form-check form-check-inline mb-2">
+                                                <input {% if config().menu().getMenuStyle() == 'blue' %}checked{% endif %} class="form-check-input" id="menuBlue" name="menuStyle" type="radio" value="blue">
+                                                <label class="form-check-label" for="menuBlue">{{phrase('blue color')}}</label>
+                                            </div>
+                                            <div class="menu-preview">
+                                                <img alt="Синее меню" class="img-thumbnail" src="{{template}}/assets/images/menu-blue.png">
+                                            </div>
+                                        </div>
+
+                                        <div class="menu-style-option">
+                                            <div class="form-check form-check-inline mb-2">
+                                                <input {% if config().menu().getMenuStyle() == 'red' %}checked{% endif %} class="form-check-input" id="menuRed" name="menuStyle" type="radio" value="red">
+                                                <label class="form-check-label" for="menuRed">{{phrase('red color')}}</label>
+                                            </div>
+                                            <div class="menu-preview">
+                                                <img alt="Красное меню" class="img-thumbnail" src="{{template}}/assets/images/menu-red.png">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
 
                             </div>
 
 
                             <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
-                <span id="saveMenu" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
-                        class="bi bi-sd-card ms-2"></i></span>
+                                <span id="saveMenu" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i class="bi bi-sd-card ms-2"></i></span>
                             </div>
                         </div>
+
+
                         <div class="tab-pane p-0" id="background" role="tabpanel">
                             <div class="card-body">
 
@@ -2512,20 +2560,27 @@
     });
 
     $("#saveMenu").click(function () {
-        var menuItems = []; // Изменено имя переменной для массива
+        var menuItems = [];
 
+        // Собираем данные о пунктах меню
         $(".menu-item").each(function () {
             var menuItem = {
                 icon: $(this).find('.phraseMenuIcon').val(),
                 phraseId: $(this).find('.phraseMenuID').val(),
                 phraseLink: $(this).find('.phraseLink').val(),
             };
-            menuItems.push(menuItem); // Добавление элементов в массив menuItems
+            menuItems.push(menuItem);
         });
+
+        // Собираем данные о стиле меню
+        var neonEffects = $('#neon-effects').is(':checked');
+        var menuStyle = $('input[name="menuStyle"]:checked').val();
 
         var menuData = {
             __config_name__: '__config_menu__',
-            menulist: menuItems // Использование массива menuItems
+            menulist: menuItems,
+            neonEffects: neonEffects,
+            menuStyle: menuStyle
         };
 
         AjaxSend('/admin/config/save', 'POST', menuData, false);

@@ -1902,5 +1902,11 @@ Password: %%password%%',
     'security_key_info' => 'The key is required for security. It can be obtained after generating the patch.',
     'launcher_additional_description' => 'Additional description on the launcher page (optional)',
     'backup_links_info' => 'You can specify backup links for the patch, client, launcher, or any other information. HTML tags are allowed.',
-    'plugin_disabled_message' => 'The plugin is disabled.<br>Only enabled plugins can be configured.'
+    'plugin_disabled_message' => 'The plugin is disabled.<br>Only enabled plugins can be configured.',
+    'isNeonEffect' => 'Enable neon effects on hover over the menu',
+    'menu style' => 'Menu style',
+    'green color' => 'Green color',
+    'red color' => 'Red color',
+    'blue color' => 'Blue color',
+
 ];

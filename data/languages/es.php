@@ -1895,6 +1895,11 @@ Contraseña: %%password%%',
     'security_key_info' => 'La clave es necesaria para la seguridad. Se puede obtener después de generar un parche.',
     'launcher_additional_description' => 'Descripción adicional en la página del lanzador (opcional)',
     'backup_links_info' => 'Puede proporcionar enlaces de respaldo para parches, cliente, lanzador o cualquier otra información. Se permiten etiquetas HTML.',
-    'plugin_disabled_message' => 'El complemento está desactivado.<br>Solo los complementos activados se pueden configurar.'
+    'plugin_disabled_message' => 'El complemento está desactivado.<br>Solo los complementos activados se pueden configurar.',
+    'isNeonEffect' => 'Habilitar efectos de neón al pasar el cursor sobre el menú',
+    'menu style' => 'Estilo de menú',
+    'green color' => 'Color verde',
+    'red color' => 'Color rojo',
+    'blue color' => 'Color azul',
 
 ];

@@ -1017,6 +1017,14 @@ class tpl
             }
         }));
 
+        $twig->addFunction(new TwigFunction('classColorMenu', function () {
+            if(config::load()->menu()->isNeonEffects()) {
+                $color = config::load()->menu()->getMenuStyle();
+                return "glow-element glow-{$color}" ;
+            }
+            return "";
+        }));
+
         $twig->addFunction(new TwigFunction('show_all_pages_short', function () {
             return page::show_all_pages_short();
         }));

@@ -29,6 +29,10 @@
   </style>
   {% endif %}
 
+  {% if config().menu().isNeonEffects() %}
+  <link rel="stylesheet" href="{{template}}/assets/css/menu-neon.css">
+  {% endif %}
+ 
   <!-- Choices JS -->
   <script src="{{template}}/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
 

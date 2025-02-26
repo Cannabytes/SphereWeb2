@@ -1,0 +1,36 @@
+.glow-element {
+    /* Внешний вид элемента */
+    border-radius: 8px;
+
+    /* Базовая тень */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    /* Позиционирование содержимого (если нужно) */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    /* Курсор и плавность анимации */
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Эффект свечения при наведении */
+.glow-element:hover {
+    box-shadow: 0 0 15px rgba(110, 142, 251, 0.8);
+}
+
+/* Вариант с более интенсивным свечением */
+.glow-intense:hover {
+    box-shadow: 0 0 20px rgba(110, 142, 251, 1);
+}
+
+/* Вариант с другим цветом (красное свечение) */
+.glow-red:hover {
+    box-shadow: 0 0 15px rgba(251, 110, 110, 0.8);
+}
+
+/* Вариант с зеленым свечением */
+.glow-green:hover {
+    box-shadow: 0 0 15px rgba(110, 251, 142, 0.8);
+}
