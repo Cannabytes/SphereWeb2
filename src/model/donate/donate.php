@@ -622,22 +622,36 @@ class donate
     {
         $quantity = config::load()->donate()->getSphereCoinCost();
 
+        // Вспомогательный «мини-метод», определяющий нужную формулу
+        $calc = function(float $sum, float $rate, float $quantity): float|int {
+            if ($quantity >= 1.0) {
+                // Обычная формула: делим sum на rate и умножаем на quantity
+                return ($sum / $rate) * $quantity;
+            } else {
+                // «Исключительная» формула: умножаем sum на rate и на quantity
+                return ($sum * $rate) * $quantity;
+            }
+        };
+
+        // Если включены динамические курсы
         if (config::load()->other()->isExchangeRates()) {
             $exchangeRates = config::load()->other()->getExchangeRates();
-            foreach($exchangeRates AS $name=>$rate){
-                if($currency == $name){
-                    return ($sum / $rate) * $quantity;
+            foreach ($exchangeRates as $name => $rate) {
+                if ($currency === $name) {
+                    return $calc($sum, $rate, $quantity);
                 }
             }
         }
 
+        // Иначе — используем курсы по умолчанию
         return match ($currency) {
-            "RUB" => ($sum / config::load()->donate()->getRatioRUB()) * $quantity,
-            "UAH" => ($sum / config::load()->donate()->getRatioUAH()) * $quantity,
-            "EUR" => ($sum / config::load()->donate()->getRatioEUR()) * $quantity,
-            default => ($sum / config::load()->donate()->getRatioUSD()) * $quantity,
+            'RUB' => $calc($sum, config::load()->donate()->getRatioRUB(), $quantity),
+            'UAH' => $calc($sum, config::load()->donate()->getRatioUAH(), $quantity),
+            'EUR' => $calc($sum, config::load()->donate()->getRatioEUR(), $quantity),
+            default => $calc($sum, config::load()->donate()->getRatioUSD(), $quantity),
         };
     }
+
 
     //Сумма зачисления денег с учетом курса валют конфига
 
@@ -801,6 +815,26 @@ class donate
             if ($donateClass::forAdmin() and user::self()->getAccessLevel() != 'admin') {
                 board::error('Only for Admin');
             }
+        }
+    }
+
+    /**
+     * Функция для «умного» расчёта количества коинов.
+     * Если sphereCoinCost >= 1, используем стандартную формулу деления.
+     * Если sphereCoinCost < 1, автоматически переходим к формуле умножения.
+     *
+     * @param float $count Количество штук
+     * @param float $ratioUSD Стоимость в долларах
+     * @param float $sphereCoinCost Кол-во коинов за 1 доллар
+     *
+     * @return float Итоговое количество коинов
+     */
+    function getOrderAmount($count, $ratioUSD, $sphereCoinCost): float
+    {
+        if ($sphereCoinCost >= 1.0) {
+            return $count * ($ratioUSD / $sphereCoinCost);
+        } else {
+            return $count * ($ratioUSD * $sphereCoinCost);
         }
     }
 

@@ -32,10 +32,20 @@
                     </div>
 
                     <div class="text-center">{{phrase('estimated_cost')}}</div>
-                    {% set USD = getServer().donate().getRatioUSD() / getServer().donate().getSphereCoinCost() %}
-                    {% set EUR = getServer().donate().getRatioEUR() / getServer().donate().getSphereCoinCost() %}
-                    {% set RUB = getServer().donate().getRatioRUB() / getServer().donate().getSphereCoinCost() %}
-                    {% set UAH = getServer().donate().getRatioUAH() / getServer().donate().getSphereCoinCost() %}
+
+                    {% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
+
+                    {% if sphereCoinCost >= 1 %}
+                        {% set USD = getServer().donate().getRatioUSD() / sphereCoinCost %}
+                        {% set EUR = getServer().donate().getRatioEUR() / sphereCoinCost %}
+                        {% set RUB = getServer().donate().getRatioRUB() / sphereCoinCost %}
+                        {% set UAH = getServer().donate().getRatioUAH() / sphereCoinCost %}
+                    {% else %}
+                        {% set USD = getServer().donate().getRatioUSD() * sphereCoinCost %}
+                        {% set EUR = getServer().donate().getRatioEUR() * sphereCoinCost %}
+                        {% set RUB = getServer().donate().getRatioRUB() * sphereCoinCost %}
+                        {% set UAH = getServer().donate().getRatioUAH() * sphereCoinCost %}
+                    {% endif %}
 
                     <div class="block-content block-content-full">
                         <div class="row text-center">
