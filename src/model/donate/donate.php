@@ -621,19 +621,13 @@ class donate
     public static function currency(int|float $sum, string $currency): float|int
     {
         $quantity = config::load()->donate()->getSphereCoinCost();
-
-        // Вспомогательный «мини-метод», определяющий нужную формулу
         $calc = function(float $sum, float $rate, float $quantity): float|int {
             if ($quantity >= 1.0) {
-                // Обычная формула: делим sum на rate и умножаем на quantity
                 return ($sum / $rate) * $quantity;
             } else {
-                // «Исключительная» формула: умножаем sum на rate и на quantity
-                return ($sum * $rate) * $quantity;
+                return $sum / ($rate * $quantity);
             }
         };
-
-        // Если включены динамические курсы
         if (config::load()->other()->isExchangeRates()) {
             $exchangeRates = config::load()->other()->getExchangeRates();
             foreach ($exchangeRates as $name => $rate) {
@@ -642,8 +636,6 @@ class donate
                 }
             }
         }
-
-        // Иначе — используем курсы по умолчанию
         return match ($currency) {
             'RUB' => $calc($sum, config::load()->donate()->getRatioRUB(), $quantity),
             'UAH' => $calc($sum, config::load()->donate()->getRatioUAH(), $quantity),
