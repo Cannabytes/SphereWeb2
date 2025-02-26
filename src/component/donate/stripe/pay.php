@@ -47,7 +47,7 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        $sum = intval($_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost()));
+        $sum = intval($donate->getSphereCoinCost() >= 1 ? ($_POST['count'] * ($donate->getRatioUSD() / $donate->getSphereCoinCost())) : ($_POST['count'] * ($donate->getRatioUSD() * $donate->getSphereCoinCost())));
 
         try {
             \Stripe\Stripe::setApiKey(self::getConfigValue('secret_key')); // Замените YOUR_SECRET_KEY своим секретным ключом Stripe

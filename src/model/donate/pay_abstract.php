@@ -10,6 +10,16 @@ use Ofey\Logan22\model\user\userModel;
 
 class pay_abstract {
 
+    function sphereCoinSmartCalc(float $count, float $ratio, float $sphereCoinCost): float
+    {
+        // Если sphereCoinCost ≥ 1, используем деление, иначе — умножение
+        if ($sphereCoinCost >= 1.0) {
+            return $count * ($ratio / $sphereCoinCost);
+        } else {
+            return $count * ($ratio * $sphereCoinCost);
+        }
+    }
+
     /**
      * Используется для определения конфигурации платежной системы
      *

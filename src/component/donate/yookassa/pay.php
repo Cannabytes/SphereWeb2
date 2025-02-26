@@ -66,7 +66,8 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
         if ($_POST['count'] > $donate->getMaxSummaPaySphereCoin()) {
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
-		$order_amount = $_POST['count'] * ($donate['coefficient']['RUB'] / $donate['quantity']);
+        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
+
 		$userId = auth::get_id();
 		$params = [
 			'metadata' => [

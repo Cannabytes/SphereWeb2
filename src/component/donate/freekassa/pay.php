@@ -54,7 +54,9 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
         if ($_POST['count'] > $donate->getMaxSummaPaySphereCoin()) {
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
-        $order_amount = $_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost());
+
+        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
+
         $merchant_id = self::getConfigValue('merchant_id');
         $order_id = user::self()->getEmail();
         $secret_word = self::getConfigValue('secret_key_1');

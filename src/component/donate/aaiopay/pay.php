@@ -43,7 +43,7 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        $amount = $_POST['count'] * ($donate->getRatioRUB() / $donate->getSphereCoinCost());
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
 
         // Генерируем случайный идентификатор заказа
         $order_id = uniqid();
