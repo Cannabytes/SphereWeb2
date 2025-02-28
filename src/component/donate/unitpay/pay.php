@@ -68,7 +68,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
         }
         $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
 
-		$account = auth::get_id();
+		$account = user::self()->getId();
 		
 		$signature = hash( 'sha256', $account . '{up}' . $this->currency_default . '{up}' . $this->desc . '{up}' . $order_amount . '{up}' . $this->secretKey );
 
