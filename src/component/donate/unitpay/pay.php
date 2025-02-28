@@ -6,6 +6,7 @@ use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\bonus\bonus;
+use Ofey\Logan22\model\user\user;
 
 class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 
@@ -53,20 +54,20 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
      */
     function create_link(): void {
         user::self()->isAuth() ?: board::notice(false, lang::get_phrase(234));
+        donate::isOnlyAdmin(self::class);
+
         filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT) ?: board::notice(false, "Введите сумму цифрой");
 
-        $donate = __config__donate;
+        $donate = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
 
-        if ($_POST['count'] < $donate['min_donate_bonus_coin']) {
-            board::notice(false, "Минимальное пополнение: " . $donate['min_donate_bonus_coin']  );
+        if ($_POST['count'] < $donate->getMinSummaPaySphereCoin()) {
+            board::notice(false, "Минимальное пополнение: " . $donate->getMinSummaPaySphereCoin());
         }
-		
-        if ($_POST['count'] > $donate['max_donate_bonus_coin']) {
-            board::notice(false, "Максимальная пополнение: " . $donate['max_donate_bonus_coin']  );
+        if ($_POST['count'] > $donate->getMaxSummaPaySphereCoin()) {
+            board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
+        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
 
-		$order_amount = $_POST['count'] * ($donate['coefficient']['RUB'] / $donate['quantity']);
-	
 		$account = auth::get_id();
 		
 		$signature = hash( 'sha256', $account . '{up}' . $this->currency_default . '{up}' . $this->desc . '{up}' . $order_amount . '{up}' . $this->secretKey );
@@ -82,7 +83,6 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 					'name' => $this->desc,
 					'count' => 1,
 					'price' => $order_amount,
-					//'currency' => $this->currency_default,
 				]
 			])),
 			'customerEmail' => auth::get_email(),			
@@ -144,7 +144,6 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 				'result' => [ 'message' => "Запрос [{$method}] успешно обработан!" ]
 			]));
 		}
-        donate::control_uuid($_REQUEST['unitpayId'], get_called_class());
 
         if ( !is_numeric( $userId ) ) {
 			die(json_encode([
@@ -152,12 +151,16 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 			]));
 		}
 
-        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $this->currency_default, get_called_class()]);
+        donate::control_uuid($sign . "__" . mt_rand(0, 999999999), get_called_class());
+
         $amount = donate::currency($amount, $this->currency_default);
 
-        auth::change_donate_point((int) $userId, $amount, get_called_class());
-		donate::AddDonateItemBonus($userId, $amount);
-		echo json_encode([ 'result' => [ 'message' => 'Запрос успешно обработан' ] ]);
+        self::telegramNotice(user::getUserId($userId), $_POST['AMOUNT'], $this->currency_default, $amount, get_called_class());
+        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['AMOUNT'], $this->currency_default, get_called_class()]);
+        user::getUserId($userId)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
+        donate::addUserBonus($userId, $amount);
+
+        echo 'YES';
     }
 }
  
