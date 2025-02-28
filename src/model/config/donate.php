@@ -454,10 +454,18 @@ class donate
     }
 
     /**
-     * @return array|donateSystem[]
+     * @return null|array|donateSystem[]
      */
-    public function getDonateSystems(): array
+    public function getDonateSystems($sysName = null)
     {
+        if($sysName!==null){
+            foreach($this->donateSystems as $system){
+                if($system->getName() == $sysName){
+                    return $system;
+                }
+            }
+            return null;
+        }
         return $this->donateSystems;
     }
 

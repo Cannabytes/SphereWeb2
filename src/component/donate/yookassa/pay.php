@@ -2,6 +2,7 @@
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\user;
@@ -104,6 +105,10 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
 
     //Получение информации об оплате
     function webhook(): void {
+        if (!(config::load()->donate()->getDonateSystems('yookassa')?->isEnable() ?? false)) {
+            echo 'disabled';
+            exit;
+        }
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
         if(empty($this->shopId) OR empty($this->secretKey)){
             board::error('No set token api');

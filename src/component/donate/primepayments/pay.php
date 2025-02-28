@@ -74,7 +74,7 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract
         $data['sign'] = md5(
           self::getConfigValue(
             'secret_1'
-          ) . $data['action'] . $data['project'] . $sum . $data['currency'] . $data['innerID'] . $data['email'] . $data['payWay']
+          ) . $data['action'] . $data['project'] . $order_amount . $data['currency'] . $data['innerID'] . $data['email'] . $data['payWay']
         );
         $ch           = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://pay.primepayments.io/API/v2/');
@@ -97,6 +97,12 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract
     //Получение информации об оплате
     function webhook(): void
     {
+
+        if (!(config::load()->donate()->getDonateSystems('primepayments')?->isEnable() ?? false)) {
+            echo 'disabled';
+            exit;
+        }
+
         file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $_REQUEST, true ) . PHP_EOL, FILE_APPEND );
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
         $hash = md5(

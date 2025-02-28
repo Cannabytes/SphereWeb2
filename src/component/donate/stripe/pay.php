@@ -2,6 +2,7 @@
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\user;
 use Stripe\Checkout\Session;
@@ -83,6 +84,10 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
     //Получение информации об оплате
     function webhook(): void
     {
+        if (!(config::load()->donate()->getDonateSystems('stripe')?->isEnable() ?? false)) {
+            echo 'disabled';
+            exit;
+        }
         $input = file_get_contents("php://input");
         if(!$input){
             return;

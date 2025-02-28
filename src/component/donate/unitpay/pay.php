@@ -2,6 +2,7 @@
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\bonus\bonus;
@@ -114,6 +115,10 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 
     //Получение информации об оплате
     function webhook(): void {
+        if (!(config::load()->donate()->getDonateSystems('unitpay')?->isEnable() ?? false)) {
+            echo 'disabled';
+            exit;
+        }
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
 		$method = $_REQUEST['method'] ?? '';

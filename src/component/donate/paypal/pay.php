@@ -149,6 +149,10 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
 
     function webhook(): void
     {
+        if (!(config::load()->donate()->getDonateSystems('paypal')?->isEnable() ?? false)) {
+            echo 'disabled';
+            exit;
+        }
         // Получаем данные из тела запроса
         $input = file_get_contents('php://input');
         file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $input, true ) . PHP_EOL, FILE_APPEND );

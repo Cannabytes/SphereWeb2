@@ -2,6 +2,7 @@
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\userlog;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\auth\auth;
@@ -62,6 +63,10 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
 
     //Получение информации об оплате
     function webhook(): void {
+        if (!(config::load()->donate()->getDonateSystems('yoomoney')?->isEnable() ?? false)) {
+            echo 'disabled';
+            exit;
+        }
         $notification_type = $_POST['notification_type'] ?? "";
         if($notification_type != "card-incoming"){
             exit();
