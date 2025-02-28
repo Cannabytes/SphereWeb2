@@ -219,6 +219,7 @@
                 url: '/admin/filescanner/scan',
                 method: 'POST',
                 dataType: 'json',
+                timeout: 60000,
                 success: function(response) {
                     if (response.changed_files !== undefined) {
                         setTimeout(() => {
@@ -230,10 +231,17 @@
                         }, 1500);
                     } else {
                         showNotification('Некорректный ответ от сервера', 'danger');
+                        $('#scanning-animation').hide();
+                        $('#scan-button-block').show();
                     }
                 },
                 error: function(xhr, status, error) {
-                    showNotification('Произошла ошибка при сканировании: ' + error, 'danger');
+                    // Проверяем тип ошибки
+                    if (status === 'timeout') {
+                        showNotification('Превышено время ожидания ответа от сервера', 'danger');
+                    } else {
+                        showNotification('Произошла ошибка при сканировании: ' + error, 'danger');
+                    }
                     $('#scanning-animation').hide();
                     $('#scan-button-block').show();
                 }

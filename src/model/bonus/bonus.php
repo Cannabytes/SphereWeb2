@@ -28,7 +28,8 @@ class bonus
         $maxCodeSymbols = 12;
         $countGenBonusCode = $_POST["count_codes"] ?? 100;
         $items = $_POST['items'];
-        $prefix = $_POST['prefix'] ?? '';
+        $prefix = trim($_POST['prefix']) ?? '';
+        $autocreatecode = (bool) filter_input(INPUT_POST, 'autocreatecode', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
         $disposable = (int) filter_input(INPUT_POST, 'disposable', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
 
         if ($items == null || count($items) == 0) {
@@ -46,9 +47,33 @@ class bonus
         $server_id = $_POST['server'] ?? user::self()->getServerId();
         $codesReg = [];
 
-        for ($i = 0; $i < $countGenBonusCode; $i++) {
-            $code = $prefix . self::generateRandomStrings($minCodeSymbols, $maxCodeSymbols);
-            $codesReg[] = $code;
+        if($autocreatecode) {
+            for ($i = 0; $i < $countGenBonusCode; $i++) {
+                $code = $prefix . self::generateRandomStrings($minCodeSymbols, $maxCodeSymbols);
+                $codesReg[] = $code;
+                foreach ($items as $item) {
+                    $itemid = $item['itemId'];
+                    $count = $item['count'];
+                    $enchant = 0;
+                    sql::run(
+                        "INSERT INTO `bonus_code` (`server_id`, `code`, `item_id`, `count`, `enchant`, `phrase`, `start_date_code`, `end_date_code`, `disposable`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        [
+                            $server_id,
+                            $code,
+                            $itemid,
+                            $count,
+                            $enchant,
+                            "code_bonus",
+                            $start_date_code,
+                            $end_date_code,
+                            $disposable,
+                        ]
+                    );
+                }
+            }
+        }else{
+            sql::run("DELETE FROM `bonus_code` WHERE `server_id` = ? AND `code` == ?", [$server_id, $prefix]);
+            $codesReg[] = $prefix;
             foreach ($items as $item) {
                 $itemid = $item['itemId'];
                 $count = $item['count'];
@@ -57,7 +82,7 @@ class bonus
                     "INSERT INTO `bonus_code` (`server_id`, `code`, `item_id`, `count`, `enchant`, `phrase`, `start_date_code`, `end_date_code`, `disposable`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     [
                         $server_id,
-                        $code,
+                        $prefix,
                         $itemid,
                         $count,
                         $enchant,
@@ -69,6 +94,7 @@ class bonus
                 );
             }
         }
+
         header('Content-Type: application/json');
         echo json_encode($codesReg);
     }

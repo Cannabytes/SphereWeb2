@@ -23,16 +23,36 @@
           {% endif %}
 
           <div class="row row-cols-lg-auto align-items-center">
-            <span class="fw-semibold mb-1 text-muted">Префикс</span>
+            <span class="fw-semibold mb-1 text-muted">{{phrase(27)}}</span>
             <div class="col-4">
               <div class="col-sm">
-                <input type="text" class="form-control" id="prefix" value="" placeholder="bonus_"
+                <input type="text" class="form-control" id="prefix" value="" placeholder="Present"
                        aria-label="State">
               </div>
             </div>
           </div>
 
-          <div class="row row-cols-lg-auto align-items-center">
+          <div class="form-check form-check-lg d-flex align-items-center">
+            <input id="autocreatecode" class="form-check-input" type="checkbox" value="">
+            <label class="form-check-label" for="autocreatecode">
+              {{phrase('bonus_code_autocreate')}}
+            </label>
+
+          </div>
+          <script>
+            $(document).ready(function () {
+              $('#autocreatecode').change(function () {
+                if (this.checked) {
+                  $('#ccodes').removeClass('d-none');
+                } else {
+                  $('#ccodes').addClass('d-none');
+                }
+              });
+            });
+          </script>
+            <span>{{phrase('bonus_code_desc')|raw}}</span>
+
+          <div id="ccodes" class="row row-cols-lg-auto align-items-center d-none">
             <span class="fw-semibold mb-1 text-muted">{{ phrase('number_of_codes') }}</span>
             <div class="col-4">
               <div class="col-sm">
@@ -41,6 +61,9 @@
               </div>
             </div>
           </div>
+
+          <hr>
+
           <div class="row row-cols-lg-auto align-items-center">
             <div class="col-4">
               <span class="fw-semibold mb-1 text-muted">{{ phrase('bonus_code_start_date') }}</span>
@@ -188,6 +211,7 @@
     AjaxSend('/admin/bonuscode/create', 'POST', {
       server: $('#serverPromo').val(),
       count_codes : $('#count_codes').val(),
+      autocreatecode: $('#autocreatecode').is(':checked'),
       disposable: $('#disposable').is(':checked'),
       items: items,
       start_date_code: startDate,

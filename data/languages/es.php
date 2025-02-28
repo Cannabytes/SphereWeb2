@@ -1901,5 +1901,7 @@ Contraseña: %%password%%',
     'green color' => 'Color verde',
     'red color' => 'Color rojo',
     'blue color' => 'Color azul',
+    'bonus_code_desc' => 'Si los códigos se generan automáticamente, se debe especificar la cantidad de códigos.<br>Si los códigos se crean manualmente, entonces el código será el nombre especificado.',
+    'bonus_code_autocreate' => 'Generar códigos automáticamente.',
 
 ];
