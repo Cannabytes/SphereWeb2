@@ -70,7 +70,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 
 		$account = user::self()->getId();
 		
-		$signature = hash( 'sha256', $account . '{up}' . $this->currency_default . '{up}' . $this->desc . '{up}' . $order_amount . '{up}' . $this->secretKey );
+		$signature = hash( 'sha256', $account . '{up}' . $this->currency_default . '{up}' . $this->desc . '{up}' . $order_amount . '{up}' . self::getConfigValue('secretKey') );
 
 		$params = [
 			'account' => $account,
@@ -86,9 +86,9 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 				]
 			])),
 			'customerEmail' => user::self()->getEmail(),
-			'projectId' => $this->publicKey,
+			'projectId' => self::getConfigValue('publicKey'),
 			'resultUrl' => \Ofey\Logan22\component\request\url::host('/donate'),
-			'secretKey' => self::TESTMODE ? self::$test_key : $this->secretKey,
+			'secretKey' => self::TESTMODE ? self::$test_key : self::getConfigValue('secretKey'),
 			'signature' => $signature
 		];
 		
@@ -130,7 +130,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 		ksort( $_REQUEST['params'] );
 		$params = implode( '{up}', $_REQUEST['params'] );
 		
-		$sign = hash( 'sha256', $method . '{up}' . $params . '{up}' . $this->secretKey );
+		$sign = hash( 'sha256', $method . '{up}' . $params . '{up}' . self::getConfigValue('secretKey'));
 		
 		header( 'Content-type: application/json' );
 		if ( $crc <> $sign ) {
