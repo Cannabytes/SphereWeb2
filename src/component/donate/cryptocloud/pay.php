@@ -70,7 +70,7 @@ class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
+        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioUSD(), $donate->getSphereCoinCost());
 
         $response = $this->getResponse('https://api.cryptocloud.plus/v2/invoice/create', [
           'shop_id'  => self::getConfigValue('shopId'),
