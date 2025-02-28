@@ -85,7 +85,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 					'price' => $order_amount,
 				]
 			])),
-			'customerEmail' => auth::get_email(),			
+			'customerEmail' => user::self()->getEmail(),
 			'projectId' => $this->publicKey,
 			'resultUrl' => \Ofey\Logan22\component\request\url::host('/donate'),
 			'secretKey' => self::TESTMODE ? self::$test_key : $this->secretKey,
