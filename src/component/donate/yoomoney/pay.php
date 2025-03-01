@@ -54,11 +54,28 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
             'receiver' => self::getConfigValue('shopId'),
             'sum' => (string)$order_amount,
             "quickpay-form" => 'donate',
-            'label' => auth::get_id(),
+            'label' => user::self()->getId(),
             'paymentType' => 'AC',
             'successURL' => \Ofey\Logan22\component\request\url::host("/donate/pay"),
         ];
         echo "https://yoomoney.ru/quickpay/confirm.xml?" . http_build_query($params);
+
+        $ch = curl_init('https://yoomoney.ru/quickpay/confirm.xml');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $response = curl_exec($ch);
+        $error = curl_error($ch);
+        curl_close($ch);
+var_dump($response, $error);exit;
+        if ($error) {
+            // Обрабатываем ошибку
+            echo "Ошибка при отправке: $error";
+        } else {
+            // Выводим ответ сервиса
+            echo "Ответ YooMoney: " . $response;
+        }
     }
 
     //Получение информации об оплате

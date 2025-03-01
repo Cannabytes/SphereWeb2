@@ -52,6 +52,15 @@ class options
                 if ($response['success']) {
                     try {
                         sql::run("DELETE FROM `servers` WHERE `id` = ?", [$sid]);
+                        sql::run("DELETE FROM `server_data` WHERE `server_id` = ?", [$sid]);
+                        sql::run("DELETE FROM `settings` WHERE `serverId` = ?", [$sid]);
+                        sql::run("DELETE FROM `donate` WHERE `server_id` = ?", [$sid]);
+                        sql::run("DELETE FROM `bonus_code` WHERE `server_id` = ?", [$sid]);
+                        sql::run("DELETE FROM `player_accounts` WHERE `server_id` = ?", [$sid]);
+                        sql::run("DELETE FROM `shop_items` WHERE `serverId` = ?", [$sid]);
+                        sql::run("DELETE FROM `startpacks` WHERE `server_id` = ?", [$sid]);
+                        sql::run("DELETE FROM `server_description` WHERE `server_id` = ?", [$sid]);
+                        sql::run("DELETE FROM `server_cache` WHERE `server_id` = ?", [$sid]);
                     } catch (\Exception $e) {
                         board::error($e->getMessage());
                     }

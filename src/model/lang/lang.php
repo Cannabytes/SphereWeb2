@@ -78,7 +78,7 @@ class lang
         $lngs = array_map(function ($item) {
             return preg_replace('/\.php$/', '', $item);
         }, array_filter($lngs, function ($item) {
-            return substr($item, -4) === '.php';
+            return str_ends_with($item, '.php');
         }));
 
         $lang_name = $this->lang_user_default();

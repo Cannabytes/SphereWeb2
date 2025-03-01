@@ -120,6 +120,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
             exit;
         }
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
+        file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $_REQUEST, true ) . PHP_EOL, FILE_APPEND );
 
 		$method = $_REQUEST['method'] ?? '';
 		$userId = $_REQUEST['params']['account'] ?? -1;
@@ -151,12 +152,11 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 			]));
 		}
 
-        donate::control_uuid($sign . "__" . mt_rand(0, 999999999), get_called_class());
+        donate::control_uuid($_REQUEST['params']['unitpayId'], get_called_class());
 
         $amount = donate::currency($amount, $this->currency_default);
-
-        self::telegramNotice(user::getUserId($userId), $_POST['AMOUNT'], $this->currency_default, $amount, get_called_class());
-        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['AMOUNT'], $this->currency_default, get_called_class()]);
+        self::telegramNotice(user::getUserId($userId), $_REQUEST['params']['orderSum'], $this->currency_default, $amount, get_called_class());
+        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $this->currency_default, get_called_class()]);
         user::getUserId($userId)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
         donate::addUserBonus($userId, $amount);
 
