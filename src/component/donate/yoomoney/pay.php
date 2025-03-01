@@ -68,7 +68,6 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
         $response = curl_exec($ch);
         $error = curl_error($ch);
         curl_close($ch);
-var_dump($response, $error);exit;
         if ($error) {
             // Обрабатываем ошибку
             echo "Ошибка при отправке: $error";
@@ -80,10 +79,13 @@ var_dump($response, $error);exit;
 
     //Получение информации об оплате
     function webhook(): void {
+        file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $_REQUEST, true ) . PHP_EOL, FILE_APPEND );
+
         if (!(config::load()->donate()->getDonateSystems('yoomoney')?->isEnable() ?? false)) {
             echo 'disabled';
             exit;
         }
+
         $notification_type = $_POST['notification_type'] ?? "";
         if($notification_type != "card-incoming"){
             exit();
@@ -102,6 +104,7 @@ var_dump($response, $error);exit;
         if($hash !== $request_hash){
             exit();
         }
+        $currency = "RUB";
         donate::control_uuid($operation_id, get_called_class());
         \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
         self::telegramNotice(user::getUserId($user_id), $_POST['amount'], $currency, $amount, get_called_class());
