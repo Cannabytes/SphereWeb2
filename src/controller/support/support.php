@@ -453,6 +453,9 @@ class support
     {
         self::isEnable();
         $data = $_POST['data'];
+        if(!$data){
+            board::error("No data");
+        }
         foreach ($data as $id => $info) {
             $sectionId = $info['id'];
             $moderators = json_encode($info['moderators']);

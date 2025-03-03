@@ -94,11 +94,11 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 			$params['test'] = 1;
 			$params['login'] = self::$test_email;
 		}
-		
-		$requestUrl = 'https://unitpay.ru/api?' . http_build_query([
-			'method' => 'initPayment',
-			'params' => $params
-		], null, '&', PHP_QUERY_RFC3986);
+
+        $requestUrl = 'https://unitpay.ru/api?' . http_build_query([
+                'method' => 'initPayment',
+                'params' => $params
+            ], numeric_prefix: '', arg_separator: '&', encoding_type: PHP_QUERY_RFC3986);
 		
 		$response = json_decode( file_get_contents( $requestUrl ), true );
 

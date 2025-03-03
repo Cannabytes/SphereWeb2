@@ -366,10 +366,18 @@ class donate
     public static function sumGetValue($array, $methodName): int
     {
         $sum = 0;
-        if (is_object($array)) {
-            // Преобразуем объект в массив
-            $array = [get_object_vars($array)];
+
+        if ($array === null) {
+            return $sum;
         }
+
+        if (is_object($array)) {
+            if (method_exists($array, $methodName)) {
+                $sum += $array->$methodName();
+            }
+            return $sum;
+        }
+
         foreach ($array as $item) {
             if (is_object($item) && method_exists($item, $methodName)) {
                 $sum += $item->$methodName();
