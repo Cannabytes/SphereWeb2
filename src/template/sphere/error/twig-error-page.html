@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ошибка рендеринга</title>
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #3498db;
+            --background-color: #f9f9f9;
+            --text-color: #2c3e50;
+            --code-bg-color: #f8f8f8;
+            --border-color: #ddd;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --info-color: #2980b9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .error-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 6px 6px 0 0;
+            margin-bottom: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .error-header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .error-body {
+            background-color: white;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .error-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .error-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .error-section h2 {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .error-section h2 svg {
+            margin-right: 10px;
+        }
+
+        .error-message {
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .error-details {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .error-details dt {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .error-details dd {
+            word-break: break-word;
+        }
+
+        .code-block {
+            position: relative;
+            background-color: var(--code-bg-color);
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 14px;
+            white-space: pre;
+            border: 1px solid var(--border-color);
+        }
+
+        .code-block ol {
+            margin-left: 40px;
+        }
+
+        .code-block .line {
+            display: block;
+            padding: 0 15px;
+            margin-left: -15px;
+        }
+
+        .code-block .error-line {
+            background-color: rgba(231, 76, 60, 0.2);
+            border-left: 2px solid var(--primary-color);
+            font-weight: bold;
+        }
+
+        .code-context {
+            margin-top: 15px;
+        }
+
+        .toggle-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .stack-trace, .template-content, .context-details {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .stack-trace.show, .template-content.show, .context-details.show {
+            display: block;
+        }
+
+        .stack-frame {
+            padding: 10px;
+            background-color: var(--code-bg-color);
+            border-left: 3px solid var(--secondary-color);
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+
+        .file-preview {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .error-tip {
+            background-color: #f7f9fc;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .error-tip h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .error-tip ul {
+            margin-left: 20px;
+        }
+
+        .error-tip li {
+            margin-bottom: 5px;
+        }
+
+        .clipboard-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .clipboard-btn:hover {
+            opacity: 1;
+        }
+
+        .code-lines {
+            margin-left: 2em;
+            margin-bottom: 0;
+            counter-reset: line;
+        }
+
+        .code-lines li {
+            counter-increment: line;
+            position: relative;
+        }
+
+        .code-lines li::before {
+            content: counter(line);
+            position: absolute;
+            left: -2.5em;
+            width: 2em;
+            text-align: right;
+            color: #888;
+            font-size: 0.8em;
+        }
+
+        .var-list {
+            background-color: var(--code-bg-color);
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .var-list dt {
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .var-list dt:first-child {
+            margin-top: 0;
+        }
+
+        .var-list dd {
+            padding: 5px;
+            margin-left: 20px;
+        }
+
+        .var-name {
+            color: var(--secondary-color);
+        }
+
+        .var-type {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .var-string {
+            color: #008800;
+        }
+
+        .var-numeric {
+            color: #0000BB;
+        }
+
+        .var-bool {
+            color: #880000;
+        }
+
+        .var-null {
+            color: #888;
+            font-style: italic;
+        }
+
+        .var-array, .var-object {
+            color: #800080;
+        }
+
+        .var-key {
+            color: #880000;
+        }
+
+        .var-array-list, .var-object-list {
+            list-style-type: none;
+            margin: 5px 0 5px 20px;
+            padding: 0;
+        }
+
+        .function-calls {
+            background-color: #fff8dc;
+            border-left: 4px solid var(--warning-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .possible-solutions {
+            background-color: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .solution-item {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .solution-item:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+        }
+
+        .code-highlight {
+            background-color: rgba(255, 255, 0, 0.3);
+            border-radius: 2px;
+            padding: 2px;
+        }
+
+        .function-def {
+            background-color: #f0f8ff;
+            border-left: 4px solid var(--info-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .tab-container {
+            margin: 20px 0;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: transparent;
+            border: none;
+            outline: none;
+            font-weight: bold;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .tab-btn.active {
+            opacity: 1;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 15px;
+            background-color: white;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .error-details {
+                grid-template-columns: 1fr;
+            }
+
+            .error-details dt {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-header">
+            <h1>Ошибка рендеринга шаблонизатора</h1>
+            <p>Обнаружена проблема при обработке шаблона.</p>
+        </div>
+
+        <div class="error-body">
+            <div class="error-section">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Сообщение об ошибке
+                </h2>
+                <div class="error-message">{{ errorMessage }}</div>
+
+                <dl class="error-details">
+                    <dt>Файл:</dt>
+                    <dd>{{ errorFile }}</dd>
+
+                    <dt>Строка:</dt>
+                    <dd>{{ errorLine }}</dd>
+
+                    <dt>Тип:</dt>
+                    <dd>{{ errorType }}</dd>
+
+                    <dt>Шаблон:</dt>
+                    <dd>{{ templateName }}</dd>
+                </dl>
+
+                {% if contextInfo is defined and contextInfo.argumentError is defined %}
+                <div class="function-calls">
+                    <h3>Проблема с аргументами:</h3>
+                    <p>Для функции требуется <strong>{{ contextInfo.argumentError.required }}</strong> аргументов, но было передано <strong>{{ contextInfo.argumentError.given }}</strong>.</p>
+
+                    {% if contextInfo.functionCalls is defined and contextInfo.functionCalls.phrase is defined %}
+                    <h4>Найдены вызовы функции phrase():</h4>
+                    <ul>
+                        {% for call in contextInfo.functionCalls.phrase %}
+                        <li><code>phrase({{ call|raw }})</code></li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    {% if contextInfo.twigFunctions is defined and contextInfo.twigFunctions.phrase is defined %}
+                    <div class="function-def">
+                        <h4>Определение функции phrase():</h4>
+                        {% if contextInfo.twigFunctions.phrase.exists %}
+                        <p>Файл: {{ contextInfo.twigFunctions.phrase.file }} (строка {{ contextInfo.twigFunctions.phrase.line }})</p>
+                        <p>Параметры:</p>
+                        <ul>
+                            {% for param in contextInfo.twigFunctions.phrase.params %}
+                            <li>
+                                <strong>{{ param.name }}</strong>
+                                {% if param.required %}<span style="color: red;">(обязательный)</span>{% else %}<span style="color: green;">(необязательный, значение по умолчанию: {{ param.default }})</span>{% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>Не удалось найти определение функции: {{ contextInfo.twigFunctions.phrase.error }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="openTab(event, 'tab-code')">Код с ошибкой</button>
+                    <button class="tab-btn" onclick="openTab(event, 'tab-template')">Шаблон целиком</button>
+                    <button class="tab-btn" onclick="openTab(event, 'tab-trace')">Стек вызовов</button>
+                    <button class="tab-btn" onclick="openTab(event, 'tab-vars')">Переменные шаблона</button>
+                </div>
+
+                <div id="tab-code" class="tab-content active">
+                    <div class="code-block">
+                        <button class="clipboard-btn" onclick="copyToClipboard('codeBlock')">Копировать</button>
+                        <div id="codeBlock" class="file-preview">
+                            {{ codePreview|raw }}
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-template" class="tab-content">
+                    <div class="code-block">
+                        <button class="clipboard-btn" onclick="copyToClipboard('templateBlock')">Копировать</button>
+                        <div id="templateBlock" class="file-preview">
+                            {{ templateContent|raw }}
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-trace" class="tab-content">
+                    <div class="stack-trace show">
+                        {{ stackTrace|raw }}
+                    </div>
+                </div>
+
+                <div id="tab-vars" class="tab-content">
+                    <h3>Переменные доступные в шаблоне:</h3>
+                    {{ templateVars|raw }}
+                </div>
+            </div>
+
+            <div class="error-section">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                    </svg>
+                    Возможные решения
+                </h2>
+
+                <div class="possible-solutions">
+                    {% if contextInfo is defined and contextInfo.possibleSolutions is defined %}
+                        {% for solution in contextInfo.possibleSolutions %}
+                            <div class="solution-item">{{ solution }}</div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="solution-item">Проверьте синтаксис шаблона Twig на наличие несоответствий или отсутствующих закрывающих тегов.</div>
+                        <div class="solution-item">Убедитесь, что все переменные, используемые в шаблоне, были переданы в контекст рендеринга.</div>
+                        <div class="solution-item">Проверьте наличие опечаток в именах переменных или функций.</div>
+                        <div class="solution-item">Проверьте, существуют ли все включаемые или расширяемые шаблоны.</div>
+                        <div class="solution-item">Проверьте на наличие циклических включений или расширений.</div>
+                    {% endif %}
+
+                    {% if contextInfo is defined and contextInfo.argumentError is defined %}
+                        <div class="solution-item">Убедитесь, что функция phrase() получает нужное количество аргументов ({{ contextInfo.argumentError.required }}).</div>
+                        <div class="solution-item">Проверьте, не передаются ли null значения в функцию.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+
+            navigator.clipboard.writeText(text).then(function() {
+                const btn = document.querySelector('.clipboard-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Скопировано!';
+
+                setTimeout(function() {
+                    btn.textContent = originalText;
+                }, 2000);
+            }, function() {
+                alert('Не удалось скопировать текст');
+            });
+        }
+
+        function openTab(evt, tabName) {
+            // Скрываем все вкладки
+            var tabContents = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabContents.length; i++) {
+                tabContents[i].className = tabContents[i].className.replace(" active", "");
+            }
+
+            // Убираем активное состояние со всех кнопок
+            var tabButtons = document.getElementsByClassName("tab-btn");
+            for (var i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+            }
+
+            // Показываем текущую вкладку и делаем кнопку активной
+            document.getElementById(tabName).className += " active";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>

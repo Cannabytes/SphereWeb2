@@ -115,7 +115,6 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
                 donate::control_uuid($id, get_called_class());
                 $amount = donate::currency($amount, $currency);
                 self::telegramNotice(user::getUserId($user_id), $paymentIntent->amount / 100, $currency, $amount, get_called_class());
-                \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$paymentIntent->amount / 100, $currency, get_called_class()]);
                 user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
                 donate::addUserBonus($user_id, $amount);
                 echo 'YES';

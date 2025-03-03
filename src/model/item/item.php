@@ -259,9 +259,7 @@ use Ofey\Logan22\component\image\client_icon;
             self::$arrItems[$id] = $itemObject;
             return $itemObject;
         }
-
         $itemArr = require $file;
-
         if (isset($itemArr[$id])) {
             $item = $itemArr[$id];
             $itemObject = new item();
@@ -277,8 +275,14 @@ use Ofey\Logan22\component\image\client_icon;
             $itemObject->setIsStackable($item['is_stackable'] ?? false);
             $itemObject->setIsDepositable($item['is_depositable'] ?? false);
             $itemObject->setPrice($item['price'] ?? 0);
-            $itemObject->setIcon($item['icon']??null);
             $itemObject->setExists(true);
+
+            if(file_exists("uploads/images/icon/{$id}.webp")){
+                $itemObject->setIcon("{$id}.webp");
+            }else{
+                $itemObject->setIcon($item['icon']??null);
+            }
+
             self::$arrItems[$id] = $itemObject;
             return $itemObject;
         }

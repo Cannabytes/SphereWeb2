@@ -1258,7 +1258,7 @@ return [
 	'LOG_CHANGE_ACCOUNT_PASSWORD' => 'Пользователь изменил пароль аккаунту %s',
 	'LOG_CHANGE_AVATAR' => 'Пользователь обновил аватар',
 	'LOG_DONATE_COIN_TO_GAME' => 'Пользователь перевел баланс на персонажа %s | ID: %d | Count: %d',
-	'LOG_DONATE_SUCCESS' => 'Пользователь пожертвовал %f %f и получил %f Donate Coin',
+	'LOG_DONATE_SUCCESS' => 'Пользователь %s %s пожертвовал и получил %f Donate Coin используя платежную систему %s',
 	'log_in' => 'Авторизуйтесь',
 	'log_in_crt_gm_acc' => 'Войти и создать игровой аккаунт',
 	'LOG_INVENTORY_TO_GAME' => 'Пользователь перевел на игрока %s ID: %d Count %d предметов',

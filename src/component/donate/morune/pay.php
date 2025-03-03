@@ -102,14 +102,12 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
                 $requestData['invoice_id'],
                 self::getConfigValue('shop_id')
             );
-            file_put_contents(__DIR__ . '/invoice.php', '<?php _REQUEST: ' . print_r($invoice, true) . PHP_EOL, FILE_APPEND);
             $invoice = $invoice['data'];
             $amount = $invoice['invoice_amount'];
             $currency = $invoice['currency'];
             $amount = donate::currency($amount, $currency);
 
             self::telegramNotice(user::getUserId($user_id), $invoice['invoice_amount'], $currency, $amount, get_called_class());
-            \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
             user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system: get_called_class(), input: $input);
             donate::addUserBonus($user_id, $amount);
             echo 'YES';

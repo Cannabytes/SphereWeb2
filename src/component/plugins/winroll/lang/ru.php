@@ -15,4 +15,5 @@ return [
     "List of items for the raffle" => "Список предметов для розыгрыша",
     "limit max count items in raffle" => "Максимальное количество предметов в розыгрыше",
     "error_sum_chance" => "Ошибка: суммарный шанс должен быть 100%%, сейчас: %g%%",
+    "winroll_my_win" => "Мои выигрыши",
 ];

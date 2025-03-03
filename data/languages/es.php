@@ -1227,7 +1227,7 @@ Almacenamiento en caché de archivos re-descargados por el usuario.
     'LOG_CHANGE_ACCOUNT_PASSWORD' => 'El usuario cambió la contraseña de la cuenta %s',
     'LOG_CHANGE_AVATAR' => 'El usuario actualizó el avatar',
     'LOG_DONATE_COIN_TO_GAME' => 'El usuario transfirió saldo al personaje %s | ID: %d | Cantidad: %d',
-    'LOG_DONATE_SUCCESS' => 'El usuario donó %f %f y recibió %f Donate Coin',
+    'LOG_DONATE_SUCCESS' => 'El usuario %s %s donó y recibió %f Donate Coin usando el sistema de pago %s',
     'log_in' => 'Iniciar sesión',
     'log_in_crt_gm_acc' => 'Iniciar sesión y crear una cuenta de juego',
     'LOG_INVENTORY_TO_GAME' => 'El usuario transfirió al jugador %s ID: %d Cantidad %d de artículos',

@@ -8,7 +8,6 @@ use Exception;
 use InvalidArgumentException;
 use Ofey\Logan22\component\account\generation;
 use Ofey\Logan22\component\alert\board;
-use Ofey\Logan22\component\alert\logs;
 use Ofey\Logan22\component\captcha\google;
 use Ofey\Logan22\component\chronicle\client;
 use Ofey\Logan22\component\chronicle\race_class;
@@ -47,11 +46,11 @@ use Ofey\Logan22\model\statistic\statistic as statistic_model;
 use Ofey\Logan22\model\template\async;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\player\player_account;
-use Ofey\Logan22\model\user\profile\other;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\model\user\userModel;
 use Ofey\Logan22\route\Route;
 use ReflectionClass;
+use ReflectionFunction;
 use ReflectionMethod;
 use RuntimeException;
 use Throwable;
@@ -69,7 +68,6 @@ class tpl
 {
 
     private static array $allTplVars = [];
-
     private static string $templatePath = "/src/template/sphere/";
 
     private static ?bool $isAjax = null;
@@ -786,8 +784,8 @@ class tpl
             return (sprintf("/uploads/images/icon/%s", $img));
         }));
 
-        $twig->addFunction(new TwigFunction('get_item_info', function ($item_id) {
-            return client_icon::get_item_info($item_id, false, false);
+        $twig->addFunction(new TwigFunction('get_item_info', function ($item_id, $chronicle = null) {
+            return client_icon::get_item_info($item_id, false, false, $chronicle);
         }));
 
         //        $twig->addFunction(new TwigFunction('donateConfig', function (): donateConfig {
@@ -1441,9 +1439,655 @@ class tpl
         }
     }
 
-public static function display($tplName) {
 
-        //Проверка, есть ли кастомный файл вместо стандартного
+    /**
+     * Обрабатывает ошибку Twig и отображает детальную страницу ошибки через Twig
+     * с расширенным анализом контекста
+     *
+     * @param Exception $e Объект исключения
+     * @param string $tplName Имя шаблона, который вызвал ошибку
+     * @return void
+     */
+    private static function handleTwigError(Exception $e, $tplName) {
+        // Определяем тип ошибки
+        $errorType = get_class($e);
+
+        // Получаем базовую информацию об ошибке
+        $errorMessage = $e->getMessage();
+        $errorFile = $e->getFile();
+        $errorLine = $e->getLine();
+
+        // Формируем предварительный просмотр кода с подсветкой строки с ошибкой
+        $codePreview = self::getCodePreview($errorFile, $errorLine, 5);
+
+        // Получаем содержимое шаблона, в котором произошла ошибка
+        $templateContent = self::getTemplateContent($tplName);
+
+        // Формируем стек вызовов в читаемом формате
+        $stackTrace = self::getFormattedStackTrace($e);
+
+        // Анализируем контекст ошибки
+        $contextInfo = self::analyzeErrorContext($e, $tplName, self::$allTplVars);
+
+        // Создаем новый экземпляр Twig для рендеринга страницы ошибки
+        $loader = new \Twig\Loader\FilesystemLoader(fileSys::get_dir('src/template/sphere/error'));
+        $errorTwig = new \Twig\Environment($loader, [
+            'cache' => false,
+            'debug' => true,
+            'auto_reload' => true
+        ]);
+
+        // Подготавливаем данные для шаблона ошибки
+        $errorData = [
+            'errorMessage' => $errorMessage,
+            'errorFile' => $errorFile,
+            'errorLine' => $errorLine,
+            'errorType' => $errorType,
+            'templateName' => $tplName,
+            'templateContent' => $templateContent,
+            'codePreview' => $codePreview,
+            'stackTrace' => $stackTrace,
+            'contextInfo' => $contextInfo,
+            'templateVars' => self::formatTemplateVars(self::$allTplVars)
+        ];
+
+        try {
+            // Пытаемся отрендерить шаблон ошибки через новый экземпляр Twig
+            echo $errorTwig->render('twig-error-page.html', $errorData);
+        } catch (Exception $renderException) {
+            // Если даже шаблон ошибки не может быть отрендерен,
+            // выводим простую HTML страницу с ошибкой как запасной вариант
+            self::renderFallbackErrorPage($e, $tplName, $renderException, $contextInfo);
+        }
+
+        exit;
+    }
+
+    /**
+     * Анализирует контекст ошибки для получения дополнительной информации
+     *
+     * @param Exception $e Объект исключения
+     * @param string $tplName Имя шаблона
+     * @param array $templateVars Переменные шаблона
+     * @return array Дополнительная информация о контексте ошибки
+     */
+    private static function analyzeErrorContext(Exception $e, $tplName, $templateVars) {
+        $contextInfo = [
+            'functionCalls' => [],
+            'relatedVariables' => [],
+            'possibleSolutions' => []
+        ];
+
+        $errorMessage = $e->getMessage();
+
+        // Анализ ошибок связанных с неверным количеством аргументов
+        if (preg_match('/The arguments array must contain (\d+) items, (\d+) given/', $errorMessage, $matches)) {
+            $requiredArgs = (int)$matches[1];
+            $givenArgs = (int)$matches[2];
+
+            $contextInfo['argumentError'] = [
+                'required' => $requiredArgs,
+                'given' => $givenArgs,
+                'diff' => $requiredArgs - $givenArgs
+            ];
+
+            // Попытка найти вызов функции в содержимом шаблона
+            $tplContent = self::getTemplateContent($tplName);
+
+            // Ищем вызовы функций с возможно неверным числом аргументов
+            if (preg_match_all('/\{\{.*?phrase\((.*?)\).*?\}\}/s', $tplContent, $functionMatches)) {
+                $contextInfo['functionCalls']['phrase'] = array_map('trim', $functionMatches[1]);
+            }
+
+            // Поиск глобальных функций Twig и их анализ
+            $contextInfo['twigFunctions'] = self::analyzeTwigFunctions();
+
+            // Решения для ошибки с аргументами
+            $contextInfo['possibleSolutions'][] = "Убедитесь, что функция phrase() получает нужное количество аргументов ({$requiredArgs}).";
+            $contextInfo['possibleSolutions'][] = "Проверьте, не передаются ли null значения в функцию.";
+            $contextInfo['possibleSolutions'][] = "Если используется вложенный вызов функций, убедитесь, что промежуточные функции возвращают ожидаемые значения.";
+        }
+
+        // Анализ ошибок с неопределенными переменными
+        if (strpos($errorMessage, 'Variable') !== false && strpos($errorMessage, 'does not exist') !== false) {
+            if (preg_match('/Variable "(.*?)" does not exist/', $errorMessage, $matches)) {
+                $missingVar = $matches[1];
+                $contextInfo['missingVariable'] = $missingVar;
+
+                // Поиск похожих переменных (для опечаток)
+                $similarVars = [];
+                foreach (array_keys($templateVars) as $varName) {
+                    if (levenshtein($missingVar, $varName) <= 3) { // Максимальное расстояние Левенштейна 3
+                        $similarVars[] = $varName;
+                    }
+                }
+                $contextInfo['similarVariables'] = $similarVars;
+
+                // Добавляем решения
+                $contextInfo['possibleSolutions'][] = "Убедитесь, что переменная '{$missingVar}' определена и передана в шаблон.";
+                if (!empty($similarVars)) {
+                    $contextInfo['possibleSolutions'][] = "Возможно, вы имели в виду: " . implode(", ", $similarVars);
+                }
+            }
+        }
+
+        // Поиск проблем с логикой шаблона или функциями
+        if (strpos($errorMessage, 'Unknown "') !== false && strpos($errorMessage, '" function') !== false) {
+            if (preg_match('/Unknown "(.*?)" function/', $errorMessage, $matches)) {
+                $unknownFunction = $matches[1];
+                $contextInfo['unknownFunction'] = $unknownFunction;
+
+                // Ищем похожие функции, которые могут быть доступны
+                $availableFunctions = self::getAvailableTwigFunctions();
+                $similarFunctions = [];
+
+                foreach ($availableFunctions as $funcName) {
+                    if (levenshtein($unknownFunction, $funcName) <= 3) {
+                        $similarFunctions[] = $funcName;
+                    }
+                }
+
+                $contextInfo['similarFunctions'] = $similarFunctions;
+
+                // Добавляем решения
+                $contextInfo['possibleSolutions'][] = "Функция '{$unknownFunction}' не зарегистрирована в Twig.";
+                if (!empty($similarFunctions)) {
+                    $contextInfo['possibleSolutions'][] = "Возможно, вы имели в виду: " . implode(", ", $similarFunctions);
+                }
+            }
+        }
+
+        // Добавляем общие решения, если нет специфичных
+        if (empty($contextInfo['possibleSolutions'])) {
+            $contextInfo['possibleSolutions'][] = "Проверьте синтаксис и логику шаблона.";
+            $contextInfo['possibleSolutions'][] = "Убедитесь, что все переменные и функции определены и доступны.";
+            $contextInfo['possibleSolutions'][] = "Проверьте, не используются ли устаревшие методы или функции.";
+        }
+
+        return $contextInfo;
+    }
+
+    /**
+     * Возвращает отформатированное содержимое шаблона с подсветкой синтаксиса
+     *
+     * @param string $tplName Имя шаблона
+     * @return string Содержимое шаблона или сообщение об ошибке
+     */
+    private static function getTemplateContent($tplName) {
+        $twig = self::preload();
+
+        try {
+            $loader = $twig->getLoader();
+            if ($loader instanceof \Twig\Loader\FilesystemLoader) {
+                // Пытаемся получить путь к файлу шаблона
+                try {
+                    $templatePath = $loader->getSourceContext($tplName)->getPath();
+                    if (file_exists($templatePath)) {
+                        // Читаем содержимое файла
+                        $content = file_get_contents($templatePath);
+
+                        // Форматируем содержимое для отображения
+                        return self::formatTemplateCode($content);
+                    }
+                } catch (Exception $e) {
+                    // Если не удалось получить путь, пробуем альтернативный способ
+                    foreach ($loader->getPaths() as $path) {
+                        $possiblePath = $path . '/' . $tplName;
+                        if (file_exists($possiblePath)) {
+                            $content = file_get_contents($possiblePath);
+                            return self::formatTemplateCode($content);
+                        }
+                    }
+                }
+            }
+
+            return '<p>Не удалось получить содержимое шаблона.</p>';
+        } catch (Exception $e) {
+            return '<p>Ошибка при получении содержимого шаблона: ' . htmlspecialchars($e->getMessage()) . '</p>';
+        }
+    }
+
+    /**
+     * Форматирует код шаблона для отображения с подсветкой синтаксиса
+     *
+     * @param string $code Код шаблона
+     * @return string Отформатированный HTML
+     */
+    private static function formatTemplateCode($code) {
+        // Подсветка синтаксиса Twig
+        $code = htmlspecialchars($code);
+
+        // Подсветка тегов Twig
+        $code = preg_replace('/{%\s*(.*?)\s*%}/s', '<span style="color: #007700;">{%$1%}</span>', $code);
+
+        // Подсветка выражений Twig
+        $code = preg_replace('/{{(.*?)}}/s', '<span style="color: #0000BB;">{{$1}}</span>', $code);
+
+        // Подсветка комментариев Twig
+        $code = preg_replace('/{#(.*?)#}/s', '<span style="color: #888888;">{#$1#}</span>', $code);
+
+        // Добавляем нумерацию строк
+        $lines = explode("\n", $code);
+        $numberedCode = '<ol class="code-lines">';
+
+        foreach ($lines as $line) {
+            $numberedCode .= '<li>' . $line . '</li>';
+        }
+
+        $numberedCode .= '</ol>';
+
+        return $numberedCode;
+    }
+
+    /**
+     * Форматирует переменные шаблона для отображения
+     *
+     * @param array $vars Переменные шаблона
+     * @return string Отформатированный HTML
+     */
+    private static function formatTemplateVars($vars) {
+        $html = '<dl class="var-list">';
+
+        foreach ($vars as $name => $value) {
+            // Получаем тип и описание переменной
+            $type = gettype($value);
+            $description = self::formatVarDescription($value);
+
+            $html .= '<dt><span class="var-name">' . htmlspecialchars($name) . '</span> <span class="var-type">(' . $type . ')</span></dt>';
+            $html .= '<dd>' . $description . '</dd>';
+        }
+
+        $html .= '</dl>';
+
+        return $html;
+    }
+
+    /**
+     * Форматирует описание значения переменной
+     *
+     * @param mixed $value Значение
+     * @param int $depth Текущая глубина вложенности
+     * @return string Описание значения
+     */
+    private static function formatVarDescription($value, $depth = 0) {
+        $maxDepth = 2; // Максимальная глубина для вложенных структур
+
+        if ($depth > $maxDepth) {
+            return '...';
+        }
+
+        if (is_null($value)) {
+            return '<span class="var-null">null</span>';
+        } elseif (is_bool($value)) {
+            return '<span class="var-bool">' . ($value ? 'true' : 'false') . '</span>';
+        } elseif (is_string($value)) {
+            if (strlen($value) > 100) {
+                $value = substr($value, 0, 100) . '...';
+            }
+            return '<span class="var-string">"' . htmlspecialchars($value) . '"</span>';
+        } elseif (is_numeric($value)) {
+            return '<span class="var-numeric">' . $value . '</span>';
+        } elseif (is_array($value)) {
+            $count = count($value);
+            if ($count === 0) {
+                return '<span class="var-array">[]</span>';
+            }
+
+            if ($depth >= $maxDepth) {
+                return '<span class="var-array">Array(' . $count . ')</span>';
+            }
+
+            $html = '<details' . ($depth === 0 ? ' open' : '') . '>';
+            $html .= '<summary><span class="var-array">Array(' . $count . ')</span></summary>';
+            $html .= '<ul class="var-array-list">';
+
+            $i = 0;
+            foreach ($value as $k => $v) {
+                if ($i >= 10) { // Ограничиваем количество элементов
+                    $html .= '<li>... и еще ' . ($count - 10) . ' элементов</li>';
+                    break;
+                }
+
+                $html .= '<li>';
+                $html .= '<span class="var-key">' . htmlspecialchars($k) . '</span>: ';
+                $html .= self::formatVarDescription($v, $depth + 1);
+                $html .= '</li>';
+
+                $i++;
+            }
+
+            $html .= '</ul>';
+            $html .= '</details>';
+
+            return $html;
+        } elseif (is_object($value)) {
+            $class = get_class($value);
+
+            $html = '<details>';
+            $html .= '<summary><span class="var-object">Object(' . htmlspecialchars($class) . ')</span></summary>';
+
+            // Если объект можно преобразовать в массив, показываем его свойства
+            if (method_exists($value, 'toArray')) {
+                $properties = $value->toArray();
+                $html .= self::formatVarDescription($properties, $depth + 1);
+            } elseif ($value instanceof \Traversable) {
+                // Если объект итерируемый, показываем его элементы
+                $html .= '<ul class="var-object-list">';
+                $i = 0;
+                foreach ($value as $k => $v) {
+                    if ($i >= 5) {
+                        $html .= '<li>...</li>';
+                        break;
+                    }
+
+                    $html .= '<li>';
+                    $html .= '<span class="var-key">' . htmlspecialchars($k) . '</span>: ';
+                    $html .= self::formatVarDescription($v, $depth + 1);
+                    $html .= '</li>';
+
+                    $i++;
+                }
+                $html .= '</ul>';
+            } else {
+                // Пытаемся получить публичные свойства объекта
+                $reflect = new \ReflectionObject($value);
+                $props = $reflect->getProperties(\ReflectionProperty::IS_PUBLIC);
+
+                if (!empty($props)) {
+                    $html .= '<ul class="var-object-list">';
+                    foreach ($props as $prop) {
+                        $propName = $prop->getName();
+                        $propValue = $prop->getValue($value);
+
+                        $html .= '<li>';
+                        $html .= '<span class="var-key">' . htmlspecialchars($propName) . '</span>: ';
+                        $html .= self::formatVarDescription($propValue, $depth + 1);
+                        $html .= '</li>';
+                    }
+                    $html .= '</ul>';
+                } else {
+                    $html .= '<p>Нет доступных публичных свойств</p>';
+                }
+            }
+
+            $html .= '</details>';
+
+            return $html;
+        } elseif (is_resource($value)) {
+            return '<span class="var-resource">Resource(' . get_resource_type($value) . ')</span>';
+        } else {
+            return '<span class="var-unknown">Unknown type</span>';
+        }
+    }
+
+    /**
+     * Получает предварительный просмотр кода с выделением строки с ошибкой
+     *
+     * @param string $filePath Путь к файлу
+     * @param int $errorLine Номер строки с ошибкой
+     * @param int $context Количество строк контекста до и после ошибки
+     * @return string HTML код с предварительным просмотром
+     */
+    private static function getCodePreview($filePath, $errorLine, $context = 5) {
+        if (!file_exists($filePath) || !is_readable($filePath)) {
+            return '<p>Файл не найден или не доступен для чтения.</p>';
+        }
+
+        $lines = file($filePath);
+        if (!$lines) {
+            return '<p>Не удалось прочитать содержимое файла.</p>';
+        }
+
+        $start = max(0, $errorLine - $context - 1);
+        $end = min(count($lines) - 1, $errorLine + $context - 1);
+
+        $html = '<ol start="' . ($start + 1) . '">';
+
+        for ($i = $start; $i <= $end; $i++) {
+            $lineNumber = $i + 1;
+            $class = ($lineNumber == $errorLine) ? 'line error-line' : 'line';
+            $html .= '<li class="' . $class . '">' . htmlspecialchars($lines[$i]) . '</li>';
+        }
+
+        $html .= '</ol>';
+
+        return $html;
+    }
+
+    /**
+     * Форматирует стек вызовов в читаемый HTML
+     *
+     * @param Exception $e Объект исключения
+     * @return string HTML код со стеком вызовов
+     */
+    private static function getFormattedStackTrace(Exception $e) {
+        $trace = $e->getTrace();
+        $html = '';
+
+        foreach ($trace as $i => $frame) {
+            $html .= '<div class="stack-frame">';
+
+            // Файл и строка
+            if (isset($frame['file']) && isset($frame['line'])) {
+                $html .= '<strong>' . htmlspecialchars($frame['file']) . '</strong>';
+                $html .= ' (строка ' . $frame['line'] . ')<br>';
+            } else {
+                $html .= '<strong>[Внутренняя функция]</strong><br>';
+            }
+
+            // Класс и метод
+            if (isset($frame['class']) && isset($frame['function'])) {
+                $html .= htmlspecialchars($frame['class'] . $frame['type'] . $frame['function']) . '(';
+            } elseif (isset($frame['function'])) {
+                $html .= htmlspecialchars($frame['function']) . '(';
+            }
+
+            // Аргументы
+            if (isset($frame['args']) && is_array($frame['args'])) {
+                $args = array_map(function($arg) {
+                    if (is_object($arg)) {
+                        return 'Object(' . get_class($arg) . ')';
+                    } elseif (is_array($arg)) {
+                        return 'Array(' . count($arg) . ')';
+                    } elseif (is_string($arg)) {
+                        return "'" . (strlen($arg) > 30 ? substr($arg, 0, 30) . '...' : $arg) . "'";
+                    } elseif (is_null($arg)) {
+                        return 'NULL';
+                    } elseif (is_bool($arg)) {
+                        return $arg ? 'true' : 'false';
+                    }
+                    return $arg;
+                }, $frame['args']);
+
+                $html .= implode(', ', $args);
+            }
+
+            $html .= ')<br>';
+            $html .= '</div>';
+        }
+
+        return $html;
+    }
+
+
+    /**
+     * Анализирует функции Twig для поиска возможных проблем
+     *
+     * @return array Информация о функциях Twig
+     */
+    private static function analyzeTwigFunctions() {
+        $functions = [];
+
+        // Пытаемся найти определение функции phrase()
+        try {
+            $reflection = new ReflectionFunction('phrase');
+            if ($reflection) {
+                $functions['phrase'] = [
+                    'exists' => true,
+                    'file' => $reflection->getFileName(),
+                    'line' => $reflection->getStartLine(),
+                    'params' => []
+                ];
+
+                // Получаем информацию о параметрах
+                $params = $reflection->getParameters();
+                foreach ($params as $param) {
+                    $functions['phrase']['params'][] = [
+                        'name' => $param->getName(),
+                        'required' => !$param->isOptional(),
+                        'default' => $param->isOptional() ? $param->getDefaultValue() : null
+                    ];
+                }
+            }
+        } catch (Exception $e) {
+            $functions['phrase'] = [
+                'exists' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+
+        return $functions;
+    }
+
+    /**
+     * Получает список доступных функций Twig
+     *
+     * @return array Список имен функций
+     */
+    private static function getAvailableTwigFunctions() {
+        $functions = [];
+
+        // Пытаемся получить список из экземпляра Twig
+        try {
+            $twig = self::preload();
+
+            // Получаем доступ к загруженным расширениям
+            $reflection = new ReflectionObject($twig);
+            $extensionsProperty = $reflection->getProperty('extensions');
+            $extensionsProperty->setAccessible(true);
+            $extensions = $extensionsProperty->getValue($twig);
+
+            foreach ($extensions as $extension) {
+                $extReflection = new ReflectionObject($extension);
+
+                // Проверяем, есть ли метод getFunctions
+                if ($extReflection->hasMethod('getFunctions')) {
+                    $getFunctionsMethod = $extReflection->getMethod('getFunctions');
+                    $twigFunctions = $getFunctionsMethod->invoke($extension);
+
+                    foreach ($twigFunctions as $function) {
+                        // В зависимости от версии Twig, структура может различаться
+                        if (is_object($function) && method_exists($function, 'getName')) {
+                            $functions[] = $function->getName();
+                        }
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            // В случае ошибки возвращаем базовый список функций Twig
+            $functions = [
+                'block', 'constant', 'cycle', 'date', 'dump', 'include',
+                'max', 'min', 'parent', 'random', 'range', 'source',
+                'template_from_string', 'phrase', 'logTypes'
+            ];
+        }
+
+        return $functions;
+    }
+
+    /**
+     * Рендерит простую страницу ошибки с дополнительным контекстом
+     *
+     * @param Exception $originalException Оригинальное исключение
+     * @param string $tplName Имя шаблона
+     * @param Exception $renderException Исключение рендеринга
+     * @param array $contextInfo Дополнительная информация о контексте
+     * @return void
+     */
+    private static function renderFallbackErrorPage(Exception $originalException, $tplName, Exception $renderException = null, array $contextInfo = []) {
+        $html = '<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Критическая ошибка Twig</title>
+        <style>
+            body { font-family: sans-serif; margin: 0; padding: 20px; background: #f8f8f8; }
+            .error-container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+            h1, h2, h3 { color: #e74c3c; }
+            pre { background: #f8f8f8; padding: 15px; overflow: auto; border-radius: 3px; }
+            .important { color: #e74c3c; font-weight: bold; }
+            .code { font-family: monospace; background: #f5f5f5; padding: 2px 4px; border-radius: 3px; }
+            .solution { background: #ebf5eb; border-left: 4px solid #28a745; padding: 10px; margin: 10px 0; }
+        </style>
+    </head>
+    <body>
+        <div class="error-container">
+            <h1>Критическая ошибка Twig</h1>
+            <p><strong>Не удалось отрендерить подробную страницу ошибки.</strong></p>
+            
+            <h2>Оригинальная ошибка:</h2>
+            <pre>' . htmlspecialchars($originalException->getMessage()) . '</pre>
+            
+            <p><strong>Файл:</strong> ' . htmlspecialchars($originalException->getFile()) . '</p>
+            <p><strong>Строка:</strong> ' . $originalException->getLine() . '</p>
+            <p><strong>Шаблон:</strong> ' . htmlspecialchars($tplName) . '</p>';
+
+        // Добавляем информацию о контексте, если она есть
+        if (!empty($contextInfo)) {
+            $html .= '<h2>Дополнительная информация:</h2><div>';
+
+            if (!empty($contextInfo['argumentError'])) {
+                $html .= '<div class="important">
+                <p>Ошибка в количестве аргументов:</p>
+                <ul>
+                    <li>Требуется аргументов: ' . $contextInfo['argumentError']['required'] . '</li>
+                    <li>Передано аргументов: ' . $contextInfo['argumentError']['given'] . '</li>
+                </ul>
+            </div>';
+            }
+
+            if (!empty($contextInfo['functionCalls']['phrase'])) {
+                $html .= '<h3>Найдены вызовы функции phrase():</h3><ul>';
+                foreach ($contextInfo['functionCalls']['phrase'] as $call) {
+                    $html .= '<li><code class="code">phrase(' . htmlspecialchars($call) . ')</code></li>';
+                }
+                $html .= '</ul>';
+            }
+
+            if (!empty($contextInfo['possibleSolutions'])) {
+                $html .= '<h3>Возможные решения:</h3>';
+                foreach ($contextInfo['possibleSolutions'] as $solution) {
+                    $html .= '<div class="solution">' . htmlspecialchars($solution) . '</div>';
+                }
+            }
+
+            $html .= '</div>';
+        }
+
+        if ($renderException !== null) {
+            $html .= '
+            <h2>Ошибка рендеринга страницы ошибки:</h2>
+            <pre>' . htmlspecialchars($renderException->getMessage()) . '</pre>
+            <p><strong>Файл:</strong> ' . htmlspecialchars($renderException->getFile()) . '</p>
+            <p><strong>Строка:</strong> ' . $renderException->getLine() . '</p>';
+        }
+
+        $html .= '
+        </div>
+    </body>
+    </html>';
+
+        echo $html;
+    }
+
+    /**
+     * Отображает шаблон с обработкой ошибок
+     *
+     * @param string $tplName Имя шаблона для отображения
+     * @return void
+     */
+    public static function display($tplName) {
+        // Проверка, есть ли кастомный файл вместо стандартного
         if (file_exists(self::customizeFilePath($tplName, true))) {
             $tplName = self::customizeFilePath($tplName, false);
         }
@@ -1468,24 +2112,8 @@ public static function display($tplName) {
                 echo $template->render(self::$allTplVars);
             }
         } catch (Exception $e) {
-            $txt  = "<h4>TEMPLATE ERROR</h4>";
-            $txt  .= "Message: " . $e->getMessage() . "<br>";
-            $txt  .= "File: " . $e->getFile() . "<br>";
-            $txt  .= "Line: " . $e->getLine() . "<br>";
-            $txt  .= "Code: ";
-            $file = fopen($e->getFile(), "r");
-            if ($file) {
-                for ($i = 1; $i < $e->getLine(); ++$i) {
-                    if (fgets($file) === false) {
-                        break;
-                    }
-                }
-                $line = fgets($file);
-                fclose($file);
-                $txt .= htmlspecialchars($line);
-            }
-            echo $txt;
-            logs::loggerError(preg_replace('/<h4[^>]*>|<\/h4>|<br[^>]*>/', "\n", $txt));
+            // Используем улучшенную обработку ошибок через Twig
+            self::handleTwigError($e, $tplName);
         }
     }
 

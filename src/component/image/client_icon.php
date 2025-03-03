@@ -67,7 +67,7 @@ class client_icon {
         return self::get_item_info($item_id, true);
     }
 
-    public static function get_item_info($item_id = null, $json = false, $protected = true): string|item|array {
+    public static function get_item_info($item_id = null, $json = false, $protected = true, $chronicle = null): string|item|array {
         if ($protected) {
             validation::user_protection();
         }
@@ -77,7 +77,8 @@ class client_icon {
                 board::notice(false, "Не передано значение ID предмета");
             }
         }
-        $icon = item::getItem($item_id);
+        $icon = item::getItem($item_id, $chronicle);
+
         if(!$icon){
             if ($json) {
                 board::alert([

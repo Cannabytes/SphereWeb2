@@ -118,7 +118,6 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
         donate::control_uuid($signatureValue, get_called_class());
 
         self::telegramNotice(user::getUserId($user_id), $_POST['OutSum'], $currencyIn, $amount, get_called_class());
-        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$_POST['OutSum'], $currencyIn, get_called_class()]);
         user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
         donate::addUserBonus($user_id, $amount);
         echo 'YES';

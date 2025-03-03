@@ -15,4 +15,5 @@ return [
     "List of items for the raffle" => "List of items for the raffle",
     "limit max count items in raffle" => "The maximum number of items (50) has already been added.",
     "error_sum_chance" => "Error: sum chance should be 100%%, now: %g%%",
+    "winroll_my_win" => "My Winnings",
 ];

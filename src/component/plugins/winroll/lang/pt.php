@@ -14,4 +14,5 @@ return [
     "List of items for the raffle" => "Lista de itens para o sorteio",
     "limit max count items in raffle" => "Número máximo de itens no sorteio",
     "error_sum_chance" => "Erro: a chance total deve ser 100%%, atualmente: %g%%",
+    "winroll_my_win" => "Meus Ganhos",
 ];

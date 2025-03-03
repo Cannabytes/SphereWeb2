@@ -13,19 +13,19 @@
           <a href="/admin/modify/item/get/{{chronicle}}" class="avatar border text-muted me-2">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
           </a>
-          Изменение предмета | {{chronicle}}
+          {{phrase('Item Modify')}} | {{chronicle}}
         </div>
       </div>
       <div class="card-body">
         <form method="post" action="/admin/modify/item/update/save" class="row g-3 mt-0">
           <input name="chronicle" type="hidden" value="{{chronicle}}">
           <div class="col-md-2">
-            <label for="itemId" class="form-label">ID предмета</label>
+            <label for="itemId" class="form-label">{{phrase('item_id')}}</label>
             <input name="itemId" id="itemId" type="number" class="form-control" placeholder="ID item"
                    aria-label="ID item" value="{{itemInfo.getItemId()}}" readonly>
           </div>
           <div class="col-md-2">
-            <label for="inputState" class="form-label">Тип предмета</label>
+            <label for="inputState" class="form-label">{{phrase('Item Modify Type')}}</label>
             <select name="type" id="inputState" class="form-select form-select-lg">
               <option {% if itemInfo.getType() == 'etcitem' %}selected{% endif %} value="etcitem" >etcitem</option>
               <option {% if itemInfo.getType() == 'armor' %}selected{% endif %} value="armor" >armor</option>
@@ -33,7 +33,7 @@
             </select>
           </div>
           <div class="col-md-2">
-            <label for="grade" class="form-label">Грейд</label>
+            <label for="grade" class="form-label">{{phrase('Item Modify Grade')}}</label>
             <select name="grade" id="grade" class="form-select form-select-lg">
               <option {% if itemInfo.getCrystalType() == 'none' %}selected{% endif %} value="none" >No-Grade</option>
               <option {% if itemInfo.getCrystalType() == 'd' %}selected{% endif %} value="d" >D</option>
@@ -44,20 +44,20 @@
             </select>
           </div>
           <div class="col-md-3">
-            <label for="itemname" class="form-label">Название</label>
+            <label for="itemname" class="form-label">{{phrase('Item Modify Name')}}</label>
             <input name="itemname" type="text" class="form-control" id="itemname" placeholder="Arcana Mace" value="{{itemInfo.getItemName()}}">
           </div>
           <div class="col-md-3">
-            <label for="itemaddname" class="form-label">Доп. название</label>
+            <label for="itemaddname" class="form-label">{{phrase('Item Modify Name Add')}}</label>
             <input name="itemaddname" type="text" class="form-control" id="itemaddname" placeholder="Acumen" value="{{itemInfo.getAddName()}}">
           </div>
           <div class="col-md-6">
-            <label for="desc" class="form-label">Описание</label>
+            <label for="desc" class="form-label">{{phrase(0)}}</label>
             <input name="desc" type="text" class="form-control" id="desc" value="{{itemInfo.getDescription()}}">
           </div>
           <div class="col-12">
-            <label for="icon" class="form-label">Иконка</label>  {% if itemInfo.getIcon() %}<img class="avatar avatar-sm" src="{{ itemInfo.getIcon() }}" width="100" height="100" alt="item_icon">{% endif %}
-            - или загрузите новое изображение
+            <label for="icon" class="form-label">{{phrase('Item Modify Icon')}}</label>  {% if itemInfo.getIcon() %}<img class="avatar avatar-sm" src="{{ itemInfo.getIcon() }}" width="100" height="100" alt="item_icon">{% endif %}
+            - {{phrase('Item Modify New Icon')}}
             <input id="icon" type="file" class="single-fileupload1 itemicon" name="filepond" data-type="favicon"
                    data-max-file-size="1MB" data-max-files="1">
           </div>
@@ -65,13 +65,17 @@
             <div class="form-check">
               <input name="is_stackable" class="form-check-input" type="checkbox" id="stack" {% if itemInfo.isStackable() %}checked{% endif %}>
               <label class="form-check-label" for="stack">
-                Предмет стаковый (is_stackable)
+                {{phrase('Item Modify Is Stack')}} (is_stackable)
               </label>
             </div>
           </div>
-          <div class="col-12">
-            <button type="submit" class="btn btn-primary">{{ phrase('create') }}</button>
-          </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">{{ phrase('create') }}</button>
+          <span data-item-id="{{itemInfo.getItemId()}}" data-chronicle="{{chronicle}}" href="/admin/modify/item/delete/{{chronicle}}/id/{{itemInfo.getItemId()}}"
+             class="btn btn-danger ms-2 delete">
+            {{ phrase('delete') }}
+          </span>
+        </div>
         </form>
       </div>
 
@@ -88,6 +92,17 @@
 {% endblock %}
 
 {% block js %}
+
+<script>
+  $(".delete").click(function () {
+    AjaxSend("/admin/modify/item/delete", "POST", {
+      chronicle: "{{chronicle}}",
+      id: $(this).data("item-id")
+    }, true).then(function (data) {
+      location.href = "/admin/modify/item/get/{{chronicle}}";
+    });
+  });
+</script>
 
 <script src="https://unpkg.com/filepond/dist/filepond.js"></script>
 <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
@@ -122,7 +137,7 @@
       server: {
         process: (fieldName, file, metadata, load, error, progress, abort) => {
           if ($("#itemId").val() === ""){
-            noticeError("Введите ID предмета");
+            noticeError("{{phrase('Item Modify Enter ID')}}");
             abort();
             return;
           }

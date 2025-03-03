@@ -106,7 +106,6 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
         }
         $currency = "RUB";
         donate::control_uuid($operation_id, get_called_class());
-        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $currency, get_called_class()]);
         self::telegramNotice(user::getUserId($user_id), $_POST['amount'], $currency, $amount, get_called_class());
         $amount = donate::currency($withdraw_amount, $currency);
         user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());

@@ -2,170 +2,630 @@
 
 {% block title %}{% endblock %}
 
+{% block css %}
+<style>
+.pulse-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+}
+
+.pulse-bubble {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--primary-bg-color, #6259ca);
+  margin: 0 4px;
+  animation: pulse 1.2s infinite;
+}
+
+.pulse-bubble-1 {
+  animation-delay: 0s;
+}
+
+.pulse-bubble-2 {
+  animation-delay: 0.2s;
+}
+
+.pulse-bubble-3 {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
 
   <div class="row">
 
-    <div class="col-xl-7">
+    <div class="col-xl-12">
       <div class="card custom-card">
         <div class="card-header">
-          <div class="card-title">
+          <div class="card-title ">
             <a href="/admin" class="avatar border text-muted me-2">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
             </a>
+
             {{ phrase('output_sorting') }}
           </div>
         </div>
-        <div class="card-body row">
-          <div class="col-xl-8">
-            <select class="js-example-placeholder-single js-states form-control">
+
+        <div class="card-body row d-flex align-items-center">
+
+          <div class="col-xl-4">
+            <select class="js-example-placeholder-single js-states form-control" id="log-type-selector">
+              <option selected value="0">{{phrase('all_logs')}}</option>
               {% for logType in logTypes() %}
-              <option value="{{logType.value}}">{{logType.name}}</option>
+              <option value="{{logType.value}}">{{ phrase(logType.name ~ "_DESC") }}</option>
               {% endfor %}
             </select>
           </div>
-          <div class="col-xl-4">
-            <button type="submit" class="btn btn-primary">{{ phrase('apply') }}</button>
+
+            <div class="col-xl-2 ">
+              <select class="js-example-placeholder-single js-states form-control" id="update-time">
+                <option selected value="3">3 {{phrase('sec')}}.</option>
+                <option value="7">7 {{phrase('sec')}}.</option>
+                <option value="10">10 {{phrase('sec')}}.</option>
+                <option value="30">30 {{phrase('sec')}}.</option>
+                <option value="60">1 {{phrase('sec')}}.</option>
+                <option value="0">{{phrase('do_not_update')}}</option>
+              </select>
+
+
+              </div>
+
+          <div class="col-xl-2">
+                <div class="text-center " id="logs-loading" style="display: none;">
+                <div class="pulse-container">
+                  <div class="pulse-bubble pulse-bubble-1"></div>
+                  <div class="pulse-bubble pulse-bubble-2"></div>
+                  <div class="pulse-bubble pulse-bubble-3"></div>
+                </div>
+            </div>
+            </div>
+
+
           </div>
+
         </div>
 
       </div>
     </div>
-
-    <div class="col-xl-5">
-      <div class="card custom-card">
-        <div class="card-header">
-          <div class="card-title">
-            {{phrase('auto_update_time')}}
-          </div>
-        </div>
-        <div class="card-body row">
-
-          <div class="col-xl-8">
-            <select id="update-time" class="js-example-placeholder-single js-states form-control">
-              <option value="3" selected>3 {{phrase('sec')}}.</option>
-              <option value="7">7 {{phrase('sec')}}.</option>
-              <option value="10">10 {{phrase('sec')}}.</option>
-              <option value="30">30 {{phrase('sec')}}.</option>
-              <option value="60">1 {{phrase('sec')}}.</option>
-              <option value="0">{{phrase('do_not_update')}}</option>
-            </select>
-          </div>
-          <div class="col-xl-4">
-            <button type="submit" class="btn btn-primary">{{ phrase('apply') }}</button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-  </div>
 
 
   <div class="row justify-content-center">
     <div class="col-xxl-12 col-xl-12 col-sm-12">
+
+
       <ul class="timeline list-unstyled" id="logs">
-        {% for i, log in logsAll() %}
-        <li class="last-log" data-last-log-id="{{log.id}}">
-          <div class="timeline-time text-end">
-            <span class="time d-inline-block">{{ProhloVremya(log.time, true)}}</span>
-          </div>
-          <div class="timeline-icon ">
-            <a href="javascript:void(0);"></a>
-          </div>
-          <div class="timeline-body">
-            <div class="d-flex align-items-top timeline-main-content  mt-0">
-              <div class="avatar avatar-md  me-3 avatar-rounded mt-sm-0 mt-4 flex-none">
-                <img alt="avatar" src="{{log.user.avatar}}">
-              </div>
-              <div class="flex-fill">
-                <div class="align-items-center">
-                  <div class="mt-sm-0 mt-2">
-                    <p class="mb-0 fs-14 fw-semibold"><a href="/admin/user/info/{{log.user.id}}">{{log.user.email}} ({{log.user.name}})</a></p>
-                    <p class="mb-0 text-muted">{{log.message|raw}}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </li>
-        {% endfor %}
+
       </ul>
     </div>
   </div>
 
 </div>
 
+<!-- Модальное окно для просмотра деталей лога -->
+<div class="modal fade" id="logDetailModal" tabindex="-1" aria-labelledby="logDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logDetailModalLabel">Подробная информация о логе</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-md-4">ID пользователя:</div>
+          <div class="col-md-8" id="modal-user-id"></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">Время:</div>
+          <div class="col-md-8" id="modal-time"></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">Тип:</div>
+          <div class="col-md-8" id="modal-type"></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">Фраза:</div>
+          <div class="col-md-8" id="modal-phrase"></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">Переменные:</div>
+          <div class="col-md-8" id="modal-variables"></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">ID сервера:</div>
+          <div class="col-md-8" id="modal-server-id"></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">Метод:</div>
+          <div class="col-md-8" id="modal-method"></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">Действие:</div>
+          <div class="col-md-8" id="modal-action"></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">Файл:</div>
+          <div class="col-md-8" id="modal-file-line"></div>
+        </div>
+
+        <!-- JSON-запрос на всю ширину -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <h6 class="mb-2">Запрос (JSON):</h6>
+            <pre id="modal-request" class="bg-light p-3 rounded json-highlight" style="max-height: 300px; overflow-y: auto;"></pre>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Стили для кликабельных логов */
+  .log-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .log-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  /* Стили для JSON в модальном окне */
+  #modal-request {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.5;
+  }
+
+  /* Стили для подсветки JSON */
+  .json-key {
+    color: #0066cc;
+    font-weight: bold;
+  }
+
+  .json-string {
+    color: #008800;
+  }
+
+  .json-number {
+    color: #aa22ff;
+  }
+
+  .json-boolean {
+    color: #ee4488;
+  }
+
+  .json-null {
+    color: #aa22ff;
+    font-weight: bold;
+  }
+
+  .json-punctuation {
+    color: #666666;
+  }
+</style>
+
+<style>
+/* Стили для индикатора загрузки внизу списка */
+#bottom-loading {
+  margin: 20px 0;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease;
+}
+
+/* Стили для обозначения конца списка */
+.end-of-logs {
+  color: #888;
+  font-style: italic;
+  padding: 15px 0;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border-top: 1px dashed #ddd;
+  border-bottom: 1px dashed #ddd;
+  background-color: rgba(0, 0, 0, 0.02);
+  animation: fadeIn 0.5s ease;
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Анимация для новых элементов списка */
+.new-log-item {
+  animation: highlightNew 1.5s ease;
+}
+
+@keyframes highlightNew {
+  0% { background-color: rgba(98, 89, 202, 0.1); }
+  100% { background-color: transparent; }
+}
+</style>
+
 {% endblock %}
 
 {% block js %}
 
 <script>
-  window.addEventListener('load', function () {
-    let updateTime = parseInt($('#update-time').val());
+$(document).ready(function () {
+  // Получаем сохраненное время обновления (если есть)
+  let savedUpdateTime = localStorage.getItem('logsUpdateTime');
+  if (savedUpdateTime !== null) {
+    $('#update-time').val(savedUpdateTime);
+  }
 
-    // Проверяем, что updateTime больше 0
-    if (updateTime > 0) {
-      // Функция для отправки запроса и обработки данных
-      function fetchLogs() {
-        // Получаем последний ID лога li
-        var lastLogId = $('ul.timeline li.last-log').first().data('last-log-id');
+  let updateTime = parseInt($('#update-time').val());
+  let logsUpdateInterval;
+  let lastProcessedId = -1;
+  let oldestLogId = Infinity; // ID самого старого загруженного лога
+  let logsData = {}; // Объект для хранения всех данных логов
+  let isLoading = false; // Флаг загрузки данных
+  let noMoreLogs = false; // Флаг окончания логов
 
-        // Посылаем запрос на получение новых логов
-        AjaxSend('/admin/logs/update', "POST", {
-          lastLogId: lastLogId,
-        }, true).then(function (data) {
-          // Отладочная информация
-          console.log("Response data:", data);
+  // Функция для отображения индикатора загрузки
+  function showLoading() {
+    $('#logs-loading').fadeIn(200);
+    isLoading = true;
+  }
 
-          // Данные уже являются массивом объектов, поэтому просто используем их напрямую
-          var logs = data;
-
-          if (logs.length > 0) {
-            logs.forEach(function(log) {
-              var logItem = `
-                <li class="last-log" data-last-log-id="${log.id}">
-                  <div class="timeline-time text-end">
-                    <span class="time d-inline-block">${log.time}</span>
-                  </div>
-                  <div class="timeline-icon">
-                    <a href="javascript:void(0);"></a>
-                  </div>
-                  <div class="timeline-body">
-                    <div class="d-flex align-items-top timeline-main-content mt-0">
-                      <div class="avatar avatar-md me-3 avatar-rounded mt-sm-0 mt-4 flex-none">
-                        <img alt="avatar" src="${log.user.avatar}">
-                      </div>
-                      <div class="flex-fill">
-                        <div class="align-items-center">
-                          <div class="mt-sm-0 mt-2">
-                            <p class="mb-0 fs-14 fw-semibold">${log.user.email} (${log.user.name})</p>
-                            <p class="mb-0 text-muted">${log.message}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              `;
-              $('#logs').prepend(logItem);
-            });
-          }
-        }).catch(function (error) {
-          console.error("Ошибка при выполнении запроса:", error);
-        });
-      }
-
-      // Запускаем цикл с интервалом updateTime секунд
-      setInterval(fetchLogs, updateTime * 1000);
-
-      // Немедленно выполняем fetchLogs первый раз
-      fetchLogs();
+  // Функция для показа индикатора загрузки внизу списка
+  function showBottomLoading() {
+    // Проверяем, существует ли уже элемент загрузки внизу
+    if ($('#bottom-loading').length === 0) {
+      $('#logs').append(`
+        <li id="bottom-loading" class="text-center py-3">
+          <div class="pulse-container">
+            <div class="pulse-bubble pulse-bubble-1"></div>
+            <div class="pulse-bubble pulse-bubble-2"></div>
+            <div class="pulse-bubble pulse-bubble-3"></div>
+          </div>
+        </li>
+      `);
     }
+    isLoading = true;
+  }
+
+  // Функция для скрытия индикатора загрузки
+  function hideLoading() {
+    $('#logs-loading').fadeOut(200);
+    $('#bottom-loading').remove();
+    isLoading = false;
+  }
+
+  // Функция для получения наибольшего ID из списка логов
+  function getMaxLogId() {
+    let maxId = -1;
+
+    $('ul.timeline li.last-log').each(function() {
+      const logId = parseInt($(this).data('last-log-id'));
+      if (logId > maxId) {
+        maxId = logId;
+      }
+    });
+
+    return maxId;
+  }
+
+  // Функция для получения наименьшего ID из списка логов
+  function getMinLogId() {
+    let minId = Infinity;
+
+    $('ul.timeline li.last-log').each(function() {
+      const logId = parseInt($(this).data('last-log-id'));
+      if (logId < minId) {
+        minId = logId;
+      }
+    });
+
+    return minId === Infinity ? -1 : minId;
+  }
+
+  // Функция для форматирования и подсветки JSON
+  function formatJSON(jsonString) {
+    try {
+      // Пробуем разобрать JSON-строку
+      const obj = JSON.parse(jsonString);
+
+      // Преобразуем обратно в строку с отступами
+      const formattedJSON = JSON.stringify(obj, null, 4);
+
+      // Подсвечиваем синтаксис
+      return syntaxHighlight(formattedJSON);
+    } catch (e) {
+      console.error("Ошибка при форматировании JSON:", e);
+      return jsonString; // возвращаем оригинальную строку, если не удалось распарсить
+    }
+  }
+
+  // Функция для подсветки синтаксиса JSON
+  function syntaxHighlight(json) {
+    // Заменяем символы, которые могут интерпретироваться как HTML
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    // Используем подход с заменой через регулярные выражения
+    return json.replace(/"(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?/g, function(match) {
+      // Определяем, является ли это ключом или строкой
+      const isKey = /:$/.test(match);
+
+      // Применяем соответствующий класс
+      return '<span class="' + (isKey ? 'json-key' : 'json-string') + '">' + match + '</span>';
+    })
+          .replace(/\b(true|false)\b/g, '<span class="json-boolean">$1</span>')
+          .replace(/\bnull\b/g, '<span class="json-null">null</span>')
+          .replace(/\b(-?\d+(\.\d+)?([eE][+-]?\d+)?)\b/g, '<span class="json-number">$1</span>')
+          .replace(/([{}[\]:,])/g, '<span class="json-punctuation">$1</span>');
+  }
+
+  // Функция для открытия модального окна с деталями лога
+  function openLogDetail(logId) {
+    const logData = logsData[logId];
+
+    if (!logData) {
+      console.error("Данные для лога с ID", logId, "не найдены");
+      return;
+    }
+
+    // Заполняем модальное окно данными
+    $('#modal-user-id').text(logData.user_id);
+    $('#modal-time').text(logData.time);
+    $('#modal-type').text(logData.type);
+    $('#modal-phrase').text(logData.phrase);
+    $('#modal-variables').text(logData.variables);
+    $('#modal-server-id').text(logData.server_id);
+    $('#modal-method').text(logData.method);
+    $('#modal-action').text(logData.action);
+
+    // Объединяем путь к файлу и номер строки в одном поле
+    $('#modal-file-line').text(`${logData.file}:${logData.line}`);
+
+    // Форматируем JSON для поля request с подсветкой синтаксиса
+    const formattedRequest = formatJSON(logData.request);
+
+    // Используем html() вместо text() для отображения подсвеченного синтаксиса
+    $('#modal-request').html(formattedRequest);
+
+    // Отображаем модальное окно
+    $('#logDetailModal').modal('show');
+  }
+
+  // Функция для создания элемента лога
+  function createLogItem(log, isNewLog = false) {
+    // Сохраняем полные данные лога в logsData
+    logsData[log.id] = log;
+
+    return `
+      <li class="last-log ${isNewLog ? 'new-log-item' : ''}" data-last-log-id="${log.id}">
+        <div class="timeline-time text-end">
+          <span class="time d-inline-block">${log.time}</span>
+        </div>
+        <div class="timeline-icon">
+          <a href="javascript:void(0);"></a>
+        </div>
+        <div class="timeline-body">
+          <div class="d-flex align-items-top timeline-main-content mt-0 log-item" data-log-id="${log.id}">
+            <div class="avatar avatar-md me-3 avatar-rounded mt-sm-0 mt-4 flex-none">
+              <img alt="avatar" src="${log.user.avatar}">
+            </div>
+            <div class="flex-fill">
+              <div class="align-items-center">
+                <div class="mt-sm-0 mt-2">
+                  <p class="mb-0 fs-14 fw-semibold"><a href="/admin/user/info/${log.user.id}">${log.user.email} (${log.user.name})</a></p>
+                  <p class="mb-0 text-muted">${log.message}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    `;
+  }
+
+  // Функция для загрузки начальных логов
+  function fetchInitialLogs() {
+    lastProcessedId = -1;
+    oldestLogId = Infinity;
+    noMoreLogs = false;
+
+    // Очищаем список перед начальной загрузкой
+    $('#logs').empty();
+    // Очищаем кэш данных при смене фильтра
+    logsData = {};
+
+    fetchLogs(true);
+  }
+
+  // Функция для загрузки логов
+  function fetchLogs(isInitial = false) {
+    if (isLoading || noMoreLogs) return;
+
+    if (isInitial) {
+      showLoading();
+    } else {
+      showBottomLoading();
+    }
+
+    // Если это начальная загрузка, используем lastProcessedId = -1
+    // Если это загрузка при прокрутке вниз, используем oldestLogId
+    const idToSend = isInitial ? -1 : oldestLogId;
+    const direction = isInitial ? 'newer' : 'older';
+
+    AjaxSend('/admin/logs/update', "POST", {
+      type: $('#log-type-selector').val(),
+      lastLogId: idToSend,
+      direction: direction,
+      limit: 50
+    }, true).then(function (data) {
+      hideLoading();
+      console.log("Response data:", data);
+
+      if (data.length > 0) {
+        // При начальной загрузке, сортируем по времени (новые сверху)
+        if (isInitial) {
+          data.sort((a, b) => {
+            const dateA = new Date(a.time);
+            const dateB = new Date(b.time);
+            return dateB - dateA; // По убыванию (новые сверху)
+          });
+        }
+
+        data.forEach(function (log) {
+          const logItem = createLogItem(log);
+
+          if (isInitial) {
+            // При начальной загрузке добавляем элементы в конец списка
+            $('#logs').append(logItem);
+          } else {
+            // При подгрузке логов при прокрутке добавляем в конец списка
+            $('#logs').append(logItem);
+          }
+
+          // Обновляем oldestLogId
+          if (log.id < oldestLogId) {
+            oldestLogId = log.id;
+          }
+        });
+
+        // Добавляем обработчик кликов для новых логов
+        bindLogClickHandlers();
+      } else {
+        // Если не получили данных, значит больше логов нет
+        noMoreLogs = true;
+
+        // Показываем сообщение о конце списка, если это не начальная загрузка
+        if (!isInitial) {
+          $('#logs').append('<li class="text-center py-3 end-of-logs">Больше логов нет</li>');
+        }
+      }
+    }).catch(function (error) {
+      hideLoading();
+      console.error("Ошибка при выполнении запроса:", error);
+    });
+  }
+
+  // Функция для загрузки новых логов (обновление)
+  function fetchNewLogs() {
+    if (isLoading) return;
+
+    const currentMaxId = getMaxLogId();
+
+    showLoading();
+
+    AjaxSend('/admin/logs/update', "POST", {
+      type: $('#log-type-selector').val(),
+      lastLogId: currentMaxId,
+      direction: 'newer',
+      limit: 50
+    }, true).then(function (data) {
+      hideLoading();
+
+      if (data.length > 0) {
+        // Сортируем по ID: новые (больший ID) сначала
+        data.sort((a, b) => b.id - a.id);
+
+        data.forEach(function (log) {
+          const logItem = createLogItem(log, true); // true означает, что это новый лог
+          // Добавляем новые логи в начало списка
+          $('#logs').prepend(logItem);
+        });
+
+        // Обновляем lastProcessedId
+        lastProcessedId = getMaxLogId();
+
+        // Добавляем обработчик кликов для новых логов
+        bindLogClickHandlers();
+      }
+    }).catch(function (error) {
+      hideLoading();
+      console.error("Ошибка при выполнении запроса:", error);
+    });
+  }
+
+  // Функция для привязки обработчиков кликов к логам
+  function bindLogClickHandlers() {
+    // Удаляем существующие обработчики чтобы избежать дублирования
+    $('.log-item').off('click');
+
+    // Добавляем новые обработчики
+    $('.log-item').on('click', function() {
+      const logId = $(this).data('log-id');
+      openLogDetail(logId);
+    });
+  }
+
+  // Инициализация интервала обновления
+  function setupInterval() {
+    if (logsUpdateInterval) {
+      clearInterval(logsUpdateInterval);
+    }
+
+    updateTime = parseInt($('#update-time').val());
+
+    if (updateTime > 0) {
+      logsUpdateInterval = setInterval(() => fetchNewLogs(), updateTime * 1000);
+      // Начальная загрузка данных
+      fetchInitialLogs();
+    } else {
+      fetchInitialLogs();
+    }
+  }
+
+  // Обработчик прокрутки для бесконечной загрузки с дебаунсом
+  let scrollTimeout;
+  $(window).scroll(function() {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(function() {
+      if ($(window).scrollTop() + $(window).height() > $(document).height() - 300) {
+        if (!isLoading && !noMoreLogs) {
+          fetchLogs(false);
+        }
+      }
+    }, 100); // Задержка для предотвращения лишних вызовов
   });
+
+  // Начальная инициализация интервала
+  setupInterval();
+
+  // Привязываем обработчики кликов к существующим логам
+  bindLogClickHandlers();
+
+  // Обработчик изменения времени обновления
+  $('#update-time').on('change', function () {
+    localStorage.setItem('logsUpdateTime', $(this).val());
+    setupInterval();
+  });
+
+  // Обработчик изменения типа логов
+  $('#log-type-selector').on('change', function () {
+    // Загружаем новые логи с флагом сброса
+    fetchInitialLogs();
+  });
+});
 </script>
-
-
 
 {% endblock %}

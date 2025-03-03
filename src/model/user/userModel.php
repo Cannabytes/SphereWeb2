@@ -389,6 +389,14 @@ class userModel
                 'paySystem' => $pay_system,
                 'request' => $input,
             ]);
+
+            $phrase = config::load()->lang()->getPhrase("LOG_DONATE_SUCCESS", $this->getEmail(), $this->getName(), $amount, $pay_system);
+            self::addLog(logtypes::LOG_DONATE_SUCCESS, $phrase);
+
+        }else{
+            // Если это бонус пожертвований
+            $phrase = config::load()->lang()->getPhrase("LOG_DONATE_BONUS_SUCCESS", $amount, $pay_system);
+            self::addLog(logtypes::LOG_DONATE_BONUS_SUCCESS, $phrase);
         }
 
         sql::run(

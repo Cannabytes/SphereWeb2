@@ -4,8 +4,6 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\donate\donate;
-use Ofey\Logan22\model\user\auth\auth;
-use Ofey\Logan22\model\bonus\bonus;
 use Ofey\Logan22\model\user\user;
 
 class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
@@ -104,7 +102,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 		
 		$response = json_decode( file_get_contents( $requestUrl ), true );
 
-		if ( $response['error']['message'] ) {
+        if (isset($response['error']['message'])) {
 			board::notice( false, $response['error']['message'] );
 		}
 
@@ -156,7 +154,6 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 
         $amount = donate::currency($amount, $this->currency_default);
         self::telegramNotice(user::getUserId($userId), $_REQUEST['params']['orderSum'], $this->currency_default, $amount, get_called_class());
-        \Ofey\Logan22\model\admin\userlog::add("user_donate", 545, [$amount, $this->currency_default, get_called_class()]);
         user::getUserId($userId)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
         donate::addUserBonus($userId, $amount);
 
