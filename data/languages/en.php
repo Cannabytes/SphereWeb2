@@ -1240,7 +1240,7 @@ Try our launcher and experience all the benefits of a fast and reliable tool cre
 	'LOG_CHANGE_ACCOUNT_PASSWORD' => 'The user changed the password for the account %s',
 	'LOG_CHANGE_AVATAR' => 'User updated avatar',
 	'LOG_DONATE_COIN_TO_GAME' => 'The user transferred the balance to the character %s | ID: %d | Count: %d',
-	'LOG_DONATE_SUCCESS' => 'User %s %s donated and received %f Donate Coin using payment system %s',
+	'LOG_DONATE_SUCCESS' => 'The user donated and received %f Donate Coin using the %s payment system',
 	'log_in' => 'Log in',
 	'log_in_crt_gm_acc' => 'Login and create a game account',
 	'LOG_INVENTORY_TO_GAME' => 'User transferred %s ID to player: %d Count %d items',
