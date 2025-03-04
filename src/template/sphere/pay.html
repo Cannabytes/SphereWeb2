@@ -37,7 +37,7 @@
    .payment-system {
        cursor: pointer;
        border-radius: 12px;
-       padding: 8px;
+       padding: 1px;
        transition: all 0.3s;
        display: flex;
        align-items: center;
@@ -214,7 +214,7 @@
 </style>
 {% endblock %}
 {% block content %}
-<div class="container-fluid py-4">
+<div class="container-fluid">
    <div class="row gy-4">
       <!-- Блок пополнения баланса -->
       <div class="col-xl-5">
@@ -384,6 +384,15 @@
                </button>
                <div class="pay-link-container mt-3" id="linkPay" style="display: none;"></div>
             </div>
+
+            {% if config().other().getContactAdmin() is not empty %}
+               <div class="card-footer bg-transparent text-center">
+                  <div class="alert alert-info" role="alert">
+                     {{config().other().getContactAdmin()|raw}}
+                  </div>
+               </div>
+            {% endif %}
+
          </div>
       </div>
        <!-- Блок бонусов -->
@@ -396,7 +405,7 @@
                </div>
             </div>
             <div class="card-body">
-               <ul class="nav nav-pills justify-content-center nav-style-2 mb-3" role="tablist">
+               <ul class="nav nav-tabs mb-3 nav-justified nav-style-1 d-sm-flex d-block" role="tablist">
                   {% if getServer().donate().isRewardForDonatingItems() %}
                   <li class="nav-item">
                      <a aria-selected="true" class="nav-link active" data-bs-toggle="tab"
@@ -418,14 +427,6 @@
                      <a class="nav-link {% if (not getServer().donate().isRewardForDonatingItems()) and (not getServer().donate().isEnableOneTimeBonus()) %}active{% endif %}"
                         data-bs-toggle="tab" href="#services-vertical" role="tab">
                      <i class="ri-stack-line me-2"></i> {{phrase('accum_bonuses')}}
-                     </a>
-                  </li>
-                  {% endif %}
-                  {% if config().other().getContactAdmin() is not empty %}
-                  <li class="nav-item">
-                     <a class="nav-link {% if (not getServer().donate().isRewardForDonatingItems()) and (not getServer().donate().isEnableOneTimeBonus()) and (not getServer().donate().isEnableCumulativeDiscountSystem()) %}active{% endif %}"
-                        data-bs-toggle="tab" href="#contacts-vertical" role="tab">
-                     <i class="ri-customer-service-2-line me-2"></i> {{phrase('contact_admin')}}
                      </a>
                   </li>
                   {% endif %}
@@ -587,15 +588,6 @@
                         </div>
                      </div>
                   </div>
-                  {% if config().other().getContactAdmin() is not empty %}
-                  <div class="tab-pane {% if getServer().donate().isRewardForDonatingItems() == false and getServer().donate().isEnableOneTimeBonus() == false and getServer().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %}"
-                       id="contacts-vertical"
-                       role="tabpanel">
-                     <div class="p-3 border rounded">
-                        {{ config().other().getContactAdmin()|raw }}
-                     </div>
-                  </div>
-                  {% endif %}
                </div>
             </div>
             <div class="col-xl-3">
