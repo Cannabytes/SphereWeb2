@@ -88,21 +88,28 @@
 
                                 <div id="langSettings" class="row mb-1">
 
-                                    <div class="col-xl-6">
-                                        <label class="form-label">{{ phrase('used_languages') }} :</label>
+<div class="col-xl-6">
+    <label class="form-label">{{ phrase('used_languages') }} :</label>
 
-                                        {% for lang in getLangList() %}
-                                        <div class="form-check">
-                                            <input {% if isAllowAllLang(lang.lang) %}checked{% endif %} name="list[]"
-                                                   class="form-check-input"
-                                                   type="checkbox" value="{{ lang.name }}" id="lang_{{ lang.lang }}">
-                                            <label class="form-check-label" for="lang_{{ lang.lang }}">
-                                                {{ lang.name }}
-                                            </label>
-                                        </div>
-                                        {% endfor %}
+    {% for lang in getLangList() %}
+    <div class="form-check d-flex align-items-center mb-2">
+        <div style="display: grid; grid-template-columns: auto auto auto; gap: 10px; align-items: center;">
 
-                                    </div>
+            <input {% if isAllowAllLang(lang.lang) %}checked{% endif %} name="list[]"
+                   class="form-check-input m-0"
+                   type="checkbox" value="{{ lang.name }}" id="lang_{{ lang.lang }}">
+
+            <span class="avatar avatar-xs">
+                <img src="/uploads/images/flags/{{lang.lang}}.png" alt="img">
+            </span>
+
+            <label class="form-check-label m-0" for="lang_{{ lang.lang }}">
+                {{ lang.name }}
+            </label>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 
                                     <div class="col-xl-6">
 
