@@ -72,7 +72,7 @@ class bonus
                 }
             }
         }else{
-            sql::run("DELETE FROM `bonus_code` WHERE `server_id` = ? AND `code` == ?", [$server_id, $prefix]);
+            sql::run("DELETE FROM `bonus_code` WHERE `server_id` = ? AND `code` = ?", [$server_id, $prefix]);
             $codesReg[] = $prefix;
             foreach ($items as $item) {
                 $itemid = $item['itemId'];
