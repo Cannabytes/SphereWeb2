@@ -117,96 +117,191 @@ class bonus
         return $randomString;
     }
 
-    public static function getCode($code): void
+    /**
+     * Активирует бонусный код для текущего пользователя
+     *
+     * @param string $code Код бонуса для активации
+     * @return void
+     */
+    public static function getCode(string $code): void
     {
         try {
             sql::beginTransaction();
 
-            $bonus = sql::getRow("SELECT * FROM bonus_code WHERE code = ? LIMIT 1", [$code]);
-            if (!$bonus) {
+            // Получаем бонусные коды из БД
+            $bonusCodes = sql::getRows("SELECT * FROM bonus_code WHERE code = ?", [$code]);
+            if (empty($bonusCodes)) {
                 throw new Exception(lang::get_phrase("code_not_found"));
             }
 
+            // Проверяем возможность использования кода
+            self::validateCode($code, $bonusCodes);
+
             $bonusNames = "";
             $bonusNamesTxt = "";
+            $codesToDelete = [];
 
-            //Является код одноразовым
-            $disposable = !isset($bonus['disposable']) || (bool)$bonus['disposable'];
+            // Применяем каждый бонус
+            foreach ($bonusCodes as $bonus) {
+                // Применяем бонус и получаем информацию для отображения
+                $result = self::applyBonus($bonus);
 
-            //Если код не одноразовый, проверяем, был ли он уже использован
-            if(!$disposable) {
-                $logs = user::self()->getLogs(logTypes::LOG_BONUS_CODE);
-                //Ищем лог
-                foreach ($logs as $log) {
-                    $variables = $log['variables'];
-                    $codeVar = $variables[0];
-                    if ($codeVar == $code) {
-                        board::error("Этот код уже был Вами использован");
-                    }
+                // Добавляем данные для отображения
+                $bonusNames .= $result['htmlDisplay'];
+                $bonusNamesTxt .= $result['textDisplay'];
+
+                // Логируем использование бонуса
+                user::self()->addLog(
+                    logTypes::LOG_BONUS_CODE,
+                    'LOG_BONUS_CODE',
+                    [$code, $result['name'], $bonus['count']]
+                );
+
+                // Если код одноразовый, добавляем его в список на удаление
+                $isDisposable = !isset($bonus['disposable']) || (bool)$bonus['disposable'];
+                if ($isDisposable) {
+                    $codesToDelete[] = $bonus['id'];
                 }
             }
 
-            // Проверка даты бонуса
-            if (time() < strtotime($bonus['start_date_code'])) {
-                throw new Exception(lang::get_phrase("code_not_active"));
-            }
+            // Отправляем уведомление, если настроено
+            self::sendNotification($bonusNamesTxt);
 
-            // Проверка истечения времени даты бонуса
-            if (time() > strtotime($bonus['end_date_code'])) {
-                throw new Exception(lang::get_phrase("code_dead"));
-            }
+            // Удаляем одноразовые коды
+            self::deleteDisposableCodes($codesToDelete);
 
-            $serverId = $bonus['server_id'];
-            if ($serverId == 0) {
-                $serverId = user::self()->getServerId();
-            } else {
-                if ($serverId != user::self()->getServerId()) {
-                    throw new Exception("Этот код создан для другого сервера");
-                }
-            }
-
-            $itemId = $bonus['item_id'];
-            $count = $bonus['count'];
-            $enchant = $bonus['enchant'] ?? 0;
-            $phrase = $bonus['phrase'];
-
-            if($disposable) {
-                sql::sql("DELETE FROM bonus_code WHERE id = ?", [$bonus['id']]);
-            }
-            $itemInfo = client_icon::get_item_info($bonus['item_id'], false);
-
-            //Для зачисления доната в лк на личный счёт
-            if ($itemId == -1) {
-                user::self()->donateAdd($count);
-                $name = $itemInfo->getItemName();
-                $bonusNamesTxt .= $name . " ({$count}), ";
-            } else {
-                user::self()->addToWarehouse($serverId, $itemId, $count, $enchant, $phrase);
-                $enchant = ($enchant > 0) ? "+{$bonus['enchant']} " : "";
-                $name = $enchant . $itemInfo->getAddName() . " " . $itemInfo->getItemName();
-                $bonusNames = "<img src='" . $itemInfo->getIcon() . "' width='16' height='16'> " . $name . "({$count}),  " . $bonusNames;
-                $bonusNamesTxt .= $name . " ({$count}), ";
-            }
-            user::self()->addLog(logTypes::LOG_BONUS_CODE, 'LOG_BONUS_CODE', [$code, $name, $count]);
-
+            // Завершаем транзакцию
             sql::commit();
 
-            if (\Ofey\Logan22\controller\config\config::load()->notice()->isUseBonusCode()) {
-                $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_use_bonus_code');
-                $bonusNamesTxt = rtrim(trim($bonusNamesTxt), ',');
-                $msg = strtr($template, [
-                    '{email}' => user::self()->getEmail(),
-                    '{bonusNames}' => $bonusNamesTxt,
-                ]);
-                telegram::sendTelegramMessage($msg);
-            }
-
-            $message = lang::get_phrase("bonus_code_success", $bonusNames);
+            // Выводим сообщение об успешном применении бонуса
+            $message = lang::get_phrase("bonus_code_success", rtrim($bonusNames, ", "));
             board::success($message);
+
         } catch (Exception $e) {
             sql::rollback();
             board::notice(false, $e->getMessage());
         }
+    }
+
+    /**
+     * Проверяет возможность использования бонусного кода
+     *
+     * @param string $code Проверяемый код
+     * @param array $bonusCodes Массив бонусных кодов
+     * @throws Exception Если код не может быть использован
+     */
+    private static function validateCode(string $code, array $bonusCodes): void
+    {
+        $currentTime = time();
+        $currentServerId = user::self()->getServerId();
+        $logs = user::self()->getLogs(logTypes::LOG_BONUS_CODE);
+
+        foreach ($bonusCodes as $bonus) {
+            // Проверка временных ограничений
+            if ($currentTime < strtotime($bonus['start_date_code'])) {
+                throw new Exception(lang::get_phrase("code_not_active"));
+            }
+
+            if ($currentTime > strtotime($bonus['end_date_code'])) {
+                throw new Exception(lang::get_phrase("code_dead"));
+            }
+
+            // Проверка сервера
+            if ($bonus['server_id'] != 0 && $bonus['server_id'] != $currentServerId) {
+                throw new Exception("Этот код создан для другого сервера");
+            }
+
+            // Проверка на повторное использование многоразовых кодов
+            $isDisposable = !isset($bonus['disposable']) || (bool)$bonus['disposable'];
+            if (!$isDisposable) {
+                foreach ($logs as $log) {
+                    $variables = $log['variables'] ?? [];
+                    if (!empty($variables) && $variables[0] == $code) {
+                        throw new Exception("Этот код уже был Вами использован");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Применяет бонус к аккаунту пользователя
+     *
+     * @param array $bonus Данные бонуса
+     * @return array Информация о примененном бонусе
+     */
+    private static function applyBonus(array $bonus): array
+    {
+        $itemId = $bonus['item_id'];
+        $count = $bonus['count'];
+        $enchant = $bonus['enchant'] ?? 0;
+        $phrase = $bonus['phrase'];
+        $serverId = ($bonus['server_id'] == 0) ? user::self()->getServerId() : $bonus['server_id'];
+        $itemInfo = client_icon::get_item_info($itemId, false);
+
+        // Для зачисления доната в ЛК
+        if ($itemId == -1) {
+            user::self()->donateAdd($count);
+            $name = $itemInfo->getItemName();
+            $htmlDisplay = $name . " ({$count}), ";
+            $textDisplay = $name . " ({$count}), ";
+        } else {
+            // Добавление предмета на склад
+            user::self()->addToWarehouse($serverId, $itemId, $count, $enchant, $phrase);
+            $enchantPrefix = ($enchant > 0) ? "+{$enchant} " : "";
+            $name = $enchantPrefix . $itemInfo->getAddName() . " " . $itemInfo->getItemName();
+            $htmlDisplay = "<img src='" . $itemInfo->getIcon() . "' width='16' height='16'> " . $name . "({$count}), ";
+            $textDisplay = $name . " ({$count}), ";
+        }
+
+        return [
+            'name' => $name,
+            'htmlDisplay' => $htmlDisplay,
+            'textDisplay' => $textDisplay
+        ];
+    }
+
+    /**
+     * Отправляет уведомление о применении бонуса
+     *
+     * @param string $bonusNamesTxt Текстовое описание примененных бонусов
+     */
+    private static function sendNotification(string $bonusNamesTxt): void
+    {
+        $config = \Ofey\Logan22\controller\config\config::load();
+        if (!$config->notice()->isUseBonusCode()) {
+            return;
+        }
+
+        $template = lang::get_other_phrase(
+            $config->notice()->getNoticeLang(),
+            'notice_use_bonus_code'
+        );
+
+        // Удаляем запятую в конце списка бонусов
+        $bonusNamesTxt = rtrim(trim($bonusNamesTxt), ',');
+
+        $msg = strtr($template, [
+            '{email}' => user::self()->getEmail(),
+            '{bonusNames}' => $bonusNamesTxt,
+        ]);
+
+        telegram::sendTelegramMessage($msg);
+    }
+
+    /**
+     * Удаляет одноразовые бонусные коды
+     *
+     * @param array $codeIds Массив ID кодов для удаления
+     */
+    private static function deleteDisposableCodes(array $codeIds): void
+    {
+        if (empty($codeIds)) {
+            return;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($codeIds), '?'));
+        sql::sql("DELETE FROM bonus_code WHERE id IN ({$placeholders})", $codeIds);
     }
 
 }
