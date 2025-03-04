@@ -2110,6 +2110,7 @@ class tpl
             } else {
                 $template = $twig->load($tplName);
                 echo $template->render(self::$allTplVars);
+                exit();
             }
         } catch (Exception $e) {
             // Используем улучшенную обработку ошибок через Twig

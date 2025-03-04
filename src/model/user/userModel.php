@@ -813,7 +813,7 @@ class userModel
         // Получаем время последнего обновления из сессии для текущего сервера
         $lastUpdateTime = $_SESSION['accounts_last_update_time'][$this->getServerId()] ?? 0;
         $currentTime = time();
-        $updateInterval = 5; // Интервал обновления в секундах
+        $updateInterval = 7; // Интервал обновления в секундах
 
         // Определяем необходимость обновления
         $needUpdate = $need_reload || ($currentTime - $lastUpdateTime) >= $updateInterval;
@@ -846,6 +846,7 @@ class userModel
                 }
                 return $this->accounts;
             }
+            return [];
         }
 
         // Получаем данные через API
