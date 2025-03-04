@@ -87,8 +87,11 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 			'projectId' => self::getConfigValue('publicKey'),
 			'resultUrl' => \Ofey\Logan22\component\request\url::host('/donate'),
 			'secretKey' => self::TESTMODE ? self::$test_key : self::getConfigValue('secretKey'),
-			'signature' => $signature
-		];
+			'signature' => $signature,
+            'hideMenu' => true,
+            'hideOtherPSMethods' => true,
+            'hideOtherMethods' => true,
+        ];
 		
 		if ( self::TESTMODE ) {
 			$params['test'] = 1;

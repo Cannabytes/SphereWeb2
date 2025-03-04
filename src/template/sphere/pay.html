@@ -1,521 +1,867 @@
 {% extends 'struct.html' %}
-
 {% block title %}{{ phrase('balance_topup') }}{% endblock %}
-
-{% block content %}
-<div class="container-fluid">
-    <!-- ROW-1 OPEN -->
-    <div class="row">
-        <!-- COL-END -->
-
-        <div class="col-xl-4">
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <h3 class="card-title">{{phrase('topup_master_acc_bal')}}</h3>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="input-group">
-                        <div class="mb-1 text-muted">{{phrase('how_many_donate_coin_buy')|raw}}</div>
-                        <div class="input-group border rounded flex-nowrap">
-                            <button class="btn btn-icon btn-primary input-group-text flex-fill "
-                                    id="product-quantity-minus"><i class="ri-subtract-line"></i></button>
-                            <input min="{{getServer().donate().getMinSummaPaySphereCoin()}}"
-                                   max="{{getServer().donate().getMaxSummaPaySphereCoin()}}" type="text"
-                                   class="form-control form-control-sm border-0 text-center w-100"
-                                   aria-label="quantity" id="numberOfCoinsPurchased"
-                                   value="{{getServer().donate().getMinSummaPaySphereCoin()}}">
-                            <button class="btn btn-icon btn-primary input-group-text flex-fill "
-                                    id="product-quantity-plus"><i class="ri-add-line"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="text-center">{{phrase('estimated_cost')}}</div>
-
-                    {% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
-
-                    {% if sphereCoinCost >= 1 %}
-                        {% set USD = getServer().donate().getRatioUSD() / sphereCoinCost %}
-                        {% set EUR = getServer().donate().getRatioEUR() / sphereCoinCost %}
-                        {% set RUB = getServer().donate().getRatioRUB() / sphereCoinCost %}
-                        {% set UAH = getServer().donate().getRatioUAH() / sphereCoinCost %}
-                    {% else %}
-                        {% set USD = getServer().donate().getRatioUSD() * sphereCoinCost %}
-                        {% set EUR = getServer().donate().getRatioEUR() * sphereCoinCost %}
-                        {% set RUB = getServer().donate().getRatioRUB() * sphereCoinCost %}
-                        {% set UAH = getServer().donate().getRatioUAH() * sphereCoinCost %}
-                    {% endif %}
-
-                    <div class="block-content block-content-full">
-                        <div class="row text-center">
-                            <div class="col-6">
-                                <div class="fs-sm fw-semibold text-uppercase text-muted">USD</div>
-                                <div data-cost="{{USD}}" data-count="usd" class="fs-3 fw-semibold">0</div>
-                            </div>
-                            <div class="col-6">
-                                <div class="fs-sm fw-semibold text-uppercase text-muted">EUR</div>
-                                <div data-cost="{{EUR}}" data-count="eur" class="fs-3 fw-semibold">0</div>
-                            </div>
-
-                            <div class="col-6">
-                                <div class="fs-sm fw-semibold text-uppercase text-muted">RUB</div>
-                                <div data-cost="{{RUB}}" data-count="rub" class="fs-3 fw-semibold">0</div>
-                            </div>
-                            <div class="col-6">
-                                <div class="fs-sm fw-semibold text-uppercase text-muted">UAH</div>
-                                <div data-cost="{{UAH}}" data-count="uah" class="fs-3 fw-semibold">0</div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
-
-                <div class="card-header">
-                    <div class="card-title">{{phrase('sel_payment_sys')}}</div>
-                </div>
-                <div class="">
-                    {% for donSys in donateSysNames %}
-                    <div class="form-check d-flex overflow-visible border-bottom border-block-end-dashed selectDonSys"
-                         data-name="{{donSys.name}}">
-                        <input hidden="" value="{{donSys.name}}" class="form-check-input" type="radio" name="paysystem"
-                               id="{{donSys.name}}">
-                        <span class="avatar card-aside-column br-5 cover-image"
-                              data-bs-image-src="{{template}}/assets/images/donate/{{donSys.name}}.png"
-                              style="background: url({{template}}/assets/images/donate/{{donSys.name}}.png) center center;"></span>
-                        <div class="ps-3 flex-column">
-                            <span class="badge bg-danger">{{donSys.name}}</span>
-                            <div class="text-muted">{{donSys.description}}</div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-
-
-                <div class="card-footer text-center">
-                    <div class="btn-list">
-                        <button id="paynext" type="button" class="btn btn-success btn-wave waves-effect waves-light">
-                            {{phrase('pay')}}
-                        </button>
-                        <div id="linkPay"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="col-xl-8">
-            <div class="card custom-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        {{phrase('bonuses')}}
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-xl-3">
-                            <ul class="nav nav-tabs flex-column nav-style-4" role="tablist">
-                                {% if getServer().donate().isRewardForDonatingItems() %}
-                                <li class="nav-item">
-                                    <a class="nav-link active" data-bs-toggle="tab" role="tab"
-                                       aria-current="page" href="#home-vertical"
-                                       aria-selected="true">{{phrase('item_bonuses')}}</a>
-                                </li>
-                                {% endif %}
-
-                                {% if getServer().donate().isEnableOneTimeBonus() %}
-                                <li class="nav-item">
-                                    <a class="nav-link {% if getServer().donate().isRewardForDonatingItems() == false %}active{% endif %}"
-                                       data-bs-toggle="tab" role="tab"
-                                       aria-current="page" href="#about-vertical"
-                                       aria-selected="true">{{phrase('one_time_bonus')}}</a>
-                                </li>
-                                {% endif %}
-
-                                {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
-                                <li class="nav-item">
-                                    <a class="nav-link {% if getServer().donate().isRewardForDonatingItems() == false and getServer().donate().isEnableOneTimeBonus() == false %}active{% endif %}"
-                                       data-bs-toggle="tab" role="tab"
-                                       aria-current="page" href="#services-vertical"
-                                       aria-selected="true">{{phrase('accum_bonuses')}}</a>
-                                </li>
-                                {% endif %}
-
-                                {% if config().other().getContactAdmin() is not empty %}
-                                <li class="nav-item">
-                                    <a class="nav-link btn btn-success btn-sm {% if getServer().donate().isRewardForDonatingItems() == false and getServer().donate().isEnableOneTimeBonus() == false and getServer().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %} "
-                                       data-bs-toggle="tab" role="tab"
-                                       aria-current="page" href="#contacts-vertical"
-                                       aria-selected="true">{{phrase('contact_admin')}}</a>
-                                </li>
-                                {% endif %}
-
-                            </ul>
-                        </div>
-                        <div class="col-xl-9">
-                            <div class="tab-content">
-                                {% if getServer().donate().isRewardForDonatingItems() %}
-                                <div class="tab-pane show active text-muted" id="home-vertical"
-                                     role="tabpanel">
-
-                                    {{phrase('bonus_items_topup_amt')}}<br>
-
-
-                                    {% for cost, bonus in getServer().donate().getTableItemsBonus() %}
-                                    <div class="table-responsive mt-4 bonus_items" data-cost="{{cost}}">
-                                        <table class="table table-sm text-nowrap table-bordered border-primary">
-                                            <thead>
-                                            <tr>
-                                                <th colspan="4" scope="col">От {{cost}} {{ phrase('donate_coin') }}</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for item in bonus %}
-                                            <tr class="">
-                                                <th scope="row" style="width: 1px">
-                                                    <img class="avatar avatar-sm me-2" src="{{item.item.getIcon()}}">
-                                                </th>
-                                                <td>
-                                                    <span class="">{{item.item.getAddName()}} {{item.item.itemName()}} {% if item.item.getDescription() %} - {{ item.item.getDescription() }} {% endif %}</span>
-                                                </td>
-                                                <td><span class="">{{item.count}}</span></td>
-                                            </tr>
-                                            {% endfor %}
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    {% endfor %}
-
-                                </div>
-                                {% endif %}
-
-                                {% if getServer().donate().isEnableOneTimeBonus() %}
-                                <div class="tab-pane text-muted {% if getServer().donate().isRewardForDonatingItems() == false %}active{% endif %}"
-                                     id="about-vertical"
-                                     role="tabpanel">
-                                    {{phrase('one_time_bonus_pct_topup')}}
-                                    <br>
-                                    <div class="table-responsive mt-4">
-                                        <table class="table table-sm text-nowrap table-bordered border-primary">
-                                            <thead>
-                                            <tr>
-                                                <th>{{phrase('min_topup')}}</th>
-                                                <th>{{phrase('reward_pct')}}</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for bonus in getServer().donate().getTableEnableOneTimeBonus() %}
-                                            <tr>
-                                                <th scope="row">{{bonus.coin}}</th>
-                                                <td>+{{bonus.percent}}%</td>
-                                            </tr>
-                                            {% endfor %}
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                </div>
-                                {% endif %}
-
-                                {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
-                                <div class="tab-pane text-muted {% if getServer().donate().isRewardForDonatingItems() == false and getServer().donate().isEnableOneTimeBonus() == false %}active{% endif %}"
-                                     id="services-vertical"
-                                     role="tabpanel">
-
-                                    {{phrase('accum_sys_bonus', count_all_donate_bonus,
-                                    count_all_donate_bonus_percent)|raw}}
-
-                                    <br>
-                                    <div class="table-responsive mt-4">
-                                        <table class="table table-sm text-nowrap table-bordered border-primary">
-                                            <thead>
-                                            <tr>
-                                                <th>{{phrase('funds_accum')}}</th>
-                                                <th>{{phrase('reward_pct')}}</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for bonus in getServer().donate().getTableCumulativeDiscountSystem() %}
-                                            <tr data-percent="{{bonus.percent}}">
-                                                <td>{{bonus.coin}}</td>
-                                                <td>{{bonus.percent}}%</td>
-                                            </tr>
-                                            {% endfor %}
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                </div>
-                                {% endif %}
-
-                                {% if config().other().getContactAdmin() is not empty %}
-                                <div class="tab-pane text-muted {% if getServer().donate().isRewardForDonatingItems() == false and getServer().donate().isEnableOneTimeBonus() == false and getServer().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %}"
-                                     id="contacts-vertical"
-                                     role="tabpanel">
-                                    {{ config().other().getContactAdmin()|raw }}
-                                </div>
-                                {% endif %}
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-
-    <div class="row">
-        <div class="col-xl-12">
-            <div class="card custom-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        {{phrase('recent_donations_bonuses')}}
-                    </div>
-                </div>
-                <div class="card-body">
-                    <table id="scroll-vertical" class="table table-bordered text-nowrap w-100">
-                        <thead>
-                        <tr>
-                            <td style="width: 1px">{{phrase(262)}}</td>
-                            <th style="width: 1px">{{phrase('summa')}}</th>
-                            <th>{{phrase('message')}}</th>
-                            <th style="width: 1px">{{phrase('donation_sys')}}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for history in donate_history_pay %}
-                        <tr>
-                            <td>{{history.date|date('H:i:s d.m.Y')}}</td>
-                            <td>+{{history.point}}</td>
-                            <td>{{history.message}}</td>
-                            <td> {% if history.sphere == 0 %}{{history.pay_system}}{% else %}{{phrase('bonus')}}{% endif
-                                %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End:: row-7 -->
-
-
-</div>
-
-
-{% endblock %}
-
-
 {% block css %}
+<style>
+   .payment-card {
+       border-radius: 15px;
+       box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+       transition: all 0.3s ease;
+   }
+   .payment-card:hover {
+       transform: translateY(-5px);
+       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+   }
+   .coin-input-container {
+       border-radius: 12px;
+       margin-bottom: 7px;
+   }
+   .currency-box {
+       border-radius: 10px;
+       padding: 15px;
+       transition: all 0.3s;
+       background: rgba(var(--primary-rgb), 0.05);
+   }
+   .currency-box:hover {
+       background: rgba(var(--primary-rgb), 0.1);
+   }
+   .currency-value {
+       font-weight: 700;
+       font-size: 1.5rem;
+       color: var(--primary);
+   }
+   .currency-label {
+       font-weight: 600;
+       font-size: 0.85rem;
+       letter-spacing: 1px;
+   }
+   .payment-system {
+       cursor: pointer;
+       border-radius: 12px;
+       padding: 8px;
+       transition: all 0.3s;
+       display: flex;
+       align-items: center;
+       border: 1px solid rgba(0, 0, 0, 0.05);
+       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+   }
+   .payment-system:hover {
+       background: rgba(var(--success-rgb), 0.05);
+       transform: translateY(-3px);
+       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+   }
+   .payment-system.selected {
+       background: rgba(var(--success-rgb), 0.35) !important;
+       border-left: 6px solid var(--success) !important;
+       box-shadow: 0 4px 25px rgba(9, 173, 149, 0.9);
+   }
+   .payment-system .payment-logo {
+       cursor: pointer;
+       border-radius: 12px;
+       padding: 3px;
+       margin-bottom: 1px;
+       transition: all 0.3s;
+       display: flex;
+       align-items: center;
+       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+   }
+   .payment-system:hover .payment-logo {
+       transform: scale(1.05);
+       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+   }
+   .payment-system.selected .payment-logo {
+       box-shadow: 0 5px 15px rgba(var(--success-rgb), 0.2);
+       border-color: rgba(var(--success-rgb), 0.3);
+   }
+   .payment-system .payment-logo img {
+       width: 100%;
+       height: 100%;
+       object-fit: contain;
+   }
+   .payment-system .payment-info {
+       margin-left: 15px;
+   }
+   .bonus-table {
+       border-radius: 10px;
+       overflow: hidden;
+   }
+   .bonus-table th {
+       background: rgba(var(--primary-rgb), 0.1);
+   }
+   .bonus-items.highlight {
+       border: 2px solid var(--success) !important;
+       box-shadow: 0 5px 15px rgba(var(--success-rgb), 0.2);
+   }
+   .history-table {
+       border-radius: 12px;
+       overflow: hidden;
+   }
+   .history-table th {
+       background: rgba(var(--primary-rgb), 0.05);
+       font-weight: 600;
+   }
+   .btn-quantity {
+       width: 45px;
+       height: 45px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       border-radius: 8px !important;
+       font-size: 1.2rem;
+   }
+   #numberOfCoinsPurchased {
+       height: 45px;
+       font-size: 1.2rem;
+       font-weight: 700;
+   }
+   .btn-pay {
+       padding: 12px 30px;
+       font-size: 1.1rem;
+       font-weight: 600;
+       border-radius: 10px;
+       box-shadow: 0 4px 10px rgba(var(--success-rgb), 0.3);
+       transition: all 0.3s;
+   }
+   .btn-pay:hover {
+       transform: translateY(-3px);
+       box-shadow: 0 6px 15px rgba(var(--success-rgb), 0.4);
+   }
+   .pay-link-container {
+       margin-top: 15px;
+       padding: 10px;
+       border-radius: 8px;
+       background: rgba(var(--success-rgb), 0.1);
+   }
+   /* Адаптивность для мобильных устройств */
+   @media (max-width: 768px) {
+       .currency-box {
+           margin-bottom: 10px;
+       }
+       .bonus-nav-link {
+           text-align: center;
+       }
+   }
+   .cost-accordion .accordion-button {
+       padding: 1rem;
+       border-radius: 12px !important;
+       font-weight: 600;
+   }
+   .cost-accordion .accordion-button:not(.collapsed) {
+       color: var(--primary);
+       background-color: rgba(var(--primary-rgb), 0.05);
+       box-shadow: none;
+   }
+   .cost-accordion .accordion-item {
+       border-radius: 12px !important;
+       background-color: rgba(var(--info-rgb), 0.05);
+       overflow: hidden;
+   }
+   .cost-accordion .accordion-button::after {
+       margin-left: 10px;
+   }
+   .cost-accordion .cost-summary {
+       font-size: 1rem;
+       font-weight: 600;
+       letter-spacing: 0.5px;
+       border-radius: 50px;
+   }
+   /* Дополнительные стили для адаптации под темы */
+   .dark-mode .cost-accordion .accordion-item {
+       background-color: rgba(255, 255, 255, 0.05);
+   }
+   .dark-mode .cost-accordion .accordion-button:not(.collapsed) {
+       background-color: rgba(var(--primary-rgb), 0.2);
+   }
+   /* Анимация при обновлении цены */
+   .cost-summary.flash {
+       animation: flash-animation 0.5s ease-out;
+   }
+   @keyframes flash-animation {
+       0% {
+           background-color: rgba(var(--success-rgb), 0.5);
+       }
+       100% {
+           background-color: rgba(var(--primary-rgb), 0.2);
+       }
+   }
+
+   .text-shadow-enhanced {
+      text-shadow:
+            -1px -1px 0 rgba(0, 0, 0, 0.7),
+            1px -1px 0 rgba(0, 0, 0, 0.7),
+            -1px 1px 0 rgba(0, 0, 0, 0.7),
+            1px 1px 0 rgba(0, 0, 0, 0.7),
+            0 0 8px rgba(0, 0, 0, 0.7);
+      color: white;
+      font-weight: bold;
+   }
+   .text-with-backdrop {
+      position: relative;
+      display: inline-block;
+      padding: 2px 8px;
+      background-color: rgba(0, 0, 0, 0.20);
+      border-radius: 4px;
+      backdrop-filter: blur(1px);
+      color: white;
+   }
+   .enhanced-gradient-overlay {
+      background: linear-gradient(to top,
+      rgba(0, 0, 0, 0.7),
+      rgba(0, 0, 0, 0.6) 30%,
+      rgba(0, 0, 0, 0.5) 60%,
+      rgba(0, 0, 0, 0.7) 100%) !important;
+   }
+
+</style>
 {% endblock %}
-
-
+{% block content %}
+<div class="container-fluid py-4">
+   <div class="row gy-4">
+      <!-- Блок пополнения баланса -->
+      <div class="col-xl-5">
+         <div class="card payment-card">
+            <!-- Заголовок карточки -->
+            <div class="card-header bg-transparent d-flex align-items-center">
+               <div class="me-auto">
+                  <h3 class="card-title mb-0">
+                     <i class="ri-wallet-3-line text-primary me-2"></i>
+                     {{phrase('topup_master_acc_bal')}}
+                  </h3>
+               </div>
+            </div>
+             <!-- Тело карточки -->
+            <div class="card-body">
+               <!-- Ввод количества монет -->
+               <div class="coin-input-container">
+                  <label class="form-label text-muted mb-3">
+                  <i class="ri-coin-line text-warning me-1"></i>
+                  {{phrase('how_many_donate_coin_buy')|raw}}
+                  </label>
+                  <div class="input-group mb-3">
+                     <button class="btn btn-primary btn-quantity shadow-sm" id="product-quantity-minus">
+                     <i class="ri-subtract-line"></i>
+                     </button>
+                     <input min="{{getServer().donate().getMinSummaPaySphereCoin()}}"
+                            class="form-control text-center shadow-sm"
+                            id="numberOfCoinsPurchased"
+                            max="{{getServer().donate().getMaxSummaPaySphereCoin()}}"
+                            type="text"
+                            value="{{getServer().donate().getMinSummaPaySphereCoin()}}">
+                     <button class="btn btn-primary btn-quantity shadow-sm" id="product-quantity-plus">
+                     <i class="ri-add-line"></i>
+                     </button>
+                  </div>
+               </div>
+                <!-- Замена блока cost-estimation на аккордеон -->
+               <div class="accordion cost-accordion " id="costAccordion">
+                  <div class="accordion-item border-0 shadow-sm rounded">
+                     <h2 class="accordion-header" id="costHeading">
+                        <button aria-controls="costCollapse" aria-expanded="false" class="accordion-button collapsed bg-transparent" data-bs-target="#costCollapse" data-bs-toggle="collapse" type="button">
+                        <i class="ri-price-tag-3-line me-2"></i>
+                        <span class="me-auto">{{phrase('estimated_cost')}}</span>
+                        <span class="ms-2 badge bg-primary-transparent px-3 cost-summary" data-default-currency="usd">0</span>
+                        </button>
+                     </h2>
+                     <div aria-labelledby="costHeading" class="accordion-collapse collapse" data-bs-parent="#costAccordion" id="costCollapse">
+                        <div class="accordion-body p-3">
+                           {% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
+                           {% if sphereCoinCost >= 1 %}
+                           {% set USD = getServer().donate().getRatioUSD() / sphereCoinCost %}
+                           {% set EUR = getServer().donate().getRatioEUR() / sphereCoinCost %}
+                           {% set RUB = getServer().donate().getRatioRUB() / sphereCoinCost %}
+                           {% set UAH = getServer().donate().getRatioUAH() / sphereCoinCost %}
+                           {% else %}
+                           {% set USD = getServer().donate().getRatioUSD() * sphereCoinCost %}
+                           {% set EUR = getServer().donate().getRatioEUR() * sphereCoinCost %}
+                           {% set RUB = getServer().donate().getRatioRUB() * sphereCoinCost %}
+                           {% set UAH = getServer().donate().getRatioUAH() * sphereCoinCost %}
+                           {% endif %}
+                           <div class="row g-3">
+                              <div class="col-6">
+                                 <div class="currency-box text-center">
+                                    <div class="currency-label text-muted">USD</div>
+                                    <div class="currency-value" data-cost="{{USD}}" data-count="usd">0</div>
+                                 </div>
+                              </div>
+                              <div class="col-6">
+                                 <div class="currency-box text-center">
+                                    <div class="currency-label text-muted">EUR</div>
+                                    <div class="currency-value" data-cost="{{EUR}}" data-count="eur">0</div>
+                                 </div>
+                              </div>
+                              <div class="col-6">
+                                 <div class="currency-box text-center">
+                                    <div class="currency-label text-muted">RUB</div>
+                                    <div class="currency-value" data-cost="{{RUB}}" data-count="rub">0</div>
+                                 </div>
+                              </div>
+                              <div class="col-6">
+                                 <div class="currency-box text-center">
+                                    <div class="currency-label text-muted">UAH</div>
+                                    <div class="currency-value" data-cost="{{UAH}}" data-count="uah">0</div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+             <!-- Выбор платежной системы -->
+            <div class="card-header bg-transparent border-top">
+               <div class="card-title">
+                  <i class="ri-bank-card-line text-primary me-2"></i>
+                  {{phrase('sel_payment_sys')}}
+               </div>
+            </div>
+            <div class="card-body pt-2">
+               <div class="payment-systems-container">
+                  <div class="row g-3">
+                     {% for donSys in donateSysNames %}
+                     {% set isLast = loop.last %}
+                     {% set isOdd = (donateSysNames|length % 2 == 1) %}
+                     {% if isLast and isOdd %}
+                     <div class="col-12">
+                        <div class="payment-system selectDonSys" data-name="{{donSys.name}}">
+                           <input class="form-check-input" hidden="" id="{{donSys.name}}" name="paysystem" type="radio" value="{{donSys.name}}">
+                           <div class="position-relative rounded overflow-hidden w-100" style="height: 120px;">
+                              <img alt="{{donSys.name}}"
+                                   class="img-fluid w-100 h-100 object-fit-cover enhanced-gradient-overlay"
+                                   src="{{template}}/assets/images/donate/{{donSys.name}}.png">
+                               <!-- Градиентное затемнение для обеспечения читаемости текста -->
+                              <div class="position-absolute top-0 start-0 w-100 h-100"
+                                   style="background: linear-gradient(to top, rgba(0,0,0,0.1), rgba(0,0,0,0.7));">
+                              </div>
+                               <!-- Блок с информацией - название сверху и по центру -->
+                              <div class="position-absolute top-0 start-0 w-100 text-center p-3">
+                                 <div class="fw-bold  text-shadow-enhanced " style="font-size: 1.2rem;">
+                                    {{donSys.name}}
+                                 </div>
+                                 {% if donSys.description %}
+                                 <div class="small text-with-backdrop">
+                                    {{donSys.description}}
+                                 </div>
+                                 {% endif %}
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     {% else %}
+                     <div class="col-md-6">
+                        <div class="payment-system selectDonSys" data-name="{{donSys.name}}">
+                           <input class="form-check-input" hidden="" id="{{donSys.name}}" name="paysystem" type="radio" value="{{donSys.name}}">
+                           <div class="position-relative rounded overflow-hidden w-100" style="height: 90px;">
+                              <img alt="{{donSys.name}}"
+                                   class="img-fluid w-100 h-100 object-fit-cover enhanced-gradient-overlay"
+                                   src="{{template}}/assets/images/donate/{{donSys.name}}.png">
+                               <!-- Градиентное затемнение для обеспечения читаемости текста -->
+                              <div class="position-absolute top-0 start-0 w-100 h-100"
+                                   style="background: linear-gradient(to top, rgba(0,0,0,0.1), rgba(0,0,0,0.7));">
+                              </div>
+                               <!-- Блок с информацией - название сверху и по центру -->
+                              <div class="position-absolute top-0 start-0 w-100 text-center p-3">
+                                 <div class="fw-bold text-shadow-enhanced mb-1" style="font-size: 1.1rem;">
+                                    {{donSys.name}}
+                                 </div>
+                                 {% if donSys.description %}
+                                 <div class="small text-with-backdrop">
+                                    {{donSys.description}}
+                                 </div>
+                                 {% endif %}
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     {% endif %}
+                     {% endfor %}
+                  </div>
+               </div>
+            </div>
+             <!-- Кнопка оплаты -->
+            <div class="card-footer bg-transparent text-center">
+               <button class="btn btn-success btn-pay" id="paynext" type="button">
+               <i class="ri-secure-payment-line me-1"></i>
+               {{phrase('pay')}}
+               </button>
+               <div class="pay-link-container mt-3" id="linkPay" style="display: none;"></div>
+            </div>
+         </div>
+      </div>
+       <!-- Блок бонусов -->
+      <div class="col-xl-7">
+         <div class="card payment-card h-100">
+            <div class="card-header bg-transparent">
+               <div class="card-title">
+                  <i class="ri-gift-line text-primary me-2"></i>
+                  {{phrase('bonuses')}}
+               </div>
+            </div>
+            <div class="card-body">
+               <ul class="nav nav-pills justify-content-center nav-style-2 mb-3" role="tablist">
+                  {% if getServer().donate().isRewardForDonatingItems() %}
+                  <li class="nav-item">
+                     <a aria-selected="true" class="nav-link active" data-bs-toggle="tab"
+                        href="#home-vertical" role="tab">
+                     <i class="ri-box-3-line me-2"></i> {{phrase('item_bonuses')}}
+                     </a>
+                  </li>
+                  {% endif %}
+                  {% if getServer().donate().isEnableOneTimeBonus() %}
+                  <li class="nav-item">
+                     <a class="nav-link {% if not getServer().donate().isRewardForDonatingItems() %}active{% endif %}"
+                        data-bs-toggle="tab" href="#about-vertical" role="tab">
+                     <i class="ri-percent-line me-2"></i> {{phrase('one_time_bonus')}}
+                     </a>
+                  </li>
+                  {% endif %}
+                  {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
+                  <li class="nav-item">
+                     <a class="nav-link {% if (not getServer().donate().isRewardForDonatingItems()) and (not getServer().donate().isEnableOneTimeBonus()) %}active{% endif %}"
+                        data-bs-toggle="tab" href="#services-vertical" role="tab">
+                     <i class="ri-stack-line me-2"></i> {{phrase('accum_bonuses')}}
+                     </a>
+                  </li>
+                  {% endif %}
+                  {% if config().other().getContactAdmin() is not empty %}
+                  <li class="nav-item">
+                     <a class="nav-link {% if (not getServer().donate().isRewardForDonatingItems()) and (not getServer().donate().isEnableOneTimeBonus()) and (not getServer().donate().isEnableCumulativeDiscountSystem()) %}active{% endif %}"
+                        data-bs-toggle="tab" href="#contacts-vertical" role="tab">
+                     <i class="ri-customer-service-2-line me-2"></i> {{phrase('contact_admin')}}
+                     </a>
+                  </li>
+                  {% endif %}
+                  <li class="nav-item">
+                     <a class="nav-link" data-bs-toggle="tab"
+                        href="#history-donate" role="tab">
+                     <i class="bi bi-clock-history me-2"></i> {{ phrase('donation_history') }}
+                     </a>
+                  </li>
+               </ul>
+               <div class="tab-content">
+                  {% if getServer().donate().isRewardForDonatingItems() %}
+                  <div class="tab-pane show active" id="home-vertical" role="tabpanel">
+                     <div class="alert alert-info mb-4">
+                        <i class="ri-information-line me-2"></i>
+                        {{phrase('bonus_items_topup_amt')}}
+                     </div>
+                     {% for cost, bonus in getServer().donate().getTableItemsBonus() %}
+                     <div class="table-responsive mt-4 bonus-items" data-cost="{{cost}}">
+                        <table class="table table-hover bonus-table mb-0">
+                           <thead>
+                              <tr class="bg-light">
+                                 <th class="text-primary" colspan="3">
+                                    <i class="ri-gift-2-line me-2"></i>
+                                    От {{cost}} {{ phrase('donate_coin') }}
+                                 </th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              {% for item in bonus %}
+                              <tr>
+                                 <td class="text-center" style="width: 50px">
+                                    <img class="avatar avatar-sm" src="{{item.item.getIcon()}}">
+                                 </td>
+                                 <td>
+                                    <span class="fw-medium">{{item.item.getAddName()}} {{item.item.itemName()}}</span>
+                                    {% if item.item.getDescription() %}
+                                    <small class="d-block text-muted">{{ item.item.getDescription() }}</small>
+                                    {% endif %}
+                                 </td>
+                                 <td class="text-center fw-bold">
+                                    <span class="badge bg-primary-transparent rounded-pill px-3">
+                                    {{item.count}} шт.
+                                    </span>
+                                 </td>
+                              </tr>
+                              {% endfor %}
+                           </tbody>
+                        </table>
+                     </div>
+                     {% endfor %}
+                  </div>
+                  {% endif %}
+                  {% if getServer().donate().isEnableOneTimeBonus() %}
+                  <div class="tab-pane {% if getServer().donate().isRewardForDonatingItems() == false %}active{% endif %}"
+                       id="about-vertical"
+                       role="tabpanel">
+                     <div class="alert alert-info mb-4">
+                        <i class="ri-information-line me-2"></i>
+                        {{phrase('one_time_bonus_pct_topup')}}
+                     </div>
+                     <div class="table-responsive mt-4">
+                        <table class="table table-hover bonus-table mb-0">
+                           <thead>
+                              <tr>
+                                 <th>{{phrase('min_topup')}}</th>
+                                 <th>{{phrase('reward_pct')}}</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              {% for bonus in getServer().donate().getTableEnableOneTimeBonus() %}
+                              <tr>
+                                 <td>
+                                    <i class="ri-coin-line text-warning me-1"></i>
+                                    {{bonus.coin}}
+                                 </td>
+                                 <td>
+                                    <span class="badge bg-success-transparent rounded-pill px-3">
+                                    +{{bonus.percent}}%
+                                    </span>
+                                 </td>
+                              </tr>
+                              {% endfor %}
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+                  {% endif %}
+                  {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
+                  <div class="tab-pane {% if getServer().donate().isRewardForDonatingItems() == false and getServer().donate().isEnableOneTimeBonus() == false %}active{% endif %}"
+                       id="services-vertical"
+                       role="tabpanel">
+                     <div class="alert alert-info mb-4">
+                        <i class="ri-information-line me-2"></i>
+                        {{phrase('accum_sys_bonus', count_all_donate_bonus, count_all_donate_bonus_percent)|raw}}
+                     </div>
+                     <div class="table-responsive mt-4">
+                        <table class="table table-hover bonus-table mb-0">
+                           <thead>
+                              <tr>
+                                 <th>{{phrase('funds_accum')}}</th>
+                                 <th>{{phrase('reward_pct')}}</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              {% for bonus in getServer().donate().getTableCumulativeDiscountSystem() %}
+                              <tr data-percent="{{bonus.percent}}">
+                                 <td>
+                                    <i class="ri-coin-line text-warning me-1"></i>
+                                    {{bonus.coin}}
+                                 </td>
+                                 <td>
+                                    <span class="badge bg-primary-transparent rounded-pill px-3">
+                                    {{bonus.percent}}%
+                                    </span>
+                                 </td>
+                              </tr>
+                              {% endfor %}
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+                  {% endif %}
+                   <!-- Полностью переделанный блок с историей пожертвований -->
+                  <div class="tab-pane" id="history-donate" role="tabpanel">
+                     <div class="p-1 border rounded">
+                        <div class="table-responsive">
+                           <table class="table table-hover history-table mb-0" id="scroll-vertical">
+                              <tbody>
+                                 {% for history in donate_history_pay %}
+                                 <tr>
+                                    <td>
+                                       <span data-bs-toggle="tooltip" title="{{history.date|date('H:i:s d.m.Y')}}">
+                                       <i class="ri-time-line text-muted me-1"></i>
+                                       {{history.date|date('d.m.Y')}}
+                                       </span>
+                                    </td>
+                                    <td>
+                                       <div class="d-flex flex-column">
+                                          <div class="mb-1">{{history.message}}</div>
+                                          <div class="d-flex align-items-center small text-muted">
+                                             <div class="me-3 text-success fw-bold">
+                                                +{{history.point}} {{phrase('donate_coin')}}
+                                             </div>
+                                             <div>
+                                                {% if history.sphere == 0 %}
+                                                <span class="badge bg-primary-transparent">{{history.pay_system}}</span>
+                                                {% else %}
+                                                <span class="badge bg-success-transparent">{{phrase('bonus')}}</span>
+                                                {% endif %}
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 {% endfor %}
+                              </tbody>
+                           </table>
+                        </div>
+                     </div>
+                  </div>
+                  {% if config().other().getContactAdmin() is not empty %}
+                  <div class="tab-pane {% if getServer().donate().isRewardForDonatingItems() == false and getServer().donate().isEnableOneTimeBonus() == false and getServer().donate().isEnableCumulativeDiscountSystem() == false %}active{% endif %}"
+                       id="contacts-vertical"
+                       role="tabpanel">
+                     <div class="p-3 border rounded">
+                        {{ config().other().getContactAdmin()|raw }}
+                     </div>
+                  </div>
+                  {% endif %}
+               </div>
+            </div>
+            <div class="col-xl-3">
+               <ul class="nav nav-pills justify-content-center nav-style-2 mb-3" role="tablist">
+               </ul>
+            </div>
+            <div class="col-xl-9">
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+</div>
+</div>
+{% endblock %}
 {% block js %}
-
 <script>
+   $(document).ready(function () {
+       // Инициализация при загрузке страницы
+       updateCurrencyValues();
+       selectBonusPanel();
+
+       $('#costCollapse').on('shown.bs.collapse', function () {
+           var preferredCurrency = $('.cost-summary').attr('data-default-currency');
+           $('.currency-box').removeClass('active-currency');
+           $('[data-count="' + preferredCurrency + '"]').closest('.currency-box').addClass('active-currency');
+       });
+
+       var lastValue = parseInt($('#numberOfCoinsPurchased').val()) || 1;
+
+       // Обработка ввода в поле с количеством монет
+       $('#numberOfCoinsPurchased').on('input', function () {
+           var currentValue = parseInt($(this).val()) || 1;
+           var difference = Math.abs(currentValue - lastValue);
+
+           // Если изменение значительное (более 5 единиц), открываем аккордеон
+           if (difference > 5 && $('#costCollapse').hasClass('collapse')) {
+               $('#costCollapse').collapse('show');
+           }
+
+           lastValue = currentValue;
+       });
+
+       // Обновление стоимости при открытии аккордеона
+       $('#costCollapse').on('shown.bs.collapse', function () {
+           updateCurrencyValues();
+       });
 
 
-    $(document).ready(function () {
-        updateCurrencyValues();
+       // Переменные для таймеров
+       var incrementTimer;
+       var deincrementTimer;
 
-        $('#numberOfCoinsPurchased').on('input', function () {
-            // Удаляем все символы, кроме цифр
-            this.value = this.value.replace(/[^0-9]/g, '');
+       // Уменьшение количества при зажатии кнопки минус
+       $("#product-quantity-minus").on("mousedown", function () {
+           deincrementTimer = setInterval(function () {
+               var currentValue = parseInt($('#numberOfCoinsPurchased').val());
+               var min = 1;
 
-            var value = this.value === '' ? '' : parseInt(this.value);
-            // var min = parseInt(this.getAttribute('min'));
-            var min = 1;
-            var max = parseInt(this.getAttribute('max'));
+               if (!isNaN(currentValue)) {
+                   var newValue = currentValue - 1;
+                   if (newValue >= min) {
+                       $('#numberOfCoinsPurchased').val(newValue);
+                   } else {
+                       $('#numberOfCoinsPurchased').val(min);
+                       clearInterval(deincrementTimer);
+                   }
+               } else {
+                   $('#numberOfCoinsPurchased').val(min);
+               }
 
-            // Проверяем, если значение пустое, оставляем его пустым
-            if (value === '') {
-                this.value = '';
-            }
-            // Проверяем на минимальное значение или если значение не число
-            else if (value < min || isNaN(value)) {
-                this.value = min;
-            }
-            // Проверяем на максимальное значение
-            else if (value > max) {
-                this.value = max;
-            }
-            updateCurrencyValues();
-            selectBonusPanel();
-        });
+               selectBonusPanel();
+               updateCurrencyValues();
+           }, 50);
+       }).on("mouseup mouseleave", function () {
+           clearInterval(deincrementTimer);
+           updateCurrencyValues();
+       });
 
+       // Увеличение количества при зажатии кнопки плюс
+       $("#product-quantity-plus").on("mousedown", function () {
+           incrementTimer = setInterval(function () {
+               var currentValue = parseInt($('#numberOfCoinsPurchased').val());
+               var max = parseInt($('#numberOfCoinsPurchased').attr('max'));
 
-        var incrementTimer;
-        var deincrementTimer;
+               if (!isNaN(currentValue)) {
+                   var newValue = currentValue + 1;
+                   if (newValue <= max) {
+                       $('#numberOfCoinsPurchased').val(newValue);
+                   } else {
+                       $('#numberOfCoinsPurchased').val(max);
+                       clearInterval(incrementTimer);
+                   }
+               } else {
+                   $('#numberOfCoinsPurchased').val('1');
+               }
 
-        $("#product-quantity-minus").on("mousedown", function () {
-            deincrementTimer = setInterval(function () {
-                var currentValue = parseInt($('#numberOfCoinsPurchased').val());
-                var min = 1;
-                if (!isNaN(currentValue)) {
-                    var newValue = currentValue - 1;
-                    if (newValue >= min) {
-                        $('#numberOfCoinsPurchased').val(newValue);
-                    } else {
-                        $('#numberOfCoinsPurchased').val(min);
-                        clearInterval(deincrementTimer); // Остановить декрементирование, если достигнут минимум
-                    }
-                } else {
-                    $('#numberOfCoinsPurchased').val(min);
-                }
-                selectBonusPanel();
-                updateCurrencyValues()
-            }, 50);
-        }).on("mouseup mouseleave", function () {
-            clearInterval(deincrementTimer);
-            updateCurrencyValues()
-        });
+               selectBonusPanel();
+               updateCurrencyValues();
+           }, 50);
+       }).on("mouseup mouseleave", function () {
+           clearInterval(incrementTimer);
+           updateCurrencyValues();
+       });
 
+       // Выбор платежной системы при клике
+       $(document).on("click", ".selectDonSys", function (e) {
+           var name = $(this).data("name");
+           activateRadio(name);
+       });
 
-        $("#product-quantity-plus").on("mousedown", function () {
-            incrementTimer = setInterval(function () {
-                var currentValue = parseInt($('#numberOfCoinsPurchased').val());
-                var max = parseInt($('#numberOfCoinsPurchased').attr('max'));
+       // Активация платежной системы по умолчанию
+       activateRadio("{{getServer().donate().getPaySystemDefault()}}");
 
-                if (!isNaN(currentValue)) {
-                    var newValue = currentValue + 1;
-                    if (newValue <= max) {
-                        $('#numberOfCoinsPurchased').val(newValue);
-                    } else {
-                        $('#numberOfCoinsPurchased').val(max);
-                        clearInterval(incrementTimer); // Остановить инкрементирование, если достигнут максимум
-                    }
-                } else {
-                    $('#numberOfCoinsPurchased').val('1');
-                }
-                selectBonusPanel();
-                updateCurrencyValues();
-            }, 50);
-        }).on("mouseup mouseleave", function () {
-            clearInterval(incrementTimer);
-            updateCurrencyValues(); // Обновление значений валюты при остановке
-        });
+       // Обработка нажатия на кнопку оплаты
+       $(document).on("click", "#paynext", function () {
+           var paysystem = getSelectedPaySystemValue();
 
+           if (typeof paysystem === 'undefined') {
+               return;
+           }
 
-    });
+           // Добавляем анимацию загрузки к кнопке
+           $(this).html('<i class="spinner-border spinner-border-sm me-2"></i> {{phrase("pay")}}');
+           $(this).prop('disabled', true);
 
-    function updateCurrencyValues() {
-        var numberOfCoins = parseInt($('#numberOfCoinsPurchased').val());
+           $.ajax({
+               type: "POST",
+               url: "/donate/transfer/" + paysystem + "/createlink",
+               data: {
+                   count: $("#numberOfCoinsPurchased").val()
+               },
+               success: function (redirectLink) {
+                   // Восстанавливаем кнопку
+                   $("#paynext").html('<i class="ri-secure-payment-line me-1"></i> {{phrase("pay")}}');
+                   $("#paynext").prop('disabled', false);
 
-        // Если значение пустое или не число, считаем, что там 1
-        if (isNaN(numberOfCoins) || numberOfCoins === '') {
-            numberOfCoins = 1;
-        }
+                   if (redirectLink['ok'] === false) {
+                       noticeError(redirectLink['message']);
+                   } else {
+                       const linkText = "{{phrase('Click to go to the payment page')}}";
+                       $("#linkPay").html(`
+                           <a href="${redirectLink}" class="btn btn-sm btn-outline-success w-100" target="_blank">
+                               <i class="ri-external-link-line me-1"></i> ${linkText}
+                           </a>`
+                       );
+                       $("#linkPay").slideDown();
+                       window.open(redirectLink, '_blank');
+                   }
+               },
+               error: function () {
+                   // Восстанавливаем кнопку в случае ошибки
+                   $("#paynext").html('<i class="ri-secure-payment-line me-1"></i> {{phrase("pay")}}');
+                   $("#paynext").prop('disabled', false);
+                   noticeError("Произошла ошибка при создании платежа");
+               }
+           });
+       });
 
-        $('[data-count]').each(function () {
-            var cost = parseFloat($(this).data('cost'));
-            var newValue = (numberOfCoins * cost).toFixed(1);
-            $(this).text(newValue);
-        });
-    }
+       // Инициализация подсветки для таблицы скидок
+       selectTablePanel();
+   });
 
+   // Функция обновления стоимости в разных валютах
+   function updateCurrencyValues() {
+       var numberOfCoins = parseInt($('#numberOfCoinsPurchased').val());
 
-    selectTablePanel();
+       // Если значение пустое или не число, считаем, что там 1
+       if (isNaN(numberOfCoins) || numberOfCoins === '') {
+           numberOfCoins = 1;
+       }
 
-    function selectTablePanel() {
-        var currentPercent = parseFloat('{{count_all_donate_bonus_percent}}');
-        $('tr[data-percent]').each(function () {
-            var rowPercent = parseFloat($(this).data('percent'));
+       // Определяем предпочтительную валюту пользователя на основе страны
+       var userCountry = '{{ getUser().getCountry() }}';
+       var preferredCurrency = 'usd'; // По умолчанию USD
 
-            if (rowPercent === currentPercent) {
-                $(this).find('td').addClass('bg-success-transparent text-success p-2 px-3');
-            }
-        });
-    }
+       // Определяем валюту на основе страны пользователя
+       if (userCountry === 'UA') {
+           preferredCurrency = 'uah';
+       } else if (userCountry === 'RU') {
+           preferredCurrency = 'rub';
+       } else if (userCountry === 'EU' || userCountry.match(/^(DE|FR|IT|ES|PT|NL|BE|IE|AT|FI|LT|LV|EE|SK|SI|GR|MT|CY)$/)) {
+           preferredCurrency = 'eur';
+       }
 
-    function getSelectedPaySystemValue() {
-        var selectedValue = $('input[name="paysystem"]:checked').val();
-        if (selectedValue !== undefined && selectedValue !== null) {
-            return selectedValue;
-        } else {
-            noticeError('{{phrase("sel_payment_sys")}}');
-        }
-    }
+       // Сохраняем предпочтительную валюту как атрибут для последующего использования
+       $('.cost-summary').attr('data-default-currency', preferredCurrency);
 
-    function selectBonusPanel() {
-        let enteredValue = parseInt($('#numberOfCoinsPurchased').val(), 10);
+       // Обновляем краткую информацию (основную валюту)
+       var mainCurrencyValue = (numberOfCoins * parseFloat($('[data-count="' + preferredCurrency + '"]').data('cost'))).toFixed(1);
+       var currencySymbol = preferredCurrency.toUpperCase();
+       $('.cost-summary').text(mainCurrencyValue + ' ' + currencySymbol);
 
-        // Если значение пустое или не число, считаем, что там 1
-        if (isNaN(enteredValue) || enteredValue === '') {
-            enteredValue = 1;
-        }
+       // Добавляем анимацию мигания
+       $('.cost-summary').addClass('flash');
+       setTimeout(function () {
+           $('.cost-summary').removeClass('flash');
+       }, 500);
 
-        let maxCost = 0;
-        let $maxCostElement = null;
+       // Обновляем все валюты в детальном представлении
+       $('[data-count]').each(function () {
+           var cost = parseFloat($(this).data('cost'));
+           var newValue = (numberOfCoins * cost).toFixed(1);
+           $(this).text(newValue);
+       });
+   }
 
-        // Сначала находим элемент с максимальным data-cost, который меньше или равен введенному значению
-        $('.bonus_items').each(function () {
-            let cost = parseInt($(this).data('cost'), 10);
-            if (cost > maxCost && enteredValue >= cost) {
-                maxCost = cost;
-                $maxCostElement = $(this);
-            }
-        });
+   // Функция подсветки текущей скидки
+   function selectTablePanel() {
+       var currentPercent = parseFloat('{{count_all_donate_bonus_percent}}');
+       $('tr[data-percent]').each(function () {
+           var rowPercent = parseFloat($(this).data('percent'));
 
-        // Удаляем класс alert alert-success у всех элементов
-        $('.bonus_items').removeClass('alert alert-success');
+           if (rowPercent === currentPercent) {
+               $(this).addClass('bg-success-transparent');
+               $(this).find('.badge').removeClass('bg-primary-transparent').addClass('bg-success-transparent');
+           }
+       });
+   }
 
-        // Добавляем класс alert alert-success только выбранному элементу
-        if ($maxCostElement) {
-            $maxCostElement.addClass('alert alert-success');
-        }
-    }
+   // Функция получения выбранной платежной системы
+   function getSelectedPaySystemValue() {
+       var selectedValue = $('input[name="paysystem"]:checked').val();
+       if (selectedValue !== undefined && selectedValue !== null) {
+           return selectedValue;
+       } else {
+           noticeError('{{phrase("sel_payment_sys")}}');
+       }
+   }
 
+   // Функция подсветки бонусов в зависимости от выбранной суммы
+   function selectBonusPanel() {
+       let enteredValue = parseInt($('#numberOfCoinsPurchased').val(), 10);
 
-    $(document).on("click", "#paynext", function () {
-        paysystem = getSelectedPaySystemValue();
-        if (typeof paysystem === 'undefined') {
-            return;
-        }
-        $.ajax(
-            {
-                type: "POST",
-                url: "/donate/transfer/" + paysystem + "/createlink",
-                data: {
-                    count: $("#numberOfCoinsPurchased").val()
-                },
-                success: function (redirectLink) {
-                    console.log(redirectLink)
-                    if (redirectLink['ok'] === false) {
-                        noticeError(redirectLink['message'])
-                    } else {
-                        const linkText = "{{phrase('Click to go to the payment page')}}";
-                        $("#linkPay").html(`<a href="${redirectLink}" target="_blank">${linkText}</a>`);
-                        window.open(redirectLink, '_blank');
-                    }
-                }
-            });
-    });
+       // Если значение пустое или не число, считаем, что там 1
+       if (isNaN(enteredValue) || enteredValue === '') {
+           enteredValue = 1;
+       }
 
-    activateRadio("{{getServer().donate().getPaySystemDefault()}}");
+       let maxCost = 0;
+       let $maxCostElement = null;
 
-    $(document).on("click", ".selectDonSys", function (e) {
-        var name = $(this).data("name");
-        activateRadio(name);
-    });
+       // Сначала находим элемент с максимальным data-cost, который меньше или равен введенному значению
+       $('.bonus-items').each(function () {
+           let cost = parseInt($(this).data('cost'), 10);
+           if (cost > maxCost && enteredValue >= cost) {
+               maxCost = cost;
+               $maxCostElement = $(this);
+           }
+       });
 
-    function activateRadio(name) {
-        $('input[name="paysystem"]').prop('checked', false);
-        $('.form-check').removeClass('bg-success-transparent border-success notify-border-start-success');
-        $('#' + name).prop('checked', true);
-        $('.selectDonSys[data-name="' + name + '"]').addClass('bg-success-transparent border-success notify-border-start-success');
-    }
+       // Удаляем класс highlight у всех элементов
+       $('.bonus-items').removeClass('highlight');
 
+       // Добавляем класс highlight только выбранному элементу
+       if ($maxCostElement) {
+           $maxCostElement.addClass('highlight');
+       }
+   }
 
+   // Функция активации радио-кнопки платежной системы
+   function activateRadio(name) {
+       $('input[name="paysystem"]').prop('checked', false);
+       $('.payment-system').removeClass('selected');
+       $('#' + name).prop('checked', true);
+       $('.selectDonSys[data-name="' + name + '"]').addClass('selected');
+   }
 </script>
-
-
 {% endblock %}
