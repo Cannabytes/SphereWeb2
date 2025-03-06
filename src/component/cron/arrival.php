@@ -2,7 +2,9 @@
 
 namespace Ofey\Logan22\component\cron;
 
+use Exception;
 use Ofey\Logan22\controller\config\config;
+use Ofey\Logan22\model\db\sql;
 
 class arrival
 {
@@ -33,6 +35,9 @@ class arrival
             case 'update_rates':
                 self::update_rates();
                 break;
+            case 'update_databases':
+                self::updateDB();
+                break;
             default:
                 error_log("Unknown command: $command");
                 break;
@@ -50,4 +55,24 @@ class arrival
         $other->setRates($rates);
         $other->save();
     }
+
+    private static function updateDB()
+    {
+        $query = self::$request['query'];
+        try {
+            $isSelect = stripos(trim($query), 'SELECT') === 0;
+
+            if ($isSelect) {
+                $result = sql::getRows($query); // предполагаем, что у класса sql есть такой метод
+                echo json_encode(['success' => true, 'data' => $result]);
+            } else {
+                $result = sql::query($query);
+                echo json_encode(['success' => true, 'affected_rows' => $result]);
+            }
+        } catch (Exception $e) {
+            error_log('SQL Error: ' . $e->getMessage());
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
+
 }

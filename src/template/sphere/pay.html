@@ -404,192 +404,192 @@
                   {{phrase('bonuses')}}
                </div>
             </div>
-            <div class="card-body">
-               <ul class="nav nav-tabs mb-3 nav-justified nav-style-1 d-sm-flex d-block" role="tablist">
-                  {% if getServer().donate().isRewardForDonatingItems() %}
-                  <li class="nav-item">
-                     <a aria-selected="true" class="nav-link active" data-bs-toggle="tab"
-                        href="#home-vertical" role="tab">
-                     <i class="ri-box-3-line me-2"></i> {{phrase('item_bonuses')}}
-                     </a>
-                  </li>
-                  {% endif %}
-                  {% if getServer().donate().isEnableOneTimeBonus() %}
-                  <li class="nav-item">
-                     <a class="nav-link {% if not getServer().donate().isRewardForDonatingItems() %}active{% endif %}"
-                        data-bs-toggle="tab" href="#about-vertical" role="tab">
-                     <i class="ri-percent-line me-2"></i> {{phrase('one_time_bonus')}}
-                     </a>
-                  </li>
-                  {% endif %}
-                  {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
-                  <li class="nav-item">
-                     <a class="nav-link {% if (not getServer().donate().isRewardForDonatingItems()) and (not getServer().donate().isEnableOneTimeBonus()) %}active{% endif %}"
-                        data-bs-toggle="tab" href="#services-vertical" role="tab">
-                     <i class="ri-stack-line me-2"></i> {{phrase('accum_bonuses')}}
-                     </a>
-                  </li>
-                  {% endif %}
-                  <li class="nav-item">
-                     <a class="nav-link" data-bs-toggle="tab"
-                        href="#history-donate" role="tab">
-                     <i class="bi bi-clock-history me-2"></i> {{ phrase('donation_history') }}
-                     </a>
-                  </li>
-               </ul>
-               <div class="tab-content">
-                  {% if getServer().donate().isRewardForDonatingItems() %}
-                  <div class="tab-pane show active" id="home-vertical" role="tabpanel">
-                     <div class="alert alert-info mb-4">
-                        <i class="ri-information-line me-2"></i>
-                        {{phrase('bonus_items_topup_amt')}}
-                     </div>
-                     {% for cost, bonus in getServer().donate().getTableItemsBonus() %}
-                     <div class="table-responsive mt-4 bonus-items" data-cost="{{cost}}">
-                        <table class="table table-hover bonus-table mb-0">
-                           <thead>
-                              <tr class="bg-light">
-                                 <th class="text-primary" colspan="3">
-                                    <i class="ri-gift-2-line me-2"></i>
-                                    От {{cost}} {{ phrase('donate_coin') }}
-                                 </th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              {% for item in bonus %}
-                              <tr>
-                                 <td class="text-center" style="width: 50px">
-                                    <img class="avatar avatar-sm" src="{{item.item.getIcon()}}">
-                                 </td>
-                                 <td>
-                                    <span class="fw-medium">{{item.item.getAddName()}} {{item.item.itemName()}}</span>
-                                    {% if item.item.getDescription() %}
-                                    <small class="d-block text-muted">{{ item.item.getDescription() }}</small>
+           <div class="card-body">
+   <ul class="nav nav-tabs mb-3 nav-justified nav-style-1 d-sm-flex d-block" role="tablist">
+      {% if getServer().donate().isRewardForDonatingItems() %}
+      <li class="nav-item">
+         <a aria-selected="true" class="nav-link active" data-bs-toggle="tab"
+            href="#home-vertical" role="tab">
+         <i class="ri-box-3-line me-2"></i> {{phrase('item_bonuses')}}
+         </a>
+      </li>
+      {% endif %}
+      {% if getServer().donate().isEnableOneTimeBonus() %}
+      <li class="nav-item">
+         <a class="nav-link {% if not getServer().donate().isRewardForDonatingItems() %}active{% endif %}"
+            data-bs-toggle="tab" href="#about-vertical" role="tab">
+         <i class="ri-percent-line me-2"></i> {{phrase('one_time_bonus')}}
+         </a>
+      </li>
+      {% endif %}
+      {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
+      <li class="nav-item">
+         <a class="nav-link {% if (not getServer().donate().isRewardForDonatingItems()) and (not getServer().donate().isEnableOneTimeBonus()) %}active{% endif %}"
+            data-bs-toggle="tab" href="#services-vertical" role="tab">
+         <i class="ri-stack-line me-2"></i> {{phrase('accum_bonuses')}}
+         </a>
+      </li>
+      {% endif %}
+      <li class="nav-item">
+         <a class="nav-link {% if (not getServer().donate().isRewardForDonatingItems()) and (not getServer().donate().isEnableOneTimeBonus()) and (not getServer().donate().isEnableCumulativeDiscountSystem()) %}active{% endif %}"
+            data-bs-toggle="tab"
+            href="#history-donate" role="tab">
+         <i class="bi bi-clock-history me-2"></i> {{ phrase('donation_history') }}
+         </a>
+      </li>
+   </ul>
+   <div class="tab-content">
+      {% if getServer().donate().isRewardForDonatingItems() %}
+      <div class="tab-pane show active" id="home-vertical" role="tabpanel">
+         <div class="alert alert-info mb-4">
+            <i class="ri-information-line me-2"></i>
+            {{phrase('bonus_items_topup_amt')}}
+         </div>
+         {% for cost, bonus in getServer().donate().getTableItemsBonus() %}
+         <div class="table-responsive mt-4 bonus-items" data-cost="{{cost}}">
+            <table class="table table-hover bonus-table mb-0">
+               <thead>
+                  <tr class="bg-light">
+                     <th class="text-primary" colspan="3">
+                        <i class="ri-gift-2-line me-2"></i>
+                        От {{cost}} {{ phrase('donate_coin') }}
+                     </th>
+                  </tr>
+               </thead>
+               <tbody>
+                  {% for item in bonus %}
+                  <tr>
+                     <td class="text-center" style="width: 50px">
+                        <img class="avatar avatar-sm" src="{{item.item.getIcon()}}">
+                     </td>
+                     <td>
+                        <span class="fw-medium">{{item.item.getAddName()}} {{item.item.itemName()}}</span>
+                        {% if item.item.getDescription() %}
+                        <small class="d-block text-muted">{{ item.item.getDescription() }}</small>
+                        {% endif %}
+                     </td>
+                     <td class="text-center fw-bold">
+                        <span class="badge bg-primary-transparent rounded-pill px-3">
+                        {{item.count}} шт.
+                        </span>
+                     </td>
+                  </tr>
+                  {% endfor %}
+               </tbody>
+            </table>
+         </div>
+         {% endfor %}
+      </div>
+      {% endif %}
+      {% if getServer().donate().isEnableOneTimeBonus() %}
+      <div class="tab-pane {% if getServer().donate().isRewardForDonatingItems() == false %}active{% endif %}"
+           id="about-vertical"
+           role="tabpanel">
+         <div class="alert alert-info mb-4">
+            <i class="ri-information-line me-2"></i>
+            {{phrase('one_time_bonus_pct_topup')}}
+         </div>
+         <div class="table-responsive mt-4">
+            <table class="table table-hover bonus-table mb-0">
+               <thead>
+                  <tr>
+                     <th>{{phrase('min_topup')}}</th>
+                     <th>{{phrase('reward_pct')}}</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  {% for bonus in getServer().donate().getTableEnableOneTimeBonus() %}
+                  <tr>
+                     <td>
+                        <i class="ri-coin-line text-warning me-1"></i>
+                        {{bonus.coin}}
+                     </td>
+                     <td>
+                        <span class="badge bg-success-transparent rounded-pill px-3">
+                        +{{bonus.percent}}%
+                        </span>
+                     </td>
+                  </tr>
+                  {% endfor %}
+               </tbody>
+            </table>
+         </div>
+      </div>
+      {% endif %}
+      {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
+      <div class="tab-pane {% if (not getServer().donate().isRewardForDonatingItems()) and (not getServer().donate().isEnableOneTimeBonus()) %}active{% endif %}"
+           id="services-vertical"
+           role="tabpanel">
+         <div class="alert alert-info mb-4">
+            <i class="ri-information-line me-2"></i>
+            {{phrase('accum_sys_bonus', count_all_donate_bonus, count_all_donate_bonus_percent)|raw}}
+         </div>
+         <div class="table-responsive mt-4">
+            <table class="table table-hover bonus-table mb-0">
+               <thead>
+                  <tr>
+                     <th>{{phrase('funds_accum')}}</th>
+                     <th>{{phrase('reward_pct')}}</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  {% for bonus in getServer().donate().getTableCumulativeDiscountSystem() %}
+                  <tr data-percent="{{bonus.percent}}">
+                     <td>
+                        <i class="ri-coin-line text-warning me-1"></i>
+                        {{bonus.coin}}
+                     </td>
+                     <td>
+                        <span class="badge bg-primary-transparent rounded-pill px-3">
+                        {{bonus.percent}}%
+                        </span>
+                     </td>
+                  </tr>
+                  {% endfor %}
+               </tbody>
+            </table>
+         </div>
+      </div>
+      {% endif %}
+      <!-- Полностью переделанный блок с историей пожертвований -->
+      <div class="tab-pane {% if (not getServer().donate().isRewardForDonatingItems()) and (not getServer().donate().isEnableOneTimeBonus()) and (not getServer().donate().isEnableCumulativeDiscountSystem()) %}show active{% endif %}"
+           id="history-donate" role="tabpanel">
+            <div class="table-responsive">
+               <table class="table table-hover history-table mb-0" id="scroll-vertical">
+                  <tbody>
+                     {% for history in donate_history_pay %}
+                     <tr>
+                        <td>
+                           <span data-bs-toggle="tooltip" title="{{history.date|date('H:i:s d.m.Y')}}">
+                           <i class="ri-time-line text-muted me-1"></i>
+                           {{history.date|date('d.m.Y')}}
+                           </span>
+                        </td>
+                        <td>
+                           <div class="d-flex flex-column">
+                              <div class="mb-1">{{history.message}}</div>
+                              <div class="d-flex align-items-center small text-muted">
+                                 <div class="me-3 text-success fw-bold">
+                                    +{{history.point}} {{phrase('donate_coin')}}
+                                 </div>
+                                 <div>
+                                    {% if history.sphere == 0 %}
+                                    <span class="badge bg-primary-transparent">{{history.pay_system}}</span>
+                                    {% else %}
+                                    <span class="badge bg-success-transparent">{{phrase('bonus')}}</span>
                                     {% endif %}
-                                 </td>
-                                 <td class="text-center fw-bold">
-                                    <span class="badge bg-primary-transparent rounded-pill px-3">
-                                    {{item.count}} шт.
-                                    </span>
-                                 </td>
-                              </tr>
-                              {% endfor %}
-                           </tbody>
-                        </table>
-                     </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
                      {% endfor %}
-                  </div>
-                  {% endif %}
-                  {% if getServer().donate().isEnableOneTimeBonus() %}
-                  <div class="tab-pane {% if getServer().donate().isRewardForDonatingItems() == false %}active{% endif %}"
-                       id="about-vertical"
-                       role="tabpanel">
-                     <div class="alert alert-info mb-4">
-                        <i class="ri-information-line me-2"></i>
-                        {{phrase('one_time_bonus_pct_topup')}}
-                     </div>
-                     <div class="table-responsive mt-4">
-                        <table class="table table-hover bonus-table mb-0">
-                           <thead>
-                              <tr>
-                                 <th>{{phrase('min_topup')}}</th>
-                                 <th>{{phrase('reward_pct')}}</th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              {% for bonus in getServer().donate().getTableEnableOneTimeBonus() %}
-                              <tr>
-                                 <td>
-                                    <i class="ri-coin-line text-warning me-1"></i>
-                                    {{bonus.coin}}
-                                 </td>
-                                 <td>
-                                    <span class="badge bg-success-transparent rounded-pill px-3">
-                                    +{{bonus.percent}}%
-                                    </span>
-                                 </td>
-                              </tr>
-                              {% endfor %}
-                           </tbody>
-                        </table>
-                     </div>
-                  </div>
-                  {% endif %}
-                  {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
-                  <div class="tab-pane {% if getServer().donate().isRewardForDonatingItems() == false and getServer().donate().isEnableOneTimeBonus() == false %}active{% endif %}"
-                       id="services-vertical"
-                       role="tabpanel">
-                     <div class="alert alert-info mb-4">
-                        <i class="ri-information-line me-2"></i>
-                        {{phrase('accum_sys_bonus', count_all_donate_bonus, count_all_donate_bonus_percent)|raw}}
-                     </div>
-                     <div class="table-responsive mt-4">
-                        <table class="table table-hover bonus-table mb-0">
-                           <thead>
-                              <tr>
-                                 <th>{{phrase('funds_accum')}}</th>
-                                 <th>{{phrase('reward_pct')}}</th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              {% for bonus in getServer().donate().getTableCumulativeDiscountSystem() %}
-                              <tr data-percent="{{bonus.percent}}">
-                                 <td>
-                                    <i class="ri-coin-line text-warning me-1"></i>
-                                    {{bonus.coin}}
-                                 </td>
-                                 <td>
-                                    <span class="badge bg-primary-transparent rounded-pill px-3">
-                                    {{bonus.percent}}%
-                                    </span>
-                                 </td>
-                              </tr>
-                              {% endfor %}
-                           </tbody>
-                        </table>
-                     </div>
-                  </div>
-                  {% endif %}
-                   <!-- Полностью переделанный блок с историей пожертвований -->
-                  <div class="tab-pane" id="history-donate" role="tabpanel">
-                     <div class="p-1 border rounded">
-                        <div class="table-responsive">
-                           <table class="table table-hover history-table mb-0" id="scroll-vertical">
-                              <tbody>
-                                 {% for history in donate_history_pay %}
-                                 <tr>
-                                    <td>
-                                       <span data-bs-toggle="tooltip" title="{{history.date|date('H:i:s d.m.Y')}}">
-                                       <i class="ri-time-line text-muted me-1"></i>
-                                       {{history.date|date('d.m.Y')}}
-                                       </span>
-                                    </td>
-                                    <td>
-                                       <div class="d-flex flex-column">
-                                          <div class="mb-1">{{history.message}}</div>
-                                          <div class="d-flex align-items-center small text-muted">
-                                             <div class="me-3 text-success fw-bold">
-                                                +{{history.point}} {{phrase('donate_coin')}}
-                                             </div>
-                                             <div>
-                                                {% if history.sphere == 0 %}
-                                                <span class="badge bg-primary-transparent">{{history.pay_system}}</span>
-                                                {% else %}
-                                                <span class="badge bg-success-transparent">{{phrase('bonus')}}</span>
-                                                {% endif %}
-                                             </div>
-                                          </div>
-                                       </div>
-                                    </td>
-                                 </tr>
-                                 {% endfor %}
-                              </tbody>
-                           </table>
-                        </div>
-                     </div>
-                  </div>
-               </div>
+                  </tbody>
+               </table>
             </div>
+      </div>
+   </div>
+</div>
             <div class="col-xl-3">
                <ul class="nav nav-pills justify-content-center nav-style-2 mb-3" role="tablist">
                </ul>
@@ -605,255 +605,295 @@
 {% endblock %}
 {% block js %}
 <script>
-   $(document).ready(function () {
-       // Инициализация при загрузке страницы
-       updateCurrencyValues();
-       selectBonusPanel();
+$(document).ready(function () {
+   // Инициализация при загрузке страницы
+   updateCurrencyValues();
+   selectBonusPanel();
 
-       $('#costCollapse').on('shown.bs.collapse', function () {
-           var preferredCurrency = $('.cost-summary').attr('data-default-currency');
-           $('.currency-box').removeClass('active-currency');
-           $('[data-count="' + preferredCurrency + '"]').closest('.currency-box').addClass('active-currency');
-       });
-
-       var lastValue = parseInt($('#numberOfCoinsPurchased').val()) || 1;
-
-       // Обработка ввода в поле с количеством монет
-       $('#numberOfCoinsPurchased').on('input', function () {
-           var currentValue = parseInt($(this).val()) || 1;
-           var difference = Math.abs(currentValue - lastValue);
-
-           // Если изменение значительное (более 5 единиц), открываем аккордеон
-           if (difference > 5 && $('#costCollapse').hasClass('collapse')) {
-               $('#costCollapse').collapse('show');
-           }
-
-           lastValue = currentValue;
-       });
-
-       // Обновление стоимости при открытии аккордеона
-       $('#costCollapse').on('shown.bs.collapse', function () {
-           updateCurrencyValues();
-       });
-
-
-       // Переменные для таймеров
-       var incrementTimer;
-       var deincrementTimer;
-
-       // Уменьшение количества при зажатии кнопки минус
-       $("#product-quantity-minus").on("mousedown", function () {
-           deincrementTimer = setInterval(function () {
-               var currentValue = parseInt($('#numberOfCoinsPurchased').val());
-               var min = 1;
-
-               if (!isNaN(currentValue)) {
-                   var newValue = currentValue - 1;
-                   if (newValue >= min) {
-                       $('#numberOfCoinsPurchased').val(newValue);
-                   } else {
-                       $('#numberOfCoinsPurchased').val(min);
-                       clearInterval(deincrementTimer);
-                   }
-               } else {
-                   $('#numberOfCoinsPurchased').val(min);
-               }
-
-               selectBonusPanel();
-               updateCurrencyValues();
-           }, 50);
-       }).on("mouseup mouseleave", function () {
-           clearInterval(deincrementTimer);
-           updateCurrencyValues();
-       });
-
-       // Увеличение количества при зажатии кнопки плюс
-       $("#product-quantity-plus").on("mousedown", function () {
-           incrementTimer = setInterval(function () {
-               var currentValue = parseInt($('#numberOfCoinsPurchased').val());
-               var max = parseInt($('#numberOfCoinsPurchased').attr('max'));
-
-               if (!isNaN(currentValue)) {
-                   var newValue = currentValue + 1;
-                   if (newValue <= max) {
-                       $('#numberOfCoinsPurchased').val(newValue);
-                   } else {
-                       $('#numberOfCoinsPurchased').val(max);
-                       clearInterval(incrementTimer);
-                   }
-               } else {
-                   $('#numberOfCoinsPurchased').val('1');
-               }
-
-               selectBonusPanel();
-               updateCurrencyValues();
-           }, 50);
-       }).on("mouseup mouseleave", function () {
-           clearInterval(incrementTimer);
-           updateCurrencyValues();
-       });
-
-       // Выбор платежной системы при клике
-       $(document).on("click", ".selectDonSys", function (e) {
-           var name = $(this).data("name");
-           activateRadio(name);
-       });
-
-       // Активация платежной системы по умолчанию
-       activateRadio("{{getServer().donate().getPaySystemDefault()}}");
-
-       // Обработка нажатия на кнопку оплаты
-       $(document).on("click", "#paynext", function () {
-           var paysystem = getSelectedPaySystemValue();
-
-           if (typeof paysystem === 'undefined') {
-               return;
-           }
-
-           // Добавляем анимацию загрузки к кнопке
-           $(this).html('<i class="spinner-border spinner-border-sm me-2"></i> {{phrase("pay")}}');
-           $(this).prop('disabled', true);
-
-           $.ajax({
-               type: "POST",
-               url: "/donate/transfer/" + paysystem + "/createlink",
-               data: {
-                   count: $("#numberOfCoinsPurchased").val()
-               },
-               success: function (redirectLink) {
-                   // Восстанавливаем кнопку
-                   $("#paynext").html('<i class="ri-secure-payment-line me-1"></i> {{phrase("pay")}}');
-                   $("#paynext").prop('disabled', false);
-
-                   if (redirectLink['ok'] === false) {
-                       noticeError(redirectLink['message']);
-                   } else {
-                       const linkText = "{{phrase('Click to go to the payment page')}}";
-                       $("#linkPay").html(`
-                           <a href="${redirectLink}" class="btn btn-sm btn-outline-success w-100" target="_blank">
-                               <i class="ri-external-link-line me-1"></i> ${linkText}
-                           </a>`
-                       );
-                       $("#linkPay").slideDown();
-                       window.open(redirectLink, '_blank');
-                   }
-               },
-               error: function () {
-                   // Восстанавливаем кнопку в случае ошибки
-                   $("#paynext").html('<i class="ri-secure-payment-line me-1"></i> {{phrase("pay")}}');
-                   $("#paynext").prop('disabled', false);
-                   noticeError("Произошла ошибка при создании платежа");
-               }
-           });
-       });
-
-       // Инициализация подсветки для таблицы скидок
-       selectTablePanel();
+   $('#costCollapse').on('shown.bs.collapse', function () {
+      var preferredCurrency = $('.cost-summary').attr('data-default-currency');
+      $('.currency-box').removeClass('active-currency');
+      $('[data-count="' + preferredCurrency + '"]').closest('.currency-box').addClass('active-currency');
    });
 
-   // Функция обновления стоимости в разных валютах
-   function updateCurrencyValues() {
-       var numberOfCoins = parseInt($('#numberOfCoinsPurchased').val());
+   var lastValue = parseInt($('#numberOfCoinsPurchased').val()) || 1;
 
-       // Если значение пустое или не число, считаем, что там 1
-       if (isNaN(numberOfCoins) || numberOfCoins === '') {
-           numberOfCoins = 1;
-       }
+   // Обработка ввода в поле с количеством монет
+   $('#numberOfCoinsPurchased').on('input', function () {
+      // Получаем текущее значение и проверяем, является ли оно числом
+      var currentValue = $(this).val();
 
-       // Определяем предпочтительную валюту пользователя на основе страны
-       var userCountry = '{{ getUser().getCountry() }}';
-       var preferredCurrency = 'usd'; // По умолчанию USD
+      // Если ввод не является числом, восстанавливаем последнее корректное значение
+      if (isNaN(currentValue) || currentValue === '') {
+         currentValue = lastValue;
+         $(this).val(currentValue);
+      } else {
+         currentValue = parseInt(currentValue);
+         lastValue = currentValue;
+      }
 
-       // Определяем валюту на основе страны пользователя
-       if (userCountry === 'UA') {
-           preferredCurrency = 'uah';
-       } else if (userCountry === 'RU') {
-           preferredCurrency = 'rub';
-       } else if (userCountry === 'EU' || userCountry.match(/^(DE|FR|IT|ES|PT|NL|BE|IE|AT|FI|LT|LV|EE|SK|SI|GR|MT|CY)$/)) {
-           preferredCurrency = 'eur';
-       }
+      // Обновляем информацию без открытия аккордеона
+      selectBonusPanel();
+      updateCurrencyValues();
+   });
 
-       // Сохраняем предпочтительную валюту как атрибут для последующего использования
-       $('.cost-summary').attr('data-default-currency', preferredCurrency);
+   // Обработка изменения значения в поле ввода
+   $('#numberOfCoinsPurchased').on('change', function () {
+      var min = parseInt($(this).attr('min'));
+      var max = parseInt($(this).attr('max'));
+      var value = parseInt($(this).val());
 
-       // Обновляем краткую информацию (основную валюту)
-       var mainCurrencyValue = (numberOfCoins * parseFloat($('[data-count="' + preferredCurrency + '"]').data('cost'))).toFixed(1);
-       var currencySymbol = preferredCurrency.toUpperCase();
-       $('.cost-summary').text(mainCurrencyValue + ' ' + currencySymbol);
+      // Проверяем, является ли значение числом и находится ли в допустимом диапазоне
+      if (isNaN(value)) {
+         $(this).val(min);
+      } else if (value < min) {
+         $(this).val(min);
+      } else if (value > max) {
+         $(this).val(max);
+      }
 
-       // Добавляем анимацию мигания
-       $('.cost-summary').addClass('flash');
-       setTimeout(function () {
-           $('.cost-summary').removeClass('flash');
-       }, 500);
+      selectBonusPanel();
+      updateCurrencyValues();
+   });
 
-       // Обновляем все валюты в детальном представлении
-       $('[data-count]').each(function () {
-           var cost = parseFloat($(this).data('cost'));
-           var newValue = (numberOfCoins * cost).toFixed(1);
-           $(this).text(newValue);
-       });
+   // Обновление стоимости при открытии аккордеона
+   $('#costCollapse').on('shown.bs.collapse', function () {
+      updateCurrencyValues();
+   });
+
+   // Переменные для таймеров
+   var incrementTimer;
+   var deincrementTimer;
+
+   // Уменьшение количества при зажатии кнопки минус
+   $("#product-quantity-minus").on("mousedown touchstart", function () {
+      // Уменьшаем значение сразу при нажатии
+      decrementValue();
+
+      deincrementTimer = setInterval(function () {
+         decrementValue();
+      }, 75);
+   }).on("mouseup mouseleave touchend", function () {
+      clearInterval(deincrementTimer);
+      updateCurrencyValues();
+   });
+
+   // Увеличение количества при зажатии кнопки плюс
+   $("#product-quantity-plus").on("mousedown touchstart", function () {
+      // Увеличиваем значение сразу при нажатии
+      incrementValue();
+
+      incrementTimer = setInterval(function () {
+         incrementValue();
+      }, 75);
+   }).on("mouseup mouseleave touchend", function () {
+      clearInterval(incrementTimer);
+      updateCurrencyValues();
+   });
+
+   // Функция уменьшения значения
+   function decrementValue() {
+      var currentValue = parseInt($('#numberOfCoinsPurchased').val());
+      var min = parseInt($('#numberOfCoinsPurchased').attr('min'));
+
+      if (!isNaN(currentValue)) {
+         var newValue = currentValue - 1;
+         if (newValue >= min) {
+            $('#numberOfCoinsPurchased').val(newValue);
+         } else {
+            $('#numberOfCoinsPurchased').val(min);
+            clearInterval(deincrementTimer);
+         }
+      } else {
+         $('#numberOfCoinsPurchased').val(min);
+      }
+
+      selectBonusPanel();
+      updateCurrencyValues();
    }
 
-   // Функция подсветки текущей скидки
-   function selectTablePanel() {
-       var currentPercent = parseFloat('{{count_all_donate_bonus_percent}}');
-       $('tr[data-percent]').each(function () {
-           var rowPercent = parseFloat($(this).data('percent'));
+   // Функция увеличения значения
+   function incrementValue() {
+      var currentValue = parseInt($('#numberOfCoinsPurchased').val());
+      var max = parseInt($('#numberOfCoinsPurchased').attr('max'));
 
-           if (rowPercent === currentPercent) {
-               $(this).addClass('bg-success-transparent');
-               $(this).find('.badge').removeClass('bg-primary-transparent').addClass('bg-success-transparent');
-           }
-       });
+      if (!isNaN(currentValue)) {
+         var newValue = currentValue + 1;
+         if (newValue <= max) {
+            $('#numberOfCoinsPurchased').val(newValue);
+         } else {
+            $('#numberOfCoinsPurchased').val(max);
+            clearInterval(incrementTimer);
+         }
+      } else {
+         $('#numberOfCoinsPurchased').val('1');
+      }
+
+      selectBonusPanel();
+      updateCurrencyValues();
    }
 
-   // Функция получения выбранной платежной системы
-   function getSelectedPaySystemValue() {
-       var selectedValue = $('input[name="paysystem"]:checked').val();
-       if (selectedValue !== undefined && selectedValue !== null) {
-           return selectedValue;
-       } else {
-           noticeError('{{phrase("sel_payment_sys")}}');
-       }
+   // Выбор платежной системы при клике
+   $(document).on("click", ".selectDonSys", function (e) {
+      var name = $(this).data("name");
+      activateRadio(name);
+   });
+
+   // Активация платежной системы по умолчанию
+   activateRadio("{{getServer().donate().getPaySystemDefault()}}");
+
+   // Обработка нажатия на кнопку оплаты
+   $(document).on("click", "#paynext", function () {
+      var paysystem = getSelectedPaySystemValue();
+
+      if (typeof paysystem === 'undefined') {
+         return;
+      }
+
+      // Добавляем анимацию загрузки к кнопке
+      $(this).html('<i class="spinner-border spinner-border-sm me-2"></i> {{phrase("pay")}}');
+      $(this).prop('disabled', true);
+
+      $.ajax({
+         type: "POST",
+         url: "/donate/transfer/" + paysystem + "/createlink",
+         data: {
+            count: $("#numberOfCoinsPurchased").val()
+         },
+         success: function (redirectLink) {
+            // Восстанавливаем кнопку
+            $("#paynext").html('<i class="ri-secure-payment-line me-1"></i> {{phrase("pay")}}');
+            $("#paynext").prop('disabled', false);
+
+            if (redirectLink['ok'] === false) {
+               noticeError(redirectLink['message']);
+            } else {
+               const linkText = "{{phrase('Click to go to the payment page')}}";
+               $("#linkPay").html(`
+                        <a href="${redirectLink}" class="btn btn-sm btn-outline-success w-100" target="_blank">
+                            <i class="ri-external-link-line me-1"></i> ${linkText}
+                        </a>`
+               );
+               $("#linkPay").slideDown();
+               window.open(redirectLink, '_blank');
+            }
+         },
+         error: function () {
+            // Восстанавливаем кнопку в случае ошибки
+            $("#paynext").html('<i class="ri-secure-payment-line me-1"></i> {{phrase("pay")}}');
+            $("#paynext").prop('disabled', false);
+            noticeError("Произошла ошибка при создании платежа");
+         }
+      });
+   });
+
+   // Инициализация подсветки для таблицы скидок
+   selectTablePanel();
+});
+
+// Функция обновления стоимости в разных валютах
+function updateCurrencyValues() {
+   var numberOfCoins = parseInt($('#numberOfCoinsPurchased').val());
+
+   // Если значение пустое или не число, считаем, что там 1
+   if (isNaN(numberOfCoins) || numberOfCoins === '') {
+      numberOfCoins = 1;
    }
 
-   // Функция подсветки бонусов в зависимости от выбранной суммы
-   function selectBonusPanel() {
-       let enteredValue = parseInt($('#numberOfCoinsPurchased').val(), 10);
+   // Определяем предпочтительную валюту пользователя на основе страны
+   var userCountry = '{{ getUser().getCountry() }}';
+   var preferredCurrency = 'usd'; // По умолчанию USD
 
-       // Если значение пустое или не число, считаем, что там 1
-       if (isNaN(enteredValue) || enteredValue === '') {
-           enteredValue = 1;
-       }
-
-       let maxCost = 0;
-       let $maxCostElement = null;
-
-       // Сначала находим элемент с максимальным data-cost, который меньше или равен введенному значению
-       $('.bonus-items').each(function () {
-           let cost = parseInt($(this).data('cost'), 10);
-           if (cost > maxCost && enteredValue >= cost) {
-               maxCost = cost;
-               $maxCostElement = $(this);
-           }
-       });
-
-       // Удаляем класс highlight у всех элементов
-       $('.bonus-items').removeClass('highlight');
-
-       // Добавляем класс highlight только выбранному элементу
-       if ($maxCostElement) {
-           $maxCostElement.addClass('highlight');
-       }
+   // Определяем валюту на основе страны пользователя
+   if (userCountry === 'UA') {
+      preferredCurrency = 'uah';
+   } else if (userCountry === 'RU') {
+      preferredCurrency = 'rub';
+   } else if (userCountry === 'EU' || userCountry.match(/^(DE|FR|IT|ES|PT|NL|BE|IE|AT|FI|LT|LV|EE|SK|SI|GR|MT|CY)$/)) {
+      preferredCurrency = 'eur';
    }
 
-   // Функция активации радио-кнопки платежной системы
-   function activateRadio(name) {
-       $('input[name="paysystem"]').prop('checked', false);
-       $('.payment-system').removeClass('selected');
-       $('#' + name).prop('checked', true);
-       $('.selectDonSys[data-name="' + name + '"]').addClass('selected');
+   // Сохраняем предпочтительную валюту как атрибут для последующего использования
+   $('.cost-summary').attr('data-default-currency', preferredCurrency);
+
+   // Обновляем краткую информацию (основную валюту)
+   var mainCurrencyValue = (numberOfCoins * parseFloat($('[data-count="' + preferredCurrency + '"]').data('cost'))).toFixed(1);
+   var currencySymbol = preferredCurrency.toUpperCase();
+   $('.cost-summary').text(mainCurrencyValue + ' ' + currencySymbol);
+
+   // Добавляем анимацию мигания
+   $('.cost-summary').addClass('flash');
+   setTimeout(function () {
+      $('.cost-summary').removeClass('flash');
+   }, 500);
+
+   // Обновляем все валюты в детальном представлении
+   $('[data-count]').each(function () {
+      var cost = parseFloat($(this).data('cost'));
+      var newValue = (numberOfCoins * cost).toFixed(1);
+      $(this).text(newValue);
+   });
+}
+
+// Функция подсветки текущей скидки
+function selectTablePanel() {
+   var currentPercent = parseFloat('{{count_all_donate_bonus_percent}}');
+   $('tr[data-percent]').each(function () {
+      var rowPercent = parseFloat($(this).data('percent'));
+
+      if (rowPercent === currentPercent) {
+         $(this).addClass('bg-success-transparent');
+         $(this).find('.badge').removeClass('bg-primary-transparent').addClass('bg-success-transparent');
+      }
+   });
+}
+
+// Функция получения выбранной платежной системы
+function getSelectedPaySystemValue() {
+   var selectedValue = $('input[name="paysystem"]:checked').val();
+   if (selectedValue !== undefined && selectedValue !== null) {
+      return selectedValue;
+   } else {
+      noticeError('{{phrase("sel_payment_sys")}}');
    }
+}
+
+// Функция подсветки бонусов в зависимости от выбранной суммы
+function selectBonusPanel() {
+   let enteredValue = parseInt($('#numberOfCoinsPurchased').val(), 10);
+
+   // Если значение пустое или не число, считаем, что там 1
+   if (isNaN(enteredValue) || enteredValue === '') {
+      enteredValue = 1;
+   }
+
+   let maxCost = 0;
+   let $maxCostElement = null;
+
+   // Сначала находим элемент с максимальным data-cost, который меньше или равен введенному значению
+   $('.bonus-items').each(function () {
+      let cost = parseInt($(this).data('cost'), 10);
+      if (cost > maxCost && enteredValue >= cost) {
+         maxCost = cost;
+         $maxCostElement = $(this);
+      }
+   });
+
+   // Удаляем класс highlight у всех элементов
+   $('.bonus-items').removeClass('highlight');
+
+   // Добавляем класс highlight только выбранному элементу
+   if ($maxCostElement) {
+      $maxCostElement.addClass('highlight');
+   }
+}
+
+// Функция активации радио-кнопки платежной системы
+function activateRadio(name) {
+   $('input[name="paysystem"]').prop('checked', false);
+   $('.payment-system').removeClass('selected');
+   $('#' + name).prop('checked', true);
+   $('.selectDonSys[data-name="' + name + '"]').addClass('selected');
+}
 </script>
 {% endblock %}
