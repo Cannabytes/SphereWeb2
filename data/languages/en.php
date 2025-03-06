@@ -1123,7 +1123,7 @@ You can get the CAPTCHA keys here - <a href=\'https://www.google.com/recaptcha/a
 	'hide_player_passwords' => 'Hide player passwords',
 	'hide_private' => '[ Hidden by privacy settings ]',
 	'History of software updates' => 'History of software updates',
-	'homepage_link' => 'Link to the homepage',
+	'homepage_link' => 'Link to homepage (Return to site)',
 	'hours' => 'часов',
 	'How to describe the problem correctly?' => 'How to describe the problem correctly?',
 	'how_does_it_work' => 'How does it work?',
@@ -1928,5 +1928,6 @@ Password: %%password%%',
     'LOG_WINROW_WIN_DESC' => 'Raffle games',
     'LOG_DONATE_BONUS_SUCCESS_DESC' => 'Donation bonuses',
     "LOG_DONATE_BONUS_SUCCESS" => "The user received a bonus for the donation +%f",
+    "logolink" => "Link when clicking on the logo",
 
 ];

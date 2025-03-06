@@ -1093,7 +1093,7 @@ return [
     'hide_player_passwords' => 'Απόκρυψη κωδικών παικτών',
     'hide_private' => '[ Κρυφό με τις ρυθμίσεις απορρήτου ]',
     'History of software updates' => 'Ιστορικό ενημερώσεων λογισμικού',
-    'homepage_link' => 'Σύνδεσμος αρχικής σελίδας',
+    'homepage_link' => 'Σύνδεσμος προς την αρχική σελίδα (Επιστροφή στον ιστότοπο)',
     'hours' => 'ώρες',
     'How to describe the problem correctly?' => 'Πώς να περιγράψετε σωστά το πρόβλημα;',
     'how_does_it_work' => 'Πώς λειτουργεί;',
@@ -1908,5 +1908,6 @@ Password: %%password%%',
     'LOG_WINROW_WIN_DESC' => 'Κληρώσεις',
     'LOG_DONATE_BONUS_SUCCESS_DESC' => 'Μπόνους για δωρεά',
     "LOG_DONATE_BONUS_SUCCESS" => "Ο χρήστης έλαβε μπόνους για τη δωρεά +%f",
+    "logolink" => "Σύνδεσμος κατά το κλικ στο λογότυπο",
 
 ];

@@ -1109,7 +1109,7 @@ Você pode sempre escrever para o <a class=\'text-info\' href=\'https://t.me/shp
     'hide_player_passwords' => 'Ocultar senhas dos jogadores',
     'hide_private' => '[ Oculto pelas configurações de privacidade ]',
     'History of software updates' => 'Histórico de atualizações do software',
-    'homepage_link' => 'Link para a página inicial',
+    'homepage_link' => 'Link para a página inicial (Voltar ao site)',
     'hours' => 'horas',
     'How to describe the problem correctly?' => 'Como descrever o problema corretamente?',
     'how_does_it_work' => 'Como funciona?',
@@ -1924,4 +1924,6 @@ Password: %%password%%',
     'LOG_WINROW_WIN_DESC' => 'Jogos de sorteio',
     'LOG_DONATE_BONUS_SUCCESS_DESC' => 'Bônus por doações',
     "LOG_DONATE_BONUS_SUCCESS" => "O usuário recebeu um bônus pela doação +%f",
+    "logolink" => "Link ao clicar no logotipo",
+
 ];

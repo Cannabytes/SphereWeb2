@@ -37,7 +37,7 @@
     </div>
 
     <div class="lang__list" data-lang-list="">
-    {% for lang in getAllowLang(false) %}
+    {% for lang in getAllowLang() %}
         <a href="/user/change/lang/{{lang.lang }}" class="lang__link lang__link_sub">
             <img class="lang__img" src="{{template}}/images/lang/lang__{{lang.lang }}.png" alt="{{lang.name}}" />
             <span class="lang__name">{{lang.lang }}</span>

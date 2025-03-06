@@ -35,6 +35,8 @@ class other
 
     private string $keywords = "";
 
+    private string $linkLogo = "/main";
+
     private string $linkMainPage = "/";
 
     private int $maxAccount = 10;
@@ -59,6 +61,7 @@ class other
         $this->timezone = $setting['timezone'] ?? $this->timezone;
         $this->messageTechnicalWork = $setting['messageTechnicalWork'] ?? $this->messageTechnicalWork;
         $this->keywords = $setting['keywords'] ?? $this->keywords;
+        $this->linkLogo = $setting['linkLogo'] ?? $this->linkLogo;
         $this->linkMainPage = $setting['linkMainPage'] ?? $this->linkMainPage;
         $this->maxAccount = (int)(is_array($setting) ? ($setting['max_account'] ?? $this->maxAccount) : $this->maxAccount);
         $this->contactAdmin = $setting['contactAdmin'] ?? $this->contactAdmin;
@@ -74,6 +77,11 @@ class other
     public function setAutoUpdate(bool $autoUpdate): void
     {
         $this->autoUpdate = $autoUpdate;
+    }
+
+    public function getLinkLogo(): string
+    {
+        return $this->linkLogo;
     }
 
     public function getLinkMainPage(): string

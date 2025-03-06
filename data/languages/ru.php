@@ -1131,7 +1131,7 @@ return [
 	'hide_player_passwords' => 'Скрывать пароли игроков',
 	'hide_private' => '[ Скрыто настройками приватности ]',
 	'History of software updates' => 'История обновлений ПО',
-	'homepage_link' => 'Ссылка на главную страницу',
+	'homepage_link' => 'Ссылка на главную страницу (Вернуться на сайт)',
 	'hours' => 'hours',
 	'How to describe the problem correctly?' => 'Как описать проблему правильно?',
 	'how_does_it_work' => 'Как это работает?',
@@ -1952,6 +1952,6 @@ Password: %%password%%',
     'LOG_WINROW_WIN_DESC' => 'Игры в розыгрыш',
     'LOG_DONATE_BONUS_SUCCESS_DESC' => 'Бонусы за донат',
     "LOG_DONATE_BONUS_SUCCESS" => "Пользователь получил бонус за пожертвование +%f",
-
+    "logolink" => "Ссылка при нажатии на логотип",
 
 ];

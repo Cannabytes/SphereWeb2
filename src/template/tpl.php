@@ -408,7 +408,7 @@ class tpl
             return \Ofey\Logan22\controller\config\config::load()->lang()->getLangList();
         }));
 
-        $twig->addFunction(new TwigFunction('getAllowLang', function ($isAll = true) {
+        $twig->addFunction(new TwigFunction('getAllowLang', function ($isAll = false) {
             return \Ofey\Logan22\controller\config\config::load()->lang()->getAllowLang($isAll);
         }));
 
@@ -426,7 +426,7 @@ class tpl
 
         //Вывести язык который сейчас включен
         $twig->addFunction(new TwigFunction('lang_active', function ($isActive = true) {
-            $langs = \Ofey\Logan22\controller\config\config::load()->lang()->getLangList();
+            $langs = \Ofey\Logan22\controller\config\config::load()->lang()->getAllowLang();
             if ($isActive) {
                 foreach ($langs as $lang) {
                     if ($lang->getIsActive()) {
@@ -442,7 +442,6 @@ class tpl
                     }
                 }
             }
-
             return $langs;
         }));
 

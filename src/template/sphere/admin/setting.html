@@ -1047,6 +1047,17 @@
                                 <li class="list-group-item">
                                     <div class="row gx-5 gy-3">
                                         <div class="col-xl-12">
+                                            <p class="fs-14 mb-1 fw-semibold">{{phrase('logolink')}} </p>
+                                            <input value="{{ config().other().getLinkLogo() }}" type="text"
+                                                   class="form-control"
+                                                   id="linkLogo" placeholder="/">
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <div class="row gx-5 gy-3">
+                                        <div class="col-xl-12">
                                             <p class="fs-14 mb-1 fw-semibold">{{phrase('homepage_link')}}</p>
                                             <input value="{{ config().other().getLinkMainPage() }}" type="text"
                                                    class="form-control"

@@ -1114,7 +1114,7 @@ Siempre puedes escribir en el <a class=\'text-info\' href=\'https://t.me/shperew
     'hide_player_passwords' => 'Ocultar contraseñas de los jugadores',
     'hide_private' => '[ Oculto por configuración de privacidad ]',
     'History of software updates' => 'Historial de actualizaciones de software',
-    'homepage_link' => 'Enlace a la página de inicio',
+    'homepage_link' => 'Enlace a la página principal (Volver al sitio)',
     'hours' => 'horas',
     'How to describe the problem correctly?' => '¿Cómo describir correctamente el problema?',
     'how_does_it_work' => '¿Cómo funciona?',
@@ -1920,4 +1920,6 @@ Contraseña: %%password%%',
     'LOG_WINROW_WIN_DESC' => 'Juegos de sorteo',
     'LOG_DONATE_BONUS_SUCCESS_DESC' => 'Bonificaciones por donaciones',
     "LOG_DONATE_BONUS_SUCCESS" => "El usuario recibió una bonificación por la donación +%f",
+    "logolink" => "Enlace al hacer clic en el logotipo",
+
 ];
