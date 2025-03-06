@@ -854,7 +854,6 @@ class userModel
             'forced' => $need_reload,
             'email' => $this->getEmail(),
         ])->show(false)->getResponse();
-
         if (isset($sphere['error']) || !$sphere) {
             $this->accounts = [];
             $_SESSION['accounts_last_update_time'][$this->getServerId()] = $currentTime;
@@ -997,7 +996,7 @@ class userModel
 
 
         $sql = 'INSERT INTO `player_accounts` (`login`, `password`, `email`, `server_id`, `characters`, `date_update_characters`, `password_hide`) VALUES (?, ?, ?, ?, ?, ?, ?);';
-        foreach ($this->account as $account) {
+        foreach ($this->accounts as $account) {
             //Удаление старых записей
             sql::run($sql, [
                 $account->getAccount(),
