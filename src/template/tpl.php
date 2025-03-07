@@ -454,6 +454,20 @@ class tpl
             return 'TODO: description_start_page';
         }));
 
+        $twig->addFunction(new TwigFunction('rename_donate_paysystem', function ($name = null) {
+            if ($name === null) {
+                return '';
+            }
+
+            $replacements = [
+                'betatransfer' => 'BetaTransfer',
+                'cryptocloud' => 'CryptoCloud',
+                'freekassa' => 'FreeKassa',
+            ];
+
+            return $replacements[$name] ?? $name;
+        }));
+
         $twig->addFunction(new TwigFunction('keywords_start_page', function () {
             return \Ofey\Logan22\controller\config\config::load()->other()->getKeywords();
         }));
