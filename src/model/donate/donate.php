@@ -65,7 +65,7 @@ class donate
      * Проверяем существование индефикатора и сохраняем его.
      * Если индификатор уже был в системе, тогда останавливаем зачисление.
      */
-    public static function control_uuid($uuid = null, string $pay_system_name = 'NoNamePaySystem'): void
+    public static function control_uuid($uuid = null, string $pay_system_name = 'NoNamePaySystem', $request = null): void
     {
         if ($uuid === null) {
             return;
@@ -73,7 +73,7 @@ class donate
         if (self::get_uuid($uuid, $pay_system_name)) {
             die('This UUID was previously determined');
         }
-        self::set_uuid($uuid, $pay_system_name);
+        self::set_uuid($uuid, $pay_system_name, $request);
     }
 
     /**
@@ -104,11 +104,12 @@ class donate
      * Это создано с целью безопастности, на тот случай, если платежная система НЕ предоставляет данных
      * о своих IP и не имеет криптографических ключей для проверки подлинности транзакции
      */
-    public static function set_uuid($uuid, $pay_system_name): false|PDOStatement|null
+    public static function set_uuid($uuid, $pay_system_name, $request = null): false|PDOStatement|null
     {
-        $request = '';
-        if (isset($_REQUEST) && !empty($_REQUEST)) {
-            $request = json_encode($_REQUEST, JSON_UNESCAPED_UNICODE);
+        if ($request == null) {
+            if (!empty($_REQUEST)) {
+                $request = json_encode($_REQUEST, JSON_UNESCAPED_UNICODE);
+            }
         }
 
         return sql::sql(
