@@ -78,7 +78,7 @@ class config
 
         if($configName=='__config_notice__'){
             if(!empty($_POST['telegramTokenApi']) and !empty($_POST['telegramChatID'])){
-                $chatId = \Ofey\Logan22\controller\admin\telegram::getChatID($_POST['telegramTokenApi']);
+                $chatId = \Ofey\Logan22\controller\admin\telegram::getChatID($_POST['telegramChatID']);
                 if($chatId != ""){
                     $_POST['telegramChatID'] = $chatId;
                 }
