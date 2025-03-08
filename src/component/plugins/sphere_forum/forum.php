@@ -1820,7 +1820,7 @@ class forum
      * Удаление темы и связанных данных
      */
     private function deleteThreadAndRelated(forum_thread $thread): void {
-
+        // Удаление опроса и связанных с ним данных
         if ($thread->getPollId()) {
             // Удаляем голоса
             sql::run(
@@ -1841,6 +1841,7 @@ class forum
             );
         }
 
+        // Получаем контент постов для извлечения изображений
         $posts = sql::getRows(
             "SELECT content FROM forum_posts WHERE thread_id = ?",
             [$thread->getId()]
@@ -1851,16 +1852,16 @@ class forum
         foreach ($posts as $post) {
             $useInternalErrors = libxml_use_internal_errors(true);
             $dom = new \DOMDocument();
-            $dom->loadHTML(mb_convert_encoding($post['content'], 'HTML-ENTITIES', 'UTF-8'),
-                LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
-            );
+
+            $content = htmlspecialchars_decode($post['content']);
+            $dom->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             libxml_use_internal_errors($useInternalErrors);
 
             $images = $dom->getElementsByTagName('img');
 
             foreach ($images as $img) {
                 $src = $img->getAttribute('src');
-                if (strpos($src, '/uploads/forum/') === 0) {
+                if (str_starts_with($src, '/uploads/forum/')) {
                     if (preg_match('/\/uploads\/forum\/(\d+)(?:_thumb)?\.png/i', $src, $match)) {
                         $filesToDelete[] = $match[1] . '.png';
                     }
@@ -1871,8 +1872,8 @@ class forum
         // Получаем неприкрепленные файлы
         $unattachedFiles = sql::getRows(
             "SELECT filename FROM forum_attachments 
-         WHERE (post_id IS NULL AND user_id = ?) OR 
-               (post_id IN (SELECT id FROM forum_posts WHERE thread_id = ?))",
+        WHERE (post_id IS NULL AND user_id = ?) OR 
+              (post_id IN (SELECT id FROM forum_posts WHERE thread_id = ?))",
             [user::self()->getId(), $thread->getId()]
         );
 
@@ -1898,41 +1899,54 @@ class forum
 
         // Удаляем записи из БД, используя полные имена файлов
         if (!empty($filesToDelete)) {
-            $placeholders = str_repeat('?,', count($filesToDelete) - 1) . '?';
+            $placeholders = implode(',', array_fill(0, count($filesToDelete), '?'));
             sql::run(
-                "DELETE FROM forum_attachments 
-             WHERE filename IN ($placeholders)",
+                "DELETE FROM forum_attachments WHERE filename IN ($placeholders)",
                 $filesToDelete
             );
         }
 
-        // Удаляем отслеживания тем
-        sql::run("DELETE FROM forum_user_thread_tracks WHERE thread_id = ?",
-            [$thread->getId()]
-        );
+        // Транзакционное удаление связанных данных
+        try {
+            sql::beginTransaction();
 
-        // Удаляем уведомления
-        sql::run("DELETE FROM forum_notifications WHERE thread_id = ?",
-            [$thread->getId()]
-        );
+            // Удаляем отслеживания тем
+            sql::run(
+                "DELETE FROM forum_user_thread_tracks WHERE thread_id = ?",
+                [$thread->getId()]
+            );
 
-        // Удаляем лайки постов
-        sql::run(
-            "DELETE fl FROM forum_post_likes fl 
-        INNER JOIN forum_posts fp ON fl.post_id = fp.id 
-        WHERE fp.thread_id = ?",
-            [$thread->getId()]
-        );
+            // Удаляем уведомления
+            sql::run(
+                "DELETE FROM forum_notifications WHERE thread_id = ?",
+                [$thread->getId()]
+            );
 
-        // Удаляем посты темы
-        sql::run("DELETE FROM forum_posts WHERE thread_id = ?",
-            [$thread->getId()]
-        );
+            // Удаляем лайки постов - оптимизированный запрос
+            sql::run(
+                "DELETE fl FROM forum_post_likes fl 
+            INNER JOIN forum_posts fp ON fl.post_id = fp.id 
+            WHERE fp.thread_id = ?",
+                [$thread->getId()]
+            );
 
-        // Удаляем саму тему
-        sql::run("DELETE FROM forum_threads WHERE id = ?",
-            [$thread->getId()]
-        );
+            // Удаляем посты темы
+            sql::run(
+                "DELETE FROM forum_posts WHERE thread_id = ?",
+                [$thread->getId()]
+            );
+
+            // Удаляем саму тему
+            sql::run(
+                "DELETE FROM forum_threads WHERE id = ?",
+                [$thread->getId()]
+            );
+
+            sql::commit();
+        } catch (\Exception $e) {
+            sql::rollBack();
+            throw $e;
+        }
     }
 
     /**

@@ -36,39 +36,44 @@ class referral
         }
         $_SESSION['cooldown_referral_bonus'] = time();
 
-        $playersList     = \Ofey\Logan22\model\referral\referral::player_list();
+        $playersList = \Ofey\Logan22\model\referral\referral::player_list();
         $hasRequirements = array_filter($playersList, function ($entry) {
             return isset($entry['is_requirements']) && $entry['is_requirements'] === true;
         });
-        $countBonus      = 0;
-        $playerNames     = [];
-        if ((bool)$hasRequirements) {
+        $countBonus = 0;
+        $playerNames = [];
+
+        if (!empty($hasRequirements)) {
             $bonusDonateCoin = config::load()->referral()->getBonusAmount();
+
             foreach ($hasRequirements as $referral) {
                 $slaveUser = user::getUserId($referral['id']);
 
                 //Отметим что данный реферальный квест был выполнен
                 \Ofey\Logan22\model\referral\referral::done($slaveUser->getId(), user::self()->getId());
-                $countBonus    += $bonusDonateCoin;
+                $countBonus += $bonusDonateCoin;
                 $playerNames[] = $referral['name'];
                 user::self()->donateAdd($bonusDonateCoin);
 
                 $leaderDonateItems = config::load()->referral()->getLeaderBonusItems();
-                foreach ($leaderDonateItems as $item) {
-                    $item_id = $item->getItemId();
-                    $count   = $item->getCount() ?? 1;
-                    $enchant = $item->getEnchant() ?? 0;
-                    user::self()->addToWarehouse(user::self()->getServerId(), $item_id, $count, $enchant, "add_item_donate_bonus_referral_master");
+                if (!empty($leaderDonateItems)) {
+                    foreach ($leaderDonateItems as $item) {
+                        $item_id = $item->getItemId();
+                        $count = $item->getCount() ?? 1;
+                        $enchant = $item->getEnchant() ?? 0;
+                        user::self()->addToWarehouse(user::self()->getServerId(), $item_id, $count, $enchant, "add_item_donate_bonus_referral_master");
+                    }
                 }
 
                 $slaveDonateItems = config::load()->referral()->getSlaveBonusItems();
-                foreach ($slaveDonateItems as $item) {
-                    $item_id = (int)$item->getItemId();
-                    $count   = (int)$item->getCount() ?? 1;
-                    $enchant = (int)$item->getEnchant() ?? 0;
-                    $slaveUser->addToWarehouse(user::self()->getServerId(), $item_id, $count, $enchant, "add_item_donate_bonus_referral_slave");
+                if (!empty($slaveDonateItems)) {
+                    foreach ($slaveDonateItems as $item) {
+                        $item_id = (int)$item->getItemId();
+                        $count = (int)$item->getCount() ?? 1;
+                        $enchant = (int)$item->getEnchant() ?? 0;
+                        $slaveUser->addToWarehouse(user::self()->getServerId(), $item_id, $count, $enchant, "add_item_donate_bonus_referral_slave");
+                    }
                 }
-
             }
 
             // Массив с именами игроков в строку, разделенной запятой
@@ -76,8 +81,8 @@ class referral
             $getProcentDonateBonus = config::load()->referral()->getProcentDonateBonus();
 
             board::alert([
-              "success" => true,
-              "message" => "Вы получили <span class='text-success'>+{$countBonus}</span> коинов за рефералов и будете получать <span class='text-success'>{$getProcentDonateBonus}%</span> за пожертвование пользователя: {$playerNames}. Все бонусы отправлены Вам на склад.",
+                "success" => true,
+                "message" => "Вы получили <span class='text-success'>+{$countBonus}</span> коинов за рефералов и будете получать <span class='text-success'>{$getProcentDonateBonus}%</span> за пожертвование пользователя: {$playerNames}. Все бонусы отправлены Вам на склад.",
             ]);
         } else {
             error::show("Вы не можете получить бонусы за рефералов, не выполнены требуемые условия");
