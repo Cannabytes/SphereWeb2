@@ -1186,27 +1186,6 @@ Você pode sempre escrever para o <a class=\'text-info\' href=\'https://t.me/shp
 	'Launcher Launcher Panel' => 'Painel do lançador',
 	'launcher_data' => 'Dados do lançador',
 	'launcher_download' => 'Baixar lançador',
-	'launcher_full_desc' => 'O Sphere Launcher é a melhor e mais avançada solução para download de arquivos. Ele fornece aos
-usuários a capacidade única de fazer download de múltiplos arquivos simultaneamente, o que economiza
-tempo e aumenta a produtividade.
-<br>
-Principais vantagens:<br>
-<br>
-Alta velocidade e desempenho: O lançador foi desenvolvido utilizando as melhores práticas de Go, garantindo
-processamento rápido de dados e otimização mesmo com grandes volumes de arquivos.<br>
-Download simultâneo: Graças ao processamento paralelo, o lançador pode fazer o download de vários
-arquivos ao mesmo tempo, tornando-se indispensável para usuários que trabalham com grandes volumes de
-dados.<br>
-Segurança e confiabilidade: Mecanismos internos do Go garantem a proteção de dados e a estabilidade
-do lançador, minimizando erros e falhas.<br>
-Escalabilidade: O lançador se adapta facilmente a qualquer tarefa, seja para download de pequenos arquivos ou
-grandes volumes de dados, sempre oferecendo desempenho estável.<br>
-Facilidade de uso: A interface simples e intuitiva torna o uso do lançador acessível até para iniciantes, com
-funções integradas que facilitam a configuração e o gerenciamento dos downloads.<br>
-Cache de arquivos baixados novamente pelo usuário.
-<br>
-Experimente o nosso lançador e aproveite todos os benefícios de uma ferramenta rápida e confiável, criada
-com as mais modernas tecnologias!<br>',
 	'launcher_info' => 'Baixe o lançador e não será necessário ter um lançador separado para cada servidor.',
 	'launcher_info_2' => 'Se você já baixou o lançador, basta executá-lo.',
 	'launcher_note' => 'Nota sobre o lançador',

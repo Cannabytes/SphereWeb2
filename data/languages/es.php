@@ -1192,18 +1192,6 @@ otras etiquetas para mostrar texto. Puedes
     'Launcher Launcher Panel' => 'Panel de lanzamiento del lanzador',
     'launcher_data' => 'Datos del lanzador',
     'launcher_download' => 'Descargar lanzador',
-    'launcher_full_desc' => 'Sphere Launcher es la mejor y más avanzada solución para la descarga de archivos. El lanzador ofrece a los usuarios la capacidad única de descargar múltiples archivos simultáneamente, lo que ahorra tiempo y mejora la productividad.
-<br>
-Principales ventajas:<br>
-<br>
-Alta velocidad y rendimiento: El lanzador está diseñado con las mejores prácticas de Go, lo que garantiza un procesamiento rápido de datos y un funcionamiento óptimo incluso con grandes volúmenes de archivos.<br>
-Descarga simultánea: Gracias al procesamiento paralelo de tareas, el lanzador puede descargar múltiples archivos al mismo tiempo, lo que lo convierte en una herramienta indispensable para usuarios que trabajan con grandes volúmenes de datos.<br>
-Seguridad y confiabilidad: Los mecanismos integrados de Go garantizan la protección de datos y la estabilidad del lanzador, minimizando la posibilidad de errores y fallos.<br>
-Escalabilidad: El lanzador se adapta fácilmente a cualquier tarea, ya sea la descarga de archivos pequeños o el trabajo con grandes volúmenes de datos, asegurando un rendimiento estable en cualquier situación.<br>
-Facilidad de uso: Una interfaz clara y sencilla hace que el lanzador sea accesible incluso para usuarios principiantes, y las funciones integradas facilitan la configuración y gestión de descargas.<br>
-Almacenamiento en caché de archivos re-descargados por el usuario.
-<br>
-¡Prueba nuestro lanzador y experimenta todas las ventajas de una herramienta rápida y confiable, creada con las tecnologías más modernas!<br>',
     'launcher_info' => 'Descarga el lanzador y no tendrás que tener un lanzador para cada servidor.',
     'launcher_info_2' => 'Si ya descargaste el lanzador, simplemente ejecútalo.',
     'launcher_note' => 'Nota sobre el lanzador',

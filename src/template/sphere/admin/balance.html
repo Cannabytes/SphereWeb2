@@ -8,7 +8,21 @@
 
     <div class="row">
 
-        <div class="col-xl-3">
+        <div class="col-xl-1">
+            <div class="card custom-card  text-fixed-white">
+                <div class="card-body p-0">
+                    <div class="d-flex align-items-top p-4 flex-wrap">
+                        <a href="/admin" class="avatar border text-muted me-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                               fill="currentColor"><path
+                                d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2">
             <div class="card custom-card  text-fixed-white">
                 <div class="card-body p-0">
                     <div class="d-flex align-items-top p-4 flex-wrap">
@@ -43,25 +57,6 @@
                                 <div class="flex-fill">
                                     <h5 class="fw-semibold mb-1 sphereBalance">${{balance}}</h5>
                                     <p class="text-muted mb-0 fs-12">{{ phrase('on account') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-4 border-end border-inline-end-dashed">
-                            <div class="d-flex flex-wrap align-items-top p-4">
-                                <div class="me-3 lh-1">
-                                                <span class="avatar avatar-md avatar-rounded bg-secondary shadow-sm">
-                                                    <i class="ti ti-rocket fs-18"></i>
-                                                </span>
-                                </div>
-                                <div class="flex-fill">
-                                    <h5 class="fw-semibold mb-1">{{ phrase('menu_launcher') }}</h5>
-                                    {% if launcher.isActive %}
-                                    <p class="text-muted mb-0 fs-12">{{ phrase('activated until') }} <span
-                                          class="launcherDate">{{launcher.dateTimeout|date('d.m.Y H:i', getUser().getTimezone())}}</span>
-                                    </p>
-                                    {% else %}
-                                    <p class="text-muted mb-0 fs-12">{{ phrase('not_active') }}</p>
-                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -104,7 +99,7 @@
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
-                                    <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
+                                    <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
                                     <span>{{ phrase('game_updater_program')|raw }}</span>
                                 </li>
 
@@ -172,7 +167,7 @@
                                 </li>
 
                                 <li class="d-flex align-items-center mb-3">
-                                    <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
+                                    <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
                                     <span>{{phrase('game_updater_program')|raw}}</span>
                                 </li>
 
@@ -342,7 +337,7 @@
     <!-- Start::row-1 -->
     <div class="row">
 
-        <div class="col-xl-6">
+        <div class="col-xl-4">
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="d-flex align-items-center w-100">
@@ -390,67 +385,7 @@
             </div>
         </div>
 
-        <div class="col-xl-6">
-            <div class="card custom-card">
-                <div class="card-header justify-content-between">
-                    <div class="d-flex align-items-center w-100">
-                        <div class="card-title">
-                            <div class="fs-15 fw-semibold">Sphere Launcher</div>
-                        </div>
-                        <div class="ms-auto prism-toggle">
-                            {% if launcher.isActive %}
-                            <span class="text-success">{{launcher.dateTimeout|date('d.m.Y H:i', getUser().getTimezone())}}</span>
-                            {% else %}
-                            <span class="text-danger">{{ phrase('not_active') }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-
-                    <button aria-controls="collapseWidthExample" aria-expanded="false" class="btn btn-primary"
-                            data-bs-target="#collapseWidthExample" data-bs-toggle="collapse"
-                            type="button">
-                        {{ phrase('description of Sphere Launcher') }}
-                    </button>
-                    <div class="collapse collapse-horizontal" id="collapseWidthExample">
-                        <div class="fs-14 text-muted">
-                            {{ phrase('launcher_full_desc')|raw }}
-                        </div>
-                    </div>
-
-                    <ul class="list-unstyled order-details-list">
-
-                        <li>
-                            <div class="fs-14 text-muted">
-                                <a href="/admin/launcher">{{ phrase('go to launcher settings') }}</a>
-                            </div>
-                        </li>
-
-                    </ul>
-
-                    <span class="my-auto  text-muted fw-semibold">
-                                            <select class="form-control " id="launcherMonth" name="launcherMonth">
-                                                  <option value="1">1 {{ phrase('month') }} / $5 </option>
-                                                  <option value="2">2 {{ phrase('months') }} / $9 </option>
-                                                  <option value="3">3 {{ phrase('months') }} / $13 </option>
-                                                  <option value="6">6 {{ phrase('months') }} / $25 </option>
-                                                  <option value="12">12 {{ phrase('months') }} / 45$</option>
-                                              </select>
-                                        </span>
-
-                </div>
-                <div class="card-footer">
-                    <div class="d-flex justify-content-between">
-                        <button class="btn btn-success" id="updateTime" type="button">{{ phrase('extend Launcher') }}
-                        </button>
-                    </div>
-                </div>
-                <div id="successPayLauncher"></div>
-            </div>
-        </div>
-
-        <div class="col-xl-6">
+        <div class="col-xl-4">
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="d-flex align-items-center w-100">
@@ -501,7 +436,7 @@
             </div>
         </div>
 
-        <div class="col-xl-6">
+        <div class="col-xl-4">
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="d-flex align-items-center w-100">
@@ -728,31 +663,6 @@
         // Инициализация подсчета суммы при загрузке страницы
         calculateTotal();
     });
-</script>
-
-
-<script>
-
-    $("#updateTime").on("click", function () {
-        $('#updateTime').prop('disabled', true);
-        AjaxSend("/admin/launcher/update/time", "POST", {
-            month: $("#launcherMonth").val()
-        }, true).then(function (response) {
-            $('#updateTime').prop('disabled', false);
-            responseAnalysis(response);
-            if (response.date) {
-                $(".sphereBalance").text("$" + response.balance)
-                $(".launcherDate").text(response.date)
-                $("#successPayLauncher").html("                        <div class=\"alert alert-success d-flex align-items-center rounded-0 shadow-none\" role=\"alert\">\n" +
-                      "                            <svg class=\"flex-shrink-0 me-2 svg-success\" xmlns=\"http://www.w3.org/2000/svg\" height=\"1.5rem\" viewBox=\"0 0 24 24\" width=\"1.5rem\" fill=\"#000000\"><path d=\"M0 0h24v24H0V0zm0 0h24v24H0V0z\" fill=\"none\"></path><path d=\"M16.59 7.58L10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"></path></svg>\n" +
-                      "                            <div>\n" +
-                      "                                <strong>{{ phrase('You have successfully extended the use of the launcher') }} " + response.date + " \n" +
-                      "                            </div>\n" +
-                      "                        </div>")
-            }
-        })
-    })
-
 </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>

@@ -1199,24 +1199,6 @@ You can get the CAPTCHA keys here - <a href=\'https://www.google.com/recaptcha/a
 	'Launcher Launcher Panel' => 'Launcher Launcher Panel',
 	'launcher_data' => 'Launcher data',
 	'launcher_download' => 'Download Launcher',
-	'launcher_full_desc' => 'Sphere Launcher is the best and most advanced solution for file downloading. Launcher provides users with a unique ability to download multiple files at once, which significantly saves time and increases productivity. <br>
-Main advantages:<br>
-<br>
-High speed and performance: The launcher is designed taking into account all the best Go practices, which
-ensures lightning-fast data processing and optimal work even with a large number of
-files.<br>
-Simultaneous download: Thanks to parallel processing of tasks, the launcher can download many
-files at the same time, which makes it an indispensable tool for users working with a large
-volume of data.<br>
-Security and reliability: Built-in Go language mechanisms guarantee data protection and stability of
-the launcher, minimizing the likelihood of errors and failures.<br>
-Scalability: The launcher easily adapts to any task, whether it is downloading small files or
-working with large amounts of data, ensuring stable performance in any situation.<br>
-Ease of use: A laconic and clear interface makes working with the launcher accessible even for novice
-users, and built-in functions make it easier to set up and manage downloads.<br>
-Caching of re-downloaded files by the user.
-<br>
-Try our launcher and experience all the benefits of a fast and reliable tool created on the basis of the most modern technologies!<br>',
 	'launcher_info' => 'Download the launcher and you no longer have to have a launcher for each server.',
 	'launcher_info_2' => 'If you previously downloaded the launcher, then simply launch it.',
 	'launcher_note' => 'Launcher note',
