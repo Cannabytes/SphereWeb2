@@ -64,7 +64,7 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
             'fail_url' => \Ofey\Logan22\component\request\url::host("/donate/pay"),
         ];
 
-        $ch = curl_init('https://paypalych.com/api/v1/bill/create');
+        $ch = curl_init('https://pal24.pro/api/v1/bill/create');
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
 
