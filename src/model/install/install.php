@@ -34,21 +34,13 @@ const CHARSET = 'utf8';
 
         // Проверяем успешность записи
         if ($result === false) {
-            echo json_encode([
-              "type"    => "error",
-              "ok"      => false,
-              "message" => "Failed to save configuration to {$filePath}",
-            ]);
+            board::error("Failed to save configuration to {$filePath}");
             exit();
         }
 
         // Проверяем, что размер записанного файла соответствует ожидаемому
         if (filesize($filePath) !== strlen($phpText)) {
-            echo json_encode([
-              "type"    => "error",
-              "ok"      => false,
-              "message" => "Failed to save configuration to {$filePath}",
-            ]);
+            board::error("Failed to save configuration to {$filePath}");
             exit();
         }
     }

@@ -15,7 +15,7 @@ use PDOException;
 class items_increase
 {
 
-    public function show(int $serverId = null)
+    public function show(?int $serverId = null)
     {
         validation::user_protection("admin");
         if ($serverId == null) {

@@ -20,7 +20,7 @@ class board
     private static ?bool $reload = null;
     private static bool $reloadIsNow = false;
 
-    public static function success(string $message = null, int $flags = 0, bool $next = false): self
+    public static function success(?string $message = null, int $flags = 0, bool $next = false): self
     {
         return self::notice(true, $message, $flags, $next);
     }
@@ -28,7 +28,7 @@ class board
     /**
      * Использовать для аякс уведомлений, когда нужно вернуть результат и сообщение
      */
-    public static function notice(bool $ok = true, string $message = null, int $flags = 0, bool $next = false): self
+    public static function notice(bool $ok = true, ?string $message = null, int $flags = 0, bool $next = false): self
     {
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
             $data = [
@@ -76,7 +76,7 @@ class board
         }
     }
 
-    public static function error(string $message = null, int $flags = 0, bool $next = false): self
+    public static function error(?string $message = null, int $flags = 0, bool $next = false): self
     {
         return self::notice(false, $message, $flags, $next);
     }

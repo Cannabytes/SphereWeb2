@@ -6,8 +6,6 @@
 
 <div class="container-fluid">
 
-
-    <!-- Start::row-1 -->
     <div class="row">
         <div class="col-xxl-3">
 
@@ -103,17 +101,6 @@
                                         <th scope="row">Sphere Web</th>
                                         <td><span class="text-{% if licenseActive %}success{% else %}danger{% endif %}">{% if licenseActive == false %}<i
                                                 class="bi bi-x-circle"></i> {% endif %}{{ license|date('d.m.Y H:i', getUser().getTimezone()) }}</span>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <th scope="row">Sphere Launcher</th>
-                                        <td>
-                                            {% if launcher.dateTimeout == false %}
-                                            <span class="text-danger">{{ phrase('not_active') }}</span>
-                                            {% else %}
-                                            <span class="text-success">{{launcher.dateTimeout|date('d.m.Y H:i', getUser().getTimezone())}}</span>
-                                            {% endif %}
                                         </td>
                                     </tr>
 
