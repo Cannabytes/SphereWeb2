@@ -170,7 +170,6 @@ enum type
             self::GET_COMMIT_FILES => '/api/github/commit/files',
 
             self::LAUNCHER_CREATE_TOKEN => '/api/launcher/create/token',
-            self::LAUNCHER_UPDATE_TIME => '/api/launcher/update/time',
 
             self::SPHERE_DONATE => "/api/donate",
             self::DONATE_STATISTIC => "/api/statistic/server/donate",
