@@ -68,15 +68,4 @@ class launcher
         }
     }
 
-    public static function updateTime(): void
-    {
-        $month        = $_POST['month'] ?? board::error("Не указано на сколько месяцев");
-        $data         = \Ofey\Logan22\component\sphere\server::send(type::LAUNCHER_UPDATE_TIME, [
-          'month' => (int)$month,
-        ])->show()->getResponse();
-        $data['type'] = 'notice';
-        $data['ok']   = true;
-        echo json_encode($data);
-    }
-
 }

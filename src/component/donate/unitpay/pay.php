@@ -14,11 +14,6 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
     //Включить только для администратора
     protected static bool $forAdmin = false;
 
-    protected static array $description = [
-        "ru" => "Unitpay [Россия, Беларусь]",
-        "en" => "Unitpay [Russia, Belarus]",
-    ];
-
     private string $currency_default = 'RUB';
 
     public static function inputs(): array

@@ -65,7 +65,6 @@ enum type
 
     // Создание токена для лаунчера
     case LAUNCHER_CREATE_TOKEN;
-    case LAUNCHER_UPDATE_TIME;
 
     // Данные для оплаты SphereWeb
     case SPHERE_DONATE;

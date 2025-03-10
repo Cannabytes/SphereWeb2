@@ -1806,21 +1806,7 @@ return array (
     'page' => '',
     'comment' => '',
   ),
-  131 => 
-  array (
-    'enable' => true,
-    'method' => 'POST',
-    'pattern' => '/admin/launcher/update/time',
-    'func' => 'controller\\admin\\launcher::updateTime',
-    'access' => 
-    array (
-      0 => 'admin',
-    ),
-    'weight' => 0,
-    'page' => '',
-    'comment' => '',
-  ),
-  133 => 
+  133 =>
   array (
     'enable' => true,
     'method' => 'POST',
