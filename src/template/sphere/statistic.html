@@ -2,52 +2,408 @@
 
 {% block title %}{{ phrase('menu_statistics') }}{% endblock %}
 
-{% block content %}
+{% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/choices.js/public/assets/styles/choices.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/prismjs/themes/prism-coy.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
 
-<div class="container-fluid">
+<style>
+    :root {
+        --l2-primary: #a32c2c;
+        --l2-secondary: #2c3040;
+        --l2-accent: #d4af37;
+        --l2-dark: #1a1a24;
+    }
+
+    body {
+        position: relative;
+    }
+
+    .l2-stats-container {
+        position: relative;
+        z-index: 10;
+    }
+
+    .parallax-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        opacity: 0.15;
+        z-index: 1;
+    }
+
+    .custom-card {
+        border: 1px solid rgba(113, 128, 147, 0.2);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .custom-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+        border-color: var(--l2-accent);
+    }
+
+    .card-header {
+        border-bottom: 2px solid var(--l2-accent);
+        padding: 1rem;
+    }
+    .card-title i {
+        margin-right: 10px;
+        color: var(--l2-accent);
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        padding: 12px;
+        border-bottom: 2px solid var(--l2-accent);
+    }
+
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+    }
+
+    .table tbody tr th,
+    .table tbody tr td {
+        padding: 12px;
+        vertical-align: middle;
+    }
+
+    .avatar {
+        position: relative;
+        width: 32px;
+        height: 32px;
+        overflow: hidden;
+        border-radius: 50%;
+        border: 2px solid var(--l2-secondary);
+    }
+
+    .avatar-rounded {
+        border-radius: 50%;
+    }
+
+    .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar.online::after,
+    .avatar.offline::after {
+        content: '';
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        bottom: 0;
+        right: 0;
+        border: 2px solid var(--l2-secondary);
+    }
+
+    .avatar.online::after {
+        background-color: #10b981;
+    }
+
+    .avatar.offline::after {
+        background-color: #ef4444;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.35em 0.65em;
+        border-radius: 4px;
+    }
+
+    .badge.bg-success-transparent {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+
+    .badge.bg-danger-transparent {
+        background-color: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+
+    .badge.bg-light {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .stats-header {
+        position: relative;
+        padding: 1rem 0;
+        margin-bottom: 1rem;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .stats-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stats-header::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        background: linear-gradient(to right, transparent, var(--l2-accent), transparent);
+    }
+
+    .stats-header p {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .alert-l2 {
+        background: linear-gradient(135deg, #6b1b1b, #8c1e1e);
+        border-left: 4px solid var(--l2-accent);
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .alert-l2 i {
+        font-size: 1.5rem;
+        margin-right: 1rem;
+        color: var(--l2-accent);
+    }
+
+    /* Стили для анимации glow */
+    @keyframes glow {
+        from {
+            box-shadow: 0 0 4px rgba(212, 175, 55, 0.2);
+        }
+        to {
+            box-shadow: 0 0 16px rgba(212, 175, 55, 0.6);
+        }
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--l2-dark);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--l2-primary);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--l2-accent);
+    }
+
+    /* Stats counter animation */
+    .counter-container {
+        display: flex;
+        justify-content: space-around;
+        margin: 1rem 0 2rem;
+    }
+
+    .counter-item {
+        text-align: center;
+        padding: 1rem;
+        background-color: rgba(25, 28, 36, 0.8);
+        border-radius: 0.5rem;
+        border: 1px solid rgba(113, 128, 147, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .counter-item:hover {
+        transform: translateY(-5px);
+        border-color: var(--l2-accent);
+    }
+
+    .counter-icon {
+        font-size: 2rem;
+        color: var(--l2-accent);
+        margin-bottom: 0.5rem;
+    }
+
+    .counter-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .counter-label {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Стиль для всплывающей подсказки с уровнем */
+    .tooltip-level {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .tooltip-level:hover::after {
+        content: "{{phrase(100)}}: " attr(data-level);
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 100%;
+        margin-bottom: 5px;
+        background-color: var(--l2-accent);
+        color: #000;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        animation: fadeIn 0.3s forwards;
+        z-index: 100;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .tooltip-level:hover::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 100%;
+        border-width: 5px;
+        border-style: solid;
+        border-color: var(--l2-accent) transparent transparent transparent;
+        z-index: 100;
+        opacity: 0;
+        animation: fadeIn 0.3s forwards;
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .stats-header h1 {
+            font-size: 2rem;
+        }
+
+        .counter-container {
+            flex-wrap: wrap;
+        }
+
+        .counter-item {
+            width: 45%;
+            margin-bottom: 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .counter-item {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="parallax-bg"></div>
+
+<div class="container-fluid l2-stats-container">
+    <div class="stats-header" data-aos="fade-down">
+        <h1>{{ phrase('menu_statistics') }}</h1>
+        <p>Лучших игроки, кланы и владельцы замков</p>
+    </div>
 
     {% if statusSphereServer() is same as(false) %}
-        <div class="alert alert-danger" role="alert">
-            <strong>Ошибка!</strong> Сервер Sphere недоступен.
+        <div class="alert-l2" data-aos="fade-up">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>Ошибка!</strong> Сервер Sphere недоступен.
+            </div>
         </div>
     {% else %}
 
     <div class="row">
-        <div class="col-xl-6">
+        <div class="col-xl-6" data-aos="fade-right" data-aos-delay="50">
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="card-title">
-                        {{phrase('top_pvp')}}
+                        <i class="fas fa-crosshairs"></i> {{phrase('top_pvp')}}
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-sm text-nowrap table-bordered">
+                        <table class="table table-sm text-nowrap table-bordered table-hover">
                             <thead>
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">{{phrase('player')}}</th>
-                                <th scope="col">PvP</th>
-                                <th scope="col">PK</th>
+                                <th scope="col"><i class="fas fa-shield-alt"></i> PvP</th>
+                                <th scope="col"><i class="fas fa-skull"></i> PK</th>
                                 <th scope="col">{{phrase(94)}}</th>
                                 <th scope="col">{{phrase(109)}}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for i, player in statistic_get_pvp(0, 10) %}
-                            <tr>
-                                <th scope="row" style="width: 1px;">{{i+1}}</th>
+                            <tr {% if i == 0 %}class="top-player" style="animation: 2s infinite alternate glow;"{% endif %}>
+                                <th scope="row" style="width: 1px;">
+                                    {% if i < 3 %}
+                                        <span class="badge rounded-pill" style="background-color: {% if i == 0 %}#FFD700{% elseif i == 1 %}#C0C0C0{% else %}#CD7F32{% endif %}; color: #000;">
+                                            {{i+1}}
+                                        </span>
+                                    {% else %}
+                                        {{i+1}}
+                                    {% endif %}
+                                </th>
                                 <th>
                                     <div class="d-flex align-items-center">
                                        <span class="avatar avatar-sm me-2 {% if player.online %}online{% else %}offline{% endif %} avatar-rounded">
                                         <img src="{{ template('/assets/images/race/' ~ sex(player.sex) ~ '/' ~ get_class_race(player.class_id)) ~ '.jpg' }}" alt="img">
-                                       </span>{{player.player_name}}
-                                        <span class="badge bg-light text-dark">{{ player.level }}</span>
+                                       </span>
+                                       <span class="tooltip-level" data-level="{{ player.level }}">{{player.player_name}}</span>
                                     </div>
                                 </th>
                                 <td><span class="badge bg-success-transparent">{{player.pvp}}</span></td>
                                 <td><span class="badge bg-danger-transparent">{{player.pk}}</span></td>
-                                <td>{{clan_icon(player)|raw}} {{player.clan_name}}</td>
+                                <td>{{clan_icon(player)|raw}} <span class="clan-name">{{player.clan_name}}</span></td>
                                 <td>{{get_class(player['class_id'])}}</td>
                             </tr>
                             {% endfor %}
@@ -57,41 +413,49 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-6">
+        <div class="col-xl-6" data-aos="fade-left" data-aos-delay="50">
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="card-title">
-                        {{phrase('top_pk')}}
+                        <i class="fas fa-skull-crossbones"></i> {{phrase('top_pk')}}
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-sm text-nowrap table-bordered">
+                        <table class="table table-sm text-nowrap table-bordered table-hover">
                             <thead>
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">{{phrase('player')}}</th>
-                                <th scope="col">PvP</th>
-                                <th scope="col">PK</th>
+                                <th scope="col"><i class="fas fa-shield-alt"></i> PvP</th>
+                                <th scope="col"><i class="fas fa-skull"></i> PK</th>
                                 <th scope="col">{{phrase(94)}}</th>
                                 <th scope="col">{{phrase(109)}}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for i, player in statistic_get_pk(0, 10) %}
-                            <tr>
-                                <th scope="row" style="width: 1px;">{{i+1}}</th>
+                            <tr {% if i == 0 %}class="top-player" style="animation: 2s infinite alternate glow;"{% endif %}>
+                                <th scope="row" style="width: 1px;">
+                                    {% if i < 3 %}
+                                        <span class="badge rounded-pill" style="background-color: {% if i == 0 %}#FFD700{% elseif i == 1 %}#C0C0C0{% else %}#CD7F32{% endif %}; color: #000;">
+                                            {{i+1}}
+                                        </span>
+                                    {% else %}
+                                        {{i+1}}
+                                    {% endif %}
+                                </th>
                                 <th>
                                     <div class="d-flex align-items-center">
                                        <span class="avatar avatar-sm me-2 {% if player.online %}online{% else %}offline{% endif %} avatar-rounded">
                                         <img src="{{ template('/assets/images/race/' ~ sex(player.sex) ~ '/' ~ get_class_race(player.class_id)) ~ '.jpg' }}" alt="img">
-                                       </span>{{player.player_name}}
-                                        <span class="badge bg-light text-dark">{{ player.level }}</span>
+                                       </span>
+                                       <span class="tooltip-level" data-level="{{ player.level }}">{{player.player_name}}</span>
                                     </div>
                                 </th>
                                 <td><span class="badge bg-success-transparent">{{player.pvp}}</span></td>
                                 <td><span class="badge bg-danger-transparent">{{player.pk}}</span></td>
-                                <td>{{clan_icon(player)|raw}} {{player.clan_name}}</td>
+                                <td>{{clan_icon(player)|raw}} <span class="clan-name">{{player.clan_name}}</span></td>
                                 <td>{{get_class(player['class_id'])}}</td>
                             </tr>
                             {% endfor %}
@@ -104,40 +468,47 @@
     </div>
 
     <div class="row">
-        <div class="col-xl-6">
+        <div class="col-xl-6" data-aos="fade-right" data-aos-delay="80">
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="card-title">
-                        {{phrase('top_online')}}
+                        <i class="fas fa-hourglass-half"></i> {{phrase('top_online')}}
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-sm text-nowrap table-bordered">
+                        <table class="table table-sm text-nowrap table-bordered table-hover">
                             <thead>
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">{{phrase('player')}}</th>
-                                <th scope="col">{{phrase(52)}}</th>
+                                <th scope="col"><i class="fas fa-clock"></i> {{phrase(52)}}</th>
                                 <th scope="col">{{phrase(94)}}</th>
                                 <th scope="col">{{phrase(109)}}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for i, player in statistic_players_online_time(0, 10) %}
-                            <tr>
-                                <th scope="row" style="width: 1px;">{{i+1}}</th>
+                            <tr {% if i == 0 %}class="top-player" style="animation: 2s infinite alternate glow;"{% endif %}>
+                                <th scope="row" style="width: 1px;">
+                                    {% if i < 3 %}
+                                        <span class="badge rounded-pill" style="background-color: {% if i == 0 %}#FFD700{% elseif i == 1 %}#C0C0C0{% else %}#CD7F32{% endif %}; color: #000;">
+                                            {{i+1}}
+                                        </span>
+                                    {% else %}
+                                        {{i+1}}
+                                    {% endif %}
+                                </th>
                                 <th>
                                     <div class="d-flex align-items-center">
-                                       <span style="width: 20px;height: 19px" class="avatar me-2 {% if player.online %}online{% else %}offline{% endif %} avatar-rounded ">
+                                       <span class="avatar avatar-sm me-2 {% if player.online %}online{% else %}offline{% endif %} avatar-rounded">
                                         <img src="{{ template('/assets/images/race/' ~ sex(player.sex) ~ '/' ~ get_class_race(player.class_id)) ~ '.jpg' }}" alt="img">
                                        </span>
-                                        {{player.player_name}}
-                                        <span class="badge bg-light text-dark">{{ player.level }}</span>
+                                       <span class="tooltip-level" data-level="{{ player.level }}">{{player.player_name}}</span>
                                     </div>
                                 </th>
-                                <td>{{ timeHasPassed(player.time_in_game, true) }}</td>
-                                <td>{{clan_icon(player)|raw}} {{player.clan_name}}</td>
+                                <td><span class="badge" style="background-color: rgba(79, 70, 229, 0.2); color: #818cf8;">{{ timeHasPassed(player.time_in_game, true) }}</span></td>
+                                <td>{{clan_icon(player)|raw}} <span class="clan-name">{{player.clan_name}}</span></td>
                                 <td>{{get_class(player.class_id)}}</td>
                             </tr>
                             {% endfor %}
@@ -147,40 +518,47 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-6">
+        <div class="col-xl-6" data-aos="fade-left" data-aos-delay="80">
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="card-title">
-                        {{phrase('top_exp')}}
+                        <i class="fas fa-chart-line"></i> {{phrase('top_exp')}}
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-sm text-nowrap table-bordered">
+                        <table class="table table-sm text-nowrap table-bordered table-hover">
                             <thead>
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">{{phrase('player')}}</th>
-                                <th scope="col">{{phrase(52)}}</th>
+                                <th scope="col"><i class="fas fa-clock"></i> {{phrase(52)}}</th>
                                 <th scope="col">{{phrase(94)}}</th>
                                 <th scope="col">{{phrase(109)}}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for i, player in statistic_get_exp(0, 10) %}
-                            <tr>
-                                <th scope="row" style="width: 1px;">{{i+1}}</th>
+                            <tr {% if i == 0 %}class="top-player" style="animation: 2s infinite alternate glow;"{% endif %}>
+                                <th scope="row" style="width: 1px;">
+                                    {% if i < 3 %}
+                                        <span class="badge rounded-pill" style="background-color: {% if i == 0 %}#FFD700{% elseif i == 1 %}#C0C0C0{% else %}#CD7F32{% endif %}; color: #000;">
+                                            {{i+1}}
+                                        </span>
+                                    {% else %}
+                                        {{i+1}}
+                                    {% endif %}
+                                </th>
                                 <th>
                                     <div class="d-flex align-items-center">
-                                       <span style="width: 20px;height: 19px" class="avatar me-2 {% if player.online %}online{% else %}offline{% endif %} avatar-rounded ">
+                                       <span class="avatar avatar-sm me-2 {% if player.online %}online{% else %}offline{% endif %} avatar-rounded">
                                         <img src="{{ template('/assets/images/race/' ~ sex(player.sex) ~ '/' ~ get_class_race(player.class_id)) ~ '.jpg' }}" alt="img">
                                        </span>
-                                        {{player.player_name}}
-                                        <span class="badge bg-light text-dark">{{ player.level }}</span>
+                                       <span class="tooltip-level" data-level="{{ player.level }}">{{player.player_name}}</span>
                                     </div>
                                 </th>
-                                <td>{{ timeHasPassed(player.time_in_game, true) }}</td>
-                                <td>{{clan_icon(player)|raw}} {{player.clan_name}}</td>
+                                <td><span class="badge" style="background-color: rgba(79, 70, 229, 0.2); color: #818cf8;">{{ timeHasPassed(player.time_in_game, true) }}</span></td>
+                                <td>{{clan_icon(player)|raw}} <span class="clan-name">{{player.clan_name}}</span></td>
                                 <td>{{get_class(player.class_id)}}</td>
                             </tr>
                             {% endfor %}
@@ -193,31 +571,39 @@
     </div>
 
     <div class="row">
-        <div class="col-xl-6">
+        <div class="col-xl-6" data-aos="fade-right" data-aos-delay="100">
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="card-title">
-                        {{phrase(126)}}
+                        <i class="fas fa-flag"></i> {{phrase(126)}}
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-sm text-nowrap table-bordered">
+                        <table class="table table-sm text-nowrap table-bordered table-hover">
                             <thead>
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">{{phrase(94)}}</th>
-                                <th scope="col">{{phrase(102)}}</th>
-                                <th scope="col">{{phrase('allies')}}</th>
+                                <th scope="col"><i class="fas fa-star"></i> {{phrase(102)}}</th>
+                                <th scope="col"><i class="fas fa-users"></i> {{phrase('allies')}}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for i, clan in statistic_get_clans(0, 10) %}
-                            <tr>
-                                <th scope="row">{{i+1}}</th>
-                                <td>{{clan_icon(clan)|raw}} {{clan.clan_name}} <span class="badge bg-light text-dark">{{ clan.clan_level }}</span> </td>
+                            <tr {% if i == 0 %}class="top-player" style="animation: 2s infinite alternate glow;"{% endif %}>
+                                <th scope="row">
+                                    {% if i < 3 %}
+                                        <span class="badge rounded-pill" style="background-color: {% if i == 0 %}#FFD700{% elseif i == 1 %}#C0C0C0{% else %}#CD7F32{% endif %}; color: #000;">
+                                            {{i+1}}
+                                        </span>
+                                    {% else %}
+                                        {{i+1}}
+                                    {% endif %}
+                                </th>
+                                <td>{{clan_icon(clan)|raw}} <span class="clan-name">{{clan.clan_name}}</span> <span class="badge bg-light text-dark">{{ clan.clan_level }}</span> </td>
                                 <td><span class="badge bg-danger-transparent">{{ format_number_fr(clan.reputation_score) }}</span></td>
-                                <td>{{ clan.clan_count_members }}</td>
+                                <td><span class="badge bg-info-transparent" style="background-color: rgba(59, 130, 246, 0.2); color: #60a5fa;">{{ clan.clan_count_members }}</span></td>
                             </tr>
                             {% endfor %}
                             </tbody>
@@ -227,33 +613,33 @@
             </div>
         </div>
 
-        <div class="col-xl-6">
+        <div class="col-xl-6" data-aos="fade-left" data-aos-delay="100">
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="card-title">
-                        {{phrase(50)}}
+                        <i class="fas fa-chess-rook"></i> {{phrase(50)}}
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-sm text-nowrap table-bordered">
+                        <table class="table table-sm text-nowrap table-bordered table-hover">
                             <thead>
                             <tr>
                                 <th scope="col">{{phrase(105)}}</th>
                                 <th scope="col">{{phrase(94)}}</th>
                                 <th scope="col">{{phrase(101)}}</th>
-                                <th scope="col">{{phrase(106)}}</th>
-                                <th scope="col">{{phrase(107)}}</th>
+                                <th scope="col"><i class="fas fa-percentage"></i> {{phrase(106)}}</th>
+                                <th scope="col"><i class="fas fa-calendar"></i> {{phrase(107)}}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for i, castle in statistic_get_castle() %}
                             <tr>
-                                <th scope="row">{{ get_castle(castle.castle_id) }}</th>
-                                <td>{{clan_icon(castle.clan_crest)|raw}} {{castle.clan_name }} <span class="badge bg-light text-dark">{{ castle.clan_level }}</span> </td>
-                                <td>{{ castle.player_name }}</td>
-                                <td>{{ castle.tax??0 }}%</td>
-                                <td>{{ unitToDate(castle.siege_date) }}</td>
+                                <th scope="row"><span class="castle-name">{{ get_castle(castle.castle_id) }}</span></th>
+                                <td>{{clan_icon(castle.clan_crest)|raw}} <span class="clan-name">{{castle.clan_name }}</span> <span class="badge bg-light text-dark">{{ castle.clan_level }}</span> </td>
+                                <td><span class="lord-name">{{ castle.player_name }}</span></td>
+                                <td><span class="badge" style="background-color: rgba(245, 158, 11, 0.2); color: #f59e0b;">{{ castle.tax??0 }}%</span></td>
+                                <td><span class="badge bg-primary-transparent" style="background-color: rgba(99, 102, 241, 0.2); color: #818cf8;">{{ unitToDate(castle.siege_date) }}</span></td>
                             </tr>
                             {% endfor %}
                             </tbody>
@@ -267,25 +653,83 @@
     {% endif %}
 
 </div>
-
-{% endblock %}
-
-{% block css %}
-<link rel="stylesheet" href="{{template}}/assets/libs/choices.js/public/assets/styles/choices.min.css">
-
-<!-- Prism CSS -->
-<link rel="stylesheet" href="{{template}}/assets/libs/prismjs/themes/prism-coy.min.css">
-
 {% endblock %}
 
 {% block js %}
-
-<!-- Custom-Switcher JS -->
-<!-- Color Picker JS -->
 <script src="{{template}}/assets/libs/@simonwep/pickr/pickr.es5.min.js"></script>
-
-<!-- Prism JS -->
 <script src="{{template}}/assets/libs/prismjs/prism.js"></script>
 <script src="{{template}}/assets/js/prism-custom.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 
+<script>
+// Заменить текущий блок инициализации AOS
+$(document).ready(function() {
+    // Инициализация библиотеки анимаций с измененными настройками
+    AOS.init({
+        duration: 800,
+        easing: 'ease-in-out',
+        once: true,
+        startEvent: 'DOMContentLoaded', // Изменено с 'load' на 'DOMContentLoaded'
+        offset: 0, // Устанавливаем смещение на 0, чтобы анимации срабатывали сразу
+        delay: 0, // Устанавливаем задержку по умолчанию на 0
+        disableMutationObserver: false,
+        mirror: false,
+        anchorPlacement: 'top-bottom'
+    });
+
+    // Принудительно активируем все анимации при загрузке
+    setTimeout(function() {
+        AOS.refresh();
+    }, 100);
+
+    // Функция параллакса для фона
+    $(window).scroll(function() {
+        var scrollTop = $(this).scrollTop();
+        $('.parallax-bg').css('transform', 'translateY(' + scrollTop * 0.5 + 'px)');
+    });
+
+    // Эффект подсветки для наведения на строки в таблицах
+    $('.table-hover tbody tr').hover(
+          function() {
+              $(this).addClass('bg-opacity-25 bg-primary');
+          },
+          function() {
+              $(this).removeClass('bg-opacity-25 bg-primary');
+          }
+    );
+
+    // Улучшенная анимация для всплывающей подсказки с уровнем
+    $('.tooltip-level').hover(
+          function() {
+              $(this).css({
+                  'color': '#d4af37',
+                  'transition': 'all 0.3s ease'
+              });
+          },
+          function() {
+              $(this).css({
+                  'color': '',
+                  'transition': 'all 0.3s ease'
+              });
+          }
+    );
+
+    // Добавляем дополнительные классы для мобильного адаптива
+    if (window.innerWidth < 768) {
+        $('.table-responsive').addClass('table-responsive-sm');
+    }
+});
+
+// Добавление света при прокрутке страницы вниз
+$(window).scroll(function() {
+    var scrollPosition = $(this).scrollTop();
+    if (scrollPosition > 100) {
+        $('body').addClass('scrolled');
+        $('.parallax-bg').css('opacity', 0.1 + scrollPosition * 0.0001);
+    } else {
+        $('body').removeClass('scrolled');
+        $('.parallax-bg').css('opacity', 0.15);
+    }
+});
+</script>
 {% endblock %}
