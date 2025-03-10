@@ -23,6 +23,7 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
         return [
             'shop_id' => '',
             'secret_key' => '',
+            'secret_key_additional' => '',
         ];
     }
 
@@ -48,7 +49,6 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
         $secret_word = self::getConfigValue('secret_key');
         $currency = "RUB";
         $order_id = uniqid();
-        $sign = md5($shop_id . ':' . $order_amount . ':' . $secret_word . ':' . $currency . ':' . $order_id);
         $params = [
             'amount' => $order_amount,
             'order_id' => $order_id,
@@ -87,14 +87,18 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
         }
         $input = file_get_contents('php://input');
         $requestData = json_decode($input, true);
-        file_put_contents(__DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r($requestData, true) . PHP_EOL, FILE_APPEND);
+        file_put_contents(__DIR__ . '/debug.php', '<?php ' . print_r($input, true) . print_r($_SERVER, true) . PHP_EOL, FILE_APPEND);
+
+        $signature = $_SERVER['HTTP_X_API_SHA256_SIGNATURE'] ?? '';
+        if (!$this->checkSignature($input, $signature, self::getConfigValue('secret_key_additional'))) {
+            echo 'Invalid signature';
+            exit;
+        }
 
         $status = $requestData['status'] ?? null;
         $order = $requestData['custom_fields']['order'] ?? null;
         $user_id = $order !== null ? (int)$order : null;
 
-        // Получаем сигнатуру из заголовка 'x-api-sha256-signature'
-        $signature = $_SERVER['HTTP_X_API_SHA256_SIGNATURE'] ?? '';
 
         if ($status == "success") {
             $invoice = $this->getInvoiceInfo(
@@ -131,6 +135,15 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
         curl_close($ch);
 
         return json_decode($response, true);
+    }
+
+    private function checkSignature(string $hookJson, string $headerSignature, string $secretKey): bool
+    {
+        $hookArr = json_decode($hookJson, true);
+        ksort($hookArr);
+        $hookJsonSorted = json_encode($hookArr, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $calculatedSignature = hash_hmac('sha256', $hookJsonSorted, $secretKey);
+        return hash_equals($headerSignature, $calculatedSignature);
     }
 
 }

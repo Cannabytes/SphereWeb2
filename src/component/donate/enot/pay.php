@@ -31,6 +31,7 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
         return [
           'shop_id'    => '',
           'secret_key' => '',
+          'secret_key_additional' => '',
         ];
     }
 
@@ -90,42 +91,41 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
 
     function webhook(): void
     {
+        // Проверяем, что ваша платежная система не отключена
         if (!(config::load()->donate()->getDonateSystems('enot')?->isEnable() ?? false)) {
             echo 'disabled';
             exit;
         }
-        $input     = file_get_contents('php://input');
-        $requestData = json_decode($input, true);
-        file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $requestData, true ) . PHP_EOL, FILE_APPEND );
+        $input = file_get_contents('php://input');
+        file_put_contents(__DIR__ . '/debug.php', '<?php ' . print_r($input, true) . print_r($_SERVER, true) . PHP_EOL, FILE_APPEND);
 
-        $status = $requestData['status'] ?? null;
-
-        $order = $requestData['custom_fields']['order'] ?? null;
-
-        $user_id = $order !== null ? (int)$order : null;
-
-        // Получаем сигнатуру из заголовка 'x-api-sha256-signature'
         $signature = $_SERVER['HTTP_X_API_SHA256_SIGNATURE'] ?? '';
-
-        if ($status == "success") {
+        if (!$this->checkSignature($input, $signature, self::getConfigValue('secret_key_additional'))) {
+            echo 'Invalid signature';
+            exit;
+        }
+        $status  = $requestData['status'] ?? null;
+        $order   = $requestData['custom_fields']['order'] ?? null;
+        $user_id = $order !== null ? (int)$order : null;
+        if ($status === "success") {
             $invoice = $this->getInvoiceInfo(
-              self::getConfigValue('secret_key'),
-              $requestData['invoice_id'],
-              self::getConfigValue('shop_id')
+                self::getConfigValue('secret_key'),
+                $requestData['invoice_id'],
+                self::getConfigValue('shop_id')
             );
-            $invoice = $invoice['data'];
+            $invoice  = $invoice['data'];
             $amount   = $invoice['invoice_amount'];
             $currency = $invoice['currency'];
             $amount   = donate::currency($amount, $currency);
-
             self::telegramNotice(user::getUserId($user_id), $invoice['invoice_amount'], $currency, $amount, get_called_class());
-            user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, message: null, pay_system:  get_called_class(), input: $input);
+            user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, message: null, pay_system: get_called_class(), input: $input);
             donate::addUserBonus($user_id, $amount);
             echo 'YES';
         } else {
             echo 'Платеж не принят';
         }
     }
+
 
     function getInvoiceInfo(string $apiKey, string $invoiceId, string $shopId): array
     {
@@ -143,5 +143,15 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
 
         return json_decode($response, true);
     }
+
+    private function checkSignature(string $hookJson, string $headerSignature, string $secretKey): bool
+    {
+        $hookArr = json_decode($hookJson, true);
+        ksort($hookArr);
+        $hookJsonSorted = json_encode($hookArr, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $calculatedSignature = hash_hmac('sha256', $hookJsonSorted, $secretKey);
+        return hash_equals($headerSignature, $calculatedSignature);
+    }
+
 
 }
