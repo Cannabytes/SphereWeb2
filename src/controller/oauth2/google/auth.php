@@ -66,6 +66,7 @@ class auth
                 session::add('id', $emailData->getId());
                 session::add('email', $emailData->getEmail());
                 session::add('password', "GOOGLE");
+                session::add("oauth2", true);
                 redirect::location("/main");
                 return;
             }
@@ -93,6 +94,7 @@ class auth
                 session::add('id', $userID);
                 session::add('email', $email);
                 session::add('password', "GOOGLE");
+                session::add("oauth2", true);
                 redirect::location("/main");
             } else {
                 board::notice(false, lang::get_phrase(178));

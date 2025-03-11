@@ -12,7 +12,6 @@ use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
-use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\userlog;
 use Ofey\Logan22\model\db\sql;
@@ -99,13 +98,14 @@ class userModel
                     }
                 }
             }
-            if (isset($_SESSION['id']) and $user['password'] != "GOOGLE") {
-                if ($_SESSION['id'] == $user['id']) {
-                    if (!password_verify($_SESSION['password'], $user['password'])) {
-                        session::clear();
-                        redirect::location("/main");
-                    }
-                }
+            if (isset($_SESSION['id']) &&
+                $_SESSION['id'] == $user['id'] &&
+                isset($_SESSION['oauth2']) &&
+                !$_SESSION['oauth2'] &&
+                !password_verify($_SESSION['password'], $user['password'])) {
+
+                session::clear();
+                redirect::location("/main");
             }
 
             $this->setIsAuth(true);
