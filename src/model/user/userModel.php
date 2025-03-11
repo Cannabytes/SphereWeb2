@@ -99,7 +99,7 @@ class userModel
                     }
                 }
             }
-            if (isset($_SESSION['id'])) {
+            if (isset($_SESSION['id']) and $user['password'] != "GOOGLE") {
                 if ($_SESSION['id'] == $user['id']) {
                     if (!password_verify($_SESSION['password'], $user['password'])) {
                         session::clear();

@@ -408,6 +408,9 @@ class auth
         if ( ! $user_info) {
             board::notice(false, lang::get_phrase(164));
         }
+        if($user_info['password']=="GOOGLE"){
+            board::error("Аккаунт зарегистрирован через Google и не имеет пароля. Войдите через Google.");
+        }
         if (password_verify($password, $user_info['password'])) {
             session::add('id', (int)$user_info['id']);
             session::add('email', $email);

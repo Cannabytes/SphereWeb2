@@ -1806,7 +1806,7 @@ return array (
     'page' => '',
     'comment' => '',
   ),
-  133 =>
+  133 => 
   array (
     'enable' => true,
     'method' => 'POST',
@@ -2538,6 +2538,20 @@ return array (
     'access' => 
     array (
       0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  185 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/google/callback',
+    'func' => 'controller\\oauth2\\google\\auth::callback',
+    'access' => 
+    array (
+      0 => 'guest',
     ),
     'weight' => 0,
     'page' => '',

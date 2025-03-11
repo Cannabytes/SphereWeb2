@@ -51,16 +51,26 @@ class change
             }
         }
 
+        if(mb_strlen($newPassword) < 4 || mb_strlen($newPassword) > 32){
+            board::error(lang::get_phrase('password_max_min_sim', 4, 32));
+        }
+
         if (!empty($_POST['new_password'])) {
-            /**
-             * Проверяем старый пароль
-             */
-            if (password_verify($password, user::self()->getPassword())) {
+            if(user::self()->getPassword() == "GOOGLE"){
                 user::self()->setPassword($newPassword);
                 $isChange = true;
                 $isChangePassword = true;
-            } else {
-                board::error("Старый пароль неправильный");
+            }else{
+                /**
+                 * Проверяем старый пароль
+                 */
+                if (password_verify($password, user::self()->getPassword())) {
+                    user::self()->setPassword($newPassword);
+                    $isChange = true;
+                    $isChangePassword = true;
+                } else {
+                    board::error("Старый пароль неправильный");
+                }
             }
         }
 

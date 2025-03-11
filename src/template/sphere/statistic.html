@@ -16,55 +16,16 @@
         --l2-dark: #1a1a24;
     }
 
-    body {
+    /* Фикс для горизонтального скролла */
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
         position: relative;
     }
 
     .l2-stats-container {
-        position: relative;
-        z-index: 10;
-    }
-
-    .parallax-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        opacity: 0.15;
-        z-index: 1;
-    }
-
-    .custom-card {
-        border: 1px solid rgba(113, 128, 147, 0.2);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(5px);
-        transition: all 0.3s ease;
-        border-radius: 0.5rem;
-        overflow: hidden;
-        margin-bottom: 1.5rem;
-    }
-
-    .custom-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
-        border-color: var(--l2-accent);
-    }
-
-    .card-header {
-        border-bottom: 2px solid var(--l2-accent);
-        padding: 1rem;
-    }
-    .card-title i {
-        margin-right: 10px;
-        color: var(--l2-accent);
-    }
-
-    .table {
-        margin-bottom: 0;
+        max-width: 100%;
+        overflow-x: hidden;
     }
 
     .table thead th {
@@ -88,66 +49,6 @@
     .table tbody tr td {
         padding: 12px;
         vertical-align: middle;
-    }
-
-    .avatar {
-        position: relative;
-        width: 32px;
-        height: 32px;
-        overflow: hidden;
-        border-radius: 50%;
-        border: 2px solid var(--l2-secondary);
-    }
-
-    .avatar-rounded {
-        border-radius: 50%;
-    }
-
-    .avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .avatar.online::after,
-    .avatar.offline::after {
-        content: '';
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        bottom: 0;
-        right: 0;
-        border: 2px solid var(--l2-secondary);
-    }
-
-    .avatar.online::after {
-        background-color: #10b981;
-    }
-
-    .avatar.offline::after {
-        background-color: #ef4444;
-    }
-
-    .badge {
-        font-size: 0.7rem;
-        font-weight: 600;
-        padding: 0.35em 0.65em;
-        border-radius: 4px;
-    }
-
-    .badge.bg-success-transparent {
-        background-color: rgba(16, 185, 129, 0.2);
-        color: #10b981;
-    }
-
-    .badge.bg-danger-transparent {
-        background-color: rgba(239, 68, 68, 0.2);
-        color: #ef4444;
-    }
-
-    .badge.bg-light {
-        background-color: rgba(255, 255, 255, 0.1) !important;
     }
 
     .stats-header {
@@ -211,62 +112,8 @@
         }
     }
 
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: var(--l2-dark);
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: var(--l2-primary);
-        border-radius: 4px;
-    }
-
     ::-webkit-scrollbar-thumb:hover {
         background: var(--l2-accent);
-    }
-
-    /* Stats counter animation */
-    .counter-container {
-        display: flex;
-        justify-content: space-around;
-        margin: 1rem 0 2rem;
-    }
-
-    .counter-item {
-        text-align: center;
-        padding: 1rem;
-        background-color: rgba(25, 28, 36, 0.8);
-        border-radius: 0.5rem;
-        border: 1px solid rgba(113, 128, 147, 0.2);
-        transition: all 0.3s ease;
-    }
-
-    .counter-item:hover {
-        transform: translateY(-5px);
-        border-color: var(--l2-accent);
-    }
-
-    .counter-icon {
-        font-size: 2rem;
-        color: var(--l2-accent);
-        margin-bottom: 0.5rem;
-    }
-
-    .counter-value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: white;
-    }
-
-    .counter-label {
-        font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.7);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
 
     /* Стиль для всплывающей подсказки с уровнем */
@@ -314,6 +161,17 @@
         }
     }
 
+    /* Фикс для параллакс-фона */
+    .parallax-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        pointer-events: none;
+    }
+
     /* Responsive adjustments */
     @media (max-width: 992px) {
         .stats-header h1 {
@@ -327,6 +185,14 @@
         .counter-item {
             width: 45%;
             margin-bottom: 1rem;
+        }
+
+        /* Улучшения для таблиц на мобильных устройствах */
+        .table-responsive {
+            width: 100%;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
     }
 
@@ -345,10 +211,9 @@
 {% block content %}
 <div class="parallax-bg"></div>
 
-<div class="container-fluid l2-stats-container">
+<div class="container l2-stats-container">
     <div class="stats-header" data-aos="fade-down">
         <h1>{{ phrase('menu_statistics') }}</h1>
-        <p>Лучших игроки, кланы и владельцы замков</p>
     </div>
 
     {% if statusSphereServer() is same as(false) %}
@@ -662,16 +527,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 
 <script>
-// Заменить текущий блок инициализации AOS
 $(document).ready(function() {
+    // Исправление проблемы горизонтального скролла до прокрутки
+    $("html, body").css({
+        "overflow-x": "hidden",
+        "width": "100%"
+    });
+
+    // Принудительное скрытие горизонтального скролла
+    setTimeout(function() {
+        $(window).trigger('resize');
+        $(".table-responsive").css("overflow-x", "auto");
+    }, 50);
+
     // Инициализация библиотеки анимаций с измененными настройками
     AOS.init({
         duration: 800,
         easing: 'ease-in-out',
         once: true,
-        startEvent: 'DOMContentLoaded', // Изменено с 'load' на 'DOMContentLoaded'
-        offset: 0, // Устанавливаем смещение на 0, чтобы анимации срабатывали сразу
-        delay: 0, // Устанавливаем задержку по умолчанию на 0
+        startEvent: 'DOMContentLoaded',
+        offset: 0,
+        delay: 0,
         disableMutationObserver: false,
         mirror: false,
         anchorPlacement: 'top-bottom'
@@ -682,10 +558,14 @@ $(document).ready(function() {
         AOS.refresh();
     }, 100);
 
-    // Функция параллакса для фона
+    // Функция параллакса для фона с ограничением
     $(window).scroll(function() {
         var scrollTop = $(this).scrollTop();
-        $('.parallax-bg').css('transform', 'translateY(' + scrollTop * 0.5 + 'px)');
+        $('.parallax-bg').css({
+            'transform': 'translateY(' + Math.min(scrollTop * 0.5, 200) + 'px)',
+            'width': '100%',
+            'left': '0'
+        });
     });
 
     // Эффект подсветки для наведения на строки в таблицах
@@ -730,6 +610,18 @@ $(window).scroll(function() {
         $('body').removeClass('scrolled');
         $('.parallax-bg').css('opacity', 0.15);
     }
+});
+
+// Функция для исправления горизонтального скролла при загрузке страницы
+$(window).on('load', function() {
+    // Устраняем возможный горизонтальный скролл
+    setTimeout(function(){
+        $("html, body").css("overflow-x", "hidden");
+        $(".l2-stats-container").css({
+            "max-width": "100%",
+            "overflow-x": "hidden"
+        });
+    }, 100);
 });
 </script>
 {% endblock %}

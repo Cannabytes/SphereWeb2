@@ -112,9 +112,22 @@
               <a href="/forget" class="btn  btn-primary-transparent">
                 {{ phrase(67) }}
               </a>
+
+            <div class="text-center my-1 authentication-barrier">
+              <span><i class="ri-google-fill"></i></span>
             </div>
 
+                        <a class="btn btn-teal-gradient btn-wave waves-effect waves-light label-btn" href="https://accounts.google.com/o/oauth2/v2/auth?client_id=1063214487839-nsaf8toejvelcbj3mq5a7pss7loc69k1.apps.googleusercontent.com&redirect_uri=https://sphereweb.net/google/auth.php&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent&state={{HTTP_HOST()}}">
+            <i class="ri-google-fill label-btn-icon me-1"></i> Войти через Google
+          </a>
+
+            </div>
+
+
+
           </form>
+
+
 
           <div class="text-center">
             {% for lang in getAllowLang(false) %}
@@ -125,6 +138,7 @@
             </a>
             {% endfor %}
           </div>
+
 
         </div>
 

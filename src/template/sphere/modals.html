@@ -25,14 +25,19 @@
           </div>
 
           <i class="border-top d-block my-3"></i>
+          {% if getUser().getPassword() != "GOOGLE" %}
           <div class="col-xl-6 mb-2">
             <label for="old_u_password" class="form-label text-dark fw-semibold">{{ phrase('old_password') }}</label>
             <input name="password" type="password" class="form-control" id="old_u_password" autocomplete="new-password">
           </div>
+          {% else %}
+          <span>У Вас нет пароля, хотите установить?</span>
+          {% endif %}
           <div class="col-xl-6 mb-2">
             <label for="new_u_password" class="form-label text-dark fw-semibold">{{ phrase(60) }}</label>
             <input name="new_password" type="password" class="form-control" id="new_u_password" autocomplete="new-password">
           </div>
+
         </div>
       </div>
 
