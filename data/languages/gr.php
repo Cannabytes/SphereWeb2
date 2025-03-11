@@ -1887,5 +1887,5 @@ Password: %%password%%',
     'LOG_DONATE_BONUS_SUCCESS_DESC' => 'Μπόνους για δωρεά',
     "LOG_DONATE_BONUS_SUCCESS" => "Ο χρήστης έλαβε μπόνους για τη δωρεά +%f",
     "logolink" => "Σύνδεσμος κατά το κλικ στο λογότυπο",
-
+    'oauth2_google_enter' => 'Σύνδεση με το Google',
 ];

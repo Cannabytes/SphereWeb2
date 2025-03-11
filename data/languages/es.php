@@ -1909,5 +1909,5 @@ Contraseña: %%password%%',
     'LOG_DONATE_BONUS_SUCCESS_DESC' => 'Bonificaciones por donaciones',
     "LOG_DONATE_BONUS_SUCCESS" => "El usuario recibió una bonificación por la donación +%f",
     "logolink" => "Enlace al hacer clic en el logotipo",
-
+    'oauth2_google_enter' => 'Iniciar sesión con Google',
 ];
