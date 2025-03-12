@@ -610,6 +610,12 @@ $(document).ready(function () {
    updateCurrencyValues();
    selectBonusPanel();
 
+   // Создаем элемент для отображения бонуса
+   $('.coin-input-container label').after('<div id="bonus-coins-info" class="alert alert-success py-1 px-2 mb-2" style="display:none;"><i class="ri-gift-line me-1"></i> {{phrase("bonus")}}: <span id="bonus-value" class="fw-bold"></span></div>');
+
+   // Рассчитываем бонусы при загрузке
+   calculateBonusCoins();
+
    $('#costCollapse').on('shown.bs.collapse', function () {
       var preferredCurrency = $('.cost-summary').attr('data-default-currency');
       $('.currency-box').removeClass('active-currency');
@@ -635,6 +641,7 @@ $(document).ready(function () {
       // Обновляем информацию без открытия аккордеона
       selectBonusPanel();
       updateCurrencyValues();
+      calculateBonusCoins(); // Добавляем расчет бонусов
    });
 
    // Обработка изменения значения в поле ввода
@@ -654,6 +661,7 @@ $(document).ready(function () {
 
       selectBonusPanel();
       updateCurrencyValues();
+      calculateBonusCoins(); // Добавляем расчет бонусов
    });
 
    // Обновление стоимости при открытии аккордеона
@@ -676,6 +684,7 @@ $(document).ready(function () {
    }).on("mouseup mouseleave touchend", function () {
       clearInterval(deincrementTimer);
       updateCurrencyValues();
+      calculateBonusCoins(); // Добавляем расчет бонусов
    });
 
    // Увеличение количества при зажатии кнопки плюс
@@ -689,6 +698,7 @@ $(document).ready(function () {
    }).on("mouseup mouseleave touchend", function () {
       clearInterval(incrementTimer);
       updateCurrencyValues();
+      calculateBonusCoins(); // Добавляем расчет бонусов
    });
 
    // Функция уменьшения значения
@@ -710,6 +720,7 @@ $(document).ready(function () {
 
       selectBonusPanel();
       updateCurrencyValues();
+      calculateBonusCoins(); // Добавляем расчет бонусов
    }
 
    // Функция увеличения значения
@@ -731,6 +742,7 @@ $(document).ready(function () {
 
       selectBonusPanel();
       updateCurrencyValues();
+      calculateBonusCoins(); // Добавляем расчет бонусов
    }
 
    // Выбор платежной системы при клике
@@ -790,6 +802,69 @@ $(document).ready(function () {
    // Инициализация подсветки для таблицы скидок
    selectTablePanel();
 });
+
+// Функция расчета бонусных донат-коинов
+function calculateBonusCoins() {
+   const enteredValue = parseInt($('#numberOfCoinsPurchased').val(), 10) || 0;
+   let totalBonusCoins = 0;
+
+   // 1. Расчет бонуса из одноразовых бонусов (вкладка "Одноразовый бонус")
+   let oneTimeBonus = 0;
+
+   $('#about-vertical table tbody tr').each(function() {
+      const costText = $(this).find('td:first').text().trim();
+      const cost = parseInt(costText.replace(/\D/g, ''), 10) || 0;
+
+      if (cost <= enteredValue) {
+         const percentText = $(this).find('td:last .badge').text().trim();
+         const percent = parseFloat(percentText.replace(/[^0-9.]/g, '')) || 0;
+
+         if (percent > oneTimeBonus) {
+            oneTimeBonus = percent;
+         }
+      }
+   });
+
+   // 2. Расчет бонуса из накопительных бонусов (вкладка "Накопительные бонусы")
+   let cumulativeBonus = parseFloat('{{count_all_donate_bonus_percent}}') || 0;
+
+   // Проверяем накопительный бонус из таблицы, если есть
+   $('#services-vertical table tbody tr').each(function() {
+      const costText = $(this).find('td:first').text().trim();
+      const cost = parseInt(costText.replace(/\D/g, ''), 10) || 0;
+
+      if (cost <= enteredValue) {
+         const percentText = $(this).find('td:last .badge').text().trim();
+         const percent = parseFloat(percentText.replace(/[^0-9.]/g, '')) || 0;
+
+         if (percent > cumulativeBonus) {
+            cumulativeBonus = percent;
+         }
+      }
+   });
+
+   // Расчет бонуса в зависимости от активных систем
+   if ($('#about-vertical').length > 0 && oneTimeBonus > 0) {
+      // Если активна система одноразовых бонусов
+      totalBonusCoins += Math.floor(enteredValue * oneTimeBonus / 100);
+   }
+
+   if ($('#services-vertical').length > 0 && cumulativeBonus > 0) {
+      // Если активна накопительная система бонусов
+      totalBonusCoins += Math.floor(enteredValue * cumulativeBonus / 100);
+   }
+
+   // Проверяем, есть ли вообще бонусы
+   if (totalBonusCoins > 0) {
+      // Обновляем текст бонуса
+      $('#bonus-value').html(`+${totalBonusCoins} {{phrase('donate_coin')}}`);
+      $('#bonus-coins-info').fadeIn(300);
+   } else {
+      $('#bonus-coins-info').fadeOut(300);
+   }
+
+   return totalBonusCoins;
+}
 
 // Функция обновления стоимости в разных валютах
 function updateCurrencyValues() {
@@ -860,31 +935,56 @@ function getSelectedPaySystemValue() {
 
 // Функция подсветки бонусов в зависимости от выбранной суммы
 function selectBonusPanel() {
-   let enteredValue = parseInt($('#numberOfCoinsPurchased').val(), 10);
+   const enteredValue = parseInt($('#numberOfCoinsPurchased').val(), 10) || 0;
 
-   // Если значение пустое или не число, считаем, что там 1
-   if (isNaN(enteredValue) || enteredValue === '') {
-      enteredValue = 1;
-   }
-
+   // 1. Подсветка для бонусных предметов (bonus-items)
    let maxCost = 0;
    let $maxCostElement = null;
 
-   // Сначала находим элемент с максимальным data-cost, который меньше или равен введенному значению
-   $('.bonus-items').each(function () {
-      let cost = parseInt($(this).data('cost'), 10);
-      if (cost > maxCost && enteredValue >= cost) {
+   $('.bonus-items').each(function() {
+      const cost = parseInt($(this).data('cost'), 10);
+      if (cost <= enteredValue && cost > maxCost) {
          maxCost = cost;
          $maxCostElement = $(this);
       }
    });
 
-   // Удаляем класс highlight у всех элементов
    $('.bonus-items').removeClass('highlight');
-
-   // Добавляем класс highlight только выбранному элементу
    if ($maxCostElement) {
       $maxCostElement.addClass('highlight');
+   }
+
+   // 2. Подсветка для одноразовых бонусов
+   $('#about-vertical table tbody tr').each(function() {
+      const costText = $(this).find('td:first').text().trim();
+      const cost = parseInt(costText.replace(/\D/g, ''), 10);
+
+      $(this).removeClass('bg-success-transparent');
+      if (enteredValue >= cost) {
+         $(this).addClass('bg-success-transparent');
+      }
+   });
+
+   // 3. Подсветка для накопительных бонусов
+   maxCost = 0;
+   $maxCostElement = null;
+
+   $('#services-vertical table tbody tr').each(function() {
+      const costText = $(this).find('td:first').text().trim();
+      const cost = parseInt(costText.replace(/\D/g, ''), 10);
+
+      $(this).removeClass('bg-success-transparent');
+      $(this).find('.badge').removeClass('bg-success-transparent').addClass('bg-primary-transparent');
+
+      if (cost <= enteredValue && cost > maxCost) {
+         maxCost = cost;
+         $maxCostElement = $(this);
+      }
+   });
+
+   if ($maxCostElement) {
+      $maxCostElement.addClass('bg-success-transparent');
+      $maxCostElement.find('.badge').removeClass('bg-primary-transparent').addClass('bg-success-transparent');
    }
 }
 
@@ -895,5 +995,145 @@ function activateRadio(name) {
    $('#' + name).prop('checked', true);
    $('.selectDonSys[data-name="' + name + '"]').addClass('selected');
 }
+
+// Функция для подсветки всех бонусных панелей
+function selectAllBonusPanels() {
+   const enteredValue = parseInt($('#numberOfCoinsPurchased').val(), 10) || 0;
+
+   // 1. Подсветка для бонусных предметов (вкладка "Бонусные предметы")
+   highlightItemBonuses(enteredValue);
+
+   // 2. Подсветка для одноразовых бонусов (вкладка "Одноразовый бонус")
+   highlightOneTimeBonuses(enteredValue);
+
+   // 3. Подсветка для накопительных бонусов (вкладка "Накопительные бонусы")
+   highlightCumulativeBonuses(enteredValue);
+
+   // 4. Расчет и обновление бонуса
+   calculateBonusCoins();
+}
+
+// Функция для подсветки бонусных предметов
+function highlightItemBonuses(enteredValue) {
+   // Сначала удаляем класс highlight у ВСЕХ элементов
+   $('.bonus-items').removeClass('highlight');
+
+   let maxCost = 0;
+   let $maxCostElement = null;
+
+   // Находим максимальный элемент с data-cost меньше или равный введенному значению
+   $('.bonus-items').each(function() {
+      const cost = parseInt($(this).data('cost'), 10);
+      if (cost <= enteredValue && cost > maxCost) {
+         maxCost = cost;
+         $maxCostElement = $(this);
+      }
+   });
+
+   // Добавляем класс highlight только выбранному элементу
+   if ($maxCostElement) {
+      $maxCostElement.addClass('highlight');
+   }
+}
+
+// Функция для подсветки одноразовых бонусов
+function highlightOneTimeBonuses(enteredValue) {
+   // Сначала удаляем подсветку со всех строк
+   $('#about-vertical table tbody tr').removeClass('table-active');
+
+   // Находим максимальный доступный бонус
+   let maxCost = 0;
+   let $maxCostElement = null;
+
+   $('#about-vertical table tbody tr').each(function() {
+      // Получаем минимальную сумму из ячейки (первая ячейка в строке)
+      const costText = $(this).find('td:first').text().trim();
+      const cost = parseInt(costText.replace(/\D/g, ''), 10) || 0; // Извлекаем только цифры
+
+      if (cost <= enteredValue && cost > maxCost) {
+         maxCost = cost;
+         $maxCostElement = $(this);
+      }
+   });
+
+   // Добавляем подсветку только к строке с максимальным доступным бонусом
+   if ($maxCostElement) {
+      $maxCostElement.addClass('table-active');
+
+      // Также изменяем стиль бейджа
+      $maxCostElement.find('.badge')
+            .removeClass('bg-primary-transparent')
+            .addClass('bg-success-transparent');
+   }
+}
+
+// Функция для подсветки накопительных бонусов
+function highlightCumulativeBonuses(enteredValue) {
+   // Сначала сбрасываем все подсветки
+   $('#services-vertical table tbody tr').removeClass('table-active');
+   $('#services-vertical table tbody tr .badge')
+         .removeClass('bg-success-transparent')
+         .addClass('bg-primary-transparent');
+
+   let maxCost = 0;
+   let $maxCostElement = null;
+
+   // Находим максимальный элемент с монетами меньше или равный введенному значению
+   $('#services-vertical table tbody tr').each(function() {
+      // Получаем количество монет из первой ячейки
+      const costText = $(this).find('td:first').text().trim();
+      const cost = parseInt(costText.replace(/\D/g, ''), 10) || 0; // Извлекаем только цифры
+
+      if (cost <= enteredValue && cost > maxCost) {
+         maxCost = cost;
+         $maxCostElement = $(this);
+      }
+   });
+
+   // Добавляем подсветку только выбранному элементу
+   if ($maxCostElement) {
+      $maxCostElement.addClass('table-active');
+      $maxCostElement.find('.badge')
+            .removeClass('bg-primary-transparent')
+            .addClass('bg-success-transparent');
+   }
+}
+
+// Инициализация при загрузке страницы
+$(document).ready(function() {
+   // Добавляем CSS стили для подсветки
+   $('head').append(`
+        <style id="bonus-highlight-styles">
+            /* Стили для блоков бонусных предметов */
+            .bonus-items.highlight {
+                border: 2px solid var(--success) !important;
+                background-color: rgba(var(--success-rgb), 0.05) !important;
+                box-shadow: 0 5px 15px rgba(var(--success-rgb), 0.2) !important;
+            }
+
+            /* Стили для строк в таблицах */
+            .table-active {
+                background-color: rgba(var(--success-rgb), 0.15) !important;
+            }
+        </style>
+    `);
+
+   // Вызываем функцию при загрузке страницы
+   selectAllBonusPanels();
+
+   // Заменяем существующую функцию selectBonusPanel на нашу улучшенную версию
+   window.selectBonusPanel = function() {
+      selectAllBonusPanels();
+   };
+
+   // Добавляем обработчики событий для обновления подсветки
+   $('#numberOfCoinsPurchased').on('input change', selectAllBonusPanels);
+
+   // Также вызываем функцию при переключении вкладок
+   $('.nav-link').on('shown.bs.tab', function() {
+      selectAllBonusPanels();
+   });
+});
+
 </script>
 {% endblock %}
