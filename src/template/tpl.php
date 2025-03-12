@@ -1022,7 +1022,7 @@ class tpl
 
         $twig->addFunction(new TwigFunction('getPageLink', function ($news) {
             if ($news['link'] == '') {
-                return "/read/{$news['id']}";
+                return "/page/{$news['id']}";
             } else {
                 return $news['link'];
             }

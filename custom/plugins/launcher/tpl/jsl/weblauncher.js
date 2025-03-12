@@ -659,7 +659,7 @@ function startUpdate() {
     if (wsclient.isConnected() === false) {
         return errorMessage(getPhrase("need_start_launcher"))
     }
-    if ($("#selectClient").val() !== null) {
+    if ($("#selectClient").val() !== "" && $("#selectClient").val() !== null) {
         if (getUpdateClient()) {
             //Если клиент обновляется, тогда мы запросе, мы будем слать команду на отмену загрузки
             clientUpdateCancel()
