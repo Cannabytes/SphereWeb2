@@ -1133,7 +1133,7 @@
                                                 </div>
                                                 <div class="card-body ">
                                                     <div class="table-responsive">
-                                                        <table class="table table-bordered text-nowrap mb-0">
+                                                        <table class="table table-bordered mb-0">
                                                             <tbody class="top-selling">
                                                             <tr>
                                                                 <th class="">
@@ -1149,6 +1149,7 @@
                                                                         </option>
                                                                         {% endfor %}
                                                                     </select>
+                                                                    <a target="_blank" id="linkTemplateShowView" href="/admin/view/template/{{config().template().getName()}}">{{phrase('view template')}}</a>
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -2288,6 +2289,9 @@
 
     $('#templateSelect').change(function () {
         let selectedTemplate = $(this).val();
+
+        $("#linkTemplateShowView").attr("href", "/admin/view/template/" + selectedTemplate);
+
         AjaxSend('/admin/template/readme', 'POST', {template: selectedTemplate}, true).then(function (response) {
             let date = new Date(response.date * 1000);
             let formattedDate = ('0' + date.getDate()).slice(-2) + '.' +

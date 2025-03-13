@@ -3,6 +3,8 @@
 namespace Ofey\Logan22\component\time;
 
 use DateTimeZone;
+use Ofey\Logan22\component\sphere\server;
+use Ofey\Logan22\component\sphere\type;
 
 class timezone {
 
@@ -32,24 +34,27 @@ class timezone {
         if(!filter_var($ip, FILTER_VALIDATE_IP) or $ip == '127.0.0.1') {
             return null;
         }
-        $geo = self::get_ip_info_geoplugin($ip);
-        if($geo) {
-            return $geo;
-        }
 
-        $geo = self::get_ip_info_ipApi($ip);
-        if($geo) {
-            return $geo;
-        }
-
-        $geo = self::get_ip_info_ipwho($ip);
-        if($geo) {
-            return $geo;
-        }
-
-        $geo = self::get_ip_info_ipSb($ip);
-        if($geo) {
-            return $geo;
+        $data = server::send(type::GEO_IP, ['ip' => $ip])->show(false)->getResponse();
+        if($data['status'] == 'success') {
+            return $data;
+        }else{
+            $geo = self::get_ip_info_geoplugin($ip);
+            if($geo) {
+                return $geo;
+            }
+            $geo = self::get_ip_info_ipApi($ip);
+            if($geo) {
+                return $geo;
+            }
+            $geo = self::get_ip_info_ipwho($ip);
+            if($geo) {
+                return $geo;
+            }
+            $geo = self::get_ip_info_ipSb($ip);
+            if($geo) {
+                return $geo;
+            }
         }
 
         return null;

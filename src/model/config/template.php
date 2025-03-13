@@ -101,6 +101,11 @@ class template
         return $this->name;
     }
 
+    public function setName($name): void
+    {
+        $this->template = $name;
+    }
+
     /**
      * @return float|mixed
      */

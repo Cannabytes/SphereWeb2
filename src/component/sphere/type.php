@@ -109,6 +109,8 @@ enum type
 
     case BUY_BALANCE_PACK;
 
+    case GEO_IP;
+
     static function url(type $type): string
     {
         return match ($type) {
@@ -194,6 +196,8 @@ enum type
             self::FILE_SCANNER => '/api/file/scanner',
 
             self::BUY_BALANCE_PACK => '/api/balance/buy/pack',
+
+            self::GEO_IP => '/api/geo/ip',
 
             default => null,
         };
