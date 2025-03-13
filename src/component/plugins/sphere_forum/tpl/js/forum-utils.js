@@ -3,10 +3,12 @@
 
 const ForumUtils = (function() {
     // Приватные переменные
-    const YOUTUBE_REGEX = /https:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)[^\s<]*/g;
+    const YOUTUBE_VIDEO_REGEX = /https:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)[^\s<]*/g;
+    const YOUTUBE_CHANNEL_REGEX = /https:\/\/(?:www\.)?youtube\.com\/@[a-zA-Z0-9_-]+(?:\/\w+)?[^\s<]*/g;
+    const YOUTUBE_REGEX = /https:\/\/(?:www\.)?(?:youtube\.com\/(?:watch\?v=|@[a-zA-Z0-9_-]+(?:\/\w+)?)|youtu\.be\/)([a-zA-Z0-9_-]+)?[^\s<]*/g;
     const IMAGE_URL_REGEX = /https?:\/\/[^\s<]+(?:jpg|jpeg|png|gif|webp)(?![^<]*>|[^<]*<\/)/gi;
     const URL_REGEX = /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])|(\bwww\.[^\s<]+[^<.,:;"')\]\s])/g;
-    const EXCLUDED_DOMAINS = ['youtube.com', 'youtu.be'];
+    const EXCLUDED_DOMAINS = [];
 
     // Функции для работы с датами
     function formatDate(date) {
@@ -29,74 +31,217 @@ const ForumUtils = (function() {
     }
 
     function processYoutubeLinks(post) {
+        // Обрабатываем только видео-ссылки для встраивания
         let htmlContent = post.innerHTML;
-        htmlContent = htmlContent.replace(YOUTUBE_REGEX, (match, videoId) => {
+        htmlContent = htmlContent.replace(YOUTUBE_VIDEO_REGEX, (match, videoId) => {
             return createYoutubeEmbed(videoId);
         });
         post.innerHTML = htmlContent;
+
+        // Примечание: каналы и другие типы YouTube-ссылок
+        // будут обрабатываться как обычные ссылки в processParagraphLinks
     }
 
     function processImagesAndLinks(post) {
         post.querySelectorAll('p').forEach(paragraph => {
-            const content = paragraph.innerHTML;
-            const processedContent = processContentWithImagesAndLinks(content);
-            paragraph.innerHTML = processedContent;
+            // Обрабатываем изображения первыми
+            processParagraphImages(paragraph);
+
+            // Затем обрабатываем ссылки
+            processParagraphLinks(paragraph);
         });
     }
 
-    function processContentWithImagesAndLinks(content) {
-        const parts = splitContentByImages(content);
-        return processContentParts(parts);
-    }
+    function processParagraphImages(paragraph) {
+        // Получаем текстовое содержимое параграфа
+        const content = paragraph.innerHTML;
 
-    function splitContentByImages(content) {
-        const parts = [];
-        let lastIndex = 0;
+        // Находим все URL изображений
+        const imageMatches = Array.from(content.matchAll(IMAGE_URL_REGEX));
 
-        const matches = Array.from(content.matchAll(IMAGE_URL_REGEX));
-        matches.forEach(match => {
-            const textBefore = content.slice(lastIndex, match.index);
-            if (textBefore) parts.push({ type: 'text', content: textBefore });
-            parts.push({ type: 'image', content: match[0] });
-            lastIndex = match.index + match[0].length;
-        });
+        if (imageMatches.length === 0) return;
 
-        if (lastIndex < content.length) {
-            parts.push({ type: 'text', content: content.slice(lastIndex) });
+        // Создаем временный div для работы с HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content;
+
+        // Собираем группы изображений и содержимое без изображений
+        const elements = [];
+        let currentImages = [];
+        let lastTextNode = null;
+
+        // Получаем все текстовые узлы
+        const textNodes = [];
+        const walker = document.createTreeWalker(
+            tempDiv,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false
+        );
+
+        let node;
+        while (node = walker.nextNode()) {
+            textNodes.push(node);
         }
 
-        return parts;
-    }
+        // Проходим по всем текстовым узлам и ищем URL изображений
+        textNodes.forEach(textNode => {
+            const nodeContent = textNode.nodeValue;
+            const nodeImageMatches = Array.from(nodeContent.matchAll(IMAGE_URL_REGEX));
 
-    function processContentParts(parts) {
-        let result = '';
-        let imageGroup = [];
+            if (nodeImageMatches.length > 0) {
+                let lastIndex = 0;
 
-        parts.forEach((part, index) => {
-            if (part.type === 'image') {
-                const prevPart = parts[index - 1];
-                const nextPart = parts[index + 1];
+                nodeImageMatches.forEach(match => {
+                    const imageUrl = match[0];
+                    const offset = match.index;
 
-                const hasSignificantTextBefore = hasSignificantText(prevPart);
-                const hasSignificantTextAfter = hasSignificantText(nextPart);
+                    // Текст до изображения
+                    if (offset > lastIndex) {
+                        const textBefore = nodeContent.slice(lastIndex, offset);
+                        if (textBefore.trim()) {
+                            // Если есть значимый текст, завершаем текущую группу изображений
+                            if (currentImages.length > 0) {
+                                elements.push(createImageGroupHtml(currentImages));
+                                currentImages = [];
+                            }
 
-                if (hasSignificantTextBefore) {
-                    result += createImageGroupHtml(imageGroup);
-                    imageGroup = [];
+                            // Добавляем текст как отдельный элемент
+                            const textNode = document.createTextNode(textBefore);
+                            elements.push(textNode);
+                        }
+                    }
+
+                    // Добавляем изображение в текущую группу
+                    currentImages.push(imageUrl);
+                    lastIndex = offset + imageUrl.length;
+                });
+
+                // Текст после последнего изображения
+                if (lastIndex < nodeContent.length) {
+                    const textAfter = nodeContent.slice(lastIndex);
+                    if (textAfter.trim()) {
+                        // Если есть значимый текст, завершаем текущую группу изображений
+                        if (currentImages.length > 0) {
+                            elements.push(createImageGroupHtml(currentImages));
+                            currentImages = [];
+                        }
+
+                        // Добавляем текст как отдельный элемент
+                        const textNode = document.createTextNode(textAfter);
+                        elements.push(textNode);
+                    }
                 }
 
-                imageGroup.push(part.content);
-
-                if (hasSignificantTextAfter || index === parts.length - 1) {
-                    result += createImageGroupHtml(imageGroup);
-                    imageGroup = [];
-                }
-            } else if (part.type === 'text') {
-                result += convertUrlsToLinks(part.content);
+                // Удаляем обработанный текстовый узел
+                textNode.parentNode.removeChild(textNode);
+            } else {
+                // Если в текстовом узле нет изображений, сохраняем его
+                elements.push(textNode.cloneNode(true));
             }
         });
 
-        return result;
+        // Завершаем последнюю группу изображений
+        if (currentImages.length > 0) {
+            elements.push(createImageGroupHtml(currentImages));
+        }
+
+        // Очищаем параграф и добавляем новые элементы
+        paragraph.innerHTML = '';
+        elements.forEach(element => {
+            if (element instanceof Node) {
+                paragraph.appendChild(element);
+            } else {
+                const tempContainer = document.createElement('div');
+                tempContainer.innerHTML = element;
+                while (tempContainer.firstChild) {
+                    paragraph.appendChild(tempContainer.firstChild);
+                }
+            }
+        });
+    }
+
+    function processParagraphLinks(paragraph) {
+        // Получаем все текстовые узлы параграфа
+        const textNodes = [];
+        const walker = document.createTreeWalker(
+            paragraph,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false
+        );
+
+        let node;
+        while (node = walker.nextNode()) {
+            textNodes.push(node);
+        }
+
+        // Обрабатываем каждый текстовый узел
+        textNodes.forEach(textNode => {
+            const content = textNode.nodeValue;
+
+            // Проверяем, содержит ли текст URL
+            if (!content.match(URL_REGEX)) return;
+
+            const fragments = [];
+            let lastIndex = 0;
+
+            // Используем регулярное выражение для поиска URL
+            const urlMatches = Array.from(content.matchAll(URL_REGEX));
+
+            urlMatches.forEach(match => {
+                const url = match[0];
+                const offset = match.index;
+                const www = url.startsWith('www.');
+
+                try {
+                    const domain = new URL(www ? `http://${url}` : url).hostname;
+
+                    // Добавляем текст до URL
+                    if (offset > lastIndex) {
+                        fragments.push(document.createTextNode(content.slice(lastIndex, offset)));
+                    }
+
+                    // Пропускаем исключенные домены и уже обработанные изображения
+                    if (EXCLUDED_DOMAINS.some(excludedDomain => domain.includes(excludedDomain)) ||
+                        IMAGE_URL_REGEX.test(url)) {
+                        fragments.push(document.createTextNode(url));
+                    } else {
+                        // Создаем ссылку
+                        const link = document.createElement('a');
+                        link.href = www ? `http://${url}` : url;
+                        link.textContent = url;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.className = 'text-primary fw-semibold';
+                        fragments.push(link);
+                    }
+
+                    lastIndex = offset + url.length;
+                } catch (error) {
+                    console.warn('Неверный формат URL:', error);
+                    if (offset > lastIndex) {
+                        fragments.push(document.createTextNode(content.slice(lastIndex, offset)));
+                    }
+                    fragments.push(document.createTextNode(url));
+                    lastIndex = offset + url.length;
+                }
+            });
+
+            // Добавляем оставшийся текст
+            if (lastIndex < content.length) {
+                fragments.push(document.createTextNode(content.slice(lastIndex)));
+            }
+
+            // Заменяем исходный текстовый узел на фрагменты
+            const parent = textNode.parentNode;
+            fragments.forEach(fragment => {
+                parent.insertBefore(fragment, textNode);
+            });
+
+            // Удаляем исходный текстовый узел
+            parent.removeChild(textNode);
+        });
     }
 
     // Вспомогательные функции
@@ -138,49 +283,6 @@ const ForumUtils = (function() {
         link.appendChild(img);
         col.appendChild(link);
         return col;
-    }
-
-    function convertUrlsToLinks(text) {
-        if (!text.match(URL_REGEX)) return text;
-
-        let result = '';
-        let lastIndex = 0;
-
-        text.replace(URL_REGEX, (url, protocol, www, offset) => {
-            try {
-                const domain = new URL(www ? `http://${url}` : url).hostname;
-
-                // Добавляем текст до URL
-                result += text.slice(lastIndex, offset);
-
-                // Пропускаем исключенные домены
-                if (EXCLUDED_DOMAINS.some(excludedDomain => domain.includes(excludedDomain))) {
-                    result += url;
-                } else {
-                    // Создаем ссылку
-                    const link = document.createElement('a');
-                    link.href = www ? `http://${url}` : url;
-                    link.textContent = url;
-                    link.target = '_blank';
-                    link.rel = 'noopener noreferrer';
-                    link.className = 'text-primary fw-semibold';
-                    result += link.outerHTML;
-                }
-
-                lastIndex = offset + url.length;
-            } catch (error) {
-                console.warn('Неверный формат URL:', error);
-                result += url;
-                lastIndex = offset + url.length;
-            }
-        });
-
-        // Добавляем оставшийся текст
-        if (lastIndex < text.length) {
-            result += text.slice(lastIndex);
-        }
-
-        return result;
     }
 
     function hasSignificantText(part) {
