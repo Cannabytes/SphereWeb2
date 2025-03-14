@@ -1741,37 +1741,179 @@ class forum
                 );
             }
 
-            sql::beginTransaction();
-            try {
-                // Получаем количество постов в теме перед удалением
-                $postCount = sql::getValue(
-                    "SELECT COUNT(*) FROM forum_posts WHERE thread_id = ?",
-                    [$threadId]
-                );
+            $categoryId = $thread->getCategoryId();
 
-                // Удаляем тему и все сообщения
-                $this->deleteThreadAndRelated($thread);
+            // Получаем количество постов в теме перед удалением
+            $postCount = sql::getValue(
+                "SELECT COUNT(*) FROM forum_posts WHERE thread_id = ?",
+                [$threadId]
+            );
 
-                // Уменьшаем счетчики в категории
-                $this->decrementCategoryCounters($thread->getCategoryId(), $postCount);
+            // Удаляем тему и все сообщения
+            $this->deleteThreadAndRelated($thread);
 
-                // Обновляем информацию о последней теме в категории
-                $this->updateCategoryAfterThreadDeletion($thread);
+            // Уменьшаем счетчики в категории
+            $this->decrementCategoryCounters($categoryId, $postCount);
 
-                sql::commit();
+            // Обновляем информацию о последней теме в категории
+            $this->updateCategoryAfterThreadRemoval($categoryId);
 
-                $categoryName = $this->getCategoryName($thread->getCategoryId());
-                $custom_twig = new custom_twig();
-                $translitCategoryName = $custom_twig->transliterateToEn($categoryName);
+            $categoryName = $this->getCategoryName($categoryId);
+            $custom_twig = new custom_twig();
+            $translitCategoryName = $custom_twig->transliterateToEn($categoryName);
 
-                board::redirect("/forum/{$translitCategoryName}.{$thread->getCategoryId()}");
-                board::success("Тема успешно удалена");
-            } catch (Exception $e) {
-                sql::rollback();
-                throw $e;
-            }
+            board::redirect("/forum/{$translitCategoryName}.{$categoryId}");
+            board::success("Тема успешно удалена");
+
         } catch (Exception $e) {
             board::error($e->getMessage());
+        }
+    }
+
+    /**
+     * Обновляет информацию о последней теме в категории после удаления темы
+     *
+     * @param int $categoryId ID категории
+     * @return void
+     */
+    private function updateCategoryAfterThreadRemoval(int $categoryId): void
+    {
+        // Получаем последнюю активную тему в категории (если есть)
+        $lastThread = sql::getRow(
+            "SELECT * FROM forum_threads 
+        WHERE category_id = ? 
+        ORDER BY updated_at DESC 
+        LIMIT 1",
+            [$categoryId]
+        );
+
+        if ($lastThread) {
+            // Если есть темы в категории, обновляем данные на последнюю тему
+            sql::run(
+                "UPDATE forum_categories SET 
+            last_thread_id = ?, 
+            last_post_id = ?,
+            last_reply_user_id = ?,
+            updated_at = ? 
+            WHERE id = ?",
+                [
+                    $lastThread['id'],
+                    $lastThread['last_post_id'],
+                    $lastThread['last_reply_user_id'],
+                    time::mysql(),
+                    $categoryId
+                ]
+            );
+        } else {
+            // Если тем нет, очищаем информацию о последней теме
+            sql::run(
+                "UPDATE forum_categories SET 
+            last_thread_id = NULL, 
+            last_post_id = NULL,
+            last_reply_user_id = NULL,
+            updated_at = ? 
+            WHERE id = ?",
+                [
+                    time::mysql(),
+                    $categoryId
+                ]
+            );
+        }
+
+        // Обновляем родительские категории
+        $this->updateParentCategoriesLastThread($categoryId);
+    }
+
+    /**
+     * Оптимизированная версия рекурсивного обновления информации о последней теме
+     * в родительских категориях с минимальным количеством запросов
+     *
+     * @param int $categoryId ID текущей категории
+     * @return void
+     */
+    private function updateParentCategoriesLastThread(int $categoryId): void
+    {
+        // Получаем всю цепочку родительских категорий сразу
+        $parentIds = [];
+        $currentId = $categoryId;
+
+        while ($currentId) {
+            $parent = sql::getRow(
+                "SELECT parent_id FROM forum_categories WHERE id = ? LIMIT 1",
+                [$currentId]
+            );
+
+            if (!$parent || $parent['parent_id'] === null) {
+                break;
+            }
+
+            $parentIds[] = $parent['parent_id'];
+            $currentId = $parent['parent_id'];
+        }
+
+        if (empty($parentIds)) {
+            return; // Нет родительских категорий
+        }
+
+        // Обновляем каждую родительскую категорию, начиная с ближайшей
+        foreach ($parentIds as $parentId) {
+            // Получаем все категории, которые нужно проверить (текущий родитель и все его прямые подкатегории)
+            $categoriesToCheck = sql::getRows(
+                "SELECT id FROM forum_categories WHERE id = ? OR parent_id = ?",
+                [$parentId, $parentId]
+            );
+
+            $categoryIds = array_column($categoriesToCheck, 'id');
+
+            if (empty($categoryIds)) {
+                continue;
+            }
+
+            // Формируем строку с плейсхолдерами для SQL запроса
+            $placeholders = rtrim(str_repeat('?,', count($categoryIds)), ',');
+
+            // Находим последнюю активную тему во всех этих категориях
+            $lastThreadInfo = sql::getRow(
+                "SELECT t.id, t.last_post_id, t.last_reply_user_id, t.updated_at 
+            FROM forum_threads t 
+            WHERE t.category_id IN ($placeholders) AND t.is_approved = 1
+            ORDER BY t.updated_at DESC 
+            LIMIT 1",
+                $categoryIds
+            );
+
+            if ($lastThreadInfo) {
+                // Обновляем родительскую категорию
+                sql::run(
+                    "UPDATE forum_categories SET 
+                last_thread_id = ?, 
+                last_post_id = ?,
+                last_reply_user_id = ?,
+                updated_at = ? 
+                WHERE id = ?",
+                    [
+                        $lastThreadInfo['id'],
+                        $lastThreadInfo['last_post_id'],
+                        $lastThreadInfo['last_reply_user_id'],
+                        time::mysql(),
+                        $parentId
+                    ]
+                );
+            } else {
+                // Если активных тем нет, очищаем данные
+                sql::run(
+                    "UPDATE forum_categories SET 
+                last_thread_id = NULL, 
+                last_post_id = NULL,
+                last_reply_user_id = NULL,
+                updated_at = ? 
+                WHERE id = ?",
+                    [
+                        time::mysql(),
+                        $parentId
+                    ]
+                );
+            }
         }
     }
 

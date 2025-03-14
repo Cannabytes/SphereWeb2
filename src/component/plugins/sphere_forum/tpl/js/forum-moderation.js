@@ -2,7 +2,6 @@
 // Модуль для модерации и управления темами форума
 
 const ForumModeration = (function () {
-    // Приватные переменные
     const config = window.forumConfig || {};
 
     // Инициализация
@@ -14,18 +13,18 @@ const ForumModeration = (function () {
     }
 
     function initializeModerationHandlers() {
-        // Обработчики модерации
-        $('#confirmDelete').on('click', handleDeleteThread);
-        $('#confirmMove').on('click', handleMoveThread);
-        $('#confirmRename').on('click', handleRenameThread);
+        // Удаляем предыдущие обработчики перед назначением новых
+        $('#confirmDelete').off('click').on('click', handleDeleteThread);
+        $('#confirmMove').off('click').on('click', handleMoveThread);
+        $('#confirmRename').off('click').on('click', handleRenameThread);
 
         if (config.isModerated && !config.isApproved) {
-            $('#applyApprove').on('click', handleApproveThread);
+            $('#applyApprove').off('click').on('click', handleApproveThread);
         }
     }
 
     function initializeSubscriptionHandlers() {
-        $('#toggleSubscription').on('click', handleToggleSubscription);
+        $('#toggleSubscription').off('click').on('click', handleToggleSubscription);
     }
 
     // Обработчики событий
