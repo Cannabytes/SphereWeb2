@@ -46,8 +46,7 @@ class player_account
         self::valid_email($email);
 
         if (auth::is_user($email)) {
-            captcha::generation();
-            board::response("notice", ["message" => lang::get_phrase(201), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]);
+            board::response("notice", ["message" => lang::get_phrase(201), "ok" => false, "reloadCaptcha" => true]);
         }
         registration::add($email, $password);
         $server = server::getServer($server_id);
@@ -68,7 +67,7 @@ class player_account
         //TODO: логирование ошибок
         if (is_array($err)) {
             if ( ! $err['ok']) {
-                board::response("notice", ["message" => $err['message'], "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]);
+                board::response("notice", ["message" => $err['message'], "ok" => false, "reloadCaptcha" => true]);
             }
         }
         self::add_inside_account($login, $password, $email, $_SERVER['REMOTE_ADDR'], $server_id, $password_hide);
@@ -79,15 +78,12 @@ class player_account
     public static function valid_login($login)
     {
         if (3 > mb_strlen($login)) {
-            captcha::generation();
             board::response("notice", ["message" => lang::get_phrase(208), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]);
         }
         if (16 < mb_strlen($login)) {
-            captcha::generation();
             board::response("notice", ["message" => lang::get_phrase(209), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]);
         }
         if ( ! preg_match("/^[a-zA-Z0-9_]+$/", $login) == 1) {
-            captcha::generation();
             board::response("notice", ["message" => lang::get_phrase(210), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]);
         }
     }
@@ -145,8 +141,7 @@ class player_account
         self::valid_login($login);
         self::valid_password($password);
         if (self::count_account() >= config::load()->other()->getMaxAccount()) {
-            captcha::generation();
-            board::response("notice", ["message" => lang::get_phrase(206), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]);
+            board::response("notice", ["message" => lang::get_phrase(206), "ok" => false, "reloadCaptcha" => true]);
         }
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::REGISTRATION, [
           'login'            => $login,
@@ -250,8 +245,7 @@ class player_account
         self::valid_login($login);
         self::valid_password($password);
         if (self::count_account() >= config::load()->other()->getMaxAccount()) {
-            captcha::generation();
-            board::response("notice", ["message" => lang::get_phrase(206), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]);
+            board::response("notice", ["message" => lang::get_phrase(206), "ok" => false, "reloadCaptcha" => true]);
         }
 
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::REGISTRATION, [

@@ -60,22 +60,16 @@
                                 <input required name="email" type="text" class="form-control form-control-lg" id="email" placeholder="example@example.com">
                             </div>
 
-
-                            {% if config().captcha().isGoogleCaptcha() %}
-                            <div id="g-recaptcha"></div>
-                            {% else %}
-                            <div class="col-xl-12 ">
-                                <div class="row">
-                                    <div class="col-xl-7">
-                                        <img src="" class="lightbox-thumb img-thumb captchaToken captcha_img" style="width: 100%; height: 100%;"/>
-                                    </div>
-                                    <div class="col-xl-5">
-                                        <label for="register_captcha" class="form-label captchaToken">{{ phrase('verification_code') }}</label>
-                                        <input type="text" class="form-control" id="register_captcha" name="captcha" placeholder="Captcha">
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
+              {% if config().captcha().isGoogleCaptcha() %}
+                <div id="g-recaptcha"></div>
+              {% elseif config().captcha().isCloudflareCaptcha() %}
+                <div id="cf-turnstile" class="cf-turnstile"></div>
+                <input type="hidden" id="cf-turnstile-response" name="cf-turnstile-response">
+              {% elseif config().captcha().isDefaultCaptcha() %}
+                <iframe id="captcha-iframe" src="https://sphereweb.net/cloudflare/captcha-proxy.html"
+                        style="width: 100%; height: 80px; border: none;"></iframe>
+                    <input id="cf-turnstile-response" name="cf-turnstile-response" type="hidden">
+              {% endif %}
 
                             <div class="col-xl-12 d-grid mt-2">
                                 <button id="forget" class="btn btn-lg btn-primary">{{ phrase(364) }}</button>
@@ -122,46 +116,179 @@
 <script src="{{template}}/assets/js/Toasts.js"></script>
 <script src="{{template}}/assets/js/general.js"></script>
 
+{% if config().captcha().isEnabled() %}
+
+<script>
+  var captcha = "{{config().captcha().getCaptcha()}}";
+</script>
+
 {% if config().captcha().isGoogleCaptcha() %}
 <script src="https://www.google.com/recaptcha/api.js"></script>
 <script>
-    window.onload = function() {
-        if (typeof grecaptcha !== 'undefined') {
-            grecaptcha.render('g-recaptcha', {
-                'sitekey': '{{ google_secret_key() }}'
-            });
-        } else {
-            console.error('grecaptcha is not defined');
-        }
-    };
+  window.onload = function () {
+      if (typeof grecaptcha !== 'undefined') {
+          grecaptcha.render('g-recaptcha', {
+              'sitekey': '{{ google_secret_key() }}'
+          });
+      } else {
+          console.error('grecaptcha is not defined');
+      }
+  };
 </script>
-{% else %}
+{% elseif config().captcha().isDefaultCaptcha() %}
 <script>
-    function get_captcha() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/captcha', true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                var data = xhr.responseText;
-                var captchaImages = document.querySelectorAll('.captcha_img');
-                captchaImages.forEach(function(img) {
-                    img.src = data;
-                });
-            }
-        };
-        xhr.send();
+document.addEventListener('DOMContentLoaded', function() {
+    const authForm = document.getElementById('authForm');
+    const submitButton = document.querySelector('#forget');
+    const tokenInput = document.getElementById('cf-turnstile-response');
+    let formSubmitting = false;
+    let verificationInProgress = false;
+
+    // Инициализация: кнопка неактивна при загрузке страницы
+    submitButton.disabled = true;
+
+    // Создаем дополнительное скрытое поле для временного хранения изначального токена
+    const originalTokenInput = document.createElement('input');
+    originalTokenInput.type = 'hidden';
+    originalTokenInput.id = 'original-turnstile-token';
+    authForm.appendChild(originalTokenInput);
+
+    // Функция для проверки токена перед отправкой формы
+    function verifyToken(token) {
+        if (verificationInProgress) return Promise.reject('Проверка уже выполняется');
+
+        verificationInProgress = true;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Проверка...';
+
+        return fetch('https://sphereweb.net/cloudflare/cloudflare-verify-and-store.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'cf-turnstile-response=' + encodeURIComponent(token) +
+                  '&origin=' + encodeURIComponent(window.location.origin)
+        })
+              .then(response => response.json())
+              .then(data => {
+                  verificationInProgress = false;
+
+                  if (data.success && data.file_token) {
+                      console.log('Токен проверен и сохранен в файле. File token:', data.file_token);
+                      return data.file_token;
+                  } else {
+                      let errorMsg = 'Проверка капчи не пройдена №1';
+                      if (data.error_code) {
+                          if (data.error_code === 'timeout-or-duplicate') {
+                              errorMsg = 'Токен капчи устарел или уже использован. Пожалуйста, пройдите проверку снова.';
+                          } else {
+                              errorMsg = 'Ошибка: ' + data.error_code;
+                          }
+                          // Перерисовываем капчу
+                          document.getElementById('captcha-iframe').contentWindow.postMessage('render_captcha', '*');
+                      }
+
+                      console.error('Ошибка:', data.error_code || 'Неизвестная ошибка');
+                      return Promise.reject(errorMsg);
+                  }
+              });
     }
 
-    get_captcha();
+    // Обработка сообщений от iframe с капчей
+    window.addEventListener('message', function(event) {
+        if (event.data === 'captcha_iframe_loaded') {
+            document.getElementById('captcha-iframe').contentWindow.postMessage('render_captcha', '*');
+        } else if (event.data.type === 'captcha_token') {
+            // Сохраняем полученный токен в оба поля
+            const newToken = event.data.token;
+            tokenInput.value = newToken;
+            originalTokenInput.value = newToken;
 
-    document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('captcha_img')) {
-            get_captcha();
+            // Проверяем токен сразу после получения
+            verifyToken(newToken)
+                  .then(fileToken => {
+                      // Заменяем значение в поле формы на file_token
+                      tokenInput.value = fileToken;
+                      submitButton.disabled = false;
+                      submitButton.innerHTML = '{{ phrase("enter") }}';
+                  })
+                  .catch(error => {
+                      alert(error);
+                      submitButton.disabled = true;
+                      submitButton.innerHTML = '{{ phrase("enter") }}';
+                  });
+        } else if (event.data.type === 'captcha_expired') {
+            tokenInput.value = '';
+            originalTokenInput.value = '';
+            submitButton.disabled = true;
+        } else if (event.data.type === 'captcha_error') {
+            console.error('Ошибка Turnstile');
+            tokenInput.value = '';
+            originalTokenInput.value = '';
+            submitButton.disabled = true;
         }
     });
+
+    // Обработчик отправки формы
+    authForm.addEventListener('submit', function(e) {
+        if (formSubmitting) {
+            return; // Форма уже отправляется
+        }
+
+        const currentToken = tokenInput.value;
+        if (!currentToken) {
+            e.preventDefault();
+            alert('Пожалуйста, пройдите проверку капчи');
+            return;
+        }
+
+        // Помечаем форму как отправляющуюся
+        formSubmitting = true;
+
+        // Если у нас уже есть file_token, просто отправляем форму
+        if (currentToken !== originalTokenInput.value) {
+            console.log('Форма отправляется с file_token');
+            return true; // Продолжаем стандартную отправку формы
+        }
+
+        // Если у нас все еще оригинальный токен, останавливаем отправку и проверяем его
+        e.preventDefault();
+
+        verifyToken(currentToken)
+              .then(fileToken => {
+                  // Заменяем значение токена в форме
+                  tokenInput.value = fileToken;
+
+                  // Продолжаем отправку формы
+                  console.log('Повторная отправка формы с file_token');
+                  formSubmitting = false;
+                  authForm.submit();
+              })
+              .catch(error => {
+                  alert(error);
+                  formSubmitting = false;
+                  submitButton.disabled = false;
+                  submitButton.innerHTML = '{{ phrase("enter") }}';
+              });
+    });
+});
+</script>
+{% elseif config().captcha().isCloudflareCaptcha() %}
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+<script>
+    // Инициализация Cloudflare Turnstile
+    window.onload = function() {
+        turnstile.render('#cf-turnstile', {
+            sitekey: '{{config().captcha().getCloudflareSiteKey()}}',
+            callback: function(token) {
+                document.getElementById('cf-turnstile-response').value = token;
+            }
+        });
+    };
 </script>
 {% endif %}
 
+{% endif %}
 
 </body>
 

@@ -328,25 +328,57 @@
                                     <div class="col-xl-2">
                                         <ul class="nav nav-tabs flex-column nav-style-4" role="tablist">
                                             <li class="nav-item" role="presentation">
-                                                <a class="nav-link active" data-bs-toggle="tab" role="tab"
+                                                <a class="nav-link {% if config().captcha().isEnabled() %}active{% endif %}" data-bs-toggle="tab" role="tab"
                                                    aria-current="page"
-                                                   href="#home-vertical" aria-selected="true">{{phrase('simple_captcha')}}</a>
+                                                   href="#captcha-isEnable" aria-selected="true">Отключение</a>
                                             </li>
                                             <li class="nav-item" role="presentation">
-                                                <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                                                   href="#about-vertical"
+                                                <a class="nav-link {% if config().captcha().isDefaultCaptcha() %}active{% endif %}" data-bs-toggle="tab" role="tab"
+                                                   aria-current="page"
+                                                   href="#captcha-default" aria-selected="true">Sphere Cloudflare Captcha</a>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link {% if config().captcha().isGoogleCaptcha() %}active{% endif %}" data-bs-toggle="tab" role="tab" aria-current="page"
+                                                   href="#captcha-google"
                                                    aria-selected="false" tabindex="-1">Google Captcha v2</a>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link {% if config().captcha().isCloudflareCaptcha() %}active{% endif %}" data-bs-toggle="tab" role="tab" aria-current="page"
+                                                   href="#captcha-cloudflare"
+                                                   aria-selected="false" tabindex="-1">Cloudflare</a>
                                             </li>
                                         </ul>
                                     </div>
                                     <div class="col-xl-10">
                                         <div id="captcha" class="tab-content">
-                                            <div class="tab-pane text-muted active show" id="home-vertical"
+                                            <div class="tab-pane text-muted {% if config().captcha().isEnabled() == false %}active show{% endif %}" id="captcha-isEnable"
                                                  role="tabpanel">
                                                 <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                                                     <div>
                                                         <p class="fs-14 mb-1 fw-semibold">
-                                                            {{phrase('enable_standard_captcha')}}</p>
+                                                            Отключить использование капчи
+                                                        </p>
+                                                        <p class="fs-12 mb-0 text-muted"></p>
+                                                    </div>
+                                                    <div>
+                                                        <div class="custom-toggle-switch float-sm-end">
+                                                            <input class="btnCaptcha" id="isEnableCaptcha"
+                                                                   name="isEnableCaptcha" type="checkbox" {% if
+                                                                   config().captcha().isEnabled() == false %}checked="" {%
+                                                                   endif %}>
+                                                            <label for="isEnableCaptcha"
+                                                                   class="label-success mb-1"></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane text-muted {% if config().captcha().isDefaultCaptcha() %}active show{% endif %}" id="captcha-default"
+                                                 role="tabpanel">
+                                                <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                                                    <div>
+                                                        <p class="fs-14 mb-1 fw-semibold">
+                                                            Включить капчу используя встроенные ключи сервера Cloudflare
+                                                        </p>
                                                         <p class="fs-12 mb-0 text-muted"></p>
                                                     </div>
                                                     <div>
@@ -361,7 +393,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane text-muted" id="about-vertical" role="tabpanel">
+                                            <div class="tab-pane text-muted {% if config().captcha().isGoogleCaptcha() %}active show{% endif %}" id="captcha-google" role="tabpanel">
                                                 <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                                                     <div>
                                                         <p class="fs-14 mb-1 fw-semibold">
@@ -429,6 +461,40 @@
                                                     </div>
 
                                                 </div>
+                                            </div>
+                                            <div class="tab-pane text-muted {% if config().captcha().isCloudflareCaptcha() %}active show{% endif %}" id="captcha-cloudflare" role="tabpanel">
+
+                                                <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                                                    <div>
+                                                        <p class="fs-14 mb-1 fw-semibold">
+                                                            Включить Cloudflare капчу</p>
+                                                        <p class="fs-12 mb-0 text-muted"></p>
+                                                    </div>
+                                                    <div>
+                                                        <div class="custom-toggle-switch float-sm-end">
+                                                            <input class="btnCaptcha" id="cloudflareCaptcha"
+                                                                   name="cloudflareCaptcha" type="checkbox" {% if
+                                                                   config().captcha().isCloudflareCaptcha() %}checked="" {%
+                                                                   endif %}>
+                                                            <label for="cloudflareCaptcha"
+                                                                   class="label-success mb-1"></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                  <div class="form-floating mb-3">
+                                                        <input value="{{config().captcha().getCloudflareSiteKey()}}"
+                                                               type="text" class="form-control"
+                                                               id="cloudflareSiteKey" placeholder="Site Key">
+                                                        <label for="cloudflareSiteKey">Site Key</label>
+                                                    </div>
+                                                    <div class="form-floating">
+                                                        <input value="{{config().captcha().getCloudflareSecretKey()}}"
+                                                               type="text" class="form-control"
+                                                               id="cloudflareSecretKey" placeholder="Secret Key">
+                                                        <label for="cloudflareSecretKey">Secret Key</label>
+                                                    </div>
+
                                             </div>
                                         </div>
                                     </div>

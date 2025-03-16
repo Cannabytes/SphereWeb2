@@ -419,7 +419,7 @@ class auth
         }
         board::response(
           "notice",
-          ["message" => lang::get_phrase(166), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]
+          ["message" => lang::get_phrase(166), "ok" => false, "reloadCaptcha" => true]
         );
     }
 
