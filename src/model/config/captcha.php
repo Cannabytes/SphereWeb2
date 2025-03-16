@@ -41,6 +41,15 @@ class captcha
 
     public function isEnabled(): bool
     {
+        if ($this->defaultCaptcha) {
+            return true;
+        }
+        if ($this->googleCaptcha) {
+            return true;
+        }
+        if ($this->cloudflareCaptcha) {
+            return true;
+        }
         return $this->enable;
     }
 

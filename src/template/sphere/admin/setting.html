@@ -322,13 +322,12 @@
                         </div>
                         <div class="tab-pane p-0" id="captchaSystem"
                              role="tabpanel">
-
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-xl-2">
                                         <ul class="nav nav-tabs flex-column nav-style-4" role="tablist">
                                             <li class="nav-item" role="presentation">
-                                                <a class="nav-link {% if config().captcha().isEnabled() %}active{% endif %}" data-bs-toggle="tab" role="tab"
+                                                <a class="nav-link {% if config().captcha().isEnabled() == false %}active{% endif %}" data-bs-toggle="tab" role="tab"
                                                    aria-current="page"
                                                    href="#captcha-isEnable" aria-selected="true">Отключение</a>
                                             </li>
