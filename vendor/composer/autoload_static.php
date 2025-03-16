@@ -28,7 +28,6 @@ class ComposerStaticInit0507220f772e7a768dd11955ae70034d
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Stripe\\' => 7,
-            'SimpleCaptcha\\' => 14,
         ),
         'P' => 
         array (
@@ -65,10 +64,6 @@ class ComposerStaticInit0507220f772e7a768dd11955ae70034d
         'Stripe\\' => 
         array (
             0 => __DIR__ . '/..' . '/stripe/stripe-php/lib',
-        ),
-        'SimpleCaptcha\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/s1syphos/php-simple-captcha/src',
         ),
         'PHPMailer\\PHPMailer\\' => 
         array (
