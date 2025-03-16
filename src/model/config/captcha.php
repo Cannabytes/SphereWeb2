@@ -11,7 +11,7 @@ class captcha
 
     private bool $enable = true;
 
-    private bool $defaultCaptcha = false;
+    private bool $defaultCaptcha = true;
 
     private bool $googleCaptcha = false;
 
