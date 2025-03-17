@@ -336,9 +336,6 @@ class captcha
             ];
         }
 
-        // Журналирование результата проверки для отладки
-        error_log("Результат проверки токена: " . json_encode($result));
-
         return $result;
     }
 
