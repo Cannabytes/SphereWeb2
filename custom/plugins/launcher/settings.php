@@ -10,7 +10,7 @@ return [
     "PLUGIN_ADMIN_PAGE" => "/admin/launcher",
     "PLUGIN_ADMIN_PAGE_NAME" => "Лаунчер",
     "PLUGIN_ADMIN_PAGE_ICON" => "fa fa-users",
-    "PLUGIN_COST" => 5,
+    "PLUGIN_COST" => 0,
 
     "PLUGIN_USER_PAGE" => "/launcher",
     "PLUGIN_USER_PAGE_NAME" => "Sphere-Launcher",
