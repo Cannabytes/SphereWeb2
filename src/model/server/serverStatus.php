@@ -137,7 +137,7 @@ class serverStatus
         return $this->isEnableStatus;
     }
 
-    public function setEnable(bool $isEnableStatus): void
+    public function setEnable(bool $isEnableStatus = false): void
     {
         $this->isEnableStatus = $isEnableStatus;
     }

@@ -28,12 +28,12 @@ class captcha
     public function __construct($setting)
     {
         if ($setting) {
-            $this->enable          = filter_var($setting['enable'], FILTER_VALIDATE_BOOLEAN);
-            $this->defaultCaptcha  = filter_var($setting['defaultCaptcha'], FILTER_VALIDATE_BOOLEAN);
-            $this->googleCaptcha   = filter_var($setting['googleCaptcha'], FILTER_VALIDATE_BOOLEAN);
+            $this->enable = isset($setting['enable']) ? filter_var($setting['enable'], FILTER_VALIDATE_BOOLEAN) : false;
+            $this->defaultCaptcha = isset($setting['defaultCaptcha']) ? filter_var($setting['defaultCaptcha'], FILTER_VALIDATE_BOOLEAN) : false;
+            $this->googleCaptcha = isset($setting['googleCaptcha']) ? filter_var($setting['googleCaptcha'], FILTER_VALIDATE_BOOLEAN) : false;
             $this->googleClientKey = $setting['googleClientKey'] ?? "";
             $this->googleServerKey = $setting['googleServerKey'] ?? "";
-            $this->cloudflareCaptcha = filter_var($setting['cloudflareCaptcha'], FILTER_VALIDATE_BOOLEAN);
+            $this->cloudflareCaptcha = isset($setting['cloudflareCaptcha']) ? filter_var($setting['cloudflareCaptcha'], FILTER_VALIDATE_BOOLEAN) : false;
             $this->cloudflareSiteKey = $setting['cloudflareSiteKey'] ?? "";
             $this->cloudflareSecretKey = $setting['cloudflareSecretKey'] ?? "";
         }
@@ -137,17 +137,21 @@ class captcha
             }
             // Проверка результата
             if (!isset($result['success']) || $result['success'] !== true) {
-                // Улучшенная обработка ошибок
-                $errorMessage = "Проверка капчи не пройдена";
+                if(isset($result['error'])){
+                    $errorMessage = $result['error'];
+                }else{
+                    $errorMessage = "Проверка капчи не пройдена";
 
-                if (isset($result['error-codes']) && is_array($result['error-codes'])) {
-                    // Специальная обработка для timeout-or-duplicate
-                    if (in_array('timeout-or-duplicate', $result['error-codes'])) {
-                        $errorMessage = "Токен проверки устарел или уже использован. Обновите страницу и попробуйте снова.";
-                    } else {
-                        $errorMessage .= ": " . implode(', ', $result['error-codes']);
+                    if (isset($result['error-codes']) && is_array($result['error-codes'])) {
+                        // Специальная обработка для timeout-or-duplicate
+                        if (in_array('timeout-or-duplicate', $result['error-codes'])) {
+                            $errorMessage = "Токен проверки устарел или уже использован. Обновите страницу и попробуйте снова.";
+                        } else {
+                            $errorMessage .= ": " . implode(', ', $result['error-codes']);
+                        }
                     }
                 }
+
                 error_log("Ошибка проверки Cloudflare Turnstile: " . json_encode($result));
                 board::notice(false, $errorMessage);
             }
