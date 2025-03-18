@@ -244,6 +244,7 @@ class launcher
 
     public function show($launcher_name = null): void
     {
+        $launcher = null;
         if ($launcher_name == null) {
             $serverInfo = server::getServer(user::self()->getServerId());
             $launcher   = $serverInfo->getServerData("sphere-launcher")?->getVal();
@@ -264,7 +265,9 @@ class launcher
                 }
             }
         }
-
+        if($launcher == null){
+            redirect::location("/main");
+        }
         tpl::addVar('launcher', $launcher);
         tpl::addVar('application', json_encode($launcher['application'], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) );
         tpl::displayPlugin("/launcher/tpl/show.html");
