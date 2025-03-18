@@ -69,10 +69,6 @@
                                         <span class="badge bg-warning">{{phrase('leader_consent')}}</span>
                                         {% endif %}
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        {{phrase(114)}}
-                                        <span>{{ clan.getCreatedAt()|date("d.m.Y") }}</span>
-                                    </li>
                                 </ul>
 
                                 {% if getUser().isAuth() %}
@@ -225,7 +221,6 @@
                                                 <th>{{phrase('member')}}</th>
                                                 <th>{{phrase('role')}}</th>
                                                 <th>{{phrase('join_date')}}</th>
-                                                <th>{{phrase('prime_time')}}</th>
                                                 {% if clan.getOwnerId() == getUser().getId() and user.getId() !=
                                                 clan.getOwnerId() %}
                                                 <th>{{phrase('actions')}}</th>
@@ -249,8 +244,7 @@
                                                     <span class="badge bg-secondary">{{phrase('member')}}</span>
                                                     {% endif %}
                                                 </td>
-                                                <td>{{ user.getJoinDate()|date("d.m.Y") }}</td>
-                                                <td>Играю по вечерам</td>
+                                                <td>{{ member.join_date|date("d.m.Y") }}</td>
 
                                                 {% if clan.getOwnerId() == getUser().getId() and user.getId() !=
                                                 clan.getOwnerId() %}

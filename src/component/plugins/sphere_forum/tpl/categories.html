@@ -633,7 +633,9 @@
                     {% if clan %}
                     <a href="/forum/clan/{{clan.name}}" class="btn btn-sm  btn-info-light ">{{clan.name}}</a>
                     {% else %}
-                    <a href="/forum/clan/create" class="btn btn-sm  btn-info-light ">{{phrase('create_clan')}}</a>
+                        {% if getUser().isAuth() %}
+                        <a href="/forum/clan/create" class="btn btn-sm  btn-info-light ">{{phrase('create_clan')}}</a>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
