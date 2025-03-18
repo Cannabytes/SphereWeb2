@@ -186,7 +186,11 @@ class lucera_traders
                 }
             }
 
-            $jsonData = json_encode(array_values($selllist));
+            if($selllist){
+                $jsonData = json_encode(array_values($selllist));
+            }else{
+                $jsonData = [];
+            }
 
             sql::sql("INSERT INTO `server_cache` ( `server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
                 user::self()->getServerId(),
