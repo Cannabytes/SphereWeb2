@@ -56,8 +56,7 @@ class lucera_traders
         ]);
         if ($data) {
             $totalSeconds = time::diff(time::mysql(), $data['date_create']);
-//            if ($totalSeconds > 60 * 5) {
-            if ($totalSeconds > 1 * 1) {
+            if ($totalSeconds > 60 * 1) {
                 sql::run("DELETE FROM server_cache WHERE `type` = ? AND server_id = ?;", [
                     $cacheKey,
                     user::self()->getServerId(),
