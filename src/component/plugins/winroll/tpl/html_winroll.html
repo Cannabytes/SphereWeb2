@@ -154,7 +154,7 @@ const items = [
 {% set enchant = wr.enchant %}
 {
     id: "{{ wr.id }}",
-          name: "{{ enchant > 0 ? '+' ~ enchant ~ ' ' ~ item.getItemName() : item.getItemName() }}",
+          name: "{{ enchant > 0 ? '+' ~ enchant ~ ' ' ~ item.getItemName() | raw : item.getItemName() | raw }}",
       image: "{{ item.getIcon() }}"
 },
 {% endfor %}

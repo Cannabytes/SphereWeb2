@@ -149,7 +149,11 @@ class session
 
     public static function clear()
     {
-        session_destroy();
+        $lang = $_SESSION['lang'] ?? null;
+        $_SESSION = array();
+        if ($lang !== null) {
+            $_SESSION['lang'] = $lang;
+        }
     }
 
     public static function get_guest_var()
