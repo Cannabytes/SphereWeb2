@@ -37,6 +37,9 @@
       background-color: #448a1a;
       opacity: 0.3;
     }
+
+
+
   </style>
 </head>
 
@@ -82,9 +85,8 @@
                 <div id="cf-turnstile" class="cf-turnstile"></div>
                 <input type="hidden" id="cf-turnstile-response" name="cf-turnstile-response">
               {% elseif config().captcha().isDefaultCaptcha() %}
-                <iframe id="captcha-iframe" src="https://sphereweb.net/cloudflare/captcha-proxy.html"
-                        style="width: 100%; height: 80px; border: none;"></iframe>
-                    <input id="cf-turnstile-response" name="cf-turnstile-response" type="hidden">
+                <script async defer src="https://js.hcaptcha.com/1/api.js?hl={{getUser().getLang()}}"></script>
+                <div class="h-captcha text-center" data-sitekey="0c545d06-4fe6-45d4-b704-7b809af8db9c"></div>
               {% endif %}
 
               <div class="col-xl-12 d-grid mt-2">
@@ -134,7 +136,6 @@
 
 
         </div>
-
 
         <div class="card custom-card fileauth">
           <div class="card-body">
@@ -186,143 +187,7 @@
   };
 </script>
 {% elseif config().captcha().isDefaultCaptcha() %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const authForm = document.getElementById('authForm');
-  const submitButton = document.querySelector('.enter');
-  const tokenInput = document.getElementById('cf-turnstile-response');
-  let formSubmitting = false;
-  let verificationInProgress = false;
 
-  // Инициализация: кнопка неактивна при загрузке страницы
-  submitButton.disabled = true;
-
-  // Создаем дополнительное скрытое поле для временного хранения изначального токена
-  const originalTokenInput = document.createElement('input');
-  originalTokenInput.type = 'hidden';
-  originalTokenInput.id = 'original-turnstile-token';
-  authForm.appendChild(originalTokenInput);
-
-  // Функция для проверки токена перед отправкой формы
-  function verifyToken(token) {
-    if (verificationInProgress) return Promise.reject('Проверка уже выполняется');
-
-    verificationInProgress = true;
-    submitButton.disabled = true;
-    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Проверка...';
-
-    return fetch('https://sphereweb.net/cloudflare/cloudflare-verify-and-store.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: 'cf-turnstile-response=' + encodeURIComponent(token) +
-            '&origin=' + encodeURIComponent(window.location.origin)
-    })
-          .then(response => response.json())
-          .then(data => {
-            verificationInProgress = false;
-
-            if (data.success && data.file_token) {
-              console.log('Токен проверен и сохранен в файле. File token:', data.file_token);
-              return data.file_token;
-            } else {
-              let errorMsg = 'Проверка капчи не пройдена №1';
-              if (data.error_code) {
-                if (data.error_code === 'timeout-or-duplicate') {
-                  errorMsg = 'Токен капчи устарел или уже использован. Пожалуйста, пройдите проверку снова.';
-                } else {
-                  errorMsg = 'Ошибка: ' + data.error_code;
-                }
-                // Перерисовываем капчу
-                document.getElementById('captcha-iframe').contentWindow.postMessage('render_captcha', '*');
-              }
-
-              console.error('Ошибка:', data.error_code || 'Неизвестная ошибка');
-              return Promise.reject(errorMsg);
-            }
-          });
-  }
-
-  // Обработка сообщений от iframe с капчей
-  window.addEventListener('message', function(event) {
-    if (event.data === 'captcha_iframe_loaded') {
-      document.getElementById('captcha-iframe').contentWindow.postMessage('render_captcha', '*');
-    } else if (event.data.type === 'captcha_token') {
-      // Сохраняем полученный токен в оба поля
-      const newToken = event.data.token;
-      tokenInput.value = newToken;
-      originalTokenInput.value = newToken;
-
-      // Проверяем токен сразу после получения
-      verifyToken(newToken)
-            .then(fileToken => {
-              // Заменяем значение в поле формы на file_token
-              tokenInput.value = fileToken;
-              submitButton.disabled = false;
-              submitButton.innerHTML = '{{ phrase("enter") }}';
-            })
-            .catch(error => {
-              alert(error);
-              submitButton.disabled = true;
-              submitButton.innerHTML = '{{ phrase("enter") }}';
-            });
-    } else if (event.data.type === 'captcha_expired') {
-      tokenInput.value = '';
-      originalTokenInput.value = '';
-      submitButton.disabled = true;
-    } else if (event.data.type === 'captcha_error') {
-      console.error('Ошибка Turnstile');
-      tokenInput.value = '';
-      originalTokenInput.value = '';
-      submitButton.disabled = true;
-    }
-  });
-
-  // Обработчик отправки формы
-  authForm.addEventListener('submit', function(e) {
-    if (formSubmitting) {
-      return; // Форма уже отправляется
-    }
-
-    const currentToken = tokenInput.value;
-    if (!currentToken) {
-      e.preventDefault();
-      alert('Пожалуйста, пройдите проверку капчи');
-      return;
-    }
-
-    // Помечаем форму как отправляющуюся
-    formSubmitting = true;
-
-    // Если у нас уже есть file_token, просто отправляем форму
-    if (currentToken !== originalTokenInput.value) {
-      console.log('Форма отправляется с file_token');
-      return true; // Продолжаем стандартную отправку формы
-    }
-
-    // Если у нас все еще оригинальный токен, останавливаем отправку и проверяем его
-    e.preventDefault();
-
-    verifyToken(currentToken)
-          .then(fileToken => {
-            // Заменяем значение токена в форме
-            tokenInput.value = fileToken;
-
-            // Продолжаем отправку формы
-            console.log('Повторная отправка формы с file_token');
-            formSubmitting = false;
-            authForm.submit();
-          })
-          .catch(error => {
-            alert(error);
-            formSubmitting = false;
-            submitButton.disabled = false;
-            submitButton.innerHTML = '{{ phrase("enter") }}';
-          });
-  });
-});
-</script>
 {% elseif config().captcha().isCloudflareCaptcha() %}
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
 <script>
@@ -338,38 +203,29 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 {% endif %}
 
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   function get_captcha() {
     // Проверяем, какая капча используется
     if (captcha === "google") {
       grecaptcha.reset();
-    } else {
-      // Если используется Cloudflare Turnstile
-      var iframe = document.getElementById('captcha-iframe');
-      if (iframe) {
-        // Обновляем src iframe вместо отправки сообщения
-        // Сначала сохраняем оригинальный src
-        var originalSrc = iframe.src;
-
-        // Добавляем временный параметр для избежания кэширования
-        iframe.src = originalSrc.split('?')[0] + '?reload=' + new Date().getTime();
-
-        // Сбрасываем значение токена
-        var tokenInput = document.getElementById('cf-turnstile-response');
-        var originalTokenInput = document.getElementById('original-turnstile-token');
-        if (tokenInput) tokenInput.value = '';
-        if (originalTokenInput) originalTokenInput.value = '';
-
-        // Блокируем кнопку отправки формы
-        var submitButton = document.querySelector('.enter');
-        if (submitButton) {
-          submitButton.disabled = true;
-          submitButton.innerHTML = '{{ phrase("enter") }}';
-        }
+    } else if (captcha === "default") {
+      // Сброс hCaptcha
+      if (typeof hcaptcha !== 'undefined') {
+        hcaptcha.reset();
+      }
+    } else if (captcha === "cloudflare") {
+      // Сброс Cloudflare Turnstile
+      if (typeof turnstile !== 'undefined') {
+        turnstile.reset();
       }
     }
   }
+
+  // Делаем функцию доступной глобально
+  window.get_captcha = get_captcha;
 });
 </script>
 {% endif %}

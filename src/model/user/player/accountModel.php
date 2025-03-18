@@ -85,7 +85,7 @@ class accountModel
         return $this->charactersArray;
     }
 
-    public function setCharacters(array $characters = null): void
+    public function setCharacters(?array $characters = null): void
     {
         if ($characters == null) {
             $this->character       = [];

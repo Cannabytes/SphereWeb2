@@ -127,11 +127,13 @@ class captcha
                 board::notice(false, $errorMessage);
             }
         } else {
-            $token = $_POST['cf-turnstile-response'] ?? '';
+            $token = $_POST['h-captcha-response'] ?? '';
+//            $token = $_POST['cf-turnstile-response'] ?? '';
             if (empty($token)) {
                 board::notice(false, "Пожалуйста, пройдите проверку капчи");
             }
-            $result = $this->verifySphereCloudflareTurnstile($token);
+//            $result = $this->verifySphereCloudflareTurnstile($token);
+            $result = $this->verifySphereHCaptcha($token);
             if ($result['success'] === true) {
                 return;
             }
@@ -324,6 +326,67 @@ class captcha
 
         // Декодирование JSON-ответа
         $result = json_decode($response, true);
+        // Проверка корректности JSON
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            error_log("Ошибка декодирования JSON-ответа: " . json_last_error_msg());
+
+            return [
+                'success' => false,
+                'error' => 'Некорректный ответ сервера проверки капчи',
+                'error-codes' => ['invalid_json']
+            ];
+        }
+        return $result;
+    }
+
+    private function verifySphereHCaptcha($token)
+    {
+        $uniqueId = uniqid('verify_', true);
+        $getterUrl = 'https://sphereweb.net/hcaptcha/check.php';
+        $data = [
+            'token' => $token,
+            'user_ip' => $_SERVER['REMOTE_ADDR'],
+            'unique_id' => $uniqueId,
+        ];
+
+        $ch = curl_init($getterUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded',
+            'Origin: ' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'],
+            'Cache-Control: no-cache, no-store, must-revalidate',
+            'Pragma: no-cache'
+        ]);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+        if ($response === false) {
+            error_log("Ошибка соединения с сервером проверки капчи: " . $curlError);
+            return [
+                'success' => false,
+                'error' => 'Ошибка соединения с сервером проверки капчи',
+                'error-codes' => ['connection_failed']
+            ];
+        }
+
+        // Если код ответа не 200, значит есть проблема
+        if ($httpCode !== 200) {
+            error_log("Сервер проверки капчи вернул код ошибки: " . $httpCode);
+
+            return [
+                'success' => false,
+                'error' => 'Сервер проверки капчи вернул код ошибки: ' . $httpCode,
+                'error-codes' => ['invalid_response']
+            ];
+        }
+
+        // Декодирование JSON-ответа
+        $result = json_decode($response, true);
 
         // Проверка корректности JSON
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -336,9 +399,15 @@ class captcha
             ];
         }
 
+        if (!$result['success']){
+            return [
+                'success' => false,
+                'error-codes' => $result['error-codes'],
+            ];
+        }
+
         return $result;
     }
-
 
     /**
      * Возвращает название капчи, которая будет использоваться.

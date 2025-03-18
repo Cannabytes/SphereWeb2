@@ -401,7 +401,6 @@ class auth
         $email    = request::setting('email', new request_config(isEmail: true));
         $email = trim($email);
         $password = request::setting('password', new request_config(max: 32));
-
         config::load()->captcha()->validator();
 
         $user_info = self::exist_user($email);
