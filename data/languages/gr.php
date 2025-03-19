@@ -1899,5 +1899,6 @@ Password: %%password%%',
     'collect_bonuses' => 'Συλλογή μπόνους',
     'referral_bonus_message' => 'Λάβατε <span class=\'text-success\'>+%s</span> νομίσματα για παραπομπές και θα λαμβάνετε <span class=\'text-success\'>%s%%</span> για δωρεές από τον χρήστη: %s. Όλα τα μπόνους έχουν σταλεί στην αποθήκη σας.',
     'received_items' => 'Έχετε λάβει τα ακόλουθα αντικείμενα',
+    'collecting_bonus' => 'Συλλογή μπόνους...',
 
     ];

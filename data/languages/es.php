@@ -1921,6 +1921,6 @@ Contraseña: %%password%%',
     'collect_bonuses' => 'Reclamar bonificaciones',
     'referral_bonus_message' => 'Has recibido <span class=\'text-success\'>+%s</span> monedas por referidos y recibirás <span class=\'text-success\'>%s%%</span> por donaciones del usuario: %s. Todos los bonos han sido enviados a tu almacén.',
     'received_items' => 'Ha recibido los siguientes artículos',
-
+    'collecting_bonus' => 'Reclamando bonificación...',
 
     ];

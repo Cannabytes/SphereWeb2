@@ -517,7 +517,7 @@
 
     $("#confirm_bonus").on("click", function () {
       // Показываем загрузку
-      $(".referral_message").html('<div class="text-center"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Получение бонуса...</p></div>');
+      $(".referral_message").html('<div class="text-center"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">{{phrase("collecting_bonus")}}</p></div>');
 
       // Скрываем кнопку подтверждения на время запроса
       $(this).hide();

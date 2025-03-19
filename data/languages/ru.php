@@ -1943,4 +1943,5 @@ Password: %%password%%',
     'collect_bonuses' => 'Получить бонусы',
     'referral_bonus_message' => 'Вы получили <span class=\'text-success\'>+%s</span> коинов за рефералов и будете получать <span class=\'text-success\'>%s%%</span> за пожертвование пользователя: %s. Все бонусы отправлены Вам на склад.',
     'received_items' => 'Вы получили следующие предметы',
+    'collecting_bonus' => 'Получение бонуса...',
 ];
