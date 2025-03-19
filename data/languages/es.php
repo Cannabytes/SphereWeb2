@@ -1913,5 +1913,6 @@ Contraseña: %%password%%',
 
     'balance_bonus' => 'Saldo de Bonificación',
     'referral_list' => 'Lista de sus Referidos',
+    'joined' => 'Se unió',
 
 ];

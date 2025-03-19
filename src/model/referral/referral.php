@@ -81,6 +81,7 @@ class referral
                 'avatar' => $user->getAvatar(),
                 'accounts' => $user->getAccounts(),
                 'done' => $ref['done'],
+                'join_date' => $ref['join_date'],
             ];
             $users[] = $data;
         }

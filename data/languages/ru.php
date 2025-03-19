@@ -1935,5 +1935,5 @@ Password: %%password%%',
 
     'balance_bonus' => 'Бонусный Баланс',
     'referral_list' => 'Список ваших рефералов',
-
+    'joined' => 'Присоединился',
 ];

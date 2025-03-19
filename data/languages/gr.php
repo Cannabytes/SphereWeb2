@@ -1891,5 +1891,6 @@ Password: %%password%%',
 
     'balance_bonus' => 'Υπόλοιπο Μπόνους',
     'referral_list' => 'Λίστα των Παραπομπών σας',
+    'joined' => 'Συμμετείχε',
 
 ];

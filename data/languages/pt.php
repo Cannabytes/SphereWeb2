@@ -1908,5 +1908,6 @@ Password: %%password%%',
 
     'balance_bonus' => 'Saldo de Bônus',
     'referral_list' => 'Lista de seus Indicados',
+    'joined' => 'Juntou-se',
 
 ];

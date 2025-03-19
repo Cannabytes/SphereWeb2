@@ -1915,5 +1915,6 @@ Password: %%password%%',
 
     'balance_bonus' => 'Bonus Balance',
     'referral_list' => 'Your Referrals List',
+    'joined' => 'Joined',
 
 ];

@@ -58,7 +58,7 @@
         {% if allCount > 0 %}
         <div class="progress-container mt-4">
           <div class="d-flex justify-content-between align-items-center mb-1">
-            <div class="small fw-medium">Прогресс выполнения</div>
+            <div class="small fw-medium">{{phrase('progress')}}</div>
             <div class="badge bg-primary">{{(doneCountOk/allCount*100)|number_format(0)}}%</div>
           </div>
           <div class="progress" style="height: 8px;">
@@ -150,7 +150,7 @@
             <i class="ri-coin-line fs-3 text-warning"></i>
           </div>
           <div>
-            <h6 class="mb-1">Бонусные монеты</h6>
+            <h6 class="mb-1">{{phrase('balance_bonus')}}</h6>
             <div class="small">
               {{phrase('donate_coin_per_ref_donation', config().referral().getProcentDonateBonus())}}
             </div>
@@ -247,7 +247,7 @@
     <div class="d-flex align-items-center mb-2 mt-2">
       <h5 class="mb-0 d-flex align-items-center">
         <i class="ri-team-line me-2 text-primary"></i>
-        Список ваших рефералов
+        {{phrase('referral_list')}}
       </h5>
     </div>
   </div>
@@ -269,6 +269,7 @@
               <span class="badge bg-success ms-2 rounded-pill">Online</span>
               {% endif %}
             </h6>
+            <small class="text-muted">{{ phrase('joined') }}: {{referral.join_date|date("H:m | d.m.Y")}}</small>
           </div>
         </div>
 
