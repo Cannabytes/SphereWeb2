@@ -1,163 +1,685 @@
 {% if startpacks() is not empty %}
-<div class="card custom-card overflow-hidden">
+
+{% block css %}
+<style>
+
+  .startpack-card {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    border: 2px solid transparent;
+    position: relative;
+    z-index: 1;
+  }
+
+  .startpack-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+    z-index: 2;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease-out;
+  }
+
+  .startpack-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(142, 84, 233, 0.3);
+    box-shadow: 0 15px 35px rgba(71, 118, 230, 0.2);
+  }
+
+  .startpack-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  /* Заголовок пакета */
+  .startpack-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    position: relative;
+    padding-bottom: 0.75rem;
+    text-align: center;
+    color: #2D3748;
+  }
+
+  .startpack-name::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+  }
+
+  /* Стиль для цены на кнопке */
+  .price-on-button {
+    display: inline-flex;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 5px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+
+  .btn-purchase:hover .price-on-button {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+  }
+
+  @keyframes pulseOnce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  .pulse-once {
+    animation: pulseOnce 1s ease;
+  }
+
+  /* Список предметов */
+  .item-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+  }
+
+  .item-entry {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    background: rgba(242, 242, 242, 0.5);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .item-entry:hover {
+    background: rgba(242, 242, 242, 0.9);
+    transform: translateX(5px);
+  }
+
+  .item-icon {
+    margin-right: 8px;
+    position: relative;
+    transition: transform 0.2s ease;
+  }
+
+  .item-entry:hover .item-icon {
+    transform: scale(1.1);
+  }
+
+  .item-grade {
+    margin-right: 5px;
+  }
+
+  .item-details {
+    flex-grow: 1;
+    font-size: 0.9rem;
+  }
+
+  .item-name {
+    color: #4A5568;
+    font-weight: 600;
+  }
+
+  .item-count {
+    margin-left: auto;
+    font-weight: 700;
+    color: #4776E6;
+    background: rgba(71, 118, 230, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+  }
+
+  .enchant-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #F56565 0%, #ED8936 100%);
+    color: white;
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-left: 5px;
+  }
+
+  /* Кнопка покупки */
+  .btn-purchase {
+    background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    margin-top: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .btn-purchase::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #8E54E9 0%, #4776E6 100%);
+    transition: left 0.4s ease;
+    z-index: -1;
+  }
+
+  .btn-purchase:hover::before {
+    left: 0;
+  }
+
+  .btn-purchase:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(71, 118, 230, 0.3);
+  }
+
+  /* Модальное окно */
+  .modal-custom {
+    backdrop-filter: blur(5px);
+  }
+
+  .modal-content-custom {
+    border-radius: 16px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header-custom {
+    background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+    color: white;
+    border-bottom: none;
+    padding: 0.1rem;
+  }
+
+  .modal-title-custom {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-left: 15px;
+  }
+
+  .modal-body-custom {
+    padding: 0.6rem;
+  }
+
+  .tab-nav-custom {
+    border-bottom: none;
+  }
+
+  .tab-nav-custom .nav-link {
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-left: 5px;
+    border-radius: 8px 8px 0 0;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+  }
+
+  .tab-nav-custom .nav-link.active {
+    background: rgba(255, 255, 255, 0.2);
+    opacity: 1;
+  }
+
+  .item-list-modal {
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: #F9FAFB;
+    padding: 1rem;
+  }
+
+  .tab-content-custom {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Селектор персонажей */
+  .character-select {
+    background-color: #F9FAFB;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: #4A5568;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  }
+
+  .character-select:focus {
+    border-color: #4776E6;
+    box-shadow: 0 0 0 3px rgba(71, 118, 230, 0.2);
+  }
+
+  .price-display {
+    background: #F7FAFC;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .price-label {
+    font-weight: 600;
+    color: #4A5568;
+  }
+
+  .price-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #4776E6;
+  }
+
+  .btn-buy {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+    color: white;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-buy::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    transform: rotate(30deg);
+    transition: all 0.8s;
+    opacity: 0;
+  }
+
+  .btn-buy:hover::after {
+    opacity: 1;
+    left: 100%;
+  }
+
+  .btn-buy:hover {
+    box-shadow: 0 10px 20px rgba(71, 118, 230, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* Анимации */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(-30px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .animated-item {
+    animation: fadeIn 0.5s ease-out forwards;
+    opacity: 0;
+  }
+
+  /* Адаптивность */
+  @media (max-width: 992px) {
+    .startpack-card {
+      margin-bottom: 2rem;
+    }
+  }
+
+  /* Модификатор для элементов в модальном окне */
+  #openShopStartpack .modal-dialog {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  #openShopStartpack.show .modal-dialog {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+</style>
+
+{% endblock %}
+
+<div class="">
+  <div class="card custom-card overflow-hidden">
     <div class="card-body p-0">
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane p-0 active show" id="pricing-monthly-pane" role="tabpanel"
-                 aria-labelledby="pricing-monthly" tabindex="0">
-                <div class="row">
-
-                    {% for data in startpacks() %}
-                    <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-12 border-end border-inline-end-dashed pe-0">
-                        <div class="p-4 h-100 d-flex flex-column">
-                            <h6 class="fw-semibold text-center startpack_name">{{ data.name }}</h6>
-                            <div class="py-3 d-flex align-items-center justify-content-center">
-                                <div class="">
-                                    <p class="fs-1 fw-semibold mb-0 startpack_cost">{{ data.cost }}</p>
-                                    <p class="text-muted op-5 fs-11 fw-semibold mb-0">{{ phrase('donate_coin') }}</p>
-                                </div>
-                            </div>
-                            <ul id="item_list_startpack_{{ data.id }}"
-                                class="list-unstyled text-center fs-12 px-3 pt-3 mb-0 flex-grow-1">
-
-                                {% if data.items|length > 0 %}
-                                {% for item in data.items %}
-                                {% set itemInfo = get_item_info(item.itemId) %}
-                                <li data-item-src="{{ itemInfo.getIcon() }}" data-item-name="{{ itemInfo.itemName }}"
-                                    data-item-enchant="{{ item.enchant }}" data-item-count="{{ item.count }}" class="mb-3">
-                                    {{grade_img(itemInfo.getCrystalType())|raw}}
-                                    <img src="{{ itemInfo.getIcon() }}" alt="" class="avatar avatar-sm ">
-                                    <span data-bs-toggle="tooltip" data-bs-placement="top"
-                                          data-bs-original-title="{{ itemInfo.getDescription()|e }}" class="text-muted"> {% if item.enchant > 0 %}<span
-                                            class="badge bg-danger text-white ms-1">+{{item.enchant}}</span>{% endif %} {{itemInfo.itemName}} </span>
-                                    x{{format_number_fr(item.count)}}
-                                </li>
-                                {% endfor %}
-                                {% endif %}
-
-                            </ul>
-                            <div class="d-grid mt-auto">
-                <span class="btn btn-primary-light btn-wave waves-effect waves-light btn-open-shop"
-                      data-startpack-id="{{ data.id }}"
-                      type="button" data-bs-target="#openShopStartpack"
-                      data-bs-toggle="modal">{{phrase(74)}}</span>
-                            </div>
-                        </div>
-                    </div>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane p-0 active show" id="pricing-monthly-pane" role="tabpanel"
+             aria-labelledby="pricing-monthly" tabindex="0">
+          <div class="row g-4 p-3">
+            {% for data in startpacks() %}
+            <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-12 animated-item" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+              <div class="startpack-card">
+                <div class="p-4 h-100 d-flex flex-column">
+                  <h6 class="startpack-name">{{ data.name }}</h6>
+                  <ul id="item_list_startpack_{{ data.id }}" class="item-list px-1 py-3 flex-grow-1">
+                    {% if data.items|length > 0 %}
+                    {% for item in data.items %}
+                    {% set itemInfo = get_item_info(item.itemId) %}
+                    <li data-item-src="{{ itemInfo.getIcon() }}"
+                        data-item-name="{{ itemInfo.itemName }}"
+                        data-item-enchant="{{ item.enchant }}"
+                        data-item-count="{{ item.count }}"
+                        class="item-entry">
+                      <span class="item-grade">{{grade_img(itemInfo.getCrystalType())|raw}}</span>
+                      <span class="item-icon">
+                        <img src="{{ itemInfo.getIcon() }}" alt="" class="avatar avatar-sm">
+                      </span>
+                      <div class="item-details">
+                        <span data-bs-toggle="tooltip" data-bs-placement="top"
+                              data-bs-original-title="{{ itemInfo.getDescription()|e }}" class="item-name">
+                          {% if item.enchant > 0 %}
+                          <span class="enchant-badge">+{{item.enchant}}</span>
+                          {% endif %}
+                          {{itemInfo.itemName}}
+                        </span>
+                      </div>
+                      <span class="item-count">
+                        x{{format_number_fr(item.count)}}
+                      </span>
+                    </li>
                     {% endfor %}
-
+                    {% else %}
+                    <li class="text-center text-muted py-3">Нет предметов в пакете</li>
+                    {% endif %}
+                  </ul>
+                  <div class="d-grid mt-auto">
+                    <button class="btn btn-purchase btn-wave waves-effect waves-light btn-open-shop"
+                            data-startpack-id="{{ data.id }}"
+                            type="button" data-bs-target="#openShopStartpack"
+                            data-bs-toggle="modal">
+                      <i class="fas fa-shopping-cart me-2"></i>{{phrase('buy_for')}} <span class="price-on-button">{{ data.cost }}</span>
+                    </button>
+                  </div>
                 </div>
+              </div>
             </div>
+            {% endfor %}
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </div>
-<div class="modal modal-lg fade" id="openShopStartpack" tabindex="-1" aria-labelledby="openShopStartpackLabel"
+
+<!-- Модальное окно покупки пакета -->
+<div class="modal modal-lg fade modal-custom" id="openShopStartpack" tabindex="-1" aria-labelledby="openShopStartpackLabel"
      aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="card-title">
-                    {{phrase('purchase')}}
-                </div>
-
-                <div>
-                    <ul class="nav nav-tabs justify-content-end nav-tabs-header mb-0" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
-                               href="#StartpackSendItemsToPlayer" aria-selected="true">{{phrase('send_to_char')}}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                               href="#StartpackSendItemsToWarhouse" aria-selected="true">{{phrase('send_to_wh')}}</a>
-                        </li>
-                    </ul>
-                </div>
-
-
-            </div>
-            <div class="modal-body">
-
-                <div class="card-body">
-
-                    <div class="row">
-
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                            <div class="card custom-card overflow-hidden" id="itemListSellStartpack">
-                                Вставить сюда список предметов
-                            </div>
-                        </div>
-
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-
-                            <div class="tab-content">
-                                <div class="tab-pane show active text-muted" id="StartpackSendItemsToPlayer"
-                                     role="tabpanel">
-                                    <div class="card-body">
-                                        <div class="mx-auto">
-                                            {{phrase(77)}}
-
-                                            <select {% if getUser().getCountPlayers()== 0 %}disabled{% endif
-                                                    %} class="form-control" data-trigger id="StartpackPlayer">
-                                                {% if getUser().getCountPlayers() == 0 %}
-                                                <option>{{phrase('no_chars')}}</option>
-                                                {% else %}
-                                                {% for i, account in getUser().getAccounts() %}
-                                                <optgroup label="{{phrase('account')}}: {{account.getAccount}}">
-                                                    {% if account.getCharactersCount() == 0 %}
-                                                    <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_chars')}}
-                                                    </option>
-                                                    {% else %}
-                                                    {% for i, character in account.getCharacters() %}
-                                                    <option data-account="{{account.getAccount()}}" value="{{character.getPlayerName()}}">
-                                                        &nbsp;&nbsp;&nbsp;&nbsp; {{character.getPlayerName()}}
-                                                    </option>
-                                                    {% endfor %}
-                                                    {% endif %}
-                                                </optgroup>
-                                                {% endfor %}
-                                                {% endif %}
-                                            </select>
-
-                                            <div class="d-flex flex-wrap align-items-center">
-                                                <div class="me-2 fw-semibold">
-                                                    {{phrase(72)}} :
-                                                </div>
-                                                <span class="fs-12 text-muted StartPackCostBuy">0</span>
-                                            </div>
-
-                                            <button data-object-id="0" id="Startpackpurchase" type="button"
-                                                    class="btn btn-success btn-wave waves-effect waves-light">
-                                                {{phrase('buy_send_to_char')}}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="tab-pane text-muted" id="StartpackSendItemsToWarhouse"
-                                     role="tabpanel">
-                                    <div class="card-body">
-
-                                        <div class="d-flex flex-wrap align-items-center">
-                                            <div class="me-2 fw-semibold">
-                                                {{phrase(72)}} :
-                                            </div>
-                                            <span class="fs-12 text-muted StartPackCostBuy">0</span>
-                                        </div>
-
-                                        <button data-object-id="0" id="StartpackWarehouse" type="button"
-                                                class="btn btn-success btn-wave waves-effect waves-light">
-                                            {{phrase('buy_send_to_wh')}}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-
-            </div>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modal-content-custom">
+      <div class="modal-header modal-header-custom">
+        <div class="modal-title-custom">
+          {{phrase('purchase')}}
         </div>
+        <div>
+          <ul class="nav nav-tabs justify-content-end tab-nav-custom mb-0" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#StartpackSendItemsToPlayer" aria-selected="true">
+                <i class="fas fa-user me-1"></i>{{phrase('send_to_char')}}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#StartpackSendItemsToWarhouse" aria-selected="true">
+                <i class="fas fa-warehouse me-1"></i>{{phrase('send_to_wh')}}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-body modal-body-custom">
+        <div class="row g-4">
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+            <div class="item-list-modal" id="itemListSellStartpack">
+              <!-- Тут будет загружен список предметов -->
+            </div>
+          </div>
+
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+            <div class="tab-content tab-content-custom">
+              <div class="tab-pane show active" id="StartpackSendItemsToPlayer" role="tabpanel">
+
+                {{phrase(77)}}
+                <select {% if getUser().getCountPlayers() == 0 %}disabled{% endif %}
+                        class="form-control character-select" id="StartpackPlayer">
+                  {% if getUser().getCountPlayers() == 0 %}
+                  <option>{{phrase('no_chars')}}</option>
+                  {% else %}
+                  {% for i, account in getUser().getAccounts() %}
+                  <optgroup label="{{phrase('account')}}: {{account.getAccount}}">
+                    {% if account.getCharactersCount() == 0 %}
+                    <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_chars')}}</option>
+                    {% else %}
+                    {% for i, character in account.getCharacters() %}
+                    <option data-account="{{account.getAccount()}}" value="{{character.getPlayerName()}}">
+                      &nbsp;&nbsp;&nbsp;&nbsp; {{character.getPlayerName()}}
+                    </option>
+                    {% endfor %}
+                    {% endif %}
+                  </optgroup>
+                  {% endfor %}
+                  {% endif %}
+                </select>
+
+                <div class="price-display">
+                  <div class="price-label">
+                    <i class="fas fa-coins me-2"></i>{{phrase(72)}}:
+                  </div>
+                  <div class="price-value StartPackCostBuy">0</div>
+                </div>
+
+                <button data-object-id="0" id="Startpackpurchase" type="button"
+                        class="btn btn-buy">
+                  <i class="fas fa-check-circle me-2"></i>{{phrase('buy_send_to_char')}}
+                </button>
+              </div>
+
+              <div class="tab-pane" id="StartpackSendItemsToWarhouse" role="tabpanel">
+
+                <div class="price-display">
+                  <div class="price-label">
+                    <i class="fas fa-coins me-2"></i>{{phrase(72)}}:
+                  </div>
+                  <div class="price-value StartPackCostBuy">0</div>
+                </div>
+
+                <button data-object-id="0" id="StartpackWarehouse" type="button"
+                        class="btn btn-buy">
+                  <i class="fas fa-check-circle me-2"></i>{{phrase('buy_send_to_wh')}}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
+
+<script>
+$(document).ready(function() {
+  $('.startpack-card').on('mouseenter', function() {
+    $(this).find('.item-list').addClass('hovered');
+  }).on('mouseleave', function() {
+    $(this).find('.item-list').removeClass('hovered');
+  });
+
+  // Инициализация всплывающих подсказок
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl, {
+      boundary: document.body
+    });
+  });
+
+  // Анимация появления элементов
+  $('.animated-item').each(function(index) {
+    const $this = $(this);
+    setTimeout(function() {
+      $this.css('opacity', '1');
+    }, index * 100);
+  });
+
+  // Обработка открытия модального окна
+  $('.btn-open-shop').on('click', function() {
+    const startpackId = $(this).data('startpack-id');
+    const $itemList = $('#item_list_startpack_' + startpackId);
+
+    // Показываем индикатор загрузки
+    $('#itemListSellStartpack').html('<div class="d-flex justify-content-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+
+    // Подготавливаем данные, но не вставляем их сразу
+    setTimeout(function() {
+      // Формируем HTML, но не вставляем его
+      let itemsHTML = '';
+
+      $itemList.find('li').each(function(index) {
+        const $item = $(this);
+        const src = $item.data('item-src');
+        const name = $item.data('item-name');
+        const enchant = $item.data('item-enchant');
+        const count = $item.data('item-count');
+
+        if (src && name) {
+          itemsHTML += `
+            <div class="item-entry mb-2" style="opacity: 0; transform: translateX(-30px); transition: none;" data-index="${index}">
+              <span class="item-grade">${$item.find('.item-grade').html() || ''}</span>
+              <span class="item-icon">
+                <img src="${src}" alt="" class="avatar avatar-sm">
+              </span>
+              <div class="item-details">
+                <span class="item-name">
+                  ${enchant > 0 ? `<span class="enchant-badge">+${enchant}</span>` : ''}
+                  ${name}
+                </span>
+              </div>
+              <span class="item-count">
+                x${count}
+              </span>
+            </div>
+          `;
+        }
+      });
+
+      if (itemsHTML === '') {
+        itemsHTML = '<div class="text-center text-muted py-3">Нет предметов в пакете</div>';
+      }
+
+      // Устанавливаем цену
+      const price = $('.price-on-button', $itemList.closest('.startpack-card')).text();
+      $('.StartPackCostBuy').text(price);
+
+      // Сохраняем ID пакета для кнопок покупки
+      $('#Startpackpurchase, #StartpackWarehouse').attr('data-object-id', startpackId);
+
+      // КРИТИЧЕСКИЙ МОМЕНТ: Сначала вставляем скрытые элементы
+      $('#itemListSellStartpack').html(itemsHTML);
+
+      // Даем браузеру возможность отрисовать содержимое (скрытое), а затем анимируем
+      setTimeout(function() {
+        $('#itemListSellStartpack .item-entry').each(function() {
+          const $entry = $(this);
+          const index = parseInt($entry.data('index'));
+
+          // Включаем CSS transitions
+          setTimeout(function() {
+            $entry.css({
+              'transition': 'all 0.3s ease-out',
+              'transition-delay': (index * 50) + 'ms'
+            });
+
+            // Запускаем анимацию в следующем кадре
+            requestAnimationFrame(function() {
+              $entry.css({
+                'opacity': '1',
+                'transform': 'translateX(0)'
+              });
+            });
+          }, 50); // небольшая задержка для надежности
+        });
+      }, 50); // небольшая задержка для надежности
+    }, 400);
+  });
+
+  // Эффекты для кнопок и селекторов
+  $('#StartpackPlayer').on('change', function() {
+    $(this).addClass('border-primary');
+  });
+
+  // Анимация нажатия кнопок
+  $('.btn-buy').on('click', function() {
+    const $btn = $(this);
+    $btn.addClass('disabled').html('<i class="fas fa-spinner fa-spin me-2"></i>{{phrase(425)}}...');
+
+    // Имитация процесса покупки
+    setTimeout(function() {
+      $btn.html('<i class="fas fa-check-circle me-2"></i>Успешно!').removeClass('disabled').addClass('btn-success');
+
+      // Сброс статуса через 1.5 секунды
+      setTimeout(function() {
+        $btn.html($btn.attr('id') === 'Startpackpurchase' ?
+              '<i class="fas fa-check-circle me-2"></i>{{phrase("buy_send_to_char")}}' :
+              '<i class="fas fa-check-circle me-2"></i>{{phrase("buy_send_to_wh")}}');
+        $btn.removeClass('btn-success');
+        $('#openShopStartpack').modal('hide');
+      }, 1500);
+    }, 1000);
+  });
+
+  // Обработка событий модального окна
+  $('#openShopStartpack').on('show.bs.modal', function (e) {
+    // Подготовка анимации модального окна
+    $(this).find('.modal-dialog').css({
+      'opacity': '0',
+      'transform': 'translateY(20px)'
+    });
+  }).on('shown.bs.modal', function (e) {
+    // Анимация появления модального окна
+    $(this).find('.modal-dialog').css({
+      'opacity': '1',
+      'transform': 'translateY(0)'
+    });
+  });
+
+  // Интерактивная анимация для предметов при наведении
+  $(document).on('mouseenter', '.item-entry', function() {
+    $(this).css('z-index', '10');
+  }).on('mouseleave', '.item-entry', function() {
+    $(this).css('z-index', '1');
+  });
+});
+</script>
 {% endif %}
