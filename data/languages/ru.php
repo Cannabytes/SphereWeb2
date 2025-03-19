@@ -1932,4 +1932,8 @@ Password: %%password%%',
     "LOG_DONATE_BONUS_SUCCESS" => "Пользователь получил бонус за пожертвование +%f",
     "logolink" => "Ссылка при нажатии на логотип",
     'oauth2_google_enter' => 'Войти через Google',
+
+    'balance_bonus' => 'Бонусный Баланс',
+    'referral_list' => 'Список ваших рефералов',
+
 ];

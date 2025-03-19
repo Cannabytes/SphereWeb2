@@ -11,6 +11,8 @@ class other
 
     private bool $openPassword = false;
 
+    private bool $hideLogo = false;
+
     private bool $isL2Cursor = false;
 
     private bool $isExchangeRates = false;
@@ -49,6 +51,7 @@ class other
     public function __construct($setting)
     {
         $this->openPassword = filter_var($setting['saveOpenPassword'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->hideLogo = filter_var($setting['hideLogo'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->isL2Cursor = filter_var($setting['isL2Cursor'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->isExchangeRates = filter_var($setting['isExchangeRates'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->exchangeRates = is_array($setting['exchangeRates'] ?? null) ? $setting['exchangeRates'] : null;
@@ -67,6 +70,11 @@ class other
         $this->contactAdmin = $setting['contactAdmin'] ?? $this->contactAdmin;
         $this->autoUpdate = filter_var($setting['autoUpdate'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->isShow404error = filter_var($setting['isShow404error'] ?? false, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    public function isHideLogo(): bool
+    {
+        return $this->hideLogo;
     }
 
     public function isAutoUpdate(): bool

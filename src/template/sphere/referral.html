@@ -1,274 +1,765 @@
 {% extends 'struct.html' %}
 
-
 {% block title %}{{ phrase('menu_referrals') }}{% endblock %}
 
 {% block content %}
-<div class="row">
-
-
+<div class="row g-3">
+  <!-- Реферальная ссылка и счетчики -->
   <div class="col-xl-6">
-    <div class="card custom-card">
-      <div class="card-body d-flex align-items-center justify-content-between">
-        <div class="fs-15 mb-0">{{phrase('invite_friends_get_bonus')|raw}}
+    <div class="card custom-card shadow-sm border-0 h-100 rounded-4 overflow-hidden position-relative">
+      <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10"></div>
+      <div class="card-header bg-transparent border-bottom-0 pb-0 position-relative">
+        <h5 class="mb-0 text-primary d-flex align-items-center">
+          <i class="ri-link-m me-2 fs-4"></i>
+          {{phrase('invite_friends_get_bonus')|raw}}
+        </h5>
+      </div>
+      <div class="card-body py-3 position-relative">
+        <div class="input-group mb-3 shadow-sm rounded-pill overflow-hidden">
+          <span class="input-group-text bg-light border-0 text-primary">
+            <i class="ri-user-shared-2-line"></i>
+          </span>
+          <input type="text" class="form-control bg-light border-0 py-2" id="referralLink" value="{{referral_link()}}" readonly>
+          <button class="btn btn-primary rounded-end" type="button" id="copyLink" data-bs-toggle="tooltip" data-bs-placement="top" title="{{phrase(314)}}">
+            <i class="ri-file-copy-2-line me-1"></i> {{phrase(314)}}
+          </button>
         </div>
 
-      </div>
-      <div class="card-body d-flex align-items-center justify-content-between">
-        {{phrase('your_link')}}: <span class="text-success" id="referralLink">{{referral_link()}}</span>
+        <div class="share-buttons mb-3 d-flex justify-content-center gap-2">
+          <button class="btn btn-sm btn-outline-info rounded-circle" data-bs-toggle="tooltip" title="Поделиться в Telegram">
+            <i class="ri-telegram-line"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger rounded-circle" data-bs-toggle="tooltip" title="Поделиться в Discord">
+            <i class="ri-discord-line"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-success rounded-circle" data-bs-toggle="tooltip" title="Поделиться в WhatsApp">
+            <i class="ri-whatsapp-line"></i>
+          </button>
+        </div>
 
-        <span role="button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase(314)}}" id="copyLink" class="custom-btn-icons "><i class="ri-file-copy-2-line text-info"></i></span>
+        <div class="d-flex justify-content-between mt-4">
+          <div class="text-center p-3 rounded-4 bg-light flex-grow-1 me-3 shadow-sm hover-scale">
+            <div class="stats-icon bg-primary-transparent rounded-circle mb-2">
+              <i class="ri-user-add-line text-primary"></i>
+            </div>
+            <div class="fs-1 fw-bold text-primary counter">{{allCount}}</div>
+            <div class="small text-muted fw-medium">{{phrase('attracted_players_count', '')}}</div>
+          </div>
+          <div class="text-center p-3 rounded-4 bg-light flex-grow-1 shadow-sm hover-scale">
+            <div class="stats-icon bg-success-transparent rounded-circle mb-2">
+              <i class="ri-checkbox-circle-line text-success"></i>
+            </div>
+            <div class="fs-1 fw-bold text-success counter">{{doneCountOk}}</div>
+            <div class="small text-muted fw-medium">{{phrase('completed_ref_quest_count', '')}}</div>
+          </div>
+        </div>
 
-      </div>
-
-      <div class="card-body d-flex align-items-center justify-content-between">
-        {{phrase('attracted_players_count', allCount)}}<br>
-        {{phrase('completed_ref_quest_count', doneCountOk)}}<br>
+        <!-- Прогресс реферальной программы -->
+        {% if allCount > 0 %}
+        <div class="progress-container mt-4">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="small fw-medium">Прогресс выполнения</div>
+            <div class="badge bg-primary">{{(doneCountOk/allCount*100)|number_format(0)}}%</div>
+          </div>
+          <div class="progress" style="height: 8px;">
+            <div class="progress-bar bg-gradient" role="progressbar" style="width: {{(doneCountOk/allCount*100)}}%" aria-valuenow="{{(doneCountOk/allCount*100)}}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+        {% endif %}
       </div>
     </div>
-
   </div>
 
-
+  <!-- Требования и бонусы -->
   <div class="col-xl-6">
-    <div class="card custom-card">
-      <div class="card-body  align-items-center justify-content-between">
-        {{phrase('invite_meet_req_bonus')}}
-        <br>
-        <br>
-        {{phrase('requirements')}}
-        <ul>
+    <div class="card custom-card shadow-sm border-0 h-100 rounded-4 overflow-hidden position-relative">
+      <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10"></div>
+      <div class="card-header bg-transparent border-bottom-0 pb-0 position-relative">
+        <h5 class="mb-0 text-primary d-flex align-items-center">
+          <i class="ri-award-line me-2 fs-4"></i>
+          {{phrase('invite_meet_req_bonus')}}
+        </h5>
+      </div>
+      <div class="card-body py-3 position-relative">
+        <h6 class="text-uppercase mb-2 small fw-bold bg-light py-2 px-3 rounded-pill d-inline-flex align-items-center">
+          <i class="ri-checkbox-circle-line me-1 text-success"></i> {{phrase('requirements')}}
+        </h6>
+        <div class="row g-2 mb-3">
           {% if config().referral().getLevel() > 0 %}
-          <li>{{phrase(100)}}: {{ config().referral().getLevel() }}</li>
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-2 rounded-4 bg-light text-center shadow-sm hover-scale">
+              <div class="d-inline-flex justify-content-center align-items-center bg-primary-transparent p-2 rounded-circle mb-2">
+                <i class="ri-user-star-line text-info"></i>
+              </div>
+              <div class="small text-muted">{{phrase(100)}}</div>
+              <div class="fw-bold">{{ config().referral().getLevel() }}</div>
+            </div>
+          </div>
           {% endif %}
+
           {% if config().referral().getPvP() > 0 %}
-          <li>PvP: {{ config().referral().getPvP() }}</li>
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-2 rounded-4 bg-light text-center shadow-sm hover-scale">
+              <div class="d-inline-flex justify-content-center align-items-center bg-danger-transparent p-2 rounded-circle mb-2">
+                <i class="ri-sword-line text-info"></i>
+              </div>
+              <div class="small text-muted">PvP</div>
+              <div class="fw-bold">{{ config().referral().getPvP() }}</div>
+            </div>
+          </div>
           {% endif %}
+
           {% if config().referral().getPK() > 0 %}
-          <li>PK: {{ config().referral().getPK() }}</li>
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-2 rounded-4 bg-light text-center shadow-sm hover-scale">
+              <div class="d-inline-flex justify-content-center align-items-center bg-warning-transparent p-2 rounded-circle mb-2">
+                <i class="ri-sword-fill text-info"></i>
+              </div>
+              <div class="small text-muted">PK</div>
+              <div class="fw-bold">{{ config().referral().getPK() }}</div>
+            </div>
+          </div>
           {% endif %}
+
           {% if config().referral().getTimeGame() > 0 %}
-          <li>{{phrase(95)}}: {{ timeHasPassed ( config().referral().getTimeGame() , true ) }}</li>
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-2 rounded-4 bg-light text-center shadow-sm hover-scale">
+              <div class="d-inline-flex justify-content-center align-items-center bg-info-transparent p-2 rounded-circle mb-2">
+                <i class="ri-time-line text-info"></i>
+              </div>
+              <div class="small text-muted">{{phrase(95)}}</div>
+              <div class="fw-bold">{{ timeHasPassed(config().referral().getTimeGame(), true) }}</div>
+            </div>
+          </div>
           {% endif %}
 
           {% if config().referral().getLevel() is empty and config().referral().getPvP() is empty and config().referral().getPK() is empty and config().referral().getTimeGame() is empty %}
-          <li class="text-danger">{{phrase('req_not_set')}}</li>
+          <div class="col-12">
+            <div class="alert alert-danger py-2 mb-0 rounded-4 d-flex align-items-center">
+              <i class="ri-error-warning-line me-2 fs-5"></i>
+              <span>{{phrase('req_not_set')}}</span>
+            </div>
+          </div>
           {% endif %}
+        </div>
 
-        </ul>
-        <br>
+        <!-- Бонусы от реферальной программы -->
+        {% if config().referral().getProcentDonateBonus() > 0 %}
+        <div class="alert alert-info p-3 rounded-4 d-flex align-items-center mb-3">
+          <div class="alert-icon me-3">
+            <i class="ri-coin-line fs-3 text-warning"></i>
+          </div>
+          <div>
+            <h6 class="mb-1">Бонусные монеты</h6>
+            <div class="small">
+              {{phrase('donate_coin_per_ref_donation', config().referral().getProcentDonateBonus())}}
+            </div>
+          </div>
+        </div>
+        {% endif %}
 
-        <div class="table-responsive">
-          <table class="table text-nowrap table-bordered border-success">
-            <thead>
-            <tr>
-              <th scope="col">{{phrase('leader_bonus')}}</th>
-              <th scope="col">{{phrase('ref_players_bonus')}}</th>
-            </tr>
-            </thead>
-            <tbody>
-
-            <tr>
-              <th scope="row">
-                {% if config().referral().getProcentDonateBonus() > 0 %}
-                <ul>
-                  <li>{{phrase('donate_coin_per_ref_donation', config().referral().getProcentDonateBonus())}}</li>
-                </ul>
-                {% endif %}
-
-
+        <div class="row g-3 mb-1">
+          <!-- Бонусы лидера -->
+          <div class="col-md-6">
+            <div class="bonus-card bg-light rounded-4 h-100 shadow-sm overflow-hidden">
+              <div class="bonus-header bg-primary-gradient text-white p-2 d-flex align-items-center">
+                <i class="ri-trophy-line me-2"></i>
+                <h6 class="text-uppercase mb-0 small fw-bold">{{phrase('leader_bonus')}}</h6>
+              </div>
+              <div class="bonus-body p-3">
                 {% if config().referral().getLeaderBonusItems() is not empty %}
-                <ul class="list-unstyled">
+                <div class="d-flex flex-wrap gap-1 justify-content-center">
                   {% for item in config().referral().getLeaderBonusItems() %}
-                  {% set itemName = item.getItemName() %}
-
-                  {% if item.getAddName() %}
-                  {% set addName = '<span class="badge bg-danger">' ~ item.getAddName() ~ '</span>' %}
-                  {% set itemName = addName ~ ' ' ~ itemName %}
-                  {% endif %}
-
-                  {% if item.getEnchant() > 0 %}
-                  {% set itemName = '+' ~ item.getEnchant() ~ ' ' ~ itemName %}
-                  {% endif %}
-                  <li class="mt-1"><img class="avatar avatar-md online me-2 mail-msg-avatar" src="{{ item.getIcon() }}"> {{ itemName|raw }} x{{ item.getCount() }}</li>
+                    {% set itemName = item.getItemName() %}
+                    {% if item.getAddName() %}
+                      {% set addName = item.getAddName() %}
+                      {% set itemName = addName ~ ' ' ~ itemName %}
+                    {% endif %}
+                    {% if item.getEnchant() > 0 %}
+                      {% set itemName = '+' ~ item.getEnchant() ~ ' ' ~ itemName %}
+                    {% endif %}
+                    <div class="item-card" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="false" title="{{ itemName }} x{{ item.getCount() }}">
+                      <img src="{{ item.getIcon() }}" width="40" height="40" class="rounded border item-icon">
+                      <span class="item-count">x{{ item.getCount() }}</span>
+                    </div>
                   {% endfor %}
-                </ul>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-3">
+                  <i class="ri-inbox-line fs-3 d-block mb-2"></i>
+                  Нет доступных бонусов
+                </div>
                 {% endif %}
-              </th>
-
-              <td>
-                {% if config().referral().getSlaveBonusItems() is not empty %}
-
-                <ul class="list-unstyled">
-                  {% for item in config().referral().getSlaveBonusItems() %}
-                  {% set itemName = item.getItemName() %}
-
-                  {% if item.getAddName() %}
-                  {% set addName = '<span class="badge bg-danger">' ~ item.getAddName() ~ '</span>' %}
-                  {% set itemName = addName ~ ' ' ~ itemName %}
-                  {% endif %}
-
-                  {% if item.getEnchant() > 0 %}
-                  {% set itemName = '+' ~ item.getEnchant() ~ ' ' ~ itemName %}
-                  {% endif %}
-                  <li class="mt-1"><img class="avatar avatar-md online me-2 mail-msg-avatar" src="{{ item.getIcon() }}"> {{ itemName|raw }} x{{ item.getCount() }}</li>
-                  {% endfor %}
-                </ul>
-
-                {% endif %}
-
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-
-      </div>
-
-      {% if hasRequirements %}
-      <div class="alert alert-success d-flex align-items-center rounded-0 shadow-none" role="alert">
-        <svg class="flex-shrink-0 me-2 svg-success" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0V0zm0 0h24v24H0V0z" fill="none"></path><path d="M16.59 7.58L10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg>
-        <div>
-          <strong>{{phrase('players_met_reqs')}}</strong>
-          <button id="get_ref_bonus" data-bs-effect="effect-rotate-bottom" data-bs-toggle="modal" href="#modal_bonus_list" class="modal-effect btn btn-danger-gradient btn-wave btn-sm ms-auto waves-effect waves-light">{{phrase('get_bonus')}}</button>
-        </div>
-      </div>
-      {% endif %}
-
-    </div>
-
-  </div>
-
-  <div class="modal fade"  id="modal_bonus_list">
-    <div class="modal-dialog modal-dialog-centered text-center" role="document">
-      <div class="modal-content modal-content-demo">
-        <div class="modal-header">
-          <h6 class="modal-title">{{phrase('305')}}</h6><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body text-start">
-          <h6>{{phrase('thank_for_inviting_players')}}</h6>
-          <p class="text-muted mb-0 referral_message">
-          </p>
-        </div>
-      </div>
-    </div>
-
-
-  </div>
-
-
-  {% for referral in referrals %}
-  <div class="col-xl-4">
-    <div class="card custom-card">
-      <div class="card-header">
-        <div class="card-title">
-
-          <div class="d-sm-flex align-items-top">
-                                                <span class="avatar avatar-sm">
-                                                    <img src="{{referral.avatar}}" alt="img">
-                                                </span>
-            <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
-              <p class="mb-0 lh-1">{{referral.name}}</p>
+              </div>
             </div>
           </div>
 
-
+          <!-- Бонусы рефералов -->
+          <div class="col-md-6">
+            <div class="bonus-card bg-light rounded-4 h-100 shadow-sm overflow-hidden">
+              <div class="bonus-header bg-success-gradient text-white p-2 d-flex align-items-center">
+                <i class="ri-gift-line me-2"></i>
+                <h6 class="text-uppercase mb-0 small fw-bold">{{phrase('ref_players_bonus')}}</h6>
+              </div>
+              <div class="bonus-body p-3">
+                {% if config().referral().getSlaveBonusItems() is not empty %}
+                <div class="d-flex flex-wrap gap-1 justify-content-center">
+                  {% for item in config().referral().getSlaveBonusItems() %}
+                    {% set itemName = item.getItemName() %}
+                    {% if item.getAddName() %}
+                      {% set addName = item.getAddName() %}
+                      {% set itemName = addName ~ ' ' ~ itemName %}
+                    {% endif %}
+                    {% if item.getEnchant() > 0 %}
+                      {% set itemName = '+' ~ item.getEnchant() ~ ' ' ~ itemName %}
+                    {% endif %}
+                    <div class="item-card" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="false" title="{{ itemName }} x{{ item.getCount() }}">
+                      <img src="{{ item.getIcon() }}" width="40" height="40" class="rounded border item-icon">
+                      <span class="item-count">x{{ item.getCount() }}</span>
+                    </div>
+                  {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-3">
+                  <i class="ri-inbox-line fs-3 d-block mb-2"></i>
+                  Нет доступных бонусов
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
         </div>
+
+        {% if hasRequirements %}
+        <div class="d-grid mt-4">
+          <button id="get_ref_bonus" data-bs-effect="effect-scale" data-bs-toggle="modal" href="#modal_bonus_list" class="modal-effect btn btn-success btn-lg fw-bold rounded-pill shadow-sm">
+            <i class="ri-gift-2-line me-1"></i> {{phrase('get_bonus')}}
+            <i class="ri-arrow-right-line ms-1"></i>
+          </button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Заголовок списка рефералов -->
+  <div class="col-12">
+    <div class="d-flex align-items-center mb-2 mt-2">
+      <h5 class="mb-0 d-flex align-items-center">
+        <i class="ri-team-line me-2 text-primary"></i>
+        Список ваших рефералов
+      </h5>
+    </div>
+  </div>
+
+  <!-- Список рефералов -->
+  {% for referral in referrals %}
+  <div class="col-xl-4 col-md-6">
+    <div class="card custom-card shadow-sm border-0 h-100 rounded-4 overflow-hidden hover-scale-sm">
+      <div class="card-header bg-light d-flex align-items-center justify-content-between py-3">
+        <div class="d-flex align-items-center">
+          <span class="avatar avatar-md me-2 position-relative">
+            <img src="{{referral.avatar}}" alt="img" class="rounded-circle border">
+            <span class="avatar-status bg-success position-absolute end-0 bottom-0 rounded-circle border border-white"></span>
+          </span>
+          <div>
+            <h6 class="card-title mb-0 d-flex align-items-center">
+              {{referral.name}}
+              {% if referral.online %}
+              <span class="badge bg-success ms-2 rounded-pill">Online</span>
+              {% endif %}
+            </h6>
+          </div>
+        </div>
+
       </div>
 
-
-
       {% for accounts in referral.accounts %}
-       <div class="card-body">
+      <div class="card-body p-0">
         <div class="table-responsive">
-          <table class="table table-bordered table-hover text-nowrap">
-            <thead>
-            <tr>
-              <th style="width: 1%">Персонаж</th>
-              <th style="width: 1%">Ур.</th>
-              <th style="width: 1%">PvP</th>
-              <th style="width: 1%">PK</th>
-              <th style="width: 1%">Время</th>
-            </tr>
+          <table class="table table-hover table-striped mb-0">
+            <thead class="bg-light">
+              <tr>
+                <th class="px-3 py-2">{{phrase(77)}}</th>
+                <th class="px-2 py-2 text-center" data-bs-toggle="tooltip" title="{{phrase(100)}}">
+                  <i class="ri-user-star-line text-info"></i>
+                </th>
+                <th class="px-2 py-2 text-center" data-bs-toggle="tooltip" title="PvP">
+                  <i class="ri-sword-line text-info"></i>
+                </th>
+                <th class="px-2 py-2 text-center" data-bs-toggle="tooltip" title="PK">
+                  <i class="ri-sword-fill text-info"></i>
+                </th>
+                <th class="px-2 py-2 text-center" data-bs-toggle="tooltip" title="{{phrase(95)}}">
+                  <i class="ri-time-line text-info"></i>
+                </th>
+              </tr>
             </thead>
             <tbody>
-            {% for character in accounts.charactersArray %}
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-           <span class="avatar avatar-sm me-2 {% if player.online %}online{% else %}offline{% endif %} avatar-rounded">
-                                        <img src="{{ template('/assets/images/race/' ~ sex(character.sex) ~ '/' ~ get_class_race(character.class_id)) ~ '.jpg' }}" alt="img">
-                                       </span>
-                  <div class="fw-semibold">{{character.player_name}}</div>
-                </div>
-              </td>
-              <td>
-                <span class="{% if config().referral().getLevel() <= character.level %}text-success{% else %}text-danger{% endif %}">{{character.level}}</span>
-              </td>
-              <td>
-                <span class="{% if config().referral().getPvP() <= character.pvp %}text-success{% else %}text-danger{% endif %}">{{character.pvp}}</span>
-              </td>
-              <td>
-                <span class="{% if config().referral().getPK() <= character.pk %}text-success{% else %}text-danger{% endif %}">{{character.pk}}</span>
-              </td>
-              <td>
-                <span class="{% if config().referral().getTime() <= character.time_in_game %}text-success{% else %}text-danger{% endif %}">{{timeHasPassed(character.time_in_game, true)}}</span>
-              </td>
-            </tr>
-            {% endfor %}
+              {% for character in accounts.charactersArray %}
+              <tr class="character-row align-middle">
+                <td class="px-3 py-2">
+                  <div class="d-flex align-items-center">
+                    <span class="avatar avatar-sm me-2 position-relative {% if character.online %}online{% else %}offline{% endif %}">
+                      <img src="{{ template('/assets/images/race/' ~ sex(character.sex) ~ '/' ~ get_class_race(character.class_id)) ~ '.jpg' }}" alt="img" class="rounded-circle border">
+                      <span class="avatar-status {% if character.online %}bg-success{% else %}bg-danger{% endif %} position-absolute end-0 bottom-0 rounded-circle border border-white"></span>
+                    </span>
+                    <div>
+                      <div class="fw-medium">{{character.player_name}}</div>
+                      <small class="text-muted">{{get_class(character.class_id)}}</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-2 py-2 text-center">
+                  <span class="badge {% if config().referral().getLevel() <= character.level %}bg-success{% else %}bg-danger{% endif %} rounded-pill">
+                    {{character.level}}
+                  </span>
+                </td>
+                <td class="px-2 py-2 text-center">
+                  <span class="badge {% if config().referral().getPvP() <= character.pvp %}bg-success{% else %}bg-danger{% endif %} rounded-pill">
+                    {{character.pvp}}
+                  </span>
+                </td>
+                <td class="px-2 py-2 text-center">
+                  <span class="badge {% if config().referral().getPK() <= character.pk %}bg-success{% else %}bg-danger{% endif %} rounded-pill">
+                    {{character.pk}}
+                  </span>
+                </td>
+                <td class="px-2 py-2 text-center">
 
+                  <span class="badge {% if config().referral().getTimeGame() <= character.time_in_game %}bg-success{% else %}bg-danger{% endif %} rounded-pill">
+                    {{timeHasPassed(character.time_in_game, true)}}
+                  </span>
+                </td>
+              </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>
       </div>
       {% endfor %}
 
+
     </div>
   </div>
   {% endfor %}
 
+  {% if referrals|length == 0 %}
+  <div class="col-12">
+    <div class="card custom-card shadow-sm border-0 rounded-4">
+      <div class="card-body p-5 text-center">
+        <div class="empty-state">
+          <div class="empty-state-icon bg-light rounded-circle p-4 mx-auto mb-4">
+            <i class="ri-user-search-line text-primary fs-1"></i>
+          </div>
+          <h5>У вас пока нет рефералов</h5>
+          <p class="text-muted mb-4">Поделитесь своей реферальной ссылкой с друзьями, чтобы они могли присоединиться к игре и принести вам бонусы.</p>
+          <button class="btn btn-primary rounded-pill px-4">
+            <i class="ri-share-line me-1"></i> Поделиться ссылкой
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </div>
 
+<!-- Модальное окно бонуса -->
+<div class="modal fade" id="modal_bonus_list" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow rounded-4">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title d-flex align-items-center">
+          <i class="ri-award-line me-2"></i>
+          {{phrase('305')}}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="text-center mb-4">
+          <div class="bonus-animation mb-3">
+            <div class="bonus-icon-wrapper bg-success-transparent rounded-circle p-4 mx-auto">
+              <i class="ri-gift-2-line text-success display-1"></i>
+            </div>
+            <div class="bonus-sparkles"></div>
+          </div>
+          <h4 class="mb-2">{{phrase('thank_for_inviting_players')}}</h4>
+          <p class="text-muted">Ваши бонусы готовы к получению!</p>
+        </div>
+        <div class="referral_message"></div>
 
+        <div class="reward-items d-none">
+          <h6 class="mb-3">Вы получите:</h6>
+          <div class="row g-2 mb-3">
+            <!-- Здесь будут динамически отображаться предметы после успешного получения бонусов -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">
+          <i class="ri-close-line me-1"></i> Закрыть
+        </button>
+        <button type="button" class="btn btn-success rounded-pill" id="confirm_bonus">
+          <i class="ri-check-line me-1"></i> Получить бонусы
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Всплывающее уведомление о копировании -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+  <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header bg-primary text-white">
+      <i class="ri-checkbox-circle-line me-2"></i>
+      <strong class="me-auto">Уведомление</strong>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Ссылка успешно скопирована в буфер обмена!
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block js %}
-
 <script>
+$(document).ready(function() {
+  // Инициализация всех тултипов
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl, {
+      html: false,
+      sanitize: true
+    });
+  });
 
+  // Инициализация тоста
+  var toastLiveExample = document.getElementById('liveToast');
+  var toast = new bootstrap.Toast(toastLiveExample, {
+    delay: 3000
+  });
+
+  // Исправление протокола http на https в реферальной ссылке
+  var referralLink = $('#referralLink');
+  var currentLink = referralLink.val();
+  if (currentLink.startsWith('http:')) {
+    referralLink.val(currentLink.replace('http:', 'https:'));
+  }
+
+  // Копирование реферальной ссылки
   $('#copyLink').on('click', function() {
-    var referralLink = $('#referralLink').text();
-      navigator.clipboard.writeText(referralLink).then(function() {
+    var referralLink = $('#referralLink').val();
+    navigator.clipboard.writeText(referralLink).then(function() {
+      // Показываем тост-уведомление
+      toast.show();
+
+      // Меняем текст кнопки на короткое время
+      var originalText = $('#copyLink').html();
+      $('#copyLink').html('<i class="ri-check-line me-1"></i> Скопировано');
+
+      setTimeout(function() {
+        $('#copyLink').html(originalText);
+      }, 2000);
     }, function(err) {
       console.error('Ошибка копирования: ', err);
     });
   });
 
+  // Анимация счетчиков
+  $('.counter').each(function() {
+    const $this = $(this);
+    const countTo = parseInt($this.text());
 
-  /* hide modal effects */
-  document.getElementById("modal_bonus_list").addEventListener('hidden.bs.modal', function (e) {
-    let removeClass = this.classList.value.match(/(^|\s)effect-\S+/g);
-    removeClass = removeClass[0].trim();
-    this.classList.remove(removeClass);
-  });
-
-  $("#get_ref_bonus").on("click", function () {
-    AjaxSend("/referral/bonus", "POST", {}, true).then(function (data) {
-      responseAnalysis(data);
-      if (data.success) {
-        $(".referral_message").html(data.message);
-        document.querySelectorAll(".modal-effect").forEach(e => {
-          e.addEventListener('click', function (e) {
-            e.preventDefault();
-            let effect = this.getAttribute('data-bs-effect');
-            document.querySelector("#modal_bonus_list").classList.add(effect);
-          });
-        })
-
+    $({ countNum: 0 }).animate({
+      countNum: countTo
+    }, {
+      duration: 1000,
+      easing: 'swing',
+      step: function() {
+        $this.text(Math.floor(this.countNum));
+      },
+      complete: function() {
+        $this.text(this.countNum);
       }
     });
   });
 
+  // Обработка эффектов модального окна
+  document.getElementById("modal_bonus_list").addEventListener('hidden.bs.modal', function (e) {
+    let removeClass = this.classList.value.match(/(^|\s)effect-\S+/g);
+    if (removeClass && removeClass[0]) {
+      removeClass = removeClass[0].trim();
+      this.classList.remove(removeClass);
+    }
 
+    // Сбрасываем содержимое сообщения и скрываем блок наград
+    $(".referral_message").empty();
+    $(".reward-items").addClass('d-none');
+    $(".reward-items .row").empty();
+
+    // Показываем кнопку подтверждения
+    $("#confirm_bonus").show();
+  });
+
+  // Кнопка для открытия модального окна
+  $(".modal-effect").on('click', function (e) {
+    e.preventDefault();
+    let effect = $(this).data('bs-effect');
+    $("#modal_bonus_list").addClass(effect);
+  });
+
+  // Получение бонуса
+  $("#confirm_bonus").on("click", function () {
+    // Показываем загрузку
+    $(".referral_message").html('<div class="text-center"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Получение бонуса...</p></div>');
+
+    // Скрываем кнопку подтверждения на время запроса
+    $(this).hide();
+
+    // Отправляем запрос
+    AjaxSend("/referral/bonus", "POST", {}, true).then(function (data) {
+      responseAnalysis(data);
+      if (data.success) {
+        // Показываем сообщение об успехе
+        $(".referral_message").html('<div class="alert alert-success d-flex align-items-center"><i class="ri-check-double-line me-2 fs-5"></i>' + data.message + '</div>');
+
+        // Отображаем список наград
+        $(".reward-items").removeClass('d-none');
+
+        // Здесь можно добавить динамическое отображение полученных предметов
+        if (data.items && data.items.length > 0) {
+          let itemsHtml = '';
+          data.items.forEach(function(item) {
+            itemsHtml += `
+              <div class="col-4">
+                <div class="received-item text-center p-2 bg-light rounded-3">
+                  <img src="${item.icon}" class="mb-2" width="48" height="48">
+                  <div class="small fw-medium">${item.name}</div>
+                  <div class="badge bg-primary">x${item.count}</div>
+                </div>
+              </div>
+            `;
+          });
+          $(".reward-items .row").html(itemsHtml);
+        }
+
+        // Добавляем эффект конфетти
+        const confettiSettings = { target: 'bonus-animation', max: 150, size: 1.5, animate: true, props: ['circle', 'square', 'triangle', 'line'], colors: [[165,104,246],[230,61,135],[0,199,228],[253,214,126]], clock: 25 };
+        const confetti = new ConfettiGenerator(confettiSettings);
+        confetti.render();
+
+        // Обновляем страницу через 5 секунд для отображения актуальных данных
+        setTimeout(function() {
+          location.reload();
+        }, 5000);
+      } else {
+        // Показываем сообщение об ошибке и возвращаем кнопку
+        $(".referral_message").html('<div class="alert alert-danger d-flex align-items-center"><i class="ri-error-warning-line me-2 fs-5"></i>' + (data.message || 'Произошла ошибка при получении бонуса') + '</div>');
+        $("#confirm_bonus").show();
+      }
+    }).catch(function(error) {
+      $(".referral_message").html('<div class="alert alert-danger d-flex align-items-center"><i class="ri-error-warning-line me-2 fs-5"></i>Произошла ошибка при отправке запроса</div>');
+      console.error('Ошибка запроса:', error);
+      $("#confirm_bonus").show();
+    });
+  });
+
+  // Обработка кнопок поделиться
+  $('.share-buttons .btn').on('click', function() {
+    let url = $('#referralLink').val();
+    let platform = $(this).find('i').attr('class');
+    let shareUrl = '';
+
+    if (platform.includes('vk')) {
+      shareUrl = 'https://vk.com/share.php?url=' + encodeURIComponent(url);
+    } else if (platform.includes('telegram')) {
+      shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url);
+    } else if (platform.includes('discord')) {
+      navigator.clipboard.writeText(url);
+      alert('Ссылка скопирована. Теперь вы можете вставить её в Discord.');
+      return;
+    } else if (platform.includes('whatsapp')) {
+      shareUrl = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(url);
+    }
+
+    if (shareUrl) {
+      window.open(shareUrl, '_blank', 'width=800,height=600');
+    }
+  });
+});
 </script>
+
+<!-- Добавляем стили для анимаций и эффектов -->
+<style>
+
+.share-buttons .btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.share-buttons .btn i {
+  font-size: 1.25rem;
+}
+
+/* Общие стили */
+.{
+  background-image: url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%239C92AC" fill-opacity="0.05" fill-rule="evenodd"%3E%3Cpath d="M0 40L40 0H20L0 20M40 40V20L20 40"/%3E%3C/g%3E%3C/svg%3E');
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-scale-sm:hover {
+  transform: scale(1.02);
+}
+
+/* Градиенты для фонов */
+.bg-primary-gradient {
+  background: linear-gradient(135deg, var(--bs-primary) 0%, #4e73df 100%);
+}
+
+.bg-success-gradient {
+  background: linear-gradient(135deg, var(--bs-success) 0%, #1cc88a 100%);
+}
+
+/* Прозрачные фоны с цветом */
+.bg-primary-transparent {
+  background-color: rgba(var(--bs-primary-rgb), 0.15);
+}
+
+.bg-success-transparent {
+  background-color: rgba(var(--bs-success-rgb), 0.15);
+}
+
+.bg-warning-transparent {
+  background-color: rgba(var(--bs-warning-rgb), 0.15);
+}
+
+.bg-danger-transparent {
+  background-color: rgba(var(--bs-danger-rgb), 0.15);
+}
+
+.bg-info-transparent {
+  background-color: rgba(var(--bs-info-rgb), 0.15);
+}
+
+/* Стили для блока бонусов */
+.stats-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.stats-icon i {
+  font-size: 24px;
+}
+
+/* Стили для предметов */
+.item-card {
+  position: relative;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.item-card:hover {
+  transform: translateY(-5px);
+  z-index: 1;
+}
+
+.item-icon {
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+.item-count {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+/* Стили для статуса персонажа */
+.avatar.online .avatar-status {
+  background-color: var(--bs-success) !important;
+}
+
+.avatar.offline .avatar-status {
+  background-color: var(--bs-secondary) !important;
+}
+
+/* Анимация для получения бонуса */
+.bonus-animation {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+}
+
+.bonus-icon-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: pulse 2s infinite;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--bs-success-rgb), 0.7);
+  }
+
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(var(--bs-success-rgb), 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--bs-success-rgb), 0);
+  }
+}
+
+.bonus-sparkles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* Стили для пустого состояния */
+.empty-state {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.empty-state-icon {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
 {% endblock %}

@@ -7,6 +7,7 @@
 
 namespace Ofey\Logan22\model\referral;
 
+use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\user;
@@ -36,7 +37,7 @@ class referral
     public static function player_list()
     {
         //Мои рефералы
-        $ref_users = sql::getRows("SELECT `id`, `user_id`, `done` FROM `referrals` WHERE `leader_id` = ? and `done` = 0 ", [user::self()->getId()]);
+        $ref_users = sql::getRows("SELECT `id`, `user_id`, `done`, `join_date` FROM `referrals` WHERE `leader_id` = ? and `done` = 0 ", [user::self()->getId()]);
         $users     = [];
         foreach ($ref_users as $ref) {
             $user    = user::getUserId($ref['user_id']);
@@ -90,17 +91,18 @@ class referral
     public static function add($user_id, $leader_id): void
     {
         if (config::load()->referral()->isEnable()) {
-            sql::run("INSERT INTO `referrals` (`user_id`, `leader_id`, `done`) VALUES (?, ?, ?)", [
+            sql::run("INSERT INTO `referrals` (`user_id`, `leader_id`, `done`, `join_date`) VALUES (?, ?, ?, ?)", [
               $user_id,
               $leader_id,
               0,
+              time::mysql(),
             ]);
         }
     }
 
     public static function done($user_id, $leader_id): \PDOException|false|\Exception|\PDOStatement|null
     {
-       return sql::run("UPDATE `referrals` SET `done` = 1 WHERE `user_id` = ? AND `leader_id` = ?", [$user_id, $leader_id]);
+       return sql::run("UPDATE `referrals` SET `done` = 1, `done_date` = ? WHERE `user_id` = ? AND `leader_id` = ?", [time::mysql(), $user_id, $leader_id]);
     }
 
 }

@@ -1912,4 +1912,8 @@ Password: %%password%%',
     "LOG_DONATE_BONUS_SUCCESS" => "The user received a bonus for the donation +%f",
     "logolink" => "Link when clicking on the logo",
     'oauth2_google_enter' => 'Login with Google',
+
+    'balance_bonus' => 'Bonus Balance',
+    'referral_list' => 'Your Referrals List',
+
 ];

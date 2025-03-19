@@ -52,25 +52,9 @@ class user
             board::response("notice", ["message" => lang::get_phrase(201, $email), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false,]);
         }
 
-        registration::add($email, $password, $account_name);
+        $account_name = registration::add($email, $password, $account_name);
         if (session::get("HTTP_REFERER")) {
             sql::run('INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)', [0, $_SESSION['id'], "HTTP_REFERER", session::get("HTTP_REFERER"),]);
-        }
-
-        if (server::get_count_servers() > 0 and $account_name != null) {
-
-            $user = \Ofey\Logan22\model\user\user::getUserId($_SESSION['id']);
-            \Ofey\Logan22\component\sphere\server::setUser($user);
-
-            $prefixEnable = config::load()->registration()->getEnablePrefix();
-            if ($prefixEnable) {
-                $prefixType = config::load()->registration()->getPrefixType();
-                $prefix = $_SESSION['account_prefix'] ?? "";
-                $account_name = $prefixType == "prefix" ? $prefix . $account_name : $account_name . $prefix;
-            }
-
-            $sphere = \Ofey\Logan22\component\sphere\server::send(type::REGISTRATION, ['login' => $account_name, 'password' => $password, 'is_password_hide' => true,])->show(false);
-
         }
 
         \Ofey\Logan22\model\user\user::self()->setId($_SESSION['id']);
