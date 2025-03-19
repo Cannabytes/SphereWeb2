@@ -12,6 +12,7 @@ use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\page\error;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\lang\lang;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
@@ -42,6 +43,7 @@ class referral
         });
         $countBonus = 0;
         $playerNames = [];
+        $items = []; // Массив для хранения информации о предметах
 
         if (!empty($hasRequirements)) {
             $bonusDonateCoin = config::load()->referral()->getBonusAmount();
@@ -62,6 +64,21 @@ class referral
                         $count = $item->getCount() ?? 1;
                         $enchant = $item->getEnchant() ?? 0;
                         user::self()->addToWarehouse(user::self()->getServerId(), $item_id, $count, $enchant, "add_item_donate_bonus_referral_master");
+
+                        // Добавляем информацию о предмете в массив для передачи во фронтенд
+                        $itemInfo = [
+                            'icon' => $item->getIcon(),
+                            'name' => $item->getItemName(),
+                            'count' => $count,
+                            'enchant' => $enchant
+                        ];
+
+                        // Если есть дополнительное имя, добавляем его
+                        if ($item->getAddName()) {
+                            $itemInfo['addName'] = $item->getAddName();
+                        }
+
+                        $items[] = $itemInfo;
                     }
                 }
 
@@ -81,11 +98,12 @@ class referral
             $getProcentDonateBonus = config::load()->referral()->getProcentDonateBonus();
 
             board::alert([
+                "items" => $items, // Передаем массив с информацией о предметах
                 "success" => true,
-                "message" => "Вы получили <span class='text-success'>+{$countBonus}</span> коинов за рефералов и будете получать <span class='text-success'>{$getProcentDonateBonus}%</span> за пожертвование пользователя: {$playerNames}. Все бонусы отправлены Вам на склад.",
+                "message" => config::load()->lang()->getPhrase("referral_bonus_message", $countBonus, $getProcentDonateBonus, $playerNames),
             ]);
         } else {
-            error::show("Вы не можете получить бонусы за рефералов, не выполнены требуемые условия");
+            board::error("Вы не можете получить бонусы за рефералов, не выполнены требуемые условия");
         }
     }
 

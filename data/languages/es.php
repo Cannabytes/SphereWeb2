@@ -1917,5 +1917,10 @@ Contraseña: %%password%%',
     'no_referrals_yet' => 'Aún no tienes referidos',
     'share_referral_link' => 'Comparte tu enlace de referido para que puedan unirse al juego y traer bonificaciones para ti y para ellos.',
     'share_in' => 'Compartir en %s',
+    'bonuses_ready' => 'Sus bonificaciones están listas para ser reclamadas',
+    'collect_bonuses' => 'Reclamar bonificaciones',
+    'referral_bonus_message' => 'Has recibido <span class=\'text-success\'>+%s</span> monedas por referidos y recibirás <span class=\'text-success\'>%s%%</span> por donaciones del usuario: %s. Todos los bonos han sido enviados a tu almacén.',
+    'received_items' => 'Ha recibido los siguientes artículos',
 
-];
+
+    ];

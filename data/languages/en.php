@@ -1919,5 +1919,9 @@ Password: %%password%%',
     'no_referrals_yet' => 'You don\'t have any referrals yet',
     'share_referral_link' => 'Share your referral link so they can join the game and bring bonuses to you and themselves.',
     'share_in' => 'Share in %s',
+    'bonuses_ready' => 'Your bonuses are ready to collect!',
+    'collect_bonuses' => 'Collect bonuses',
+    'referral_bonus_message' => 'You received <span class=\'text-success\'>+%s</span> coins for referrals and will receive <span class=\'text-success\'>%s%%</span> for donations from user: %s. All bonuses have been sent to your storage.',
+    'received_items' => 'You have received the following items',
 
 ];

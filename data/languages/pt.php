@@ -1912,5 +1912,8 @@ Password: %%password%%',
     'no_referrals_yet' => 'Você ainda não tem indicados',
     'share_referral_link' => 'Compartilhe seu link de indicação para que eles possam se juntar ao jogo e trazer bônus para você e para eles.',
     'share_in' => 'Compartilhar no %s',
-
-];
+    'bonuses_ready' => 'Seus bônus estão prontos para serem coletados',
+    'collect_bonuses' => 'Coletar bônus',
+    'referral_bonus_message' => 'Você recebeu <span class=\'text-success\'>+%s</span> moedas por indicações e receberá <span class=\'text-success\'>%s%%</span> pelas doações do usuário: %s. Todos os bônus foram enviados para o seu depósito.',
+    'received_items' => 'Você recebeu os seguintes itens',
+    ];
