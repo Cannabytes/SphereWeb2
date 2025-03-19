@@ -1914,5 +1914,8 @@ Contraseña: %%password%%',
     'balance_bonus' => 'Saldo de Bonificación',
     'referral_list' => 'Lista de sus Referidos',
     'joined' => 'Se unió',
+    'no_referrals_yet' => 'Aún no tienes referidos',
+    'share_referral_link' => 'Comparte tu enlace de referido para que puedan unirse al juego y traer bonificaciones para ti y para ellos.',
+    'share_in' => 'Compartir en %s',
 
 ];

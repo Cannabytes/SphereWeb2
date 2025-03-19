@@ -1909,5 +1909,8 @@ Password: %%password%%',
     'balance_bonus' => 'Saldo de Bônus',
     'referral_list' => 'Lista de seus Indicados',
     'joined' => 'Juntou-se',
+    'no_referrals_yet' => 'Você ainda não tem indicados',
+    'share_referral_link' => 'Compartilhe seu link de indicação para que eles possam se juntar ao jogo e trazer bônus para você e para eles.',
+    'share_in' => 'Compartilhar no %s',
 
 ];

@@ -26,13 +26,13 @@
         </div>
 
         <div class="share-buttons mb-3 d-flex justify-content-center gap-2">
-          <button class="btn btn-sm btn-outline-info rounded-circle" data-bs-toggle="tooltip" title="Поделиться в Telegram">
+          <button class="btn btn-sm btn-outline-info rounded-circle" data-bs-toggle="tooltip" title="{{phrase('share_in', 'Telegram')}}">
             <i class="ri-telegram-line"></i>
           </button>
-          <button class="btn btn-sm btn-outline-danger rounded-circle" data-bs-toggle="tooltip" title="Поделиться в Discord">
+          <button class="btn btn-sm btn-outline-danger rounded-circle" data-bs-toggle="tooltip" title="{{phrase('share_in', 'Discord')}}">
             <i class="ri-discord-line"></i>
           </button>
-          <button class="btn btn-sm btn-outline-success rounded-circle" data-bs-toggle="tooltip" title="Поделиться в WhatsApp">
+          <button class="btn btn-sm btn-outline-success rounded-circle" data-bs-toggle="tooltip" title="{{phrase('share_in', 'WhatsApp')}}">
             <i class="ri-whatsapp-line"></i>
           </button>
         </div>
@@ -353,11 +353,8 @@
           <div class="empty-state-icon bg-light rounded-circle p-4 mx-auto mb-4">
             <i class="ri-user-search-line text-primary fs-1"></i>
           </div>
-          <h5>У вас пока нет рефералов</h5>
-          <p class="text-muted mb-4">Поделитесь своей реферальной ссылкой с друзьями, чтобы они могли присоединиться к игре и принести вам бонусы.</p>
-          <button class="btn btn-primary rounded-pill px-4">
-            <i class="ri-share-line me-1"></i> Поделиться ссылкой
-          </button>
+          <h5>{{phrase('no_referrals_yet')}}</h5>
+          <p class="text-muted mb-4">{{phrase('share_referral_link')}}</p>
         </div>
       </div>
     </div>

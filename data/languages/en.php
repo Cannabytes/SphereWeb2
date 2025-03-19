@@ -1916,5 +1916,8 @@ Password: %%password%%',
     'balance_bonus' => 'Bonus Balance',
     'referral_list' => 'Your Referrals List',
     'joined' => 'Joined',
+    'no_referrals_yet' => 'You don\'t have any referrals yet',
+    'share_referral_link' => 'Share your referral link so they can join the game and bring bonuses to you and themselves.',
+    'share_in' => 'Share in %s',
 
 ];
