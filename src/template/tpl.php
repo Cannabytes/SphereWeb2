@@ -1045,24 +1045,11 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('include', function ($template) use ($twig) {
-            // Получаем информацию о пути файла
-            $pathInfo = pathinfo($template);
-            $customTemplate = $pathInfo['dirname'] . '/' .
-                $pathInfo['filename'] .
-                '_custom.' .
-                $pathInfo['extension'];
-
-            // Проверяем существование кастомного шаблона
-            $customTemplatePath = fileSys::get_dir(self::$templatePath . '/' . $customTemplate);
-            $originalTemplatePath = fileSys::get_dir(self::$templatePath . '/' . $template);
-
+            if (file_exists(self::customizeFilePath($template, true))) {
+                $template = self::customizeFilePath($template, false);
+            }
             try {
-                if(file_exists($customTemplatePath)) {
-                    $template = $twig->load($customTemplate);
-                } else {
-                    $template = $twig->load($template);
-                }
-                // Передаем все переменные из основного шаблона
+                $template = $twig->load($template);
                 return $template->render(self::$allTplVars);
             } catch (Exception $e) {
                 return "Error loading template: " . $e->getMessage();
