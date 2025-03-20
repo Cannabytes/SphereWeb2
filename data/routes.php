@@ -2477,7 +2477,7 @@ return array (
   array (
     'enable' => true,
     'method' => 'POST',
-    'pattern' => '/api/server/update/loginserver',
+    'pattern' => '/admin/server/update/loginserver',
     'func' => 'controller\\admin\\databases::updateLoginserver',
     'access' => 
     array (
@@ -2553,6 +2553,20 @@ return array (
     array (
       0 => 'guest',
     ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  186 =>
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/server/update/gameserver',
+    'func' => 'controller\\admin\\databases::updateGameserver',
+    'access' =>
+        array (
+            0 => 'admin',
+        ),
     'weight' => 0,
     'page' => '',
     'comment' => '',

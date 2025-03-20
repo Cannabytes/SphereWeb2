@@ -82,6 +82,7 @@ enum type
     case GET_LOGIN_SERVERS_DATA;
     case DELETE_LOGINSERVER;
     case UPDATE_LOGINSERVER;
+    case UPDATE_GAMESERVER;
 
     // Супер пользователь
     case CREATE_SUPER_USER_EMAIL_CHECK;
@@ -153,6 +154,7 @@ enum type
 
             self::DELETE_LOGINSERVER => '/api/server/delete/loginservers',
             self::UPDATE_LOGINSERVER => '/api/server/update/loginserver',
+            self::UPDATE_GAMESERVER => '/api/server/update/gameserver',
 
             self::SYNCHRONIZATION => '/api/user/accounts/synchronization',
             self::SERVER_STATISTIC_ONLINE => '/api/server/statistic/online',

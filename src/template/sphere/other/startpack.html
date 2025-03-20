@@ -8,11 +8,13 @@
     overflow: hidden;
     transition: all 0.4s ease;
     backdrop-filter: blur(5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-    height: 100%;
-    border: 2px solid transparent;
-    position: relative;
+     height: 100%;
+     position: relative;
     z-index: 1;
+    transform: translateY(0px);
+    border-color: rgba(142, 84, 233, 0.3);
+    box-shadow: 0 15px 35px rgba(71, 118, 230, 0.2);
+
   }
 
   .startpack-card::before {
@@ -31,8 +33,7 @@
 
   .startpack-card:hover {
     transform: translateY(-10px);
-    border-color: rgba(142, 84, 233, 0.3);
-    box-shadow: 0 15px 35px rgba(71, 118, 230, 0.2);
+    border: 2px solid var(--default-border);
   }
 
   .startpack-card:hover::before {
@@ -47,7 +48,6 @@
     position: relative;
     padding-bottom: 0.75rem;
     text-align: center;
-    color: #2D3748;
   }
 
   .startpack-name::after {
@@ -100,9 +100,9 @@
     align-items: center;
     padding: 8px 10px;
     margin-bottom: 8px;
-    background: rgba(242, 242, 242, 0.11);
     border-radius: 8px;
     transition: all 0.2s ease;
+    border: 1px solid var(--default-border);
   }
 
   .item-entry:hover {
@@ -385,7 +385,6 @@
                         data-item-enchant="{{ item.enchant }}"
                         data-item-count="{{ item.count }}"
                         class="item-entry">
-                      <span class="item-grade">{{grade_img(itemInfo.getCrystalType())|raw}}</span>
                       <span class="item-icon">
                         <img src="{{ itemInfo.getIcon() }}" alt="" class="avatar avatar-sm">
                       </span>
@@ -395,6 +394,7 @@
                           {% if item.enchant > 0 %}
                           <span class="enchant-badge">+{{item.enchant}}</span>
                           {% endif %}
+                      <span class="item-grade">{{grade_img(itemInfo.getCrystalType())|raw}}</span>
                           {{itemInfo.itemName}}
                         </span>
                       </div>
@@ -568,13 +568,13 @@ $(document).ready(function() {
         if (src && name) {
           itemsHTML += `
             <div class="item-entry mb-2" style="opacity: 0; transform: translateX(-30px); transition: none;" data-index="${index}">
-              <span class="item-grade">${$item.find('.item-grade').html() || ''}</span>
               <span class="item-icon">
                 <img src="${src}" alt="" class="avatar avatar-sm">
               </span>
               <div class="item-details">
                 <span class="item-name">
                   ${enchant > 0 ? `<span class="enchant-badge">+${enchant}</span>` : ''}
+                   <span class="item-grade">${$item.find('.item-grade').html() || ''}</span>
                   ${name}
                 </span>
               </div>

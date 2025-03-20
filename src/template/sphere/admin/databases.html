@@ -182,7 +182,7 @@
                                                     </div>
 
                                                     <div class="col-xl-12">
-                                                        <button id="getDBNameLogin" data-login-id="{{loginServer.id}}" type="button" class="btn btn-primary btn-sm">Загрузить список серверов</button>
+                                                        <button  data-login-id="{{loginServer.id}}" type="button" class="btn btn-primary btn-sm getDBNameLogin">Загрузить список Баз Данных</button>
                                                     </div>
 
                                                     <div class="col-xl-12">
@@ -326,7 +326,7 @@
                                                     </div>
 
                                                     <div class="col-xl-12">
-                                                        <button id="getDBNameGame" data-game-id="{{gameServer.id}}" type="button" class="btn btn-primary btn-sm">Загрузить список серверов</button>
+                                                        <button  data-game-id="{{gameServer.id}}" type="button" class="btn btn-primary btn-sm getDBNameGame">Загрузить список Баз Данных</button>
                                                     </div>
 
                                                     <div class="col-xl-12">
@@ -336,7 +336,7 @@
                                                     </div>
 
                                                     <div class="col-xl-12">
-                                                        <button data-game-id="{{gameServer.id}}" id="refresh_game_server" type="button" class="btn btn-primary btn-sm mb-3">Обновить БД</button>
+                                                        <button data-game-id="{{gameServer.id}}" type="button" class="btn btn-primary btn-sm mb-3 refresh_game_server">Обновить БД</button>
                                                     </div>
 
                                                 </div>
@@ -603,7 +603,7 @@
                 });
             });
 
-            });
+        });
 
         function updateCollections(selectedProtocols) {
             const $collectionSelect = $('#collection');
@@ -771,7 +771,7 @@
     });
 
 
-    $(document).on('click', '#getDBNameLogin', function (event) {
+    $(document).on('click', '.getDBNameLogin', function (event) {
         let loginId = $(this).attr('data-login-id');
 
         let host = $("#login_host_" + loginId).val();
@@ -790,7 +790,7 @@
             },
             dataType: 'json',
             success: function (response) {
-                $("#login_name").empty();
+                $("#login_name" + loginId).empty();
                 if (response.type === "notice") {
                     if (!ResponseNotice(response)) {
                         return;
@@ -801,7 +801,7 @@
                     if (value === "information_schema" || value === "mysql" || value === "performance_schema" || value === "sys") {
                         isDisabled = "disabled";
                     }
-                    $("#login_name").append('<option value="' + value + '" ' + isDisabled + '>' + value + '</option>');
+                    $("#login_name" + loginId).append('<option value="' + value + '" ' + isDisabled + '>' + value + '</option>');
                 });
             },
             error: function (xhr, status, error) {
@@ -810,19 +810,24 @@
         })
     });
 
-    $(document).on('click', '#getDBNameGame', function (event) {
+    $(document).on('click', '.getDBNameGame', function (event) {
+        let gameId = $(this).attr('data-game-id');
+        let host = $("#game_host_" + gameId).val().trim();
+        let port = $("#game_port_" + gameId).val().trim();
+        let user = $("#game_user_" + gameId).val().trim();
+        let password = $("#game_password_" + gameId).val().trim();
         $.ajax({
             url: "/admin/option/server/db/connect/select/name",
             type: "POST",
             data: {
-                "host": $("#game_host").val(),
-                "port": $("#game_port").val(),
-                "user": $("#game_user").val(),
-                "password": $("#game_password").val(),
+                "host": host,
+                "port": port,
+                "user": user,
+                "password": password,
             },
             dataType: 'json',
             success: function (response) {
-                $("#game_name").empty();
+                $("#game_name_" + gameId).empty();
 
                 if (response.type === "notice") {
                     if (!ResponseNotice(response)) {
@@ -830,7 +835,11 @@
                     }
                 }
                 $.each(response['databases'], function (index, value) {
-                    $("#game_name").append('<option value="' + value + '">' + value + '</option>');
+                    let isDisabled = "";
+                    if (value === "information_schema" || value === "mysql" || value === "performance_schema" || value === "sys") {
+                        isDisabled = "disabled";
+                    }
+                    $("#game_name_" + gameId).append('<option value="' + value + '" ' + isDisabled + '>' + value + '</option>');
                 });
 
             },
@@ -846,9 +855,26 @@
         let port = $("#login_port_" + loginId).val();
         let user = $("#login_user_" + loginId).val();
         let password = $("#login_password_" + loginId).val();
-        let name = $("#login_name_" + loginId).text().trim();
-        AjaxSend("/api/server/update/loginserver", "POST", {
+        let name = $("#login_name_" + loginId).val();
+        AjaxSend("/admin/server/update/loginserver", "POST", {
             loginId: loginId,
+            host: host,
+            port: port,
+            user: user,
+            password: password,
+            name: name
+        },);
+    })
+
+    $(".refresh_game_server").on("click", function () {
+        let gameId = $(this).attr('data-game-id');
+        let host = $("#game_host_" + gameId).val();
+        let port = $("#game_port_" + gameId).val();
+        let user = $("#game_user_" + gameId).val();
+        let password = $("#game_password_" + gameId).val();
+        let name = $("#game_name_" + gameId).val();
+        AjaxSend("/admin/server/update/gameserver", "POST", {
+            gameId: gameId,
             host: host,
             port: port,
             user: user,

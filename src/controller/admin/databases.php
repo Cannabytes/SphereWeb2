@@ -5,6 +5,7 @@ namespace Ofey\Logan22\controller\admin;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\chronicle\client;
 use Ofey\Logan22\component\sphere\type;
+use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\template\tpl;
 
 class databases
@@ -254,9 +255,35 @@ class databases
             'password' => $password,
             'name' => $name
         ])->show(true)->getResponse();
-        var_dump($response);
-        exit;
-        echo json_encode($response, JSON_UNESCAPED_UNICODE);
+        if(isset($response['success'])){
+            board::success("Обновлено");
+        }else{
+            board::error("Непредвиденные обстоятельства");
+        }
+    }
+
+    public static function updateGameserver(): void
+    {
+        $gameId = filter_input(INPUT_POST, 'gameId', FILTER_VALIDATE_INT) ?? board::error("No gameId");
+        $host = filter_input(INPUT_POST, 'host') ?? board::error("No host");
+        $port = filter_input(INPUT_POST, 'port', FILTER_VALIDATE_INT) ?? board::error("No port");
+        $user = filter_input(INPUT_POST, 'user') ?? board::error("No user");
+        $password = filter_input(INPUT_POST, 'password') ?? board::error("No password");
+        $name = filter_input(INPUT_POST, 'name') ?? board::error("No name");
+        $response = \Ofey\Logan22\component\sphere\server::send(type::UPDATE_GAMESERVER, [
+            'gameId' => $gameId,
+            'host' => $host,
+            'port' => $port,
+            'user' => $user,
+            'password' => $password,
+            'name' => $name
+        ])->show(true)->getResponse();
+        if(isset($response['success'])){
+            sql::sql("DELETE FROM `server_cache` WHERE `type` = 'statistic' ");
+            board::success("Обновлено");
+        }else{
+            board::error("Непредвиденные обстоятельства");
+        }
     }
 
 }

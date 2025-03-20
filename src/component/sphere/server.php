@@ -79,7 +79,7 @@ class server
 
     static public function tokenDisable(bool $on = true): void
     {
-         self::$tokenDisable = $on;
+        self::$tokenDisable = $on;
     }
 
     public static function setInstallLink(string $link): void
@@ -181,7 +181,11 @@ class server
         }
 
         if (isset($response['error'])) {
-            self::$error = $response['error'];
+            if(isset($response['error']['Message'])){
+                self::$error = $response['error']['Message'];
+            }else{
+                self::$error = $response['error'];
+            }
             if (isset($response['code'])) {
                 self::$codeError = $response['code'];
             }

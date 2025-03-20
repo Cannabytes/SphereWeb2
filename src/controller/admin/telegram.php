@@ -4,6 +4,7 @@ namespace Ofey\Logan22\controller\admin;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\controller\config\config;
+use Ofey\Logan22\model\user\user;
 
 class telegram
 {
@@ -63,10 +64,16 @@ class telegram
         return "";
     }
 
-    static public function sendTelegramMessage($message = ""): void
+    static public function sendTelegramMessage($message = "", $serverInfo = true): void
     {
         if (!config::load()->notice()->isTelegramEnable()) {
             return;
+        }
+        if($serverInfo) {
+            $server = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId());
+            $userInfo = \Ofey\Logan22\model\user\user::getUserId();
+            $link = \Ofey\Logan22\component\request\url::host("/admin/user/info/" . $userInfo->getId());
+            $message .= "\n\nServer: #{$server->getName()} | Chronicle: {$server->getChronicle()} | Rate EXP: {$server->getRateExp()} | <a href='{$link}'>UserInfo</a>";
         }
 
         $bot = new \Ofey\Logan22\component\telegram\telegram(config::load()->notice()->getTelegramTokenApi());
