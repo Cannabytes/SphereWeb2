@@ -725,15 +725,32 @@ class options
         }
     }
 
-    public static function test_connect_db_selected_name()
+    public static function test_connect_db_selected_name(): void
     {
         validation::user_protection("admin");
+
+        $host = $_POST['host'] ?? '';
+        $port = $_POST['port'] ?? '';
+        $user = $_POST['user'] ?? '';
+        $password = $_POST['password'] ?? '';
+
+        // Проверка на пустые значения
+        if (empty($host) || empty($port) || empty($user)) {
+            board::alert([
+                'type' => 'notice',
+                'ok' => false,
+                'message' => "Отсутствуют необходимые параметры для подключения к базе данных",
+            ]);
+            return;
+        }
+
         $data = \Ofey\Logan22\component\sphere\server::send(type::CONNECT_DB, [
-            "host" => $_POST['host'],
-            "port" => $_POST['port'],
-            "user" => $_POST['user'],
-            "password" => $_POST['password'],
+            "host" => $host,
+            "port" => $port,
+            "user" => $user,
+            "password" => $password,
         ])->getResponse();
+
         if (isset($data["databases"])) {
             board::alert([
                 'type' => 'notice',
@@ -741,9 +758,9 @@ class options
                 'message' => "Соединение с базой данных успешно",
                 'databases' => $data["databases"],
             ]);
-
             return;
         }
+
         board::alert([
             'type' => 'notice',
             'ok' => false,
