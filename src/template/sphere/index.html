@@ -244,27 +244,28 @@
 
                       {% endif %}
 
-                     <div class="container px-0 mb-0">
-    <div class="row">
-        <div class="col-sm-6">
+                    <div class="container px-0 mb-0">
+    <div class="row d-flex justify-content-between align-items-center">
+        <div class="col-12 col-sm-6 text-center text-sm-start mb-2 mb-sm-0">
             <button type="submit" data-func="messageRegistrationAccount"
-                    class="btn btn-success shadow-success btn-wave waves-effect waves-light">
+                    class="btn btn-success shadow-success btn-wave waves-effect waves-light w-100 w-sm-auto">
                 {{phrase('reg_new_acc')}}
             </button>
         </div>
 
-        <div class="col-sm-6 text-end" >
-          <div  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
-            <span data-bs-toggle="modal" data-bs-target="#syncAccount"
-                  data-bs-placement="top"
-                  class="btn btn-success shadow-info btn-wave waves-effect waves-light">
-                {{phrase('bind_game_account')}}
-            </span>
-          </div>
-
+        <div class="col-12 col-sm-6 text-center text-sm-end">
+            <div data-bs-toggle="tooltip" data-bs-placement="top"
+                 data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
+                <span data-bs-toggle="modal" data-bs-target="#syncAccount"
+                      data-bs-placement="top"
+                      class="btn btn-success shadow-info btn-wave waves-effect waves-light w-100 w-sm-auto">
+                    {{phrase('bind_game_account')}}
+                </span>
+            </div>
         </div>
     </div>
 </div>
+
 
 
                       <div id="registrationDataMessage" class="ps-0 mt-3 mb-0 d-none">
