@@ -11,6 +11,54 @@ use Ofey\Logan22\template\tpl;
 
 class userlog {
 
+    public static function getServerLog($sort = null, $serverId = null) {
+        validation::user_protection("admin");
+
+        if ($serverId === null) {
+            return false;
+        }
+
+        $params = [$serverId];
+
+        if ($sort === null || strtolower($sort) == 'all') {
+            $serverLog = sql::getRows("SELECT
+            logs_all.*,
+            COALESCE(users.avatar, 'none.jpeg') AS `avatar`,
+            COALESCE(users.name, '-') AS `name`,
+            COALESCE(users.email, '-') AS `email` 
+        FROM logs_all
+        LEFT JOIN users ON logs_all.user_id = users.id
+        WHERE server_id = ?
+        ORDER BY logs_all.id DESC LIMIT 50", $params);
+        } else {
+            $params[] = strtolower($sort);
+            $serverLog = sql::getRows("SELECT
+            logs_all.*,
+            COALESCE(users.avatar, 'none.jpeg') AS `avatar`,
+            COALESCE(users.name, '-') AS `name`,
+            COALESCE(users.email, '-') AS `email` 
+        FROM logs_all
+        LEFT JOIN users ON logs_all.user_id = users.id
+        WHERE server_id = ? AND type = ?
+        ORDER BY logs_all.id DESC LIMIT 50", $params);
+        }
+
+        foreach ($serverLog as &$log) {
+            $s = json_decode($log['variables']);
+            $values = is_array($s) ? array_values($s) : [$s];
+            $log['message'] = lang::get_phrase($log['phrase'], ...$values);
+        }
+
+        $logs_type = sql::getRows('SELECT DISTINCT type FROM logs_all WHERE server_id = ?', [$serverId]);
+
+        tpl::addVar('total_pages', sql::getRow('SELECT CEIL(COUNT(*) / 50) AS total_pages FROM logs_all WHERE server_id = ?', [$serverId])['total_pages']);
+        tpl::addVar('sort_type', $sort);
+        tpl::addVar('logs_type', $logs_type);
+        tpl::addVar('server_id', $serverId);
+        tpl::addVar("server_logs", $serverLog);
+        tpl::display("admin/logs/server.html");
+    }
+
     public static function all($sort = null) {
         validation::user_protection("admin");
         if($sort == null OR strtolower($sort) == 'all'){

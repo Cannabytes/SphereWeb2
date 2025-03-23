@@ -86,9 +86,16 @@
                 <option value="60">1 {{phrase('sec')}}.</option>
                 <option value="0">{{phrase('do_not_update')}}</option>
               </select>
-
-
               </div>
+
+            <div class="col-xl-2 ">
+              <select class="js-example-placeholder-single js-states form-control" id="log_server">
+                <option selected value="0">Все сервера</option>
+                {% for select in getServerAll() %}
+                <option value="{{select.getId()}}">{{select.getName()}}</option>
+                {% endfor %}
+              </select>
+            </div>
 
           <div class="col-xl-2">
                 <div class="text-center " id="logs-loading" style="display: none;">
@@ -98,6 +105,8 @@
                   <div class="pulse-bubble pulse-bubble-3"></div>
                 </div>
             </div>
+
+
             </div>
 
 
@@ -273,6 +282,8 @@
 {% block js %}
 
 <script>
+
+
 $(document).ready(function () {
   // Получаем сохраненное время обновления (если есть)
   let savedUpdateTime = localStorage.getItem('logsUpdateTime');
@@ -446,22 +457,56 @@ $(document).ready(function () {
     `;
   }
 
-  // Функция для загрузки начальных логов
-  function fetchInitialLogs() {
+  // Обновляем обработчик изменения сервера
+  $('#log_server').on('change', function() {
+    const selectedValue = $(this).val();
+
+    // Если выбрано конкретное значение (не "Все сервера")
+    if (selectedValue !== "0") {
+      // Сбрасываем данные и загружаем логи заново
+      resetLogsData();
+      // Загружаем начальные логи с новым фильтром по серверу
+      fetchInitialLogs(true); // передаем true для указания, что это сброс из-за смены сервера
+    } else {
+      // Если выбраны "Все сервера", также сбрасываем и перезагружаем
+      resetLogsData();
+      fetchInitialLogs(true);
+    }
+  });
+
+// Функция для сброса всех данных логов
+  function resetLogsData() {
     lastProcessedId = -1;
     oldestLogId = Infinity;
     noMoreLogs = false;
 
-    // Очищаем список перед начальной загрузкой
+    // Очищаем список
     $('#logs').empty();
-    // Очищаем кэш данных при смене фильтра
+    // Очищаем кэш данных
     logsData = {};
-
-    fetchLogs(true);
   }
 
+// Модифицируем функцию fetchInitialLogs
+  function fetchInitialLogs(isServerChange = false) {
+    if (!isServerChange) {
+      // Если это не изменение сервера, просто сбрасываем переменные
+      lastProcessedId = -1;
+      oldestLogId = Infinity;
+      noMoreLogs = false;
+
+      // Очищаем список перед начальной загрузкой
+      $('#logs').empty();
+      // Очищаем кэш данных при смене фильтра
+      logsData = {};
+    }
+
+    fetchLogs(true, isServerChange);
+  }
+
+
+
   // Функция для загрузки логов
-  function fetchLogs(isInitial = false) {
+  function fetchLogs(isInitial = false, isServerChange = false) {
     if (isLoading || noMoreLogs) return;
 
     if (isInitial) {
@@ -479,6 +524,8 @@ $(document).ready(function () {
       type: $('#log-type-selector').val(),
       lastLogId: idToSend,
       direction: direction,
+      serverId: $('#log_server').val(),
+      resetData: isServerChange ? 'true' : 'false', // Добавляем флаг сброса данных
       limit: 50
     }, true).then(function (data) {
       hideLoading();
@@ -511,6 +558,11 @@ $(document).ready(function () {
           }
         });
 
+        // Обновляем lastProcessedId на основе максимального ID полученных логов
+        if (isInitial) {
+          lastProcessedId = getMaxLogId();
+        }
+
         // Добавляем обработчик кликов для новых логов
         bindLogClickHandlers();
       } else {
@@ -520,6 +572,9 @@ $(document).ready(function () {
         // Показываем сообщение о конце списка, если это не начальная загрузка
         if (!isInitial) {
           $('#logs').append('<li class="text-center py-3 end-of-logs">Больше логов нет</li>');
+        } else if (isInitial && $('#logs li').length === 0) {
+          // Если это начальная загрузка и не получено логов, показываем сообщение об отсутствии данных
+          $('#logs').append('<li class="text-center py-3 end-of-logs">Нет доступных логов</li>');
         }
       }
     }).catch(function (error) {
@@ -529,7 +584,7 @@ $(document).ready(function () {
   }
 
   // Функция для загрузки новых логов (обновление)
-  function fetchNewLogs() {
+  function  fetchNewLogs() {
     if (isLoading) return;
 
     const currentMaxId = getMaxLogId();
@@ -540,6 +595,7 @@ $(document).ready(function () {
       type: $('#log-type-selector').val(),
       lastLogId: currentMaxId,
       direction: 'newer',
+      serverId: $('#log_server').val(),
       limit: 50
     }, true).then(function (data) {
       hideLoading();

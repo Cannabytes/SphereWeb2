@@ -1922,5 +1922,6 @@ Contraseña: %%password%%',
     'referral_bonus_message' => 'Has recibido <span class=\'text-success\'>+%s</span> monedas por referidos y recibirás <span class=\'text-success\'>%s%%</span> por donaciones del usuario: %s. Todos los bonos han sido enviados a tu almacén.',
     'received_items' => 'Ha recibido los siguientes artículos',
     'collecting_bonus' => 'Reclamando bonificación...',
+    'bind_game_account' => 'Vincular cuenta de juego',
 
     ];

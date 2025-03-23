@@ -1917,5 +1917,6 @@ Password: %%password%%',
     'referral_bonus_message' => 'Você recebeu <span class=\'text-success\'>+%s</span> moedas por indicações e receberá <span class=\'text-success\'>%s%%</span> pelas doações do usuário: %s. Todos os bônus foram enviados para o seu depósito.',
     'received_items' => 'Você recebeu os seguintes itens',
     'collecting_bonus' => 'Coletando bônus...',
+    'bind_game_account' => 'Vincular conta do jogo',
 
     ];

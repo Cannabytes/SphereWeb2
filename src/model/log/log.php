@@ -28,32 +28,54 @@ class log
         $lastLogId = $_POST['lastLogId'];
         $direction = $_POST['direction'] ?? 'newer';
         $limit = $_POST['limit'] ?? 50;
+        $serverId = isset($_POST['serverId']) ? (int)$_POST['serverId'] : 0;
+        $resetData = isset($_POST['resetData']) && $_POST['resetData'] === 'true';
 
-        if ($lastLogId == -1) {
-            // Если lastLogId равен -1, возвращаем последние логи указанного типа
-            if ($type == 0) {
-                $logs = sql::getRows("SELECT * FROM `logs_all` ORDER BY `id` DESC LIMIT ?", [$limit]);
-            } else {
-                $logs = sql::getRows("SELECT * FROM `logs_all` WHERE `type` = ? ORDER BY `id` DESC LIMIT ?", [$type, $limit]);
-            }
-        } else {
-            // Логика получения логов в зависимости от направления
+        // Если выбран новый сервер и запрос отмечен флагом сброса,
+        // возвращаем последние логи без учета lastLogId
+        if ($resetData) {
+            $lastLogId = -1;
+            $direction = 'newer';
+        }
+
+        $whereConditions = [];
+        $params = [];
+
+        // Добавляем условие для ID в зависимости от направления
+        if ($lastLogId != -1) {
             if ($direction === 'newer') {
-                // Получаем более новые логи (с ID > lastLogId)
-                if ($type == 0) {
-                    $logs = sql::getRows("SELECT * FROM `logs_all` WHERE `id` > ? ORDER BY `id` DESC LIMIT ?", [$lastLogId, $limit]);
-                } else {
-                    $logs = sql::getRows("SELECT * FROM `logs_all` WHERE `id` > ? AND `type` = ? ORDER BY `id` DESC LIMIT ?", [$lastLogId, $type, $limit]);
-                }
+                $whereConditions[] = "`id` > ?";
+                $params[] = $lastLogId;
             } else {
-                // Получаем более старые логи (с ID < lastLogId)
-                if ($type == 0) {
-                    $logs = sql::getRows("SELECT * FROM `logs_all` WHERE `id` < ? ORDER BY `id` DESC LIMIT ?", [$lastLogId, $limit]);
-                } else {
-                    $logs = sql::getRows("SELECT * FROM `logs_all` WHERE `id` < ? AND `type` = ? ORDER BY `id` DESC LIMIT ?", [$lastLogId, $type, $limit]);
-                }
+                $whereConditions[] = "`id` < ?";
+                $params[] = $lastLogId;
             }
         }
+
+        // Добавляем условие для типа, если он указан и не равен 0
+        if ($type != 0) {
+            $whereConditions[] = "`type` = ?";
+            $params[] = $type;
+        }
+
+        // Добавляем условие для server_id, если он указан и не равен 0
+        if ($serverId != 0) {
+            $whereConditions[] = "`server_id` = ?";
+            $params[] = $serverId;
+        }
+
+        // Формируем SQL запрос
+        $sql = "SELECT * FROM `logs_all`";
+
+        if (!empty($whereConditions)) {
+            $sql .= " WHERE " . implode(" AND ", $whereConditions);
+        }
+
+        $sql .= " ORDER BY `id` DESC LIMIT ?";
+        $params[] = $limit;
+
+        // Выполняем запрос
+        $logs = sql::getRows($sql, $params);
 
         echo json_encode(self::getLog($logs, true), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }

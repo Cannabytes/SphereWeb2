@@ -165,13 +165,14 @@
                     {% else %}
 
 
+
                     <form action="/registration/account" method="POST">
                       <div class="row mb-0">
                         <div class="input-group mb-3">
                           <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between">
                             {{ phrase(40) }}
                             <span data-bs-toggle="modal" data-bs-target="#syncAccount" >
-                              <label role="button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Synchronization of accounts. Do you have an account that is not in your list of accounts?">
+                              <label role="button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
                               {{ phrase('Do you already have an account?') }}
                               </label>
                             </span>
@@ -243,21 +244,32 @@
 
                       {% endif %}
 
-                      <div class="container px-0 mb-0">
-                        <div class="row ">
-                          <div class="col-sm-6">
-                            <button type="submit" data-func="messageRegistrationAccount"
-                                    class="btn btn-success shadow-success btn-wave waves-effect waves-light">
-                              {{phrase('reg_new_acc')}}
-                            </button>
-                          </div>
+                     <div class="container px-0 mb-0">
+    <div class="row">
+        <div class="col-sm-6">
+            <button type="submit" data-func="messageRegistrationAccount"
+                    class="btn btn-success shadow-success btn-wave waves-effect waves-light">
+                {{phrase('reg_new_acc')}}
+            </button>
+        </div>
 
-                        </div>
-                      </div>
+        <div class="col-sm-6 text-end" >
+          <div  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
+            <span data-bs-toggle="modal" data-bs-target="#syncAccount"
+                  data-bs-placement="top"
+                  class="btn btn-success shadow-info btn-wave waves-effect waves-light">
+                {{phrase('bind_game_account')}}
+            </span>
+          </div>
+
+        </div>
+    </div>
+</div>
+
 
                       <div id="registrationDataMessage" class="ps-0 mt-3 mb-0 d-none">
                         <span id="registrationMessage" class="badge border bg-danger-transparent rounded-1">
-                         Увы, аккаунт занят.
+                          {{ phrase(214) }}
                         </span>
                       </div>
 

@@ -1924,5 +1924,6 @@ Password: %%password%%',
     'referral_bonus_message' => 'You received <span class=\'text-success\'>+%s</span> coins for referrals and will receive <span class=\'text-success\'>%s%%</span> for donations from user: %s. All bonuses have been sent to your storage.',
     'received_items' => 'You have received the following items',
     'collecting_bonus' => 'Collecting bonus...',
+    'bind_game_account' => 'Bind game account',
 
 ];
