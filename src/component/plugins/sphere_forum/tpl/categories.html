@@ -181,16 +181,18 @@
 
 
                                         {% if not section.shouldHideLastTopic() and section.getLastReplyUserId() %}
-                                        <small class="d-flex align-items-center">
-                                            <i class='bx bx-right-arrow-alt'></i>
-                                            <a href="/forum/topic/{{ transliterateToEn( section.getLastThread().getTitle() ) }}.{{ section.getLastThread().getId() }}"
-                                               class="ms-1 me-1">{{ section.getLastThread().getTitle() }}</a> от
-                                            <span class="avatar avatar-sm avatar-rounded mx-1 d-inline-block">
-                                            <img src="{{ getUser(section.getLastReplyUserId()).getAvatar() }}" alt="img"
-                                                 class="rounded-circle">
-                                        </span>
-                                            <span class="">{{ getUser(section.getLastReplyUserId()).getName() }}</span>
-                                        </small>
+                                                <small class="d-flex flex-wrap align-items-center">
+                                                    <a href="/forum/topic/{{ transliterateToEn( section.getLastThread().getTitle() ) }}.{{ section.getLastThread().getId() }}"
+                                                       class="ms-1 me-1 text-break">  <i class='bx bx-right-arrow-alt'></i> {{ section.getLastThread().getTitle() }}</a>
+                                                    <span class="me-1">от</span>
+                                                    <div class="d-inline-flex align-items-center flex-wrap">
+                                                        <span class="avatar avatar-sm avatar-rounded me-1">
+                                                            <img src="{{ getUser(section.getLastReplyUserId()).getAvatar() }}" alt="img"
+                                                                 class="rounded-circle">
+                                                        </span>
+                                                        <span class="text-truncate">{{ getUser(section.getLastReplyUserId()).getName() }}</span>
+                                                    </div>
+                                                </small>
                                         {% endif %}
 
                                     </div>

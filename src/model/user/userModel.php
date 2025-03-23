@@ -64,6 +64,8 @@ class userModel
 
     private ?DateTime $lastActivity = null;
 
+    private bool $isFoundUser = false;
+
     public function __construct(?int $userId = null)
     {
         if ($userId == null) {
@@ -125,6 +127,7 @@ class userModel
             $this->city = $user['city'];
             $this->serverId = $user['server_id'];
             $this->lang = $user['lang'];
+            $this->isFoundUser = true;
 
             if($userId == $_SESSION['id']){
                 if(isset($_SESSION['lang'])){
@@ -163,6 +166,11 @@ class userModel
         return null;
     }
 
+    // Найден ли такой пользователь
+    public function isFoundUser(): bool
+    {
+        return $this->isFoundUser;
+    }
 
     /**
      * Обновляет время последней активности пользователя

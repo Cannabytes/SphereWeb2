@@ -16,7 +16,7 @@ class users {
     {
 
         $userInfo = \Ofey\Logan22\model\user\user::getUserId($id);
-        if (!$userInfo) {
+        if (!$userInfo->isFoundUser()) {
             board::error("User not found");
         }
         tpl::addVar("userInfo", $userInfo);

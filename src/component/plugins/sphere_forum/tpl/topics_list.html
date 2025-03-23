@@ -4,12 +4,13 @@
 
 {% block content %}
 <div class="container-fluid ">
-    <div class="row">
+    <div class="row ">
         <div class="col-xl-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
 
-                    <div class="d-flex align-items-center">
+<div class="card-header d-flex flex-column flex-md-row justify-content-md-between align-items-start align-items-md-center">
+
+    <div class="d-flex align-items-center mb-3 mb-md-0">
                         <a href="/forum" class="avatar border text-muted me-2">
                             <i class="fe fe-home"></i>
                         </a>
@@ -43,7 +44,8 @@
 
                     </div>
 
-                    <div>
+
+    <div class="d-flex flex-wrap gap-2">
 
                         <a data-bs-content="
     {{phrase('create_topic')}}: {% if category.canCreateTopics() %}{{phrase('yes')}}{% else %}{{phrase(426)}}{% endif %}<br>
@@ -826,8 +828,8 @@
                         <div class="sortable-sections mb-4">
                             {% for section in categories %}
                             <li class="list-group-item" data-section-id="{{ section.getId() }}">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center">
+                                <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
+                                    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
                                         {% if getUser().isAdmin() %}
                                         <span class="drag-handle-section me-2"><i class="ri-drag-move-fill text-muted"></i></span>
                                         {% endif %}
@@ -890,7 +892,7 @@
                                                 {% endif %}
                                             </div>
 
-                                            <div class="ps-2">
+                                             <div class="ps-2 mt-1 d-flex flex-wrap">
                                                 {% if section.getSubcategories() %}
                                                 <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision"
                                                      text-rendering="geometricPrecision" image-rendering="optimizeQuality"
@@ -902,7 +904,7 @@
 
                                                 {% for subcategory in section.getSubcategories() %}
                                                 <a href="/forum/{{ transliterateToEn( subcategory.getName() ) }}.{{ subcategory.getId() }}"
-                                                   class="badge border bg-primary-transparent rounded-1  me-2">
+                                                   class="badge border bg-primary-transparent rounded-1 me-2 mb-1">
                                                     <span class=""> {{ subcategory.getName() }} </span>
                                                 </a>
                                                 {% endfor %}
@@ -910,22 +912,26 @@
                                             </div>
 
                                             {% if not section.shouldHideLastTopic() and section.getLastReplyUserId() %}
-                                            <small class="d-flex align-items-center">
-                                                <i class='bx bx-right-arrow-alt'></i>
-                                                <a href="/forum/topic/{{ transliterateToEn( section.getLastThread().getTitle() ) }}.{{ section.getLastThread().getId() }}"
-                                                   class="ms-1 me-1">{{ section.getLastThread().getTitle() }}</a> от
-                                                <span class="avatar avatar-sm avatar-rounded mx-1 d-inline-block">
-                                <img src="{{ getUser(section.getLastReplyUserId()).getAvatar() }}" alt="img"
-                                     class="rounded-circle">
-                            </span>
-                                                <span class="">{{ getUser(section.getLastReplyUserId()).getName() }}</span>
-                                            </small>
-                                            {% endif %}
+<small class="d-flex flex-wrap align-items-center mt-1">
+    <i class='bx bx-right-arrow-alt'></i>
+    <a href="/forum/topic/{{ transliterateToEn( section.getLastThread().getTitle() ) }}.{{ section.getLastThread().getId() }}"
+       class="ms-1 me-1 text-break">{{ section.getLastThread().getTitle() }}</a>
+    <span class="me-1">от</span>
+    <div class="d-inline-flex align-items-center flex-wrap">
+        <span class="avatar avatar-sm avatar-rounded me-1">
+            <img src="{{ getUser(section.getLastReplyUserId()).getAvatar() }}" alt="img"
+                 class="rounded-circle"  style="width: 100%; height: 100%; object-fit: cover;">
+        </span>
+        <span class="text-truncate">{{ getUser(section.getLastReplyUserId()).getName() }}</span>
+    </div>
+</small>
+{% endif %}
+
                                         </div>
                                     </div>
 
                                     {% if section.getLink() == false %}
-                                    <div>
+            <div class="mt-2 mt-md-0 ms-md-2">
                                         <small>{{phrase('topics')}}: <strong>{{section.getThreadCount()}}</strong></small><br>
                                         <small>{{phrase('messages')}}: <strong>{{section.getPostCount()}}</strong></small>
                                     </div>
@@ -955,7 +961,7 @@
                                 <th style="width: 15%;">{{phrase('last_post')}}</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="table-group-divider">
                             {% for thread in pinnedThreads %}
                             {%- set canViewThread =
                             category.canViewTopics() or
@@ -973,7 +979,7 @@
                             -%}
 
                             {% if canViewThread and showModeratedThread %}
-                            <tr {% if canViewThread %}style="cursor: pointer;"
+                            <tr {% if canViewThread %}class="position-relative" style="cursor: pointer;"
                                 onclick="location.href = '/forum/topic/{{ transliterateToEn(thread.getTitle()) }}.{{ thread.getId() }}';"
                                 {% endif %}>
                                 {# Содержимое ячеек остается тем же #}
