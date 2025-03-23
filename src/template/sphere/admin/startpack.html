@@ -157,10 +157,17 @@
             </table>
           </div>
 
+<button class="btn btn-primary label-btn label-end mt-1 me-2 editPack" data-object-id="{{data.id}}">
+  Изменить пак
+  <i class="ri-edit-line label-btn-icon ms-2 rounded-pill"></i>
+</button>
+
           <button class="btn btn-danger label-btn label-end mt-1 removePack" data-object-id="{{data.id}}">
             Удалить пак
             <i class="ri-delete-bin-line label-btn-icon ms-2 rounded-pill"></i>
           </button>
+
+
 
         </div>
       </div>
@@ -170,6 +177,91 @@
 
 
   </div>
+
+
+  <div class="modal fade" id="editPackModal" tabindex="-1" aria-labelledby="editPackModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editPackModalLabel">Редактирование пака</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit_pack_id" value="">
+
+        <div class="row g-2 mb-3">
+          <div class="col-md">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="edit_startpack_name" placeholder="Premium Pack">
+              <label for="edit_startpack_name">{{phrase('starter_pack_name')}}</label>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="form-floating">
+              <input type="number" class="form-control" id="edit_startpack_cost" placeholder="100">
+              <label for="edit_startpack_cost">{{phrase('pack_price')}}</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+          <small id="edit_itemName" class="fs-14">{{ phrase('no_items_selected') }}</small>
+
+          <div class="col-xl-1 mb-0">
+            <div class="input-group">
+              <img class="avatar avatar-lg" id="edit_AddImgSrc" src="{{path('/uploads/images/icon/NOIMAGE.webp')}}" alt="">
+            </div>
+          </div>
+          <div class="col-xl-2">
+            <div class="input-group">
+              <div class="input-group-text">ID</div>
+              <input value="0" min="0" id="edit_itemId" type="number" class="form-control" placeholder="4037">
+            </div>
+          </div>
+
+          <div class="col-xl-2">
+            <div class="input-group">
+              <div class="input-group-text">Count</div>
+              <input value="1" min="0" id="edit_count" type="number" class="form-control" placeholder="1">
+            </div>
+          </div>
+
+          <div class="col-xl-2">
+            <div class="input-group">
+              <div class="input-group-text">Заточка</div>
+              <input value="0" min="0" id="edit_enchant" step="1" type="number" class="form-control" placeholder="0">
+            </div>
+          </div>
+
+          <div class="col-xl-2">
+            <button id="edit_addItemToTable" type="button" class="btn btn-primary">{{ phrase('add_to_pack') }}</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table id="edit_product_sheet" class="table table-sm text-nowrap table-bordered">
+            <thead>
+              <tr>
+                <th style="width: 1px" scope="col"></th>
+                <th style="width: 1px" scope="col">Item ID</th>
+                <th scope="col">Item Name</th>
+                <th scope="col">Count</th>
+                <th scope="col">Enchant</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-success" id="saveEditedPack">Сохранить изменения</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 </div>
 
@@ -181,6 +273,263 @@
 
 
 {% block js %}
+
+<script>
+  // Функция debounce для предотвращения частых вызовов
+  function debounce(func, wait, immediate) {
+    var timeout;
+    return function() {
+      var context = this, args = arguments;
+      var later = function() {
+        timeout = null;
+        if (!immediate) {
+          func.apply(context, args);
+        }
+      };
+      var callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) {
+        func.apply(context, args);
+      }
+    };
+  }
+
+  // Функция для отображения уведомления об ошибке, если ее нет в глобальном контексте
+  function noticeError(message) {
+    if (typeof window.noticeError === 'function') {
+      window.noticeError(message);
+    } else {
+      alert(message);
+    }
+  }
+
+  // Инициализация модального окна
+  var editPackModal = new bootstrap.Modal(document.getElementById('editPackModal'), {
+    keyboard: false
+  });
+
+  var edit_isIssetItem = false;
+
+  // Обработчик нажатия на кнопку редактирования
+  $(".editPack").on("click", function() {
+    // Получаем карточку пака, в которой была нажата кнопка
+    let packCard = $(this).closest('.card');
+    let packId = $(this).data('object-id');
+
+    // Очищаем таблицу перед загрузкой данных
+    $('#edit_product_sheet tbody').empty();
+
+    // Получаем название и стоимость пака из карточки
+    let packName = packCard.find('.card-title').text().trim();
+    let packCostText = packCard.find('.ms-auto').text();
+    let packCost = packCostText.match(/\d+/)[0]; // Извлекаем только числовое значение
+
+    // Заполняем поля формы
+    $('#edit_pack_id').val(packId);
+    $('#edit_startpack_name').val(packName);
+    $('#edit_startpack_cost').val(packCost);
+
+    // Получаем все предметы из таблицы в карточке
+    packCard.find('table tbody tr').each(function() {
+      let item = $(this);
+      let itemImage = item.find('img').attr('src');
+      let itemName = item.find('th:first').text().trim();
+      let itemId = item.find('th:eq(1)').text().trim();
+      let itemCount = item.find('td:eq(0)').text().trim();
+      let itemEnchant = item.find('td:eq(1)').text().trim();
+
+      // Создаем строку таблицы
+      let newRow = $('<tr></tr>');
+
+      // Добавляем ячейку с изображением
+      let imgCell = $('<td></td>').append('<span class="avatar avatar-sm"><img src="' + itemImage + '" alt=""></span>');
+      newRow.append(imgCell);
+
+      // Добавляем оставшиеся ячейки
+      newRow.append('<td>' + itemId + '</td>');
+      newRow.append('<td>' + itemName + '</td>');
+      newRow.append('<td>' + itemCount + '</td>');
+      newRow.append('<td>' + itemEnchant + '</td>');
+
+      // Добавляем ячейку с кнопкой удаления
+      let deleteBtn = $('<button class="btn btn-danger-light btn-icon ms-1 btn-sm edit_removeItemSelect"><i class="ri-delete-bin-5-line"></i></button>');
+      let deleteCell = $('<td></td>').append(deleteBtn);
+      newRow.append(deleteCell);
+
+      // Добавляем строку в таблицу
+      $('#edit_product_sheet tbody').append(newRow);
+    });
+
+    // Показываем модальное окно
+    editPackModal.show();
+  });
+
+  // Обработка добавления предмета в таблицу редактирования
+  $('#edit_addItemToTable').click(function() {
+    // Получаем данные из полей ввода
+    var itemName = $('#edit_itemName').text();
+    var itemId = $('#edit_itemId').val();
+    var count = $('#edit_count').val();
+    var enchant = $('#edit_enchant').val();
+    var imgSrc = $('#edit_AddImgSrc').attr('src');
+
+    if (count === '0' || edit_isIssetItem === false) {
+      noticeError('Необходимо выбрать предмет и указать количество');
+      return;
+    }
+
+    // Создаем строку таблицы
+    var newRow = $('<tr></tr>');
+
+    // Добавляем ячейку с изображением
+    var imgCell = $('<td></td>').append('<span class="avatar avatar-sm"><img src="' + imgSrc + '" alt=""></span>');
+    newRow.append(imgCell);
+
+    // Добавляем оставшиеся ячейки
+    newRow.append('<td>' + itemId + '</td>');
+    newRow.append('<td>' + itemName + '</td>');
+    newRow.append('<td>' + count + '</td>');
+    newRow.append('<td>' + enchant + '</td>');
+
+    // Добавляем ячейку с кнопкой удаления
+    var deleteBtn = $('<button class="btn btn-danger-light btn-icon ms-1 btn-sm edit_removeItemSelect"><i class="ri-delete-bin-5-line"></i></button>');
+    var deleteCell = $('<td></td>').append(deleteBtn);
+    newRow.append(deleteCell);
+
+    // Добавляем строку в таблицу
+    $('#edit_product_sheet tbody').append(newRow);
+
+    // Очищаем поля формы
+    $('#edit_itemId').val('0');
+    $('#edit_count').val('1');
+    $('#edit_enchant').val('0');
+    $('#edit_itemName').html("{{ phrase('no_items_selected') }}");
+    $('#edit_AddImgSrc').attr('src', '{{path("/uploads/images/icon/NOIMAGE.webp")}}');
+    edit_isIssetItem = false;
+  });
+
+  // Удаление предмета из таблицы редактирования
+  $(document).on('click', '.edit_removeItemSelect', function() {
+    $(this).closest('tr').remove();
+  });
+
+  // Поиск информации о предмете в режиме редактирования
+  $(document).on('input', '#edit_itemId', debounce(function() {
+    $('#edit_addItemToTable').prop('disabled', true);
+    let itemId = $(this).val().toString();
+    let dataToSend = {
+      itemID: itemId,
+    };
+
+    $.ajax({
+      type: 'POST',
+      url: '/admin/client/item/info',
+      dataType: 'json',
+      data: dataToSend,
+      success: function(response) {
+        if (response.ok) {
+          edit_isIssetItem = true;
+          let itemInfo = response.item;
+          $('#edit_AddImgSrc').attr('src', itemInfo.icon);
+
+          let addName = '';
+          if (itemInfo.addName !== '') {
+            addName = '<span class="badge bg-danger">' + itemInfo.addName + '</span>';
+          }
+          $('#edit_itemName').html((addName + ' ' + itemInfo.itemName).trim());
+
+          if (itemInfo.description) {
+            $('#edit_itemName').attr({
+              'data-bs-toggle': 'tooltip',
+              'data-bs-custom-class': 'tooltip-danger',
+              'data-bs-placement': 'top',
+              'data-bs-original-title': itemInfo.description,
+            });
+          } else {
+            $('#edit_itemName').removeAttr('data-bs-toggle data-bs-custom-class data-bs-placement data-bs-original-title');
+          }
+          $('[data-bs-toggle="tooltip"]').tooltip();
+
+          let countInput = $('#edit_count');
+          if (!itemInfo.isStackable) {
+            countInput.val(1);
+            if (!countInput.prop('disabled')) {
+              countInput.prop('disabled', true);
+            }
+          } else {
+            if (countInput.prop('disabled')) {
+              countInput.prop('disabled', false);
+            }
+          }
+        } else {
+          $('#edit_AddImgSrc').attr('src', response.icon);
+          $('#edit_itemName').html(response.name);
+          edit_isIssetItem = false;
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('Произошла ошибка:', error);
+        edit_isIssetItem = false;
+      },
+      complete: function() {
+        $('#edit_addItemToTable').prop('disabled', false);
+      }
+    });
+  }, 300));
+
+  // Сохранение изменений пака
+  $('#saveEditedPack').click(function() {
+    var packId = $('#edit_pack_id').val();
+    var name = $('#edit_startpack_name').val();
+    var cost = $('#edit_startpack_cost').val();
+
+    // Собираем предметы из таблицы
+    var items = $('#edit_product_sheet tbody tr').map(function() {
+      return {
+        itemId: $(this).find('td').eq(1).text(),
+        itemName: $(this).find('td').eq(2).text(),
+        count: $(this).find('td').eq(3).text(),
+        enchant: $(this).find('td').eq(4).text(),
+      };
+    }).get();
+
+    if (name === '' || cost === '') {
+      noticeError('Необходимо заполнить поля названия и стоимости');
+      return;
+    }
+
+    if (items.length === 0) {
+      noticeError('Необходимо добавить хотя бы один предмет');
+      return;
+    }
+
+    // Отправляем данные на сервер
+    AjaxSend('/admin/shop/startpack/update', 'POST', {
+      packId: packId,
+      name: name,
+      cost: cost,
+      items: items,
+    }, true).then(function(response) {
+      let rn = ResponseNotice(response);
+      if (rn === false) {
+        return;
+      }
+
+      if (response.ok) {
+        // Закрываем модальное окно
+        editPackModal.hide();
+
+        // Обновляем страницу для отображения изменений
+        setTimeout(function() {
+          location.reload();
+        }, 1000);
+      }
+    });
+  });
+</script>
+
+
 <script>
 
   //Удаляем пак

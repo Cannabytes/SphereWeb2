@@ -210,7 +210,7 @@ class startpack
         return self::$startpacks;
     }
 
-    static public function add()
+    static public function add(): void
     {
         $name = $_POST['name'] ?? board::error('Введите название набора');
         $cost = $_POST['cost'] ?? board::error('Введите стоимость набора');
@@ -228,6 +228,39 @@ class startpack
             board::success('Набор успешно добавлен');
         } else {
             board::error('Ошибка добавления набора');
+        }
+    }
+
+    static public function update(): void
+    {
+        $packId = $_POST['packId'] ?? board::error('Не указан ID пака');
+        $name = $_POST['name'] ?? board::error('Введите название набора');
+        $cost = $_POST['cost'] ?? board::error('Введите стоимость набора');
+        $items = $_POST['items'] ?? board::error('Нет наборов');
+        $items = json_encode($items);
+        if ($items === false) {
+            board::error('Не удалось закодировать наборы');
+        }
+
+        // Проверяем, существует ли пак и принадлежит ли он текущему серверу
+        $existingPack = sql::run(
+            'SELECT id FROM `startpacks` WHERE id = ? AND server_id = ? LIMIT 1',
+            [$packId, user::self()->getServerId()]
+        );
+
+        if (!$existingPack || !$existingPack->rowCount()) {
+            board::error('Пак не найден или у вас нет прав для его редактирования');
+        }
+
+        $result = sql::run(
+            'UPDATE `startpacks` SET name = ?, cost = ?, items = ? WHERE id = ? AND server_id = ?',
+            [$name, $cost, $items, $packId, user::self()->getServerId()]
+        );
+
+        if ($result && $result->rowCount()) {
+            board::success('Набор успешно обновлен');
+        } else {
+            board::error('Ошибка обновления набора или данные не изменились');
         }
     }
 

@@ -41,7 +41,7 @@ class bonuscode {
     FROM
         bonus_code 
     WHERE 
-        server_id = ?
+        server_id = ? OR server_id = 0
     ORDER BY 
         id DESC";
         $codeTable = sql::getRows($sql, [user::self()->getServerId()]);
@@ -72,12 +72,25 @@ class bonuscode {
         tpl::display("/admin/bonuscode_list.html");
     }
 
-    static public function delete()
+    static public function delete(): void
     {
         $key = $_POST['key'] ?? board::error("Not id key");
         sql::run("DELETE FROM `bonus_code` WHERE `code` = ?", [$key]);
         board::success("Удалено");
     }
 
+    static public function delete_all(): void
+    {
+        sql::run("DELETE FROM `bonus_code` WHERE `server_id` = ?", [user::self()->getServerId()]);
+        board::reload(true);
+        board::success("Удалено");
+    }
+
+    static public function delete_general_all_servers(): void
+    {
+        sql::run("DELETE FROM `bonus_code` WHERE `server_id` = 0");
+        board::reload(true);
+        board::success("Удалено");
+    }
 
 }

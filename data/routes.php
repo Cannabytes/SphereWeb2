@@ -2557,16 +2557,58 @@ return array (
     'page' => '',
     'comment' => '',
   ),
-  186 =>
+  186 => 
   array (
     'enable' => true,
     'method' => 'POST',
     'pattern' => '/admin/server/update/gameserver',
     'func' => 'controller\\admin\\databases::updateGameserver',
-    'access' =>
-        array (
-            0 => 'admin',
-        ),
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  187 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/bonuscode/delete_all',
+    'func' => 'controller\\admin\\bonuscode::delete_all',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  189 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/bonuscode/delete_general_all_servers',
+    'func' => 'controller\\admin\\bonuscode::delete_general_all_servers',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  190 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/shop/startpack/update',
+    'func' => 'controller\\admin\\startpack::update',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
     'weight' => 0,
     'page' => '',
     'comment' => '',

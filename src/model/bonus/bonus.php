@@ -31,6 +31,11 @@ class bonus
         $prefix = trim($_POST['prefix']) ?? '';
         $autocreatecode = (bool) filter_input(INPUT_POST, 'autocreatecode', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
         $disposable = (int) filter_input(INPUT_POST, 'disposable', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+        if (!$autocreatecode) {
+            if($prefix == '') {
+                $prefix = self::generateRandomStrings($minCodeSymbols, $maxCodeSymbols);
+            }
+        }
 
         if ($items == null || count($items) == 0) {
             board::notice(false, "Не указаны предметы");

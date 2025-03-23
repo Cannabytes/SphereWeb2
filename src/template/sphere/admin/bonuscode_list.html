@@ -11,9 +11,23 @@
           <a href="/admin" class="avatar border text-muted me-2">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
           </a>
-          {{ phrase('bonus_codes') }}
+          {{ phrase('bonus_codes') }} - server: {{getServer().getName()}}  ({{codeTable|length}})
+        </div>
+
+        <div class="dropdown">
+          <button class="btn btn-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            Удалить
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="#" id="delete_all_codes">Удалить коды сервера - {{getServer().getName()}}</a></li>
+            <li><a class="dropdown-item" href="#" id="delete_all_codes_servers">Удалить общие коды</a></li>
+          </ul>
         </div>
       </div>
+
+
+
+
       <div class="card-body">
         <div class="table-responsive">
           <table class="table text-nowrap table-striped table-hover">
@@ -31,6 +45,9 @@
             <tr id="{{key}}">
               <th scope="row">{{ key }}
                 <i data-code="{{ key }}" class="ri-file-copy-2-line copycode" role="button"></i>
+                {% if data[0].server_id == 0 %}
+                <span class="badge bg-success-transparent ms-2">ALL SERVERS</span>
+                {% endif %}
               </th>
               <td>
 
@@ -73,18 +90,66 @@
       </div>
 
 </div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Подтверждение действия</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMessage"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="button" class="btn btn-danger" id="confirmActionButton">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block js %}
 <script>
 
-    $('.deleteBonusCode').on('click', function() {
-      var key = $(this).data('object-key');
+
+  function showConfirmModal(message, callback) {
+    $('#confirmMessage').text(message);
+    $('#confirmActionButton').off('click');
+    $('#confirmActionButton').on('click', function() {
+      $('#confirmModal').modal('hide');
+      if (typeof callback === 'function') {
+        callback();
+      }
+    });
+    $('#confirmModal').modal('show');
+  }
+
+  $('.deleteBonusCode').on('click', function() {
+    var key = $(this).data('object-key');
+    showConfirmModal('Вы уверены, что хотите удалить бонусный код ' + key + '?', function() {
       AjaxSend("/admin/bonuscode/delete", "POST", {key:key}, true).then(function (response) {
         responseAnalysis(response);
         $('#' + key).remove();
       });
+    });
+  });
 
+  // Обработчик для удаления всех кодов сервера
+  $('#delete_all_codes').on('click', function(e) {
+    e.preventDefault();
+    showConfirmModal('Вы уверены, что хотите удалить все бонус коды для сервера {{getServer().getName()}}?', function() {
+      AjaxSend("/admin/bonuscode/delete_all", "POST", {});
+    });
+  });
+
+  // Обработчик для удаления общих кодов всех серверов
+  $('#delete_all_codes_servers').on('click', function(e) {
+    e.preventDefault();
+    showConfirmModal('Вы уверены, что хотите удалить все бонус коды общих серверов? Это действие необратимо!', function() {
+      AjaxSend("/admin/bonuscode/delete_general_all_servers", "POST", {});
+    });
   });
 
 
