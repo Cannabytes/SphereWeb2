@@ -275,4 +275,6 @@ return [
     'file_size_exceeds' => 'File size exceeds %d MB',
     'clan_messages' => 'Clan messages',
     'participants' => 'Participants',
+    'moderator_approval_of_topics' => 'Moderator approval of topics',
+    'delete_own_topics' => 'Delete own topics',
 ];

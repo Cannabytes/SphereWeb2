@@ -275,8 +275,6 @@ return [
     'file_size_exceeds' => 'Το μέγεθος του αρχείου ξεπερνά το %d MB',
     'clan_messages' => 'Μηνύματα κλαν',
     'participants' => 'Μέλη',
-
-
-
-
+    'moderator_approval_of_topics' => 'Έγκριση θεμάτων από συντονιστές',
+    'delete_own_topics' => 'Διαγραφή προσωπικών θεμάτων',
     ];

@@ -275,8 +275,6 @@ return [
     'file_size_exceeds' => 'Размер файла превышает %d MB',
     'clan_messages' => 'Сообщения клана',
     'participants' => 'Участников',
-
-
-
-
+    'moderator_approval_of_topics' => 'Модераторское одобрение тем',
+    'delete_own_topics' => 'Удаление своих тем',
     ];

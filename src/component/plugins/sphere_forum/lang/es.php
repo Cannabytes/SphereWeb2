@@ -275,4 +275,6 @@ return [
     'file_size_exceeds' => 'El tamaño del archivo excede %d MB',
     'clan_messages' => 'Mensajes del clan',
     'participants' => 'Participantes',
+    'moderator_approval_of_topics' => 'Aprobación de temas por moderadores',
+    'delete_own_topics' => 'Eliminar temas propios',
 ];
