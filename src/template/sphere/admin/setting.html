@@ -1120,16 +1120,36 @@
                                     </div>
                                 </li>
 
-                                <li class="list-group-item">
-                                    <div class="row gx-5 gy-3">
-                                        <div class="col-xl-12">
-                                            <p class="fs-14 mb-1 fw-semibold">{{phrase('homepage_link')}}</p>
-                                            <input value="{{ config().other().getLinkMainPage() }}" type="text"
-                                                   class="form-control"
-                                                   id="linkMainPage" placeholder="/">
-                                        </div>
-                                    </div>
-                                </li>
+<li class="list-group-item">
+    <div class="row gx-5 gy-3">
+        <div class="col-xl-12">
+            <div class="d-flex align-items-center mb-2">
+                <p class="fs-14 mb-0 fw-semibold me-3">{{phrase('homepage_link')}}</p>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="isEnableMenuPageLink" {{ config().other().isEnableMenuPageLink() ? 'checked' : '' }}>
+                    <label class="form-check-label" for="isEnableMenuPageLink">{{phrase('show')}} / {{phrase('hide')}}</label>
+                </div>
+            </div>
+            <input value="{{ config().other().getLinkMainPage() }}" type="text"
+                   class="form-control" {{ config().other().getLinkMainPage() ? '' : 'disabled' }}
+                   id="linkMainPage" placeholder="/">
+        </div>
+    </div>
+</li>
+
+                                <script>
+                                    $(document).ready(function() {
+                                        $('#isEnableMenuPageLink').on('change', function() {
+                                            if ($(this).is(':checked')) {
+                                                $('#linkMainPage').prop('disabled', false);
+                                                $('#pageMenuToStartURL').removeClass('d-none');
+                                            } else {
+                                                $('#linkMainPage').prop('disabled', true);
+                                                $('#pageMenuToStartURL').addClass('d-none');
+                                            }
+                                        });
+                                    });
+                                </script>
 
                                 <li class="list-group-item">
 

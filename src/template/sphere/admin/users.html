@@ -22,13 +22,16 @@
             <table id="datatable-users" class="table table-bordered text-nowrap w-100">
               <thead>
               <tr>
+                <th>ID</th>
                 <th>{{ phrase('user') }}</th>
+                <th>{{ phrase(114) }}</th>
                 <th>{{ phrase('donate_coin') }}</th>
               </tr>
               </thead>
               <tbody>
               {% for i, user in getUsers() %}
               <tr>
+                <td style="width: 1px;">{{user.getId()}}</td>
                 <td>
                   <div class="d-flex align-items-center  mt-auto">
                     <div class="avatar  avatar-md me-1 cover-image" data-bs-image-src="{{user.getAvatar()}}"
@@ -39,7 +42,8 @@
                     </div>
                   </div>
                 </td>
-                <td class="text-center">
+                <td style="width: 1px;">{{user.getDateCreate()}}</td>
+                <td style="width: 1px;" class="text-center">
                 <span data-user-id="{{user.getId()}}" data-user-balance="{{user.getDonate()}}"
                       class="reply-btn btn btn-sm btn-success sendToBalance">
                 <i class="ri-add-circle-line"></i>

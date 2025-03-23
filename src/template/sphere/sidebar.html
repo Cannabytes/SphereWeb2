@@ -153,7 +153,7 @@
         </li>
         {% endfor %}
 
-        <li class="slide glow-element {{classColorMenu()}}">
+        <li id="pageMenuToStartURL" class="slide glow-element {{classColorMenu()}} {% if config().other().isEnableMenuPageLink() == false %}d-none{% endif %}">
           <a href="{{ config().other().getLinkMainPage() }}" class="side-menu__item">
             <i class="fe fe-corner-down-left side-menu__icon"></i>
             <span class="side-menu__label">{{phrase('return_demo_page')}}</span>

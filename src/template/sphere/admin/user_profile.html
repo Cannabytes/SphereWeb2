@@ -315,7 +315,8 @@
                       </div>
                       {% else %}
                       {% for warehouse in userInfo.getWarehouse() %}
-                      <div class="col-xl-2 col-12 my-2">
+
+                      <div class="col-xl-2 col-12 my-2" id="warehouse_item_{{warehouse.id}}">
                         <div class="text-center">
                           <div class="similar-products-image me-2">
                             <img class="avatar avatar-xl bg-light p-1" src="{{warehouse.item.getIcon()}}" alt="">
@@ -330,6 +331,8 @@
                               <span class="text-muted fs-12 ms-1">{{phrase(warehouse.phrase)}}</span>
                             </p>
                           </div>
+
+<span data-id="{{warehouse.id}}" class="fs-10 text-danger itemWarehouseDelete" style="cursor: pointer;">Удалить</span>
 
                         </div>
                       </div>
@@ -358,5 +361,35 @@
 {% endblock %}
 
 {% block js %}
+<script>
+$(document).ready(function() {
+  $('.itemWarehouseDelete').on('click', function() {
+    let itemId = $(this).data('id');
 
+    if (confirm('Вы уверены, что хотите удалить этот предмет?')) {
+      AjaxSend("/admin/user/delete/item/warehouse", "POST", {
+        id: itemId
+      }, true).then(function (result) {
+        if (result.ok) {
+          $('#warehouse_item_' + itemId ).remove();
+          if ($('.warehouse-item').length === 0) {
+            const emptyMessage = `
+                            <div class="col-xl-12 col-12 my-2">
+                              <div class="text-center">
+                                <p class="mb-0 text-muted">
+                                  {{ phrase('user_has_no_items_in_inventory') }}
+                                </p>
+                              </div>
+                            </div>`;
+            $('.warehouse-items-container').html(emptyMessage);
+          }
+        } else {
+          alert(result.message);
+        }
+      })
+
+    }
+  });
+});
+</script>
 {% endblock %}

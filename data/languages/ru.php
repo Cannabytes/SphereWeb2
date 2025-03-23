@@ -1945,4 +1945,6 @@ Password: %%password%%',
     'received_items' => 'Вы получили следующие предметы',
     'collecting_bonus' => 'Получение бонуса...',
     'bind_game_account' => 'Привязать игровой аккаунт',
+    'hide' => 'Скрыть',
+    'show' => 'Показать',
 ];

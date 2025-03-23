@@ -6,6 +6,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\item\item;
 use Ofey\Logan22\model\template\async;
 use Ofey\Logan22\model\user\auth\user;
 use Ofey\Logan22\template\tpl;
@@ -120,6 +121,49 @@ class users {
 
         board::reload();
         board::success("Предмет выдан");
+    }
+
+    /**
+     * Удаление предмета из warehouse пользователя
+     * @return void
+     */
+    static public function deleteItemUserToWarehouse(): void
+    {
+        // Проверка прав пользователя
+        validation::user_protection("admin");
+
+        // Получение ID объекта для удаления
+        $objectId = $_POST["id"] ?? null;
+
+        // Проверка наличия ID
+        if (empty($objectId)) {
+            board::error("Не указан ID предмета для удаления");
+            return;
+        }
+
+        // Проверка существования предмета в warehouse
+        $item = sql::getRow("SELECT * FROM `warehouse` WHERE `id` = ?", [$objectId]);
+        if (!$item) {
+            board::error("Предмет не найден");
+            return;
+        }
+
+        // Получаем информацию о пользователе, которому принадлежит предмет
+        $userId = $item['user_id'];
+        $userObj = \Ofey\Logan22\model\user\user::getUserId($userId);
+
+        if (!$userObj->isFoundUser()) {
+            board::error("Пользователь не найден");
+            return;
+        }
+
+        // Удаление предмета из warehouse
+        try {
+            $userObj->removeWarehouseObjectId($objectId);
+            board::success( "Предмет успешно удален");
+        } catch (\Exception $e) {
+            board::error("Ошибка при удалении предмета: " . $e->getMessage());
+        }
     }
 
 

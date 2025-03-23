@@ -1918,5 +1918,6 @@ Password: %%password%%',
     'received_items' => 'Você recebeu os seguintes itens',
     'collecting_bonus' => 'Coletando bônus...',
     'bind_game_account' => 'Vincular conta do jogo',
-
+    'hide' => 'Ocultar',
+    'show' => 'Exibir',
     ];

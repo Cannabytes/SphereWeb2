@@ -1,0 +1,501 @@
+<div class="row">
+                                <div class="col-xl-6">
+                                    <div class="card custom-card shadow-none mb-3 border">
+                                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                            <div class="card-title">
+                                                <i class="ri-delete-bin-6-line text-danger me-2"></i>Очистка склада
+                                            </div>
+
+                                          <a href="#">
+                                          Загрузить все предметы пользователей
+                                          </a>
+
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="alert alert-info mb-4">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="ri-alert-line fs-5 me-3 text-info"></i>
+                                                    <div>
+                                                        <strong>Внимание!</strong> 
+                                                        <p class="mb-0">Данная операция приведет к полному удалению всех предметов из склада. Действие необратимо!</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                          <!-- Новый блок для добавления ID предметов -->
+                                            <div class="mb-4">
+                                                <label class="form-label">Если необходимо определенные ID предметов удалить из склада</label>
+                                                <div id="itemIdContainer">
+                                                </div>
+                                                <div class="d-flex mt-2">
+                                                    <button type="button" id="addItemIdBtn" class="btn btn-sm btn-primary me-2">
+                                                        <i class="ri-add-line me-1"></i>Добавить ID предмета
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="confirmClear" name="confirm">
+                                                <label class="form-check-label" for="confirmClear">
+                                                    Я подтверждаю, что хочу очистить склад выбранного персонажа
+                                                </label>
+                                            </div>
+
+                                            <div class="d-grid gap-2">
+                                                <button type="button" id="clearWarehouseBtn" class="btn btn-danger" disabled>
+                                                    <i class="ri-delete-bin-6-line me-1"></i>Очистить склад
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-6">
+                                    <div class="card custom-card shadow-none mb-3 border">
+                                        <div class="card-header bg-light">
+                                            <div class="card-title">
+                                                <i class="ri-information-line text-info me-2"></i>Информация
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <h6 class="fw-semibold mb-3">Зачем может потребоваться очистка склада?</h6>
+                                            <ul class="mb-4">
+                                                <li class="mb-2">Перед стартом сервера, чтоб удалить все предметы</li>
+                                                <li class="mb-2">Подготовка персонажей к переносу на другой сервер</li>
+                                                <li class="mb-2">Исправление некорректных предметов в складе</li>
+                                                <li class="mb-2">Удалить определенные неиспользуемые предметы</li>
+                                            </ul>
+
+                                            <div class="alert alert-info">
+                                                <div class="d-flex">
+                                                    <i class="ri-information-line fs-5 me-3 text-info"></i>
+                                                    <div>
+                                                        <p class="mb-0">Эта операция выполняется напрямую с базой данных сервера и может занять некоторое время. Пожалуйста, дождитесь завершения операции после нажатия кнопки.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                  <!-- Журнал операций -->
+                                    <div class="card custom-card shadow-none mb-0 border">
+                                        <div class="card-header bg-light">
+                                            <div class="card-title">
+                                                <i class="ri-history-line text-secondary me-2"></i>Журнал операций
+                                            </div>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div id="operationLogs" class="p-3" style="max-height: 200px; overflow-y: auto;">
+                                                <div class="text-center text-muted py-4">
+                                                    <i class="ri-history-line fs-1 mb-2 d-block"></i>
+                                                    Журнал операций пуст
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+    <div id="warehouseList"></div>
+
+                            </div>
+
+<script>
+
+
+    $(document).ready(function() {
+        const serverId = {{server.getId()}};
+
+        // Объявляем функцию логирования, если она еще не определена
+        if (typeof logOperation !== 'function') {
+            // Функция для добавления записи в журнал операций
+            function logOperation(message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = `<div class="log-entry mb-2">
+                <span class="text-muted">[${timestamp}]</span> ${message}
+            </div>`;
+
+                // Удаляем сообщение о пустом журнале, если оно есть
+                if ($('#operationLogs').find('.text-center.text-muted').length) {
+                    $('#operationLogs').empty();
+                }
+
+                $('#operationLogs').prepend(logEntry);
+            }
+
+            // Делаем функцию глобальной
+            window.logOperation = logOperation;
+        }
+
+
+        // Обработчик для загрузки списка всех предметов
+        $('.card-header a').on('click', function(e) {
+            e.preventDefault();
+
+            // Получаем ID сервера
+            const serverId = {{server.getId()}};
+
+            // Показываем индикатор загрузки в блоке warehouseList
+            $('#warehouseList').html(`
+            <div class="card custom-card shadow-none mb-3 border mt-4">
+                <div class="card-header bg-light">
+                    <div class="card-title">
+                        <i class="ri-database-2-line text-primary me-2"></i>Список предметов в складе
+                    </div>
+                </div>
+                <div class="card-body text-center p-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-3">Загрузка данных...</p>
+                </div>
+            </div>
+        `);
+
+            // Отправляем Ajax запрос на сервер
+            $.ajax({
+                url: '/admin/server/func/warehouse/list',
+                type: 'POST',
+                data: { server_id: serverId },
+                dataType: 'json',
+                success: function(response) {
+                    // Проверяем, есть ли данные
+                    if (response && response.length > 0) {
+                        renderWarehouseTable(response);
+                        logOperation(`Загружен список предметов (${response.length} записей)`);
+                    } else {
+                        // Если данных нет
+                        $('#warehouseList').html(`
+                        <div class="card custom-card shadow-none mb-3 border mt-4">
+                            <div class="card-header bg-light">
+                                <div class="card-title">
+                                    <i class="ri-database-2-line text-primary me-2"></i>Список предметов в складе
+                                </div>
+                            </div>
+                            <div class="card-body text-center p-5">
+                                <i class="ri-inbox-archive-line fs-1 text-muted mb-3"></i>
+                                <h5 class="text-muted">Склад пуст</h5>
+                                <p class="text-muted">Предметы в складе отсутствуют</p>
+                            </div>
+                        </div>
+                    `);
+                        logOperation('Склад пуст. Предметы не найдены.');
+                    }
+                },
+                error: function(xhr) {
+                    // Обработка ошибки загрузки
+                    let errorMessage = 'Произошла ошибка при загрузке списка предметов';
+
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response && response.error) {
+                            errorMessage = response.error;
+                        }
+                    } catch (e) {
+                        if (xhr.status === 400) {
+                            errorMessage = 'Некорректные параметры запроса';
+                        } else if (xhr.status === 404) {
+                            errorMessage = 'Данные не найдены';
+                        } else if (xhr.status === 500) {
+                            errorMessage = 'Внутренняя ошибка сервера';
+                        }
+                    }
+
+                    $('#warehouseList').html(`
+                    <div class="card custom-card shadow-none mb-3 border mt-4">
+                        <div class="card-header bg-light bg-danger text-white">
+                            <div class="card-title">
+                                <i class="ri-error-warning-line me-2"></i>Ошибка загрузки данных
+                            </div>
+                        </div>
+                        <div class="card-body text-center p-4">
+                            <i class="ri-error-warning-line fs-1 text-danger mb-3"></i>
+                            <h5>Не удалось загрузить список предметов</h5>
+                            <p class="mb-0">${errorMessage}</p>
+                        </div>
+                    </div>
+                `);
+
+                    logOperation(`Ошибка: ${errorMessage} (${xhr.status})`);
+                }
+            });
+        });
+
+        // Функция для отображения таблицы с предметами
+        function renderWarehouseTable(items) {
+            // Создаем структуру таблицы
+            let tableHTML = `
+            <div class="card custom-card shadow-none mb-3 border mt-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <div class="card-title">
+                        <i class="ri-database-2-line text-primary me-2"></i>Список предметов в складе (${items.length})
+                    </div>
+                    <div>
+                        <input type="text" id="warehouseSearchInput" class="form-control form-control-sm"
+                            placeholder="Поиск по имени или ID...">
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0" id="warehouseItemsTable">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Пользователь</th>
+                                    <th>ID предмета</th>
+                                    <th>Количество</th>
+                                    <th>Зачарование</th>
+                                    <th>Примечание</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+        `;
+
+            // Добавляем строки с данными
+            items.forEach(item => {
+                const userName = item.userInfo ?
+                      `<a target="_blank" href='/user/admin/user/info/${item.userInfo.id}'>${item.userInfo.email} (ID: ${item.userInfo.id})</a>` :
+                      `ID: ${item.userInfo.id}`;
+
+                tableHTML += `
+                <tr data-item-id="${item.item_id}" data-user-id="${item.user_id}">
+                    <td><img class="avatar avatar-sm" src="${item.userInfo.avatar}" >${userName}</td>
+                    <td><img class="avatar avatar-sm" src="${item.item_icon}" > <strong>${item.item_id}</strong> (${item.item_name})</td>
+                    <td>${item.count}</td>
+                    <td>${item.enchant || '0'}</td>
+                    <td>${item.phrase || '-'}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-primary add-to-removal"
+                            data-item-id="${item.item_id}">
+                            <i class="ri-add-line me-1"></i>Добавить к удалению
+                        </button>
+                    </td>
+                </tr>
+            `;
+            });
+
+            tableHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted">Всего предметов: <strong>${items.length}</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            // Устанавливаем HTML в контейнер
+            $('#warehouseList').html(tableHTML);
+
+            // Добавляем обработчик поиска
+            $('#warehouseSearchInput').on('input', function() {
+                const searchTerm = $(this).val().toLowerCase();
+
+                $('#warehouseItemsTable tbody tr').each(function() {
+                    const itemId = $(this).data('item-id').toString();
+                    const userId = $(this).data('user-id').toString();
+                    const text = $(this).text().toLowerCase();
+
+                    if (text.includes(searchTerm) || itemId.includes(searchTerm) || userId.includes(searchTerm)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+
+            // Добавляем обработчик кнопки "Добавить к удалению"
+            $('.add-to-removal').on('click', function() {
+                const itemId = $(this).data('item-id');
+
+                // Проверяем, существует ли уже такой ID в списке
+                let exists = false;
+                $('.item-id-input').each(function() {
+                    if ($(this).val() == itemId) {
+                        exists = true;
+                        // Выделяем этот инпут на короткое время
+                        $(this).addClass('border-warning bg-warning-subtle');
+                        setTimeout(() => {
+                            $(this).removeClass('border-warning bg-warning-subtle');
+                        }, 2000);
+                        return false;
+                    }
+                });
+
+                if (!exists) {
+                    // Если такого ID нет, добавляем новый инпут
+                    if ($('#itemIdContainer').find('.text-center.text-muted').length) {
+                        $('#itemIdContainer').empty();
+                    }
+
+                    // Вызываем функцию добавления нового поля и заполняем его
+                    $('#addItemIdBtn').trigger('click');
+
+                    // Заполняем последний добавленный инпут
+                    const lastInput = $('.item-id-input').last();
+                    lastInput.val(itemId);
+
+                    // Визуально подсвечиваем новый инпут
+                    lastInput.addClass('border-success bg-success-subtle');
+                    setTimeout(() => {
+                        lastInput.removeClass('border-success bg-success-subtle');
+                    }, 2000);
+                }
+            });
+        }
+
+
+      // Счетчик для генерации уникальных ID инпутов
+      let itemIdCounter = 0;
+
+      // Функция для добавления нового поля ввода ID предмета
+      $('#addItemIdBtn').on('click', function() {
+        const newItemRow = `
+            <div class="item-id-row" id="item-row-${itemIdCounter}">
+                <input type="number" class="form-control item-id-input" placeholder="Введите ID предмета" min="1" step="1">
+                <button type="button" class="btn btn-sm btn-outline-danger btn-remove" data-row-id="${itemIdCounter}">
+                    <i class="ri-delete-bin-line"></i>
+                </button>
+            </div>
+        `;
+        $('#itemIdContainer').append(newItemRow);
+        itemIdCounter++;
+
+        // Обработчик для валидации ввода только целых чисел
+        $('.item-id-input').on('input', function() {
+          this.value = this.value.replace(/[^0-9]/g, '');
+        });
+      });
+
+      // Удаление строки с инпутом ID предмета (делегирование событий)
+      $('#itemIdContainer').on('click', '.btn-remove', function() {
+        const rowId = $(this).data('row-id');
+        $(`#item-row-${rowId}`).remove();
+      });
+
+      // Активация кнопки очистки склада при отметке чекбокса
+      $('#confirmClear').on('change', function() {
+        $('#clearWarehouseBtn').prop('disabled', !$(this).is(':checked'));
+      });
+
+      // Обработчик нажатия на кнопку очистки склада
+      $('#clearWarehouseBtn').on('click', function() {
+        // Получаем список ID предметов
+        const itemIds = [];
+        $('.item-id-input').each(function() {
+          const value = $(this).val().trim();
+          if (value) {
+            itemIds.push(parseInt(value));
+          }
+        });
+
+
+        // Показываем индикатор загрузки
+        $(this).prop('disabled', true).html('<i class="spinner-border spinner-border-sm me-1"></i>Выполняется...');
+
+        // Отправляем Ajax запрос на сервер
+        $.ajax({
+          url: '/admin/server/func/warehouse/clear',
+          type: 'POST',
+          data: JSON.stringify({
+            serverId: serverId,
+            itemIds: itemIds
+          }),
+          contentType: 'application/json',
+          dataType: 'json',
+          success: function(response) {
+            // Обработка успешного выполнения
+            if (response.success) {
+              logOperation(`Операция успешно выполнена. ${response.message}`);
+              showOperationResult('success', response.message);
+
+              // Очищаем поля ввода ID предметов, если операция успешна
+              if (itemIds.length > 0) {
+                $('#itemIdContainer').empty();
+              }
+            } else {
+              // Обработка логической ошибки
+              logOperation(`Ошибка: ${response.error || 'Неизвестная ошибка'}`);
+              showOperationResult('error', response.error || 'Неизвестная ошибка');
+            }
+          },
+          error: function(xhr) {
+            // Обработка HTTP ошибки
+            let errorMessage = 'Произошла ошибка при выполнении операции';
+
+            try {
+              const response = JSON.parse(xhr.responseText);
+              if (response && response.error) {
+                errorMessage = response.error;
+              }
+            } catch (e) {
+              // Если не удалось распарсить JSON, используем общее сообщение об ошибке
+              if (xhr.status === 400) {
+                errorMessage = 'Некорректные параметры запроса';
+              } else if (xhr.status === 404) {
+                errorMessage = 'Сервер не найден';
+              } else if (xhr.status === 500) {
+                errorMessage = 'Внутренняя ошибка сервера';
+              }
+            }
+
+            logOperation(`Ошибка: ${errorMessage} (${xhr.status})`);
+            showOperationResult('error', errorMessage);
+          },
+          complete: function() {
+            // Возвращаем кнопку в исходное состояние
+            $('#clearWarehouseBtn').prop('disabled', false).html('<i class="ri-delete-bin-6-line me-1"></i>Очистить склад');
+            // Сбрасываем чекбокс подтверждения
+            $('#confirmClear').prop('checked', false);
+            $('#clearWarehouseBtn').prop('disabled', true);
+          }
+        });
+      });
+
+      // Функция для добавления записи в журнал операций
+      function logOperation(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = `<div class="log-entry mb-2">
+            <span class="text-muted">[${timestamp}]</span> ${message}
+        </div>`;
+
+        // Удаляем сообщение о пустом журнале, если оно есть
+        if ($('#operationLogs').find('.text-center.text-muted').length) {
+          $('#operationLogs').empty();
+        }
+
+        $('#operationLogs').prepend(logEntry);
+      }
+
+      // Функция для отображения результата операции
+      function showOperationResult(type, message) {
+        const header = $('#operationResultHeader');
+        const title = $('#operationResultModalLabel');
+        const body = $('#operationResultBody');
+
+        if (type === 'success') {
+          header.removeClass('bg-danger').addClass('bg-success text-white');
+          title.html('<i class="ri-check-line me-2"></i>Успешно');
+          body.html(`<div class="text-center">
+                <i class="ri-check-double-line fs-1 text-success mb-3"></i>
+                <h5>Операция выполнена успешно</h5>
+                <p class="mb-0">${message}</p>
+            </div>`);
+        } else {
+          header.removeClass('bg-success').addClass('bg-danger text-white');
+          title.html('<i class="ri-error-warning-line me-2"></i>Ошибка');
+          body.html(`<div class="text-center">
+                <i class="ri-error-warning-line fs-1 text-danger mb-3"></i>
+                <h5>Произошла ошибка</h5>
+                <p class="mb-0">${message}</p>
+            </div>`);
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('operationResultModal'));
+        modal.show();
+      }
+    });
+
+</script>

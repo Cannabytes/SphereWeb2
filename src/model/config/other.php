@@ -39,6 +39,8 @@ class other
 
     private string $linkLogo = "/main";
 
+    private bool $isEnableMenuPageLink = true;
+
     private string $linkMainPage = "/";
 
     private int $maxAccount = 10;
@@ -65,11 +67,17 @@ class other
         $this->messageTechnicalWork = $setting['messageTechnicalWork'] ?? $this->messageTechnicalWork;
         $this->keywords = $setting['keywords'] ?? $this->keywords;
         $this->linkLogo = $setting['linkLogo'] ?? $this->linkLogo;
+        $this->isEnableMenuPageLink = filter_var($setting['isEnableMenuPageLink'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->linkMainPage = $setting['linkMainPage'] ?? $this->linkMainPage;
         $this->maxAccount = (int)(is_array($setting) ? ($setting['max_account'] ?? $this->maxAccount) : $this->maxAccount);
         $this->contactAdmin = $setting['contactAdmin'] ?? $this->contactAdmin;
         $this->autoUpdate = filter_var($setting['autoUpdate'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->isShow404error = filter_var($setting['isShow404error'] ?? false, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    public function isEnableMenuPageLink(): bool
+    {
+        return $this->isEnableMenuPageLink;
     }
 
     public function isHideLogo(): bool

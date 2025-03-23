@@ -1,0 +1,104 @@
+{% extends 'struct.html' %}
+
+{% block title %}Функции сервера{% endblock %}
+
+{% set server = getServer(serverId) %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Заголовок страницы -->
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="card-title">
+                        <a href="/admin" class="avatar border text-muted me-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
+                        </a>
+                        Функции сервера - {{server.getName()}}
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <ul class="nav nav-tabs mb-4" id="serverFunctions" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="warehouse-tab" data-bs-toggle="tab" data-bs-target="#warehouse-panel" type="button" role="tab" aria-controls="warehouse-panel" aria-selected="true">
+                                <i class="ri-archive-line me-1"></i>Очистка склада
+                            </button>
+                        </li>
+
+                    </ul>
+
+                    <div class="tab-content" id="serverFunctionsContent">
+                        <div class="tab-pane fade show active" id="warehouse-panel" role="tabpanel" aria-labelledby="warehouse-tab">
+                            {% include 'admin/func/clearWarehouse.html' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Модальное окно результата операции -->
+<div class="modal fade" id="operationResultModal" tabindex="-1" aria-labelledby="operationResultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" id="operationResultHeader">
+                <h5 class="modal-title" id="operationResultModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="operationResultBody">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                    <i class="ri-check-line me-1"></i>Понятно
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<style>
+    /* Стили для карточек */
+    .custom-card {
+        transition: all 0.3s ease;
+        border-radius: 0.5rem;
+    }
+
+    /* Стили для активной вкладки */
+    .nav-tabs .nav-link.active {
+        border-bottom: 2px solid #4776E6;
+        color: #4776E6;
+        font-weight: 500;
+    }
+
+    /* Стили для журнала операций */
+    #operationLogs {
+        font-family: monospace;
+        font-size: 0.8rem;
+    }
+
+    /* Стили для блока с ID предметов */
+    .item-id-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .item-id-row .form-control {
+        flex: 1;
+    }
+
+    .item-id-row .btn-remove {
+        margin-left: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

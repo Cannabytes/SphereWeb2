@@ -331,6 +331,7 @@
 
 
                             <li class="d-grid">
+
                                 <div class="btn-group btn-group-sm my-1 d-flex" role="group"
                                      aria-label="Small button group">
                                     <a href="/admin/server/edit/{{serverInfo.getId()}}"
@@ -339,6 +340,7 @@
                                        class="btn btn-outline-success w-100">{{ phrase('server_online_statistics')
                                         }}</a>
                                 </div>
+
                                 <div class="btn-group btn-group-sm my-1 d-flex" role="group"
                                      aria-label="Small button group">
                                     <a href="/admin/server/set/donate/{{serverInfo.getId()}}"
@@ -346,6 +348,13 @@
                                     <a href="/admin/server/set/referral/{{serverInfo.getId()}}"
                                        class="btn btn-outline-success w-100">{{ phrase('Referral settings') }}</a>
                                 </div>
+
+                                <div class="btn-group btn-group-sm my-1 d-flex" role="group"
+                                     aria-label="Small button group">
+                                    <a href="/admin/server/func/{{serverInfo.getId()}}"
+                                       class="btn btn-outline-success w-100">Функции</a>
+                                </div>
+
                             </li>
 
                         </ul>

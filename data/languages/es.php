@@ -1923,5 +1923,6 @@ Contraseña: %%password%%',
     'received_items' => 'Ha recibido los siguientes artículos',
     'collecting_bonus' => 'Reclamando bonificación...',
     'bind_game_account' => 'Vincular cuenta de juego',
-
+    'hide' => 'Ocultar',
+    'show' => 'Mostrar',
     ];

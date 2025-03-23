@@ -2613,4 +2613,60 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  191 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/server/func/(\\d+)',
+    'func' => 'controller\\admin\\options::getServerFunction',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  192 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/server/func/warehouse/clear',
+    'func' => 'controller\\admin\\options::removeItemsWarehouse',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  193 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/server/func/warehouse/list',
+    'func' => 'controller\\admin\\options::getAllItemsInWarehouse',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  194 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/user/delete/item/warehouse',
+    'func' => 'controller\\admin\\users::deleteItemUserToWarehouse',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

@@ -1925,5 +1925,6 @@ Password: %%password%%',
     'received_items' => 'You have received the following items',
     'collecting_bonus' => 'Collecting bonus...',
     'bind_game_account' => 'Bind game account',
-
+    'hide' => 'Hide',
+    'show' => 'Show',
 ];

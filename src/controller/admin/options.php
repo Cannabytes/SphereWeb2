@@ -8,6 +8,7 @@
 namespace Ofey\Logan22\controller\admin;
 
 use DateTime;
+use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\chronicle\client;
 use Ofey\Logan22\component\fileSys\fileSys;
@@ -20,8 +21,10 @@ use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\model\admin\server;
 use Ofey\Logan22\model\admin\update_cache;
 use Ofey\Logan22\model\admin\validation;
+use Ofey\Logan22\model\config\template;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\install\install;
+use Ofey\Logan22\model\item\item;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
@@ -855,4 +858,103 @@ class options
         return $filteredIds;
     }
 
+    static public function getServerFunction(null|int $serverId = null): void
+    {
+        if ($serverId == null or !\Ofey\Logan22\model\server\server::getServer($serverId)){
+            board::error("Сервер не найден");
+        }
+
+        tpl::addVar([
+            "serverId" => $serverId,
+        ]);
+        tpl::display("/admin/server-functions.html");
+    }
+
+    /**
+     * Удаляет предметы из склада по заданным параметрам
+     */
+    static public function removeItemsWarehouse(): void
+    {
+
+        // Получаем данные из тела запроса в формате JSON
+        $requestData = json_decode(file_get_contents('php://input'), true);
+        // Проверяем наличие и валидность ID сервера
+        if (empty($requestData['serverId']) || !is_numeric($requestData['serverId'])) {
+            http_response_code(400);
+            board::alert([
+                'success' => false,
+                'error' => 'Некорректный ID сервера'
+            ]);
+        }
+
+        $serverId = (int)$requestData['serverId'];
+        $server = \Ofey\Logan22\model\server\server::getServer($serverId);
+        if (!$server) {
+            http_response_code(404);
+            board::alert([
+                'success' => false,
+                'error' => 'Сервер не найден'
+            ]);
+        }
+
+        // Проверяем наличие и валидность массива ID предметов
+        $itemIds = $requestData['itemIds'] ?? [];
+
+        // Валидация массива ID предметов
+        if (!empty($itemIds) && (!is_array($itemIds) || count(array_filter($itemIds, 'is_numeric')) !== count($itemIds))) {
+            http_response_code(400);
+            board::alert([
+                'success' => false,
+                'error' => 'Некорректный формат ID предметов'
+            ]);
+        }
+
+        try {
+            if (!empty($itemIds)) {
+                $placeholders = implode(',', array_fill(0, count($itemIds), '?'));
+                $params = array_merge($itemIds, [$serverId]);
+                $result = sql::run(
+                    "DELETE FROM warehouse WHERE item_id IN ($placeholders) AND server_id = ?",
+                    $params
+                );
+
+                $deletedCount = $result->rowCount();
+
+                board::alert([
+                    'success' => true,
+                    'message' => "Удалено $deletedCount предметов со склада",
+                    'deletedCount' => $deletedCount
+                ]);
+            } else {
+                $result = sql::run("DELETE FROM warehouse WHERE server_id = ?", [$serverId]);
+                $deletedCount = $result->rowCount();
+                board::alert([
+                    'success' => true,
+                    'message' => "Склад полностью очищен. Удалено $deletedCount предметов",
+                    'deletedCount' => $deletedCount
+                ]);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            board::alert([
+                'success' => false,
+                'error' => 'Ошибка при удалении предметов со склада: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    static public function getAllItemsInWarehouse(): void
+    {
+        $serverId = $_POST['server_id'];
+        $rows = sql::getRows("SELECT `user_id`, `item_id`, `count`, `enchant`, `phrase` FROM `warehouse` WHERE server_id = ?", [$serverId]);
+        foreach($rows AS &$item){
+            $user_id = $item['user_id'];
+            $itemInfo = item::getItem($item['item_id']);
+            $item['item_name'] = $itemInfo->getItemName();
+            $item['item_icon'] = $itemInfo->getIcon();
+            $item['userInfo'] = user::getUserId($user_id)->toArray();
+            $item['phrase'] = lang::get_phrase($item['phrase']);
+        }
+        echo json_encode($rows);
+    }
 }

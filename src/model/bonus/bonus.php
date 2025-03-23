@@ -49,9 +49,9 @@ class bonus
             "Не указана конечная дата действия кода"
         );
 
-        $server_id = $_POST['server'] ?? user::self()->getServerId();
-        $codesReg = [];
 
+        $server_id = $_POST['server'];
+        $codesReg = [];
         if($autocreatecode) {
             for ($i = 0; $i < $countGenBonusCode; $i++) {
                 $code = $prefix . self::generateRandomStrings($minCodeSymbols, $maxCodeSymbols);
