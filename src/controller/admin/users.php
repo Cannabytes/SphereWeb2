@@ -16,6 +16,9 @@ class users {
     {
 
         $userInfo = \Ofey\Logan22\model\user\user::getUserId($id);
+        if (!$userInfo) {
+            board::error("User not found");
+        }
         tpl::addVar("userInfo", $userInfo);
 
         $logs = sql::getRows("SELECT `id`, `time`, phrase, `variables` FROM logs_all WHERE user_id = ? ORDER BY id DESC LIMIT 1000", [$id]);
@@ -31,7 +34,6 @@ class users {
         $donate_history_pay = sql::getRows("SELECT id, point, message, pay_system, id_admin_pay, `date` FROM donate_history_pay WHERE user_id = ? ORDER BY id DESC;", [$id]);
         tpl::addVar("donate_history_pay", $donate_history_pay);
 
-//        exit;
         tpl::display("/admin/user_profile.html");
     }
 

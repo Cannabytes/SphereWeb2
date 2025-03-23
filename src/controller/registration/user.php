@@ -80,6 +80,9 @@ class user
         if (config::load()->notice()->isRegistrationUser()) {
             $template = lang::get_other_phrase(config::load()->notice()->getNoticeLang(), 'notice_registration_user');
             $msg = strtr($template, ['{email}' => $email,]);
+            if (session::get("HTTP_REFERER")) {
+                $msg .= "<br>Referrer: " . session::get("HTTP_REFERER");
+            }
             telegram::sendTelegramMessage($msg);
         }
 
