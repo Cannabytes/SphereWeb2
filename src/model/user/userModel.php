@@ -28,7 +28,7 @@ use PDOStatement;
 
 class userModel
 {
-    private const int ONLINE_THRESHOLD_MINUTES = 3;
+    private const ONLINE_THRESHOLD_MINUTES = 3;
 
     private string $email = '', $password = '';
 
