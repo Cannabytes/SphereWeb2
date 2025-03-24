@@ -28,7 +28,7 @@ use PDOStatement;
 
 class userModel
 {
-    private const ONLINE_THRESHOLD_MINUTES = 3;
+    private const int ONLINE_THRESHOLD_MINUTES = 3;
 
     private string $email = '', $password = '';
 
@@ -75,7 +75,6 @@ class userModel
             "SELECT `id`, `email`, `password`, `name`, `signature`, `ip`, `date_create`, `date_update`, `access_level`, `donate_point`, `avatar`, `avatar_background`, `timezone`, `country`, `city`, `server_id`, `lang`, `last_activity` FROM `users` WHERE id = ? LIMIT 1",
             [$userId]
         );
-
         if ($user) {
             if ($user['server_id'] === null) {
                 $server_id = server::getDefaultServer();
@@ -129,7 +128,8 @@ class userModel
             $this->lang = $user['lang'];
             $this->isFoundUser = true;
 
-            if($userId == $_SESSION['id']){
+            if (isset($_SESSION['id']) && $userId == $_SESSION['id']) {
+                \Ofey\Logan22\component\sphere\server::setUser($this);
                 if(isset($_SESSION['lang'])){
                     if($this->lang != $_SESSION['lang']){
                         $_SESSION['lang'] = $this->lang;
@@ -138,7 +138,6 @@ class userModel
                     $_SESSION['lang'] = $this->lang;
                 }
             }
-
 
             $this->initLastActivity($user['last_activity']);
 
@@ -155,8 +154,6 @@ class userModel
                     }
                 }
             }
-
-            \Ofey\Logan22\component\sphere\server::setUser($this);
             $this->warehouse = $this->warehouse() ?? null;
             $this->accounts = null;
 
@@ -259,10 +256,16 @@ class userModel
         return $serverTime;
     }
 
+    public function getLastActive(): ?string
+    {
+        return $this->lastActivity?->format('d.m.Y H:i');
+    }
+
     /**
      * Форматирует время последней активности для отображения
      */
     public function getLastActivityFormatted(): string {
+
         if ($this->lastActivity === null) {
             return "Никогда не был на сайте";
         }
@@ -336,6 +339,8 @@ class userModel
         if($loadWarehouse) {
             $this->warehouse = $this->warehouse() ?? null;
         }
+        $this->initLastActivity($user['last_activity']);
+
         $this->accounts = false;
         return $this;
     }

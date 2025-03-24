@@ -6,7 +6,7 @@
                                                 <i class="ri-delete-bin-6-line text-danger me-2"></i>Очистка склада
                                             </div>
 
-                                          <a href="#">
+                                          <a href="#" id="loadUserItems">
                                           Загрузить все предметы пользователей
                                           </a>
 
@@ -128,7 +128,7 @@
 
 
         // Обработчик для загрузки списка всех предметов
-        $('.card-header a').on('click', function(e) {
+        $('#loadUserItems').on('click', function(e) {
             e.preventDefault();
 
             // Получаем ID сервера

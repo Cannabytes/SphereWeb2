@@ -1947,4 +1947,5 @@ Password: %%password%%',
     'bind_game_account' => 'Привязать игровой аккаунт',
     'hide' => 'Скрыть',
     'show' => 'Показать',
+
 ];

@@ -1,394 +1,863 @@
 {% extends 'struct.html' %}
 
-{% block title %}{% endblock %}
+{% block title %}Профиль пользователя - {{userInfo.getName()}}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-
-
-  <!-- Start::row-1 -->
+  <!-- Основная информация о пользователе -->
   <div class="row">
-    <div class="col-xxl-3">
-      <div class="card custom-card overflow-hidden">
-        <div class="card-body border-bottom">
-          <div class="d-sm-flex  main-profile-cover">
-                                        <span class="avatar avatar-xxl online me-3">
-                                            <img src="{{userInfo.getAvatar()}}" alt="" class="avatar avatar-xxl">
-                                        </span>
-            <div class="flex-fill main-profile-info my-auto">
-              <h5 class="fw-semibold mb-1 ">{{userInfo.getEmail()}}</h5>
-              <div>
-                <p class="mb-1 text-muted">{{userInfo.getName()}}</p>
+<div class="col-xxl-3">
+      <!-- Карточка профиля пользователя -->
+      <div class="card custom-card shadow-sm overflow-hidden">
+        <!-- Улучшенный заголовок с информацией о пользователе -->
+        <div class="card-header bg-primary p-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <a href="/admin/users" class="btn btn-light btn-sm rounded-circle me-2">
+                <i class="ri-arrow-left-line"></i>
+              </a>
+              <h5 class="mb-0  d-flex align-items-center">
+                <i class="ri-user-line me-2"></i>Профиль пользователя
+              </h5>
+            </div>
+            <div class="position-relative">
 
-                <p class="me-3  fs-12 op-7 mb-0"><i
-                  class="ri-building-line me-1 align-middle"></i>{{userInfo.getDateCreate()|date("d F, Y")}}</p>
-
-                <p class="me-3  fs-12 op-7 mb-0"><i
-                  class="ri-map-pin-line me-1 align-middle"></i>{{userInfo.getCountry() ?? 'N/A'}} {{userInfo.getCity() ?? 'N/A'}}</p>
-
-                <p class="me-3  fs-12 op-7 mb-0"><i
-                  class="ri-global-line me-1 align-middle"></i>{{userInfo.getLang() ?? 'N/A'}}</p>
-
-              </div>
+              {% if userInfo.isOnline() %}
+              <span class="position-absolute bottom-0 end-0 translate-middle-y badge rounded-circle bg-success p-1" data-bs-toggle="tooltip" title="В сети">
+                <span class="visually-hidden">Онлайн</span>
+              </span>
+              {% endif %}
             </div>
           </div>
         </div>
-        <div class="card-body p-0 main-profile-info">
-          <div class="d-flex align-items-center justify-content-between w-100">
-            <div class="py-3 border-end w-100 text-center">
-              <p class="fw-bold fs-20  text-shadow mb-0">{{userInfo.getDonate()}}</p>
-              <p class="mb-0 fs-12 text-muted ">{{phrase('user_balance')}} </p>
-            </div>
 
+        <!-- Основная информация о пользователе -->
+        <div class="card-body border-bottom p-3">
+          <!-- Имя и email -->
+          <div class="text-center mb-3">
+            <h4 class="fw-bold mb-2 text-primary">
+               <span class="avatar avatar-sm border-2 border-white {% if userInfo.isOnline() %}online{% endif %}">
+                <img src="{{userInfo.getAvatar()}}" alt="{{userInfo.getName()}}" class="rounded-circle">
+              </span>
+              {{userInfo.getName()}}</h4>
+            <div class="d-flex align-items-center justify-content-center">
+              <i class="ri-mail-line me-2 text-muted"></i>
+              <span class="text-dark">{{userInfo.getEmail()}}</span>
+            </div>
           </div>
-        </div>
-      </div>
 
-
-      <div class="card custom-card">
-
-
-        <ul class="list-group followers-list">
-
-          {% for i, account in userInfo.getAccounts() %}
-          <li class="list-group-item">
-            <div class="d-sm-flex align-items-top">
-
-              <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
-                <p class="mb-0 lh-1">{{account.getAccount()}}</p>
-
-
-                <ul class="list-unstyled mb-0">
-                  {% for i, character in account.getCharacters() %}
-
-                  <li class="d-flex align-items-center mb-1">
-                                                                <span class="me-1">
-												<span class="avatar avatar-sm {% if character.getOnline() %}online{% else %}offline{% endif %}">
-                                                    <img src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg" alt="img">
-                                                </span>
-                                                                 </span>
-                    <span>
-                                                                    <strong class="me-1">{{clan_icon(character.getClanCrest())|raw}}{{character.getPlayerName()}}</strong>[{{character.getLevel()}}]
-                                                                </span>
-                  </li>
-                  {% endfor %}
-
-                </ul>
-
-              </div>
-            </div>
-          </li>
-          {% endfor %}
-
-        </ul>
-
-      </div>
-    </div>
-    <div class="col-xxl-9">
-      <div class="row">
-        <div class="col-xl-12">
-          <div class=" custom-card">
-            <div class="card-body p-0">
-              <div class="border-block-end-dashed  bg-white rounded-2 p-2">
-                <div>
-                  <ul class="nav nav-pills nav-justified gx-3 tab-style-6 d-sm-flex d-block " id="myTab" role="tablist">
-
-                    <li class="nav-item rounded" role="presentation">
-                      <button class="nav-link active" id="activity-tab" data-bs-toggle="tab"
-                              data-bs-target="#activity-tab-pane" type="button" role="tab"
-                              aria-controls="activity-tab-pane" aria-selected="true"><i
-                        class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>{{ phrase('user_log') }}
-                      </button>
-                    </li>
-
-                    <li class="nav-item rounded" role="presentation">
-                      <button class="nav-link " id="donate-tab" data-bs-toggle="tab"
-                              data-bs-target="#donate-tab-pane" type="button" role="tab"
-                              aria-controls="donate-tab-pane" aria-selected="true"><i
-                        class="ri-gift-line me-1 align-middle d-inline-block fs-16"></i>{{phrase('donation_log')}}
-                      </button>
-                    </li>
-
-                    <li class="nav-item rounded" role="presentation">
-                      <button class="nav-link" id="posts-tab" data-bs-toggle="tab"
-                              data-bs-target="#posts-tab-pane" type="button" role="tab"
-                              aria-controls="posts-tab-pane" aria-selected="false"><i
-                        class="ri-bill-line me-1 align-middle d-inline-block fs-16"></i>{{ phrase('edit') }}
-                      </button>
-                    </li>
-
-                    <li class="nav-item rounded" role="presentation">
-                      <button class="nav-link" id="warehouse-tab" data-bs-toggle="tab"
-                              data-bs-target="#warehouse-tab-pane" type="button" role="tab"
-                              aria-controls="warehouse-tab-pane" aria-selected="false"><i
-                        class="ri-bill-line me-1 align-middle d-inline-block fs-16"></i>{{ phrase('warehouse') }}
-                        {% if userInfo.countWarehouseItems() >=1 %}<span
-                          class=" top-0 start-50 translate-middle badge rounded-pill bg-danger">{{userInfo.countWarehouseItems()}}</span>{%
-                        endif %}
-                      </button>
-                    </li>
-
-                  </ul>
+          <!-- Информационные блоки -->
+          <div class="user-info-container mt-4">
+            <!-- Дата регистрации -->
+            <div class="user-info-item p-2 mb-2 bg-light rounded">
+              <div class="d-flex align-items-center">
+                <div class="info-icon-container me-3">
+                  <div class="info-icon bg-primary-transparent rounded-circle p-2">
+                    <i class="ri-calendar-line text-primary"></i>
+                  </div>
+                </div>
+                <div class="info-content">
+                  <div class="text-muted small">Регистрация</div>
+                  <div class="fw-medium">{{userInfo.getDateCreate()|date("d F, Y")}}</div>
                 </div>
               </div>
-              <div class="py-4">
-                <div class="tab-content" id="myTabContent">
+            </div>
 
-                  <div class="tab-pane show active fade p-0 border-0 bg-white p-2 rounded-3" id="activity-tab-pane"
-                       role="tabpanel" aria-labelledby="activity-tab" tabindex="0">
-                    <ul class="list-unstyled profile-timeline">
-
-                      {% for i, log in logs %}
-                      <li>
-                        <span class="fs-12 text-muted fw-semibold text-end profile-timeline-time">{{ProhloVremya(log.time, true)}}</span>
-                        <div>
-                                                                    <span
-                                                                      class="avatar avatar-sm avatar-rounded profile-timeline-avatar">
-                                                                        <img src="{{userInfo.getAvatar()}}" alt="">
-                                                                    </span>
-                          <p class="text-muted mb-2">
-                            <span class="text-default">{{log.message}}</span>
-                          </p>
-                        </div>
-                      </li>
-                      {% endfor %}
-
-
-                    </ul>
+            <!-- Локация -->
+            <div class="user-info-item p-2 mb-2 bg-light rounded">
+              <div class="d-flex align-items-center">
+                <div class="info-icon-container me-3">
+                  <div class="info-icon bg-danger-transparent rounded-circle p-2">
+                    <i class="ri-map-pin-line text-danger"></i>
                   </div>
+                </div>
+                <div class="info-content">
+                  <div class="text-muted small">Локация</div>
+                  <div class="fw-medium">{{userInfo.getCountry() ?? 'N/A'}} {{userInfo.getCity() ?? ''}}</div>
+                </div>
+              </div>
+            </div>
 
-                  <div class="tab-pane fade p-0 border-0 bg-white p-2 rounded-3" id="donate-tab-pane"
-                       role="tabpanel" aria-labelledby="donate-tab" tabindex="0">
-                    <ul class="list-unstyled profile-timeline">
-
-                      {% for i, history in donate_history_pay %}
-                      <li>
-                        <span class="fs-12 text-muted fw-semibold text-end profile-timeline-time">{{ProhloVremya(history.date, true)}}</span>
-                        <div>
-                                                                    <span
-                                                                      class="avatar avatar-sm avatar-rounded profile-timeline-avatar">
-                                                                        <img src="{{userInfo.getAvatar()}}" alt="">
-                                                                    </span>
-
-                          <div class="flex-fill">
-                            <p class="mb-0 fw-semibold">{{history.message}}</p>
-                            <p class="mb-0 text-muted fs-12">{{phrase('donation_bonus')}} : +{{history.point}}
-                              <span class="badge bg-success-transparent ms-3">{{history.pay_system}} {% if history.id_admin_pay != null %}| {{getUser(history.id_admin_pay).getName()}} {% endif %}</span></p>
-                          </div>
-
-                        </div>
-                      </li>
-                      {% endfor %}
-
-
-                    </ul>
+            <!-- Последняя активность -->
+            <div class="user-info-item p-2 mb-2 bg-light rounded">
+              <div class="d-flex align-items-center">
+                <div class="info-icon-container me-3">
+                  <div class="info-icon bg-warning-transparent rounded-circle p-2">
+                    <i class="ri-time-line text-warning"></i>
                   </div>
+                </div>
+                <div class="info-content">
+                  <div class="text-muted small">Последняя активность</div>
+                  <div class="fw-medium">{{userInfo.getLastActivityFormatted() ?? 'N/A'}}</div>
+                </div>
+              </div>
+            </div>
 
-                  <div class="tab-pane fade p-0 border-0" id="posts-tab-pane"
-                       role="tabpanel" aria-labelledby="posts-tab" tabindex="0">
-                    <div class="row">
+            <!-- Язык -->
+            <div class="user-info-item p-2 mb-0 bg-light rounded">
+              <div class="d-flex align-items-center">
+                <div class="info-icon-container me-3">
+                  <div class="info-icon bg-info-transparent rounded-circle p-2">
+                    <i class="ri-global-line text-info"></i>
+                  </div>
+                </div>
+                <div class="info-content">
+                  <div class="text-muted small">Язык интерфейса</div>
+                  <div class="fw-medium">{{userInfo.getLang() ?? 'N/A'}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                      <div class="col-xl-12">
-                        <div class="card custom-card">
-                          <div class="card-header justify-content-between">
-                            <div class="card-title">
-                              {{phrase('edit_user_parameters')}}
+        <!-- Информация о балансе -->
+        <div class="card-body p-0">
+          <div class="bg-light-primary p-3">
+            <div class="d-flex align-items-center">
+              <div class="flex-grow-1">
+                <h6 class="mb-0 text-muted">{{phrase('user_balance')}}</h6>
+                <h3 class="display-6 mb-0 text-primary">{{userInfo.getDonate()}}</h3>
+              </div>
+              <div class="avatar avatar-lg bg-primary-transparent rounded-circle p-2">
+                <i class="ri-coin-line fs-2 text-primary"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  <!-- Карточка аккаунтов пользователя -->
+      <div class="card custom-card shadow-sm mt-4">
+        <div class="card-header d-flex justify-content-between align-items-center bg-light p-3">
+          <h5 class="card-title mb-0 d-flex align-items-center">
+            <i class="ri-gamepad-line me-2 text-primary"></i>Игровые аккаунты
+          </h5>
+          <span class="badge bg-primary rounded-pill px-2 py-1">{{userInfo.getAccounts()|length}}</span>
+        </div>
+        <div class="card-body p-0">
+          {% if userInfo.getAccounts()|length > 0 %}
+          <div class="accordion" id="accountsAccordion">
+            {% for i, account in userInfo.getAccounts() %}
+            <div class="accordion-item border-0 border-bottom">
+              <h2 class="accordion-header" id="account-heading-{{i}}">
+                <button class="accordion-button {% if not loop.first %}collapsed{% endif %} py-3" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#account-collapse-{{i}}"
+                        aria-expanded="{% if loop.first %}true{% else %}false{% endif %}"
+                        aria-controls="account-collapse-{{i}}">
+                  <div class="d-flex align-items-center w-100">
+                    <span class="avatar avatar-sm bg-primary-transparent me-2">
+                      <i class="ri-user-3-line text-primary"></i>
+                    </span>
+                    <span class="fw-medium text-primary">{{account.getAccount()}}</span>
+                    <span class="badge bg-secondary ms-auto">{{account.getCharacters()|length}} перс.</span>
+                  </div>
+                </button>
+              </h2>
+              <div id="account-collapse-{{i}}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}"
+                   aria-labelledby="account-heading-{{i}}" data-bs-parent="#accountsAccordion">
+                <div class="accordion-body pt-0 pb-3 px-3">
+                  {% if account.getCharacters()|length > 0 %}
+                  <div class="characters-container">
+                    <h6 class="text-muted fs-12 fw-semibold mb-2">Персонажи:</h6>
+                    <div class="row g-2">
+                      {% for i, character in account.getCharacters() %}
+                      <div class="col-12">
+                        <div class="d-flex align-items-center p-2 rounded-3 border {% if character.getOnline() %}border-success bg-success-transparent{% else %}border-light bg-light{% endif %}">
+                          <div class="flex-shrink-0 position-relative">
+                            <span class="avatar avatar-sm border-2 {% if character.getOnline() %}border-success{% else %}border-secondary{% endif %}">
+                              <img src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg" alt="{{character.getPlayerName()}}">
+                            </span>
+                            {% if character.getOnline() %}
+                            <span class="position-absolute bottom-0 end-0 translate-middle-y badge rounded-circle bg-success p-1" style="width: 8px; height: 8px;"></span>
+                            {% endif %}
+                          </div>
+                          <div class="flex-grow-1 ms-3">
+                            <div class="d-flex align-items-center flex-wrap">
+                              <span class="fw-bold text-dark me-2">{{clan_icon(character.getClanCrest())|raw}}{{character.getPlayerName()}}</span>
+                              <span class="badge bg-secondary rounded-pill">Lvl {{character.getLevel()}}</span>
+                              {% if character.getOnline() %}
+                              <span class="badge bg-success ms-auto">Онлайн</span>
+                              {% endif %}
                             </div>
                           </div>
-                          <form action="/admin/user/edit" method="POST" class="card-body">
-
-                            <input type="hidden" name="id" value="{{userInfo.getId()}}">
-
-                            <div class="mb-3">
-                              <label for="email" class="form-label fs-14 text-dark">{{ phrase('email') }}</label>
-                              <input id="email" type="text" class="form-control" name="email" placeholder="" value="{{userInfo.getEmail()}}">
-                            </div>
-
-                            <div class="mb-3">
-                              <label for="name" class="form-label fs-14 text-dark">{{ phrase('user_nick') }}</label>
-                              <input name="name" id="name" type="text" class="form-control" placeholder="" value="{{userInfo.getName()}}">
-                            </div>
-
-
-                            <div class="mb-3">
-                              <label for="password" class="form-label fs-14 text-dark">{{ phrase('password') }}</label>
-                              <input name="password" type="password" class="form-control" id="password" placeholder="">
-                            </div>
-
-                            <div class="mb-3">
-                              <label for="group" class="form-label">{{ phrase('group') }}</label>
-                              <select name="group" id="group" class="form-select form-select-lg">
-                                <option {% if userInfo.getAccessLevel() == "user" %}selected{% endif %} value="user">{{ phrase('user') }}</option>
-                                <option {% if userInfo.getAccessLevel() == "admin" %}selected{% endif %} value="admin">{{ phrase('admin') }}</option>
-                              </select>
-                            </div>
-
-                            <div class="mb-3">
-                              <label for="donate" class="form-label fs-14 text-dark">{{ phrase(486) }}</label>
-                              <input id="donate" name="donate" type="number" step="0.1" class="form-control" placeholder="" value="{{userInfo.getDonate()}}">
-                            </div>
-
-                            <button class="btn btn-primary" type="submit">{{ phrase(89) }}</button>
-                          </form>
-
                         </div>
                       </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  {% else %}
+                  <div class="text-center py-3">
+                    <div class="avatar avatar-md bg-light-secondary mx-auto mb-2">
+                      <i class="ri-user-follow-line text-secondary"></i>
+                    </div>
+                    <p class="text-muted fs-12 mb-0">Нет персонажей в аккаунте</p>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="text-center p-4">
+            <div class="avatar avatar-lg bg-light-secondary mx-auto mb-3">
+              <i class="ri-error-warning-line text-secondary fs-24"></i>
+            </div>
+            <h6 class="text-muted">У пользователя нет игровых аккаунтов</h6>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
 
+    <!-- Правая колонка с вкладками -->
+    <div class="col-xxl-9">
+      <div class="card custom-card shadow-sm">
+        <div class="card-body p-0">
+          <!-- Вкладки -->
+          <div class="bg-light p-3 border-bottom">
+            <ul class="nav nav-pills nav-justified gap-2" id="profileTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity-tab-pane" type="button" role="tab" aria-selected="true">
+                  <i class="ri-history-line me-2 align-middle"></i>
+                  <span>{{ phrase('user_log') }}</span>
+                </button>
+              </li>
+
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="donate-tab" data-bs-toggle="tab" data-bs-target="#donate-tab-pane" type="button" role="tab" aria-selected="false">
+                  <i class="ri-gift-line me-2 align-middle"></i>
+                  <span>{{phrase('donation_log')}}</span>
+                </button>
+              </li>
+
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts-tab-pane" type="button" role="tab" aria-selected="false">
+                  <i class="ri-edit-line me-2 align-middle"></i>
+                  <span>{{ phrase('edit') }}</span>
+                </button>
+              </li>
+
+              <li class="nav-item" role="presentation">
+                <button class="nav-link position-relative" id="warehouse-tab" data-bs-toggle="tab" data-bs-target="#warehouse-tab-pane" type="button" role="tab" aria-selected="false">
+                  <i class="ri-archive-line me-2 align-middle"></i>
+                  <span>{{ phrase('warehouse') }}</span>
+                  {% if userInfo.countWarehouseItems() >= 1 %}
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{userInfo.countWarehouseItems()}}
+                    <span class="visually-hidden">предметов</span>
+                  </span>
+                  {% endif %}
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Содержимое вкладок -->
+          <div class="tab-content p-4" id="profileTabsContent">
+            <!-- Вкладка лога активности -->
+            <div class="tab-pane fade show active" id="activity-tab-pane" role="tabpanel" aria-labelledby="activity-tab" tabindex="0">
+              <h5 class="mb-4">История активности пользователя</h5>
+
+              {% if logs|length > 0 %}
+              <div class="timeline-container">
+                {% for i, log in logs %}
+                <div class="timeline-item">
+                  <div class="timeline-left">
+                    <div class="timeline-date text-muted">{{ProhloVremya(log.time, true)}}</div>
+                  </div>
+                  <div class="timeline-center">
+                    <div class="timeline-marker bg-primary"></div>
+                    <div class="timeline-line"></div>
+                  </div>
+                  <div class="timeline-right">
+                    <div class="timeline-content p-3 bg-light rounded shadow-sm">
+                      <div class="d-flex align-items-center">
+                        <span class="avatar avatar-sm avatar-rounded me-3">
+                          <img src="{{userInfo.getAvatar()}}" alt="">
+                        </span>
+                        <div>
+                          <p class="mb-0 text-dark">{{log.message}}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              {% else %}
+              <div class="text-center p-5">
+                <div class="avatar avatar-lg bg-light-secondary mx-auto mb-3">
+                  <i class="ri-file-list-3-line text-secondary fs-24"></i>
+                </div>
+                <h6 class="text-muted">История активности отсутствует</h6>
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Вкладка лога пожертвований -->
+            <div class="tab-pane fade" id="donate-tab-pane" role="tabpanel" aria-labelledby="donate-tab" tabindex="0">
+              <h5 class="mb-4">История пожертвований</h5>
+
+              {% if donate_history_pay|length > 0 %}
+              <div class="timeline-container">
+                {% for i, history in donate_history_pay %}
+                <div class="timeline-item">
+                  <div class="timeline-left">
+                    <div class="timeline-date text-muted">{{ProhloVremya(history.date, true)}}</div>
+                  </div>
+                  <div class="timeline-center">
+                    <div class="timeline-marker bg-success"></div>
+                    <div class="timeline-line"></div>
+                  </div>
+                  <div class="timeline-right">
+                    <div class="timeline-content p-3 bg-light-success rounded shadow-sm">
+                      <div class="d-flex align-items-center">
+                        <span class="avatar avatar-sm avatar-rounded me-3">
+                          <img src="{{userInfo.getAvatar()}}" alt="">
+                        </span>
+                        <div class="flex-grow-1">
+                          <p class="mb-1 fw-semibold text-dark">{{history.message}}</p>
+                          <div class="d-flex align-items-center">
+                            <span class="badge bg-success me-2">+{{history.point}}</span>
+                            <span class="text-muted fs-12">{{phrase('donation_bonus')}}</span>
+                            <span class="badge bg-info ms-auto">
+                              {{history.pay_system}}
+                              {% if history.id_admin_pay != null %}
+                              <i class="ri-user-star-line ms-1"></i> {{getUser(history.id_admin_pay).getName()}}
+                              {% endif %}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              {% else %}
+              <div class="text-center p-5">
+                <div class="avatar avatar-lg bg-light-secondary mx-auto mb-3">
+                  <i class="ri-coins-line text-secondary fs-24"></i>
+                </div>
+                <h6 class="text-muted">История пожертвований отсутствует</h6>
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Вкладка редактирования -->
+            <div class="tab-pane fade" id="posts-tab-pane" role="tabpanel" aria-labelledby="posts-tab" tabindex="0">
+              <div class="card custom-card shadow-sm border">
+                <div class="card-header bg-light">
+                  <h5 class="card-title mb-0">
+                    <i class="ri-user-settings-line me-2 text-primary"></i>
+                    {{phrase('edit_user_parameters')}}
+                  </h5>
+                </div>
+                <form action="/admin/user/edit" method="POST" class="card-body" id="userEditForm">
+                  <input type="hidden" name="id" value="{{userInfo.getId()}}">
+
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="email" class="form-label fw-semibold">{{ phrase('email') }} <span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="ri-mail-line"></i></span>
+                        <input id="email" type="email" class="form-control" name="email" value="{{userInfo.getEmail()}}" required>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                      <label for="name" class="form-label fw-semibold">{{ phrase('user_nick') }} <span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="ri-user-line"></i></span>
+                        <input name="name" id="name" type="text" class="form-control" value="{{userInfo.getName()}}" required>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                      <label for="password" class="form-label fw-semibold">{{ phrase('password') }}</label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="ri-lock-line"></i></span>
+                        <input name="password" type="password" class="form-control" id="password" placeholder="Введите новый пароль">
+                        <button class="btn btn-outline-secondary toggle-password" type="button" data-target="password">
+                          <i class="ri-eye-line"></i>
+                        </button>
+                      </div>
+                      <small class="text-muted">Оставьте пустым, чтобы не менять</small>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                      <label for="group" class="form-label fw-semibold">{{ phrase('group') }} <span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="ri-group-line"></i></span>
+                        <select name="group" id="group" class="form-select">
+                          <option {% if userInfo.getAccessLevel() == "user" %}selected{% endif %} value="user">{{ phrase('user') }}</option>
+                          <option {% if userInfo.getAccessLevel() == "admin" %}selected{% endif %} value="admin">{{ phrase('admin') }}</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                      <label for="donate" class="form-label fw-semibold">{{ phrase(486) }} <span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="ri-coin-line"></i></span>
+                        <input id="donate" name="donate" type="number" step="0.1" class="form-control" value="{{userInfo.getDonate()}}" required>
+                      </div>
                     </div>
                   </div>
 
-
-                  <div class="tab-pane fade p-0 border-0" id="warehouse-tab-pane"
-                       role="tabpanel" aria-labelledby="warehouse-tab" tabindex="0">
-                    <div class="card custom-card">
-
-                    <div class="row ">
-
-                      <div class="col-xl-12 col-12 my-2">
-                        <div class="text-center">
-                          <p class="mb-0 text-muted">
-                            <a class="text-success" href="#" data-bs-toggle="modal" data-bs-target="#mail-Compose">{{ phrase('add_item_to_user_inventory') }}</a>
-
-                          <div class="modal modal-lg fade" id="mail-Compose" tabindex="-1" aria-labelledby="mail-ComposeLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                              <form method="post" action="/admin/user/add/item/warehouse" class="modal-content">
-                                <div class="modal-header">
-                                  <h6 class="modal-title" id="mail-ComposeLabel">{{ phrase(216) }}</h6>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                          aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body px-4">
-                                  <div class="row">
-
-
-                                    <input type="hidden" id="userId" name="userId" value="{{userInfo.getId()}}">
-
-                                    <div class="col-xl-3 mb-2">
-                                      <label for="itemId" class="form-label text-dark fw-semibold">{{ phrase('server') }}</label>
-                                      <select name="serverId" class="form-select" aria-label="Default select example">
-                                        {% for server in getServerAll() %}
-                                          <option value="{{server.getId()}}">{{server.getName()}} x{{server.getRateExp()}}</option>
-                                        {% endfor %}
-                                      </select>
-                                    </div>
-
-                                    <div class="col-xl-3 mb-2">
-                                      <label for="itemId" class="form-label text-dark fw-semibold">ID Item</label>
-                                      <input type="number" class="form-control" name="itemId" id="itemId" value="">
-                                    </div>
-
-                                    <div class="col-xl-3 mb-2">
-                                      <label for="count" class="form-label text-dark fw-semibold">Count</label>
-                                      <input type="number" class="form-control" name="count" id="count" value="1">
-                                    </div>
-
-                                    <div class="col-xl-3 mb-2">
-                                      <label for="enchant" class="form-label">Enchant</label>
-                                      <input type="number" class="form-control" name="enchant" id="enchant" placeholder="0">
-                                    </div>
-
-
-                                  </div>
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="button" class="btn btn-light"
-                                          data-bs-dismiss="modal">{{ phrase('cancel') }}</button>
-                                  <button type="submit" class="btn btn-primary">{{ phrase('send_items_wh') }}</button>
-                                </div>
-                              </form>
-                            </div>
-                          </div>
-
-
-                          </p>
-                        </div>
-                      </div>
-
-                      {% if userInfo.countWarehouseItems() == 0 %}
-
-                      <div class="col-xl-12 col-12 my-2">
-                        <div class="text-center">
-                          <p class="mb-0 text-muted">
-                            {{ phrase('user_has_no_items_in_inventory') }}
-                          </p>
-                        </div>
-                      </div>
-                      {% else %}
-                      {% for warehouse in userInfo.getWarehouse() %}
-
-                      <div class="col-xl-2 col-12 my-2" id="warehouse_item_{{warehouse.id}}">
-                        <div class="text-center">
-                          <div class="similar-products-image me-2">
-                            <img class="avatar avatar-xl bg-light p-1" src="{{warehouse.item.getIcon()}}" alt="">
-                          </div>
-
-                            <label class="my-0 fs-14 fw-semibold form-label"  >{% if
-                              warehouse.enchant > 0 %}+{{warehouse.enchant}} {% endif %}{{warehouse.item.getItemName()}} <span
-                                class="text-muted ms-1">({{warehouse.count}})</span></label>
-
-                          <div class="d-flex align-items-center justify-content-center mb-0">
-                            <p class="mb-0 text-muted">
-                              <span class="text-muted fs-12 ms-1">{{phrase(warehouse.phrase)}}</span>
-                            </p>
-                          </div>
-
-<span data-id="{{warehouse.id}}" class="fs-10 text-danger itemWarehouseDelete" style="cursor: pointer;">Удалить</span>
-
-                        </div>
-                      </div>
-                      {% endfor %}
-                      {% endif %}
-
+                  <div class="mt-4 text-end">
+                    <button type="button" class="btn btn-light me-2" id="resetForm">
+                      <i class="ri-restart-line me-1"></i> Сбросить
+                    </button>
+                    <button class="btn btn-primary" type="submit">
+                      <i class="ri-save-line me-1"></i> {{ phrase(89) }}
+                    </button>
                   </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Вкладка склада -->
+            <div class="tab-pane fade" id="warehouse-tab-pane" role="tabpanel" aria-labelledby="warehouse-tab" tabindex="0">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">
+                  <i class="ri-archive-line me-2 text-primary"></i>
+                  Склад предметов
+                </h5>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#add-item-modal">
+                  <i class="ri-add-line me-1"></i> {{ phrase('add_item_to_user_inventory') }}
+                </button>
+              </div>
+
+              <div class="row g-3 warehouse-items-container">
+                {% if userInfo.countWarehouseItems() == 0 %}
+                <div class="col-12">
+                  <div class="text-center p-5 bg-light-secondary rounded shadow-sm">
+                    <div class="avatar avatar-lg bg-light-secondary mx-auto mb-3">
+                      <i class="ri-inbox-archive-line text-secondary fs-24"></i>
+                    </div>
+                    <h6 class="text-muted">{{ phrase('user_has_no_items_in_inventory') }}</h6>
                   </div>
-
-                  </div>
-
-
                 </div>
+                {% else %}
+                {% for warehouse in userInfo.getWarehouse() %}
+                <div class="col-xl-3 col-md-4 col-sm-6 warehouse-item" id="warehouse_item_{{warehouse.id}}">
+                  <div class="card custom-card h-100 border shadow-sm">
+                    <div class="card-body text-center p-3">
+                      <div class="mb-3 position-relative">
+                        <img class="img-fluid rounded bg-light p-2" style="max-height: 64px;" src="{{warehouse.item.getIcon()}}" alt="{{warehouse.item.getItemName()}}">
+
+                      </div>
+
+
+
+                      <h6 class="mb-1 text-truncate" data-bs-toggle="tooltip" title="{{warehouse.item.getItemName()}}">
+                          {% if warehouse.enchant > 0 %}
+                             +{{warehouse.enchant}}
+                          {% endif %}
+                        {{warehouse.item.getItemName()}}
+                      </h6>
+
+                      <span class="">x{{warehouse.count}}</span>
+
+                      <div class="d-flex justify-content-center align-items-center mb-2">
+                        <span class="ms-2 text-muted fs-12">{{phrase(warehouse.phrase)}}</span>
+                      </div>
+
+                      <button class="btn btn-sm btn-outline-danger w-100 mt-2 item-delete-btn" data-id="{{warehouse.id}}">
+                        <i class="ri-delete-bin-line me-1"></i> Удалить
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+                {% endif %}
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
   </div>
-  <!--End::row-1 -->
-
 </div>
+
+<!-- Модальное окно добавления предмета -->
+<div class="modal fade" id="add-item-modal" tabindex="-1" aria-labelledby="add-item-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <form method="post" action="/admin/user/add/item/warehouse" class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="add-item-modal-label">
+          <i class="ri-add-circle-line me-2"></i>
+          {{ phrase(216) }}
+        </h5>
+        <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="userId" name="userId" value="{{userInfo.getId()}}">
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="serverId" class="form-label fw-semibold">{{ phrase('server') }} <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="ri-server-line"></i></span>
+              <select name="serverId" id="serverId" class="form-select" required>
+                <option value="">-- Выберите сервер --</option>
+                {% for server in getServerAll() %}
+                <option value="{{server.getId()}}">{{server.getName()}} (x{{server.getRateExp()}})</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="itemId" class="form-label fw-semibold">ID предмета <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="ri-handbag-line"></i></span>
+              <input type="number" class="form-control" name="itemId" id="itemId" placeholder="Введите ID предмета" required>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="count" class="form-label fw-semibold">Количество <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="ri-stack-line"></i></span>
+              <input type="number" class="form-control" name="count" id="count" value="1" min="1" required>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="enchant" class="form-label fw-semibold">Заточка</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="ri-magic-line"></i></span>
+              <input type="number" class="form-control" name="enchant" id="enchant" value="0" min="0" max="25">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="ri-close-line me-1"></i> {{ phrase('cancel') }}
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="ri-send-plane-line me-1"></i> {{ phrase('send_items_wh') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+/* Стили для временной шкалы */
+.timeline-container {
+  position: relative;
+  max-width: 100%;
+}
+
+.timeline-item {
+  display: flex;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-left {
+  width: 120px;
+  text-align: right;
+  padding-right: 15px;
+  flex-shrink: 0;
+}
+
+.timeline-date {
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.timeline-center {
+  position: relative;
+  width: 30px;
+  flex-shrink: 0;
+}
+
+.timeline-marker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  position: relative;
+  top: 4px;
+  left: 9px;
+  z-index: 1;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 10px;
+  bottom: -20px;
+  left: 14px;
+  width: 2px;
+  background-color: #e9ecef;
+}
+
+.timeline-item:last-child .timeline-line {
+  display: none;
+}
+
+.timeline-right {
+  flex-grow: 1;
+  padding-left: 15px;
+}
+
+.timeline-content {
+  background: #fff;
+  border-radius: 4px;
+}
+
+/* Дополнительные стили */
+.online:after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background: #28a745;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  border: 2px solid #fff;
+}
+
+.offline:after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background: #6c757d;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  border: 2px solid #fff;
+}
+
+.bg-light-primary {
+  background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+}
+
+.bg-light-success {
+  background-color: rgba(var(--bs-success-rgb), 0.1) !important;
+}
+
+.bg-light-secondary {
+  background-color: rgba(var(--bs-secondary-rgb), 0.1) !important;
+}
+
+.bg-success-transparent {
+  background-color: rgba(var(--bs-success-rgb), 0.1) !important;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Анимации */
+.nav-link.active {
+  transition: all 0.3s ease;
+}
+
+.card {
+  transition: all 0.3s ease;
+}
+
+.btn {
+  transition: all 0.2s ease;
+}
+
+
+</style>
+
+
+<style>
+/* Стили для блоков с информацией */
+.info-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-primary-transparent {
+  background-color: rgba(var(--bs-primary-rgb), 0.15);
+}
+
+.bg-danger-transparent {
+  background-color: rgba(var(--bs-danger-rgb), 0.15);
+}
+
+.bg-warning-transparent {
+  background-color: rgba(var(--bs-warning-rgb), 0.15);
+}
+
+.bg-info-transparent {
+  background-color: rgba(var(--bs-info-rgb), 0.15);
+}
+
+.bg-success-transparent {
+  background-color: rgba(var(--bs-success-rgb), 0.15);
+}
+
+.bg-light-secondary {
+  background-color: rgba(var(--bs-secondary-rgb), 0.1);
+}
+
+.online:after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: var(--bs-success);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border: 2px solid #fff;
+}
+
+.user-info-item {
+  transition: all 0.3s ease;
+}
+
+.user-info-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Стили для аккордеона аккаунтов */
+.accordion-button:not(.collapsed) {
+  background-color: rgba(var(--bs-primary-rgb), 0.05);
+  color: var(--bs-primary);
+  box-shadow: none;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+  border-color: rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.characters-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.characters-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.characters-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.characters-container::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 4px;
+}
+
+.characters-container::-webkit-scrollbar-thumb:hover {
+  background: #c1c1c1;
+}
+</style>
 
 {% endblock %}
 
 {% block js %}
 <script>
 $(document).ready(function() {
-  $('.itemWarehouseDelete').on('click', function() {
-    let itemId = $(this).data('id');
+  // Инициализация всех тултипов
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+  });
 
-    if (confirm('Вы уверены, что хотите удалить этот предмет?')) {
-      AjaxSend("/admin/user/delete/item/warehouse", "POST", {
-        id: itemId
-      }, true).then(function (result) {
-        if (result.ok) {
-          $('#warehouse_item_' + itemId ).remove();
+  // Обработчик для кнопки удаления предмета
+  $('.item-delete-btn').on('click', function() {
+    const itemId = $(this).data('id');
+    const itemName = $(this).closest('.card').find('h6').text().trim();
+
+    if (confirm(`Вы уверены, что хотите удалить предмет "${itemName}"?`)) {
+      deleteWarehouseItem(itemId);
+    }
+  });
+
+  // Функция удаления предмета
+  function deleteWarehouseItem(itemId) {
+    // Показываем индикатор загрузки
+    const itemElement = $(`#warehouse_item_${itemId}`);
+    itemElement.addClass('opacity-50');
+
+    AjaxSend("/admin/user/delete/item/warehouse", "POST", {
+      id: itemId
+    }, true).then(function(result) {
+      if (result.ok) {
+        // Анимация удаления
+        itemElement.fadeOut(300, function() {
+          $(this).remove();
+
+          // Проверяем остались ли предметы
           if ($('.warehouse-item').length === 0) {
             const emptyMessage = `
-                            <div class="col-xl-12 col-12 my-2">
-                              <div class="text-center">
-                                <p class="mb-0 text-muted">
-                                  {{ phrase('user_has_no_items_in_inventory') }}
-                                </p>
-                              </div>
-                            </div>`;
+              <div class="col-12">
+                <div class="text-center p-5 bg-light-secondary rounded shadow-sm">
+                  <div class="avatar avatar-lg bg-light-secondary mx-auto mb-3">
+                    <i class="ri-inbox-archive-line text-secondary fs-24"></i>
+                  </div>
+                  <h6 class="text-muted">{{ phrase('user_has_no_items_in_inventory') }}</h6>
+                </div>
+              </div>`;
             $('.warehouse-items-container').html(emptyMessage);
           }
-        } else {
-          alert(result.message);
-        }
-      })
+        });
+      } else {
+        // Восстанавливаем вид элемента
+        itemElement.removeClass('opacity-50');
 
+        // Уведомление об ошибке
+        alert(result.message || 'Не удалось удалить предмет');
+      }
+    }).catch(function(error) {
+      // Восстанавливаем вид элемента
+      itemElement.removeClass('opacity-50');
+
+      // Уведомление об ошибке
+      alert('Произошла ошибка при выполнении запроса');
+    });
+  }
+
+  // Переключатель видимости пароля
+  $('.toggle-password').on('click', function() {
+    const targetId = $(this).data('target');
+    const passwordInput = $(`#${targetId}`);
+    const icon = $(this).find('i');
+
+    if (passwordInput.attr('type') === 'password') {
+      passwordInput.attr('type', 'text');
+      icon.removeClass('ri-eye-line').addClass('ri-eye-off-line');
+    } else {
+      passwordInput.attr('type', 'password');
+      icon.removeClass('ri-eye-off-line').addClass('ri-eye-line');
     }
+  });
+
+  // Сброс формы
+  $('#resetForm').on('click', function() {
+    $('#userEditForm')[0].reset();
+    $('#email').val('{{userInfo.getEmail()}}');
+    $('#name').val('{{userInfo.getName()}}');
+    $('#donate').val('{{userInfo.getDonate()}}');
+    $('#group').val('{{userInfo.getAccessLevel()}}');
+  });
+
+  // Очистка состояния валидации при изменении значения
+  $('input, select').on('change', function() {
+    $(this).removeClass('is-invalid');
   });
 });
 </script>

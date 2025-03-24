@@ -25,6 +25,7 @@
                 <th>ID</th>
                 <th>{{ phrase('user') }}</th>
                 <th>{{ phrase(114) }}</th>
+                <th>Дата входа</th>
                 <th>{{ phrase('donate_coin') }}</th>
               </tr>
               </thead>
@@ -43,6 +44,7 @@
                   </div>
                 </td>
                 <td style="width: 1px;">{{user.getDateCreate()}}</td>
+                <td style="width: 1px;">{{user.getLastActive()}}</td>
                 <td style="width: 1px;" class="text-center">
                 <span data-user-id="{{user.getId()}}" data-user-balance="{{user.getDonate()}}"
                       class="reply-btn btn btn-sm btn-success sendToBalance">
