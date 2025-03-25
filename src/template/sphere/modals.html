@@ -390,6 +390,72 @@
 
 {% endif %}
 
+
+
+{% if config().enabled().isEnableBonusCode() %}
+<div class="modal modal-lg fade" id="bonusCodeModal" tabindex="-1" aria-labelledby="bonusCodeModalLabel" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="bonusCodeModalLabel">{{phrase('code_bonus')}}</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body px-4">
+        <div class="row">
+          {% if getUser().isAuth() %}
+          <div class="col-xl-12 mb-3">
+            <label for="form-code" class="form-label text-dark fw-semibold">{{phrase('enter_bonus_code')}}<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
+            <input type="text" class="form-control" id="form-code" placeholder="{{phrase('code_bonus')}}">
+          </div>
+          {% else %}
+          <div class="col-xl-12">
+            {{phrase('need_auth_for_bonus_code')|raw}}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="modal-footer">
+        {% if getUser().isAuth() %}
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase('cancel')}}</button>
+        <button type="button" class="btn btn-primary" id="bonusCode">{{phrase('receive')}}</button>
+        {% else %}
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase('close')}}</button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function() {
+    // Очистка поля ввода при открытии модального окна
+    $('#bonusCodeModal').on('show.bs.modal', function() {
+      $('#form-code').val('');
+    });
+
+    $('#bonusCode').on('click', function() {
+      let code = $('#form-code').val();
+
+      if (!code) {
+        return;
+      }
+
+      // Отправляем AJAX запрос
+      AjaxSend('/bonus/code', 'POST', {code: code})
+              .then(function(response) {
+                // После успешной отправки закрываем модальное окно
+                var modal = bootstrap.Modal.getInstance(document.getElementById('bonusCodeModal'));
+                modal.hide();
+              })
+              .catch(function(error) {
+                console.error('Ошибка:', error);
+              });
+    });
+  });
+</script>
+{% endif %}
+
+
+
 {% if getUser().isAuth() %}
 <div class="modal modal-lg fade" id="syncAccount" tabindex="-1" aria-labelledby="syncAccountLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -453,70 +519,345 @@
     AjaxSend('/api/user/global/add/email/check', 'POST', {}, false);
   });
 </script>
-{% endif %}
 
-
-
-{% if config().enabled().isEnableBonusCode() %}
-<div class="modal modal-lg fade" id="bonusCodeModal" tabindex="-1" aria-labelledby="bonusCodeModalLabel" aria-hidden="true">
-  <div class="modal-dialog ">
+<!-- Оптимизированное модальное окно склада -->
+<div class="modal fade" id="warehouseModal" tabindex="-1" aria-labelledby="warehouseModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
-        <h6 class="modal-title" id="bonusCodeModalLabel">{{phrase('code_bonus')}}</h6>
+      <!-- Заголовок -->
+      <div class="modal-header border-0">
+        <h5 class="modal-title d-flex align-items-center" id="warehouseModalLabel">
+          <i class="ri-archive-line me-2 text-primary"></i>
+          {{phrase('warehouse')}}
+          {% if getUser().countWarehouseItems() > 0 %}
+          <span class="badge rounded-pill bg-danger ms-2 countWarehouseItems">{{getUser().countWarehouseItems()}}</span>
+          {% endif %}
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body px-4">
-        <div class="row">
-          {% if getUser().isAuth() %}
-          <div class="col-xl-12 mb-3">
-            <label for="form-code" class="form-label text-dark fw-semibold">{{phrase('enter_bonus_code')}}<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
-            <input type="text" class="form-control" id="form-code" placeholder="{{phrase('code_bonus')}}">
+
+      <!-- Основное содержимое -->
+      <div class="modal-body">
+        {% if not getUser().isAuth() %}
+        <!-- Блок для неавторизованных пользователей -->
+          <div class="alert alert-danger d-flex" role="alert">
+            <i class="ri-login-box-line fs-4 me-2"></i>
+            <div>{{phrase('first_reg_then_own_items_wh')}}</div>
           </div>
-          {% else %}
-          <div class="col-xl-12">
-            {{phrase('need_auth_for_bonus_code')|raw}}
-          </div>
-          {% endif %}
-        </div>
-      </div>
-      <div class="modal-footer">
-        {% if getUser().isAuth() %}
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase('cancel')}}</button>
-        <button type="button" class="btn btn-primary" id="bonusCode">{{phrase('receive')}}</button>
         {% else %}
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase('close')}}</button>
+        <!-- Блок для авторизованных пользователей -->
+          <div class="row">
+            <!-- Левая панель: список предметов -->
+            <div class="col-md-7 pe-md-2">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-transparent">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">{{ phrase(301) }}</span>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="selectAllItems" checked >
+                      <label class="form-check-label small" for="selectAllItems">
+                        {{phrase('sel_all_items')}}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-body p-0" style="max-height: 50vh; overflow-y: auto;">
+                  {% if getUser().countWarehouseItems() == 0 %}
+                  <!-- Пустой склад -->
+                    <div class="text-center p-4">
+                      <i class="ri-inbox-line text-muted display-4"></i>
+                      <p class="mt-2 text-muted">{{phrase('no_items_send_char')}}</p>
+                    </div>
+                  {% else %}
+                  <!-- Список предметов -->
+                    <ul class="list-group list-group-flush">
+                      {% for warehouse in getUser().getWarehouse() %}
+                        <li class="list-group-item list-group-item-action p-3 border-bottom">
+                          <div class="d-flex align-items-center">
+                            <div class="form-check me-2">
+                              <input data-object-id="{{warehouse.id}}"
+                                     class="form-check-input warehouseInventory"
+                                     type="checkbox" id="item_{{warehouse.id}}" checked>
+                            </div>
+                            <div class="item-icon me-3">
+                              <div class="position-relative">
+                                <img src="{{warehouse.item.getIcon()}}"
+                                     alt="{{warehouse.item.getItemName()}}"
+                                     class="img-fluid border rounded p-1"
+                                     style="width: 40px; height: 40px; object-fit: contain;">
+
+                              </div>
+                            </div>
+                            <div class="item-details flex-grow-1">
+                              <div class="fw-medium">
+                                {% if warehouse.enchant > 0 %}
+                                  <span class="badge bg-danger me-1">+{{warehouse.enchant}}</span>
+                                {% endif %}
+                                <label class="mb-0 cursor-pointer" for="item_{{warehouse.id}}">
+                                  {{warehouse.item.getItemName()}}
+
+                                  {% if warehouse.count > 1 %}
+                                  <span class="bottom-0 end-0 badge rounded-pill bg-secondary">
+                                    x{{warehouse.count}}
+                                  </span>
+                                {% endif %}
+
+                                </label>
+
+                              </div>
+                              <div class="small text-muted">{{phrase(warehouse.phrase)}}</div>
+                            </div>
+                          </div>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Правая панель: управление отправкой -->
+            <div class="col-md-5 mt-3 mt-md-0 ps-md-2">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-transparent">
+                  <span class="fw-bold">{{phrase('send_to_char')}}</span>
+                </div>
+                <div class="card-body">
+                  <!-- Блок выбора персонажа -->
+                  {% if getUser().getCountPlayers() == 0 %}
+                    <div class="alert alert-info d-flex mb-3" role="alert">
+                      <i class="ri-user-3-line fs-5 me-2"></i>
+                      <div>{{phrase('no_chars_send_items_wh')}}</div>
+                    </div>
+                  {% else %}
+                    <div class="mb-3">
+                      <label for="warehousePlayerSend" class="form-label">
+                        Выберите персонажа:
+                      </label>
+                      <select class="form-select form-select-lg"
+                              id="warehousePlayerSend"
+                              name="warehousePlayerSend"
+                              {% if statusSphereServer() is same as(false) %}disabled{% endif %}>
+                        {% set isPlayers = false %}
+                        {% for i, account in getUser().getAccounts() %}
+                          <optgroup label="{{account.getAccount()}}">
+                            {% if account.getCharactersCount() == 0 %}
+                              <option disabled>{{phrase('no_chars')}}</option>
+                            {% else %}
+                              {% for i, character in account.getCharacters() %}
+                                {% set isPlayers = true %}
+                                <option value="{{character.getPlayerId()}}"
+                                        data-account="{{account.getAccount()}}"
+                                        data-character="{{character.getPlayerName()}}">
+                                  {{character.getPlayerName()}} [{{character.getLevel()}}]
+                                </option>
+                              {% endfor %}
+                            {% endif %}
+                          </optgroup>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  {% endif %}
+
+                  <!-- Статус сервера -->
+                  {% if statusSphereServer() is same as(false) %}
+                    <div class="alert alert-danger d-flex mb-3" role="alert">
+                      <i class="ri-server-line fs-5 me-2"></i>
+                      <div>Сервер недоступен</div>
+                    </div>
+                  {% endif %}
+
+                  <!-- Кнопка отправки -->
+                  <button type="button"
+                          id="warehouseSendItemsToPlayer"
+                          class="btn btn-primary btn-lg w-100 mt-2"
+                          {% if not isPlayers|default(false) or statusSphereServer() is same as(false) or getUser().countWarehouseItems() == 0 %}
+                          disabled
+                          {% endif %}>
+                    <i class="ri-send-plane-line me-2"></i>
+                    {{phrase('send_items')}}
+                  </button>
+
+                </div>
+              </div>
+            </div>
+          </div>
         {% endif %}
+      </div>
+
+      <!-- Футер модального окна -->
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          {{phrase('close')}}
+        </button>
       </div>
     </div>
   </div>
 </div>
 <script>
-  $(document).ready(function() {
-    // Очистка поля ввода при открытии модального окна
-    $('#bonusCodeModal').on('show.bs.modal', function() {
-      $('#form-code').val('');
+
+/**
+ * Модуль для обработки действий со складом (warehouse)
+ * Обрабатывает отправку предметов персонажу и удаление их из интерфейса после успешной отправки
+ * Обновляет счетчик предметов на складе на основе ответа сервера
+ */
+$(document).ready(function() {
+  // Переопределение обработчика нажатия на кнопку отправки предметов
+  $(document).off('click', '#warehouseSendItemsToPlayer').on('click', '#warehouseSendItemsToPlayer', function() {
+    const selectedOption = $('#warehousePlayerSend option:selected');
+    const account = selectedOption.data('account');
+    const character = selectedOption.data('character');
+
+    // Получаем список выбранных предметов
+    const selectedItems = [];
+    $('.warehouseInventory:checked').each(function() {
+      const objectId = $(this).data('object-id');
+      if (objectId) {
+        selectedItems.push(objectId);
+      }
     });
 
-    $('#bonusCode').on('click', function() {
-      let code = $('#form-code').val();
+    // Проверяем, есть ли выбранные предметы
+    if (selectedItems.length === 0) {
+      noticeError('Выберите хотя бы один предмет для отправки');
+      return;
+    }
 
-      if (!code) {
-        return;
+    // Блокируем кнопку и показываем индикатор загрузки
+    const $sendButton = $(this);
+    $sendButton.prop('disabled', true).html('<i class="ri-loader-2-line me-2"></i> Отправка...');
+
+    // Отправляем запрос на сервер
+    AjaxSend('/inventory/send', 'POST', {
+      items: selectedItems,
+      player: character,
+      account: account
+    }).then(function(response) {
+
+      // Обработка ответа
+      if (response.ok === true) {
+        // Если есть предметы для удаления
+        if (response.removeObject && Array.isArray(response.removeObject) && response.removeObject.length > 0) {
+          // Удаляем предметы из DOM
+          handleItemRemoval(response.removeObject);
+        }
+
+        // Обновляем счетчик на основе данных из ответа сервера
+        if (response.hasOwnProperty('countWarehouseItems')) {
+          updateWarehouseCounter(response.countWarehouseItems);
+        }
+
+        // Показываем сообщение об успехе
+        if (response.message) {
+          noticeSuccess(response.message);
+        }
+      } else {
+        // Показываем сообщение об ошибке
+        if (response.message) {
+          noticeError(response.message);
+        } else {
+          noticeError('Произошла ошибка при отправке предметов');
+        }
       }
 
-      // Отправляем AJAX запрос
-      AjaxSend('/bonus/code', 'POST', {code: code})
-              .then(function(response) {
-                // После успешной отправки закрываем модальное окно
-                var modal = bootstrap.Modal.getInstance(document.getElementById('bonusCodeModal'));
-                modal.hide();
-              })
-              .catch(function(error) {
-                console.error('Ошибка:', error);
-              });
+      // Восстанавливаем кнопку
+      $sendButton.prop('disabled', false).html('<i class="ri-send-plane-line me-2"></i> Отправить предметы');
+    }).catch(function(error) {
+      console.error('Ошибка запроса:', error);
+      noticeError('Ошибка соединения с сервером');
+
+      // Восстанавливаем кнопку
+      $sendButton.prop('disabled', false).html('<i class="ri-send-plane-line me-2"></i> Отправить предметы');
     });
   });
+
+  /**
+   * Обработка удаления предметов из DOM после успешной отправки
+   * @param {Array} items - массив объектов предметов для удаления
+   */
+  function handleItemRemoval(items) {
+    console.log('Удаление предметов:', items);
+
+    // Перебираем все предметы для удаления
+    items.forEach(function(item) {
+      // Находим элемент DOM по ObjectId
+      const $itemElement = $('.warehouseInventory[data-object-id="' + item.objectId + '"]').closest('li.list-group-item');
+
+      if ($itemElement.length > 0) {
+        // Плавно скрываем и удаляем элемент
+        $itemElement.fadeOut(300, function() {
+          $(this).remove();
+
+          // Если это был последний предмет, показываем сообщение о пустом складе
+          checkIfWarehouseEmpty();
+        });
+      }
+    });
+  }
+
+  /**
+   * Проверяет, остались ли предметы на складе, и если нет, показывает сообщение о пустом складе
+   */
+  function checkIfWarehouseEmpty() {
+    if ($('.warehouseInventory').length === 0) {
+      // Создаем HTML для пустого склада
+      const emptyWarehouseHTML = `
+        <div class="text-center p-4">
+          <i class="ri-inbox-line text-muted display-4"></i>
+          <p class="mt-2 text-muted">На складе нет предметов для отправки</p>
+        </div>
+      `;
+
+      // Заменяем содержимое списка
+      const $listContainer = $('ul.list-group.list-group-flush', '#warehouseModal');
+      if ($listContainer.length) {
+        $listContainer.replaceWith(emptyWarehouseHTML);
+      } else {
+        $('#warehouseModal .card-body').first().html(emptyWarehouseHTML);
+      }
+
+      // Блокируем кнопку отправки
+      $('#warehouseSendItemsToPlayer').prop('disabled', true);
+    }
+  }
+
+  /**
+   * Обновляет счетчик предметов на складе
+   * @param {number} count - количество предметов на складе из ответа сервера
+   */
+  function updateWarehouseCounter(count) {
+    const $badgeElement = $('.countWarehouseItems');
+
+    if (count > 0) {
+      // Если есть предметы, обновляем все счетчики на странице
+      $badgeElement.text(count);
+
+      // Обновляем badge в заголовке модального окна, если он есть
+      const $modalBadge = $('#warehouseModalLabel .badge');
+      if ($modalBadge.length > 0) {
+        $modalBadge.text(count);
+      } else if (count > 0) {
+        $('#warehouseModalLabel').append(`<span class="badge rounded-pill bg-danger ms-2 countWarehouseItems">${count}</span>`);
+      }
+    } else {
+      // Если предметов нет, удаляем все счетчики
+      $badgeElement.remove();
+      $('#warehouseModalLabel .badge').remove();
+    }
+  }
+
+  // Переопределяем функцию "выбрать все" для корректной работы
+  $('#selectAllItems').off('change').on('change', function() {
+    const isChecked = $(this).is(':checked');
+    $('.warehouseInventory').prop('checked', isChecked);
+  });
+
+});
+
 </script>
+
+
 {% endif %}
 
 

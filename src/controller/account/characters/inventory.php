@@ -8,6 +8,7 @@ use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\controller\config\config;
+use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\item\item;
 use Ofey\Logan22\model\log\logTypes;
 use Ofey\Logan22\model\user\user;
@@ -69,6 +70,8 @@ class inventory
                 "ok" => true,
                 'sphereCoin' => user::self()->getDonate(),
                 "message" => lang::get_phrase("Transferred to player", $player),
+                "removeObject" => $arrObjectItems,
+                "countWarehouseItems" => user::self()->countWarehouseItems(),
             ]);
 
         }

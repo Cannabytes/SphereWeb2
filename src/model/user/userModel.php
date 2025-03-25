@@ -369,9 +369,13 @@ class userModel
         $warehouseArray = [];
         foreach ($items as $item) {
             $warehouse = new warehouse();
+            $itemObj = item::getItem($item['item_id']);
+            if ($itemObj == null) {
+                continue;
+            }
             $warehouse->setId($item['id'])->setItemId($item['item_id'])->setCount($item['count'])->setEnchant($item['enchant'])->setPhrase(
                 $item['phrase']
-            )->setItem(item::getItem($item['item_id']))->setServerId($this->serverId());
+            )->setItem($itemObj)->setServerId($this->serverId());
             $warehouseArray[] = $warehouse;
         }
 
@@ -484,9 +488,9 @@ class userModel
     }
 
     /**
-     * @return warehouse[]
+     * @return warehouse[]|null
      */
-    public function getWarehouse($reload = false): mixed
+    public function getWarehouse($reload = false): ?array
     {
         if ($reload) {
             return $this->warehouse();
@@ -1249,6 +1253,13 @@ class userModel
         } else {
             sql::run("DELETE FROM `warehouse` WHERE `id` = ?", [$objectId]);
         }
+        $warehouse = self::warehouse();
+        foreach($warehouse AS &$item) {
+            if ($item->getId() == $objectId) {
+                unset($item);
+            }
+        }
+        self::setWarehouse($warehouse);
     }
 
     /**

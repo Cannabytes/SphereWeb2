@@ -118,571 +118,380 @@
 
 
   {% if getUser().isAuth() %}
-  <div class="row">
-    <div class="col-xl-12">
-      <div class="card custom-card">
 
+  {% if getUser().isAuth() %}
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card custom-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">{{phrase(43)}}</h5>
+        <span data-bs-toggle="modal" data-bs-target="#syncAccount">
+          <i role="button" class="bi bi-person-plus text-success" data-bs-toggle="tooltip"
+             data-bs-placement="top"
+             data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}"></i>
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-xl-6">
+            <div class="card-body">
+              {% if getUser().isAuth() == false %}
+              {{phrase('you_need')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-auth-user"
+                                        class="alert-link text-danger">{{phrase('log_in')}}</a>,
+              {{phrase('or')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-new-user"
+                                  class="alert-link text-danger">{{phrase('reg_acc')}}</a>,
+              {{phrase('ctrl_chars')}}.
+              {% else %}
 
-        <div class="card-body">
-          <ul class="nav nav-pills justify-content-center nav-style-2 mb-3" role="tablist">
-            <li class="nav-item" role="presentation">
-              <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page" href="#account_list"
-                 aria-selected="true">{{phrase(43)}}</a>
-            </li>
-            {% if getUser().isAuth() %}
-            {% if getUser().getCountPlayers() > 0 %}
-            <li class="nav-item" role="presentation">
-              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page" href="#players_list"
-                 aria-selected="false" tabindex="-1">{{phrase(203)}}</a>
-            </li>
-            {% endif %}
+              <form action="/registration/account" method="POST">
+                <div class="row mb-0">
+                  <div class="input-group mb-3">
+                    <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between">
+                      {{ phrase(40) }} - {{ getServer().getName() }} {{ getServer().getRateExp() }} ({{ getServer().getChronicle() }})
+                      <span data-bs-toggle="modal" data-bs-target="#syncAccount" >
+                        <label role="button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
+                        {{ phrase('Do you already have an account?') }}
+                        </label>
+                      </span>
+                    </div>
+                  </div>
 
-            <li class="nav-item" role="presentation">
-              <a class="nav-link {% if getUser().countWarehouseItems() >=1 %}pulse pulse-danger{% endif %}"
-                 data-bs-toggle="tab" role="tab" aria-current="page" href="#warehouse_panel" aria-selected="false"
-                 tabindex="-1">{{phrase('warehouse')}}
-                {% if getUser().countWarehouseItems() >=1 %}<span
-                  class=" top-0 start-50 translate-middle badge rounded-pill bg-danger">{{getUser().countWarehouseItems()}}</span>{%
-                endif %}
-              </a>
-            </li>
-            {% endif %}
-          </ul>
-
-          <div class="tab-content">
-            <div class="tab-pane text-muted active show" id="account_list" role="tabpanel">
-
-
-              <div class="row">
-                <div class="col-xl-6">
-                  <div class="card-body">
-                    {% if getUser().isAuth() == false %}
-                    {{phrase('you_need')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-auth-user"
-                                              class="alert-link text-danger">{{phrase('log_in')}}</a>,
-                    {{phrase('or')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-new-user"
-                                        class="alert-link text-danger">{{phrase('reg_acc')}}</a>,
-                    {{phrase('ctrl_chars')}}.
-                    {% else %}
-
-
-
-                    <form action="/registration/account" method="POST">
-                      <div class="row mb-0">
-                        <div class="input-group mb-3">
-                          <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between">
-                            {{ phrase(40) }} - {{ getServer().getName() }} {{ getServer().getRateExp() }} ({{ getServer().getChronicle() }})
-                            <span data-bs-toggle="modal" data-bs-target="#syncAccount" >
-                              <label role="button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
-                              {{ phrase('Do you already have an account?') }}
-                              </label>
-                            </span>
-                          </div>
-                        </div>
-
-                        <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>
-                        <div class="col-sm-4">
-                          <div class="input-group mb-3">
-                            {% if config().registration().getEnablePrefix() and config().registration().getPrefixType()
-                            == 'prefix' %}
-                            <button class="btn btn-light account_prefix" type="button">
-                              {{config().registration().genPrefix()}}
-                            </button>
-                            {% endif %}
-                            <input minlength="3" maxlength="16" type="text" class="form-control" name="login"
-                                   id="accountRegistration" placeholder="" aria-label="Example text with button addon"
-                                   aria-describedby="button-addon1">
-                            {% if config().registration().getEnablePrefix() and config().registration().getPrefixType()
-                            == 'suffix' %}
-                            <button class="btn btn-light account_prefix" type="button">
-                              {{config().registration().genPrefix()}}
-                            </button>
-                            {% endif %}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="row mb-0">
-
-                        <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
-                        <div class="col-sm-4">
-                          <input type="password" class="form-control" name="password" id="passwordRegistration"
-                                 autocomplete="new-password">
-                        </div>
-                      </div>
-                      <fieldset class="row mb-3">
-                        <legend class="col-form-label col-sm-2 pt-0"></legend>
-                        <div class="col-sm-10">
-                          <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="password_hide" name="password_hide">
-                            <label class="form-check-label" for="password_hide">
-                              {{phrase('lv_pwd_vis')}}
-                            </label>
-                          </div>
-                        </div>
-                      </fieldset>
-
-                      {% if getUser().isAuth() == false %}
-
-                      {% if config().isGoogleCaptcha() %}
-                      <input class="captchaToken" type="hidden" name="captcha">
-                      {% else %}
-                      <div class="row mb-4">
-                        <div class="col-6">
-                          <div class="form-floating" style="">
-                            <img src="" class="lightbox-thumb img-thumb captcha_img"/>
-                          </div>
-                        </div>
-                        <div class="col-6">
-                          <div class="form-floating">
-                            <input type="text" class="form-control" id="auth_captcha" name="captcha"
-                                   placeholder="Captcha">
-                            <label class="form-label" for="auth_captcha">Captcha</label>
-                          </div>
-                        </div>
-                      </div>
+                  <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>
+                  <div class="col-sm-4">
+                    <div class="input-group mb-3">
+                      {% if config().registration().getEnablePrefix() and config().registration().getPrefixType()
+                      == 'prefix' %}
+                      <button class="btn btn-light account_prefix" type="button">
+                        {{config().registration().genPrefix()}}
+                      </button>
                       {% endif %}
-
+                      <input minlength="3" maxlength="16" type="text" class="form-control" name="login"
+                             id="accountRegistration" placeholder="" aria-label="Example text with button addon"
+                             aria-describedby="button-addon1">
+                      {% if config().registration().getEnablePrefix() and config().registration().getPrefixType()
+                      == 'suffix' %}
+                      <button class="btn btn-light account_prefix" type="button">
+                        {{config().registration().genPrefix()}}
+                      </button>
                       {% endif %}
-
-                    <div class="container px-0 mb-0">
-    <div class="row d-flex justify-content-between align-items-center">
-        <div class="col-12 col-sm-6 text-center text-sm-start mb-2 mb-sm-0">
-            <button type="submit" data-func="messageRegistrationAccount"
-                    class="btn btn-success shadow-success btn-wave waves-effect waves-light w-100 w-sm-auto">
-                {{phrase('reg_new_acc')}}
-            </button>
-        </div>
-
-        <div class="col-12 col-sm-6 text-center text-sm-end">
-            <div data-bs-toggle="tooltip" data-bs-placement="top"
-                 data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
-                <span data-bs-toggle="modal" data-bs-target="#syncAccount"
-                      data-bs-placement="top"
-                      class="btn btn-success shadow-info btn-wave waves-effect waves-light w-100 w-sm-auto">
-                    {{phrase('bind_game_account')}}
-                </span>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-                      <div id="registrationDataMessage" class="ps-0 mt-3 mb-0 d-none">
-                        <span id="registrationMessage" class="badge border bg-danger-transparent rounded-1">
-                          {{ phrase(214) }}
-                        </span>
-                      </div>
-
-                    </form>
-                    {% endif %}
-                  </div>
-                </div>
-
-                <div class="col-xl-6">
-                  <div class="card-body">
-                    {% if getUser().isAuth() %}
-                    <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm ">
-                      {{ phrase(43) }} <span data-bs-toggle="modal" data-bs-target="#syncAccount">
-                          <i role="button" class="bi bi-person-plus text-success" data-bs-toggle="tooltip"
-                             data-bs-placement="top"
-                             data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}"></i>
-                        </span>
-                    </div>
-                    {% if statusSphereServer() is same as(false) %}
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                      <strong>{{phrase('fail_conn_sphereapi_srv')}}</strong>
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    {% else %}
-                    <div class="table-responsive">
-                      <table class="table text-nowrap table-bordered table-sm">
-                        <thead>
-                        <tr>
-                          <th>{{phrase('account')}}</th>
-                          <th>{{phrase('password')}}</th>
-                          <th></th>
-                        </tr>
-                        </thead>
-                        <tbody id="player_account_list">
-                        {% for account in getUser().getAccounts() %}
-                        <tr>
-                          <td>{{ account.getAccount() }}</td>
-                          <td>
-                            {% if account.isPasswordHide() %}
-                            * * * * * *
-                            {% else %}
-                            {{ account.getPassword() }}
-                            {% endif %}
-                          </td>
-                          <td>
-
-                            <i role="button" class="fe fe-settings btn-change-password"
-                               data-account="{{account.getAccount()}}"
-                               data-bs-toggle="modal"
-                               data-bs-effect="effect-slide-in-right"
-                               data-bs-target="#changepassword"></i>
-                          </td>
-                        </tr>
-                        {% endfor %}
-                        </tbody>
-                      </table>
-                    </div>
-                    {% endif %}
-                    {% endif %}
-
-                  </div>
-                </div>
-
-
-                {% if getUser().isAuth() %}
-                <form action="/player/account/change/password" method="POST">
-                  <div class="modal fade" id="changepassword">
-                    <div class="modal-dialog modal-dialog-centered text-center" role="document">
-                      <div class="modal-content modal-content-demo">
-                        <div class="modal-header">
-                          <h6 class="modal-title">{{phrase(1)}}</h6>
-                          <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
-                        </div>
-                        <input name="login" type="hidden" class="account_new_change_password_input" value="">
-                        <div class="modal-body text-start">
-                          <h6 class="text-center">{{phrase('new_password')}} <span
-                            class="text-danger account_new_change_password">{{getUser().getName()}}</span></h6>
-                          <div class="form-floating">
-                            <input name="password" type="password" class="form-control" id="floatingPassword"
-                                   placeholder="Password">
-                            <label for="floatingPassword">{{phrase('password')}}</label>
-                          </div>
-                          <div class="col-sm-10">
-                            <div class="form-check">
-                              <input name="password_hide" class="form-check-input" type="checkbox" id="hidePassword">
-                              <label class="form-check-label" for="hidePassword">
-                                {{phrase('lv_pwd_vis')}}
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase(80)}}</button>
-                          <button type="submit" class="btn btn-primary">{{phrase(89)}}</button>
-                        </div>
-                      </div>
                     </div>
                   </div>
-                </form>
-                {% endif %}
-
-              </div>
-            </div>
-
-
-            {% if getUser().isAuth() %}
-            <div class="tab-pane text-muted" id="players_list" role="tabpanel">
-              <div class="card-body d-flex align-items-start">
-                <div class="col-xl-12">
-                  <div class="card custom-card">
-
-                    {% if statusSphereServer() is same as(false) %}
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                      <strong>{{phrase('fail_conn_sphereapi_srv')}}</strong>
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    {% else %}
-
-                    <ul class="nav nav-tabs mb-3 border-bottom-0" role="tablist">
-                      {% set i = 0 %}
-                      {% for account in getUser().getAccounts() %}
-                      <li class="nav-item" role="presentation">
-                        <a
-                          class="nav-link {% if account.getCharactersCount() > 0 %}text-success{% endif %} {% if i == 0 %}active{% set i = i + 1 %}{% endif %}"
-                          data-bs-toggle="tab" role="tab"
-                          href="#ac_{{account.getAccount()}}" aria-selected="{% if i == 0 %}true{% endif %}">{{account.getAccount()}}</a>
-                      </li>
-                      {% endfor %}
-
-                    </ul>
-                    <div class="tab-content">
-
-                      {% for i, account in getUser().getAccounts() %}
-                      <div class="tab-pane text-muted {% if i==0 %}active show{% set i = i + 1 %}{% endif %}"
-                           id="ac_{{account.getAccount()}}" role="tabpanel">
-                        <div class="row">
-
-                          {% if account.getCharacters()|length == 0 %}
-                          <div class="card mb-3  bg-danger-transparent border-danger">
-                            <div class="d-flex p-3 border-bottom-0">
-                              <div class="d-sm-flex">
-                                <div class="">
-                                  <svg class="me-4  bg-danger  alt-notify" xmlns="http://www.w3.org/2000/svg"
-                                       viewBox="0 0 24 24">
-                                    <path fill="#ff9ea7"
-                                          d="M20.057 22H3.943a3.023 3.023 0 0 1-2.618-4.534L9.382 3.511a3.023 3.023 0 0 1 5.236 0l8.057 13.955A3.023 3.023 0 0 1 20.057 22Z"></path>
-                                    <circle cx="12" cy="17" r="1" fill="#dc3545"></circle>
-                                    <path fill="#dc3545"
-                                          d="M12 14a1 1 0 0 1-1-1V9a1 1 0 0 1 2 0v4a1 1 0 0 1-1 1Z"></path>
-                                  </svg>
-                                </div>
-                                <div class="mt-0 text-start">
-                                  <span class="fs-14 fw-semibold">{{phrase('notification')}}</span>
-                                  <p class="fs-13 text-muted mb-0">{{phrase('no_chars_acc')}}</p>
-                                </div>
-                              </div>
-
-                            </div>
-                          </div>
-                          {% else %}
-
-                          {% for i, character in account.getCharacters() %}
-                          <div class="col-xl-3 col-md-6 col-lg-6 mt-3 ">
-                            <div class="card overflow-hidden">
-                              <div
-                                class="card-body alert-light text-center border-top-card border-top-danger rounded-0   ">
-
-                                <div class="d-sm-flex  main-profile-cover">
-                                  <img
-                                    src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
-                                    alt=""
-                                    class="avatar avatar-xxl img-thumbnail {% if character.getOnline() %}online{% else %}offline{% endif %}">
-                                  <div class="flex-fill main-profile-info my-auto">
-                                    <span class="fs-6 badge bg-dark text-white">{{character.getPlayerName()}}</span>
-                                    <div>
-                                      <p class="fs-12 op-7 mb-0">
-                                          <span class="me-3 d-inline-flex align-items-center"><i
-                                            class="ri-building-line me-1 align-middle"></i>Lv: {{character.getLevel()}}</span>
-                                        <span class="d-inline-flex align-items-center"><i
-                                          class="ri-map-pin-line me-1 align-middle"></i>Clan: {{clan_icon(character.getClanCrest())|raw}} {{character.getClanName()}}</span>
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div class="accordion accordion-customicon1 accordions-items-seperate"
-                                     id="accordion_open_list_{{character.getPlayerId()}}">
-                                  <div class="accordion-item">
-                                    <h2 class="accordion-header" id="open_list_{{character.getPlayerId()}}">
-                                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                              data-bs-target="#collapse_open_list_{{character.getPlayerId()}}"
-                                              aria-expanded="false"
-                                              aria-controls="collapse_open_list_{{character.getPlayerId()}}">
-                                        {{phrase('stuck_crit_err')}}
-                                      </button>
-                                    </h2>
-                                    <div id="collapse_open_list_{{character.getPlayerId()}}"
-                                         class="accordion-collapse collapse"
-                                         aria-labelledby="open_list_{{character.getPlayerId()}}"
-                                         data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
-                                      <div class="accordion-body">
-                                        {{phrase('emerg_send_char_town')}}
-                                        <hr>
-                                        <form method="post" action="/player/relocation">
-                                          <div class="mb-3 form-check">
-                                            <input name="account" type="hidden" value="{{account.getAccount()}}">
-                                            <input name="player" type="hidden" value="{{character.getPlayerName()}}">
-                                            <input checked name="itemsToWarehouse" type="checkbox"
-                                                   class="form-check-input"
-                                                   id="check_{{character.getPlayerId()}}">
-                                            <label class="form-check-label" for="check_{{character.getPlayerId()}}">{{phrase('send_items_wh')}}</label>
-                                          </div>
-                                          <button type="submit" class="btn btn-success btn-sm label-btn label-end">
-                                            {{phrase(364)}}
-                                            <i class="ri-send-plane-fill label-btn-icon ms-2"></i>
-                                          </button>
-                                        </form>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  {% if getServer().isResetHWID() == true %}
-                                  <div class="accordion-item">
-                                    <h2 class="accordion-header" id="hwid_remove_{{character.getPlayerId()}}">
-                                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                              data-bs-target="#collapse_hwid_remove_{{character.getPlayerId()}}"
-                                              aria-expanded="false"
-                                              aria-controls="collapse_hwid_remove_{{character.getPlayerId()}}">
-                                        {{phrase('reset_hwid')}}
-                                      </button>
-                                    </h2>
-                                    <div id="collapse_hwid_remove_{{character.getPlayerId()}}"
-                                         class="accordion-collapse collapse"
-                                         aria-labelledby="open_list_{{character.getPlayerId()}}"
-                                         data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
-                                      <div class="accordion-body">
-                                        {{phrase('reset_hwid_emerg_fn')}}.
-                                        <br>
-                                        <button type="submit"
-                                                class="btn btn-success btn-sm label-btn label-end removeHWID"
-                                                data-obj="{{character.getPlayerId()}}">
-                                          {{phrase('reset_hwid')}}
-                                          <i class="ri-lock-unlock-line label-btn-icon ms-2"></i>
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {% endif %}
-
-
-                                </div>
-
-                              </div>
-                            </div>
-                          </div>
-                          {% endfor %}
-
-
-                          {% endif %}
-
-                        </div>
-                      </div>
-                      {% endfor %}
-                    </div>
-                    {% endif %}
-
-                  </div>
-
-
                 </div>
-              </div>
-            </div>
-            {% endif %}
 
-            <div class="tab-pane text-muted" id="warehouse_panel" role="tabpanel">
-
-              <div class="row ">
-
-                <div class="col-xl-4">
-                  <div class="form-check form-check-lg d-flex align-items-center">
-                    <input {% if getUser().getCountPlayers()== 0 %}disabled{% endif %} class="form-check-input"
-                           type="checkbox" value="" id="selectAllItems" checked="">
-                    <label class="form-check-label" for="selectAllItems">
-                      {{phrase('sel_all_items')}}
-                    </label>
+                <div class="row mb-0">
+                  <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
+                  <div class="col-sm-4">
+                    <input type="password" class="form-control" name="password" id="passwordRegistration"
+                           autocomplete="new-password">
                   </div>
                 </div>
-
-                {% set isPlayers = false %}
-                <div class="col-xl-4">
-                  <select {% if getUser().getCountPlayers()== 0 or statusSphereServer() is same as(false) %}disabled{%
-                          endif %} class="form-control" data-trigger
-                          name="warehousePlayerSend" id="warehousePlayerSend">
-                    {% if getUser().getCountPlayers() == 0 %}
-                    <option>{{phrase('no_chars')}}</option>
-                    {% else %}
-                    {% for i, account in getUser().getAccounts() %}
-                    <optgroup label="{{phrase('account')}}: {{account.getAccount()}}">
-                      {% if account.getCharactersCount() == 0 %}
-                      <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_chars')}}</option>
-                      {% else %}
-                      {% for i, character in account.getCharacters() %}
-                      {% set isPlayers = true %}
-                      <option {{character.getPlayerId()}} data-account="{{account.getAccount()}}"
-                              data-character="{{character.getPlayerName()}}"> &nbsp;&nbsp;&nbsp;&nbsp;
-                        {{character.getPlayerName()}} [{{character.getLevel()}}]
-                      </option>
-                      {% endfor %}
-                      {% endif %}
-                    </optgroup>
-                    {% endfor %}
-                    {% endif %}
-                  </select>
-                </div>
-
-                <div class="col-xl-4">
-                  <button {% if isPlayers== false %}disabled{% endif %} id="warehouseSendItemsToPlayer"
-                          type="button" class="btn btn-dark btn-wave text-white waves-effect waves-light">
-                    {{phrase('send_items')}}
-                  </button>
-                </div>
-
-              </div>
-              <hr>
-              <div class="row">
+                <fieldset class="row mb-3">
+                  <legend class="col-form-label col-sm-2 pt-0"></legend>
+                  <div class="col-sm-10">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="password_hide" name="password_hide">
+                      <label class="form-check-label" for="password_hide">
+                        {{phrase('lv_pwd_vis')}}
+                      </label>
+                    </div>
+                  </div>
+                </fieldset>
 
                 {% if getUser().isAuth() == false %}
-                <div class="col-xl-12">
-                  <div class="card custom-card">
-                    <div class="card-body">
-                      <div class="alert alert-danger" role="alert">
-                        {{phrase('first_reg_then_own_items_wh')}}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+
+                {% if config().isGoogleCaptcha() %}
+                <input class="captchaToken" type="hidden" name="captcha">
                 {% else %}
-                {% if getUser().getCountPlayers() == 0 %}
-                <div class="card mb-3  bg-danger-transparent border-danger">
-                  <div class="d-flex p-3 border-bottom-0">
-                    <div class="d-sm-flex">
-                      <div class="">
-                        <svg class="me-4  bg-danger  alt-notify" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                          <path fill="#ff9ea7"
-                                d="M20.057 22H3.943a3.023 3.023 0 0 1-2.618-4.534L9.382 3.511a3.023 3.023 0 0 1 5.236 0l8.057 13.955A3.023 3.023 0 0 1 20.057 22Z"></path>
-                          <circle cx="12" cy="17" r="1" fill="#dc3545"></circle>
-                          <path fill="#dc3545" d="M12 14a1 1 0 0 1-1-1V9a1 1 0 0 1 2 0v4a1 1 0 0 1-1 1Z"></path>
-                        </svg>
-                      </div>
-                      <div class="mt-0 text-start">
-                        <span class="fs-14 fw-semibold">{{phrase('notification')}}</span>
-                        <p class="fs-13 text-muted mb-0">{{phrase('no_chars_send_items_wh')}}</p>
-                      </div>
+                <div class="row mb-4">
+                  <div class="col-6">
+                    <div class="form-floating" style="">
+                      <img src="" class="lightbox-thumb img-thumb captcha_img"/>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="form-floating">
+                      <input type="text" class="form-control" id="auth_captcha" name="captcha"
+                             placeholder="Captcha">
+                      <label class="form-label" for="auth_captcha">Captcha</label>
                     </div>
                   </div>
                 </div>
                 {% endif %}
 
-                {% if getUser().countWarehouseItems() == 0 %}
-                <div class="card mb-3  bg-danger-transparent border-danger">
-                  <div class="d-flex p-3 border-bottom-0">
-                    <div class="d-sm-flex">
-                      <div class="">
-                        <svg class="me-4  bg-danger  alt-notify" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                          <path fill="#ff9ea7"
-                                d="M20.057 22H3.943a3.023 3.023 0 0 1-2.618-4.534L9.382 3.511a3.023 3.023 0 0 1 5.236 0l8.057 13.955A3.023 3.023 0 0 1 20.057 22Z"></path>
-                          <circle cx="12" cy="17" r="1" fill="#dc3545"></circle>
-                          <path fill="#dc3545" d="M12 14a1 1 0 0 1-1-1V9a1 1 0 0 1 2 0v4a1 1 0 0 1-1 1Z"></path>
-                        </svg>
-                      </div>
-                      <div class="mt-0 text-start">
-                        <span class="fs-14 fw-semibold">{{phrase('notification')}}</span>
-                        <p class="fs-13 text-muted mb-0">{{phrase('no_items_send_char')}}</p>
+                {% endif %}
+
+                <div class="container px-0 mb-0">
+                  <div class="row d-flex justify-content-between align-items-center">
+                    <div class="col-12 col-sm-6 text-center text-sm-start mb-2 mb-sm-0">
+                      <button type="submit" data-func="messageRegistrationAccount"
+                              class="btn btn-success shadow-success btn-wave waves-effect waves-light w-100 w-sm-auto">
+                          {{phrase('reg_new_acc')}}
+                      </button>
+                    </div>
+
+                    <div class="col-12 col-sm-6 text-center text-sm-end">
+                      <div data-bs-toggle="tooltip" data-bs-placement="top"
+                           data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
+                          <span data-bs-toggle="modal" data-bs-target="#syncAccount"
+                                data-bs-placement="top"
+                                class="btn btn-success shadow-info btn-wave waves-effect waves-light w-100 w-sm-auto">
+                              {{phrase('bind_game_account')}}
+                          </span>
                       </div>
                     </div>
                   </div>
                 </div>
-                {% else %}
-                {% for warehouse in getUser().getWarehouse() %}
-                <div class="col-xl-2 col-12 my-2">
-                  <div class="text-center">
-                    <div class="similar-products-image me-2">
-                      <img class="avatar avatar-xl bg-light p-1" src="{{warehouse.item.getIcon()}}" alt="">
-                    </div>
-                    <div class="form-switch">
-                      <input data-object-id="{{warehouse.id}}" class="form-check-input warehouseInventory"
-                             type="checkbox" role="switch" id="bonus_{{warehouse.id}}" checked="">
-                      <label class="my-0 fs-14 fw-semibold form-label" for="bonus_{{warehouse.id}}">{% if
-                        warehouse.enchant > 0 %}+{{warehouse.enchant}} {% endif %}{{warehouse.item.getItemName()}} <span
-                          class="text-muted ms-1">({{warehouse.count}})</span></label>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-center mb-0">
-                      <p class="mb-0 text-muted">
-                        <span class="text-muted fs-12 ms-1">{{phrase(warehouse.phrase)}}</span>
-                      </p>
-                    </div>
-                  </div>
+
+                <div id="registrationDataMessage" class="ps-0 mt-3 mb-0 d-none">
+                  <span id="registrationMessage" class="badge border bg-danger-transparent rounded-1">
+                    {{ phrase(214) }}
+                  </span>
                 </div>
-                {% endfor %}
-                {% endif %}
 
-                {% endif %}
+              </form>
+              {% endif %}
+            </div>
+          </div>
 
+          <div class="col-xl-6">
+            <div class="card-body">
+              {% if getUser().isAuth() %}
+              <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between align-items-center">
+                <div>{{ phrase(43) }}</div>
+                <span data-bs-toggle="modal" data-bs-target="#syncAccount">
+                  <i role="button" class="bi bi-person-plus text-success" data-bs-toggle="tooltip"
+                     data-bs-placement="top"
+                     data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}"></i>
+                </span>
               </div>
+              {% if statusSphereServer() is same as(false) %}
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>{{phrase('fail_conn_sphereapi_srv')}}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+              {% else %}
+              <div class="table-responsive">
+                <table class="table text-nowrap table-bordered table-sm" style="table-layout: fixed;">
+                  <thead>
+                  <tr>
+                    <th>{{phrase('account')}}</th>
+                    <th>{{phrase('password')}}</th>
+                    <th>{{phrase(203)}}</th>
+                  </tr>
+                  </thead>
+                  <tbody id="player_account_list">
+                  {% for account in getUser().getAccounts() %}
+                  <tr class="account-row">
+                    <td>{{ account.getAccount() }}</td>
+                    <td>
+                    <i role="button" class="fe fe-settings btn-change-password" data-account="{{account.getAccount()}}"
+                       data-bs-toggle="modal" data-bs-effect="effect-slide-in-right"
+                       data-bs-target="#changepassword">
+                      {% if account.isPasswordHide() %}
+                      * * * * * *
+                      {% else %}
+                      {{ account.getPassword() }}
+                      {% endif %}
+                      </i>
+                    </td>
+                    <td class="text-nowrap" role="button">
+
+                      {% if account.getCharactersCount() > 0 %}
+
+                    <div class="toggle-characters" data-account="{{account.getAccount()}}">
+                    <div class="avatar-list-stacked">
+
+                      {% for i, character in account.getCharacters() %}
+                                              <span class="avatar avatar-sm me-2">
+                                                  <img src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg" alt="img">
+                                              </span>
+
+                      </a>
+                      {% endfor %}
+                                          </div>
+                                          </div>
 
 
+                      {% else %}
+                      <i class="bi bi-people ms-2 text-muted" data-bs-toggle="tooltip"
+                         data-bs-placement="top" data-bs-title="{{phrase('no_chars_acc')}}"></i>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% if account.getCharactersCount() > 0 %}
+
+              <tr class="character-container character-row-{{account.getAccount()}}" style="display: none;">
+                <td colspan="3" class="p-0">
+                  <div class="p-2 bg-light">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-2">
+                    {% for i, character in account.getCharacters() %}
+                      <div class="col">
+                        <div class="card border h-100 overflow-hidden">
+                          <div class="card-body p-1 border-top-card border-top-danger rounded-0">
+                            <div class="d-flex align-items-start">
+                              <!-- Аватар персонажа -->
+                              <div class="flex-shrink-0 me-2">
+                                <img src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
+                                     alt="" class="avatar avatar-xl img-thumbnail {% if character.getOnline() %}online{% else %}offline{% endif %}">
+                              </div>
+
+                              <!-- Информация о персонаже -->
+                              <div class="flex-grow-1 min-w-0">
+                                <h6 class="card-title mb-1 text-truncate">
+                                  <span class="badge bg-dark text-white">{{character.getPlayerName()}}</span>
+                                </h6>
+                                <div class="d-flex flex-column" style="line-height: 1.1;">
+                                  <small class="text-muted text-truncate mb-0">
+                                    <i class="ri-building-line me-1"></i>Lv: {{character.getLevel()}}
+                                  </small>
+                                  <small class="text-muted text-truncate mb-0">
+                                    <i class="ri-building-line me-1"></i>Class: {{get_class(character.getClassId())}}
+                                  </small>
+                                  <small class="text-muted text-truncate mb-0">
+                                    <i class="ri-building-line me-1"></i>PvP / PK: {{character.getPvp()}} / {{character.getPk()}}
+                                  </small>
+                                  <small class="text-muted text-truncate mb-0">
+                                    <i class="ri-building-line me-1"></i>Online Time: {{timeHasPassed(character.getTimeInGame(),true)}}
+                                  </small>
+                                  {% if character.getClanName() %}
+                                  <small class="text-muted">
+                                    <i class="ri-map-pin-line me-1"></i>Clan:
+                                    <span class="d-inline-flex align-items-center">
+                                      {{clan_icon(character.getClanCrest())|raw}}
+                                      <span class="text-truncate d-inline-block" style="max-width: 120px; vertical-align: middle;">{{character.getClanName()}}</span>
+                                    </span>
+                                  </small>
+                                  {% endif %}
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Аккордеон с функциями -->
+                            <div class="accordion accordion-customicon1 accordions-items-seperate mt-2"
+                                 id="accordion_open_list_{{character.getPlayerId()}}">
+                              <div class="accordion-item">
+                                <h2 class="accordion-header" id="open_list_{{character.getPlayerId()}}">
+                                  <button class="accordion-button collapsed py-2 text-wrap" type="button" data-bs-toggle="collapse"
+                                          data-bs-target="#collapse_open_list_{{character.getPlayerId()}}"
+                                          aria-expanded="false"
+                                          aria-controls="collapse_open_list_{{character.getPlayerId()}}">
+                                    <span class="text-truncate">{{phrase('stuck_crit_err')}}</span>
+                                  </button>
+                                </h2>
+                                <div id="collapse_open_list_{{character.getPlayerId()}}"
+                                     class="accordion-collapse collapse"
+                                     aria-labelledby="open_list_{{character.getPlayerId()}}"
+                                     data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
+                                  <div class="accordion-body py-2 text-wrap">
+                                    <p class="small mb-2 text-break">{{phrase('emerg_send_char_town')}}</p>
+                                    <hr class="my-2">
+                                    <form method="post" action="/player/relocation">
+                                      <div class="mb-2 form-check">
+                                        <input name="account" type="hidden" value="{{account.getAccount()}}">
+                                        <input name="player" type="hidden" value="{{character.getPlayerName()}}">
+                                        <input checked name="itemsToWarehouse" type="checkbox"
+                                               class="form-check-input"
+                                               id="check_{{character.getPlayerId()}}">
+                                        <label class="form-check-label small text-wrap" for="check_{{character.getPlayerId()}}">{{phrase('send_items_wh')}}</label>
+                                      </div>
+                                      <button type="submit" class="btn btn-success btn-sm w-100 text-nowrap">
+                                        <span class="d-inline-block text-truncate" style="max-width: 85%;">{{phrase(364)}}</span>
+                                        <i class="ri-send-plane-fill ms-1"></i>
+                                      </button>
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {% if getServer().isResetHWID() == true %}
+                              <div class="accordion-item">
+                                <h2 class="accordion-header" id="hwid_remove_{{character.getPlayerId()}}">
+                                  <button class="accordion-button collapsed py-2 text-wrap" type="button" data-bs-toggle="collapse"
+                                          data-bs-target="#collapse_hwid_remove_{{character.getPlayerId()}}"
+                                          aria-expanded="false"
+                                          aria-controls="collapse_hwid_remove_{{character.getPlayerId()}}">
+                                    <span class="text-truncate">{{phrase('reset_hwid')}}</span>
+                                  </button>
+                                </h2>
+                                <div id="collapse_hwid_remove_{{character.getPlayerId()}}"
+                                     class="accordion-collapse collapse"
+                                     aria-labelledby="open_list_{{character.getPlayerId()}}"
+                                     data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
+                                  <div class="accordion-body py-2 text-wrap">
+                                    <p class="small mb-2 text-break">{{phrase('reset_hwid_emerg_fn')}}.</p>
+                                    <button type="submit"
+                                            class="btn btn-success btn-sm w-100 removeHWID text-nowrap"
+                                            data-obj="{{character.getPlayerId()}}">
+                                      <span class="d-inline-block text-truncate" style="max-width: 85%;">{{phrase('reset_hwid')}}</span>
+                                      <i class="ri-lock-unlock-line ms-1"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                              {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+                  {% endif %}
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% endif %}
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+</div>
+
+{% if getUser().isAuth() %}
+<form action="/player/account/change/password" method="POST">
+  <div class="modal fade" id="changepassword">
+    <div class="modal-dialog modal-dialog-centered text-center" role="document">
+      <div class="modal-content modal-content-demo">
+        <div class="modal-header">
+          <h6 class="modal-title">{{phrase(1)}}</h6>
+          <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+        </div>
+        <input name="login" type="hidden" class="account_new_change_password_input" value="">
+        <div class="modal-body text-start">
+          <h6 class="text-center">{{phrase('new_password')}} <span
+                class="text-danger account_new_change_password">{{getUser().getName()}}</span></h6>
+          <div class="form-floating">
+            <input name="password" type="password" class="form-control" id="floatingPassword"
+                   placeholder="Password">
+            <label for="floatingPassword">{{phrase('password')}}</label>
+          </div>
+          <div class="col-sm-10">
+            <div class="form-check">
+              <input name="password_hide" class="form-check-input" type="checkbox" id="hidePassword">
+              <label class="form-check-label" for="hidePassword">
+                {{phrase('lv_pwd_vis')}}
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase(80)}}</button>
+          <button type="submit" class="btn btn-primary">{{phrase(89)}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{% endif %}
+{% endif %}
+
   {% endif %}
 
   {% for include_file in get_plugins_include("PLACE_IN_SPACE_MAIN_1") %}
@@ -705,7 +514,7 @@
               <div>
                 <i class="task-icon bg-primary"></i>
                 <h6 class="fw-semibold">{{forum.title}}<span
-                  class="text-muted fs-11 mx-2 fw-normal">{{forum.last_post_date|date('h:m:s d.m.Y')}}</span>
+                      class="text-muted fs-11 mx-2 fw-normal">{{forum.last_post_date|date('h:m:s d.m.Y')}}</span>
                 </h6>
                 <p class="text-muted fs-12 mb-0">
                   <a href="javascript:void(0)" class="fw-semibold text-primary">
@@ -811,36 +620,6 @@
     });
   });
 
-  $('#selectAllItems').change(function () {
-    var isChecked = $(this).is(':checked');
-    $('.warehouseInventory').prop('checked', isChecked);
-  });
-
-  function warehouseSelectItems() {
-    var objectIdList = [];
-    $('.warehouseInventory:checked').each(function () {
-      var objectId = $(this).data('object-id');
-      if (objectId) {
-        objectIdList.push(objectId);
-      }
-    });
-    return objectIdList;
-  }
-
-  $(document).on('click', '#warehouseSendItemsToPlayer', function () {
-    var selectedOption = $('#warehousePlayerSend option:selected');
-    var account = selectedOption.data('account');
-    var player = selectedOption.data('character');
-
-    AjaxSend('/inventory/send', 'POST', {
-      items: warehouseSelectItems(),
-      player: player,
-      account: account,
-    }).then(function (response) {
-      $('.warehouseInventory:checked').closest('.col-xl-2').remove();
-      console.log(response);
-    });
-  });
 
 
 </script>
@@ -879,5 +658,29 @@
     }
 
   }
+
+
+  // Добавьте этот код в блок JS в конце файла
+  $(document).ready(function() {
+    // Инициализация тултипов
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Обработчик клика по иконке персонажей аккаунта
+    $(document).on('click', '.toggle-characters', function() {
+      var accountName = $(this).data('account');
+      var characterRow = $('.character-row-' + accountName);
+
+      // Закрываем все открытые строки персонажей, кроме текущей
+      $('.character-container').not(characterRow).hide();
+      $('.toggle-characters').not(this).removeClass('bi-people-fill text-primary').addClass('bi-people-fill text-success');
+
+      // Переключаем видимость строки с персонажами
+      characterRow.toggle();
+
+    });
+  });
 </script>
 {% endblock %}
