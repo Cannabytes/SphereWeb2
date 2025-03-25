@@ -125,11 +125,6 @@
     <div class="card custom-card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="card-title mb-0">{{phrase(43)}}</h5>
-        <span data-bs-toggle="modal" data-bs-target="#syncAccount">
-          <i role="button" class="bi bi-person-plus text-success" data-bs-toggle="tooltip"
-             data-bs-placement="top"
-             data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}"></i>
-        </span>
       </div>
       <div class="card-body">
         <div class="row">
@@ -320,7 +315,7 @@
               <tr class="character-container character-row-{{account.getAccount()}}" style="display: none;">
                 <td colspan="3" class="p-0">
                   <div class="p-2 bg-light">
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-2">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-2">
                     {% for i, character in account.getCharacters() %}
                       <div class="col">
                         <div class="card border h-100 overflow-hidden">
