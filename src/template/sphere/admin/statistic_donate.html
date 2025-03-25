@@ -4,46 +4,146 @@
 
 {% block content %}
 <div class="container-fluid">
-
-    <div class="row">
-        <div class="col-xl-5">
-            <div class="card custom-card">
-                <div class="card-header">
-                    <div class="card-title">{{ phrase('Line chart') }}</div>
-                </div>
+    <!-- Общая информация - дашборд -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card custom-card bg-primary-transparent">
                 <div class="card-body">
-                    <div id="zoom-chart"></div>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fe fe-dollar-sign fs-35 text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1 fw-semibold">{{donatePoint}}</h5>
+                            <p class="mb-0 text-muted fs-12">{{ phrase('Total donations') }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-xl-5">
-            <div class="card custom-card">
-                <div class="card-header">
-                    <div class="card-title">{{ phrase('Line chart') }}</div>
-                </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card custom-card bg-secondary-transparent">
                 <div class="card-body">
-                    <div id="bar-basic"></div>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fe fe-credit-card fs-35 text-secondary"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1 fw-semibold">${{dollars}}</h5>
+                            <p class="mb-0 text-muted fs-12">{{ phrase('Approximate amount') }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-xl-2">
-            <div class="card custom-card">
-                <div class="card-header">
-                    <div class="card-title">{{ phrase('Income') }}</div>
-                </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card custom-card bg-success-transparent">
                 <div class="card-body">
-                    {{ phrase('Over the entire period, there were donations') }}: {{donatePoint}}
-                    <br>
-                    {{ phrase('Approximate amount') }}: ${{dollars}}
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fe fe-users fs-35 text-success"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1 fw-semibold">{{donate_users|length}}</h5>
+                            <p class="mb-0 text-muted fs-12">{{ phrase('Total donors') }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
+        <div class="col-xl-3 col-md-6">
+            <div class="card custom-card bg-info-transparent">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fe fe-trending-up fs-35 text-info"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1 fw-semibold" id="average-donation">0</h5>
+                            <p class="mb-0 text-muted fs-12">{{ phrase('Average donation') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Графики - первый ряд -->
+    <div class="row">
+        <div class="col-xl-8">
+            <div class="card custom-card">
+                <div class="card-header d-flex justify-content-between">
+                    <div class="card-title">{{ phrase('Donation history') }}</div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light" type="button" id="timeline-dropdown" data-bs-toggle="dropdown">
+                            {{ phrase('Period') }} <i class="fe fe-chevron-down"></i>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="timeline-dropdown">
+                            <li><a class="dropdown-item timeline-option" href="#" data-period="week">{{ phrase('Last week') }}</a></li>
+                            <li><a class="dropdown-item timeline-option" href="#" data-period="month">{{ phrase('Last month') }}</a></li>
+                            <li><a class="dropdown-item timeline-option" href="#" data-period="year">{{ phrase('Last year') }}</a></li>
+                            <li><a class="dropdown-item timeline-option" href="#" data-period="all">{{ phrase('All time') }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="timeline-chart" class="chart-height"></div>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-xl-4">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">{{ phrase('Distribution by payment system') }}</div>
+                </div>
+                <div class="card-body">
+                    <div id="payment-systems-chart" class="chart-height-sm"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Графики - второй ряд -->
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">{{ phrase('Monthly comparison') }}</div>
+                </div>
+                <div class="card-body">
+                    <div id="bar-basic" class="chart-height-sm"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">{{ phrase('Donation growth trend') }}</div>
+                </div>
+                <div class="card-body">
+                    <div id="trend-chart" class="chart-height-sm"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Тепловая карта по дням недели и часам -->
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">{{ phrase('Donation activity heatmap') }}</div>
+                </div>
+                <div class="card-body">
+                    <div id="heatmap-chart" class="chart-height-md"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Таблица с донатами пользователей -->
     <div class="row">
         <div class="col-xl-12">
             <div class="card custom-card">
@@ -51,62 +151,130 @@
                     <div class="card-title">{{ phrase('User donation') }}</div>
                 </div>
                 <div class="card-body">
-                    <table id="file-export" class="table table-bordered text-nowrap w-100">
-                        <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Donate Point</th>
-                            <th>Message</th>
-                            <th>System</th>
-                            <th>Date</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        {% for donate in donate_users %}
-                        {% set user = getUser(donate.user_id) %}
-                        <tr>
-                            <td>
-
-                                <div class="d-flex align-items-center mt-auto">
-                                    <a href="/admin/user/info/{{user.getId()}}" class="text-default">
-                                    <div class="avatar avatar-rounded avatar-md me-3 cover-image" data-bs-image-src="{{user.getAvatar()}}" style="background: url('{{user.getAvatar()}}') center center;"></div>
-                                    </a>
-                                    <div>
-                                        <a href="/admin/user/info/{{user.getId()}}" class="text-default">{{user.getEmail()}}</a>
-                                        <small class="d-block text-muted">Country: {{user.getCountry()}}</small>
+                    <div class="table-responsive">
+                        <table id="file-export" class="table table-bordered w-100 table-fixed">
+                            <thead>
+                            <tr>
+                                <th style="width: 20%;">{{ phrase('User') }}</th>
+                                <th style="width: 15%;">{{ phrase('donate_coin') }}</th>
+                                <th style="width: 35%;">{{ phrase('Message') }}</th>
+                                <th style="width: 10%;">{{ phrase('System') }}</th>
+                                <th style="width: 20%;">{{ phrase('Date') }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for donate in donate_users %}
+                            {% set user = getUser(donate.user_id) %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="/admin/user/info/{{user.getId()}}" class="text-default">
+                                        <div class="avatar avatar-rounded avatar-md me-3 cover-image" data-bs-image-src="{{user.getAvatar()}}" style="background: url('{{user.getAvatar()}}') center center;"></div>
+                                        </a>
+                                        <div>
+                                            <a href="/admin/user/info/{{user.getId()}}" class="text-default">{{user.getEmail()}}</a>
+                                            <small class="d-block text-muted">{{ phrase('Country') }}: {{user.getCountry()}}</small>
+                                        </div>
                                     </div>
-                                </div>
-
-                            </td>
-
-                            <td>{{donate.point}} {% if donate.sphere == false %}(${{balance_to_dollars(donate.point)}}){% endif %}</td>
-                            <td>{{donate.message}}</td>
-                            <td>{{donate.pay_system}}</td>
-                            <td>{{donate.date}}</td>
-                        </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
+                                </td>
+                                <td>{{donate.point}} {% if donate.sphere == false %}(${{formatFloatToHuman(balance_to_dollars(donate.point))}}){% endif %}</td>
+                                <td class="text-wrap">{{donate.message}}</td>
+                                <td>
+                                    <span class="badge bg-light text-dark">{{donate.pay_system}}</span>
+                                </td>
+                                <td>{{donate.date}}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-
-
 </div>
-
-
-
 {% endblock %}
 
 {% block css %}
+<style>
+    /* Стили для корректного переноса текста в таблице */
+    .table-fixed {
+        table-layout: fixed;
+    }
+
+    .text-wrap {
+        white-space: normal !important;
+        word-wrap: break-word;
+        min-width: 150px;
+        max-width: 100%;
+        overflow-wrap: break-word;
+    }
+
+    /* Улучшенные стили для таблицы */
+    #file-export thead th {
+        vertical-align: middle;
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+
+    /* Адаптивные стили для таблицы */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Высота графиков */
+    .chart-height {
+        height: 380px;
+    }
+
+    .chart-height-sm {
+        height: 300px;
+    }
+
+    .chart-height-md {
+        height: 340px;
+    }
+
+    /* Улучшения для карточек */
+    .card {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1rem 1.25rem;
+    }
+
+    .card-title {
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+
+    /* Стили для dashboard widgets */
+    .bg-primary-transparent {
+        background-color: rgba(108, 95, 252, 0.1);
+    }
+
+    .bg-secondary-transparent {
+        background-color: rgba(94, 207, 177, 0.1);
+    }
+
+    .bg-success-transparent {
+        background-color: rgba(25, 177, 89, 0.1);
+    }
+
+    .bg-info-transparent {
+        background-color: rgba(3, 85, 208, 0.1);
+    }
+
+
+</style>
 {% endblock %}
 
 {% block js %}
-
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
@@ -117,65 +285,139 @@
 <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-<script>
-    $('#file-export').DataTable({
-        dom: 'Bfrtip',
-        buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ],
-        language: {
-            searchPlaceholder: 'Search...',
-            sSearch: '',
-        },
-        scrollX: true,
-        ordering: true, // Включаем сортировку
-        order: [[4, 'desc']], // Сортировка по столбцу с индексом 7 (предполагается, что это столбец 'date'), по убыванию (desc)
-    });
-</script>
-
-
 <!-- Apex Charts JS -->
 <script src="{{template}}assets/libs/apexcharts/apexcharts.min.js"></script>
 
-<!-- Used In Zoomable TIme Series Chart -->
+<!-- Used In Zoomable Time Series Chart -->
 <script src="{{template}}assets/js/dataseries.js"></script>
 
-<!---Used In Annotations Chart-->
+<!-- Used In Annotations Chart -->
 <script src="{{template}}assets/js/apexcharts-stock-prices.js"></script>
 
 <script>
-    var monthlyPoints = {{ monthly_statistic_pay|json_encode|raw }};
+    $(document).ready(function() {
+        // Инициализация DataTable
+        $('#file-export').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: '<i class="fe fe-copy me-1"></i> {{ phrase("Copy") }}',
+                    className: 'btn btn-sm btn-outline-primary'
+                },
+                {
+                    extend: 'csv',
+                    text: '<i class="fe fe-file-text me-1"></i> CSV',
+                    className: 'btn btn-sm btn-outline-primary'
+                },
+                {
+                    extend: 'excel',
+                    text: '<i class="fe fe-file me-1"></i> Excel',
+                    className: 'btn btn-sm btn-outline-primary'
+                },
+                {
+                    extend: 'pdf',
+                    text: '<i class="fe fe-file-text me-1"></i> PDF',
+                    className: 'btn btn-sm btn-outline-primary'
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="fe fe-printer me-1"></i> {{ phrase("Print") }}',
+                    className: 'btn btn-sm btn-outline-primary'
+                }
+            ],
+            language: {
+                searchPlaceholder: '{{ phrase("Search...") }}',
+                sSearch: '',
+                paginate: {
+                    first: '{{ phrase("First") }}',
+                    last: '{{ phrase("Last") }}',
+                    next: '{{ phrase("Next") }}',
+                    previous: '{{ phrase("Previous") }}'
+                },
+                info: '{{ phrase("Showing") }} _START_ {{ phrase("to") }} _END_ {{ phrase("of") }} _TOTAL_ {{ phrase("entries") }}',
+                lengthMenu: '{{ phrase("Show") }} _MENU_ {{ phrase("entries") }}',
+                emptyTable: '{{ phrase("No data available in table") }}'
+            },
+            scrollX: true,
+            ordering: true,
+            order: [[4, 'desc']],
+            columnDefs: [
+                { width: "20%", targets: 0 },
+                { width: "15%", targets: 1 },
+                { width: "35%", targets: 2, className: "text-wrap" },
+                { width: "10%", targets: 3 },
+                { width: "20%", targets: 4 }
+            ],
+            drawCallback: function() {
+                $('.dataTables_paginate > .pagination').addClass('pagination-rounded');
+            }
+        });
+
+        // Расчет среднего пожертвования
+        var totalDonations = {{donatePoint}};
+        var totalDonors = {{donate_users|length}};
+        var averageDonation = totalDonors > 0 ? (totalDonations / totalDonors).toFixed(2) : 0;
+        $('#average-donation').text(averageDonation);
+    });
 </script>
 
 <script>
-    // Преобразуем данные monthlyPoints в массивы для графика
-    var months = Object.keys(monthlyPoints); // Месяцы
-    var points = Object.values(monthlyPoints); // Поинты за каждый месяц
+    // Данные для месячной статистики
+    var monthlyPoints = {{ monthly_statistic_pay|json_encode|raw }};
 
-    var options = {
+    // Извлекаем массивы месяцев и значений для графиков
+    var months = Object.keys(monthlyPoints);
+    var points = Object.values(monthlyPoints);
+
+    // Гистограмма месячных пожертвований
+    var optionsBarChart = {
         series: [{
-            name: 'Donate Points', // Название серии
-            data: points // Данные по количеству поинтов
+            name: '{{ phrase("donate_coin") }}',
+            data: points
         }],
         chart: {
             type: 'bar',
-            height: 320
+            height: 300,
+            toolbar: {
+                show: false
+            }
         },
         plotOptions: {
             bar: {
                 borderRadius: 4,
-                horizontal: true,
+                dataLabels: {
+                    position: 'top'
+                },
+                colors: {
+                    ranges: [{
+                        from: 0,
+                        to: Math.max(...points),
+                        color: '#6c5ffc'
+                    }]
+                }
             }
         },
         colors: ["#6c5ffc"],
         grid: {
             borderColor: '#f2f5f7',
+            row: {
+                colors: ['transparent', 'transparent']
+            }
         },
         dataLabels: {
-            enabled: true
+            enabled: true,
+            formatter: function(val) {
+                return val.toFixed(0);
+            },
+            offsetY: -20,
+            style: {
+                fontSize: '12px',
+                colors: ["#304758"]
+            }
         },
         xaxis: {
-            categories: months, // Месяцы
+            categories: months,
             labels: {
                 show: true,
                 style: {
@@ -184,6 +426,9 @@
                     fontWeight: 600,
                     cssClass: 'apexcharts-xaxis-label',
                 },
+            },
+            axisBorder: {
+                show: false
             }
         },
         yaxis: {
@@ -196,34 +441,37 @@
                     cssClass: 'apexcharts-yaxis-label',
                 },
             }
+        },
+        tooltip: {
+            y: {
+                formatter: function(val) {
+                    return val.toFixed(2) + " {{ phrase('points') }}";
+                }
+            }
         }
     };
-    var chart = new ApexCharts(document.querySelector("#bar-basic"), options);
-    chart.render();
-</script>
+    var barChart = new ApexCharts(document.querySelector("#bar-basic"), optionsBarChart);
+    barChart.render();
 
+    // Данные для временной линии
+    {% set data_series = [] %}
+    {% for date, point in statistic_pay %}
+    {% set timestamp = date|date("U") * 1000 %}
+    {% set data_series = data_series | merge([[timestamp, point]]) %}
+    {% endfor %}
 
-{% set data_series = [] %}
-
-
-{% for date, point in statistic_pay %}
-
-{% set timestamp = date|date("U") * 1000 %} {# Преобразуем дату в миллисекунды #}
-{% set data_series = data_series | merge([[timestamp, point]]) %}
-{% endfor %}
-
-<script>
     var dates = {{ data_series | json_encode | raw }};
 
-    var options = {
+    // График временной линии
+    var optionsTimelineChart = {
         series: [{
-            name: 'Donate',
+            name: '{{ phrase("Donations") }}',
             data: dates
         }],
         chart: {
             type: 'area',
             stacked: false,
-            height: 320,
+            height: 380,
             zoom: {
                 type: 'x',
                 enabled: true,
@@ -231,22 +479,26 @@
             },
             toolbar: {
                 autoSelected: 'zoom'
+            },
+            animations: {
+                enabled: true,
+                easing: 'easeinout',
+                speed: 800
             }
         },
         dataLabels: {
             enabled: false
         },
+        stroke: {
+            curve: 'smooth',
+            width: 2
+        },
         markers: {
             size: 0,
-        },
-        title: {
-            text: 'Donate Amount Over Time',
-            align: 'left',
-            style: {
-                fontSize: '13px',
-                fontWeight: 'bold',
-                color: '#8c9097'
-            },
+            strokeWidth: 3,
+            hover: {
+                size: 5
+            }
         },
         fill: {
             type: 'gradient',
@@ -254,59 +506,406 @@
                 shadeIntensity: 1,
                 inverseColors: false,
                 opacityFrom: 0.5,
-                opacityTo: 0,
+                opacityTo: 0.1,
                 stops: [0, 90, 100]
             },
         },
         grid: {
             borderColor: '#f2f5f7',
+            padding: {
+                right: 10
+            }
         },
         colors: ["#6c5ffc"],
         yaxis: {
             labels: {
                 formatter: function (val) {
-                    return val.toFixed(2); // Для отображения значений point
+                    return val.toFixed(2);
                 },
-                show: true,
                 style: {
                     colors: "#8c9097",
                     fontSize: '11px',
-                    fontWeight: 600,
-                    cssClass: 'apexcharts-yaxis-label',
-                },
-            },
-            title: {
-                text: 'Point',
-                fontSize: '13px',
-                fontWeight: 'bold',
-                style: {
-                    color: "#8c9097"
+                    fontWeight: 600
                 }
             },
+            title: {
+                text: '{{ phrase("Points") }}',
+                style: {
+                    color: "#8c9097",
+                    fontSize: '12px',
+                    fontWeight: 600
+                }
+            }
         },
         xaxis: {
             type: 'datetime',
             labels: {
-                show: true,
                 style: {
                     colors: "#8c9097",
                     fontSize: '11px',
-                    fontWeight: 600,
-                    cssClass: 'apexcharts-xaxis-label',
-                },
-            },
+                    fontWeight: 600
+                }
+            }
         },
         tooltip: {
             shared: false,
             y: {
                 formatter: function (val) {
-                    return val.toFixed(2); // Отображение реального значения point
+                    return val.toFixed(2);
+                }
+            },
+            x: {
+                format: 'dd MMM yyyy'
+            }
+        }
+    };
+    var timelineChart = new ApexCharts(document.querySelector("#timeline-chart"), optionsTimelineChart);
+    timelineChart.render();
+
+    // Фильтрация по периодам
+    $('.timeline-option').on('click', function(e) {
+        e.preventDefault();
+        var period = $(this).data('period');
+        var filteredData = filterDataByPeriod(dates, period);
+
+        timelineChart.updateSeries([{
+            name: '{{ phrase("Donations") }}',
+            data: filteredData
+        }]);
+    });
+
+    function filterDataByPeriod(data, period) {
+        var now = new Date().getTime();
+        var filtered = [];
+
+        switch(period) {
+            case 'week':
+                var weekAgo = now - (7 * 24 * 60 * 60 * 1000);
+                filtered = data.filter(item => item[0] >= weekAgo);
+                break;
+            case 'month':
+                var monthAgo = now - (30 * 24 * 60 * 60 * 1000);
+                filtered = data.filter(item => item[0] >= monthAgo);
+                break;
+            case 'year':
+                var yearAgo = now - (365 * 24 * 60 * 60 * 1000);
+                filtered = data.filter(item => item[0] >= yearAgo);
+                break;
+            case 'all':
+            default:
+                filtered = data;
+                break;
+        }
+
+        return filtered;
+    }
+
+    // Подготовка данных для графика платежных систем
+    {% set payment_systems = {} %}
+    {% for donate in donate_users %}
+    {% set pay_system = donate.pay_system %}
+    {% if pay_system in payment_systems|keys %}
+    {% set payment_systems = payment_systems|merge({(pay_system): payment_systems[pay_system] + donate.point}) %}
+    {% else %}
+    {% set payment_systems = payment_systems|merge({(pay_system): donate.point}) %}
+    {% endif %}
+    {% endfor %}
+
+    var paySystems = [];
+    var payValues = [];
+
+    {% for system, value in payment_systems %}
+    paySystems.push("{{system}}");
+    payValues.push({{value}});
+    {% endfor %}
+
+    // График распределения по платежным системам
+    var optionsPaymentSystems = {
+        series: payValues,
+        chart: {
+            type: 'donut',
+            height: 300
+        },
+        labels: paySystems,
+        colors: ['#6c5ffc', '#05c3fb', '#f7b731', '#e82646', '#45aaf2'],
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '55%',
+                    labels: {
+                        show: true,
+                        name: {
+                            show: true,
+                            fontSize: '18px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 600,
+                            offsetY: -10
+                        },
+                        value: {
+                            show: true,
+                            fontSize: '16px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            offsetY: 16,
+                            formatter: function (val) {
+                                return val.toFixed(2);
+                            }
+                        },
+                        total: {
+                            show: true,
+                            showAlways: true,
+                            label: '{{ phrase("Total") }}',
+                            fontSize: '16px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 600,
+                            color: '#373d3f',
+                            formatter: function (w) {
+                                return w.globals.seriesTotals.reduce((a, b) => {
+                                    return a + b;
+                                }, 0).toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    height: 280
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }],
+        legend: {
+            position: 'right',
+            offsetY: 0,
+            height: 230
+        }
+    };
+    var paymentSystemsChart = new ApexCharts(document.querySelector("#payment-systems-chart"), optionsPaymentSystems);
+    paymentSystemsChart.render();
+
+    // Расчет тренда роста донатов по месяцам для графика тренда
+    var trendData = [];
+    var cumulativeSum = 0;
+
+    for (var i = 0; i < months.length; i++) {
+        cumulativeSum += points[i];
+        trendData.push({
+            x: months[i],
+            y: cumulativeSum
+        });
+    }
+
+    // График тренда роста донатов
+    var optionsTrendChart = {
+        series: [{
+            name: '{{ phrase("Cumulative donations") }}',
+            data: trendData
+        }],
+        chart: {
+            type: 'line',
+            height: 300,
+            toolbar: {
+                show: false
+            },
+            zoom: {
+                enabled: false
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 3
+        },
+        grid: {
+            borderColor: '#f2f5f7'
+        },
+        colors: ["#05c3fb"],
+        xaxis: {
+            categories: months,
+            labels: {
+                style: {
+                    colors: "#8c9097",
+                    fontSize: '11px',
+                    fontWeight: 600
+                }
+            }
+        },
+        yaxis: {
+            labels: {
+                formatter: function (val) {
+                    return val.toFixed(0);
+                },
+                style: {
+                    colors: "#8c9097",
+                    fontSize: '11px',
+                    fontWeight: 600
+                }
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val.toFixed(2);
+                }
+            }
+        },
+        markers: {
+            size: 4,
+            colors: ["#05c3fb"],
+            strokeColors: "#fff",
+            strokeWidth: 2,
+            hover: {
+                size: 7
+            }
+        }
+    };
+    var trendChart = new ApexCharts(document.querySelector("#trend-chart"), optionsTrendChart);
+    trendChart.render();
+
+    // Подготовка данных для тепловой карты активности
+    // Создаем 2D массив для дней недели и часов
+    var heatmapData = [];
+    var daysOfWeek = ['{{ phrase("Sunday") }}', '{{ phrase("Monday") }}', '{{ phrase("Tuesday") }}',
+        '{{ phrase("Wednesday") }}', '{{ phrase("Thursday") }}', '{{ phrase("Friday") }}',
+        '{{ phrase("Saturday") }}'];
+
+    // Заполняем массив данными
+    {% for day in 0..6 %}
+    var dayData = {
+        name: daysOfWeek[{{day}}],
+    data: []
+    };
+
+    {% for hour in 0..23 %}
+    var count = 0;
+    {% for donate in donate_users %}
+    {% set donate_date = donate.date %}
+    {% set donate_day = donate_date|date('w') %}
+    {% set donate_hour = donate_date|date('G') %}
+
+    if ({{donate_day}} == {{day}} && {{donate_hour}} == {{hour}}) {
+        count++;
+    }
+    {% endfor %}
+
+    dayData.data.push({
+        x: '{{hour}}:00',
+        y: count
+    });
+    {% endfor %}
+
+    heatmapData.push(dayData);
+    {% endfor %}
+
+    // График тепловой карты активности
+    var optionsHeatmap = {
+        series: heatmapData,
+        chart: {
+            height: 340,
+            type: 'heatmap',
+            toolbar: {
+                show: false
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        colors: ["#6c5ffc"],
+        xaxis: {
+            type: 'category',
+            labels: {
+                style: {
+                    colors: "#8c9097",
+                    fontSize: '11px',
+                    fontWeight: 600
+                }
+            }
+        },
+        yaxis: {
+            labels: {
+                style: {
+                    colors: "#8c9097",
+                    fontSize: '11px',
+                    fontWeight: 600
+                }
+            }
+        },
+        title: {
+            text: '{{ phrase("Donations by day and hour") }}',
+            align: 'left',
+            style: {
+                fontSize: '13px',
+                fontWeight: 'bold',
+                color: '#8c9097'
+            }
+        },
+        plotOptions: {
+            heatmap: {
+                shadeIntensity: 0.5,
+                radius: 0,
+                useFillColorAsStroke: false,
+                colorScale: {
+                    ranges: [{
+                        from: 0,
+                        to: 0,
+                        color: '#F0F0F0',
+                        name: '{{ phrase("No donations") }}'
+                    }, {
+                        from: 1,
+                        to: 5,
+                        color: '#C9E4DE',
+                        name: '{{ phrase("Low") }}'
+                    }, {
+                        from: 6,
+                        to: 15,
+                        color: '#6ABEA7',
+                        name: '{{ phrase("Medium") }}'
+                    }, {
+                        from: 16,
+                        to: 1000,
+                        color: '#1A936F',
+                        name: '{{ phrase("High") }}'
+                    }]
+                }
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val + " {{ phrase('donations') }}";
                 }
             }
         }
     };
-    var chart = new ApexCharts(document.querySelector("#zoom-chart"), options);
-    chart.render();
-</script>
+    var heatmapChart = new ApexCharts(document.querySelector("#heatmap-chart"), optionsHeatmap);
+    heatmapChart.render();
 
+    // Создаем обработчики событий для интерактивности
+    document.addEventListener('DOMContentLoaded', function() {
+        // Обработчик для переключения периодов в графике временной линии
+        $('.timeline-option').on('click', function(e) {
+            e.preventDefault();
+            var period = $(this).data('period');
+            var periodText = $(this).text();
+            $('#timeline-dropdown').html(periodText + ' <i class="fe fe-chevron-down"></i>');
+
+            var filteredData = filterDataByPeriod(dates, period);
+            timelineChart.updateSeries([{
+                name: '{{ phrase("Donations") }}',
+                data: filteredData
+            }]);
+        });
+
+        // Инициализация тултипов для улучшения UX
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+</script>
 {% endblock %}

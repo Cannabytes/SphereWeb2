@@ -54,20 +54,8 @@
 
          <li class="slide warehouse {{classColorMenu()}}">
           <a href="javascript:void(0);" class="side-menu__item" data-bs-toggle="modal" data-bs-target="#warehouseModal">
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="avatar avatar-xs side-menu__icon">
-			  <defs>
-				<linearGradient id="khakiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-				  <stop offset="0%" stop-color="#94A36C" />
-				  <stop offset="100%" stop-color="#6B7D4B" />
-				</linearGradient>
-			  </defs>
-			  <path d="M6 6C6 4.5 7 4 9 4H15C17 4 18 4.5 18 6V8H20V19C20 19.5 19.5 20 19 20H5C4.5 20 4 19.5 4 19V8H6V6Z" fill="url(#khakiGradient)" stroke="#4A5A30" stroke-width="1"/>
-			  <path d="M6 8H18V11C18 11 15 12 12 12C9 12 6 11 6 11V8Z" fill="#7D8B58" stroke="#4A5A30" stroke-width="1"/>
-			  <rect x="9" y="13" width="6" height="5" fill="#94A36C" stroke="#4A5A30" stroke-width="1"/>
-			  <path d="M9 12V16" stroke="#4A5A30" stroke-width="1.5" stroke-linecap="round"/>
-			  <path d="M15 12V16" stroke="#4A5A30" stroke-width="1.5" stroke-linecap="round"/>
-			  <circle cx="12" cy="15" r="1" fill="#BFA372" stroke="#4A5A30" stroke-width="0.5"/>
-			</svg>
+            <i class="las la-warehouse side-menu__icon"></i>
+
             <span class="side-menu__label">{{phrase('warehouse')}}</span>
 			<span class="badge bg-info-transparent ms-2 countWarehouseItems">{{ getUser().countWarehouseItems() }}</span>
           </a>
