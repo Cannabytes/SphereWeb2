@@ -659,27 +659,17 @@
 
   }
 
-
-  // Добавьте этот код в блок JS в конце файла
   $(document).ready(function() {
-    // Инициализация тултипов
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    // Обработчик клика по иконке персонажей аккаунта
     $(document).on('click', '.toggle-characters', function() {
       var accountName = $(this).data('account');
       var characterRow = $('.character-row-' + accountName);
-
-      // Закрываем все открытые строки персонажей, кроме текущей
       $('.character-container').not(characterRow).hide();
-      $('.toggle-characters').not(this).removeClass('bi-people-fill text-primary').addClass('bi-people-fill text-success');
-
-      // Переключаем видимость строки с персонажами
       characterRow.toggle();
-
     });
   });
 </script>
