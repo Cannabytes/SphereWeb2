@@ -166,7 +166,7 @@ class startpack
         }
 
         foreach ($items as $item) {
-            user::self()->addToWarehouse($serverId, (int)$item['itemId'], (int)$item['count'], (int)$item['enchant'], 148);
+            user::self()->addToWarehouse($serverId, (int)$item['itemId'], (int)$item['count'], (int)$item['enchant'], 'starter_pack');
         }
 
         if (\Ofey\Logan22\controller\config\config::load()->notice()->isUseWheel()) {
