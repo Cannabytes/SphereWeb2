@@ -62,6 +62,7 @@
 
         </div>
 
+
         <div class="modal modal-lg fade" id="add-section" tabindex="-1" aria-labelledby="add-sectionLabel"
              aria-hidden="true">
             <div class="modal-dialog">
@@ -136,6 +137,7 @@
             </div>
         </div>
 
+       {% if getUser().isAdmin() %}
         <div class="modal modal-lg fade" id="add-moderator" tabindex="-1" aria-labelledby="add-moderatorLabel"
              aria-hidden="true">
             <div class="modal-dialog">
@@ -289,6 +291,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         <div class="total-mails mt-5 mt-lg-0">
             <div class="p-1 d-flex align-items-center border-bottom">
