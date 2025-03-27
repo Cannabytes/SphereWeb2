@@ -29,7 +29,6 @@ class forum {
     public static function save() {
         validation::user_protection("admin");
         \Ofey\Logan22\model\admin\forum::save();
-        var_dump($_POST);
         exit;
     }
 

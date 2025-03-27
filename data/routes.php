@@ -343,20 +343,6 @@ return array (
     'page' => '',
     'comment' => '',
   ),
-  24 => 
-  array (
-    'enable' => 1,
-    'method' => 'POST',
-    'pattern' => '/admin/function/save',
-    'func' => 'model\\enabled\\enabled::save',
-    'access' => 
-    array (
-      0 => 'admin',
-    ),
-    'weight' => 0,
-    'page' => '',
-    'comment' => 'Save status function',
-  ),
   25 => 
   array (
     'enable' => 1,
@@ -2664,6 +2650,50 @@ return array (
     'access' => 
     array (
       0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  195 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/inventory/warehouse/split-item',
+    'func' => 'controller\\account\\characters\\inventory::splitItem',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  196 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/func/destack',
+    'func' => 'controller\\admin\\options::saveStackItems',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
+  197 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/inventory/warehouse/stack',
+    'func' => 'controller\\admin\\options::stackInventoryItems',
+    'access' => 
+    array (
+      0 => 'admin',
+      1 => 'user',
     ),
     'weight' => 0,
     'page' => '',

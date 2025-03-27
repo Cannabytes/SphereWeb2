@@ -521,6 +521,40 @@
 </script>
 
 <!-- Оптимизированное модальное окно склада -->
+
+<!-- окно разбития !-->
+<!-- Модальное окно разбития предметов -->
+<div class="modal fade" id="splitItemModal" tabindex="-1" aria-labelledby="splitItemModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="splitItemModalLabel">{{phrase('unstack_item')}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-3">
+          <img id="splitItemIcon" src="" alt="Предмет" class="img-fluid border rounded p-2" style="width: 64px; height: 64px; object-fit: contain;">
+          <h5 id="splitItemName" class="mt-2"></h5>
+          <span class="badge bg-secondary" id="splitItemCount"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="splitItemQuantity" class="form-label">{{phrase('unstack_item_count_desc')}}:</label>
+          <input type="number" class="form-control" id="splitItemQuantity" min="1" value="1">
+          <div class="invalid-feedback">
+            {{phrase('unstack_item_count_min_1')}}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{phrase('cancel')}}</button>
+        <button type="button" class="btn btn-primary" id="confirmSplitItem">{{phrase('unstack')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно склада с JS-селекторами -->
 <div class="modal fade" id="warehouseModal" tabindex="-1" aria-labelledby="warehouseModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
@@ -530,7 +564,7 @@
           <i class="ri-archive-line me-2 text-primary"></i>
           {{phrase('warehouse')}}
           {% if getUser().countWarehouseItems() > 0 %}
-          <span class="badge rounded-pill bg-danger ms-2 countWarehouseItems">{{getUser().countWarehouseItems()}}</span>
+          <span class="badge rounded-pill bg-danger ms-2 js-warehouse-modal-count countWarehouseItems">{{getUser().countWarehouseItems()}}</span>
           {% endif %}
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -571,46 +605,83 @@
                     </div>
                   {% else %}
                   <!-- Список предметов -->
-                    <ul class="list-group list-group-flush">
-                      {% for warehouse in getUser().getWarehouse() %}
-                        <li class="list-group-item list-group-item-action p-1 border-bottom">
-                          <div class="d-flex align-items-center">
-                            <div class="form-check me-2">
-                              <input data-object-id="{{warehouse.id}}"
-                                     class="form-check-input warehouseInventory"
-                                     type="checkbox" id="item_{{warehouse.id}}" checked>
-                            </div>
-                            <div class="item-icon me-3">
-                              <div class="position-relative">
-                                <img src="{{warehouse.item.getIcon()}}"
-                                     alt="{{warehouse.item.getItemName()}}"
-                                     class="img-fluid border rounded p-1"
-                                     style="width: 40px; height: 40px; object-fit: contain;">
+                    <ul class="list-group list-group-flush js-warehouse-items-list">
+        {% set okStackBtn = false %}
 
-                              </div>
-                            </div>
-                            <div class="item-details flex-grow-1">
-                              <div class="fw-medium">
-                                {% if warehouse.enchant > 0 %}
-                                  <span class="badge bg-danger me-1">+{{warehouse.enchant}}</span>
-                                {% endif %}
-                                <label class="mb-0 cursor-pointer" for="item_{{warehouse.id}}">
-                                  {{warehouse.item.getItemName()}}
+{% for warehouse in getUser().getWarehouse() %}
+  <li class="list-group-item list-group-item-action p-1 border-bottom js-warehouse-item" data-item-count="{{warehouse.count}}">
+    <div class="d-flex align-items-center">
+      <div class="form-check me-2">
+        <input data-object-id="{{warehouse.id}}"
+               class="form-check-input warehouseInventory js-warehouse-item-checkbox"
+               type="checkbox" id="item_{{warehouse.id}}" checked>
+      </div>
+      <div class="item-icon me-3">
+        <div class="position-relative">
+          <img src="{{warehouse.item.getIcon()}}"
+               alt="{{warehouse.item.getItemName()}}"
+               class="img-fluid border rounded p-1 js-item-icon"
+               style="width: 40px; height: 40px; object-fit: contain;">
+        </div>
+      </div>
+      <div class="item-details flex-grow-1">
+        <div class="fw-medium d-flex justify-content-between align-items-center">
+          <div>
+            {% if warehouse.enchant > 0 %}
+              <span class="badge bg-danger me-1">+{{warehouse.enchant}}</span>
+            {% endif %}
+            <label class="mb-0 cursor-pointer js-item-name" for="item_{{warehouse.id}}">
+              {{warehouse.item.getItemName()}}
 
-                                  {% if warehouse.count > 1 %}
-                                  <span class="bottom-0 end-0 badge rounded-pill bg-secondary">
-                                    x{{warehouse.count}}
-                                  </span>
-                                {% endif %}
+              {% if warehouse.count > 1 %}
+              <span class="bottom-0 end-0 badge rounded-pill bg-secondary js-item-count">
+                x{{warehouse.count}}
+              </span>
+            {% endif %}
+            </label>
+          </div>
+          <div>
 
-                                </label>
+          {% set unstackOk = false %}
+          {% if getServer().stackableItem().allowAllItemsSplitting() %}
+              {% set unstackOk = true %}
+          {% endif %}
 
-                              </div>
-                              <div class="small text-muted">{{phrase(warehouse.phrase)}}</div>
-                            </div>
-                          </div>
-                        </li>
-                      {% endfor %}
+          {% if unstackOk == false %}
+            {% for id in getServer().stackableItem().getSplittableItems() %}
+                {% if id == warehouse.item.getItemId() %}
+                  {% set unstackOk = true %}
+                {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% if warehouse.count > 1 and unstackOk %}
+             <span class="badge bg-blue splitItem js-split-item-btn me-1">{{phrase('unstack')}}</span>
+          {% endif %}
+
+
+
+          </div>
+        </div>
+        <div class="small text-muted">{{phrase(warehouse.phrase)}}</div>
+      </div>
+    </div>
+  </li>
+
+
+        {% if getServer().stackableItem().isAllowAllItemsStacking() %}
+            {% set okStackBtn = true %}
+        {% endif %}
+
+        {% if okStackBtn == false %}
+            {% for id in getServer().stackableItem().getStackableItems() %}
+                {% if id == warehouse.getItemId() %}
+                    {% set okStackBtn = true %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+{% endfor %}
                     </ul>
                   {% endif %}
                 </div>
@@ -678,7 +749,6 @@
                     <i class="ri-send-plane-line me-2"></i>
                     {{phrase('send_items')}}
                   </button>
-
                 </div>
               </div>
             </div>
@@ -686,15 +756,401 @@
         {% endif %}
       </div>
 
-      <!-- Футер модального окна -->
       <div class="modal-footer border-0">
+
+
+
+        {% if okStackBtn == true %}
+            <button type="button" class="btn btn-primary me-auto" id="goStackItems">
+                {{phrase('stack_items')}}
+            </button>
+        {% endif %}
+
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
           {{phrase('close')}}
         </button>
       </div>
+
+
     </div>
   </div>
 </div>
+
+
+<script>
+/**
+ * Улучшенная функция для обновления списка предметов на складе
+ * с учетом правил разбития предметов
+ *
+ * @param {Object} response - ответ от сервера
+ */
+function updateWarehouseItemsList(response) {
+  // Проверяем, что ответ содержит все необходимые данные
+  if (!response || !Array.isArray(response.items) || response.items.length === 0) {
+    return;
+  }
+
+  const items = response.items;
+  const isAllowAllItemsSplitting = response.isAllowAllItemsSplitting || false;
+  const splittableItems = response.splittableItems || [];
+
+  // Находим контейнер списка предметов
+  const $itemsList = $('.js-warehouse-items-list');
+  if ($itemsList.length === 0) {
+    return;
+  }
+
+  // Очищаем текущий список
+  $itemsList.empty();
+
+  // Генерируем HTML для каждого предмета
+  items.forEach(function(item) {
+    // Определяем, можно ли разбить предмет
+    const canSplit = determineIfItemCanBeSplit(item, isAllowAllItemsSplitting, splittableItems);
+
+    // Создаем HTML элемент предмета с учетом возможности разбития
+    const itemHtml = createWarehouseItemHtml(item, canSplit);
+
+    // Добавляем элемент в список
+    $itemsList.append(itemHtml);
+  });
+
+  // Обновляем счетчик предметов
+  updateWarehouseCounter(items.length);
+
+  // Проверяем, не пуст ли склад
+  if (items.length === 0) {
+    showEmptyWarehouse();
+  }
+
+  // Активируем кнопку отправки предметов, если она была неактивна
+  if (items.length > 0) {
+    $('#warehouseSendItemsToPlayer').prop('disabled', false);
+  }
+}
+
+/**
+ * Определяет, можно ли разбить данный предмет
+ *
+ * @param {Object} item - объект предмета
+ * @param {boolean} isAllowAllItemsSplitting - разрешено ли разбивать все предметы
+ * @param {Array} splittableItems - массив ID предметов, которые можно разбивать
+ * @returns {boolean} - можно ли разбить предмет
+ */
+function determineIfItemCanBeSplit(item, isAllowAllItemsSplitting, splittableItems) {
+  // Предмет должен иметь количество больше 1
+  if (!item || item.count <= 1) {
+    return false;
+  }
+
+  // Проверяем, stackable ли предмет
+  const isStackable = item.itemInfo && item.itemInfo.isStackable === true;
+  if (!isStackable) {
+    return false;
+  }
+
+  // Проверяем, разрешено ли разбивать все предметы
+  if (isAllowAllItemsSplitting) {
+    return true;
+  }
+
+  // Проверяем, входит ли ID предмета в список разрешенных для разбития
+  return Array.isArray(splittableItems) && splittableItems.includes(item.itemId.toString());
+}
+
+/**
+ * Создает HTML-код для элемента списка предметов
+ *
+ * @param {Object} item - объект с данными о предмете
+ * @param {boolean} canSplit - можно ли разбить предмет
+ * @returns {string} HTML-код элемента списка
+ */
+function createWarehouseItemHtml(item, canSplit) {
+  // Получаем информацию о предмете
+  const itemInfo = item.itemInfo || {};
+
+  // Формируем HTML для элемента списка
+  return `
+    <li class="list-group-item list-group-item-action p-1 border-bottom js-warehouse-item" data-item-count="${item.count}" data-item-id="${item.itemId}">
+      <div class="d-flex align-items-center">
+        <div class="form-check me-2">
+          <input data-object-id="${item.id}"
+                 class="form-check-input warehouseInventory js-warehouse-item-checkbox"
+                 type="checkbox" id="item_${item.id}" checked>
+        </div>
+        <div class="item-icon me-3">
+          <div class="position-relative">
+            <img src="${itemInfo.icon || ''}"
+                 alt="${itemInfo.itemName || ''}"
+                 class="img-fluid border rounded p-1 js-item-icon"
+                 style="width: 40px; height: 40px; object-fit: contain;">
+          </div>
+        </div>
+        <div class="item-details flex-grow-1">
+          <div class="fw-medium d-flex justify-content-between align-items-center">
+            <div>
+              ${item.enchant > 0 ? `<span class="badge bg-danger me-1">+${item.enchant}</span>` : ''}
+              <label class="mb-0 cursor-pointer js-item-name" for="item_${item.id}">
+                ${itemInfo.itemName || ''}
+                ${item.count > 1 ? `<span class="bottom-0 end-0 badge rounded-pill bg-secondary js-item-count">x${item.count}</span>` : ''}
+              </label>
+            </div>
+            <div>
+              ${canSplit ? `<span class="badge bg-blue splitItem js-split-item-btn me-1">{{phrase('unstack')}}</span>` : ''}
+            </div>
+          </div>
+          <div class="small text-muted">${item.phrase || ''}</div>
+        </div>
+      </div>
+    </li>
+  `;
+}
+
+/**
+ * Обработчик для кнопки "Разбить" предмет
+ */
+$(document).on('click', '.js-split-item-btn', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  // Находим родительский элемент list-item
+  const $listItem = $(this).closest('.js-warehouse-item');
+  const $checkbox = $listItem.find('.js-warehouse-item-checkbox');
+
+  // Извлекаем данные о предмете
+  const objectId = $checkbox.data('object-id');
+  const itemName = $listItem.find('.js-item-name').text().trim();
+  const itemIcon = $listItem.find('.js-item-icon').attr('src');
+  let itemCount = $listItem.data('item-count') || 1;
+
+  // Заполняем модальное окно данными
+  $('#splitItemIcon').attr('src', itemIcon);
+  $('#splitItemName').text(itemName);
+  $('#splitItemCount').text('Доступно: ' + itemCount);
+
+  // Настраиваем поле ввода
+  const $quantityInput = $('#splitItemQuantity');
+  $quantityInput.attr('max', itemCount - 1);
+  $quantityInput.val(1);
+  $quantityInput.removeClass('is-invalid');
+
+  // Валидация поля ввода при изменении
+  $quantityInput.off('input').on('input', function() {
+    const value = parseInt($(this).val());
+    const max = parseInt($(this).attr('max'));
+
+    if (isNaN(value) || value < 1 || value > max) {
+      $(this).addClass('is-invalid');
+      $('#confirmSplitItem').prop('disabled', true);
+    } else {
+      $(this).removeClass('is-invalid');
+      $('#confirmSplitItem').prop('disabled', false);
+    }
+  });
+
+  // Сохраняем ID объекта в кнопке подтверждения
+  $('#confirmSplitItem').data('object-id', objectId).prop('disabled', false);
+
+  // Перемещаем модальное окно разбития в конец body, если оно ещё там не находится
+  if (!$('#splitItemModal').parent().is('body')) {
+    $('#splitItemModal').appendTo('body');
+  }
+
+  // Сохраняем первое модальное окно, чтобы правильно к нему вернуться
+  $('#splitItemModal').data('parentModal', $('#warehouseModal')[0]);
+
+  // Важно: скрываем backdrop первого модального окна перед открытием второго
+  $('.modal-backdrop').last().css('opacity', '0');
+
+  // Настраиваем z-index для корректного отображения
+  setTimeout(function() {
+    const zIndexBase = 1050;
+    const backdropCount = $('.modal-backdrop').length;
+
+    // Настраиваем z-index для нового модального окна
+    $('#splitItemModal').css('z-index', zIndexBase + (backdropCount * 10) + 10);
+
+    // Находим последний backdrop и настраиваем его z-index и непрозрачность
+    $('.modal-backdrop').last().css({
+      'z-index': zIndexBase + (backdropCount * 10) + 5,
+      'opacity': '0.5'
+    });
+  }, 50);
+
+  // Открываем модальное окно
+  const splitModal = new bootstrap.Modal(document.getElementById('splitItemModal'));
+  splitModal.show();
+});
+
+$('#splitItemModal').on('hidden.bs.modal', function() {
+  // Восстанавливаем видимость backdrop первого модального окна
+  $('.modal-backdrop').last().css('opacity', '0.5');
+});
+
+
+const style = document.createElement('style');
+style.innerHTML = `
+    /* Стили для корректного отображения вложенных модальных окон */
+    body.modal-open .modal-backdrop.show ~ .modal-backdrop.show {
+      opacity: 0.5 !important;
+      z-index: 1070 !important;
+    }
+
+    /* Убираем удваивание отступа справа при открытии второго модального окна */
+    body.modal-open.modal-split-open {
+      padding-right: 17px !important;
+    }
+
+    /* Повышенный z-index для содержимого модального окна разбития */
+    #splitItemModal .modal-content.elevated-modal {
+      position: relative;
+      z-index: 1080;
+    }
+  `;
+document.head.appendChild(style);
+
+/**
+ * Обработчик подтверждения разбития предмета
+ */
+$('#confirmSplitItem').off('click').on('click', function() {
+  const objectId = $(this).data('object-id');
+  const quantity = parseInt($('#splitItemQuantity').val());
+  const $button = $(this);
+  const originalButtonText = $button.text();
+
+  // Валидация
+  if (isNaN(quantity) || quantity < 1) {
+    $('#splitItemQuantity').addClass('is-invalid');
+    return;
+  }
+
+  // Показываем индикатор загрузки
+  $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Выполняется...').prop('disabled', true);
+
+  // Отправляем AJAX запрос
+  AjaxSend('/inventory/warehouse/split-item', 'POST', {
+    objectId: objectId,
+    quantity: quantity
+  }).then(function(response) {
+    // Обрабатываем ответ
+    if (response.ok === true) {
+      noticeSuccess(response.message || '{{phrase("unstack_success")}}');
+
+      // Закрываем модальное окно
+      const splitModal = bootstrap.Modal.getInstance(document.getElementById('splitItemModal'));
+      if (splitModal) {
+        splitModal.hide();
+      }
+
+      // Обновляем список предметов
+      if (response.items && Array.isArray(response.items)) {
+        updateWarehouseItemsList(response);
+      }
+    } else {
+      noticeError(response.message || '{{phrase("error_unstack_success")}}');
+    }
+  }).catch(function(error) {
+    noticeError('Ошибка соединения с сервером');
+    console.error('Ошибка запроса:', error);
+  }).finally(function() {
+    // Восстанавливаем кнопку
+    $button.html(originalButtonText).prop('disabled', false);
+  });
+});
+
+/**
+ * Показывает сообщение о пустом складе
+ */
+function showEmptyWarehouse() {
+  const $itemsList = $('.js-warehouse-items-list');
+
+  // Создаем HTML для пустого склада
+  const emptyWarehouseHTML = `
+    <div class="text-center p-4">
+      <i class="ri-inbox-line text-muted display-4"></i>
+      <p class="mt-2 text-muted">{{phrase('warehouse_is_empty')}}</p>
+    </div>
+  `;
+
+  // Заменяем содержимое списка
+  if ($itemsList.length) {
+    $itemsList.replaceWith(emptyWarehouseHTML);
+  } else {
+    $('#warehouseModal .card-body').first().html(emptyWarehouseHTML);
+  }
+
+  // Блокируем кнопку отправки
+  $('#warehouseSendItemsToPlayer').prop('disabled', true);
+}
+
+/**
+ * Обновляет счетчик предметов на складе
+ * @param {number} count - количество предметов на складе
+ */
+function updateWarehouseCounter(count) {
+  const $badgeElement = $('.js-warehouse-items-count');
+
+  if (count > 0) {
+    // Если есть предметы, обновляем все счетчики на странице
+    $badgeElement.text(count);
+
+    // Обновляем badge в заголовке модального окна, если он есть
+    const $modalBadge = $('.js-warehouse-modal-count');
+    if ($modalBadge.length > 0) {
+      $modalBadge.text(count);
+    } else if (count > 0) {
+      $('#warehouseModalLabel').append(`<span class="badge rounded-pill bg-danger ms-2 js-warehouse-modal-count countWarehouseItems">${count}</span>`);
+    }
+  } else {
+    // Если предметов нет, удаляем все счетчики
+    $badgeElement.remove();
+    $('.js-warehouse-modal-count').remove();
+  }
+}
+
+// Инициализация обработчиков для чекбокса "Выбрать все"
+$(document).ready(function() {
+  // Обработчик для чекбокса "Выбрать все"
+  $('#selectAllItems').off('change').on('change', function() {
+    const isChecked = $(this).prop('checked');
+    $('.js-warehouse-items-list .js-warehouse-item-checkbox').prop('checked', isChecked);
+  });
+
+  // Обработчик для отдельных чекбоксов предметов
+  $(document).on('change', '.js-warehouse-item-checkbox', function() {
+    const totalCheckboxes = $('.js-warehouse-items-list .js-warehouse-item-checkbox').length;
+    const checkedCheckboxes = $('.js-warehouse-items-list .js-warehouse-item-checkbox:checked').length;
+
+    $('#selectAllItems').prop('checked', totalCheckboxes === checkedCheckboxes);
+  });
+
+  // Обработчик для кнопки "Объединить предметы"
+  $("#goStackItems").off('click').on('click', function() {
+    const $button = $(this);
+    $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Выполняется...');
+
+    AjaxSend('/inventory/warehouse/stack', 'POST', {}, true)
+          .then(function(response) {
+            $button.prop('disabled', false).html('{{phrase("stack_items")}}');
+
+            if (response.success) {
+              noticeSuccess(response.message || '{{phrase("success_stack")}}');
+              updateWarehouseItemsList(response);
+            } else {
+              noticeError(response.message || '{{phrase("error_stack")}});
+            }
+          })
+          .catch(function(error) {
+            $button.prop('disabled', false).html('{{phrase("stack_items")}}');
+            noticeError('Error');
+            console.error('Ошибка запроса:', error);
+          });
+  });
+});
+
+</script>
+
+
 <script>
 
 /**
@@ -720,13 +1176,13 @@ $(document).ready(function() {
 
     // Проверяем, есть ли выбранные предметы
     if (selectedItems.length === 0) {
-      noticeError('Выберите хотя бы один предмет для отправки');
+      noticeError('{{phrase("min_1_item_for_send")}}');
       return;
     }
 
     // Блокируем кнопку и показываем индикатор загрузки
     const $sendButton = $(this);
-    $sendButton.prop('disabled', true).html('<i class="ri-loader-2-line me-2"></i> Отправка...');
+    $sendButton.prop('disabled', true).html('<i class="ri-loader-2-line me-2"></i> {{phrase("submitting_an_item")}}...');
 
     // Отправляем запрос на сервер
     AjaxSend('/inventory/send', 'POST', {
@@ -762,13 +1218,13 @@ $(document).ready(function() {
       }
 
       // Восстанавливаем кнопку
-      $sendButton.prop('disabled', false).html('<i class="ri-send-plane-line me-2"></i> Отправить предметы');
+      $sendButton.prop('disabled', false).html('<i class="ri-send-plane-line me-2"></i> {{phrase("send_items")}}');
     }).catch(function(error) {
       console.error('Ошибка запроса:', error);
       noticeError('Ошибка соединения с сервером');
 
       // Восстанавливаем кнопку
-      $sendButton.prop('disabled', false).html('<i class="ri-send-plane-line me-2"></i> Отправить предметы');
+      $sendButton.prop('disabled', false).html('<i class="ri-send-plane-line me-2"></i> {{phrase("send_items")}}');
     });
   });
 
@@ -805,7 +1261,7 @@ $(document).ready(function() {
       const emptyWarehouseHTML = `
         <div class="text-center p-4">
           <i class="ri-inbox-line text-muted display-4"></i>
-          <p class="mt-2 text-muted">На складе нет предметов для отправки</p>
+          <p class="mt-2 text-muted">{{phrase('warehouse_is_empty')}}</p>
         </div>
       `;
 
@@ -847,16 +1303,10 @@ $(document).ready(function() {
     }
   }
 
-  // Переопределяем функцию "выбрать все" для корректной работы
-  $('#selectAllItems').off('change').on('change', function() {
-    const isChecked = $(this).is(':checked');
-    $('.warehouseInventory').prop('checked', isChecked);
-  });
 
 });
 
 </script>
-
 
 {% endif %}
 

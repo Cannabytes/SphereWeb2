@@ -50,6 +50,8 @@ class serverModel
     private ?donate $donate = null;
     private ?referral $referral = null;
 
+    private ?serverStackable $stackableItem = null;
+
     public function __construct(array $server, array $server_data = [], ?int $pageId = null)
     {
         $this->id = $server['id'] ?? null;
@@ -86,8 +88,14 @@ class serverModel
 
         $this->donate = new donate($this->id, $this->knowledgeBase);
         $this->referral = new referral($this->id);
+        $this->stackableItem = new serverStackable($server['stackableItem'] ?? null);
 
         return $this;
+    }
+
+    public function stackableItem(): ?serverStackable
+    {
+        return $this->stackableItem;
     }
 
     public function getReferral()
@@ -246,6 +254,8 @@ class serverModel
             'statusServer' => $this->statusServerMem,
             'default' => $this->default,
             'position' => $this->position,
+            'stackableItem' => $this->stackableItem()->toArray(),
+            'maxOnline' => $this->maxOnline,
         ];
         sql::run(
             "INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)

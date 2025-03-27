@@ -2,6 +2,8 @@
 
 namespace Ofey\Logan22\model\item;
 
+use Ofey\Logan22\model\lang\lang;
+
 class warehouse
 {
     private int $id, $serverId, $userId, $itemId, $count, $enchant;
@@ -150,4 +152,25 @@ class warehouse
         $this->phrase = $phrase;
         return $this;
     }
+
+    /**
+     * Преобразует объект warehouse в ассоциативный массив
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        $itemInfo = item::getItem($this->getItemId());
+        return [
+            'id' => $this->getId(),
+            'serverId' => $this->getServerId(),
+            'userId' => $this->getUserId(),
+            'itemId' => $this->getItemId(),
+            'count' => $this->getCount(),
+            'enchant' => $this->getEnchant(),
+            'phrase' => \Ofey\Logan22\component\lang\lang::get_phrase($this->getPhrase()),
+            'itemInfo' => $itemInfo,
+        ];
+    }
+
 }

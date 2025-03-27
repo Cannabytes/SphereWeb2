@@ -15,12 +15,100 @@ use Ofey\Logan22\model\user\user;
 
 class inventory
 {
+    //Разбитие предмета инвентаря
+    public static function splitItem()
+    {
+        $objectItem = $_POST['objectId'] ?? board::error(lang::get_phrase('no_items_provided'));
+        $count = $_POST['quantity'] ?? board::error(lang::get_phrase('no_quantity_provided'));
+        //Проверяем $_POST['quantity'] на валидность INT значению
+        if (!filter_var($count, FILTER_VALIDATE_INT)) {
+            board::error(lang::get_phrase('Enter an integer'));
+            return;
+        }
+        // Так же проверяем objectItem на валидность INT значению
+        if (!filter_var($objectItem, FILTER_VALIDATE_INT)) {
+            board::error(lang::get_phrase('Enter an integer'));
+            return;
+        }
+
+        //Проверка что пользователь ввел от двух предметов
+        if ($count < 1) {
+            board::error(lang::get_phrase('minimum_one_item'));
+        }
+
+        $item = null;
+        foreach (user::self()->getWarehouse() as $object) {
+            if ($object->getId() == $objectItem) {
+                $item = $object;
+            }
+        }
+        if ($item == null) {
+            board::error(lang::get_phrase('item_not_found'));
+        }
+
+        // Проверяем что предмет можно стаковать/растаковать
+        if (!$item->getItem()->getIsStackable()) {
+            board::error(lang::get_phrase('item_not_stackable'));
+        }
+
+        $isOk = false;
+        //Проверяем что можно это делать
+        if (\Ofey\Logan22\model\server\server::getServer()->stackableItem()->isAllowAllItemsSplitting()) {
+            $isOk = true;
+        }
+        if (!$isOk) {
+            foreach (\Ofey\Logan22\model\server\server::getServer()->stackableItem()->getSplittableItems() as $splitableItem) {
+                if ($item->getItemId() == $splitableItem) {
+                    $isOk = true;
+                }
+            }
+        }
+
+        if (!$isOk) {
+            board::error(lang::get_phrase('item_magic_protected'));
+        }
+
+        // Нужно запретить разбитие предметов, если предметов одного itemId больше 10
+        $countItem = 0;
+        foreach (user::self()->getWarehouse() as $warehouse) {
+            if ($warehouse->getItemId() == $item->getItemId()) {
+                $countItem++;
+            }
+        }
+        if ($countItem > 10) {
+            board::error(lang::get_phrase('item_quantity_exceeded'));
+        }
+
+        foreach (user::self()->getWarehouse() as $item) {
+            if ($item->getId() == $objectItem) {
+                if ($item->getCount() <= $count) {
+                    board::error(lang::get_phrase('not_enough_items'));
+                }
+                user::self()->removeWarehouseObjectId($objectItem);
+                $item_splite_1 = $item->getCount() - $count;
+                user::self()->addToWarehouse(0, $item->getItemId(), $item_splite_1, $item->getEnchant(), $item->getPhrase());
+                user::self()->addToWarehouse(0, $item->getItemId(), $count, $item->getEnchant(), $item->getPhrase());
+                user::self()->addLog(logTypes::LOG_ITEM_SPLITED, "item_split", [$item->getItemId(), $item_splite_1, $count]);
+                break;
+            }
+        }
+
+        user::self()->getWarehouse(true);
+        board::alert([
+            "ok" => true,
+            "message" => lang::get_phrase('item_split_success'),
+            "items" => user::self()->getWarehouseToArray(),
+            "isAllowAllItemsSplitting" => \Ofey\Logan22\model\server\server::getServer()->stackableItem()->isAllowAllItemsSplitting(),
+            "splittableItems" => \Ofey\Logan22\model\server\server::getServer()->stackableItem()->getSplittableItems(),
+        ]);
+
+    }
 
     public static function warehouseToGame()
     {
-        $objectItems = $_POST['items'] ?? board::error("Не переданы предметы");
-        $account = $_POST['account'] ?? board::error("Не передан аккаунт");
-        $player = $_POST['player'] ?? board::error("Не передан имя игрока");
+        $objectItems = $_POST['items'] ?? board::error(lang::get_phrase('no_items_provided'));
+        $account = $_POST['account'] ?? board::error(lang::get_phrase('no_account_provided'));
+        $player = $_POST['player'] ?? board::error(lang::get_phrase('no_player_name_provided'));
         $arrObjectItems = [];
         foreach (user::self()->getWarehouse() as $warehouse) {
             if (in_array($warehouse->getId(), $objectItems)) {
@@ -33,7 +121,7 @@ class inventory
             }
         }
         if (empty($arrObjectItems)) {
-            board::error("Предметы не найдены в складе");
+            board::error(lang::get_phrase('items_not_found_in_warehouse'));
         }
 
         //Все проверки пройдены успешно

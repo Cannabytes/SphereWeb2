@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Функции сервера{% endblock %}
+{% block title %} {{phrase('func_server')}} {% endblock %}
 
 {% set server = getServer(serverId) %}
 
@@ -15,25 +15,33 @@
                         <a href="/admin" class="avatar border text-muted me-2">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
                         </a>
-                        Функции сервера - {{server.getName()}}
+                        {{phrase('func_server')}} - {{server.getName()}}
                     </div>
                 </div>
                 <div class="card-body">
 
-                    <ul class="nav nav-tabs mb-4" id="serverFunctions" role="tablist">
+                    <ul class="nav nav-tabs mb-3" id="serverFunctions" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="warehouse-tab" data-bs-toggle="tab" data-bs-target="#warehouse-panel" type="button" role="tab" aria-controls="warehouse-panel" aria-selected="true">
-                                <i class="ri-archive-line me-1"></i>Очистка склада
+                                <i class="ri-archive-line me-1"></i>{{phrase('clear_warehouse')}}
                             </button>
                         </li>
-
+                        <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="destack-tab" data-bs-toggle="tab" data-bs-target="#destack-panel" type="button" role="tab" aria-controls="destack-panel" aria-selected="true">
+                                 <i class="ri-archive-line me-1"></i>{{phrase('item_unstack_menu')}}
+                                </button>
+                        </li>
                     </ul>
 
                     <div class="tab-content" id="serverFunctionsContent">
                         <div class="tab-pane fade show active" id="warehouse-panel" role="tabpanel" aria-labelledby="warehouse-tab">
                             {% include 'admin/func/clearWarehouse.html' %}
                         </div>
+                        <div class="tab-pane fade " id="destack-panel" role="tabpanel" aria-labelledby="warehouse-tab">
+                            {% include 'admin/func/destack.html' %}
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -53,7 +61,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
-                    <i class="ri-check-line me-1"></i>Понятно
+                    <i class="ri-check-line me-1"></i>OK
                 </button>
             </div>
         </div>

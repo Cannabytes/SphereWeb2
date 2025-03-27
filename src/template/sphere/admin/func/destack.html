@@ -1,0 +1,436 @@
+<div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-xl-12">
+                            <div class="alert alert-info mb-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="ri-information-line fs-5 me-3 text-info"></i>
+                                    <div>
+                                        <strong>{{phrase('information')}}</strong>
+                                        <p class="mb-0">{{phrase('this_function_allows_to_set_item_stack_you_can_specify_which_items_can_be_split')}}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div id="itemStackingSettings" class="mb-4 row" >
+
+                               <div class="col-xl-6">
+                                <div class="card custom-card shadow-none mb-3 border">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <div class="fw-medium">
+            <i class="ri-scissors-cut-line text-primary me-2"></i>{{phrase('items_that_can_be_split')}}
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="mb-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="allowAllItemsSplitting" {% if getServer().stackableItem().allowAllItemsSplitting() %}checked{% endif %} >
+                <label class="form-check-label" for="allowAllItemsSplitting">
+                    {{phrase('allow_split_of_all_items')}}
+                </label>
+                <div class="fs-12 text-muted">
+{{phrase('if_enabled_all_items_can_be_split_otherwise_only_specified_items')}}
+                </div>
+            </div>
+        </div>
+
+        <div id="specificItemsSplittingSettings" style="display: none;">
+            <div class="mb-4">
+                <label class="form-label">{{phrase('add_item_id_for_splitting')}}</label>
+                <div class="d-flex align-items-center">
+                    <div class="input-group me-2">
+                        <div class="input-group-text">ID</div>
+                        <input type="number" class="form-control" id="splitItemId" placeholder="{{phrase('enter_item_id')}}" min="1" step="1">
+                    </div>
+                    <button type="button" id="addSplitItem" class="btn btn-primary">
+                        <i class="ri-add-line me-1"></i>{{phrase('add')}}
+                    </button>
+                </div>
+            </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="splittableItemsTable">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>{{phrase('item_id')}}</th>
+                                <th>{{phrase('item_name')}}</th>
+                                <th>{{phrase('actions')}}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="splittableItemsList">
+                            {% set splittableItems = getServer().stackableItem().getSplittableItems() %}
+                            {% if splittableItems|length > 0 %}
+                                {% for itemId in splittableItems %}
+                                    <tr data-item-id="{{ itemId }}">
+                                        {% set itemInfo = get_item_info(itemId) %}
+                                        <td><img class="avatar avatar-sm me-2" src="{{ itemInfo.getIcon()|default(path('/uploads/images/icon/NOIMAGE.webp')) }}" alt=""> {{ itemId }}</td>
+                                        <td>{{ itemInfo.itemName|default('Предмет #' ~ itemId) }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-danger remove-split-item">
+                                                <i class="ri-delete-bin-line"></i> {{phrase('delete')}}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+            <div id="emptySplitListMessage" class="text-center text-muted py-4" {% if splittableItems|length > 0 %}style="display: none;"{% endif %}>
+                <i class="ri-scissors-cut-line fs-1 mb-2 d-block"></i>
+                {{phrase('split_item_list_empty')}}
+            </div>
+
+
+        </div>
+    </div>
+</div>
+                               </div>
+
+                               <div class="col-xl-6">
+                                <div class="card custom-card shadow-none mb-3 border">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <div class="fw-medium">
+                                            <i class="ri-stack-line text-primary me-2"></i>{{phrase('item_connection_settings')}}
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="allowAllItemsStacking" {% if getServer().stackableItem().allowAllItemsStacking() %}checked{% endif %} >
+                                                <label class="form-check-label" for="allowAllItemsStacking">
+                                                    {{phrase('allow_connection_of_all_items')}}
+                                                </label>
+                                                <div class="fs-12 text-muted">
+{{phrase('if_enabled_all_items_can_be_connected_otherwise_only_specified_items')}}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="specificItemsStackingSettings" style="display: none;">
+                                            <div class="mb-4">
+                                                <label class="form-label">{{phrase('add_item_id_for_connection')}}</label>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="input-group me-2">
+                                                        <div class="input-group-text">ID</div>
+                                                        <input type="number" class="form-control" id="stackItemId" placeholder="{{phrase('enter_item_id')}}" min="1" step="1">
+                                                    </div>
+                                                    <button type="button" id="addStackItem" class="btn btn-primary">
+                                                        <i class="ri-add-line me-1"></i>{{phrase('add')}}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover" id="stackableItemsTable">
+                                                    <thead class="bg-light">
+                                                        <tr>
+                                                            <th>{{phrase('item_id')}}</th>
+                                                            <th>{{phrase('item_name')}}</th>
+                                                            <th>{{phrase('actions')}}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="stackableItemsList">
+                                                        {% set stackableItems = getServer().stackableItem().getStackableItems() %}
+                                                        {% if stackableItems|length > 0 %}
+                                                            {% for itemId in stackableItems %}
+                                                                <tr data-item-id="{{ itemId }}">
+                                                                    {% set itemInfo = get_item_info(itemId) %}
+                                                                    <td><img class="avatar avatar-sm me-2" src="{{ itemInfo.itemInfo.getIcon()|default(path('/uploads/images/icon/NOIMAGE.webp')) }}" alt=""> {{ itemId }}</td>
+                                                                    <td>{{ itemInfo.itemName|default('Предмет #' ~ itemId) }}</td>
+                                                                    <td>
+                                                                        <button type="button" class="btn btn-sm btn-danger remove-stack-item">
+                                                                            <i class="ri-delete-bin-line"></i> {{phrase('delete')}}
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <div id="emptyStackListMessage" class="text-center text-muted py-4" {% if stackableItems|length > 0 %}style="display: none;"{% endif %}>
+                                                <i class="ri-stack-line fs-1 mb-2 d-block"></i>
+                                                {{phrase('connection_item_list_empty')}}
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button type="button" id="saveStackingSettings" class="btn btn-success">
+                        <i class="ri-save-line me-1"></i>{{phrase('save_settings')}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    $(document).ready(function() {
+        // Проверка начального состояния настроек
+        if ($('#allowAllItemsStacking').is(':checked')) {
+            $('#specificItemsStackingSettings').hide();
+        } else {
+            $('#specificItemsStackingSettings').show();
+        }
+
+        if ($('#allowAllItemsSplitting').is(':checked')) {
+            $('#specificItemsSplittingSettings').hide();
+        } else {
+            $('#specificItemsSplittingSettings').show();
+        }
+
+        // Обработчик переключения режима стакования предметов
+        $('#allowAllItemsStacking').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('#specificItemsStackingSettings').slideUp(300);
+            } else {
+                $('#specificItemsStackingSettings').slideDown(300);
+            }
+        });
+
+        // Обработчик переключения режима разбиения предметов
+        $('#allowAllItemsSplitting').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('#specificItemsSplittingSettings').slideUp(300);
+            } else {
+                $('#specificItemsSplittingSettings').slideDown(300);
+            }
+        });
+
+        // Обработчик добавления нового предмета для стакования
+        $('#addStackItem').on('click', function() {
+            const itemId = $('#stackItemId').val().trim();
+
+            if (!itemId || isNaN(itemId) || parseInt(itemId) <= 0) {
+                noticeError('{{phrase("please_enter_a_valid_item_id")}}');
+                return;
+            }
+
+            // Проверяем, существует ли уже такой ID в списке
+            if ($(`#stackableItemsList tr[data-item-id="${itemId}"]`).length > 0) {
+                noticeError('{{phrase("this_item_is_already_added_to_the_list")}}');
+                return;
+            }
+
+            // Запрос информации о предмете
+            $.ajax({
+                url: '/admin/client/item/info',
+                type: 'POST',
+                data: { itemID: itemId },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.ok) {
+                        if (!response.item.isStackable) {
+                            noticeError('{{phrase("item_with_specified_id_is_not_stackable")}}');
+                            return;
+                        }
+                        addItemToStackList(itemId, response.item.itemName, response.item.icon);
+                        $('#stackItemId').val('');
+                    } else {
+                        noticeError('{{phrase("item_with_specified_id_not_found")}}');
+                    }
+                },
+                error: function() {
+                    // Для демонстрации добавляем предмет с заглушкой
+                    const itemName = 'Предмет #' + itemId;
+                    const itemIcon = ('/uploads/images/icon/NOIMAGE.webp');
+                    addItemToStackList(itemId, itemName, itemIcon);
+                    $('#stackItemId').val('');
+                }
+            });
+        });
+
+        // Обработчик добавления нового предмета для разбиения
+        $('#addSplitItem').on('click', function() {
+            const itemId = $('#splitItemId').val().trim();
+
+            if (!itemId || isNaN(itemId) || parseInt(itemId) <= 0) {
+                noticeError('{{phrase("please_enter_a_valid_item_id")}}');
+                return;
+            }
+
+            // Проверяем, существует ли уже такой ID в списке
+            if ($(`#splittableItemsList tr[data-item-id="${itemId}"]`).length > 0) {
+                noticeError('{{phrase("this_item_is_already_added_to_the_list")}}');
+                return;
+            }
+
+            // Запрос информации о предмете
+            $.ajax({
+                url: '/admin/client/item/info',
+                type: 'POST',
+                data: { itemID: itemId },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.ok) {
+                        if (!response.item.isStackable) {
+                            noticeError('{{phrase("item_with_specified_id_is_not_stackable")}}');
+                            return;
+                        }
+                        addItemToSplitList(itemId, response.item.itemName, response.item.icon);
+                        $('#splitItemId').val('');
+                    } else {
+                        noticeError('{{phrase("item_with_specified_id_not_found")}}');
+                    }
+                },
+                error: function() {
+                    // Для демонстрации добавляем предмет с заглушкой
+                    const itemName = 'Предмет #' + itemId;
+                    const itemIcon = ('/uploads/images/icon/NOIMAGE.webp');
+                    addItemToSplitList(itemId, itemName, itemIcon);
+                    $('#splitItemId').val('');
+                }
+            });
+        });
+
+        // Функция добавления предмета в таблицу стакуемых
+        function addItemToStackList(itemId, itemName, itemIcon) {
+            // Удаляем сообщение о пустом списке, если оно есть
+            if ($('#emptyStackListMessage').is(':visible')) {
+                $('#emptyStackListMessage').hide();
+            }
+
+            const newRow = `
+            <tr data-item-id="${itemId}">
+                <td><img class="avatar avatar-sm me-2" src="${itemIcon}" alt=""> ${itemId}</td>
+                <td>${itemName}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger remove-stack-item">
+                        <i class="ri-delete-bin-line"></i> {{phrase('delete')}}
+                    </button>
+                </td>
+            </tr>
+        `;
+
+            $('#stackableItemsList').append(newRow);
+        }
+
+        // Функция добавления предмета в таблицу разбиваемых
+        function addItemToSplitList(itemId, itemName, itemIcon) {
+            // Удаляем сообщение о пустом списке, если оно есть
+            if ($('#emptySplitListMessage').is(':visible')) {
+                $('#emptySplitListMessage').hide();
+            }
+
+            const newRow = `
+            <tr data-item-id="${itemId}">
+                <td><img class="avatar avatar-sm me-2" src="${itemIcon}" alt=""> ${itemId}</td>
+                <td>${itemName}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger remove-split-item">
+                        <i class="ri-delete-bin-line"></i> {{phrase('delete')}}
+                    </button>
+                </td>
+            </tr>
+        `;
+
+            $('#splittableItemsList').append(newRow);
+        }
+
+        // Обработчик удаления предмета из списка стакуемых
+        $(document).on('click', '.remove-stack-item', function() {
+            const row = $(this).closest('tr');
+            row.fadeOut(300, function() {
+                $(this).remove();
+
+                // Если список пуст, показываем сообщение
+                if ($('#stackableItemsList tr').length === 0) {
+                    $('#emptyStackListMessage').show();
+                }
+            });
+        });
+
+        // Обработчик удаления предмета из списка разбиваемых
+        $(document).on('click', '.remove-split-item', function() {
+            const row = $(this).closest('tr');
+            row.fadeOut(300, function() {
+                $(this).remove();
+
+                // Если список пуст, показываем сообщение
+                if ($('#splittableItemsList tr').length === 0) {
+                    $('#emptySplitListMessage').show();
+                }
+            });
+        });
+
+        // Обработчик сохранения настроек
+        $('#saveStackingSettings').on('click', function() {
+            const allowAllItemsStacking = $('#allowAllItemsStacking').is(':checked');
+            const allowAllItemsSplitting = $('#allowAllItemsSplitting').is(':checked');
+
+            // Собираем список ID предметов для стакования
+            const stackableItems = [];
+            $('#stackableItemsList tr').each(function() {
+                stackableItems.push($(this).data('item-id'));
+            });
+
+            // Собираем список ID предметов для разбиения
+            const splittableItems = [];
+            $('#splittableItemsList tr').each(function() {
+                splittableItems.push($(this).data('item-id'));
+            });
+
+            // AJAX-запрос на сохранение настроек
+            AjaxSend('/admin/func/destack', 'POST', {
+                allowAllItemsStacking: allowAllItemsStacking,
+                allowAllItemsSplitting: allowAllItemsSplitting,
+                stackableItems: stackableItems,
+                splittableItems: splittableItems
+            }, true).then(function (response) {
+                if (response.ok == true) {
+                    noticeSuccess('{{phrase("stacking_item_settings_saved_successfully")}}');
+                } else {
+                    noticeError(response.message);
+                }
+            }).catch(function(error) {
+                noticeError('Произошла ошибка при сохранении настроек');
+                console.error(error);
+            });
+        });
+    });
+</script>
+
+<style>
+    .avatar-sm {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+    }
+
+
+    /* Стилизация для списка предметов */
+    #stackableItemsTable, #splittableItemsTable {
+        margin-bottom: 0;
+    }
+
+    #stackableItemsTable th, #splittableItemsTable th {
+        font-weight: 600;
+    }
+
+    /* Анимация для добавления/удаления строк */
+    @keyframes highlight {
+        0% { background-color: rgba(0, 123, 255, 0.1); }
+        100% { background-color: transparent; }
+    }
+
+    #stackableItemsList tr:first-child, #splittableItemsList tr:first-child {
+        animation: highlight 1.5s ease;
+    }
+</style>

@@ -70,6 +70,9 @@ class board
         if (user::self()->isAuth()) {
             $arr['sphereCoin'] = user::self()->getDonate();
         }
+        if($flags == 0) {
+            $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+        }
         echo json_encode($arr, $flags);
         if ( ! $next) {
             exit;

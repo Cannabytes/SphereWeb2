@@ -957,4 +957,25 @@ class options
         }
         echo json_encode($rows);
     }
+
+
+    // Настройки стакуемых предметов сервера
+    public static function saveStackItems()
+    {
+        // Проверяй allowAllItemsStacking и allowAllItemsSplitting через фильтр POST запроса на boolean
+
+        $allowAllItemsStacking = filter_var($_POST['allowAllItemsStacking'], FILTER_VALIDATE_BOOLEAN);
+        $allowAllItemsSplitting = filter_var($_POST['allowAllItemsSplitting'], FILTER_VALIDATE_BOOLEAN);
+        $stackableItems = $_POST['stackableItems'] ?? [];
+        $splittableItems = $_POST['splittableItems'] ?? [];
+        \Ofey\Logan22\model\server\server::getServer()->stackableItem()->set($allowAllItemsStacking, $allowAllItemsSplitting, $stackableItems, $splittableItems);
+        \Ofey\Logan22\model\server\server::getServer()->save();
+        board::notice(true, "Настройки сохранены");
+    }
+
+    public static function stackInventoryItems(): void
+    {
+        user::self()->stackInventoryItems();
+    }
+
 }

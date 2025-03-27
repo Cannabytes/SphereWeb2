@@ -373,13 +373,13 @@ class userModel
             if ($itemObj == null) {
                 continue;
             }
-            $warehouse->setId($item['id'])->setItemId($item['item_id'])->setCount($item['count'])->setEnchant($item['enchant'])->setPhrase(
+            $warehouse->setUserId($this->getId())->setId($item['id'])->setItemId($item['item_id'])->setCount($item['count'])->setEnchant($item['enchant'])->setPhrase(
                 $item['phrase']
             )->setItem($itemObj)->setServerId($this->serverId());
             $warehouseArray[] = $warehouse;
         }
-
-        return $warehouseArray;
+        $this->warehouse = $warehouseArray;
+        return $this->warehouse;
     }
 
     private function serverId()
@@ -497,6 +497,126 @@ class userModel
         }
 
         return $this->warehouse;
+    }
+
+    public function getWarehouseToArray(): array
+    {
+        $warehouse = $this->getWarehouse();
+        $warehouseArray = [];
+        foreach ($warehouse as $item) {
+            $warehouseArray[] = $item->toArray();
+        }
+        return $warehouseArray;
+    }
+
+
+    /**
+     * Стакует (объединяет) одинаковые предметы в складе пользователя
+     */
+    /**
+     * Стакует (объединяет) одинаковые предметы в складе пользователя
+     */
+    public function stackInventoryItems(): void
+    {
+        // Получаем настройки стакования с сервера
+        $isAllowAllItemsStacking = \Ofey\Logan22\model\server\server::getServer()->stackableItem()->isAllowAllItemsStacking();
+        $getStackItemsList = \Ofey\Logan22\model\server\server::getServer()->stackableItem()->getStackableItems();
+
+        // Получаем предметы из склада
+        $warehouse = $this->getWarehouse();
+
+        // Если склад пустой, возвращаем результат
+        if (empty($warehouse)) {
+            board::error('Склад пуст');
+        }
+
+        // Массив для хранения стакуемых предметов, ключ - ID предмета
+        $stackableItems = [];
+
+        // Массив для хранения ID предметов, которые нужно удалить
+        $itemsToRemove = [];
+
+        // Счетчик для отслеживания количества стакованных предметов
+        $stackedItemsCount = 0;
+
+        // Проходим по всем предметам в складе
+        foreach ($warehouse as $item) {
+            $itemId = $item->getItemId();
+            $enchant = $item->getEnchant();
+
+            // Проверяем, можно ли стаковать этот предмет
+            $canStackItem = false;
+
+            // Если разрешено стаковать все предметы
+            if ($isAllowAllItemsStacking) {
+                $canStackItem = $item->getItem()->getIsStackable();
+            } else {
+                // Иначе проверяем, есть ли предмет в списке стакуемых
+                $canStackItem = $item->getItem()->getIsStackable() && in_array($itemId, $getStackItemsList);
+            }
+
+            // Если предмет можно стаковать
+            if ($canStackItem) {
+                // Создаем уникальный ключ для каждого типа предмета с учетом его зачарования
+                $key = $itemId . '_' . $enchant;
+
+                // Если мы уже нашли такой предмет ранее
+                if (isset($stackableItems[$key])) {
+                    // Добавляем количество текущего предмета к уже найденному
+                    $stackableItems[$key]['count'] += $item->getCount();
+
+                    // Добавляем ID предмета в список на удаление
+                    $itemsToRemove[] = $item->getId();
+
+                    // Увеличиваем счетчик стакованных предметов
+                    $stackedItemsCount++;
+                } else {
+                    // Если это первый предмет такого типа, сохраняем его
+                    $stackableItems[$key] = [
+                        'id' => $item->getId(),
+                        'count' => $item->getCount()
+                    ];
+                }
+            }
+        }
+
+        // Если нет предметов для стакования, возвращаем результат
+        if (empty($itemsToRemove)) {
+            board::error("Нет предметов для стакования");
+        }
+
+        try {
+            // Начинаем транзакцию
+            \Ofey\Logan22\model\db\sql::transaction(function () use ($stackableItems, $itemsToRemove) {
+                // Обновляем количество предметов в базе данных
+                foreach ($stackableItems as $data) {
+                    \Ofey\Logan22\model\db\sql::run(
+                        "UPDATE `warehouse` SET `count` = ? WHERE `id` = ?",
+                        [$data['count'], $data['id']]
+                    );
+                }
+                $this->addLog(logTypes::LOG_ITEM_STACK, "item_stack", [
+                    "items" => $itemsToRemove,
+                    "data" => json_encode($data),
+                ]);
+                // Удаляем дублирующиеся предметы
+                $this->removeWarehouseObjectId($itemsToRemove);
+            });
+
+            $this->getWarehouse(true);
+
+            board::alert([
+                'success' => true,
+                'message' => "Успешно объединено {$stackedItemsCount} предметов",
+                'stacked_items' => $stackedItemsCount,
+                'items' => $this->getWarehouseToArray(),
+                "isAllowAllItemsSplitting" => \Ofey\Logan22\model\server\server::getServer()->stackableItem()->isAllowAllItemsSplitting(),
+                "splittableItems" => \Ofey\Logan22\model\server\server::getServer()->stackableItem()->getSplittableItems(),
+            ]);
+
+        } catch (\Exception $e) {
+            board::error('Ошибка при стаковании предметов: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -1244,7 +1364,7 @@ class userModel
      * @return void
      * @throws \Exception
      */
-    public function removeWarehouseObjectId(int|array $objectId)
+    public function removeWarehouseObjectId(int|array $objectId): void
     {
         if (is_array($objectId)) {
             // Формируем строку с плейсхолдерами для каждого элемента массива

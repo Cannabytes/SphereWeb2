@@ -19,5 +19,7 @@ enum logTypes: int
     case LOG_WHEEL_WIN = 13;
     case LOG_WINROW_WIN = 14;
     case LOG_DONATE_BONUS_SUCCESS = 15;
+    case LOG_ITEM_SPLITED = 16;
+    case LOG_ITEM_STACK = 17;
 }
 
