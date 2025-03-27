@@ -1137,7 +1137,7 @@ $(document).ready(function() {
               noticeSuccess(response.message || '{{phrase("success_stack")}}');
               updateWarehouseItemsList(response);
             } else {
-              noticeError(response.message || '{{phrase("error_stack")}});
+              noticeError(response.message || '{{phrase("error_stack")}}');
             }
           })
           .catch(function(error) {
