@@ -113,6 +113,11 @@ class server
         }
         $json = json_encode($arr) ?? "";
         $url = $link . type::url($type) ?? board::error("Не указан URL запроса");
+
+        if (!preg_match('/^https?:\/\//i', $url)) {
+            $url = 'http://' . $url;
+        }
+
         $ch = curl_init();
         $headers = [
             'Content-Type: application/json',
@@ -135,6 +140,7 @@ class server
             }
         }
         $headers[] = "Token: " . self::getToken();
+
         $host = $_SERVER['HTTP_HOST'];
         if (empty($host) || !self::is_valid_domain(parse_url($host, PHP_URL_HOST))) {
             $host = $_SERVER['SERVER_NAME'];
@@ -144,15 +150,27 @@ class server
         $parsedHost = preg_replace('/:\d+$/', '', $parsedHost);
         $headers[] = "Domain: " . $parsedHost;
 
+        $headers[] = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36";
+        $headers[] = "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7";
+        $headers[] = "Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7";
+        $headers[] = "Connection: keep-alive";
+        $headers[] = "Cache-Control: max-age=0";
+        $headers[] = "Origin: https://" . $parsedHost;
+        $headers[] = "X-Requested-With: XMLHttpRequest";
+        $headers[] = 'Content-Length: ' . strlen($json);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true); // Указываем, что это POST запрос
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json); // Передаем JSON данные
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Возвращаем результат в переменную
-        curl_setopt($ch, CURLOPT_TIMEOUT, self::$timeout);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
         curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+
         self::$countRequest++;
         $response = curl_exec($ch);
+
         if ($response === false) {
             self::$codeError = "sphereapi_unavailable";
             self::$error = 'Ошибка соединения с Sphere API. Попробуйте еще раз. Возможно сервер на перезагрузке либо указаны неверные данные подключения к Sphere API. Если ошибка повторится, обратитесь в службу поддержки.';
@@ -218,6 +236,9 @@ class server
         }
         $json = json_encode($arr) ?? "";
         $url = $link . $url ?? board::error("Не указан URL запроса");
+        if (!preg_match('/^https?:\/\//i', $url)) {
+            $url = 'http://' . $url;
+        }
         $ch = curl_init();
         $headers = [
             'Content-Type: application/json',

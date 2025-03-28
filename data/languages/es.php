@@ -2064,4 +2064,5 @@ Contraseña: %%password%%',
     'user_deleted_game_account' => 'El usuario eliminó su cuenta de juego %s',
     'delete_limit_exceeded' => 'Límite de eliminación excedido',
     'account_too_long' => 'El nombre de la cuenta es demasiado largo',
+    'item_stack' => 'El usuario apiló artículos en el almacén',
     ];

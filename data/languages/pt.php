@@ -2059,4 +2059,5 @@ Password: %%password%%',
     'user_deleted_game_account' => 'O usuário excluiu sua conta de jogo %s',
     'delete_limit_exceeded' => 'Limite de exclusão excedido',
     'account_too_long' => 'O nome da conta é muito longo',
+    'item_stack' => 'O usuário empilhou itens no armazém',
     ];

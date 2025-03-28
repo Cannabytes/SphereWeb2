@@ -2066,4 +2066,5 @@ Password: %%password%%',
     'user_deleted_game_account' => 'User deleted their game account %s',
     'delete_limit_exceeded' => 'Deletion limit exceeded',
     'account_too_long' => 'Account name is too long',
+    'item_stack' => 'User stacked items in the warehouse',
 ];

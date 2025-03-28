@@ -2089,4 +2089,5 @@ Password: %%password%%',
     'user_deleted_game_account' => 'Пользователь удалил свой игровой аккаунт %s',
     'delete_limit_exceeded' => 'Превышен лимит удалений',
     'account_too_long' => 'Имя аккаунта слишком длинное',
+    'item_stack' => 'Пользователь состакал предметы на складе',
 );

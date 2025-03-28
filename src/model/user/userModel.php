@@ -527,7 +527,7 @@ class userModel
 
         // Если склад пустой, возвращаем результат
         if (empty($warehouse)) {
-            board::error('Склад пуст');
+            board::error(lang::get_phrase('warehouse_empty'));
         }
 
         // Массив для хранения стакуемых предметов, ключ - ID предмета

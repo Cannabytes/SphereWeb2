@@ -145,6 +145,12 @@ class stream
 
     public static function stream_get_platform($link)
     {
+        if ($link === null || $link === '') {
+            return 'unknown';
+        }
+
+        $link = (string)$link;
+
         if (str_contains($link, 'youtube.com') || str_contains($link, 'youtu.be')) {
             return 'youtube';
         }
