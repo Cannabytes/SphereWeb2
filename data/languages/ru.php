@@ -2061,13 +2061,11 @@ Password: %%password%%',
     'attention' => 'Внимание!',
     'this_operation_will_lead_to_the_complete_removal_of_all_items_from_the_warehouse_the_action_is_irreversible' => 'Данная операция приведет к полному удалению всех предметов из склада. Действие необратимо!',
     'this_function_allows_to_set_item_stack_you_can_specify_which_items_can_be_split' => 'Данная функция позволяет настроить стакование предметов. Вы можете указать, какие предметы могут быть разбиты на части (например, если у пользователя 400 предметов, он сможет их разбить на 100 и 300).',
-
     'items_that_can_be_split' => 'Предметы, которые можно разбить на части',
     'allow_split_of_all_items' => 'Разрешить разделение всех предметов',
     'if_enabled_all_items_can_be_split_otherwise_only_specified_items' => 'Если включено, все предметы можно будет разбивать на части. Иначе будет разрешено разбиение только указанных предметов.',
     'add_item_id_for_splitting' => 'Добавить ID предмета для разделения',
     'add' => 'Добавить',
-
     'item_name' => 'Название предмета',
     'split_item_list_empty' => 'Список предметов для разбиения пуст',
     'item_connection_settings' => 'Настройки соединения предметов',
@@ -2082,11 +2080,13 @@ Password: %%password%%',
     'item_with_specified_id_not_found' => 'Предмет с указанным ID не найден',
     'stacking_item_settings_saved_successfully' => 'Настройки стакования предметов успешно сохранены',
     'func_server' => 'Функции сервера',
-
-
-
-
-
-
-
+    'confirm_delete' => 'Подтвердить удаление',
+    'delete_account_confirm' => 'Подтвердить удалить аккаунт',
+    'delete_account_desc' => 'Аккаунт будет удален из списка аккаунтов, в игре аккаунт будет доступен.',
+    'no' => 'Нет',
+    'account_deleted_success' => 'Аккаунт успешно удален',
+    'account_deletion' => 'Удаление аккаунта',
+    'user_deleted_game_account' => 'Пользователь удалил свой игровой аккаунт %s',
+    'delete_limit_exceeded' => 'Превышен лимит удалений',
+    'account_too_long' => 'Имя аккаунта слишком длинное',
 );

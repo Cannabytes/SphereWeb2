@@ -14,6 +14,7 @@ enum type
     case INVENTORY_TO_GAME;
     case STARTPACK_TO_GAME;
     case RELOCATION;
+    case DELETE_ACCOUNT;
 
     //Получение списка коллекций запросов
     case SERVER_COLLECTIONS;
@@ -124,6 +125,7 @@ enum type
             self::INVENTORY_TO_GAME => '/api/user/player/item/add',
             self::STARTPACK_TO_GAME => '/api/user/player/startpack/add',
             self::RELOCATION => '/api/user/player/relocation',
+            self::DELETE_ACCOUNT => '/api/user/player/account/delete',
 
             self::SERVER_COLLECTIONS => '/api/server/collections',
             self::CONNECT_DB => '/api/server/mysql/connection',

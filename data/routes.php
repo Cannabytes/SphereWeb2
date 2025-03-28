@@ -2699,4 +2699,19 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  198 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/player/account/delete',
+    'func' => 'controller\\account\\characters\\account::delete',
+    'access' => 
+    array (
+      0 => 'user',
+      1 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );

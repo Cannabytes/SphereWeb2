@@ -21,5 +21,6 @@ enum logTypes: int
     case LOG_DONATE_BONUS_SUCCESS = 15;
     case LOG_ITEM_SPLITED = 16;
     case LOG_ITEM_STACK = 17;
+    case LOG_DELETE_ACCOUNT = 18;
 }
 

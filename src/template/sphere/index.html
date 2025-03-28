@@ -246,6 +246,9 @@
               {% endif %}
             </div>
 
+
+
+
           <div class="col-xl-6">
               {% if getUser().isAuth() %}
               <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between align-items-center">
@@ -274,7 +277,13 @@
                   <tbody id="player_account_list">
                   {% for account in getUser().getAccounts() %}
                   <tr class="account-row">
-                    <td>{{ account.getAccount() }}</td>
+                    <td>{{ account.getAccount() }}
+
+                        <i data-account="{{account.getAccount()}}" role="button" class="bi bi-person-dash deleteAccount"
+                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{phrase('account_deletion')}}"
+                        ></i>
+
+                     </td>
                     <td>
                     <i role="button" class="fe fe-settings btn-change-password" data-account="{{account.getAccount()}}"
                        data-bs-toggle="modal" data-bs-effect="effect-slide-in-right"
@@ -446,6 +455,59 @@
 </div>
 
 {% if getUser().isAuth() %}
+
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteAccountModalLabel">{{phrase('confirm_delete')}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{phrase('delete_account_confirm')}} <span class="fw-bold" id="accountToDelete"></span>?
+        <p class="font-13 text-muted">{{phrase('delete_account_desc')}}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{phrase('no')}}</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteAccount">{{phrase('yes')}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    // Обработчик клика по иконке удаления аккаунта
+    $(document).on('click', '.deleteAccount', function() {
+      var accountName = $(this).data('account');
+      $('#accountToDelete').text(accountName);
+      $('#confirmDeleteAccount').data('account', accountName);
+      $('#deleteAccountModal').modal('show');
+    });
+
+    // Обработчик подтверждения удаления
+    $(document).on('click', '#confirmDeleteAccount', function() {
+      var accountName = $(this).data('account');
+
+      // Отправка AJAX запроса на удаление аккаунта
+      AjaxSend('/player/account/delete', 'POST', {
+        account: accountName
+      }, true).then(function(response) {
+        $('#deleteAccountModal').modal('hide');
+        responseAnalysis(response);
+        if (response.ok) {
+          $('tr.account-row').has('i[data-account="' + accountName + '"]').remove();
+          $('tr.character-row-' + accountName).remove();
+        }
+      }).catch(function(error) {
+        $('#deleteAccountModal').modal('hide');
+      });
+    });
+  });
+</script>
+
+
+
 <form action="/player/account/change/password" method="POST">
   <div class="modal fade" id="changepassword">
     <div class="modal-dialog modal-dialog-centered text-center" role="document">
