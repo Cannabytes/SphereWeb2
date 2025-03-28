@@ -656,7 +656,7 @@
           {% endif %}
 
           {% if warehouse.count > 1 and unstackOk %}
-             <span class="badge bg-blue splitItem js-split-item-btn me-1">{{phrase('unstack')}}</span>
+             <span role="button" class="badge bg-blue splitItem js-split-item-btn me-1">{{phrase('unstack')}}</span>
           {% endif %}
 
 
@@ -896,7 +896,7 @@ function createWarehouseItemHtml(item, canSplit) {
               </label>
             </div>
             <div>
-              ${canSplit ? `<span class="badge bg-blue splitItem js-split-item-btn me-1">{{phrase('unstack')}}</span>` : ''}
+              ${canSplit ? `<span role="button" class="badge bg-blue splitItem js-split-item-btn me-1">{{phrase('unstack')}}</span>` : ''}
             </div>
           </div>
           <div class="small text-muted">${item.phrase || ''}</div>
