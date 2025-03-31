@@ -35,6 +35,7 @@ class plugin
         $serverId = user::self()->getServerId();
         if ($data) {
             foreach($data AS $configData){
+                $pluginServerId = $configData['serverId'];
                 $plugins = json_decode($configData['setting'], true);
                 if (!empty($plugins)) {
                     $pluginKeys = array_map(fn($plugin) => "'__PLUGIN__{$plugin}'", $plugins);
@@ -50,7 +51,6 @@ class plugin
                         "SELECT * FROM `settings` WHERE `key` IN ($inClause) AND serverId = ? {$selectDefaultSetting}",
                         [$serverId]
                     );
-
                     $settingsMap = [];
                     foreach ($settings as $setting) {
                         $plugin = str_replace('__PLUGIN__', '', $setting['key']);
@@ -58,9 +58,12 @@ class plugin
                     }
 
                     foreach ($plugins as $plugin) {
+                        if($pluginServerId != $serverId && $serverId != 0){
+                            continue;
+                        }
                         $pluginSetting = new DynamicPluginSetting();
                         $pluginSetting->pluginName = $plugin;
-                        $pluginSetting->pluginServerId = $serverId;
+                        $pluginSetting->pluginServerId = $pluginServerId;
 
                         // Загрузка стандартных данных плагина из tpl::pluginsAll()
                         foreach (tpl::pluginsAll() as $key => $value) {
@@ -84,8 +87,6 @@ class plugin
                 }
             }
         }
-
-
         self::$plugins = $pluginList;
     }
 
@@ -133,7 +134,6 @@ class plugin
             if (!$pluginName || !$setting) {
                 throw new InvalidArgumentException('Отсутствуют обязательные параметры');
             }
-
             $serverId = isset($_POST['serverId']) && $_POST['serverId'] == 0
                 ? 0
                 : user::self()->getServerId();

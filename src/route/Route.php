@@ -54,7 +54,6 @@ class Route extends Router {
 
         $pluginCustom = fileSys::dir_list("custom/plugins/");
         $pluginsDir = fileSys::dir_list("src/component/plugins/");
-
         $dir = fileSys::get_dir("src/component/plugins/");
         foreach($pluginsDir AS $i => $plugin){
             if (in_array($plugin, $pluginCustom)) {

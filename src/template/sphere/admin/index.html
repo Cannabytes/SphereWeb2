@@ -410,24 +410,33 @@
                 <div class="card-body">
                     <h4 class="mb-2 fw-semibold">{{phrase('admin_recommendations')}}</h4>
 
+<ul class="list-unstyled mb-4">
+  <!-- SUPER-GUARD -->
+  <li class="d-flex py-2 border-bottom">
+    <div>
+      <h6 class="fw-bold mb-1">
+        <a href="https://SUPER-GUARD.CLOUD" target="_blank" class="text-orange">
+          <img src="{{template}}/assets/images/super-guard-logo-icon.svg" alt="SUPER-GUARD" width="50" height="auto" class="me-2">
+          SUPER-GUARD.CLOUD
+        </a>
+      </h6>
+      <p class="small text-muted mb-0">{{ phrase('SUPER-GUARD.CLOUD_BANNER') }}</p>
+    </div>
+  </li>
 
-                    <ul class="task-list">
-
-                        <li class="d-sm-flex">
-                            <div>
-                                <i class="task-icon bg-success"></i>
-                                <h6 class="fw-semibold text-success"><a href="https://l2up.host"><img
-                                        src="{{template}}/assets/images/l2up3.png"></a></h6>
-                                <p class="text-muted fs-12 mb-0">
-                                    «<a href="javascript:void(0)" class="fw-semibold text-success">L2Up.host</a>»
-                                    предлагает <strong>хостинг</strong>, <strong>VPS сервера</strong>, <strong>проксирование</strong>,
-                                    <strong>выделенные сервера</strong>, качественную <strong>защиту от DDoS</strong>
-                                    атак, что позволит оставатся вашему ресурсу доступным.
-                                </p>
-                            </div>
-                        </li>
-
-                    </ul>
+    <!-- L2Up.host -->
+  <li class="d-flex py-2">
+    <div>
+      <h6 class="fw-bold mb-1">
+        <a href="https://l2up.host" target="_blank" class="text-success">
+          <img src="{{template}}/assets/images/l2up3.png" alt="L2Up.host" height="auto" class="me-2">
+          L2Up.host
+        </a>
+      </h6>
+      <p class="small text-muted mb-0">{{ phrase('L2Up.host_banner') }}</p>
+    </div>
+  </li>
+</ul>
 
 
                 </div>

@@ -2065,4 +2065,8 @@ Contraseña: %%password%%',
     'delete_limit_exceeded' => 'Límite de eliminación excedido',
     'account_too_long' => 'El nombre de la cuenta es demasiado largo',
     'item_stack' => 'El usuario apiló artículos en el almacén',
+
+    'SUPER-GUARD.CLOUD_BANNER' => ' Se especializa en brindar protección de primer nivel contra ataques DDoS, garantizando la seguridad y estabilidad de sus servicios. La empresa ofrece hosting confiable, servidores virtuales y dedicados. Soporte técnico de alto nivel.',
+    'L2Up.host_banner' => 'Hosting, servidores VPS, proxying, servidores dedicados y protección de alta calidad contra ataques DDoS para garantizar la disponibilidad de su recurso.',
+
     ];
