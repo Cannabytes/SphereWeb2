@@ -19,9 +19,8 @@
   <meta property="og:title" content="{{ config().other().getAllTitlePage() }}">
   <meta property="og:description" content="{{ config().other().getKeywords() }}">
   <meta property="og:image" content="{{config().logo().getLogo()}}">
-  <meta property="og:url" content="https://ваш-сайт.com/текущая-страница">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="EMERLAND">
+  <meta property="og:site_name" content="{{ config().other().getAllTitlePage() }}">
 
   {{ config().logo().favicon()  }}
 
