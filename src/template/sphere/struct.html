@@ -13,7 +13,6 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>{% block title %}{% endblock %} {{ config().other().getAllTitlePage() }}</title>
   <meta name="Description" content="{{ config().other().getAllTitlePage() }}">
-  <meta name="Author" content="SphereWeb CMS">
   <meta name="keywords" content="{{ config().other().getKeywords() }}">
 
   <meta property="og:title" content="{{ config().other().getAllTitlePage() }}">
@@ -38,7 +37,7 @@
   {% if config().menu().isNeonEffects() %}
   <link rel="stylesheet" href="{{template}}/assets/css/menu-neon.css">
   {% endif %}
- 
+
   <!-- Choices JS -->
   <script src="{{template}}/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
 
@@ -131,8 +130,8 @@
 
     // Определяем, нужно ли подсветить текущую ссылку
     var isActive = (href === currentPath) ||
-      (href === '/' && currentPath === '/') ||
-      (href !== '/' && href !== 'javascript:void(0);' && currentPath.startsWith(href));
+          (href === '/' && currentPath === '/') ||
+          (href !== '/' && href !== 'javascript:void(0);' && currentPath.startsWith(href));
 
     // Если ссылка активна, применяем стили
     if (isActive) {
@@ -143,8 +142,8 @@
       $this.parentsUntil('.side-menu', '.slide-menu').show();
       $this.parentsUntil('.side-menu', '.has-sub').each(function () {
         $(this).children('.side-menu__item').find('.fe-chevron-right')
-          .removeClass('fe-chevron-right')
-          .addClass('fe-chevron-down');
+              .removeClass('fe-chevron-right')
+              .addClass('fe-chevron-down');
       });
     }
   });
