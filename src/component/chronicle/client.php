@@ -315,11 +315,7 @@ class client
             ],
             [
                 'protocol' => [474],
-                'name' => "Shield of The Kingdom",
-            ],
-            [
-                'protocol' => [474],
-                'name' => "Heart Of Volcano",
+                'name' => "Essence",
             ],
             [
                 'protocol' => [502],
