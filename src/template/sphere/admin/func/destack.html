@@ -142,8 +142,9 @@
                                                             {% for itemId in stackableItems %}
                                                                 <tr data-item-id="{{ itemId }}">
                                                                     {% set itemInfo = get_item_info(itemId) %}
-                                                                    <td><img class="avatar avatar-sm me-2" src="{{ itemInfo.itemInfo.getIcon()|default(path('/uploads/images/icon/NOIMAGE.webp')) }}" alt=""> {{ itemId }}</td>
-                                                                    <td>{{ itemInfo.itemName|default('Предмет #' ~ itemId) }}</td>
+
+                                                                    <td><img class="avatar avatar-sm me-2" src="{{ itemInfo.getIcon() }}" alt=""> {{ itemId }}</td>
+                                                                    <td>{{ itemInfo.getItemName()}}</td>
                                                                     <td>
                                                                         <button type="button" class="btn btn-sm btn-danger remove-stack-item">
                                                                             <i class="ri-delete-bin-line"></i> {{phrase('delete')}}

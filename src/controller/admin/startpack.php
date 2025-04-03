@@ -20,7 +20,7 @@ class startpack
         $packId = $_POST['packId'] ?? board::error("Не передан ID пака");
         $row = sql::getRow('SELECT * FROM `startpacks` WHERE `id` = ?', [$packId]);
         if (!$row) {
-            board::error('Набор не найден');
+            board::error(lang::get_phrase(152));
         }
         sql::run("DELETE FROM `startpacks` WHERE `id` = ?", [$packId]);
         board::reload();
@@ -32,7 +32,7 @@ class startpack
         $startpackId = $_POST['startpackId'] ?? board::error('Не указан id набора');
         $row = sql::getRow('SELECT * FROM `startpacks` WHERE `id` = ?', [$startpackId]);
         if (!$row) {
-            board::error('Набор не найден');
+            board::error(lang::get_phrase(152));
         }
 
         $totalPrice = $row['cost'];
@@ -40,20 +40,19 @@ class startpack
         $serverId = $row['server_id'];
 
         if (user::self()->getServerId() != $serverId) {
-            board::error('Вы не можете купить наборы на другого сервера');
+            board::error('Error server id');
         }
 
         $db = sql::instance();
         if (!$db) {
-            board::error("Ошибка подключения к базе данных.");
-
+            board::error("DB ERROR CONNECT");
             return;
         }
         $db->beginTransaction();
         try {
             $canAffordPurchase = user::self()->canAffordPurchase($totalPrice);
             if (!$canAffordPurchase) {
-                board::error(sprintf("Для покупки у Вас нехватает %s SphereCoin", $totalPrice - user::self()->getDonate()));
+                board::error(lang::get_phrase("You dont have enough to purchase", $totalPrice - user::self()->getDonate()));
             }
 
             user::self()->donateDeduct($totalPrice);
@@ -76,7 +75,7 @@ class startpack
                 }
             }
             if (!$foundAccount) {
-                board::notice(false, "Аккаунт не найден");
+                board::notice(false, lang::get_phrase(164));
             }
 
             $foundPlayer = false;
@@ -88,7 +87,7 @@ class startpack
                 }
             }
             if (!$foundPlayer) {
-                board::notice(false, "Персонаж не найден");
+                board::notice(false, lang::get_phrase('Character not found'));
             }
 
             $arrObjectItems = [];
@@ -140,7 +139,7 @@ class startpack
         $startpackId = $_POST['startpackId'] ?? board::error('Не указан id набора');
         $row = sql::getRow('SELECT * FROM `startpacks` WHERE `id` = ?', [$startpackId]);
         if (!$row) {
-            board::error('Набор не найден');
+            board::error(lang::get_phrase(152));
         }
 
         $totalPrice = $row['cost'];
@@ -148,12 +147,12 @@ class startpack
         $serverId = (int)$row['server_id'];
 
         if (user::self()->getServerId() != $serverId) {
-            board::error('Вы не можете купить наборы на другого сервера');
+            board::error('Error server id');
         }
 
         $canAffordPurchase = user::self()->canAffordPurchase($totalPrice);
         if (!$canAffordPurchase) {
-            board::error(sprintf("Для покупки у Вас нехватает %s SphereCoin", $totalPrice - user::self()->getDonate()));
+            board::error(lang::get_phrase("You dont have enough to purchase", $totalPrice - user::self()->getDonate()));
         }
 
         if (!user::self()->donateDeduct($totalPrice)) {
@@ -178,14 +177,8 @@ class startpack
             telegram::sendTelegramMessage($msg);
         }
 
-        board::alert([
-            'type' => 'notice',
-            'ok' => true,
-            'message' => "Предметы успешно добавлены в склад",
-            'sphereCoin' => user::self()->getDonate(),
-        ]);
-
-        board::error("Произошла чудовищная ошибка");
+        board::addWarehouseInfo();
+        board::success(lang::get_phrase('initial_set_successfully_bought'));
 
     }
 
@@ -225,7 +218,7 @@ class startpack
             [user::self()->getServerId(), $name, $cost, $items]
         );
         if (sql::lastInsertId()) {
-            board::success('Набор успешно добавлен');
+            board::success(lang::get_phrase(243));
         } else {
             board::error('Ошибка добавления набора');
         }
@@ -258,7 +251,7 @@ class startpack
         );
 
         if ($result && $result->rowCount()) {
-            board::success('Набор успешно обновлен');
+            board::success(lang::get_phrase(228));
         } else {
             board::error('Ошибка обновления набора или данные не изменились');
         }

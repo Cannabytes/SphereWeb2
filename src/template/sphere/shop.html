@@ -62,8 +62,9 @@
             </table>
             <div class="bd-example mb-0">
               <div class="d-flex flex-column flex-sm-row mb-0">
-                <div class="p-2">
+
                   {% set isStackable = true %}
+                <div class="mt-2">
                   {% for i, product in products %}
                   {% if product.getItemInfo().getIsStackable() == false %}
                   {% set isStackable = false %}
@@ -79,7 +80,7 @@
                   {% endif %}
                 </div>
 
-                <div class="p-2 d-grid d-sm-block col-sm-auto">
+                <div class="mt-2 d-grid d-sm-block col-sm-auto">
                   <button data-isStackable="{{isStackable}}"
                           data-count-buy="1"
                           data-cost="{{ sumGetValue(products, 'getCost') }}"

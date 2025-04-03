@@ -64,6 +64,7 @@ class options
                         sql::run("DELETE FROM `startpacks` WHERE `server_id` = ?", [$sid]);
                         sql::run("DELETE FROM `server_description` WHERE `server_id` = ?", [$sid]);
                         sql::run("DELETE FROM `server_cache` WHERE `server_id` = ?", [$sid]);
+                        sql::run("DELETE FROM `warehouse` WHERE `server_id` = ?", [$sid]);
                     } catch (\Exception $e) {
                         board::error($e->getMessage());
                     }

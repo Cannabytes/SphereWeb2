@@ -745,4 +745,23 @@ class serverModel
         return json_decode($setting['setting'], true);
     }
 
+    public function getCache(string $type = null, $fullData = false)
+    {
+        $data = sql::getRow("SELECT `data`, `date_create` FROM `server_cache` WHERE `server_id` = ? AND `type` = ? LIMIT 1 ", [$this->getId(), $type]);
+        if (empty($data)) {
+            return null;
+        }
+        if ($fullData) {
+            return $data;
+        }
+        return json_decode($data['data'], true);
+    }
+
+    public function setCache(string $type, $data): void
+    {
+        sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = ?", [$this->getId(), $type]);
+        sql::run("INSERT INTO `server_cache` (`server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)",
+            [$this->getId(), $type, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), time::mysql()]);
+    }
+
 }

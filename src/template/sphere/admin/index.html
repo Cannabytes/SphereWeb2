@@ -105,23 +105,12 @@
                                     </tr>
 
                                     <tr>
-                                        <th scope="row">{{ phrase('lucky_wheel') }}</th>
+                                        <th scope="row">{{ phrase('extensions') }}</th>
                                         <td>
-                                            {% if rouletteActive == false %}
-                                            <span class="text-danger">{{ phrase('not_active') }}</span>
+                                            {% if pluginActive %}
+                                            <span class="text-success">{{pluginActiveDate|date('d.m.Y H:i', getUser().getTimezone())}}</span>
                                             {% else %}
-                                            <span class="text-success">{{roulette|date('d.m.Y H:i', getUser().getTimezone())}}</span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <th scope="row">{{phrase('winroll') }}</th>
-                                        <td>
-                                            {% if isActiveWinroll == false %}
                                             <span class="text-danger">{{ phrase('not_active') }}</span>
-                                            {% else %}
-                                            <span class="text-success">{{winroll|date('d.m.Y H:i', getUser().getTimezone())}}</span>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -129,8 +118,8 @@
                                     <tr>
                                         <th scope="row"><a href="/admin/sphere/forum">{{ phrase(62) }}</a></th>
                                         <td>
-                                            {% if forumInfo.is_active %}
-                                            <span class="text-success">{{forumInfo.date|date('d.m.Y H:i', getUser().getTimezone())}}</span>
+                                            {% if pluginActive %}
+                                            <span class="text-success">{{pluginActiveDate|date('d.m.Y H:i', getUser().getTimezone())}}</span>
                                             {% else %}
                                             <span class="text-danger">{{ phrase('limited') }}</span>
                                             {% endif %}

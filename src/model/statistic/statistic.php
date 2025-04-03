@@ -77,7 +77,7 @@ class statistic
         }
 
         // Проверка кэша
-        $data = sql::getRow("SELECT * FROM `server_cache` WHERE `server_id` = ? AND `type` = 'statistic' ORDER BY id DESC LIMIT 1 ", [$server_id]);
+        $data = server::getServer($server_id)->getCache('statistic', true);
         if ($data) {
             if ($data['data'] != "") {
                 // Проверка актуальности кэша по времени
@@ -99,13 +99,7 @@ class statistic
             foreach ($statistics as $server_id => $data) {
                 foreach ($data as $type => $statistic) {
                     self::$statistic[$server_id][$type] = $statistic;
-                    sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = 'statistic' ", [$server_id]);
-                    sql::sql("INSERT INTO `server_cache` (`server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
-                        $server_id,
-                        "statistic",
-                        json_encode(self::$statistic[$server_id], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-                        time::mysql(),
-                    ]);
+                    server::getServer($server_id)->setCache("statistic", self::$statistic[$server_id]);
                 }
             }
         } else {

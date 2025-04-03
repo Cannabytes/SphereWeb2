@@ -1,0 +1,636 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card custom-card shadow-lg rounded">
+        <div class="card-header justify-content-between">
+            <div class="card-title">
+                <a href="/admin/extensions/paid" class="avatar border text-muted me-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                         fill="currentColor">
+                        <path
+                              d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z">
+                        </path>
+                    </svg>
+                </a>
+                Система кейсов
+            </div>
+            <div class="prism-toggle">
+                <div class="custom-toggle-switch d-flex align-items-center">
+                    <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}"
+                           type="checkbox" {% if pluginActive %}checked{% endif %}>
+                    <label for="enablePlugin" class="label-success"></label>
+                    <span class="ms-3">{{phrase('Activating the plugin')}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+
+            {% if pluginActive == false %}
+            <div class="alert alert-danger" role="alert">
+                {{phrase('plugin_is_disabled_need_active')|raw}}
+            </div>
+            {% endif %}
+
+            <div class="form-check mb-2">
+                <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value=""
+                       id="showMainPage" {% if setting.showMainPage %}checked{% endif %}
+                       {% if pluginActive == false %}disabled{% endif %}>
+                <label class="form-check-label" for="showMainPage">
+                    {{ phrase('Show on main page') }}
+                </label>
+            </div>
+
+            <div class="form-check mb-4">
+                <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value=""
+                       id="addToMenu" {% if setting.addToMenu %}checked{% endif %}
+                       {% if pluginActive == false %}disabled{% endif %}>
+                <label class="form-check-label" for="addToMenu">
+                    {{ phrase('Add to menu') }}
+                </label>
+            </div>
+
+            <!-- Список кейсов -->
+<div class="mb-3 p-3 border rounded">
+    <h5 class="fw-semibold mb-3"><i class="bi bi-box-seam me-2"></i>{{ phrase('chests_list') }}</h5>
+
+    <div id="casesList" class="mb-3 sortable-cases">
+        <!-- Здесь будет динамически отображаться список кейсов -->
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">{{phrase('data_loading')}}...</span>
+            </div>
+            <p class="mt-2">{{phrase('load_chests_list')}}...</p>
+        </div>
+    </div>
+
+<div class="d-flex justify-content-between align-items-center">
+    <button id="addCaseBtn" type="button" class="btn btn-primary"
+            {% if pluginActive == false %}disabled{% endif %}>
+        <i class="bi bi-plus-circle me-1"></i>{{ phrase('add_case') }}
+    </button>
+</div>
+</div>
+
+<style>
+/* Стили для выбора иконок и фонов */
+.chest-icon-label, .bg-icon-label {
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.chest-icon-label:hover, .bg-icon-label:hover {
+    border-color: #0d6efd !important;
+    background-color: rgba(13, 110, 253, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.chest-icon-input:checked + .chest-icon-label, .bg-icon-input:checked + .bg-icon-label {
+    border-color: #0d6efd !important;
+    background-color: rgba(13, 110, 253, 0.15);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+    transform: translateY(-3px) scale(1.05);
+}
+</style><!-- Модальное окно для создания/редактирования кейса -->
+
+<div class="modal fade" id="caseModal" tabindex="-1" aria-labelledby="caseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="caseModalLabel">{{ phrase('add_case') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="caseId" value="">
+                <input type="hidden" id="caseBgImage" value="{{template_plugin}}/tpl/images/chest/bg-1.png">
+
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label for="caseName" class="form-label fw-bold">{{ phrase('chest_name') }}</label>
+                            <input type="text" class="form-control" id="caseName" placeholder="{{phrase('chest_name_placeholder')}}">
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="caseCost" class="form-label fw-bold">{{ phrase('chest_price') }}</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="caseCost" min="0" value="100">
+                                        <span class="input-group-text">{{phrase("Sphere-Coin")}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="caseType" class="form-label fw-bold">{{ phrase('chest_type') }}</label>
+                                    <select class="form-select" id="caseType">
+                                        <option value="No Use">{{phrase('disabled')}}</option>
+                                        {% for name in box_names %}
+                                        <option value="{{name}}">{{name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold mb-2">{{ phrase('chest_icon') }}</label>
+                            <div class="chest-icons-container p-2 border rounded" style="max-height: 180px; overflow-y: auto;">
+                                <div class="row row-cols-6 g-2">
+                                    {% for i in 1..19 %}
+                                    <div class="col chest-icon-item">
+                                        <input type="radio" name="caseIcon" data-chest-icon-id="{{i}}" id="chest-{{i}}" value="{{template_plugin}}/tpl/images/chest/chest-{{i}}.webp" class="chest-icon-input d-none">
+                                        <label for="chest-{{i}}" class="chest-icon-label p-2 border rounded d-block cursor-pointer text-center">
+                                            <img src="{{template_plugin}}/tpl/images/chest/chest-{{i}}.webp" alt="Chest {{i}}" class="img-fluid" style="width: 40px; height: 40px; object-fit: contain;">
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold mb-2">{{ phrase('chest_background') }}</label>
+                            <div class="bg-selection p-2 border rounded">
+                                <div class="row row-cols-3 g-2">
+                                    {% for i in 1..3 %}
+                                    <div class="col bg-icon-item">
+                                        <input type="radio" name="caseBg" data-bg-id="{{i}}" id="bg-{{i}}" value="{{template_plugin}}/tpl/images/chest/bg-{{i}}.png" class="bg-icon-input d-none">
+                                        <label for="bg-{{i}}" class="bg-icon-label p-2 border rounded d-block cursor-pointer text-center">
+                                            <img src="{{template_plugin}}/tpl/images/chest/bg-{{i}}.png" alt="Background {{i}}" class="img-fluid" style="width: 60px; height: 40px; object-fit: cover;">
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">{{ phrase('preview') }}</label>
+                            <div class="rounded case-preview-container">
+                                <div class="position-relative" style="overflow: hidden;">
+                                    <!-- Фоновое изображение -->
+                                    <img id="selectedCaseBgPreview" src="{{template_plugin}}/tpl/images/background/bg-1.png" alt="Фон кейса" class="img-fluid w-100" style="display: block;">
+
+                                    <!-- Центрированная иконка кейса -->
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%;">
+                                        <img id="selectedCasePreview" src="{{template_plugin}}/tpl/images/chest/chest-1.webp" alt="Предпросмотр кейса" class="img-fluid" style="max-width: 70%; max-height: 70%; margin: 0 auto;">
+
+                                        <div class="mt-2 fw-bold " id="selectedCaseName" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.8); padding: 4px 8px; border-radius: 4px;">{{ phrase('chest_name') }}</div>
+
+                                        <div class="mt-2 mb-2" id="selectedCaseTypeContainer" style="display: none;">
+                                            <span class="badge" id="selectedCaseType">Middle</span>
+                                        </div>
+
+                                        <div class="text-warning mt-1" id="selectedCaseCost" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.8); background-color: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 4px; display: inline-block;">1 {{phrase("Sphere-Coin")}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-semibold m-0">
+                            <i class="bi bi-list-check me-2"></i>{{ phrase('items_in_chest') }}
+                        </h5>
+                        <div>
+                            <span class="me-2">{{ phrase('general_chance') }}:
+                                <span class="total-chance badge bg-secondary">0.00</span>%
+                                <span class="ms-1 text-muted">( {{phrase('general_chance_placeholder')}} )</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive mb-3 border rounded">
+                        <table class="table table-bordered align-middle mb-0" id="caseItemsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 5%" class="text-center">{{phrase(363)}}</th>
+                                    <th style="width: 25%">{{phrase('item_id')}}</th>
+                                    <th style="width: 20%">{{phrase('min count')}}</th>
+                                    <th style="width: 15%">{{phrase('enchant')}}</th>
+                                    <th style="width: 15%">{{phrase('chance')}} (%)</th>
+                                    <th style="width: 7%" class="text-center">{{phrase('delete')}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Пустой шаблон при создании нового кейса -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button id="addItemToCaseBtn" type="button" class="btn btn-success">
+                                <i class="bi bi-plus-circle me-1"></i>{{phrase('Add item')}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{phrase(80)}}</button>
+                <button type="button" class="btn btn-success" id="saveCaseBtn">
+                    <i class="bi bi-save me-1"></i>{{phrase(89)}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- JavaScript для улучшения работы с иконками -->
+<script>
+$(document).ready(function() {
+    // Функция поиска иконок
+    $("#iconSearch").on("input", function() {
+        var searchText = $(this).val().toLowerCase();
+        $(".chest-icon-item").each(function() {
+            var iconId = $(this).find("input").data("chest-icon-id").toString();
+            if (iconId.includes(searchText)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    // Обновление предпросмотра при выборе иконки
+    $(".chest-icon-input").on("change", function() {
+        if ($(this).is(":checked")) {
+            var iconSrc = $(this).val();
+            $("#selectedCasePreview").attr("src", iconSrc);
+        }
+    });
+
+    // Обновление предпросмотра при выборе фона
+    $(".bg-icon-input").on("change", function() {
+        if ($(this).is(":checked")) {
+            var bgSrc = $(this).val();
+            $("#selectedCaseBgPreview").attr("src", bgSrc);
+            $("#caseBgImage").val(bgSrc);
+        }
+    });
+
+    // Обновление предпросмотра при изменении названия кейса
+    $("#caseName").on("input", function() {
+        var caseName = $(this).val() || "{{phrase('chest_name')}}";
+        $("#selectedCaseName").text(caseName);
+    });
+
+    // Обновление предпросмотра при изменении стоимости кейса
+    $("#caseCost").on("input", function() {
+        var caseCost = $(this).val() || "0";
+        $("#selectedCaseCost").text(caseCost + " " + "{{phrase('Sphere-Coin')}}");
+    });
+
+    // Функция обновления общего шанса
+    function updateTotalChance() {
+        var totalChance = 0;
+        $("#caseItemsTable tbody tr").each(function() {
+            var chance = parseFloat($(this).find("input[name^='itemChance']").val()) || 0;
+            totalChance += chance;
+        });
+        $(".total-chance").text(totalChance.toFixed(2));
+
+        // Изменение цвета индикатора в зависимости от общего шанса
+        if (Math.abs(totalChance - 100) < 0.01) {
+            $(".total-chance").removeClass("bg-secondary bg-danger").addClass("bg-success");
+        } else {
+            $(".total-chance").removeClass("bg-secondary bg-success").addClass("bg-danger");
+        }
+    }
+
+    // Вызов функции обновления шанса при изменении полей
+    $(document).on("input", "input[name^='itemChance']", updateTotalChance);
+});
+</script>
+            <!-- Модальное окно для просмотра предметов в кейсе -->
+            <div class="modal fade" id="viewItemsModal" tabindex="-1" aria-labelledby="viewItemsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="viewItemsModalLabel">{{phrase('view_items_in_chest')}}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover align-middle mb-0" id="viewItemsTable">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 5%" class="text-center">{{phrase(363)}}</th>
+                                            <th style="width: 15%">{{phrase('item_id')}}</th>
+                                            <th style="width: 30%">{{phrase(27)}}</th>
+                                            <th style="width: 10%">{{phrase('min count')}}</th>
+                                            <th style="width: 10%">{{phrase('enchant')}}</th>
+                                            <th style="width: 10%" class="text-end">{{phrase('chance')}} (%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Динамически заполняется -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{phrase('close')}}</button>
+                            <button type="button" class="btn btn-primary edit-items-btn">
+                                <i class="bi bi-pencil me-1"></i>{{phrase('edit_case')}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    const pluginName = "{{pluginName}}";
+    const pluginActive = "{{pluginActive}}";
+    const serverId = "{{getServer().getId()}}";
+    const template_plugin = "{{template_plugin}}";
+    const phrase_spherecoin = '{{phrase("Sphere-Coin")}}';
+    const phrase_chest_name = '{{phrase("chest_name")}}';
+    const edit = '{{phrase("edit")}}';
+    const deleteData = '{{phrase("delete")}}';
+    const cost = '{{phrase(72)}}';
+    const chest_type = '{{phrase("chest_type")}}';
+    const itemsPhrase = '{{phrase("items_many")}}';
+    const view_items = '{{phrase("view_items")}}';
+    const edit_case = '{{phrase("edit_case")}}';
+    const max_items_chest = '{{phrase("max_items_chest")}}';
+    const enter_name = '{{phrase("enter_name")}}';
+    const chest_name_exists = '{{phrase("chest_name_exists")}}';
+    const select_chest_icon = '{{phrase("select_chest_icon")}}';
+    const chest_price_error = '{{phrase("chest_price_error")}}';
+    const chest_items_error = '{{phrase("chest_items_error")}}';
+    const general_chance_error = '{{phrase("general_chance_error")}}';
+    const chest_updated = '{{phrase("chest_updated")}}';
+    const chest_created = '{{phrase("chest_created")}}';
+    const delete_case = '{{phrase("delete_case")}}';
+    const chest_items = '{{phrase("chest_items")}}';
+    const no_items_chest = '{{phrase("no_items_chest")}}';
+    const item_phrase_name = '{{phrase(301)}}';
+    const data_loading = '{{phrase("data_loading")}}';
+    const even_chance = '{{phrase("even_chance")}}';
+    const position = '{{phrase("position")}}';
+    const move = '{{phrase("Move")}}';
+    const distribute_chance = '{{phrase("distribute_chance")}}';
+
+
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+<script src="{{template}}/assets/js/spherePlugin.js?v=0.0.4"></script>
+<script src="{{template_plugin}}/tpl/js/chests-admin.js?v={{ 'now'|date('U') }}"></script>
+{% endblock %}
+
+{% block css %}
+<style>
+
+/* Основные стили для кейсов */
+.case-item {
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+    position: relative;
+    border-radius: 8px;
+}
+
+.case-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Стили для хендла (элемента для перетаскивания) */
+.drag-handle {
+    cursor: grab;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    padding: 8px;
+    opacity: 0.7;
+}
+
+.drag-handle:hover,
+.drag-handle-active {
+    background-color: rgba(13, 110, 253, 0.15);
+    opacity: 1;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+    background-color: rgba(13, 110, 253, 0.25);
+}
+
+.drag-handle i {
+    transition: color 0.2s;
+}
+
+.case-item:hover .drag-handle i {
+    color: #0d6efd !important;
+}
+
+/* Стили для элемента при перетаскивании */
+.case-item-dragging {
+    opacity: 0.6 !important;
+    background-color: #f8f9fa !important;
+    border: 1px dashed #ced4da !important;
+}
+
+/* Улучшенный стиль для плейсхолдера (места, куда будет помещен элемент) */
+.case-item-placeholder {
+    border: 2px dashed #0d6efd;
+    background-color: rgba(13, 110, 253, 0.08);
+    min-height: 100px;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    animation: pulse-placeholder 1.5s infinite;
+}
+
+@keyframes pulse-placeholder {
+    0% { background-color: rgba(13, 110, 253, 0.05); border-color: rgba(13, 110, 253, 0.5); }
+    50% { background-color: rgba(13, 110, 253, 0.1); border-color: rgba(13, 110, 253, 1); }
+    100% { background-color: rgba(13, 110, 253, 0.05); border-color: rgba(13, 110, 253, 0.5); }
+}
+
+/* Стили для хелпера (элемента, который перетаскивается за курсором) */
+.ui-sortable-helper,
+.drag-helper {
+    cursor: grabbing !important;
+    background-color: #fff !important;
+    border: 2px solid #0d6efd !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
+    opacity: 0.95 !important;
+    transform: rotate(1deg) scale(1.02) !important;
+    z-index: 9999 !important;
+    transition: none !important;
+    pointer-events: none;
+}
+
+/* Улучшенные стили для иконок кейсов */
+.chest-icon-label {
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.chest-icon-label:hover {
+    border-color: #0d6efd !important;
+    background-color: rgba(13, 110, 253, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.chest-icon-input:checked + .chest-icon-label {
+    border-color: #0d6efd !important;
+    background-color: rgba(13, 110, 253, 0.15);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+    transform: translateY(-3px) scale(1.05);
+}
+
+/* Анимации для других элементов интерфейса */
+.save-order-indicator {
+    animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-20px); }
+}
+
+/* Стили для модальных окон */
+.modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: none;
+}
+
+
+/* Стили для списка предметов */
+.item-row {
+    transition: background-color 0.2s;
+}
+
+.item-row:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.item-icon {
+    transition: transform 0.2s;
+    border-radius: 4px;
+}
+
+.item-row:hover .item-icon {
+    transform: scale(1.15);
+}
+
+/* Стили для тултипов */
+.item-tooltip {
+    background-color: #343a40;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    max-width: 250px;
+    z-index: 1050;
+    pointer-events: none;
+}
+
+/* Улучшенные стили для кнопок */
+.btn-sm {
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.btn-sm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-sm:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Стили для индикатора загрузки */
+#loadingOverlay {
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    animation: fadeInOverlay 0.3s;
+}
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+#loadingOverlay .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+/* Улучшения для мобильных устройств */
+@media (max-width: 768px) {
+    .case-item {
+        padding: 10px !important;
+    }
+
+    .case-item .row {
+        flex-direction: column;
+    }
+
+    .case-item .col-md-4 {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .drag-handle {
+        padding: 5px;
+    }
+
+    .drag-helper {
+        width: 250px !important;
+    }
+}
+
+/* Дополнительные эффекты для анимации */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+</style>
+{% endblock %}

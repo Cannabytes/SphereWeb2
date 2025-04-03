@@ -271,11 +271,14 @@ class donate
                 telegram::sendTelegramMessage($msg);
             }
 
+            user::self()->getWarehouse(true);
+
             board::alert([
                 'type' => 'notice',
                 'ok' => true,
                 'message' => lang::get_phrase(304),
                 'sphereCoin' => user::self()->getDonate(),
+                'warehouse' => user::self()->getWarehouseToArray(),
             ]);
         } catch (Exception $e) {
             $db->rollback();

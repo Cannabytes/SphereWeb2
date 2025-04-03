@@ -609,7 +609,7 @@ class userModel
                 'success' => true,
                 'message' => "Успешно объединено {$stackedItemsCount} предметов",
                 'stacked_items' => $stackedItemsCount,
-                'items' => $this->getWarehouseToArray(),
+                'warehouse' => $this->getWarehouseToArray(),
                 "isAllowAllItemsSplitting" => \Ofey\Logan22\model\server\server::getServer()->stackableItem()->isAllowAllItemsSplitting(),
                 "splittableItems" => \Ofey\Logan22\model\server\server::getServer()->stackableItem()->getSplittableItems(),
             ]);

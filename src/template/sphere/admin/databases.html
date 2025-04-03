@@ -790,7 +790,7 @@
             },
             dataType: 'json',
             success: function (response) {
-                $("#login_name" + loginId).empty();
+                $("#login_name_" + loginId).empty();
                 if (response.type === "notice") {
                     if (!ResponseNotice(response)) {
                         return;
@@ -801,7 +801,7 @@
                     if (value === "information_schema" || value === "mysql" || value === "performance_schema" || value === "sys") {
                         isDisabled = "disabled";
                     }
-                    $("#login_name" + loginId).append('<option value="' + value + '" ' + isDisabled + '>' + value + '</option>');
+                    $("#login_name_" + loginId).append('<option value="' + value + '" ' + isDisabled + '>' + value + '</option>');
                 });
             },
             error: function (xhr, status, error) {
@@ -828,7 +828,6 @@
             dataType: 'json',
             success: function (response) {
                 $("#game_name_" + gameId).empty();
-
                 if (response.type === "notice") {
                     if (!ResponseNotice(response)) {
                         return;

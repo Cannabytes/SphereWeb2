@@ -1,0 +1,1200 @@
+
+/* Контейнер кейсов */
+.chests-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px; /* Увеличиваем расстояние между кейсами */
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.chest-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    width: 400px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+.chest-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Шапка кейса */
+.chest-header {
+    text-align: center;
+    position: relative;
+    min-height: 445px; /* Увеличиваем минимальную высоту */
+    display: flex;
+    flex-direction: column;
+}
+
+.chest-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%);
+    z-index: 1;
+}
+
+/* Иконка кейса */
+.chest-icon {
+    position: relative;
+    z-index: 2;
+    transition: transform 0.5s;
+    height: 220px; /* Увеличиваем высоту контейнера иконки */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chest-icon img {
+    max-width: 100%;
+    max-height: 220px; /* Увеличиваем максимальную высоту изображения */
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+    transition: all 0.3s ease;
+}
+
+.chest-item:hover .chest-icon {
+    transform: scale(1.1);
+}
+
+.chest-item:hover .chest-icon img {
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+    animation: floatChest 3s infinite ease-in-out;
+}
+
+@keyframes floatChest {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Информация о кейсе */
+.chest-info {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    margin-top: 20px; /* Увеличиваем отступ сверху */
+}
+
+.chest-name {
+    margin: 0 0 15px; /* Увеличиваем отступ снизу */
+    font-size: 28px; /* Увеличиваем размер шрифта */
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.chest-type {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Типы кейсов */
+.chest-type-middle .chest-type {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.chest-type-top .chest-type {
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+}
+
+.chest-type-low .chest-type {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+}
+
+.chest-type-event .chest-type {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+/* Секция покупки кейса - изменена, убрана кнопка */
+.chest-buy {
+    padding: 20px 25px; /* Увеличиваем отступы */
+    text-align: center;
+}
+
+/* Стили для блока цены */
+.price-tag {
+    font-size: 22px; /* Увеличиваем размер шрифта */
+    font-weight: 600;
+    color: #f1c40f;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s ease;
+    padding: 8px 15px; /* Добавляем внутренние отступы */
+    border-radius: 30px; /* Добавляем скругление */
+    background-color: rgba(0, 0, 0, 0.2); /* Добавляем фон */
+}
+
+.price-tag::before, .price-tag::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    height: 2px;
+    width: 15px;
+    background: rgba(241, 196, 15, 0.5);
+    transform: translateY(-50%);
+}
+
+.price-tag::before {
+    left: -25px;
+}
+
+.price-tag::after {
+    right: -25px;
+}
+
+.chest-item:hover .price-tag {
+    transform: scale(1.1);
+    color: #f39c12;
+}
+
+/* Удалены стили для .open-chest-btn */
+
+/* Модальное окно */
+#chestModal .modal-dialog {
+    max-width: 800px;
+}
+
+#chestModal .modal-content {
+    /*background-color: #1e2029;*/
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+#chestModal .modal-body {
+}
+
+/* Кнопка закрытия */
+.custom-modal-close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1100;
+    transition: all 0.3s ease;
+}
+
+.custom-modal-close:hover {
+    background: rgba(255, 0, 0, 0.7);
+    transform: rotate(90deg);
+}
+
+/* Контейнер модального окна */
+.chest-modal-container {
+    position: relative;
+}
+
+/* Предпросмотр кейса */
+.chest-preview-container {
+    text-align: center;
+}
+
+
+@keyframes floatImage {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+#modal-chest-name {
+    color: #fff;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.price-badge-container {
+    margin-bottom: 20px;
+}
+
+.price-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #f39c12, #f1c40f);
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Кнопка открытия кейса */
+.open-button-container {
+    margin-top: 20px;
+}
+
+.open-chest-main-btn {
+    padding: 14px 40px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.open-chest-main-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: 0.5s;
+}
+
+.open-chest-main-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.open-chest-main-btn:hover::before {
+    left: 100%;
+}
+
+.open-chest-main-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Список предметов */
+.items-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+/* Стили для скроллбара */
+.items-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.items-list::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.items-list::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.items-list::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Карточка предмета */
+.item-card {
+    border-radius: 10px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.item-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    /*background-color: #282a36;*/
+}
+
+.item-image-container {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item-image {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.item-enchant {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.item-details-n {
+    flex: 1;
+}
+
+/* Анимация открытия */
+.opening-animation-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /*background-color: rgba(30, 32, 41, 0.95);*/
+    z-index: 10;
+    border-radius: 15px;
+}
+
+.animation-spinner {
+    text-align: center;
+}
+
+.animation-spinner .spinner-border {
+    width: 4rem;
+    height: 4rem;
+    color: #3498db;
+    margin-bottom: 20px;
+}
+
+.animation-spinner p {
+    font-size: 18px;
+    font-weight: 600;
+}
+/* Контейнер с анимацией открытия */
+.opening-animation-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /*background-color: rgba(30, 32, 41, 0.95);*/
+    z-index: 200;
+    border-radius: 15px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.opening-animation-container.animate__fadeIn {
+    opacity: 1;
+}
+
+/* Контейнер с выигрышем */
+.winning-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /*background-color: rgba(30, 32, 41, 0.95);*/
+    z-index: 200;
+    border-radius: 15px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.winning-container.show {
+    opacity: 1;
+}
+
+/* Обеспечиваем правильное позиционирование контейнеров */
+.chest-modal-container {
+    position: relative;
+    min-height: 400px; /* Минимальная высота для контейнера */
+}
+
+.chest-preview-container, .chest-items-container {
+    position: relative;
+    z-index: 100;
+}
+
+/* Карточка выигрыша */
+.winning-item {
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    z-index: 210;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.winning-item-header {
+    margin-bottom: 20px;
+}
+
+.winning-item-header h4 {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.winning-item-header p {
+    font-size: 18px;
+}
+
+.winning-item-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.winning-item-image-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#winning-item-image {
+    max-width: 100%;
+    max-height: 100%;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
+}
+
+.winning-item-shine {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 70%);
+    background-size: 200% 100%;
+    animation: shine 2s infinite linear;
+    z-index: 1;
+}
+
+@keyframes shine {
+    0% { background-position: -100% 0; }
+    100% { background-position: 100% 0; }
+}
+
+.winning-item-details-n {
+    text-align: center;
+}
+
+#winning-item-name {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+#winning-item-count {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.enchant-badge {
+    display: inline-block;
+    padding: 5px 15px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.winning-actions {
+    margin-top: 25px;
+}
+
+.btn-open-again {
+    padding: 12px 30px;
+    color: #fff;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-open-again:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .chest-item {
+        width: 250px;
+    }
+
+    .chest-header {
+        min-height: 240px;
+    }
+
+    .chest-icon {
+        height: 150px;
+    }
+
+    .chest-name {
+        font-size: 20px;
+    }
+
+    #chestModal .modal-dialog {
+        margin: 10px;
+    }
+
+    .items-list {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .winning-item {
+        padding: 20px;
+    }
+
+    #winning-item-name {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .chest-modal-container {
+        padding: 0;
+    }
+
+    #chestModal .modal-body {
+        padding: 20px 15px;
+    }
+
+    .items-list {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 10px;
+    }
+
+    .item-card {
+        padding: 10px;
+    }
+
+    .item-image-container {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+    }
+
+    .item-name {
+        font-size: 13px;
+    }
+
+    .winning-item {
+        padding: 15px;
+    }
+
+    .winning-item-header h4 {
+        font-size: 24px;
+    }
+
+    #winning-item-name {
+        font-size: 18px;
+    }
+
+    .enchant-badge {
+        font-size: 14px;
+    }
+}
+
+/* Контейнер для плавающих элементов */
+.floating-items-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden; /* Добавлено чтобы скрыть элементы, вылетающие за границы */
+}
+
+/* Стили для отдельной плавающей иконки - увеличена непрозрачность и размер */
+.floating-item {
+    position: absolute;
+    width: 55px; /* Увеличенный размер */
+    height: 55px; /* Увеличенный размер */
+    opacity: 0.4; /* Значительно увеличена непрозрачность */
+    top: var(--position-y, 10%);
+    left: var(--position-x, 10%);
+    pointer-events: none;
+    animation: float-animation 10s infinite linear; /* Ускорена анимация */
+    animation-delay: var(--delay, 0s);
+    filter: brightness(1.5); /* Делаем иконки светлее */
+    transition: opacity 1s ease; /* Добавляем transition для плавного появления */
+}
+
+/* Стили для изображения внутри плавающего элемента */
+.floating-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8)); /* Усилена тень */
+}
+
+/* Разные задержки и длительности для создания эффекта хаотичности - ускорены */
+.floating-item:nth-child(1) { animation-duration: 8s; }
+.floating-item:nth-child(2) { animation-duration: 9s; animation-direction: reverse; }
+.floating-item:nth-child(3) { animation-duration: 10s; }
+.floating-item:nth-child(4) { animation-duration: 11s; animation-direction: reverse; }
+.floating-item:nth-child(5) { animation-duration: 9.5s; }
+.floating-item:nth-child(6) { animation-duration: 8.5s; animation-direction: reverse; }
+.floating-item:nth-child(7) { animation-duration: 10.5s; }
+.floating-item:nth-child(8) { animation-duration: 11.5s; animation-direction: reverse; }
+.floating-item:nth-child(9) { animation-duration: 9s; }
+.floating-item:nth-child(10) { animation-duration: 10s; animation-direction: reverse; }
+
+/* Анимация для перемещения иконок - более выраженное движение */
+@keyframes float-animation {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(0.8);
+    }
+    25% {
+        transform: translate(60px, 50px) rotate(90deg) scale(1.1);
+    }
+    50% {
+        transform: translate(100px, -30px) rotate(180deg) scale(0.9);
+    }
+    75% {
+        transform: translate(30px, -70px) rotate(270deg) scale(1.2);
+    }
+    100% {
+        transform: translate(0, 0) rotate(360deg) scale(0.8);
+    }
+}
+
+.chest-icon {
+    position: relative;
+    z-index: 3;
+}
+
+.chest-info {
+    position: relative;
+    z-index: 3;
+}
+
+.chest-buy {
+    position: relative;
+    z-index: 2;
+}
+
+.price-tag {
+    position: relative;
+    z-index: 3;
+    background-color: rgba(0, 0, 0, 0.7); /* Увеличен фон для лучшей видимости */
+}
+
+/* Добавляем усиленный эффект свечения при наведении */
+.chest-item:hover .floating-item {
+    opacity: 0.7;
+    filter: brightness(1.8);
+}
+
+
+
+.chest-opening-animation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.chest-animation-image {
+    width: 350px;
+    height: 350px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.chest-animation-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    animation: chest-glow 1.5s infinite alternate;
+}
+
+@keyframes chest-glow {
+    0% { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3)); transform: scale(1); }
+    100% { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.7)); transform: scale(1.1); }
+}
+
+.items-flying-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.flying-item {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    opacity: 0;
+    transform: scale(0);
+    pointer-events: none;
+}
+
+.flying-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+}
+
+@keyframes fly-from-chest {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(0deg); }
+    10% { opacity: 1; transform: translate(-40%, -40%) scale(1.2) rotate(20deg); }
+    90% { opacity: 1; transform: translate(var(--fly-x), var(--fly-y)) scale(0.8) rotate(var(--rotate-deg)); }
+    100% { opacity: 0; transform: translate(var(--fly-x), var(--fly-y)) scale(0.5) rotate(var(--rotate-deg)); }
+}
+
+.animation-text {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.animation-text p {
+    font-size: 18px;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    animation: text-pulse 1s infinite;
+}
+
+@keyframes text-pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+/* Стили для особых предметов класса S */
+.legendary-item {
+    animation: legendary-pulse 2s infinite;
+}
+
+.legendary-item .winning-item-header h4 {
+    text-shadow: 0 0 10px rgb(62, 62, 62);
+}
+
+.legendary-item .winning-item-image-container {
+    position: relative;
+}
+
+.legendary-item .winning-item-image-container::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(241, 196, 15, 0.3) 0%, rgba(241, 196, 15, 0) 70%);
+    z-index: 1;
+    animation: legendary-glow 2s infinite alternate;
+}
+
+.legendary-item #winning-item-name {
+    text-shadow: 0 0 10px rgb(62, 62, 62);
+}
+
+@keyframes legendary-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+@keyframes legendary-glow {
+    0% { opacity: 0.5; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1.05); }
+}
+
+
+/* Дополнительные стили для анимации рулетки */
+
+/* Стили для контейнера рулетки */
+.roulette-container {
+    width: 100%;
+    padding: 30px 0;
+    position: relative;
+    overflow: hidden;
+    margin: 20px 0;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Viewport для рулетки - видимая область */
+.roulette-viewport {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 20px 0;
+    height: 180px; /* Добавляем фиксированную высоту */
+}
+
+/* Трек рулетки - лента с предметами */
+.roulette-track {
+    display: flex;
+    position: relative;
+    white-space: nowrap;
+    will-change: transform, left;
+    left: 0;
+    position: absolute;
+}
+
+/* Предмет в рулетке */
+.roulette-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 5px;
+    padding: 15px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    min-width: 100px;
+    transition: all 0.3s ease;
+    text-align: center;
+    user-select: none;
+}
+
+/* Контейнер для изображения */
+.roulette-image-container {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Изображение предмета */
+.roulette-image {
+    max-width: 100%;
+    max-height: 100%;
+    filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.3));
+}
+
+/* Значок зачарования */
+.roulette-enchant {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Название предмета */
+.roulette-item-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    white-space: normal;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    height: 36px;
+}
+
+/* Количество предметов */
+.roulette-item-count {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* Центральный маркер для выделения текущего предмета */
+.roulette-center-highlight {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 110px;
+    height: 100%;
+    transform: translateX(-50%);
+    border-left: 2px solid rgba(255, 215, 0, 0.7);
+    border-right: 2px solid rgba(255, 215, 0, 0.7);
+    pointer-events: none;
+    z-index: 100;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* Активное состояние центрального маркера */
+.roulette-center-highlight.active {
+    border-left: 2px solid rgba(255, 215, 0, 0.9);
+    border-right: 2px solid rgba(255, 215, 0, 0.9);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6),
+    inset 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+/* Эффект тика для центрального маркера */
+.roulette-center-highlight.tick {
+    border-left: 3px solid rgba(255, 215, 0, 1);
+    border-right: 3px solid rgba(255, 215, 0, 1);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8),
+    inset 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+/* Эффект свечения для рулетки */
+.roulette-shine-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.1) 75%,
+    rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+    z-index: 50;
+}
+
+/* Выделение выигрышного предмета */
+.winning-item-highlight {
+    transform: scale(1.1) !important;
+    background: rgba(255, 215, 0, 0.2) !important;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5) !important;
+    z-index: 90 !important;
+    position: relative !important;
+}
+
+@keyframes winner-pulse {
+    0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+    100% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.8); }
+}
+
+/* Анимация открытия сундука */
+.chest-opening {
+    animation: chest-open 2s forwards;
+}
+
+@keyframes chest-open {
+    0% { transform: scale(1) translateY(0); filter: brightness(1); }
+    10% { transform: scale(1.05) translateY(-10px); filter: brightness(1.2); }
+    20% { transform: scale(1) translateY(0); filter: brightness(1); }
+    30% { transform: scale(1.1) translateY(-15px); filter: brightness(1.3); }
+    40% { transform: scale(1.05) translateY(-5px) rotate(-5deg); filter: brightness(1.2); }
+    50% { transform: scale(1.15) translateY(-20px) rotate(5deg); filter: brightness(1.4); }
+    60% { transform: scale(1.1) translateY(-10px); filter: brightness(1.3); }
+    70% { transform: scale(1.2) translateY(-25px); filter: brightness(1.5); }
+    80% { transform: scale(1.15) translateY(-15px) rotate(-3deg); filter: brightness(1.4); }
+    90% { transform: scale(1.25) translateY(-30px) rotate(3deg); filter: brightness(1.6); }
+    100% { transform: scale(1.2) translateY(-20px); filter: brightness(1.5); }
+}
+
+/* Частицы для анимации открытия сундука */
+.particles-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.particle {
+    position: absolute;
+    background-color: rgba(255, 215, 0, 0.8);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+}
+
+@keyframes particle-fly {
+    0% { transform: scale(0) translate(0, 0); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: scale(0.2) translate(var(--tx, 100px), var(--ty, -100px)); opacity: 0; }
+}
+
+/* Генерируем много разных анимаций частиц для разнообразия */
+.particle:nth-child(4n+1) {
+    --tx: 100px;
+    --ty: -100px;
+}
+.particle:nth-child(4n+2) {
+    --tx: -120px;
+    --ty: -80px;
+}
+.particle:nth-child(4n+3) {
+    --tx: 80px;
+    --ty: 120px;
+}
+.particle:nth-child(4n+4) {
+    --tx: -90px;
+    --ty: 110px;
+}
+
+/* Стили для конфетти */
+.confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 20;
+    overflow: hidden;
+}
+
+.confetti {
+    position: absolute;
+    background-color: #f39c12;
+    border-radius: 3px;
+    pointer-events: none;
+    opacity: 0;
+}
+
+@keyframes confetti-fall {
+    0% { transform: translateY(0) rotate(0) scale(1); opacity: 1; }
+    100% { transform: translateY(500px) rotate(720deg) scale(0.5); opacity: 0; }
+}
+
+/* Добавляем разные формы конфетти */
+.confetti:nth-child(3n+1) {
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); /* ромб */
+}
+.confetti:nth-child(3n+2) {
+    clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); /* пятиугольник */
+}
+.confetti:nth-child(3n+3) {
+    /* круг по умолчанию */
+}
+
+/* Улучшаем анимацию выигрыша */
+.winning-container {
+    background: radial-gradient(circle, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.8) 100%);
+}
+
+.winning-item {
+    transform: scale(0);
+    animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes pop-in {
+    0% { transform: scale(0); }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Улучшенное свечение для выигрышного предмета */
+.winning-item-shine {
+    animation: shine-effect 3s infinite linear;
+}
+
+@keyframes shine-effect {
+    0% { background-position: -200% 0; opacity: 0; }
+    25% { opacity: 0.8; }
+    50% { opacity: 0.5; }
+    75% { opacity: 0.8; }
+    100% { background-position: 200% 0; opacity: 0; }
+}
+
+/* Улучшения для легендарных предметов */
+.legendary-item {
+    background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,215,0,0.2) 100%);
+    box-shadow: 0 0 30px rgba(255,215,0,0.5);
+}
+
+.legendary-item #winning-item-image {
+    filter: drop-shadow(0 0 8px rgba(255,215,0,0.8));
+    animation: legendary-item-glow 2s infinite alternate;
+}
+
+@keyframes legendary-item-glow {
+    0% { filter: drop-shadow(0 0 8px rgba(255,215,0,0.5)); transform: scale(1); }
+    100% { filter: drop-shadow(0 0 16px rgba(255,215,0,0.8)); transform: scale(1.05); }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .roulette-item {
+        min-width: 80px;
+        padding: 10px 5px;
+    }
+
+    .roulette-image-container {
+        width: 40px;
+        height: 40px;
+    }
+
+    .roulette-center-highlight {
+        width: 90px;
+    }
+
+    .roulette-item-name {
+        font-size: 12px;
+        height: 32px;
+    }
+}

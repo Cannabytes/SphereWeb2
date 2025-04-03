@@ -196,8 +196,214 @@ function animateCounter(targetValue, duration = 1500) {
     );
 }
 
+/**
+ * Создает HTML для элемента склада с поддержкой разных структур данных
+ *
+ * @param {Object} warehouse - объект предмета склада
+ * @param {boolean} canSplit - можно ли разбить предмет
+ * @returns {string} - HTML строка для элемента списка
+ */
+function createWarehouseItemHtml(warehouse, canSplit) {
+    // Проверки на существование данных и инициализация переменных с безопасными значениями
+    if (!warehouse) return '';
+
+    // Получаем информацию о предмете из разных возможных источников
+    const itemInfo = warehouse.itemInfo || warehouse.item || {};
+    const itemName = itemInfo.itemName || warehouse.name || 'Предмет';
+    const itemIcon = itemInfo.icon || (warehouse.item && warehouse.item.getIcon ? warehouse.item.getIcon() : '');
+    const count = warehouse.count || 1;
+    const enchant = warehouse.enchant || 0;
+    const objectId = warehouse.id || 0;
+
+    // Функция для безопасного получения фразы
+    const safePhrase = (phraseId) => {
+        if (typeof phrase === 'function') {
+            try {
+                return phrase(phraseId);
+            } catch (e) {
+                return phraseId.toString();
+            }
+        }
+        return phraseId.toString();
+    };
+
+    // Получаем фразу
+    const phraseText = warehouse.phrase
+        ? (typeof warehouse.phrase === 'string' ? warehouse.phrase : safePhrase(warehouse.phrase))
+        : 'Предмет склада';
+
+    // Создаем HTML
+    return `
+        <li class="list-group-item list-group-item-action p-1 border-bottom js-warehouse-item" data-item-count="${count}">
+            <div class="d-flex align-items-center">
+                <div class="form-check me-2">
+                    <input data-object-id="${objectId}"
+                        class="form-check-input warehouseInventory js-warehouse-item-checkbox"
+                        type="checkbox" id="item_${objectId}" checked>
+                </div>
+                <div class="item-icon me-3">
+                    <div class="position-relative">
+                        <img src="${itemIcon}"
+                            alt="${itemName}"
+                            class="img-fluid border rounded p-1 js-item-icon"
+                            style="width: 40px; height: 40px; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="item-details-n flex-grow-1">
+                    <div class="fw-medium d-flex justify-content-between align-items-center">
+                        <div>
+                            ${enchant > 0 ? `<span class="badge bg-danger me-1">+${enchant}</span>` : ''}
+                            <label class="mb-0 cursor-pointer js-item-name" for="item_${objectId}">
+                                ${itemName}
+                                ${count > 1 ? `<span class="bottom-0 end-0 badge rounded-pill bg-secondary js-item-count">x${count}</span>` : ''}
+                            </label>
+                        </div>
+                        <div>
+                            ${(count > 1 && canSplit) ? `<span role="button" class="badge bg-blue splitItem js-split-item-btn me-1">${safePhrase('unstack')}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="small text-muted">${phraseText}</div>
+                </div>
+            </div>
+        </li>
+    `;
+}
 
 
+/**
+ * Улучшенная функция для обновления списка предметов на складе
+ * с учетом правил разбития предметов и обработки пустого склада
+ *
+ * @param {Object} response - ответ от сервера
+ */
+function updateWarehouseItemsList(response) {
+    // Проверяем, что ответ содержит warehouse
+    if (!response || !response.hasOwnProperty('warehouse')) {
+        return;
+    }
+
+    const items = Array.isArray(response.warehouse) ? response.warehouse : [];
+    const isAllowAllItemsSplitting = response.isAllowAllItemsSplitting || false;
+    const splittableItems = response.splittableItems || [];
+
+    // Находим контейнер, где должен быть список предметов
+    let $cardBody = $('#warehouseModal .card-body').first();
+
+    // Проверяем, пуст ли склад
+    if (items.length === 0) {
+        // Обновляем счетчик предметов на 0
+        updateWarehouseCounter(0);
+
+        // Показываем сообщение о пустом складе
+        const emptyWarehouseHTML = `
+            <div class="text-center p-4">
+                <i class="ri-inbox-line text-muted display-4"></i>
+                <p class="mt-2 text-muted">${phrase('no_items_send_char')}</p>
+            </div>
+        `;
+
+        // Находим список предметов, если он существует
+        let $itemsList = $('.js-warehouse-items-list');
+
+        if ($itemsList.length > 0) {
+            // Если список существует, заменяем его
+            $itemsList.replaceWith(emptyWarehouseHTML);
+        } else {
+            // Если списка нет, заменяем все содержимое первого card-body
+            $cardBody.html(emptyWarehouseHTML);
+        }
+
+        // Блокируем кнопку отправки
+        $('#warehouseSendItemsToPlayer').prop('disabled', true);
+        return;
+    }
+
+    // Обрабатываем случай, когда есть предметы
+    let $itemsList = $('.js-warehouse-items-list');
+
+    // Если список не существует, нужно создать его
+    if ($itemsList.length === 0) {
+        // Создаем структуру для списка предметов, заменяя существующее содержимое
+        const listContainerHTML = `
+            <ul class="list-group list-group-flush js-warehouse-items-list">
+            </ul>
+        `;
+        $cardBody.html(listContainerHTML);
+        $itemsList = $('.js-warehouse-items-list'); // Переопределяем переменную с новым элементом
+    } else {
+        // Если список существует, очищаем его
+        $itemsList.empty();
+    }
+
+    // Генерируем HTML для каждого предмета
+    items.forEach(function(item) {
+        // Определяем, можно ли разбить предмет
+        const canSplit = determineIfItemCanBeSplit(item, isAllowAllItemsSplitting, splittableItems);
+
+        // Создаем HTML элемент предмета с учетом возможности разбития
+        const itemHtml = createWarehouseItemHtml(item, canSplit);
+
+        // Добавляем элемент в список
+        $itemsList.append(itemHtml);
+    });
+
+    // Обновляем счетчик предметов
+    updateWarehouseCounter(items.length);
+
+    // Активируем кнопку отправки предметов
+    $('#warehouseSendItemsToPlayer').prop('disabled', false);
+}
+
+/**
+ * Обновляет счетчик предметов на складе
+ * @param {number} count - количество предметов на складе
+ */
+function updateWarehouseCounter(count) {
+    const $badgeElement = $('.js-warehouse-items-count');
+
+    if (count > 0) {
+        // Если есть предметы, обновляем все счетчики на странице
+        $badgeElement.text(count);
+
+        // Обновляем badge в заголовке модального окна, если он есть
+        const $modalBadge = $('.js-warehouse-modal-count');
+        if ($modalBadge.length > 0) {
+            $modalBadge.text(count);
+        } else if (count > 0) {
+            $('#warehouseModalLabel').append(`<span class="badge rounded-pill bg-danger ms-2 js-warehouse-modal-count countWarehouseItems">${count}</span>`);
+        }
+        $(".countWarehouseItems").text(count);
+    } else {
+        // Если предметов нет, удаляем все счетчики
+        $badgeElement.remove();
+        $('.js-warehouse-modal-count').remove();
+    }
+}
+
+/**
+ * Показывает сообщение о пустом складе
+ */
+function showEmptyWarehouse() {
+    const $itemsList = $('.js-warehouse-items-list');
+
+    // Создаем HTML для пустого склада
+    const emptyWarehouseHTML = `
+    <div class="text-center p-4">
+      <i class="ri-inbox-line text-muted display-4"></i>
+      <p class="mt-2 text-muted">{{phrase('warehouse_is_empty')}}</p>
+    </div>
+  `;
+
+    // Заменяем содержимое списка
+    if ($itemsList.length) {
+        $itemsList.replaceWith(emptyWarehouseHTML);
+    } else {
+        $('#warehouseModal .card-body').first().html(emptyWarehouseHTML);
+    }
+
+    // Блокируем кнопку отправки
+    $('#warehouseSendItemsToPlayer').prop('disabled', true);
+}
 
 function responseAnalysis(response, form) {
     //Если существует переменная count_sphere_coin то обновляем счетчик class .count_sphere_coin
@@ -206,6 +412,10 @@ function responseAnalysis(response, form) {
         sphereCoin = $(".count_sphere_coin").text();
         animateCounter(response.sphereCoin-sphereCoin)
     }
+    if (response.warehouse !== undefined) {
+        updateWarehouseItemsList(response)
+    }
+
     if (response.type === "notice") {
         ResponseNotice(response)
     } else if (response.type === "notice_registration") {

@@ -441,14 +441,9 @@
 
       // Отправляем AJAX запрос
       AjaxSend('/bonus/code', 'POST', {code: code})
-              .then(function(response) {
-                // После успешной отправки закрываем модальное окно
-                var modal = bootstrap.Modal.getInstance(document.getElementById('bonusCodeModal'));
-                modal.hide();
-              })
-              .catch(function(error) {
-                console.error('Ошибка:', error);
-              });
+      var modal = bootstrap.Modal.getInstance(document.getElementById('bonusCodeModal'));
+      modal.hide();
+
     });
   });
 </script>
@@ -624,7 +619,7 @@
                style="width: 40px; height: 40px; object-fit: contain;">
         </div>
       </div>
-      <div class="item-details flex-grow-1">
+      <div class="item-details-n flex-grow-1">
         <div class="fw-medium d-flex justify-content-between align-items-center">
           <div>
             {% if warehouse.enchant > 0 %}
@@ -704,7 +699,7 @@
                   {% else %}
                     <div class="mb-3">
                       <label for="warehousePlayerSend" class="form-label">
-                        Выберите персонажа:
+                        {{ phrase(76) }}:
                       </label>
                       <select class="form-select form-select-lg"
                               id="warehousePlayerSend"
@@ -778,56 +773,16 @@
 
 
 <script>
-/**
- * Улучшенная функция для обновления списка предметов на складе
- * с учетом правил разбития предметов
- *
- * @param {Object} response - ответ от сервера
- */
-function updateWarehouseItemsList(response) {
-  // Проверяем, что ответ содержит все необходимые данные
-  if (!response || !Array.isArray(response.items) || response.items.length === 0) {
-    return;
-  }
 
-  const items = response.items;
-  const isAllowAllItemsSplitting = response.isAllowAllItemsSplitting || false;
-  const splittableItems = response.splittableItems || [];
-
-  // Находим контейнер списка предметов
-  const $itemsList = $('.js-warehouse-items-list');
-  if ($itemsList.length === 0) {
-    return;
-  }
-
-  // Очищаем текущий список
-  $itemsList.empty();
-
-  // Генерируем HTML для каждого предмета
-  items.forEach(function(item) {
-    // Определяем, можно ли разбить предмет
-    const canSplit = determineIfItemCanBeSplit(item, isAllowAllItemsSplitting, splittableItems);
-
-    // Создаем HTML элемент предмета с учетом возможности разбития
-    const itemHtml = createWarehouseItemHtml(item, canSplit);
-
-    // Добавляем элемент в список
-    $itemsList.append(itemHtml);
+$(document).ready(function() {
+  $('.slide.warehouse .side-menu__item').on('mousedown', function(e) {
+    if (e.which === 2) {
+      e.preventDefault();
+      $('#warehouseModal').modal('show');
+      return false;
+    }
   });
-
-  // Обновляем счетчик предметов
-  updateWarehouseCounter(items.length);
-
-  // Проверяем, не пуст ли склад
-  if (items.length === 0) {
-    showEmptyWarehouse();
-  }
-
-  // Активируем кнопку отправки предметов, если она была неактивна
-  if (items.length > 0) {
-    $('#warehouseSendItemsToPlayer').prop('disabled', false);
-  }
-}
+});
 
 /**
  * Определяет, можно ли разбить данный предмет
@@ -856,54 +811,6 @@ function determineIfItemCanBeSplit(item, isAllowAllItemsSplitting, splittableIte
 
   // Проверяем, входит ли ID предмета в список разрешенных для разбития
   return Array.isArray(splittableItems) && splittableItems.includes(item.itemId.toString());
-}
-
-/**
- * Создает HTML-код для элемента списка предметов
- *
- * @param {Object} item - объект с данными о предмете
- * @param {boolean} canSplit - можно ли разбить предмет
- * @returns {string} HTML-код элемента списка
- */
-function createWarehouseItemHtml(item, canSplit) {
-  // Получаем информацию о предмете
-  const itemInfo = item.itemInfo || {};
-
-  // Формируем HTML для элемента списка
-  return `
-    <li class="list-group-item list-group-item-action p-1 border-bottom js-warehouse-item" data-item-count="${item.count}" data-item-id="${item.itemId}">
-      <div class="d-flex align-items-center">
-        <div class="form-check me-2">
-          <input data-object-id="${item.id}"
-                 class="form-check-input warehouseInventory js-warehouse-item-checkbox"
-                 type="checkbox" id="item_${item.id}" checked>
-        </div>
-        <div class="item-icon me-3">
-          <div class="position-relative">
-            <img src="${itemInfo.icon || ''}"
-                 alt="${itemInfo.itemName || ''}"
-                 class="img-fluid border rounded p-1 js-item-icon"
-                 style="width: 40px; height: 40px; object-fit: contain;">
-          </div>
-        </div>
-        <div class="item-details flex-grow-1">
-          <div class="fw-medium d-flex justify-content-between align-items-center">
-            <div>
-              ${item.enchant > 0 ? `<span class="badge bg-danger me-1">+${item.enchant}</span>` : ''}
-              <label class="mb-0 cursor-pointer js-item-name" for="item_${item.id}">
-                ${itemInfo.itemName || ''}
-                ${item.count > 1 ? `<span class="bottom-0 end-0 badge rounded-pill bg-secondary js-item-count">x${item.count}</span>` : ''}
-              </label>
-            </div>
-            <div>
-              ${canSplit ? `<span role="button" class="badge bg-blue splitItem js-split-item-btn me-1">{{phrase('unstack')}}</span>` : ''}
-            </div>
-          </div>
-          <div class="small text-muted">${item.phrase || ''}</div>
-        </div>
-      </div>
-    </li>
-  `;
 }
 
 /**
@@ -1058,55 +965,7 @@ $('#confirmSplitItem').off('click').on('click', function() {
   });
 });
 
-/**
- * Показывает сообщение о пустом складе
- */
-function showEmptyWarehouse() {
-  const $itemsList = $('.js-warehouse-items-list');
 
-  // Создаем HTML для пустого склада
-  const emptyWarehouseHTML = `
-    <div class="text-center p-4">
-      <i class="ri-inbox-line text-muted display-4"></i>
-      <p class="mt-2 text-muted">{{phrase('warehouse_is_empty')}}</p>
-    </div>
-  `;
-
-  // Заменяем содержимое списка
-  if ($itemsList.length) {
-    $itemsList.replaceWith(emptyWarehouseHTML);
-  } else {
-    $('#warehouseModal .card-body').first().html(emptyWarehouseHTML);
-  }
-
-  // Блокируем кнопку отправки
-  $('#warehouseSendItemsToPlayer').prop('disabled', true);
-}
-
-/**
- * Обновляет счетчик предметов на складе
- * @param {number} count - количество предметов на складе
- */
-function updateWarehouseCounter(count) {
-  const $badgeElement = $('.js-warehouse-items-count');
-
-  if (count > 0) {
-    // Если есть предметы, обновляем все счетчики на странице
-    $badgeElement.text(count);
-
-    // Обновляем badge в заголовке модального окна, если он есть
-    const $modalBadge = $('.js-warehouse-modal-count');
-    if ($modalBadge.length > 0) {
-      $modalBadge.text(count);
-    } else if (count > 0) {
-      $('#warehouseModalLabel').append(`<span class="badge rounded-pill bg-danger ms-2 js-warehouse-modal-count countWarehouseItems">${count}</span>`);
-    }
-  } else {
-    // Если предметов нет, удаляем все счетчики
-    $badgeElement.remove();
-    $('.js-warehouse-modal-count').remove();
-  }
-}
 
 // Инициализация обработчиков для чекбокса "Выбрать все"
 $(document).ready(function() {

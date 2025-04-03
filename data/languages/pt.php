@@ -2064,4 +2064,12 @@ Password: %%password%%',
     'SUPER-GUARD.CLOUD_BANNER' => ' Especializa-se em fornecer proteção de alto nível contra ataques DDoS, garantindo a segurança e estabilidade dos seus serviços. A empresa oferece hospedagem confiável, servidores virtuais e dedicados. Suporte técnico de alto nível.',
     'L2Up.host_banner' => ' Hospedagem, servidores VPS, proxying, servidores dedicados e proteção de alta qualidade contra ataques DDoS para garantir a disponibilidade do seu recurso.',
 
+    'code_time_not_start' => 'O tempo para usar o código ainda não começou',
+    'code_already_used' => 'Este código já foi usado por você',
+    'code_created_for_another_server' => 'Este código foi criado para outro servidor',
+    'initial_set_successfully_bought' => 'Conjunto inicial comprado com sucesso',
+    'preview' => 'Pré-visualização',
+    'type' => 'Tipo',
+    'items_many' => 'Itens',
+
     ];

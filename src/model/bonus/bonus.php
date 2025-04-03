@@ -180,6 +180,7 @@ class bonus
 
             // Выводим сообщение об успешном применении бонуса
             $message = lang::get_phrase("bonus_code_success", rtrim($bonusNames, ", "));
+            board::addWarehouseInfo();
             board::success($message);
 
         } catch (Exception $e) {
@@ -204,7 +205,7 @@ class bonus
         foreach ($bonusCodes as $bonus) {
             // Проверка временных ограничений
             if ($currentTime < strtotime($bonus['start_date_code'])) {
-                throw new Exception(lang::get_phrase("code_not_active"));
+                throw new Exception(lang::get_phrase("code_time_not_start"));
             }
 
             if ($currentTime > strtotime($bonus['end_date_code'])) {
@@ -213,7 +214,7 @@ class bonus
 
             // Проверка сервера
             if ($bonus['server_id'] != 0 && $bonus['server_id'] != $currentServerId) {
-                throw new Exception("Этот код создан для другого сервера");
+                throw new Exception(lang::get_phrase('code_created_for_another_server'));
             }
 
             // Проверка на повторное использование многоразовых кодов
@@ -222,7 +223,7 @@ class bonus
                 foreach ($logs as $log) {
                     $variables = $log['variables'] ?? [];
                     if (!empty($variables) && $variables[0] == $code) {
-                        throw new Exception("Этот код уже был Вами использован");
+                        throw new Exception(lang::get_phrase("code_already_used"));
                     }
                 }
             }

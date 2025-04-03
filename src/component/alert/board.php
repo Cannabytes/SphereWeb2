@@ -19,6 +19,7 @@ class board
 
     private static ?bool $reload = null;
     private static bool $reloadIsNow = false;
+    private static bool $addWarehouseInfo = false;
 
     public static function success(?string $message = null, int $flags = 0, bool $next = false): self
     {
@@ -47,6 +48,9 @@ class board
             }
             if (self::$reloadIsNow) {
                 $data['reloadIsNow'] = self::$reloadIsNow;
+            }
+            if (self::$addWarehouseInfo) {
+                $data['warehouse'] = user::self()->getWarehouseToArray();
             }
             self::alert($data, $flags);
         }
@@ -118,6 +122,12 @@ class board
     {
         self::$reloadIsNow = $isNow;
         self::$reload = true;
+    }
+
+    public static function addWarehouseInfo()
+    {
+        self::$addWarehouseInfo = true;
+        user::self()->getWarehouse(true);
     }
 
 }

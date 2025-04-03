@@ -262,6 +262,11 @@
                                     <span><strong class="me-1">{{ phrase('winroll') }}</strong></span>
                                 </li>
 
+                                <li class="d-flex align-items-center mb-3">
+                                     <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success op-3"></i></span>
+                                    <span><strong class="me-1">{{ phrase('chests_name') }}</strong></span>
+                                </li>
+
                                 <li class="d-grid">
                                     <button id="buyprofessional" class="btn btn-info btn-wave buy-button" type="button">{{ phrase('pay') }}</button>
                                     <script>
@@ -329,164 +334,6 @@
             </div>
         </div>
     </div>
-
-
-    <h5 class="fw-semibold text-center"> {{ phrase('optional_services') }}
- </h5>
-
-    <!-- Start::row-1 -->
-    <div class="row">
-
-        <div class="col-xl-4">
-            <div class="card custom-card">
-                <div class="card-header justify-content-between">
-                    <div class="d-flex align-items-center w-100">
-                        <div class="card-title">
-                            <div class="fs-15 fw-semibold">SphereWeb</div>
-
-                        </div>
-                        <div class="ms-auto prism-toggle">
-              <span class="text-{% if info.licenseActive %}success{% else %}danger{% endif %}">
-                {% if info.licenseActive == false %}<i class="bi bi-x-circle"></i> {% endif %}
-                {{info.license|date('d.m.Y H:i', getUser().getTimezone())}}
-              </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    {{ phrase('you can help show gratitude and support to the developer for SphereWeb, just top up your balance.') }}
-                    <div class="col-xl-12 mt-2">
-                        <label class="form-label" for="renewmonths">{{ phrase('for how many months should I renew SphereWeb?') }}</label>
-                        <select class="form-control" id="renewmonths" name="renewmonths">
-                            <option value="1">1 {{ phrase('month') }} - $12.5</option>
-                            <option value="2">2 {{ phrase('months') }} - $24</option>
-                            <option value="3">3 {{ phrase('months') }} - $35</option>
-                            <option value="6">6 {{ phrase('months') }} - $70</option>
-                            <option value="12">12 {{ phrase('months') }} - $140</option>
-                        </select>
-                    </div>
-
-                </div>
-                <div class="card-footer">
-                    <div class="d-flex justify-content-between">
-                        <button class="btn btn-success label-btn label-end" id="renewLicense">
-                            {{ phrase('extend use') }}
-                            <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
-                        </button>
-                        <script>
-                            $("#renewLicense").on("click", function () {
-                                AjaxSend("/admin/balance/pay/renewlicense", "POST", {
-                                    months: $("#renewmonths").val()
-                                }, false);
-                            });
-                        </script>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-4">
-            <div class="card custom-card">
-                <div class="card-header justify-content-between">
-                    <div class="d-flex align-items-center w-100">
-                        <div class="card-title">
-                            <div class="fs-15 fw-semibold">{{ phrase('lucky_wheel') }}</div>
-                        </div>
-                        <div class="ms-auto prism-toggle">
-                            {% if info.rouletteActive %}
-                            <span class="text-success">{{info.roulette|date('d.m.Y H:i', getUser().getTimezone())}}</span>
-                            {% else %}
-                            <span class="text-danger">{{ phrase('not_active') }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    {{ phrase('description spin the roulette of luck') }}
-
-                    <div class="col-xl-12 mt-2">
-                        <label class="form-label" for="rouletteMonths">{{ phrase('extend the Roulette of Luck')
-                            }}</label>
-                        <select class="form-control" id="rouletteMonths" name="rouletteMonths">
-                            <option value="1">1 {{ phrase('month') }} / $5</option>
-                            <option value="2">2 {{ phrase('months') }} / $9</option>
-                            <option value="3">3 {{ phrase('months') }} / $13</option>
-                            <option value="6">6 {{ phrase('months') }} / $25</option>
-                            <option value="12">12 {{ phrase('months') }} / 45$</option>
-                        </select>
-                    </div>
-
-
-                </div>
-                <div class="card-footer">
-                    <div class="d-flex justify-content-between">
-                        <button class="btn btn-success label-btn label-end" id="clickRouletteMonths">
-                            {{ phrase('extend use') }}
-                            <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
-                        </button>
-                        <script>
-                            $("#clickRouletteMonths").on("click", function () {
-                                AjaxSend("/admin/balance/pay/roulette", "POST", {
-                                    months: $("#rouletteMonths").val()
-                                }, false);
-                            });
-                        </script>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-4">
-            <div class="card custom-card">
-                <div class="card-header justify-content-between">
-                    <div class="d-flex align-items-center w-100">
-                        <div class="card-title">
-                            <div class="fs-15 fw-semibold">{{ phrase('Tracking the number of items') }}</div>
-                        </div>
-                        <div class="ms-auto prism-toggle">
-                            {% if info.isActiveTopFarmStats %}
-                            <span class="text-success">{{info.topFarmStats|date('d.m.Y H:i', getUser().getTimezone())}}</span>
-                            {% else %}
-                            <span class="text-danger">{{ phrase('not_active') }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    {{ phrase('Plugin for collecting top farm') }}
-
-                    <div class="col-xl-12 mt-2">
-                        <label class="form-label" for="itemsIncreaseMonths">{{ phrase('For how many months should the collection of information on the number of items be extended') }}</label>
-                        <select class="form-control" id="itemsIncreaseMonths" name="itemsIncreaseMonths">
-                            <option value="1">1 {{ phrase('month') }} / $3</option>
-                            <option value="2">2 {{ phrase('months') }} / $5.6</option>
-                            <option value="3">3 {{ phrase('months') }} / $7.8</option>
-                            <option value="6">6 {{ phrase('months') }} / $14.4</option>
-                            <option value="12">12 {{ phrase('months') }} / $24</option>
-                        </select>
-                    </div>
-
-                </div>
-                <div class="card-footer">
-                    <div class="d-flex justify-content-between">
-                        <button class="btn btn-success label-btn label-end" id="clickItemsIncreaseMonths">
-                            {{ phrase('extend use') }}
-                            <i class="ri-thumb-up-line label-btn-icon ms-2"></i>
-                        </button>
-                        <script>
-                            $("#clickItemsIncreaseMonths").on("click", function () {
-                                AjaxSend("/admin/balance/pay/item/increase", "POST", {
-                                    months: $("#increaseMonths").val()
-                                }, false);
-                            });
-                        </script>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
 
 
 </div>
