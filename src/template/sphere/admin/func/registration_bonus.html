@@ -5,7 +5,7 @@
             <div class="form-check form-check-lg d-flex align-items-center mb-3">
               <input {% if getServer().bonus().isRegistrationBonus() %}checked{% endif %} id="enableRegistrationBonus" class="form-check-input" type="checkbox" value="">
               <label class="form-check-label" for="enableRegistrationBonus">
-                Включить бонусы за регистрацию
+                {{phrase('enable_registration_reward')}}
               </label>
             </div>
 
@@ -14,12 +14,12 @@
               <div class="card-body">
                 <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
                   <div class="col-xl-6">
-                    <span class="fs-14 mb-0">Добавить предмет в список бонусов, которые будут выдаваться при регистрации пользователям.</span>
+                    <span class="fs-14 mb-0">{{phrase('registration_reward_desc')}}</span>
 
                     <div class="input-group input-group-sm mt-3">
                      <input {% if getServer().bonus().isIssueAllItems() %}checked{% endif %} class="form-check-input" id="issueAllItems" type="checkbox" value="">
                      <label class="form-check-label" for="issueAllItems">
-                       Поставьте "ОК" чтоб выдавать все предметы, иначе будет выдан только один случайный предмет.
+                       {{phrase('registration_reward_all_item_or_one')}}
                     </label>
                   </div>
 
@@ -31,22 +31,22 @@
                       <div class="input-group input-group-sm">
                         <div class="form-floating mb-3">
                           <input type="number" step="1" class="form-control" id="item_id_bonus" placeholder="57">
-                          <label for="item_id_bonus">ID предмета</label>
+                          <label for="item_id_bonus">{{phrase('item_id')}}</label>
                         </div>
 
                         <div class="form-floating mb-3">
                           <input type="number" step="1" class="form-control" id="count_bonus" placeholder="10" value="1">
-                          <label for="count_bonus">Количество</label>
+                          <label for="count_bonus">{{phrase(71)}}</label>
                         </div>
 
                         <div class="form-floating mb-3">
                           <input type="number" step="1" class="form-control" id="enchant_bonus" placeholder="0" value="0">
-                          <label for="enchant_bonus">Заточка</label>
+                          <label for="enchant_bonus">{{phrase('enchant')}}</label>
                         </div>
 
                         <div class="form-floating mb-3">
                           <button type="button" class="btn btn-success btn-wave waves-effect waves-light" id="item_add_to_bonus">
-                            Добавить
+                            {{phrase('add')}}
                           </button>
                         </div>
                       </div>
@@ -58,9 +58,9 @@
                     <table class="table text-nowrap table-bordered bonus_items_table">
                       <thead class="bg-light">
                         <tr>
-                          <th>Предмет</th>
-                          <th>Количество</th>
-                          <th>Действия</th>
+                          <th>{{phrase(301)}}</th>
+                          <th>{{phrase(71)}}</th>
+                          <th>{{phrase('actions')}}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -85,7 +85,7 @@
 
                   <div id="emptyBonusListMessage" class="text-center text-muted py-4">
                     <i class="ri-gift-2-line fs-1 mb-2 d-block"></i>
-                    Список предметов для бонуса пуст
+                    {{phrase('registration_reward_empty')}}
                   </div>
                 </div>
               </div>
@@ -94,7 +94,7 @@
 
             <div class="float-end mt-3">
               <button id="saveRegistrationBonus" type="button" class="btn btn-success">
-                Сохранить настройки
+                {{phrase('save_settings')}}
               </button>
             </div>
           </div>
@@ -107,23 +107,23 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editItemModalLabel">Редактирование предмета</h5>
+        <h5 class="modal-title" id="editItemModalLabel">{{phrase('edit')}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="edit_item_id">
         <div class="mb-3">
-          <label for="edit_item_count" class="form-label">Количество</label>
+          <label for="edit_item_count" class="form-label">{{phrase(71)}}</label>
           <input type="number" class="form-control" id="edit_item_count" min="1" step="1">
         </div>
         <div class="mb-3">
-          <label for="edit_item_enchant" class="form-label">Заточка</label>
+          <label for="edit_item_enchant" class="form-label">{{phrase('enchant')}}</label>
           <input type="number" class="form-control" id="edit_item_enchant" min="0" step="1">
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-        <button type="button" class="btn btn-primary" id="saveItemChanges">Сохранить</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{phrase(80)}}</button>
+        <button type="button" class="btn btn-primary" id="saveItemChanges">{{phrase(89)}}</button>
       </div>
     </div>
   </div>
@@ -234,7 +234,7 @@ $(document).ready(function() {
     // Устанавливаем новый таймер для предотвращения частых запросов
     searchTimeout = setTimeout(function() {
       // Показываем индикатор загрузки
-      $('#item_preview').html('<div class="d-flex align-items-center"><div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div><span>Поиск предмета...</span></div>').show();
+      $('#item_preview').html('<div class="d-flex align-items-center"><div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div><span>{{phrase("search_item")}}...</span></div>').show();
 
       // Выполняем запрос для получения информации о предмете
       AjaxSend('/admin/client/item/info', 'POST', { 'itemID': itemId }, true)
@@ -262,12 +262,12 @@ $(document).ready(function() {
                 $('#item_preview').html(previewHtml);
               } else {
                 // Если предмет не найден
-                $('#item_preview').html('<div class="text-danger"><i class="ri-error-warning-line me-1"></i>Предмет с ID ' + itemId + ' не найден</div>');
+                $('#item_preview').html('<div class="text-danger"><i class="ri-error-warning-line me-1"></i>{{phrase("item_not_found")}}</div>');
               }
             })
             .catch(function() {
               // Обрабатываем ошибку запроса
-              $('#item_preview').html('<div class="text-danger"><i class="ri-error-warning-line me-1"></i>Ошибка при получении информации о предмете</div>');
+              $('#item_preview').html('<div class="text-danger"><i class="ri-error-warning-line me-1"></i>Error</div>');
             });
     }, 500); // Задержка в 500 мс перед запросом
   });
@@ -296,18 +296,18 @@ $(document).ready(function() {
     // Базовая валидация
     if (!itemId) {
       if (typeof noticeError === 'function') {
-        noticeError("Заполните ID предмета");
+        noticeError("{{phrase('enter_item_id')}}");
       } else {
-        alert("Заполните ID предмета");
+        alert("{{phrase('enter_item_id')}}");
       }
       return;
     }
 
     if (isNaN(itemId) || isNaN(count) || parseInt(count) <= 0) {
       if (typeof noticeError === 'function') {
-        noticeError("ID предмета и количество должны быть положительными числами");
+        noticeError("{{phrase('item_id_and_count_must_be_positive')}}");
       } else {
-        alert("ID предмета и количество должны быть положительными числами");
+        alert("{{phrase('item_id_and_count_must_be_positive')}}");
       }
       return;
     }
@@ -374,7 +374,7 @@ $(document).ready(function() {
               // Создаем новую строку таблицы с заглушкой
               const newRow = `
             <tr data-item-id="${itemId}" data-count="${count}" data-enchant="${enchant}">
-              <td><span class="avatar avatar-sm"><img src="${mockIcon}" alt="img"></span> (ID: ${itemId}) Предмет #${itemId}</td>
+              <td><span class="avatar avatar-sm"><img src="${mockIcon}" alt="img"></span> (ID: ${itemId}) {{phrase(301)}} #${itemId}</td>
               <td>${count}</td>
               <td>
                 <div class="hstack gap-2 flex-wrap">
@@ -548,7 +548,7 @@ $(document).ready(function() {
       bonus_items: bonusItems
     }, true).then(function(response) {
       if (response.ok) {
-        noticeSuccess("Настройки бонусов за регистрацию сохранены");
+        noticeSuccess("{{phrase(581)}}");
       } else {
         noticeError("Ошибка при сохранении настроек: " + response.message);
       }

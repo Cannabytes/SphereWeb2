@@ -2076,6 +2076,14 @@ Contraseña: %%password%%',
     'items_many' => 'Objetos',
     'registration_reward_all' => '¡Regístrate ahora y recibe recompensas valiosas!',
     'registration_reward_one_random' => '¡Regístrate ahora y recibe una recompensa aleatoria!',
-    'registration_bonus' => 'Bonificación de registro',
+    'registration_bonus' => 'Bono de registro',
+    'registration_reward' => 'Recompensa de registro',
+    'enable_registration_reward' => 'Habilitar recompensas de registro',
+    'registration_reward_desc' => 'Agrega un objeto a la lista de bonificaciones que se otorgarán a los usuarios al registrarse.',
+    'registration_reward_all_item_or_one' => 'Marca "OK" para otorgar todos los objetos; de lo contrario, solo se otorgará un objeto aleatorio.',
+    'registration_reward_empty' => 'La lista de recompensas está vacía',
+    'search_item' => 'Buscar objeto',
+    'item_id_and_count_must_be_positive' => 'El ID del objeto y la cantidad deben ser números positivos',
+
 
     ];

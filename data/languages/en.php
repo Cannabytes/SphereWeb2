@@ -2078,5 +2078,15 @@ Password: %%password%%',
     'items_many' => 'Items',
     'registration_reward_all' => 'Register now and receive valuable rewards!',
     'registration_reward_one_random' => 'Register now and receive a random reward!',
-    'registration_bonus' => 'Registration bonus',
+    'registration_bonus' => 'Registration Bonus',
+    'registration_reward' => 'Registration Reward',
+    'enable_registration_reward' => 'Enable Registration Rewards',
+    'registration_reward_desc' => 'Add an item to the list of bonuses that will be given to users upon registration.',
+    'registration_reward_all_item_or_one' => 'Check "OK" to give all items; otherwise, only one random item will be given.',
+    'registration_reward_empty' => 'The reward list is empty',
+    'search_item' => 'Search for an item',
+    'item_id_and_count_must_be_positive' => 'Item ID and quantity must be positive numbers',
+
+
+
 ];

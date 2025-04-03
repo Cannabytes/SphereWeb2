@@ -2099,7 +2099,16 @@ Password: %%password%%',
     'preview' => 'Предпросмотр',
     'type' => 'Тип',
     'items_many' => 'Предметов',
+
     'registration_reward_all' => 'Зарегистрируйся сейчас и получи ценные награды!',
     'registration_reward_one_random' => 'Зарегистрируйся сейчас и получи случайную награду!',
     'registration_bonus' => 'Бонус за регистрацию',
+    'registration_reward' => 'Награда за регистрацию',
+    'enable_registration_reward' => 'Включить награды за регистрацию',
+    'registration_reward_desc' => 'Добавить предмет в список бонусов, которые будут выдаваться при регистрации пользователям.',
+    'registration_reward_all_item_or_one' => 'Поставьте "ОК" чтоб выдавать все предметы, иначе будет выдан только один случайный предмет.',
+    'registration_reward_empty' => 'Список наград пуст',
+    'search_item' => 'Поиск предмета',
+    'item_id_and_count_must_be_positive' => 'ID предмета и количество должны быть положительными числами',
+
 );
