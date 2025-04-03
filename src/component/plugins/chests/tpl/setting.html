@@ -106,7 +106,7 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="caseId" value="">
-                <input type="hidden" id="caseBgImage" value="{{template_plugin}}/tpl/images/chest/bg-1.png">
+                <input type="hidden" id="caseBgImage" value="{{template_plugin}}/tpl/images/background/bg-1.png">
 
                 <div class="row mb-4">
                     <div class="col-md-8">
@@ -160,9 +160,9 @@
                                 <div class="row row-cols-3 g-2">
                                     {% for i in 1..3 %}
                                     <div class="col bg-icon-item">
-                                        <input type="radio" name="caseBg" data-bg-id="{{i}}" id="bg-{{i}}" value="{{template_plugin}}/tpl/images/chest/bg-{{i}}.png" class="bg-icon-input d-none">
+                                        <input type="radio" name="caseBg" data-bg-id="{{i}}" id="bg-{{i}}" value="{{template_plugin}}/tpl/images/background/bg-{{i}}.png" class="bg-icon-input d-none">
                                         <label for="bg-{{i}}" class="bg-icon-label p-2 border rounded d-block cursor-pointer text-center">
-                                            <img src="{{template_plugin}}/tpl/images/chest/bg-{{i}}.png" alt="Background {{i}}" class="img-fluid" style="width: 60px; height: 40px; object-fit: cover;">
+                                            <img src="{{template_plugin}}/tpl/images/background/bg-{{i}}.png" alt="Background {{i}}" class="img-fluid" style="width: 60px; height: 40px; object-fit: cover;">
                                         </label>
                                     </div>
                                     {% endfor %}
