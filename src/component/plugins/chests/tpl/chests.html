@@ -3,8 +3,13 @@
 {% block title %}{% endblock %}
 
 {% block content %}
+{% set setting = getPluginSetting('chests') %}
+
+{% if setting.showMainPage %}
 
 {% include 'chests/tpl/html_chests.html' %}
+
+{% endif %}
 
 {% endblock %}
 

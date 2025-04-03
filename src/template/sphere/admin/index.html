@@ -62,20 +62,20 @@
                         <div class="flex-fill d-flex align-items-top">
                             <div class="me-2">
                                 <span class="avatar avatar-md text-primary border bg-light"><i
-                                        class="ti ti-currency-dollar fs-18"></i></span>
+                                      class="ti ti-currency-dollar fs-18"></i></span>
                             </div>
                             <div class="flex-fill">
                                 <p class="fw-semibold fs-14 mb-0"><a href="/admin/balance">{{
                                     phrase('sphereweb_maintenance') }}</a></p>
                                 <p class="mb-0 text-muted fs-12 op-7">{{ phrase('on_your_balance') }} <span
-                                        class="text-primary h4">${{balance|number_format(2)}}</span></p>
+                                      class="text-primary h4">${{balance|number_format(2)}}</span></p>
                             </div>
                         </div>
 
                         <div>
                             <a href="javascript:void(0);" data-bs-toggle="dropdown"
                                class="btn btn-icon btn-sm btn-light" aria-expanded="false"><i
-                                    class="ti ti-dots"></i></a>
+                                  class="ti ti-dots"></i></a>
                             <ul class="dropdown-menu" style="">
                                 <li><a href="/admin/balance/faq" class="dropdown-item">{{
                                     phrase('frequently_asked_questions') }}</a></li>
@@ -100,7 +100,7 @@
                                     <tr>
                                         <th scope="row">Sphere Web</th>
                                         <td><span class="text-{% if licenseActive %}success{% else %}danger{% endif %}">{% if licenseActive == false %}<i
-                                                class="bi bi-x-circle"></i> {% endif %}{{ license|date('d.m.Y H:i', getUser().getTimezone()) }}</span>
+                                              class="bi bi-x-circle"></i> {% endif %}{{ license|date('d.m.Y H:i', getUser().getTimezone()) }}</span>
                                         </td>
                                     </tr>
 
@@ -136,7 +136,7 @@
                     </div>
 
                     {# Если лицензия была отключена #}
-                    {% if licenseActive == false or forumInfo.is_active == false %}
+                    {% if licenseActive == false   %}
                     <div class="mt-0 task-navigation border-bottom border-block-end-dashed">
                         <ul class="list-unstyled task-main-nav mb-0">
                             <li class="px-0 pt-0">
@@ -160,7 +160,7 @@
                             </li>
                         {% endif %}
 
-                        {% if forumInfo.is_active == false %}
+                        {% if pluginActive == false %}
                             <li class="" data-bs-original-title="{{ phrase('forum_description_limit') }}" data-bs-placement="bottom"
                                 data-bs-toggle="tooltip">
                                 <a href="javascript:void(0);">
@@ -240,7 +240,7 @@
                             <li class="d-flex align-items-center mb-3">
                                                                 <span class="me-2">
                                                                     <i
-                                                                            class="{% if serverInfo.getStatus().isEnableLoginServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
+                                                                          class="{% if serverInfo.getStatus().isEnableLoginServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
                                                                 </span>
 
 
@@ -446,7 +446,7 @@
                                             <button class="nav-link active" id="followers-tab" data-bs-toggle="tab"
                                                     data-bs-target="#followers-tab-pane" type="button" role="tab"
                                                     aria-controls="followers-tab-pane" aria-selected="false"><i
-                                                    class="ri-money-dollar-box-line me-1 align-middle d-inline-block fs-16"></i>{{
+                                                  class="ri-money-dollar-box-line me-1 align-middle d-inline-block fs-16"></i>{{
                                                 phrase('settings') }}
                                             </button>
                                         </li>
@@ -455,7 +455,7 @@
                                             <button class="nav-link " id="php-tab" data-bs-toggle="tab"
                                                     data-bs-target="#php-tab-pane" type="button" role="tab"
                                                     aria-controls="php-tab-pane" aria-selected="true"><i
-                                                    class="bi bi-clipboard2-data me-1 align-middle d-inline-block fs-16"></i>
+                                                  class="bi bi-clipboard2-data me-1 align-middle d-inline-block fs-16"></i>
                                                 Web-Server
                                             </button>
                                         </li>
@@ -464,7 +464,7 @@
                                             <button class="nav-link " id="activity-tab" data-bs-toggle="tab"
                                                     data-bs-target="#activity-tab-pane" type="button" role="tab"
                                                     aria-controls="activity-tab-pane" aria-selected="true"><i
-                                                    class="bi bi-cloud-download me-1 align-middle d-inline-block fs-16"></i>
+                                                  class="bi bi-cloud-download me-1 align-middle d-inline-block fs-16"></i>
                                                 {{ phrase('History of software updates') }}
                                             </button>
                                         </li>
@@ -493,10 +493,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/general.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/general.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{
@@ -519,10 +519,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/donate.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/donate.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{
@@ -545,10 +545,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/pages.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/pages.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('news_and_pages')
@@ -572,10 +572,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/servers.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/servers.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('servers') }}</p>
@@ -601,10 +601,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/stream.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/stream.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{phrase('stream')}}</p>
@@ -626,10 +626,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/shop.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/shop.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase(215) }}</p>
@@ -654,10 +654,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/startpack.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/startpack.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('starter_pack')
@@ -684,10 +684,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/bonuscode.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/bonuscode.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('bonus_codes')
@@ -716,10 +716,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/forum.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/forum.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('connect_forum')
@@ -742,10 +742,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/users.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/users.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('users') }}</p>
@@ -768,10 +768,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/mailing.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/mailing.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('mail_messages')
@@ -795,10 +795,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/logs.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/logs.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('logs') }}</p>
@@ -819,10 +819,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/paidext.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/paidext.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('extensions')
@@ -845,10 +845,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/traffics.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/traffics.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('traffic_sources') }}
@@ -876,10 +876,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/paidext.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/paidext.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">Sphere API</p>
@@ -902,10 +902,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/news.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/news.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('translations')
@@ -932,10 +932,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/routers.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/routers.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('routers') }}</p>
@@ -958,10 +958,10 @@
                                                     <div class="card-body p-4">
                                                         <div class="text-center">
                                                                             <span
-                                                                                    class="avatar avatar-xl avatar-rounded">
+                                                                                  class="avatar avatar-xl avatar-rounded">
                                                                                 <img
-                                                                                        src="{{template}}/assets/images/admenu/updates.png"
-                                                                                        alt="">
+                                                                                      src="{{template}}/assets/images/admenu/updates.png"
+                                                                                      alt="">
                                                                             </span>
                                                             <div class="mt-2">
                                                                 <p class="mb-0 fw-semibold">{{ phrase('software_update')

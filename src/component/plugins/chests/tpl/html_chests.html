@@ -1,6 +1,10 @@
 {% if getPluginActive('chests') %}
+
+{% set setting = getPluginSetting('chests') %}
+
 {% set chests = getServer(getUser().getServerId()).getCache("chests") %}
-{% if chests is not null %}
+{% if chests is not null and setting.showMainPage %}
+
 <div class="mb-4">
     <div class="chests-container" data-chests="{{ chests|json_encode|escape('html_attr') }}">
         {% for id, chest in chests %}
