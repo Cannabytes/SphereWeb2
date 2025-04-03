@@ -4,6 +4,7 @@ namespace Ofey\Logan22\component\plugins\winroll;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
@@ -24,6 +25,9 @@ class winroll
 
     public function show()
     {
+        if(!plugin::getPluginActive("winroll")){
+            redirect::location("/main");
+        }
         tpl::addVar([
             'logs' => user::self()->getLogs(logTypes::LOG_WINROW_WIN),
         ]);
@@ -53,6 +57,9 @@ class winroll
     public function spin()
     {
         validation::user_protection();
+        if (!plugin::getPluginActive("winroll")){
+            board::error("disabled");
+        }
         $winrolls = server::sendCustom("/api/plugin/winroll/spin")->show()->getResponse();
         if (isset($winrolls['status']) && $winrolls['status'] == "success") {
             $cost = $winrolls['cost'];

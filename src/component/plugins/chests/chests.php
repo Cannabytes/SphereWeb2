@@ -31,13 +31,7 @@ class chests
 
     public function setting()
     {
-//        $cases = server::sendCustom("/api/plugin/chests/get")->show()->getResponse();
-//        var_dump($cases);
-//
-//        $cases = \Ofey\Logan22\model\server\server::getServer()->getCache("chests");
-//
-//        var_dump($cases);
-//        exit;
+        validation::user_protection("admin");
         $box_names = include "box_names.php";
         tpl::addVar([
 //            "cases" => $cases,
@@ -184,6 +178,7 @@ class chests
      */
     public function getCase()
     {
+        validation::user_protection(["admin"]);
         $id = $_POST['id'] ?? null;
 
         if (!$id) {
@@ -369,6 +364,9 @@ class chests
     {
         // Проверка пользователя на авторизацию
         validation::user_protection();
+        if (plugin::getPluginActive("chests")==false){
+            board::error("disabled");
+        }
 
         // Валидация входных данных
         $case_name = isset($_POST['chest_id']) ? htmlspecialchars(trim($_POST['chest_id'])) : '';
