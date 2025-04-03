@@ -2714,4 +2714,18 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  199 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/setting/registration/bonus/save',
+    'func' => 'controller\\admin\\options::saveRegistrationBonusItems',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );
