@@ -89,8 +89,15 @@ class serverModel
         $this->donate = new donate($this->id, $this->knowledgeBase);
         $this->referral = new referral($this->id);
         $this->stackableItem = new serverStackable($server['stackableItem'] ?? null);
-
+        $this->bonus = new serverBonus($server['bonus']);
         return $this;
+    }
+
+    private ?serverBonus $bonus = null;
+
+    public function bonus(): ?serverBonus
+    {
+        return $this->bonus;
     }
 
     public function stackableItem(): ?serverStackable
@@ -255,6 +262,7 @@ class serverModel
             'default' => $this->default,
             'position' => $this->position,
             'stackableItem' => $this->stackableItem()->toArray(),
+            'bonus' => $this->bonus()->toArray(),
             'maxOnline' => $this->maxOnline,
         ];
         sql::run(
@@ -763,5 +771,6 @@ class serverModel
         sql::run("INSERT INTO `server_cache` (`server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)",
             [$this->getId(), $type, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), time::mysql()]);
     }
+
 
 }

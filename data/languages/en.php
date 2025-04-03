@@ -2067,10 +2067,8 @@ Password: %%password%%',
     'delete_limit_exceeded' => 'Deletion limit exceeded',
     'account_too_long' => 'Account name is too long',
     'item_stack' => 'User stacked items in the warehouse',
-
     'SUPER-GUARD.CLOUD_BANNER' => ' Specializes in providing top-tier DDoS protection, ensuring the security and stability of your services. The company offers reliable hosting, virtual and dedicated servers. Premium-level customer support.',
     'L2Up.host_banner' => ' Hosting, VPS servers, proxying, dedicated servers, and high-quality DDoS protection to ensure your resource\'s availability.',
-
     'code_time_not_start' => 'The time to use the code has not started yet',
     'code_already_used' => 'This code has already been used by you',
     'code_created_for_another_server' => 'This code was created for another server',
@@ -2078,5 +2076,7 @@ Password: %%password%%',
     'preview' => 'Preview',
     'type' => 'Type',
     'items_many' => 'Items',
-
+    'registration_reward_all' => 'Register now and receive valuable rewards!',
+    'registration_reward_one_random' => 'Register now and receive a random reward!',
+    'registration_bonus' => 'Registration bonus',
 ];

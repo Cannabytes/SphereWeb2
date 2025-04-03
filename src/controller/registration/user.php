@@ -63,14 +63,10 @@ class user
         $mailTemplate = mail::getTemplates();
 
         if (filter_var($mailTemplate['send_notice_for_registration'], FILTER_VALIDATE_BOOLEAN)) {
-
             $config = config::load()->email();
             if (!empty($config->getHost()) || !empty($config->getUsername()) || !empty($config->getPassword()) || !empty($config->getPort()) || !empty($config->isSmtpAuth()) || !empty($config->getProtocol())) {
-
                 $html = str_replace(["\n", "\t"], "", $mailTemplate['notice_success_registration_html']);
-
                 $html = str_replace(['%site%',], [url::scheme() . "://" . $_SERVER['SERVER_NAME'],], $html);
-
                 mail::send($email, $html, $mailTemplate['notice_reg_subject'], false);
             }
         }
@@ -86,6 +82,25 @@ class user
             telegram::sendTelegramMessage($msg);
         }
 
+
+        //Выдаем бонусы при регистрации
+        foreach (server::getServerAll() as $server) {
+            if ($server->bonus()->isRegistrationBonus()) {
+                $items = $server->bonus()->getRegistrationBonusItems();
+                $ifIssueAllItems = $server->bonus()->isIssueAllItems();
+                 // Если выдаем все предметы
+                if($ifIssueAllItems){
+                    foreach ($items as $item) {
+                        \Ofey\Logan22\model\user\user::self()->addToWarehouse($server->getId(), $item->getId(), $item->getCount(), $item->getEnchant(), 'registration_bonus');
+                    }
+                }else{
+                    // выбираем рандомный предмет
+                    $item = $items[array_rand($items)];
+                    \Ofey\Logan22\model\user\user::self()->addToWarehouse($server->getId(), $item->getId(), $item->getCount(), $item->getEnchant(), 'registration_bonus');
+                }
+            }
+        }
+
         if (config::load()->registration()->getEnableLoadFileRegistration() and $account_name != null) {
             $serverInfo = server::getDefault();
             if($serverInfo!=null){
@@ -94,7 +109,8 @@ class user
             board::response("notice_registration", ["ok" => true, "message" => lang::get_phrase(207), "isDownload" => config::load()->registration()->getEnableLoadFileRegistration(), "title" => $_SERVER['SERVER_NAME'] . " - " . $email . ".txt", "content" => $content, "redirect" => fileSys::localdir("/main"),]);
         }
 
-       board::response("notice_registration", ["ok" => true, "message" => lang::get_phrase(207), "redirect" => fileSys::localdir("/main"),]);
+
+        board::response("notice_registration", ["ok" => true, "message" => lang::get_phrase(207), "redirect" => fileSys::localdir("/main"),]);
     }
 
     public static function show($ref_name = null): void

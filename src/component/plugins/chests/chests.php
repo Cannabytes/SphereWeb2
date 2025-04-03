@@ -4,6 +4,7 @@ namespace Ofey\Logan22\component\plugins\chests;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\image\client_icon;
+use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
@@ -25,6 +26,9 @@ class chests
 
     public function show()
     {
+        if (!plugin::getPluginActive("chests")) {
+            redirect::location("/main");
+        }
         tpl::addVar('last_history_winner', $this->last_history_winner());
         tpl::displayPlugin("/chests/tpl/chests.html");
     }

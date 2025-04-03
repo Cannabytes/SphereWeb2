@@ -1,0 +1,587 @@
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+
+            <div class="form-check form-check-lg d-flex align-items-center mb-3">
+              <input {% if getServer().bonus().isRegistrationBonus() %}checked{% endif %} id="enableRegistrationBonus" class="form-check-input" type="checkbox" value="">
+              <label class="form-check-label" for="enableRegistrationBonus">
+                Включить бонусы за регистрацию
+              </label>
+            </div>
+
+            <div class="card custom-card shadow-none mb-3 border">
+
+              <div class="card-body">
+                <div class="row gy-2 d-sm-flex align-items-center justify-content-between">
+                  <div class="col-xl-6">
+                    <span class="fs-14 mb-0">Добавить предмет в список бонусов, которые будут выдаваться при регистрации пользователям.</span>
+
+                    <div class="input-group input-group-sm mt-3">
+                     <input {% if getServer().bonus().isIssueAllItems() %}checked{% endif %} class="form-check-input" id="issueAllItems" type="checkbox" value="">
+                     <label class="form-check-label" for="issueAllItems">
+                       Поставьте "ОК" чтоб выдавать все предметы, иначе будет выдан только один случайный предмет.
+                    </label>
+                  </div>
+
+                  </div>
+                  <div class="col-xl-6">
+
+                    <div class="form-floating mb-3">
+
+                      <div class="input-group input-group-sm">
+                        <div class="form-floating mb-3">
+                          <input type="number" step="1" class="form-control" id="item_id_bonus" placeholder="57">
+                          <label for="item_id_bonus">ID предмета</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                          <input type="number" step="1" class="form-control" id="count_bonus" placeholder="10" value="1">
+                          <label for="count_bonus">Количество</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                          <input type="number" step="1" class="form-control" id="enchant_bonus" placeholder="0" value="0">
+                          <label for="enchant_bonus">Заточка</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                          <button type="button" class="btn btn-success btn-wave waves-effect waves-light" id="item_add_to_bonus">
+                            Добавить
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div class="table-responsive">
+                    <table class="table text-nowrap table-bordered bonus_items_table">
+                      <thead class="bg-light">
+                        <tr>
+                          <th>Предмет</th>
+                          <th>Количество</th>
+                          <th>Действия</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+                          {% for item in getServer().bonus().getRegistrationBonusItems() %}
+                          {% set itemInfo = get_item_info(item.id) %}
+                          <tr>
+                            <td><span class="avatar avatar-sm"><img src="{{ (itemInfo.getIcon()) }}" alt="img"></span> (ID: {{ item.id }}) {% if item.enchant > 0 %}+{{ item.enchant }} {% endif %} {% if itemInfo.getAddName() %}{{ itemInfo.getAddName() }} {% endif %} {{ itemInfo.getItemName() }}</td>
+                            <td>{{ item.count }}</td>
+                            <td>
+                              <div class="hstack gap-2 flex-wrap">
+                                <a href="javascript:void(0);" class="text-info fs-14 lh-1 edit-item me-2"><i class="ri-edit-line"></i></a>
+                                <a href="javascript:void(0);" class="text-danger fs-14 lh-1 delete-item"><i class="ri-delete-bin-5-line"></i></a>
+                              </div>
+                            </td>
+                          </tr>
+                          {% endfor %}
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div id="emptyBonusListMessage" class="text-center text-muted py-4">
+                    <i class="ri-gift-2-line fs-1 mb-2 d-block"></i>
+                    Список предметов для бонуса пуст
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="float-end mt-3">
+              <button id="saveRegistrationBonus" type="button" class="btn btn-success">
+                Сохранить настройки
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+<!-- Модальное окно для редактирования предмета -->
+<div class="modal fade" id="editItemModal" tabindex="-1" aria-labelledby="editItemModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editItemModalLabel">Редактирование предмета</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit_item_id">
+        <div class="mb-3">
+          <label for="edit_item_count" class="form-label">Количество</label>
+          <input type="number" class="form-control" id="edit_item_count" min="1" step="1">
+        </div>
+        <div class="mb-3">
+          <label for="edit_item_enchant" class="form-label">Заточка</label>
+          <input type="number" class="form-control" id="edit_item_enchant" min="0" step="1">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="button" class="btn btn-primary" id="saveItemChanges">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+$(document).ready(function() {
+  // Инициализация атрибутов data- для существующих элементов при загрузке страницы
+  $('.bonus_items_table tbody tr').each(function() {
+    // Извлекаем ID предмета из текста ячейки
+    const cellText = $(this).find('td:eq(0)').text();
+    const idMatch = cellText.match(/\(ID: (\d+)\)/);
+
+    if (idMatch && idMatch[1]) {
+      const itemId = idMatch[1];
+      const count = $(this).find('td:eq(1)').text().trim();
+
+      // Проверяем наличие заточки в тексте
+      const enchantMatch = cellText.match(/\+(\d+)/);
+      const enchant = (enchantMatch && enchantMatch[1]) ? enchantMatch[1] : '0';
+
+      // Устанавливаем атрибуты data-
+      $(this).attr('data-item-id', itemId);
+      $(this).attr('data-count', count);
+      $(this).attr('data-enchant', enchant);
+    }
+  });
+
+  // Обновляем отображение пустого сообщения при загрузке
+  updateEmptyMessage();
+
+  // Добавляем элемент для предпросмотра под полем ID предмета
+  $('#item_id_bonus').after('<div id="item_preview" class="item-preview mt-1" style="display:none;"></div>');
+
+  // Переменная для хранения таймера задержки поиска
+  let searchTimeout;
+
+  // Функция для проверки и исправления путей к иконкам
+  function fixIconPath(iconPath) {
+    // Если путь не начинается с /, добавляем его
+    if (iconPath && !iconPath.startsWith('/') && !iconPath.startsWith('http')) {
+      return '/' + iconPath;
+    }
+    // Если путь пустой или undefined, возвращаем заглушку
+    if (!iconPath) {
+      return '/uploads/images/icon/NOIMAGE.webp';
+    }
+    return iconPath;
+  }
+
+  // Функция для проверки наличия предмета в таблице
+  function isItemInTable(itemId) {
+    let exists = false;
+    $('.bonus_items_table tbody tr').each(function() {
+      if ($(this).attr('data-item-id') == itemId) {
+        exists = true;
+        return false; // прерываем цикл
+      }
+    });
+    return exists;
+  }
+
+  // Функция для обновления количества существующего предмета
+  function updateExistingItem(itemId, additionalCount) {
+    $('.bonus_items_table tbody tr').each(function() {
+      if ($(this).attr('data-item-id') == itemId) {
+        const currentCount = parseInt($(this).attr('data-count'));
+        const newCount = currentCount + parseInt(additionalCount);
+
+        $(this).attr('data-count', newCount);
+        $(this).find('td:eq(1)').text(newCount);
+
+        // Визуально выделяем обновленный предмет
+        $(this).addClass('bg-success-subtle');
+        setTimeout(() => {
+          $(this).removeClass('bg-success-subtle');
+        }, 1500);
+
+        return false; // прерываем цикл
+      }
+    });
+  }
+
+  // Функция для обновления отображения таблицы
+  function updateEmptyMessage() {
+    if ($('.bonus_items_table tbody tr').length > 0) {
+      $('#emptyBonusListMessage').hide();
+    } else {
+      $('#emptyBonusListMessage').show();
+    }
+  }
+
+  // Обработчик ввода в поле ID предмета - подсказка с предпросмотром
+  $('#item_id_bonus').on('input', function() {
+    const itemId = $(this).val().trim();
+
+    // Скрываем предпросмотр, если ID пустой
+    if (!itemId || isNaN(itemId) || parseInt(itemId) <= 0) {
+      $('#item_preview').hide();
+      return;
+    }
+
+    // Очищаем предыдущий таймер
+    clearTimeout(searchTimeout);
+
+    // Устанавливаем новый таймер для предотвращения частых запросов
+    searchTimeout = setTimeout(function() {
+      // Показываем индикатор загрузки
+      $('#item_preview').html('<div class="d-flex align-items-center"><div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div><span>Поиск предмета...</span></div>').show();
+
+      // Выполняем запрос для получения информации о предмете
+      AjaxSend('/admin/client/item/info', 'POST', { 'itemID': itemId }, true)
+            .then(function(response) {
+              if (response.ok) {
+                // Формируем превью предмета
+                let icon = response.item.icon;
+                let name = response.item.itemName;
+
+                if (response.item.addName) {
+                  name = response.item.addName + ' ' + name;
+                }
+
+                // Отображаем информацию о предмете
+                const previewHtml = `
+              <div class="d-flex align-items-center p-2 border rounded bg-light">
+                <span class="avatar avatar-sm me-2"><img src="${fixIconPath(icon)}" alt=""></span>
+                <div>
+                  <div class="fw-semibold">${name}</div>
+                  <small class="text-muted">ID: ${itemId}</small>
+                </div>
+              </div>
+            `;
+
+                $('#item_preview').html(previewHtml);
+              } else {
+                // Если предмет не найден
+                $('#item_preview').html('<div class="text-danger"><i class="ri-error-warning-line me-1"></i>Предмет с ID ' + itemId + ' не найден</div>');
+              }
+            })
+            .catch(function() {
+              // Обрабатываем ошибку запроса
+              $('#item_preview').html('<div class="text-danger"><i class="ri-error-warning-line me-1"></i>Ошибка при получении информации о предмете</div>');
+            });
+    }, 500); // Задержка в 500 мс перед запросом
+  });
+
+  // Обработчик потери фокуса полем ID предмета
+  $('#item_id_bonus').on('blur', function() {
+    // Используем таймер, чтобы дать пользователю возможность кликнуть по предпросмотру
+    setTimeout(function() {
+      $('#item_preview').hide();
+    }, 200);
+  });
+
+  // ВАЖНО: Удаляем все существующие обработчики с кнопки "Добавить"
+  $('#item_add_to_bonus').off('click');
+
+  // Обработчик клика по кнопке "Добавить"
+  $('#item_add_to_bonus').on('click', function() {
+    // Получаем значения из полей ввода
+    const itemId = $('#item_id_bonus').val().trim();
+    const count = $('#count_bonus').val().trim() || '1';
+    const enchant = $('#enchant_bonus').val().trim() || '0';
+
+    // Скрываем предпросмотр
+    $('#item_preview').hide();
+
+    // Базовая валидация
+    if (!itemId) {
+      if (typeof noticeError === 'function') {
+        noticeError("Заполните ID предмета");
+      } else {
+        alert("Заполните ID предмета");
+      }
+      return;
+    }
+
+    if (isNaN(itemId) || isNaN(count) || parseInt(count) <= 0) {
+      if (typeof noticeError === 'function') {
+        noticeError("ID предмета и количество должны быть положительными числами");
+      } else {
+        alert("ID предмета и количество должны быть положительными числами");
+      }
+      return;
+    }
+
+    // Проверяем, существует ли уже предмет с таким ID
+    if (isItemInTable(itemId)) {
+      // Если предмет уже есть в таблице, обновляем его количество
+      updateExistingItem(itemId, count);
+
+      // Очищаем поля ввода
+      $('#item_id_bonus').val('');
+      $('#count_bonus').val('1');
+      $('#enchant_bonus').val('0');
+
+      return;
+    }
+
+    // Выполняем запрос для получения информации о предмете
+    AjaxSend('/admin/client/item/info', 'POST', { 'itemID': itemId }, true)
+          .then(function(response) {
+            if (response.ok) {
+              // Формируем данные предмета
+              const icon = fixIconPath(response.item.icon);
+              let name = response.item.itemName || 'Предмет #' + itemId;
+
+              if (response.item.addName) {
+                name = response.item.addName + ' ' + name;
+              }
+
+              let enchantText = '';
+              if (enchant > 0) {
+                enchantText = ' +' + enchant + ' ';
+              }
+
+              // Создаем новую строку таблицы
+              const newRow = `
+            <tr data-item-id="${itemId}" data-count="${count}" data-enchant="${enchant}">
+              <td><span class="avatar avatar-sm"><img src="${icon}" alt="img"></span> (ID: ${itemId}) ${enchantText}${name}</td>
+              <td>${count}</td>
+              <td>
+                <div class="hstack gap-2 flex-wrap">
+                  <a href="javascript:void(0);" class="text-info fs-14 lh-1 edit-item me-2"><i class="ri-edit-line"></i></a>
+                  <a href="javascript:void(0);" class="text-danger fs-14 lh-1 delete-item"><i class="ri-delete-bin-5-line"></i></a>
+                </div>
+              </td>
+            </tr>
+          `;
+
+              // Добавляем строку в таблицу
+              $('.bonus_items_table tbody').append(newRow);
+
+              // Обновляем отображение сообщения о пустом списке
+              updateEmptyMessage();
+
+              // Очищаем поля ввода
+              $('#item_id_bonus').val('');
+              $('#count_bonus').val('1');
+              $('#enchant_bonus').val('0');
+
+            } else {
+              // Если предмет не найден, но мы хотим всё равно добавить его (для тестирования)
+              const mockIcon = '/uploads/images/icon/NOIMAGE.webp';
+
+              // Создаем новую строку таблицы с заглушкой
+              const newRow = `
+            <tr data-item-id="${itemId}" data-count="${count}" data-enchant="${enchant}">
+              <td><span class="avatar avatar-sm"><img src="${mockIcon}" alt="img"></span> (ID: ${itemId}) Предмет #${itemId}</td>
+              <td>${count}</td>
+              <td>
+                <div class="hstack gap-2 flex-wrap">
+                  <a href="javascript:void(0);" class="text-info fs-14 lh-1 edit-item me-2"><i class="ri-edit-line"></i></a>
+                  <a href="javascript:void(0);" class="text-danger fs-14 lh-1 delete-item"><i class="ri-delete-bin-5-line"></i></a>
+                </div>
+              </td>
+            </tr>
+          `;
+
+              // Добавляем строку в таблицу
+              $('.bonus_items_table tbody').append(newRow);
+
+              // Обновляем отображение сообщения о пустом списке
+              updateEmptyMessage();
+
+              // Очищаем поля ввода
+              $('#item_id_bonus').val('');
+              $('#count_bonus').val('1');
+              $('#enchant_bonus').val('0');
+
+            }
+          })
+          .catch(function(error) {
+            console.error(error);
+          });
+  });
+
+  // Обработчик для удаления предмета из списка (делегирование событий)
+  $(document).off('click', '.delete-item');
+  $(document).on('click', '.delete-item', function() {
+    const row = $(this).closest('tr');
+
+    // Анимация удаления
+    row.fadeOut(300, function() {
+      $(this).remove();
+
+      // Обновляем отображение сообщения о пустом списке
+      updateEmptyMessage();
+    });
+  });
+
+  // Обработчик для открытия модального окна редактирования
+  $(document).off('click', '.edit-item');
+  $(document).on('click', '.edit-item', function() {
+    const row = $(this).closest('tr');
+    const itemId = row.attr('data-item-id');
+    const count = row.attr('data-count');
+    const enchant = row.attr('data-enchant');
+
+    // Заполняем данные в модальном окне
+    $('#edit_item_id').val(itemId);
+    $('#edit_item_count').val(count);
+    $('#edit_item_enchant').val(enchant);
+
+    // Открываем модальное окно
+    if (typeof bootstrap !== 'undefined') {
+      new bootstrap.Modal(document.getElementById('editItemModal')).show();
+    } else {
+      $('#editItemModal').show();
+    }
+  });
+
+  // Обработчик для сохранения изменений предмета
+  $('#saveItemChanges').off('click');
+  $('#saveItemChanges').on('click', function() {
+    const itemId = $('#edit_item_id').val();
+    const count = $('#edit_item_count').val();
+    const enchant = $('#edit_item_enchant').val();
+
+    // Находим строку с нужным ID
+    const row = $('.bonus_items_table tbody tr').filter(function() {
+      return $(this).attr('data-item-id') == itemId;
+    });
+
+    if (row.length > 0) {
+      // Получаем информацию о предмете
+      AjaxSend('/admin/client/item/info', 'POST', { 'itemID': itemId }, true)
+            .then(function(response) {
+              if (response.ok) {
+                // Обновляем данные
+                row.attr('data-count', count);
+                row.attr('data-enchant', enchant);
+
+                // Обновляем отображение количества
+                row.find('td:eq(1)').text(count);
+
+                // Формируем данные предмета
+                const icon = fixIconPath(response.item.icon);
+                let name = response.item.itemName || 'Предмет #' + itemId;
+
+                if (response.item.addName) {
+                  name = response.item.addName + ' ' + name;
+                }
+
+                let enchantText = '';
+                if (enchant > 0) {
+                  enchantText = ' +' + enchant + ' ';
+                }
+
+                // Обновляем ячейку с именем предмета
+                row.find('td:eq(0)').html(`<span class="avatar avatar-sm"><img src="${icon}" alt="img"></span> (ID: ${itemId}) ${enchantText}${name}`);
+
+                // Визуально выделяем обновленную строку
+                row.addClass('bg-info-subtle');
+                setTimeout(() => {
+                  row.removeClass('bg-info-subtle');
+                }, 1500);
+
+                // Закрываем модальное окно
+                if (typeof bootstrap !== 'undefined') {
+                  bootstrap.Modal.getInstance(document.getElementById('editItemModal')).hide();
+                } else {
+                  $('#editItemModal').hide();
+                }
+
+              } else {
+                // Если информация о предмете недоступна, обновляем только количество
+                row.attr('data-count', count);
+                row.attr('data-enchant', enchant);
+                row.find('td:eq(1)').text(count);
+
+                // Закрываем модальное окно
+                if (typeof bootstrap !== 'undefined') {
+                  bootstrap.Modal.getInstance(document.getElementById('editItemModal')).hide();
+                } else {
+                  $('#editItemModal').hide();
+                }
+              }
+            })
+            .catch(function() {
+              // При ошибке запроса, обновляем только количество
+              row.attr('data-count', count);
+              row.attr('data-enchant', enchant);
+              row.find('td:eq(1)').text(count);
+
+              // Закрываем модальное окно
+              if (typeof bootstrap !== 'undefined') {
+                bootstrap.Modal.getInstance(document.getElementById('editItemModal')).hide();
+              } else {
+                $('#editItemModal').hide();
+              }
+            });
+    }
+  });
+
+  // Обработчик для сохранения настроек бонусов
+  $('#saveRegistrationBonus').off('click');
+  $('#saveRegistrationBonus').on('click', function() {
+    // Собираем список предметов
+    const bonusItems = [];
+
+    $('.bonus_items_table tbody tr').each(function() {
+      bonusItems.push({
+        item_id: $(this).attr('data-item-id'),
+        count: $(this).attr('data-count'),
+        enchant: $(this).attr('data-enchant')
+      });
+    });
+
+    // Выводим данные в консоль для отладки
+    console.log('Отправляемые данные:', {
+      enabled: $('#enableRegistrationBonus').is(':checked'),
+      issueAllItems: $('#issueAllItems').is(':checked'),
+      bonus_items: bonusItems
+    });
+
+    AjaxSend('/admin/setting/registration/bonus/save', 'POST', {
+      enabled: $('#enableRegistrationBonus').is(':checked'),
+      issueAllItems: $('#issueAllItems').is(':checked'),
+      bonus_items: bonusItems
+    }, true).then(function(response) {
+      if (response.ok) {
+        noticeSuccess("Настройки бонусов за регистрацию сохранены");
+      } else {
+        noticeError("Ошибка при сохранении настроек: " + response.message);
+      }
+    }).catch(function(error) {
+      noticeError("Произошла ошибка при сохранении настроек");
+      console.error('Ошибка при сохранении настроек:', error);
+    });
+  });
+
+  // Добавляем стили для интерфейса
+  $('head').append(`
+    <style>
+      .item-preview {
+        position: absolute;
+        z-index: 1000;
+        width: calc(100% - 30px);
+        max-width: 300px;
+      }
+      .avatar-sm {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+      }
+      .bonus_items_table tr {
+        transition: background-color 0.3s;
+      }
+      .bg-success-subtle {
+        background-color: rgba(25, 135, 84, 0.15);
+      }
+      .bg-info-subtle {
+        background-color: rgba(13, 110, 253, 0.15);
+      }
+    </style>
+  `);
+});
+</script>

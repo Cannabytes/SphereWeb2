@@ -31,16 +31,25 @@
                                  <i class="ri-archive-line me-1"></i>{{phrase('item_unstack_menu')}}
                                 </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="registration-items-tab" data-bs-toggle="tab" data-bs-target="#registration-items-panel" type="button" role="tab" aria-controls="registration-items-panel" aria-selected="true">
+                                 <i class="ri-archive-line me-1"></i>Подарки за регистрацию
+                                </button>
+                        </li>
                     </ul>
 
                     <div class="tab-content" id="serverFunctionsContent">
                         <div class="tab-pane fade show active" id="warehouse-panel" role="tabpanel" aria-labelledby="warehouse-tab">
                             {% include 'admin/func/clearWarehouse.html' %}
                         </div>
-                        <div class="tab-pane fade " id="destack-panel" role="tabpanel" aria-labelledby="warehouse-tab">
+                        <div class="tab-pane fade " id="destack-panel" role="tabpanel" aria-labelledby="destack-tab">
                             {% include 'admin/func/destack.html' %}
                         </div>
+                        <div class="tab-pane fade " id="registration-items-panel" role="tabpanel" aria-labelledby="registration-items-tab">
+                            {% include 'admin/func/registration_bonus.html' %}
+                        </div>
                     </div>
+
 
                 </div>
             </div>

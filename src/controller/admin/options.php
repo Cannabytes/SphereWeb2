@@ -961,10 +961,8 @@ class options
 
 
     // Настройки стакуемых предметов сервера
-    public static function saveStackItems()
+    public static function saveStackItems(): void
     {
-        // Проверяй allowAllItemsStacking и allowAllItemsSplitting через фильтр POST запроса на boolean
-
         $allowAllItemsStacking = filter_var($_POST['allowAllItemsStacking'], FILTER_VALIDATE_BOOLEAN);
         $allowAllItemsSplitting = filter_var($_POST['allowAllItemsSplitting'], FILTER_VALIDATE_BOOLEAN);
         $stackableItems = $_POST['stackableItems'] ?? [];
@@ -977,6 +975,13 @@ class options
     public static function stackInventoryItems(): void
     {
         user::self()->stackInventoryItems();
+    }
+
+    public static function saveRegistrationBonusItems(): void
+    {
+        \Ofey\Logan22\model\server\server::getServer()->bonus()->setRegistrationBonusItems($_POST['enabled'], $_POST['issueAllItems'], $_POST['bonus_items']);
+        \Ofey\Logan22\model\server\server::getServer()->save();
+        board::notice(true, "Настройки сохранены");
     }
 
 }
