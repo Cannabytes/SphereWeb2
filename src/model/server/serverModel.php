@@ -89,7 +89,7 @@ class serverModel
         $this->donate = new donate($this->id, $this->knowledgeBase);
         $this->referral = new referral($this->id);
         $this->stackableItem = new serverStackable($server['stackableItem'] ?? null);
-        $this->bonus = new serverBonus($server['bonus']);
+        $this->bonus = new serverBonus($server['bonus'] ?? null);
         return $this;
     }
 
