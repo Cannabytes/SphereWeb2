@@ -40,4 +40,5 @@ return [
     'happy_win_chest' => '¡Felicidades!',
     'you_win_chest' => 'Has ganado',
     'open_more_chest' => 'Abrir más',
+    'chests_description_plugin' => 'Cofres de regalos. El usuario puede sacar cualquiera de los artículos que hayas añadido al cofre.',
 ];

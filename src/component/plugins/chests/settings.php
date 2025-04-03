@@ -3,7 +3,7 @@
 return [
     "PLUGIN_HIDE" => false,
     "PLUGIN_ENABLE" => true,
-    "PLUGIN_NAME" => "chests",
+    "PLUGIN_NAME" => "chests_name",
     "PLUGIN_PHRASE_ID" => "chests_name",
     "PLUGIN_VERSION" => "1.0.0",
     "PLUGIN_AUTHOR" => "Logan22",

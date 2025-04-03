@@ -40,4 +40,5 @@ return [
     'happy_win_chest' => 'Congratulations!',
     'you_win_chest' => 'You won',
     'open_more_chest' => 'Open more',
+    'chests_description_plugin' => 'Gift chests. The user can draw any of the items you have added to the chest.',
 ];

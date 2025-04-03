@@ -40,4 +40,5 @@ return [
     'happy_win_chest' => 'Parabéns!',
     'you_win_chest' => 'Você ganhou',
     'open_more_chest' => 'Abrir mais',
+    'chests_description_plugin' => 'Baús de presentes. O usuário pode retirar qualquer um dos itens que você adicionou ao baú.',
 ];
