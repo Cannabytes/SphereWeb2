@@ -1,20 +1,7 @@
 {% extends 'struct.html' %}
-
 {% block title %}{% endblock %}
 
 {% block content %}
-{% set setting = getPluginSetting('chests') %}
-
-{% if setting.showMainPage %}
-
-{% include 'chests/tpl/html_chests.html' %}
-
-{% endif %}
-
-{% endblock %}
-
-{% block css %}
-{% endblock %}
-
-{% block js %}
+	{% set chests = getServer(getUser().getServerId()).getCache("chests") %}
+	{% include 'chests/tpl/struct.html' %}
 {% endblock %}
