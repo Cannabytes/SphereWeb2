@@ -723,25 +723,28 @@ $(document).ready(function() {
   });
 
   {% if getServer().bonus().isRegistrationBonus() %}
-  // начало
   // JavaScript для магического кристалла
-  // Пути к изображениям предметов
+// Пути к изображениям предметов
   const itemImages = [
     {% for item in getServer().bonus().getRegistrationBonusItems() %}
-    {% set itemInfo = get_item_info(item.id) %}
-    '{{ itemInfo.getIcon() }}',
-    {% endfor %}
-  ];
+  {% set itemInfo = get_item_info(item.id) %}
+  '{{ itemInfo.getIcon() }}',
+  {% endfor %}
+];
 
-  // Создаем левитирующие предметы
+// Создаем левитирующие предметы
   const itemsContainer = $('.levitating-items-container');
 
-  // Функция для создания орбит предметов
+// Функция для создания орбит предметов
   function createItemOrbits() {
     const orbitsContainer = $('.energy-lines-container');
 
+    // Определяем нужное количество орбит на основе количества предметов
+    // Распределим предметы на 3 орбиты
+    const orbitsCount = 3;
+
     // Создаем орбиты
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < orbitsCount; i++) {
       const orbitSize = 140 + i * 30;
       const orbit = $('<div>')
             .addClass('item-orbit')
@@ -755,21 +758,36 @@ $(document).ready(function() {
     }
   }
 
-  // Создаем орбиты
+// Создаем орбиты
   createItemOrbits();
 
-  // Создаем предметы и размещаем их по орбитам с уникальными скоростями и траекториями
-  function createItems() {
-    // Базовые продолжительности анимаций для предотвращения синхронизации
-    const baseDurations = [23, 29, 31, 37, 41, 43];
-    // Начальные позиции распределены равномерно по кругу, чтобы избежать группировки
-    const startPositions = [0, 60, 120, 180, 240, 300];
+// Функция для получения случайных скоростей вращения
+  function getRandomSpeed(min, max) {
+    return min + Math.random() * (max - min);
+  }
 
-    for (let i = 0; i < itemImages.length; i++) {
-      // Уникальные анимации для каждого элемента с использованием простых чисел для продолжительности
-      const radius = 100 + (i % 3) * 30; // Увеличенные радиусы орбит: 100, 130, 160 (было 70, 95, 120)
-      const startPos = startPositions[i]; // Равномерное распределение
-      const orbitDuration = baseDurations[i]; // Разные продолжительности на основе простых чисел
+// Создаем предметы и размещаем их по орбитам с уникальными скоростями и траекториями
+  function createItems() {
+    const itemCount = itemImages.length;
+    const animationKeyframes = [];
+
+    // Создаем массив для хранения всех keyframes анимаций
+    const keyframesArray = [];
+
+    // Распределяем элементы равномерно вокруг орбит
+    for (let i = 0; i < itemCount; i++) {
+      // Определяем, на какой орбите будет элемент (распределяем по 3 орбитам)
+      const orbitIndex = i % 3;
+
+      // Расстояние от центра зависит от орбиты
+      const radius = 100 + orbitIndex * 30; // 100, 130, 160
+
+      // Генерируем случайный начальный угол для каждого элемента
+      const randomStartAngle = Math.random() * 360;
+
+      // Выбираем случайную скорость вращения для каждого элемента
+      // Чем меньше число, тем быстрее движение
+      const orbitDuration = getRandomSpeed(20, 40);
 
       // Создаем элемент предмета с индивидуальными CSS свойствами
       const item = $('<div>')
@@ -778,57 +796,48 @@ $(document).ready(function() {
             .css({
               'top': '50%',
               'left': '50%',
-              'z-index': 15, // Высокий z-index для всех предметов
+              'z-index': 15,
               'transform-origin': 'center'
             });
 
-      // Применяем уникальную CSS анимацию для предотвращения группировки
+      // Применяем случайную начальную позицию
       item.css({
-        'animation': `none`, // Сбрасываем анимацию
-        'transform': `rotate(${startPos}deg) translateX(${radius}px) rotate(-${startPos}deg)` // Начальная позиция
+        'transform': `rotate(${randomStartAngle}deg) translateX(${radius}px) rotate(-${randomStartAngle}deg)`
       });
 
-      // Добавляем уникальную анимацию через setTimeout, чтобы избежать синхронизации
-      setTimeout(() => {
-        item.css({
-          'animation': `orbit${i} ${orbitDuration}s linear infinite`,
-          'transition': 'none'
-        });
+      // Создаем уникальные ключевые кадры анимации для каждого элемента
+      const keyframesName = `orbit${i}`;
+      const keyframes = `
+      @keyframes ${keyframesName} {
+        0% { transform: rotate(${randomStartAngle}deg) translateX(${radius}px) rotate(-${randomStartAngle}deg); }
+        100% { transform: rotate(${randomStartAngle + 360}deg) translateX(${radius}px) rotate(-${randomStartAngle + 360}deg); }
+      }
+    `;
 
-        // Добавляем keyframes для уникальной орбитальной анимации
-        const keyframes = `
-            @keyframes orbit${i} {
-              0% { transform: rotate(${startPos}deg) translateX(${radius}px) rotate(-${startPos}deg); }
-              100% { transform: rotate(${startPos + 360}deg) translateX(${radius}px) rotate(-${startPos + 360}deg); }
-            }
-          `;
+      keyframesArray.push(keyframes);
 
-        $('<style>').text(keyframes).appendTo('head');
-      }, 100 + i * 50);
-
-      // Создаем обертку для вращения с уникальной продолжительностью
+      // Создаем обертку для вращения элемента вокруг своей оси
       const itemWrapper = $('<div>')
             .addClass('item-wrapper')
             .css({
-              'animation-duration': `${13 + i * 2.7}s`,
-              'animation-direction': i % 2 === 0 ? 'normal' : 'reverse',
-              'animation-delay': `${i * 0.7}s` // Добавляем задержку для дополнительного разброса
+              'animation-duration': `${getRandomSpeed(8, 15)}s`,
+              'animation-direction': i % 2 === 0 ? 'normal' : 'reverse'
             });
 
       // Создаем контент предмета
       const itemContent = $('<div>')
             .addClass('item-content')
-            .css('z-index', 20); // Еще выше z-index для содержимого
+            .css('z-index', 20);
 
       // Добавляем изображение
       const img = $('<img>')
-            .attr('src', itemImages[i]) ;
+            .attr('src', itemImages[i]);
 
       // Добавляем свечение вокруг предмета
       const itemGlow = $('<div>')
             .addClass('item-glow')
             .css({
-              'animation-delay': `${i * 0.5}s`
+              'animation-delay': `${Math.random() * 2}s`
             });
 
       // Собираем структуру
@@ -837,13 +846,36 @@ $(document).ready(function() {
       itemWrapper.append(itemContent);
       item.append(itemWrapper);
       itemsContainer.append(item);
+
+      // Сохраняем информацию об анимации для последующего применения
+      animationKeyframes.push({
+        element: item,
+        keyframesName: keyframesName,
+        duration: orbitDuration
+      });
     }
+
+    // Объединяем все keyframes и добавляем в head
+    const allKeyframes = keyframesArray.join('\n');
+    $('<style>').text(allKeyframes).appendTo('head');
+
+    // Ждем немного, чтобы DOM был полностью готов,
+    // затем применяем все анимации одновременно
+    setTimeout(() => {
+      // Применяем анимации ко всем элементам сразу
+      animationKeyframes.forEach(item => {
+        item.element.css({
+          'animation': `${item.keyframesName} ${item.duration}s linear infinite`,
+          'transition': 'none'
+        });
+      });
+    }, 500);
   }
 
-  // Создаем предметы
+// Создаем предметы
   createItems();
 
-  // Функция для создания магических частиц
+// Функция для создания магических частиц
   function createMagicParticles() {
     const particlesContainer = $('.magic-particles-container');
 
@@ -864,30 +896,33 @@ $(document).ready(function() {
     }
   }
 
-  // Создаем магические частицы
+// Создаем магические частицы
   createMagicParticles();
 
-  // Функция для выделения случайного предмета и отображения его названия
+// Функция для выделения случайного предмета и отображения его названия
   function highlightRandomItem() {
     // Сначала удаляем предыдущее выделение
     $('.item-content img').removeClass('item-highlight');
 
     // Выбираем случайный предмет
     const items = $('.levitating-item');
-    const randomIndex = Math.floor(Math.random() * items.length);
-    const selectedItem = $(items[randomIndex]);
 
-    // Выделяем предмет
-    selectedItem.find('.item-content img').addClass('item-highlight');
+    if (items.length > 0) {
+      const randomIndex = Math.floor(Math.random() * items.length);
+      const selectedItem = $(items[randomIndex]);
+
+      // Выделяем предмет
+      selectedItem.find('.item-content img').addClass('item-highlight');
+    }
 
     // Планируем следующее выделение
     setTimeout(highlightRandomItem, 3000 + Math.random() * 2000);
   }
 
-  // Начинаем процесс выделения предметов
+// Начинаем процесс выделения предметов
   setTimeout(highlightRandomItem, 2000);
 
-  // Функция для изменения интенсивности свечения кристалла
+// Функция для изменения интенсивности свечения кристалла
   function pulsecrystalGlow() {
     const innerGlow = $('.crystal-inner-glow');
     const baseGlow = $('.crystal-glow');
@@ -904,10 +939,10 @@ $(document).ready(function() {
     setTimeout(pulsecrystalGlow, 2000 + Math.random() * 1000);
   }
 
-  // Запускаем пульсацию свечения
+// Запускаем пульсацию свечения
   pulsecrystalGlow();
 
-  // Улучшенная функция для создания эффектных вспышек энергии
+// Улучшенная функция для создания эффектных вспышек энергии
   function createEnergyBurst() {
     // Создаем эффектную вспышку с градиентом
     const burst = $('<div>')
@@ -920,10 +955,10 @@ $(document).ready(function() {
             'background': 'radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(144, 120, 255, 0.6) 40%, rgba(104, 79, 243, 0.2) 70%, transparent 100%)',
             'border-radius': '50%',
             'transform': 'translate(-50%, -50%)',
-            'z-index': '6', // Увеличен z-index для лучшей видимости
+            'z-index': '6',
             'pointer-events': 'none',
-            'transition': 'all 0.7s cubic-bezier(0.2, 0.8, 0.3, 1)', // Более плавная анимация
-            'filter': 'blur(3px)' // Добавляем размытие для более мягкого эффекта
+            'transition': 'all 0.7s cubic-bezier(0.2, 0.8, 0.3, 1)',
+            'filter': 'blur(3px)'
           });
 
     // Добавляем в контейнер
@@ -932,8 +967,8 @@ $(document).ready(function() {
     // Анимируем вспышку
     setTimeout(() => {
       burst.css({
-        'width': '300px', // Увеличено с 220px
-        'height': '300px', // Увеличено с 220px
+        'width': '300px',
+        'height': '300px',
         'opacity': '0'
       });
 
@@ -950,11 +985,11 @@ $(document).ready(function() {
     setTimeout(createEnergyBurst, 4000 + Math.random() * 3000);
   }
 
-  // Функция для создания мерцающих частиц при вспышке
+// Функция для создания мерцающих частиц при вспышке
   function createBurstParticles() {
-    for (let i = 0; i < 20; i++) { // Увеличено с 12
+    for (let i = 0; i < 20; i++) {
       const angle = Math.random() * 360;
-      const distance = 40 + Math.random() * 120; // Увеличено с 30 + Math.random() * 80
+      const distance = 40 + Math.random() * 120;
       const radian = (angle * Math.PI) / 180;
       const x = Math.cos(radian) * distance;
       const y = Math.sin(radian) * distance;
@@ -964,8 +999,8 @@ $(document).ready(function() {
               'position': 'absolute',
               'top': '50%',
               'left': '50%',
-              'width': `${3 + Math.random() * 5}px`, // Увеличено с 2 + Math.random() * 4
-              'height': `${3 + Math.random() * 5}px`, // Увеличено с 2 + Math.random() * 4
+              'width': `${3 + Math.random() * 5}px`,
+              'height': `${3 + Math.random() * 5}px`,
               'background-color': `rgba(${144 + Math.random() * 111}, ${120 + Math.random() * 135}, 255, ${0.7 + Math.random() * 0.3})`,
               'border-radius': '50%',
               'transform': `translate(-50%, -50%)`,
@@ -996,7 +1031,7 @@ $(document).ready(function() {
     }
   }
 
-  // Запускаем создание вспышек энергии
+// Запускаем создание вспышек энергии
   setTimeout(createEnergyBurst, 2000);
   {% endif %}
 

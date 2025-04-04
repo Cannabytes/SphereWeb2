@@ -35,6 +35,7 @@ class chests
 
     public function setting()
     {
+
         validation::user_protection("admin");
         $box_names = include "box_names.php";
         tpl::addVar([
@@ -60,9 +61,7 @@ class chests
     public function getAllCases()
     {
         validation::user_protection(["admin"]);
-
-        $cases = \Ofey\Logan22\model\server\server::getServer()->getCache("chests");
-
+        $cases = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
         if (empty($cases)) {
             // Возвращаем пустой массив, если нет кейсов
             board::alert([
@@ -147,7 +146,7 @@ class chests
         $casesOrder = $_POST['cases_order'];
 
         // Получаем текущие данные кейсов
-        $cases = \Ofey\Logan22\model\server\server::getServer()->getCache("chests");
+        $cases = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
         if (!$cases || !is_array($cases)) {
             board::error("Настройки кейсов не найдены");
             return;
@@ -169,7 +168,7 @@ class chests
         }
 
         // Сохраняем обновленные данные
-        \Ofey\Logan22\model\server\server::getServer()->getCache("chests", $orderedCases);
+        \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests", null, $orderedCases);
 
         board::alert([
             'ok' => true,
@@ -190,7 +189,7 @@ class chests
             return;
         }
 
-        $cases = \Ofey\Logan22\model\server\server::getServer()->getCache("chests");
+        $cases = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
 
         if (!$cases || !isset($cases[$id])) {
             board::error("Кейс не найден");
@@ -235,7 +234,7 @@ class chests
             return;
         }
 
-        $cases = \Ofey\Logan22\model\server\server::getServer()->getCache("chests");
+        $cases = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
 
         if (!$cases || !isset($cases[$id])) {
             board::error("Кейс не найден");
@@ -244,14 +243,14 @@ class chests
 
         $response = server::sendCustom("/api/plugin/chests/delete", [
             "name" => $id,
-            "serverId" => \Ofey\Logan22\model\server\server::getServer()->getId(),
+            "serverId" => \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getId(),
         ])->show()->getResponse();
         if (isset($response['success'])) {
             // Удаляем кейс из массива
             unset($cases[$id]);
 
             // Сохраняем обновленные данные
-            \Ofey\Logan22\model\server\server::getServer()->setCache("chests", $cases);
+            \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->setCache("chests", $cases);
 
             board::alert([
                 'ok' => true,
@@ -294,7 +293,7 @@ class chests
             return;
         }
 
-        $cases = \Ofey\Logan22\model\server\server::getServer()->getCache("chests");
+        $cases = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
 
         // Проверка на дубликаты названий (только при создании нового кейса или при изменении имени)
         if (($originalName != $name) && isset($cases[$name])) {
@@ -341,7 +340,7 @@ class chests
         $cases[$name] = $case;
 
         // Сохраняем обновленные настройки
-        \Ofey\Logan22\model\server\server::getServer()->setCache("chests", $cases);
+        \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->setCache("chests", $cases);
 
         server::sendCustom("/api/plugin/chests/save", [
             'name' => $originalName,
@@ -383,7 +382,7 @@ class chests
             "serverId" => user::self()->getServerId(),
             "name" => $case_name,
         ])->show()->getResponse();
-        $case = \Ofey\Logan22\model\server\server::getServer()->getCache("chests");
+        $case = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
 
         // Преобразование цены в целое число
         $price = (float)$case['price'];

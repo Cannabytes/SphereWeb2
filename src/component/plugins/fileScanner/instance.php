@@ -37,6 +37,7 @@ class instance {
     public function scan(): void {
         header('Content-Type: application/json');
         ini_set('max_execution_time', 300);
+        ini_set('memory_limit', '1G');
         try {
             $scanner = new scannerSystem(self::ALLOWED_EXTENSIONS, self::EXCLUDED_PATHS);
             $scanner->setBufferSize(64 * 1024);

@@ -753,9 +753,12 @@ class serverModel
         return json_decode($setting['setting'], true);
     }
 
-    public function getCache(string $type = null, $fullData = false)
+    public function getCache(string $type = null, $server_id = null, $fullData = false)
     {
-        $data = sql::getRow("SELECT `data`, `date_create` FROM `server_cache` WHERE `server_id` = ? AND `type` = ? LIMIT 1 ", [$this->getId(), $type]);
+        if ($server_id == null) {
+            $server_id = $this->getId();
+        }
+        $data = sql::getRow("SELECT `data`, `date_create` FROM `server_cache` WHERE `server_id` = ? AND `type` = ? LIMIT 1 ", [$server_id, $type]);
         if (empty($data)) {
             return null;
         }
