@@ -261,6 +261,7 @@ class serverModel
             'statusServer' => $this->statusServerMem,
             'default' => $this->default,
             'position' => $this->position,
+            'knowledgeBase' => $this->knowledgeBase,
             'stackableItem' => $this->stackableItem()->toArray(),
             'bonus' => $this->bonus()->toArray(),
             'maxOnline' => $this->maxOnline,

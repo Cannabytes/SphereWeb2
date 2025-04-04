@@ -408,7 +408,7 @@ class chests
             }
 
             // Проверка существования предмета
-            $itemInfo = item::getItem($item['id']);
+            $itemInfo = item::getItem($item['id'], \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getKnowledgeBase() );
             if (!$itemInfo || !$itemInfo->isExists()) {
                 throw new \Exception("Предмет не найден");
             }

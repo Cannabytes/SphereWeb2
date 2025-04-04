@@ -369,7 +369,7 @@ class userModel
         $warehouseArray = [];
         foreach ($items as $item) {
             $warehouse = new warehouse();
-            $itemObj = item::getItem($item['item_id']);
+            $itemObj = item::getItem($item['item_id'], server::getServer($this->getServerId())->getKnowledgeBase());
             if ($itemObj == null) {
                 continue;
             }

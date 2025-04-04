@@ -7,6 +7,7 @@ use DateTime;
 use JsonSerializable;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\image\client_icon;
+use Ofey\Logan22\model\user\user;
 
 #[AllowDynamicProperties] class item implements JsonSerializable {
 
@@ -244,7 +245,6 @@ use Ofey\Logan22\component\image\client_icon;
 
     public static function getItem($id, $dbVersion = null): ?item
     {
-
         if (isset(self::$arrItems[$id])) {
             return self::$arrItems[$id];
         }

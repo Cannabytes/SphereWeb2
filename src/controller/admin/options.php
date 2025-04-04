@@ -951,6 +951,13 @@ class options
         foreach($rows AS &$item){
             $user_id = $item['user_id'];
             $itemInfo = item::getItem($item['item_id']);
+            if (!$itemInfo){
+                $itemInfo = new item();
+                $itemInfo->setId($item['item_id']);
+                $itemInfo->setCount($item['count']);
+                $itemInfo->setItemName("No Item Name");
+                $itemInfo->setIcon(fileSys::localdir("/uploads/images/icon/NOIMAGE.webp"));
+            }
             $item['item_name'] = $itemInfo->getItemName();
             $item['item_icon'] = $itemInfo->getIcon();
             $item['userInfo'] = user::getUserId($user_id)->toArray();

@@ -77,6 +77,9 @@ class client_icon {
                 board::notice(false, "Не передано значение ID предмета");
             }
         }
+        if ($chronicle === null) {
+            $chronicle = server::getServer(user::self()->getServerId())->getKnowledgeBase();
+        }
         $icon = item::getItem($item_id, $chronicle);
 
         if(!$icon){
