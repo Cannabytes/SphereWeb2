@@ -1264,6 +1264,9 @@ class userModel
         string|int $phrase = 'none'
     ): array
     {
+        //Добавление лога
+        $this->addLog(logTypes::LOG_WAREHOUSE_ADD, "LOG_WAREHOUSE_ADD", [$server_id, $item_id, $count, $enchant, $phrase]);
+
         if ($server_id == 0) {
             $server_id = $this->serverId();
         }
@@ -1329,6 +1332,7 @@ class userModel
                     $enchant = $warehouse->getEnchant();
                     $serverId = $warehouse->getServerId();
                     userlog::add("inventory_to_game", 542, [$itemId, $count, $enchant, $playerName]);
+                    user::self()->addLog();
                     $this->addToInventoryPlayer($serverId, $itemId, $count, $enchant, $playerName);
                     $this->removeWarehouseObjectId($warehouse->getId());
                     $isSend = true;

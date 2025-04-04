@@ -124,6 +124,13 @@ class inventory
             board::error(lang::get_phrase('items_not_found_in_warehouse'));
         }
 
+        $itemTxt = "";
+        foreach ($arrObjectItems as $item) {
+            $itemData = item::getItem($item['itemId']);
+            $itemTxt .= $itemData->getItemName() . " (" . $item['count'] . ")<br>";
+            user::self()->addLog(logTypes::LOG_INVENTORY_TO_GAME, "LOG_INVENTORY_TO_GAME", [$account, $item['itemId'], $item['count']]);
+        }
+
         //Все проверки пройдены успешно
         $json = server::send(type::INVENTORY_TO_GAME, [
             'items' => $arrObjectItems,
@@ -132,12 +139,6 @@ class inventory
             'email' => user::self()->getEmail(),
         ])->show()->getResponse();
         if (isset($json['data']) && $json['data'] === true) {
-            $itemTxt = "";
-            foreach ($arrObjectItems as $item) {
-                $itemData = item::getItem($item['itemId']);
-                $itemTxt .= $itemData->getItemName() . " (" . $item['count'] . ")<br>";
-                user::self()->addLog(logTypes::LOG_INVENTORY_TO_GAME, "LOG_INVENTORY_TO_GAME", [$account, $item['itemId'], $item['count']]);
-            }
 
             $objectItems = $json['objects'];
             user::self()->removeWarehouseObjectId($objectItems);
