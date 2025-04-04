@@ -60,7 +60,6 @@ class serverBonus
                 'enchant' => $item->getEnchant()
             ];
         }
-
         return [
             'enabled' => $this->registrationBonusEnabled,
             'isIssueAllItems' => $this->issueAllItems,

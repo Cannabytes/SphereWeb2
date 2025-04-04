@@ -979,8 +979,13 @@ class options
 
     public static function saveRegistrationBonusItems(): void
     {
-        \Ofey\Logan22\model\server\server::getServer()->bonus()->setRegistrationBonusItems($_POST['enabled'], $_POST['issueAllItems'], $_POST['bonus_items']);
-        \Ofey\Logan22\model\server\server::getServer()->save();
+        $serverId = $_POST['serverId'] ?? -1;
+        if(!\Ofey\Logan22\model\server\server::getServer($serverId)){
+            board::notice(false, "Сервер не найден");
+        }
+        $server = \Ofey\Logan22\model\server\server::getServer($serverId);
+        $server->bonus()->setRegistrationBonusItems($_POST['enabled'], $_POST['issueAllItems'], $_POST['bonus_items']);
+        $server->save();
         board::notice(true, "Настройки сохранены");
     }
 

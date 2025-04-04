@@ -1,9 +1,9 @@
   <div class="row">
     <div class="col-xl-12">
       <div class="card custom-card">
-
+ 
             <div class="form-check form-check-lg d-flex align-items-center mb-3">
-              <input {% if getServer().bonus().isRegistrationBonus() %}checked{% endif %} id="enableRegistrationBonus" class="form-check-input" type="checkbox" value="">
+              <input {% if getServer(serverId).bonus().isRegistrationBonus() %}checked{% endif %} id="enableRegistrationBonus" class="form-check-input" type="checkbox" value="">
               <label class="form-check-label" for="enableRegistrationBonus">
                 {{phrase('enable_registration_reward')}}
               </label>
@@ -17,7 +17,7 @@
                     <span class="fs-14 mb-0">{{phrase('registration_reward_desc')}}</span>
 
                     <div class="input-group input-group-sm mt-3">
-                     <input {% if getServer().bonus().isIssueAllItems() %}checked{% endif %} class="form-check-input" id="issueAllItems" type="checkbox" value="">
+                     <input {% if getServer(serverId).bonus().isIssueAllItems() %}checked{% endif %} class="form-check-input" id="issueAllItems" type="checkbox" value="">
                      <label class="form-check-label" for="issueAllItems">
                        {{phrase('registration_reward_all_item_or_one')}}
                     </label>
@@ -65,7 +65,7 @@
                       </thead>
                       <tbody>
 
-                          {% for item in getServer().bonus().getRegistrationBonusItems() %}
+                          {% for item in getServer(serverId).bonus().getRegistrationBonusItems() %}
                           {% set itemInfo = get_item_info(item.id) %}
                           <tr>
                             <td><span class="avatar avatar-sm"><img src="{{ (itemInfo.getIcon()) }}" alt="img"></span> (ID: {{ item.id }}) {% if item.enchant > 0 %}+{{ item.enchant }} {% endif %} {% if itemInfo.getAddName() %}{{ itemInfo.getAddName() }} {% endif %} {{ itemInfo.getItemName() }}</td>
@@ -535,14 +535,8 @@ $(document).ready(function() {
       });
     });
 
-    // Выводим данные в консоль для отладки
-    console.log('Отправляемые данные:', {
-      enabled: $('#enableRegistrationBonus').is(':checked'),
-      issueAllItems: $('#issueAllItems').is(':checked'),
-      bonus_items: bonusItems
-    });
-
     AjaxSend('/admin/setting/registration/bonus/save', 'POST', {
+      server_id: '{{serverId}}',
       enabled: $('#enableRegistrationBonus').is(':checked'),
       issueAllItems: $('#issueAllItems').is(':checked'),
       bonus_items: bonusItems
