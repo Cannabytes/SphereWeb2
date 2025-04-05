@@ -1738,7 +1738,6 @@
 
                                     <div class="row mt-2">
 
-
                                         <div class="col-xl-4">
                                             <div class="custom-toggle-switch d-flex align-items-center mb-4">
                                                 <input {% if config().notice().isTechnicalSupport() %}checked="" {%
@@ -1746,6 +1745,7 @@
                                                        type="checkbox">
                                                 <label for="isTechnicalSupport" class="label-success"></label><span
                                                     class="ms-3">Новые сообщения тех.поддержки</span>
+                                                    [TID: <span class="tid" data-thread-name="technicalSupport" data-thread-id="{{ config().notice().getTechnicalSupportThreadId() }}">{{ config().notice().getTechnicalSupportThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1756,6 +1756,7 @@
                                                        type="checkbox">
                                                 <label for="isDonationCrediting" class="label-success"></label><span
                                                     class="ms-3">При зачислении пожертвования</span>
+                                                    [TID: <span class="tid" data-thread-name="donationCrediting" data-thread-id="{{ config().notice().getDonationCreditingThreadId() }}">{{ config().notice().getDonationCreditingThreadId()|default('no set') }}</span>
                                             </div>
                                         </div>
 
@@ -1768,6 +1769,8 @@
                                                 <label for="isTranslationGame" class="label-success"></label><span
                                                     class="ms-3">Перевод <img class='avatar avatar-xs rounded'
                                                                               src='/uploads/images/icon/etc_coins_gold_i00.webp'> в игру</span>
+                                                    [TID: <span class="tid" data-thread-name="translationGame" data-thread-id="{{ config().notice().getTranslationGameThreadId() }}">{{ config().notice().getTranslationGameThreadId()|default('no set') }}</span>
+
                                             </div>
                                         </div>
 
@@ -1779,6 +1782,7 @@
                                                        type="checkbox">
                                                 <label for="isRegistrationUser" class="label-success"></label><span
                                                     class="ms-3">Регистрация пользователя</span>
+                                                [TID: <span class="tid" data-thread-name="registrationUser" data-thread-id="{{ config().notice().getRegistrationUserThreadId() }}">{{ config().notice().getRegistrationUserThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1789,6 +1793,7 @@
                                                        type="checkbox">
                                                 <label for="isRegistrationAccount" class="label-success"></label><span
                                                     class="ms-3">Регистрация аккаунта</span>
+                                                [TID: <span class="tid" data-thread-name="registrationAccount" data-thread-id="{{ config().notice().getRegistrationAccountThreadId() }}">{{ config().notice().getRegistrationAccountThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1798,6 +1803,7 @@
                                                        %} id="isForgetPassword" name="isForgetPassword" type="checkbox">
                                                 <label for="isForgetPassword" class="label-success"></label><span
                                                     class="ms-3">Восстановление пароля</span>
+                                                [TID: <span class="tid" data-thread-name="forgetPassword" data-thread-id="{{ config().notice().getForgetPasswordThreadId() }}">{{ config().notice().getForgetPasswordThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1808,6 +1814,7 @@
                                                        name="isChangeAccountPassword" type="checkbox">
                                                 <label for="isChangeAccountPassword" class="label-success"></label><span
                                                     class="ms-3">Смена пароля аккаунту</span>
+                                                [TID: <span class="tid" data-thread-name="changeAccountPassword" data-thread-id="{{ config().notice().getChangeAccountPasswordThreadId() }}">{{ config().notice().getChangeAccountPasswordThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1818,6 +1825,7 @@
                                                        type="checkbox">
                                                 <label for="isChangeUserPassword" class="label-success"></label><span
                                                     class="ms-3">Смена пароля профиля</span>
+                                                [TID: <span class="tid" data-thread-name="changeUserPassword" data-thread-id="{{ config().notice().getChangeUserPasswordThreadId() }}">{{ config().notice().getChangeUserPasswordThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1827,6 +1835,7 @@
                                                        id="isSyncAccount" name="isSyncAccount" type="checkbox">
                                                 <label for="isSyncAccount" class="label-success"></label><span
                                                     class="ms-3">Синхронизация аккаунта</span>
+                                                [TID: <span class="tid" data-thread-name="syncAccount" data-thread-id="{{ config().notice().getSyncAccountThreadId() }}">{{ config().notice().getSyncAccountThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1836,6 +1845,7 @@
                                                        id="isAddStream" name="isAddStream" type="checkbox">
                                                 <label for="isAddStream" class="label-success"></label><span
                                                     class="ms-3">Добавление стрима</span>
+                                                [TID: <span class="tid" data-thread-name="addStream" data-thread-id="{{ config().notice().getAddStreamThreadId() }}">{{ config().notice().getAddStreamThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1845,6 +1855,7 @@
                                                        id="isUseWheel" name="isUseWheel" type="checkbox">
                                                 <label for="isUseWheel" class="label-success"></label><span
                                                     class="ms-3">Использовании рулетки</span>
+                                                [TID: <span class="tid" data-thread-name="useWheel" data-thread-id="{{ config().notice().getUseWheelThreadId() }}">{{ config().notice().getUseWheelThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1854,6 +1865,7 @@
                                                        id="isUseBonusCode" name="isUseBonusCode" type="checkbox">
                                                 <label for="isUseBonusCode" class="label-success"></label><span
                                                     class="ms-3">Использование Бонус-Кода</span>
+                                                [TID: <span class="tid" data-thread-name="useBonusCode" data-thread-id="{{ config().notice().getUseBonusCodeThreadId() }}">{{ config().notice().getUseBonusCodeThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1863,6 +1875,7 @@
                                                        id="isBuyStartPack" name="isBuyStartPack" type="checkbox">
                                                 <label for="isBuyStartPack" class="label-success"></label><span
                                                     class="ms-3">Покупка стартового набора</span>
+                                                [TID: <span class="tid" data-thread-name="buyStartPack" data-thread-id="{{ config().notice().getBuyStartPackThreadId() }}">{{ config().notice().getBuyStartPackThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1871,6 +1884,8 @@
                                                 <input {% if config().notice().isBuyShop() %}checked="" {% endif %}
                                                        id="isBuyShop" name="isBuyShop" type="checkbox">
                                                 <label for="isBuyShop" class="label-success"></label><span class="ms-3">Покупка в магазине</span>
+                                                [TID: <span class="tid" data-thread-name="buyShop" data-thread-id="{{ config().notice().getBuyShopThreadId() }}">{{ config().notice().getBuyShopThreadId()|default('no set') }}</span>]
+
                                             </div>
                                         </div>
 
@@ -1881,6 +1896,7 @@
                                                        type="checkbox">
                                                 <label for="isSendWarehouseToGame" class="label-success"></label><span
                                                     class="ms-3">Отправка из склада в игру</span>
+                                                [TID: <span class="tid" data-thread-name="sendWarehouseToGame" data-thread-id="{{ config().notice().getSendWarehouseToGameThreadId() }}">{{ config().notice().getSendWarehouseToGameThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1891,6 +1907,7 @@
                                                        type="checkbox">
                                                 <label for="isSendPlayerToVillage" class="label-success"></label><span
                                                     class="ms-3">Отправка персонажа в город</span>
+                                                [TID: <span class="tid" data-thread-name="sendPlayerToVillage" data-thread-id="{{ config().notice().getSendPlayerToVillageThreadId() }}">{{ config().notice().getSendPlayerToVillageThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
 
@@ -1961,6 +1978,25 @@
         }, false)
     })
 
+    $(".tid").click(function () {
+        const $this = $(this); // сохраняем текущий элемент
+
+        // Отправляем запрос
+        AjaxSend("/telegram/notice/get/thread", "POST", {
+            tokenApi: $("#telegramTokenApi").val(),
+        }).then(function (response) {
+            if (response && response.id) {
+                $this.text(response.id);
+                $this.attr("title", response.name);
+                $this.attr("data-thread-id", response.id);
+            } else {
+                console.warn("Некорректный ответ:", response);
+            }
+        }).catch(function (err) {
+            console.error("Ошибка AJAX:", err);
+        });
+    });
+
     $(document).ready(function () {
 
         $("#saveNotice").on("click", function () {
@@ -1986,6 +2022,19 @@
                 isSendWarehouseToGame: $('#isSendWarehouseToGame').prop('checked'),
                 isSendPlayerToVillage: $('#isSendPlayerToVillage').prop('checked'),
             };
+
+            $(".tid").each(function () {
+                const threadName = $(this).data('thread-name'); // извлекаем thread-name
+                const threadId = $(this).data('thread-id'); // извлекаем thread-id
+                const isChecked = $("#" + threadName).prop('checked'); // проверяем состояние соответствующего чекбокса
+                if (threadName) {
+                    formData[threadName] = isChecked;
+                }
+                if (threadId) {
+                    formData[threadName + 'ThreadId'] = threadId;
+                }
+            });
+
             AjaxSend('/admin/config/save', 'POST', formData, false);
         })
 
@@ -2694,5 +2743,8 @@
     });
 
 
+
 </script>
+
+
 {% endblock %}

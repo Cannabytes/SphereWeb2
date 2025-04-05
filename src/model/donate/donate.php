@@ -268,7 +268,7 @@ class donate
                 $msg = strtr($template, [
                     '{email}' => user::self()->getEmail(),
                 ]);
-                telegram::sendTelegramMessage($msg);
+                telegram::sendTelegramMessage($msg, config::load()->notice()->getBuyShopThreadId());
             }
 
             user::self()->getWarehouse(true);
@@ -525,7 +525,7 @@ class donate
                         '{email}' => user::self()->getEmail(),
                         '{player}' => $playerName,
                     ]);
-                    telegram::sendTelegramMessage($msg);
+                    telegram::sendTelegramMessage($msg, config::load()->notice()->isSendWarehouseToGame());
                 }
 
                 board::alert([

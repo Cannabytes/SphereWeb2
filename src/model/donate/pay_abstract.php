@@ -79,7 +79,7 @@ class pay_abstract {
                 '{amount}' => $amount,
                 '{paySystem}' => $paySystem,
             ]);
-            telegram::sendTelegramMessage($msg);
+            telegram::sendTelegramMessage($msg, config::load()->notice()->getDonationCreditingThreadId());
         }
     }
 

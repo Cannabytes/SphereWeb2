@@ -21,7 +21,7 @@ class telegram
      * @param string $parseMode Режим форматирования сообщения (по умолчанию HTML)
      * @return bool Успешно ли отправлено сообщение
      */
-    public function sendMessage(string $chatId, string $message, string $parseMode = 'HTML'): bool
+    public function sendMessage(string $chatId, string $message, $threadId = null, string $parseMode = 'HTML'): bool
     {
         $message = str_replace('<br>', "\n", $message);
 
@@ -32,6 +32,11 @@ class telegram
             'parse_mode' => $parseMode,
             'disable_web_page_preview' => true,
         ];
+
+        //Если threadId указан, тогда добавляем в массив параметр reply_to_message_id
+        if ($threadId) {
+            $postData['message_thread_id'] = $threadId;
+        }
 
         $response = $this->sendRequest($url, $postData);
         if (isset($response['ok']) && $response['ok'] === true) {

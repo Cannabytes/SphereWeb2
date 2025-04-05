@@ -3212,7 +3212,7 @@ class forum
 
         $msg = "Пользователь %s (%s) создал новую тему %s.\n<a href='%s'>Открыть ссылку</a>";
         $msg = sprintf($msg, user::self()->getEmail(), user::self()->getName(), $title, \Ofey\Logan22\component\request\url::host($link));
-        telegram::sendTelegramMessage($msg);
+        telegram::sendTelegramMessage($msg, config::load()->notice()->isTechnicalSupport());
 
     }
 

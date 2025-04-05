@@ -503,20 +503,19 @@ $(document).ready(function () {
     fetchLogs(true, isServerChange);
   }
 
-
-
-  // Функция для загрузки логов
+// Модифицируем функцию fetchLogs
   function fetchLogs(isInitial = false, isServerChange = false) {
     if (isLoading || noMoreLogs) return;
 
     if (isInitial) {
       showLoading();
+      // Очищаем список и данные при начальной загрузке
+      $('#logs').empty();
+      logsData = {};
     } else {
       showBottomLoading();
     }
 
-    // Если это начальная загрузка, используем lastProcessedId = -1
-    // Если это загрузка при прокрутке вниз, используем oldestLogId
     const idToSend = isInitial ? -1 : oldestLogId;
     const direction = isInitial ? 'newer' : 'older';
 
@@ -525,38 +524,42 @@ $(document).ready(function () {
       lastLogId: idToSend,
       direction: direction,
       serverId: $('#log_server').val(),
-      resetData: isServerChange ? 'true' : 'false', // Добавляем флаг сброса данных
+      resetData: isServerChange ? 'true' : 'false',
       limit: 50
     }, true).then(function (data) {
       hideLoading();
       console.log("Response data:", data);
 
       if (data.length > 0) {
-        // При начальной загрузке, сортируем по времени (новые сверху)
-        if (isInitial) {
-          data.sort((a, b) => {
-            const dateA = new Date(a.time);
-            const dateB = new Date(b.time);
-            return dateB - dateA; // По убыванию (новые сверху)
-          });
-        }
+        // Клонируем массив перед сортировкой
+        const sortedData = [...data];
 
-        data.forEach(function (log) {
-          const logItem = createLogItem(log);
+        // Строго сортируем по времени в формате даты
+        sortedData.sort((a, b) => {
+          // Преобразуем строки времени в объекты Date для правильного сравнения
+          const dateA = new Date(a.time.replace(' ', 'T')); // Формат ISO для корректного парсинга
+          const dateB = new Date(b.time.replace(' ', 'T'));
 
-          if (isInitial) {
-            // При начальной загрузке добавляем элементы в конец списка
-            $('#logs').append(logItem);
-          } else {
-            // При подгрузке логов при прокрутке добавляем в конец списка
-            $('#logs').append(logItem);
-          }
+          // Сортировка по убыванию (новые сверху)
+          return dateB - dateA;
+        });
+
+        let logsHtml = '';
+        sortedData.forEach(function (log) {
+          logsHtml += createLogItem(log, isInitial);
 
           // Обновляем oldestLogId
           if (log.id < oldestLogId) {
             oldestLogId = log.id;
           }
         });
+
+        // Добавляем все логи за одну операцию DOM
+        if (isInitial) {
+          $('#logs').html(logsHtml);
+        } else {
+          $('#logs').append(logsHtml);
+        }
 
         // Обновляем lastProcessedId на основе максимального ID полученных логов
         if (isInitial) {
@@ -569,11 +572,10 @@ $(document).ready(function () {
         // Если не получили данных, значит больше логов нет
         noMoreLogs = true;
 
-        // Показываем сообщение о конце списка, если это не начальная загрузка
+        // Показываем сообщение о конце списка
         if (!isInitial) {
           $('#logs').append('<li class="text-center py-3 end-of-logs">Больше логов нет</li>');
         } else if (isInitial && $('#logs li').length === 0) {
-          // Если это начальная загрузка и не получено логов, показываем сообщение об отсутствии данных
           $('#logs').append('<li class="text-center py-3 end-of-logs">Нет доступных логов</li>');
         }
       }
@@ -583,8 +585,8 @@ $(document).ready(function () {
     });
   }
 
-  // Функция для загрузки новых логов (обновление)
-  function  fetchNewLogs() {
+// Также обновим функцию fetchNewLogs
+  function fetchNewLogs() {
     if (isLoading) return;
 
     const currentMaxId = getMaxLogId();
@@ -601,14 +603,24 @@ $(document).ready(function () {
       hideLoading();
 
       if (data.length > 0) {
-        // Сортируем по ID: новые (больший ID) сначала
-        data.sort((a, b) => b.id - a.id);
+        // Клонируем массив перед сортировкой
+        const sortedData = [...data];
 
-        data.forEach(function (log) {
-          const logItem = createLogItem(log, true); // true означает, что это новый лог
-          // Добавляем новые логи в начало списка
-          $('#logs').prepend(logItem);
+        // Строго сортируем по времени
+        sortedData.sort((a, b) => {
+          const dateA = new Date(a.time.replace(' ', 'T'));
+          const dateB = new Date(b.time.replace(' ', 'T'));
+          return dateB - dateA;
         });
+
+        // Создаем HTML для всех новых логов
+        let newLogsHtml = '';
+        sortedData.forEach(function (log) {
+          newLogsHtml += createLogItem(log, true);
+        });
+
+        // Добавляем все новые логи за одну операцию DOM
+        $('#logs').prepend(newLogsHtml);
 
         // Обновляем lastProcessedId
         lastProcessedId = getMaxLogId();
@@ -621,6 +633,7 @@ $(document).ready(function () {
       console.error("Ошибка при выполнении запроса:", error);
     });
   }
+
 
   // Функция для привязки обработчиков кликов к логам
   function bindLogClickHandlers() {

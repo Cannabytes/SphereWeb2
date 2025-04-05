@@ -24,6 +24,23 @@ class notice
     private bool $isSendWarehouseToGame = false;
     private bool $isSendPlayerToVillage = false;
 
+    private null|int $technicalSupportThreadId = null;
+    private null|int $donationCreditingThreadId = null;
+    private null|int $translationGameThreadId = null;
+    private null|int $registrationUserThreadId = null;
+    private null|int $registrationAccountThreadId = null;
+    private null|int $forgetPasswordThreadId = null;
+    private null|int $changeAccountPasswordThreadId = null;
+    private null|int $changeUserPasswordThreadId = null;
+    private null|int $syncAccountThreadId = null;
+    private null|int $addStreamThreadId = null;
+    private null|int $useWheelThreadId = null;
+    private null|int $useBonusCodeThreadId = null;
+    private null|int $buyStartPackThreadId = null;
+    private null|int $buyShopThreadId = null;
+    private null|int $sendWarehouseToGameThreadId = null;
+    private null|int $sendPlayerToVillageThreadId = null;
+
     public function __construct($setting = null)
     {
         if ($setting == null) {
@@ -48,6 +65,24 @@ class notice
         $this->isBuyShop = filter_var($setting['isBuyShop'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->isSendWarehouseToGame = filter_var($setting['isSendWarehouseToGame'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->isSendPlayerToVillage = filter_var($setting['isSendPlayerToVillage'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+        $this->technicalSupportThreadId = filter_var($setting['technicalSupportThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->donationCreditingThreadId = filter_var($setting['donationCreditingThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->translationGameThreadId = filter_var($setting['translationGameThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->registrationUserThreadId = filter_var($setting['registrationUserThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->registrationAccountThreadId = filter_var($setting['registrationAccountThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->forgetPasswordThreadId = filter_var($setting['forgetPasswordThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->changeAccountPasswordThreadId = filter_var($setting['changeAccountPasswordThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->changeUserPasswordThreadId = filter_var($setting['changeUserPasswordThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->syncAccountThreadId = filter_var($setting['syncAccountThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->addStreamThreadId = filter_var($setting['addStreamThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->useWheelThreadId = filter_var($setting['useWheelThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->useBonusCodeThreadId = filter_var($setting['useBonusCodeThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->buyStartPackThreadId = filter_var($setting['buyStartPackThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->buyShopThreadId = filter_var($setting['buyShopThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->sendWarehouseToGameThreadId = filter_var($setting['sendWarehouseToGameThreadId'] ?? null, FILTER_VALIDATE_INT);
+        $this->sendPlayerToVillageThreadId = filter_var($setting['sendPlayerToVillageThreadId'] ?? null, FILTER_VALIDATE_INT);
+
     }
 
     //Проверка включено ли уведомление по телеграмму
@@ -154,6 +189,86 @@ class notice
     public function isSendPlayerToVillage(): bool
     {
         return $this->isSendPlayerToVillage;
+    }
+
+    public function getTechnicalSupportThreadId(): ?int
+    {
+        return $this->technicalSupportThreadId;
+    }
+
+    public function getDonationCreditingThreadId(): ?int
+    {
+        return $this->donationCreditingThreadId;
+    }
+
+    public function getTranslationGameThreadId(): ?int
+    {
+        return $this->translationGameThreadId;
+    }
+
+    public function getRegistrationUserThreadId(): ?int
+    {
+        return $this->registrationUserThreadId;
+    }
+
+    public function getRegistrationAccountThreadId(): ?int
+    {
+        return $this->registrationAccountThreadId;
+    }
+
+    public function getForgetPasswordThreadId(): ?int
+    {
+        return $this->forgetPasswordThreadId;
+    }
+
+    public function getChangeAccountPasswordThreadId(): ?int
+    {
+        return $this->changeAccountPasswordThreadId;
+    }
+
+    public function getChangeUserPasswordThreadId(): ?int
+    {
+        return $this->changeUserPasswordThreadId;
+    }
+
+    public function getSyncAccountThreadId(): ?int
+    {
+        return $this->syncAccountThreadId;
+    }
+
+    public function getAddStreamThreadId(): ?int
+    {
+        return $this->addStreamThreadId;
+    }
+
+    public function getUseWheelThreadId(): ?int
+    {
+        return $this->useWheelThreadId;
+    }
+
+    public function getUseBonusCodeThreadId(): ?int
+    {
+        return $this->useBonusCodeThreadId;
+    }
+
+    public function getBuyStartPackThreadId(): ?int
+    {
+        return $this->buyStartPackThreadId;
+    }
+
+    public function getBuyShopThreadId(): ?int
+    {
+        return $this->buyShopThreadId;
+    }
+
+    public function getSendWarehouseToGameThreadId(): ?int
+    {
+        return $this->sendWarehouseToGameThreadId;
+    }
+
+    public function getSendPlayerToVillageThreadId(): ?int
+    {
+        return $this->sendPlayerToVillageThreadId;
     }
 
 }

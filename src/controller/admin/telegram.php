@@ -22,7 +22,7 @@ class telegram
         }
         if ($chatId != "") {
             $message = "Привет, это тестовое сообщение от SphereWeb";
-            if ($bot->sendMessage((string)$chatId, $message)) {
+            if ($bot->sendMessage((string)$chatId, $message, 308)) {
                 board::success("Сообщение успешно отправлено");
             } else {
                 board::error("Ошибка при отправке сообщения");
@@ -31,6 +31,34 @@ class telegram
             board::error("Не определен chat_id");
         }
     }
+
+    static public function testGetThread()
+    {
+        $tokenAPI = $_POST['tokenApi'] ?? "";
+
+        $url = "https://api.telegram.org/bot{$tokenAPI}/getUpdates";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        if (!$response) return "";
+
+        $response = json_decode($response, true);
+        if(end( $response['result'])['message']['message_thread_id']) {
+            echo json_encode([
+                'id' => end( $response['result'])['message']['message_thread_id'],
+                'name' => end( $response['result'])['message']['reply_to_message']['forum_topic_created']['name'],
+            ]);
+            exit;
+        }
+        board::error("no find thread");
+    }
+
 
     static public function getChatID($token = ""): string|int
     {
@@ -64,7 +92,7 @@ class telegram
         return "";
     }
 
-    static public function sendTelegramMessage($message = "", $serverInfo = true): void
+    static public function sendTelegramMessage($message = "", $threadId = null, $serverInfo = true): void
     {
         if (!config::load()->notice()->isTelegramEnable()) {
             return;
@@ -79,7 +107,7 @@ class telegram
         $bot = new \Ofey\Logan22\component\telegram\telegram(config::load()->notice()->getTelegramTokenApi());
         $chatId = config::load()->notice()->getTelegramChatID();
         if ($chatId != "") {
-            $bot->sendMessage($chatId, $message);
+            $bot->sendMessage($chatId, $message, $threadId);
         }
 
     }

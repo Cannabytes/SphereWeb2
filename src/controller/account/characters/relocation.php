@@ -7,6 +7,7 @@ use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\controller\admin\telegram;
+use Ofey\Logan22\model\config\config;
 use Ofey\Logan22\model\user\user;
 
 class relocation
@@ -40,7 +41,7 @@ class relocation
                     '{player}' => $player,
                     '{itemsToWarehouse}' => $itemsToWarehouse ? 'Yes' : 'No',
                 ]);
-                telegram::sendTelegramMessage($msg);
+                telegram::sendTelegramMessage($msg, \Ofey\Logan22\controller\config\config::load()->notice()->getSendPlayerToVillageThreadId());
             }
             board::success("Relocation success");
         }

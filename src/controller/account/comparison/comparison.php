@@ -56,7 +56,7 @@ class comparison
                             '{email}' => user::self()->getEmail(),
                             '{login}' => $login,
                         ]);
-                        telegram::sendTelegramMessage($msg);
+                        telegram::sendTelegramMessage($msg, \Ofey\Logan22\controller\config\config::load()->notice()->getSyncAccountThreadId());
                     }
 
                     board::success(lang::get_phrase('Account added'));
@@ -82,7 +82,7 @@ class comparison
                     '{login}' => $login,
                     '{error}' => $e->getMessage(),
                 ]);
-                telegram::sendTelegramMessage($msg);
+                telegram::sendTelegramMessage($msg, \Ofey\Logan22\controller\config\config::load()->notice()->getSyncAccountThreadId());
             }
 
             board::error($e->getMessage());

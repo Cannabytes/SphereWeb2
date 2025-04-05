@@ -12,6 +12,7 @@ use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\admin\telegram;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\log\logTypes;
@@ -229,7 +230,7 @@ class wheel
                     '{item_enchant}' => $enc_lvl,
                     '{item_count}' => $item['count'],
                 ]);
-                telegram::sendTelegramMessage($msg);
+                telegram::sendTelegramMessage($msg, config::load()->notice()->getUseWheelThreadId());
             }
 
             $_SESSION['last_wheel_spin'] = time();

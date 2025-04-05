@@ -127,7 +127,7 @@ class inventory
         $itemTxt = "";
         foreach ($arrObjectItems as $item) {
             $itemData = item::getItem($item['itemId']);
-            $itemTxt .= $itemData->getItemName() . " (" . $item['count'] . ")<br>";
+            $itemTxt .= "+" . $item['enchant'] . " " . $itemData->getItemName() . " (" . $item['count'] . ")<br>";
             user::self()->addLog(logTypes::LOG_INVENTORY_TO_GAME, "LOG_INVENTORY_TO_GAME", [$account, $item['itemId'], $item['count']]);
         }
 
@@ -151,7 +151,7 @@ class inventory
                     '{player}' => $player,
                     '{items}' => $itemTxt,
                 ]);
-                telegram::sendTelegramMessage($msg);
+                telegram::sendTelegramMessage($msg, config::load()->notice()->getSendWarehouseToGameThreadId());
             }
 
             board::alert([
@@ -238,7 +238,7 @@ class inventory
                     '{coins}' => $coins,
                     '{player}' => $player,
                 ]);
-                telegram::sendTelegramMessage($msg);
+                telegram::sendTelegramMessage($msg, config::load()->notice()->getTranslationGameThreadId());
             }
 
             user::self()->addLog(logTypes::LOG_DONATE_COIN_TO_GAME, "LOG_DONATE_COIN_TO_GAME", [$account, \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getItemIdToGameTransfer(), $countItemsToGameTransfer]);

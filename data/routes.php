@@ -2728,4 +2728,19 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+
+    200 =>
+        array (
+            'enable' => true,
+            'method' => 'POST',
+            'pattern' => '/telegram/notice/get/thread',
+            'func' => 'controller\\admin\\telegram::testGetThread',
+            'access' =>
+                array (
+                    0 => 'admin',
+                ),
+            'weight' => 0,
+            'page' => '',
+            'comment' => '',
+        ),
 );

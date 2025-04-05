@@ -76,7 +76,7 @@ class stream
                 '{email}' => user::self()->getEmail(),
                 '{link}' => url::host("/admin/stream"),
             ]);
-            telegram::sendTelegramMessage($msg);
+            telegram::sendTelegramMessage($msg, \Ofey\Logan22\controller\config\config::load()->notice()->getAddStreamThreadId());
         }
 
         board::success("Стрим добавлен. Ожидайте одобрение администратора.");

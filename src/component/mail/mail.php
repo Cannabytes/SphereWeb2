@@ -372,7 +372,7 @@ class mail
                         $msg = strtr($template, [
                             '{email}' => $email,
                         ]);
-                        telegram::sendTelegramMessage($msg);
+                        telegram::sendTelegramMessage($msg, config::load()->notice()->getForgetPasswordThreadId());
                     }
                     board::response("notice", ["message" => "Письмо отправлено на почту {$email}", "ok" => true]);
                 } else {
@@ -382,7 +382,7 @@ class mail
                             '{email}' => $email,
                             '{error}' => $mail->ErrorInfo,
                         ]);
-                        telegram::sendTelegramMessage($msg);
+                        telegram::sendTelegramMessage($msg, config::load()->notice()->getForgetPasswordThreadId());
                     }
                     board::error("Не удалось отправить письмо на почту {$email}. {$mail->ErrorInfo}");
                 }
@@ -392,7 +392,7 @@ class mail
                     $msg = strtr($template, [
                         '{email}' => $email,
                     ]);
-                    telegram::sendTelegramMessage($msg);
+                    telegram::sendTelegramMessage($msg, config::load()->notice()->getForgetPasswordThreadId());
                 }
                 $mail->send();
             }
@@ -405,7 +405,7 @@ class mail
                         '{email}' => $email,
                         '{error}' => $mail->ErrorInfo,
                     ]);
-                    telegram::sendTelegramMessage($msg);
+                    telegram::sendTelegramMessage($msg, config::load()->notice()->getForgetPasswordThreadId());
                 }
                 board::error("Не удалось отправить письмо на почту {$email}. {$mail->ErrorInfo}");
             }

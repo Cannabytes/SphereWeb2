@@ -196,7 +196,7 @@ class support
 
             if (!self::isUserModerator() and config::load()->notice()->isTechnicalSupport()) {
                 $msg = sprintf("Пользователь %s (%s) обратился в техническую поддержку\n<a href='%s'>Открыть ссылку</a>", user::self()->getEmail(), user::self()->getName(), url::host($link));
-                telegram::sendTelegramMessage($msg);
+                telegram::sendTelegramMessage($msg, config::load()->notice()->getTechnicalSupportThreadId());
             }
 
             board::redirect($link);
@@ -308,7 +308,7 @@ class support
         if (!self::isUserModerator() and config::load()->notice()->isTechnicalSupport()) {
             $link = "/support/read/" . $support_thread_id;
             $msg = sprintf("Пользователь %s (%s) написал сообщение в техническую поддержку\n<a href='%s'>Открыть ссылку</a>", user::self()->getEmail(), user::self()->getName(), url::host($link));
-            telegram::sendTelegramMessage($msg);
+            telegram::sendTelegramMessage($msg, config::load()->notice()->getTechnicalSupportThreadId());
         }
 
 

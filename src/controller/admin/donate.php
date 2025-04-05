@@ -112,7 +112,7 @@ class donate {
                     '{email}' => $user->getEmail(),
                     '{amount}' => $amount,
                 ]);
-                telegram::sendTelegramMessage($msg);
+                telegram::sendTelegramMessage($msg, config::load()->notice()->getDonationCreditingThreadId());
             }
             board::alert([
                 "ok" => true,

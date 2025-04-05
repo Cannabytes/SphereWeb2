@@ -63,7 +63,7 @@ class change
                     '{email}' => user::self()->getEmail(),
                     '{login}' => $login,
                 ]);
-                telegram::sendTelegramMessage($msg);
+                telegram::sendTelegramMessage($msg, config::load()->notice()->getChangeAccountPasswordThreadId());
             }
 
             user::self()->addLog(logTypes::LOG_CHANGE_ACCOUNT_PASSWORD, "LOG_CHANGE_ACCOUNT_PASSWORD", [$login]);

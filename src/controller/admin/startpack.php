@@ -99,6 +99,16 @@ class startpack
                 ];
             }
 
+            if (\Ofey\Logan22\controller\config\config::load()->notice()->isBuyStartPack()) {
+                $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_start_pack_to_player');
+                $msg = strtr($template, [
+                    '{email}' => user::self()->getEmail(),
+                    '{start_pack_name}' => $startPackName,
+                    '{player}' => $playerName,
+                ]);
+                telegram::sendTelegramMessage($msg, \Ofey\Logan22\controller\config\config::load()->notice()->getBuyStartPackThreadId() );
+            }
+
             $json = \Ofey\Logan22\component\sphere\server::send(type::INVENTORY_TO_GAME, [
                 'items' => $arrObjectItems,
                 'player' => $playerName,
@@ -107,16 +117,6 @@ class startpack
             ])->show()->getResponse();
             if (isset($json['data']) && $json['data'] === true) {
                 $db->commit();
-
-                if (\Ofey\Logan22\controller\config\config::load()->notice()->isUseWheel()) {
-                    $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_start_pack_to_player');
-                    $msg = strtr($template, [
-                        '{email}' => user::self()->getEmail(),
-                        '{start_pack_name}' => $startPackName,
-                        '{player}' => $playerName,
-                    ]);
-                    telegram::sendTelegramMessage($msg);
-                }
 
                 board::alert([
                     'type' => 'notice',
@@ -168,13 +168,13 @@ class startpack
             user::self()->addToWarehouse($serverId, (int)$item['itemId'], (int)$item['count'], (int)$item['enchant'], 'starter_pack');
         }
 
-        if (\Ofey\Logan22\controller\config\config::load()->notice()->isUseWheel()) {
+        if (\Ofey\Logan22\controller\config\config::load()->notice()->isBuyStartPack()) {
             $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_start_pack_warehouse');
             $msg = strtr($template, [
                 '{email}' => user::self()->getEmail(),
                 '{start_pack_name}' => $startPackName,
             ]);
-            telegram::sendTelegramMessage($msg);
+            telegram::sendTelegramMessage($msg, \Ofey\Logan22\controller\config\config::load()->notice()->getBuyStartPackThreadId() );
         }
 
         board::addWarehouseInfo();

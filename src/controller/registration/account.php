@@ -94,7 +94,7 @@ class account
                         '{login}' => $login,
                         '{server}' => $serverInfo->getName() . " x" . $serverInfo->getRateExp(),
                     ]);
-                    telegram::sendTelegramMessage($msg);
+                    telegram::sendTelegramMessage($msg, config::load()->notice()->getRegistrationAccountThreadId());
                 }
 
                 \Ofey\Logan22\model\user\user::self()->addLog(logTypes::LOG_REGISTRATION_ACCOUNT, 533, [$login]);

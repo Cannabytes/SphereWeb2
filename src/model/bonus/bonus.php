@@ -292,7 +292,7 @@ class bonus
             '{bonusNames}' => $bonusNamesTxt,
         ]);
 
-        telegram::sendTelegramMessage($msg);
+        telegram::sendTelegramMessage($msg, $config->notice()->getUseBonusCodeThreadId());
     }
 
     /**

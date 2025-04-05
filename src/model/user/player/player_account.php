@@ -189,7 +189,7 @@ class player_account
                     '{login}' => $login,
                     '{server}' => $serversName,
                 ]);
-                telegram::sendTelegramMessage($msg);
+                telegram::sendTelegramMessage($msg, config::load()->notice()->getRegistrationAccountThreadId());
             }
 
             user::self()->addLog(logTypes::LOG_REGISTRATION_ACCOUNT, 532, [$login]);
@@ -275,7 +275,7 @@ class player_account
                 '{login}' => $login,
                 '{server}' => $server->getName() . " x" . $server->getRateExp(),
             ]);
-            telegram::sendTelegramMessage($msg);
+            telegram::sendTelegramMessage($msg, config::load()->notice()->getRegistrationAccountThreadId());
         }
 
         user::self()->addLog(logTypes::LOG_REGISTRATION_ACCOUNT, 532, [$login]);
