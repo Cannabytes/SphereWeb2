@@ -129,9 +129,6 @@ class chests
     /**
      * Обновление порядка сортировки кейсов
      */
-    /**
-     * Обновление порядка сортировки кейсов
-     */
     public function updateCasesOrder()
     {
         validation::user_protection(["admin"]);
@@ -325,7 +322,7 @@ class chests
         // Собираем данные кейса
         $case = [
             'icon' => (int)$icon,
-            'price' => (int)$cost,
+            'price' => (float)$cost,
             'type' => $type,
             'items' => $formattedItems,
             'sort' => (int)$sort,
@@ -382,8 +379,9 @@ class chests
             "serverId" => user::self()->getServerId(),
             "name" => $case_name,
         ])->show()->getResponse();
-        $case = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
 
+        $case = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
+        $case = $case[$case_name];
         // Преобразование цены в целое число
         $price = (float)$case['price'];
         if ($price < 0) {

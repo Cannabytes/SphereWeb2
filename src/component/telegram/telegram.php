@@ -33,8 +33,7 @@ class telegram
             'disable_web_page_preview' => true,
         ];
 
-        //Если threadId указан, тогда добавляем в массив параметр reply_to_message_id
-        if ($threadId) {
+        if (($threadId ?? 0) !== 0) {
             $postData['message_thread_id'] = $threadId;
         }
 
