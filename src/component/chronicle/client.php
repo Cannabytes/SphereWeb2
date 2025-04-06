@@ -325,6 +325,10 @@ class client
                 'protocol' => [502],
                 'name' => "Superion",
             ],
+            [
+                'protocol' => [507],
+                'name' => "Orc Village",
+            ],
 
         ];
     }

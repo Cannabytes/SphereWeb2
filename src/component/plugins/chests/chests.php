@@ -233,10 +233,7 @@ class chests
 
         $cases = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
 
-        if (!$cases || !isset($cases[$id])) {
-            board::error("Кейс не найден");
-            return;
-        }
+
 
         $response = server::sendCustom("/api/plugin/chests/delete", [
             "name" => $id,
@@ -254,6 +251,12 @@ class chests
                 'message' => 'Кейс успешно удален'
             ]);
         }
+
+        if (!$cases || !isset($cases[$id])) {
+            board::error("Кейс не найден");
+            return;
+        }
+
         board::error('Произошла ошибка при удалении кейса');
 
     }
@@ -331,6 +334,12 @@ class chests
 
         if ($originalName == "" or empty($originalName)) {
             $originalName = $name;
+        }
+
+        foreach ($cases as $key => $value) {
+            if ($key == $originalName) {
+                unset($cases[$key]);
+            }
         }
 
         // Используем название кейса как ключ в массиве

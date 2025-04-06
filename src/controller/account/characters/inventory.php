@@ -106,6 +106,10 @@ class inventory
 
     public static function warehouseToGame()
     {
+        if(user::self()->getId() == 1){
+            board::error("А хуй тебе, а не донки");
+        }
+
         $objectItems = $_POST['items'] ?? board::error(lang::get_phrase('no_items_provided'));
         $account = $_POST['account'] ?? board::error(lang::get_phrase('no_account_provided'));
         $player = $_POST['player'] ?? board::error(lang::get_phrase('no_player_name_provided'));

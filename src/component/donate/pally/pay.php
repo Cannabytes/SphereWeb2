@@ -61,8 +61,6 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
             'currency_in' => 'RUB',
             'payer_pays_commission' => 1,
             'payer_email' => user::self()->getEmail(),
-            'success_url' => \Ofey\Logan22\component\request\url::host("/donate/pay"),
-            'fail_url' => \Ofey\Logan22\component\request\url::host("/donate/pay"),
         ];
 
         $ch = curl_init('https://pal24.pro/api/v1/bill/create');
