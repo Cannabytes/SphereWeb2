@@ -91,7 +91,7 @@ class change
                 $msg = strtr($template, [
                     '{email}' => user::self()->getEmail(),
                 ]);
-                telegram::sendTelegramMessage($msg, \Ofey\Logan22\controller\config\config::load()->notice()->isChangeUserPassword());
+                telegram::sendTelegramMessage($msg, \Ofey\Logan22\controller\config\config::load()->notice()->getChangeUserPasswordThreadId());
             }
 
             user::self()->addLog(logTypes::LOG_USER_CHANGE_PROFILE, "LOG_USER_CHANGE_PROFILE", []);

@@ -79,7 +79,7 @@ class user
             if (session::get("HTTP_REFERER")) {
                 $msg .= "<br>Referrer: " . session::get("HTTP_REFERER");
             }
-            telegram::sendTelegramMessage($msg, config::load()->notice()->isRegistrationUser());
+            telegram::sendTelegramMessage($msg, config::load()->notice()->getRegistrationUserThreadId());
         }
 
 
