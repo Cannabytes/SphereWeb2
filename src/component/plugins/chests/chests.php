@@ -35,11 +35,9 @@ class chests
 
     public function setting()
     {
-
         validation::user_protection("admin");
         $box_names = include "box_names.php";
         tpl::addVar([
-//            "cases" => $cases,
             "box_names" => $box_names,
         ]);
         tpl::displayPlugin("chests/tpl/setting.html");
@@ -233,8 +231,6 @@ class chests
 
         $cases = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
 
-
-
         $response = server::sendCustom("/api/plugin/chests/delete", [
             "name" => $id,
             "serverId" => \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getId(),
@@ -388,7 +384,6 @@ class chests
             "serverId" => user::self()->getServerId(),
             "name" => $case_name,
         ])->show()->getResponse();
-
         $case = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
         $case = $case[$case_name];
         // Преобразование цены в целое число
@@ -402,7 +397,6 @@ class chests
 
         try {
             sql::beginTransaction();
-
             // Проверка баланса пользователя
             $canAffordPurchase = user::self()->canAffordPurchase($price);
             if (!$canAffordPurchase) {
@@ -413,7 +407,6 @@ class chests
             if (!user::self()->donateDeduct($price)) {
                 throw new \Exception("Ошибка при списании средств");
             }
-
             // Проверка существования предмета
             $itemInfo = item::getItem($item['id'], \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getKnowledgeBase() );
             if (!$itemInfo || !$itemInfo->isExists()) {

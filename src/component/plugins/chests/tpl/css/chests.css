@@ -1,5 +1,8 @@
+.modal-blur {
+    backdrop-filter: blur(7px);
+}
 
-/* Контейнер кейсов */
+    /* Контейнер кейсов */
 .chests-container {
     display: flex;
     flex-wrap: wrap;
@@ -167,10 +170,8 @@
 }
 
 #chestModal .modal-content {
-    /*background-color: #1e2029;*/
     border: none;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     overflow: hidden;
 }
 
@@ -808,17 +809,6 @@
     100% { opacity: 0; transform: translate(var(--fly-x), var(--fly-y)) scale(0.5) rotate(var(--rotate-deg)); }
 }
 
-.animation-text {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.animation-text p {
-    font-size: 18px;
-    font-weight: 600;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-    animation: text-pulse 1s infinite;
-}
 
 @keyframes text-pulse {
     0%, 100% { opacity: 0.8; }
@@ -1196,4 +1186,26 @@
         font-size: 12px;
         height: 32px;
     }
+}
+
+/* Стили для эффектов выигрышного предмета */
+.winning-item-glow {
+    position: absolute;
+    border-radius: 10px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Улучшенный маркер центра рулетки */
+.roulette-center-highlight {
+    transition: all 0.2s ease;
+}
+
+.roulette-center-highlight.tick {
+    background-color: rgba(255, 215, 0, 0.15);
+}
+
+/* Улучшенная анимация для выигрышного предмета */
+.winning-item-highlight {
+    transition: all 0.3s ease !important;
 }

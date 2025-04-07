@@ -785,7 +785,6 @@ class userModel
     public function canAffordPurchase(float|int $purchaseAmount): bool
     {
         $userBalance = self::getDonate();
-
         if ($userBalance <= 0) {
             board::error("Вы не можете совершать покупки если у Вас на счету 0");
         }
@@ -798,7 +797,6 @@ class userModel
         if (!is_numeric($purchaseAmount) || is_nan($purchaseAmount) || is_infinite($purchaseAmount)) {
             board::error('Некорректная стоимость покупки.');
         }
-
         // Проверяем, что баланс пользователя и стоимость покупки неотрицательны
         if ($purchaseAmount < 0) {
             board::error('Стоимость покупки должны быть неотрицательными числами.');
