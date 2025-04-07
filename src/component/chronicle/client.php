@@ -329,6 +329,10 @@ class client
                 'protocol' => [507],
                 'name' => "Orc Village",
             ],
+            [
+                'protocol' => [474],
+                'name'     => "Shield of The Kingdom",
+            ],
 
         ];
     }

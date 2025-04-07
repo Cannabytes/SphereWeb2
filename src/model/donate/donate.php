@@ -508,6 +508,8 @@ class donate
                 ];
             }
 
+
+
             $json = \Ofey\Logan22\component\sphere\server::send(type::INVENTORY_TO_GAME, [
                 'items' => $arrObjectItems,
                 'player' => $playerName,
@@ -516,8 +518,6 @@ class donate
             ])->show()->getResponse();
             if (isset($json['data']) && $json['data'] === true) {
                 $objectItems = $json['objects'];
-                user::self()->removeWarehouseObjectId($objectItems);
-                $db->commit();
 
                 if (\Ofey\Logan22\controller\config\config::load()->notice()->isBuyShop()) {
                     $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_buy_to_player');
@@ -525,8 +525,12 @@ class donate
                         '{email}' => user::self()->getEmail(),
                         '{player}' => $playerName,
                     ]);
-                    telegram::sendTelegramMessage($msg, config::load()->notice()->isSendWarehouseToGame());
+                    telegram::sendTelegramMessage($msg, config::load()->notice()->getBuyShopThreadId());
                 }
+
+                user::self()->removeWarehouseObjectId($objectItems);
+
+                $db->commit();
 
                 board::alert([
                     'type' => 'notice',
