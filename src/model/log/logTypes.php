@@ -24,5 +24,6 @@ enum logTypes: int
     case LOG_DELETE_ACCOUNT = 18;
     case LOG_CHEST_WIN = 19;
     case LOG_WAREHOUSE_ADD = 20;
+    case LOG_BUY_SHOP_ITEM = 21;
 }
 

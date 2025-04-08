@@ -506,9 +506,8 @@ class donate
                     'enchant' => $item->getEnchant(),
                     'itemId' => $item->getItemId(),
                 ];
+                user::self()->addLog(logTypes::LOG_BUY_SHOP_ITEM, "LOG_BUY_SHOP_ITEM", [$account, $item->getId(), $item->getItemId(), $item->getCount() * $quantity, $item->getEnchant()]);
             }
-
-
 
             $json = \Ofey\Logan22\component\sphere\server::send(type::INVENTORY_TO_GAME, [
                 'items' => $arrObjectItems,
@@ -518,6 +517,7 @@ class donate
             ])->show()->getResponse();
             if (isset($json['data']) && $json['data'] === true) {
                 $objectItems = $json['objects'];
+
 
                 if (\Ofey\Logan22\controller\config\config::load()->notice()->isBuyShop()) {
                     $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_buy_to_player');
@@ -544,8 +544,6 @@ class donate
             }
 
             $db->commit();
-
-
 
             board::alert([
                 'type' => 'notice',
