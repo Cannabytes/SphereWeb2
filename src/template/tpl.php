@@ -977,7 +977,7 @@ class tpl
             return statistic_model::get_castle($server_id);
         }));
 
-        $twig->addFunction(new TwigFunction('clan_icon', function (string|array $data = null) {
+        $twig->addFunction(new TwigFunction('clan_icon', function (null|string|array $data = null) {
             if ($data == null) {
                 return null;
             }
@@ -2000,11 +2000,11 @@ class tpl
      *
      * @param Exception $originalException Оригинальное исключение
      * @param string $tplName Имя шаблона
-     * @param Exception $renderException Исключение рендеринга
+     * @param Exception|null $renderException Исключение рендеринга
      * @param array $contextInfo Дополнительная информация о контексте
      * @return void
      */
-    private static function renderFallbackErrorPage(Exception $originalException, $tplName, Exception $renderException = null, array $contextInfo = []) {
+    private static function renderFallbackErrorPage(Exception $originalException, $tplName, ?Exception $renderException = null, array $contextInfo = []) {
         $html = '<!DOCTYPE html>
     <html>
     <head>

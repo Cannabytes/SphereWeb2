@@ -62,7 +62,7 @@ class telegram
      * @param array|null $postData Данные POST-запроса (если есть)
      * @return array Ответ от API в виде массива
      */
-    private function sendRequest(string $url, array $postData = null): array
+    private function sendRequest(string $url, ?array $postData = null): array
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);

@@ -552,7 +552,7 @@ class donateSystem
      *
      * @return int|string
      */
-    public function getInput(string $method = null): string|int
+    public function getInput(?string $method = null): string|int
     {
         if ($method === null) {
             return 'method is null';

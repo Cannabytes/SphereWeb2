@@ -754,7 +754,7 @@ class serverModel
         return json_decode($setting['setting'], true);
     }
 
-    public function getCache(string $type = null, $server_id = null, $fullData = false)
+    public function getCache(?string $type = null, $server_id = null, $fullData = false)
     {
         if ($server_id == null) {
             $server_id = $this->getId();

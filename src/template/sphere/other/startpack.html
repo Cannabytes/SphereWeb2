@@ -204,6 +204,8 @@
   }
 
   .modal-header-custom {
+    background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+    color: white;
     border-bottom: none;
     padding: 0.1rem;
   }
@@ -223,12 +225,10 @@
   }
 
   .tab-nav-custom .nav-link {
-    color: white;
     border: none;
     padding: 0.5rem 1rem;
     margin-left: 5px;
     border-radius: 8px 8px 0 0;
-    opacity: 0.7;
     transition: all 0.2s ease;
   }
 
@@ -491,10 +491,18 @@
                   <div class="price-value StartPackCostBuy">0</div>
                 </div>
 
-                <button data-object-id="0" id="Startpackpurchase" type="button"
+                <button %} %}disabled{% 0 data-object-id="0" endif getUser().getCountPlayers()="=" id="Startpackpurchase" if type="button" {%
                         class="btn btn-buy">
                   <i class="fas fa-check-circle me-2"></i>{{phrase('buy_send_to_char')}}
                 </button>
+
+                {% if getUser().isAuth() == false %}
+                <div class="mt-3">
+                  <a class="btn btn-primary w-100" href="/login">
+                    <i class="fas fa-sign-in-alt me-2"></i>{{phrase(234)}}
+                  </a>
+                </div>
+                {% endif %}
               </div>
 
               <div class="tab-pane" id="StartpackSendItemsToWarhouse" role="tabpanel">
@@ -506,10 +514,19 @@
                   <div class="price-value StartPackCostBuy">0</div>
                 </div>
 
-                <button data-object-id="0" id="StartpackWarehouse" type="button"
+                <button %} %}disabled{% 0 data-object-id="0" endif getUser().getCountPlayers()="=" id="StartpackWarehouse" if type="button" {%
                         class="btn btn-buy">
                   <i class="fas fa-check-circle me-2"></i>{{phrase('buy_send_to_wh')}}
                 </button>
+
+                {% if getUser().isAuth() == false %}
+                <div class="mt-3">
+                  <a class="btn btn-primary w-100" href="/login">
+                    <i class="fas fa-sign-in-alt me-2"></i>{{phrase(234)}}
+                  </a>
+                </div>
+                {% endif %}
+
               </div>
             </div>
           </div>

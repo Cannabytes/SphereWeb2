@@ -297,7 +297,7 @@ class donate
      *
      * @return shop[]|null Массив содержит объекты класса shop, индексированный ID магазина
      */
-    static public function getShopItems(int $shopId = null, $toArray = true): ?array
+    static public function getShopItems(?int $shopId = null, $toArray = true): ?array
     {
         $shopInfo = [];
 
