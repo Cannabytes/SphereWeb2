@@ -8,8 +8,8 @@
     overflow: hidden;
     transition: all 0.4s ease;
     backdrop-filter: blur(5px);
-     height: 100%;
-     position: relative;
+    height: 100%;
+    position: relative;
     z-index: 1;
     transform: translateY(0px);
     border-color: rgba(142, 84, 233, 0.3);
@@ -204,10 +204,13 @@
   }
 
   .modal-header-custom {
-    background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+    background:
+          linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
     color: white;
-    border-bottom: none;
-    padding: 0.1rem;
+    border-bottom:
+          none;
+    padding:
+          0.1rem;
   }
 
   .modal-title-custom {
@@ -491,14 +494,14 @@
                   <div class="price-value StartPackCostBuy">0</div>
                 </div>
 
-                <button %} %}disabled{% 0 data-object-id="0" endif getUser().getCountPlayers()="=" id="Startpackpurchase" if type="button" {%
+                <button {% if getUser().getCountPlayers() == 0 %}disabled{% endif %} data-object-id="0" id="Startpackpurchase" type="button"
                         class="btn btn-buy">
                   <i class="fas fa-check-circle me-2"></i>{{phrase('buy_send_to_char')}}
                 </button>
 
                 {% if getUser().isAuth() == false %}
                 <div class="mt-3">
-                  <a class="btn btn-primary w-100" href="/login">
+                  <a href="/login" class="btn btn-primary w-100">
                     <i class="fas fa-sign-in-alt me-2"></i>{{phrase(234)}}
                   </a>
                 </div>
@@ -514,14 +517,14 @@
                   <div class="price-value StartPackCostBuy">0</div>
                 </div>
 
-                <button %} %}disabled{% 0 data-object-id="0" endif getUser().getCountPlayers()="=" id="StartpackWarehouse" if type="button" {%
+                <button {% if getUser().getCountPlayers() == 0 %}disabled{% endif %} data-object-id="0" id="StartpackWarehouse" type="button"
                         class="btn btn-buy">
                   <i class="fas fa-check-circle me-2"></i>{{phrase('buy_send_to_wh')}}
                 </button>
 
                 {% if getUser().isAuth() == false %}
                 <div class="mt-3">
-                  <a class="btn btn-primary w-100" href="/login">
+                  <a href="/login" class="btn btn-primary w-100">
                     <i class="fas fa-sign-in-alt me-2"></i>{{phrase(234)}}
                   </a>
                 </div>
