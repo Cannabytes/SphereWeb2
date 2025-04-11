@@ -93,7 +93,7 @@
                             </div>
                         </div>
                         <div class="d-flex align-items-center">
-                            <select class="form-select" id="serverSelect">
+                            <select class="form-select" id="serverSelectQuery">
                                 {% for server in getServers() %}
                                 <option value="{{server.getId()}}" {% if server.getId() == getUser().getServerId() %}selected{% endif %}>
                                     Сервер: {{server.getName()}} x{{server.getRateExp()}}
@@ -320,9 +320,9 @@
                         AjaxSend("/admin/collection/check", "POST", {
                             query: editor.getValue(),
                             params: params,
-                            base: document.getElementById('collectionName').value,
-                            query_name: queryBlock.querySelector('.card-title').textContent,
-                            server_id: document.getElementById('serverSelect').value
+                            base: $('#collectionName').val(),
+                            query_name: $(queryBlock).find('.card-title').text(),
+                            server_id: $('#serverSelectQuery').val()
                         }, true).then(function (response) {
                             const resultDiv = queryBlock.querySelector('.query-result');
                             let responseData = typeof response === 'string' ? JSON.parse(response) : response;
