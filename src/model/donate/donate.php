@@ -637,9 +637,9 @@ class donate
         $quantity = config::load()->donate()->getSphereCoinCost();
         $calc = function(float $sum, float $rate, float $quantity): float|int {
             if ($quantity >= 1.0) {
-                return ($sum / $rate) * $quantity;
+                return round(($sum / $rate) * $quantity, 1);
             } else {
-                return $sum / ($rate * $quantity);
+                return round($sum / ($rate * $quantity), 1);
             }
         };
         if (config::load()->other()->isExchangeRates()) {

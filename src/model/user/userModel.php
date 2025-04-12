@@ -421,7 +421,7 @@ class userModel
             "INSERT INTO `donate_history_pay` (`user_id`, `point`, `message`, `pay_system`, `id_admin_pay`, `date`, `sphere`) VALUES (?, ?, ?, ?, ?, ?, ?)",
             [
                 $this->getId(),
-                ceil($amount),
+                $amount,
                 $message,
                 $pay_system,
                 $id_admin_pay,

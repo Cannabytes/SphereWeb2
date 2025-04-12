@@ -162,7 +162,7 @@ class support
             board::error("Нельзя отправить пустое сообщение");
         }
         $section = (int)$_POST['section'] ?? 1;
-        $private = filter_input(INPUT_POST, 'private', FILTER_VALIDATE_BOOL);
+        $private = (int)filter_input(INPUT_POST, 'private', FILTER_VALIDATE_BOOL);
         $screens = null;
         if (isset($_POST['screens'])) {
             foreach ($_POST['screens'] as $screen) {
