@@ -55,6 +55,117 @@
             {% endif %}
 
 
+            <!-- SSL-Сертификат информация (компактная версия) -->
+{% if SSL %}
+<div class="card custom-card mt-2">
+    <div class="card-header bg-light p-2 d-flex justify-content-between align-items-center">
+        <h6 class="card-title mb-0">
+            <i class="bi bi-shield-lock{% if SSL.IsValid %}-fill{% else %}-exclamation{% endif %} me-1"></i>
+            SSL-сертификат
+        </h6>
+        <span class="badge {% if SSL.IsValid %}bg-success{% else %}bg-danger{% endif %}">
+            {% if SSL.IsValid %}Действителен{% else %}Недействителен{% endif %}
+        </span>
+    </div>
+    <div class="card-body p-2">
+        {% if SSL.IsValid %}
+            {% set daysLeft = SSL.DaysLeft|default(0) %}
+
+            {% if daysLeft < 30 %}
+                <div class="alert alert-warning py-1 px-2 mb-2 small">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    Истекает через {{ daysLeft|round(0, 'floor') }} дней
+                </div>
+            {% else %}
+                <div class="alert alert-success py-1 px-2 mb-2 small">
+                    <i class="bi bi-shield-check me-1"></i>
+                    Действителен ещё {{ daysLeft|round(0, 'floor') }} дней
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-danger py-1 px-2 mb-2 small">
+                <i class="bi bi-x-circle-fill me-1"></i>
+                Недействителен: {{ SSL.ErrorReason ?: 'Неизвестная ошибка' }}
+            </div>
+        {% endif %}
+
+        <div class="row g-1 small">
+            <div class="col-sm-12">
+                <div class="d-flex flex-wrap">
+                    <div class="text-muted me-1">Домен:</div>
+                    <div class="text-truncate flex-grow-1 mb-1">
+                        {{ SSL.Subject }}
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap">
+                    <div class="text-muted me-1">Сроки:</div>
+                    <div class="text-truncate flex-grow-1 mb-1">
+                        {{ SSL.NotBefore|date("d.m.Y") }} -
+                        <span class="{% if not SSL.IsValid or SSL.DaysLeft < 30 %}text-danger fw-bold{% endif %}">
+                            {{ SSL.NotAfter|date("d.m.Y") }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap">
+                    <div class="text-muted me-1">Домены:</div>
+                    <div class="text-truncate flex-grow-1">
+                        {% for domain in SSL.DNSNames|slice(0, 2) %}
+                            <span class="badge bg-light text-dark me-1">{{ domain }}</span>
+                        {% endfor %}
+                        {% if SSL.DNSNames|length > 2 %}
+                            <span class="badge bg-light text-dark">+{{ SSL.DNSNames|length - 2 }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer p-2 text-center">
+        {% if not SSL.IsValid or SSL.DaysLeft < 30 %}
+            <a href="https://certbot.eff.org/" target="_blank" class="btn btn-sm btn-{% if SSL.IsValid %}warning{% else %}danger{% endif %} w-100">
+                <i class="bi bi-{% if SSL.IsValid %}arrow-repeat{% else %}shield-plus{% endif %} me-1"></i>
+                {% if SSL.IsValid %}Обновить сертификат{% else %}Получить сертификат{% endif %}
+            </a>
+        {% endif %}
+        <p class="small mb-0">Важно иметь SSL-сертификат для обеспечения безопасности.</p>
+    </div>
+</div>
+{% else %}
+<div class="card custom-card mt-2">
+    <div class="card-header bg-light p-2">
+        <h6 class="card-title mb-0">
+            <i class="bi bi-shield-exclamation me-1"></i>
+            SSL-сертификат
+        </h6>
+    </div>
+    <div class="card-body p-2">
+        <div class="alert alert-danger py-1 px-2 mb-0 small">
+            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+            <strong>Внимание!</strong> Нет данных о сертификате
+        </div>
+        <p class="small mb-0 mt-2">Возможно, сертификат отсутствует или недоступен.<br>Без SSL-сертификата сервер не будет обслуживаться.<br>Подключите SSL-сертификат.<br>Перепроверка каждые 10 мин.</p>
+    </div>
+    <div class="card-footer p-2 text-center">
+        <a href="https://certbot.eff.org/" target="_blank" class="btn btn-sm btn-outline-primary w-100">
+            <i class="bi bi-shield-plus me-1"></i>
+            Установить SSL
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    // Инициализация всплывающих подсказок
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+
             <div class="card custom-card">
                 <div class="card-body">
                     <div class="d-flex align-items-top justify-content-between mb-0 ">
@@ -215,6 +326,8 @@
                 </div>
 
             </div>
+
+
 
             {% if config().enabled().isEnableEmulation() == false %}
 

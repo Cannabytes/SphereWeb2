@@ -64,6 +64,7 @@ class index
                 "registrationLimit" => $info['registrationLimit'],
                 "forumInfo" => $info['forumInfo'],
                 "serverTime" => $info['serverTime'],
+                "SSL" => $info['SSL'],
             ]);
         }
 
