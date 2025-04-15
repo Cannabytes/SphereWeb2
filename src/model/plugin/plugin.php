@@ -32,6 +32,7 @@ class plugin
         $data = sql::getRows(
             "SELECT * FROM `settings` WHERE `key` = '__PLUGIN__'"
         );
+
         $serverId = user::self()->getServerId();
         if ($data) {
             foreach($data AS $configData){
@@ -51,6 +52,7 @@ class plugin
                         "SELECT * FROM `settings` WHERE `key` IN ($inClause) AND serverId = ? {$selectDefaultSetting}",
                         [$serverId]
                     );
+
                     $settingsMap = [];
                     foreach ($settings as $setting) {
                         $plugin = str_replace('__PLUGIN__', '', $setting['key']);
@@ -58,9 +60,7 @@ class plugin
                     }
 
                     foreach ($plugins as $plugin) {
-                        if($pluginServerId != $serverId && $serverId != 0){
-                            continue;
-                        }
+
                         $pluginSetting = new DynamicPluginSetting();
                         $pluginSetting->pluginName = $plugin;
                         $pluginSetting->pluginServerId = $pluginServerId;
@@ -87,6 +87,7 @@ class plugin
                 }
             }
         }
+
         self::$plugins = $pluginList;
     }
 

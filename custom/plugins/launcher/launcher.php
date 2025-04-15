@@ -233,6 +233,10 @@ class launcher
         $list   = $_POST['list'] ?? board::error("No csv file");
         $storage = $_POST['storage'] ?? board::error("No URL to patch");
 
+        if(server::get_count_servers() == 0){
+            board::error("У Вас должен быть хоть один сервер");
+        }
+
         $launcher = \Ofey\Logan22\component\sphere\server::send(type::LAUNCHER_CREATE_TOKEN, [
           'list'   => $list,
           'storage' => $storage,
