@@ -21,7 +21,6 @@ use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\model\admin\server;
 use Ofey\Logan22\model\admin\update_cache;
 use Ofey\Logan22\model\admin\validation;
-use Ofey\Logan22\model\config\template;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\install\install;
 use Ofey\Logan22\model\item\item;
@@ -561,7 +560,10 @@ class options
             "user" => $user,
             "password" => $password,
             "name" => $name
-        ])->show(true)->getResponse();
+        ])->show(false)->getResponse();
+        if (isset($data['error'])) {
+            board::error($data['error']);
+        }
         if (isset($data['id'])) {
             board::alert([
                 'success' => true,

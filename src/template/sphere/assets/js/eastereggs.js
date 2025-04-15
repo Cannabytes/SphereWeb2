@@ -386,3 +386,252 @@
     });
 
 })();
+
+
+// Массив изображений котов - замените эти URL на ваши изображения
+const catImages = [
+    'https://sphereweb.net/cats/1.png',
+    'https://sphereweb.net/cats/2.png',
+    'https://sphereweb.net/cats/3.png',
+    'https://sphereweb.net/cats/4.png',
+    'https://sphereweb.net/cats/5.png',
+    'https://sphereweb.net/cats/6.png',
+    'https://sphereweb.net/cats/7.png',
+    'https://sphereweb.net/cats/8.png',
+    'https://sphereweb.net/cats/9.png',
+    'https://sphereweb.net/cats/11.png',
+    'https://sphereweb.net/cats/12.png',
+];
+
+
+// Константы физики
+const GRAVITY = 0.19; // Уменьшенная гравитация для более медленного падения
+const BOUNCE_FACTOR = 0.95;
+const DRAG_FACTOR = 0.995; // Увеличили для меньшего сопротивления воздуха
+const THROW_STRENGTH = 3;
+
+// Массив для хранения всех котов
+let cats = [];
+let catCount = 0;
+
+
+    // Обработчик для кнопки добавления котов
+    document.getElementById('addCatButton').addEventListener('click', () => {
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => addCat(), i * 100);
+        }
+    });
+
+// Функция добавления кота
+function addCat() {
+    // Создаем элемент кота
+    const catElement = document.createElement('div');
+    catElement.className = 'cat';
+
+    // Выбираем случайное изображение кота из массива
+    const randomImageIndex = Math.floor(Math.random() * catImages.length);
+    catElement.style.backgroundImage = `url('${catImages[randomImageIndex]}')`;
+
+    document.body.appendChild(catElement);
+
+    // Определяем начальную позицию
+    const width = window.innerWidth - 100;
+    const x = Math.random() * width;
+    const y = -100 - Math.random() * 500; // Начинаем над экраном
+
+    // Создаем объект кота с физическими свойствами
+    const catObj = {
+        element: catElement,
+        x: x,
+        y: y,
+        vx: (Math.random() - 0.5) * 8, // начальная скорость по X
+        vy: Math.random() * 3,         // начальная скорость по Y
+        lastThrowDirectionX: 0,        // запоминаем направление броска
+        width: 100,
+        height: 100,
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 10,
+        dragging: false,
+        lastMouseX: 0,
+        lastMouseY: 0,
+        dragVelocityX: 0,
+        dragVelocityY: 0,
+        lastTime: Date.now()
+    };
+
+    // Обновляем позицию элемента
+    updateCatPosition(catObj);
+
+    // Добавляем обработчики для перетаскивания
+    catElement.addEventListener('mousedown', (e) => startDragging(e, catObj));
+    catElement.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        startDragging(e.touches[0], catObj);
+    }, {passive: false});
+
+    // Добавляем кота в массив
+    cats.push(catObj);
+    catCount++;
+}
+
+// Запускаем анимацию
+function animate() {
+    const now = Date.now();
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+
+    cats.forEach(cat => {
+        if (!cat.dragging) {
+            // Применяем гравитацию
+            cat.vy += GRAVITY;
+
+            // Применяем сопротивление воздуха
+            cat.vx *= DRAG_FACTOR;
+            cat.vy *= DRAG_FACTOR;
+
+            // Обновляем позицию
+            cat.x += cat.vx;
+            cat.y += cat.vy;
+
+            // Обновляем вращение
+            cat.rotation += cat.rotationSpeed;
+            cat.rotationSpeed *= DRAG_FACTOR;
+
+            // Проверяем столкновение с нижней границей
+            if (cat.y + cat.height > windowHeight) {
+                cat.y = windowHeight - cat.height;
+                // Делаем отскок на 20-40% высоты экрана для более высокого прыжка
+                const bounceHeight = windowHeight * (0.6 + Math.random() * 0.6);
+                cat.vy = -Math.sqrt(2 * GRAVITY * bounceHeight);
+
+                // Сохраняем горизонтальное направление движения при отскоке,
+                // но с каждым отскоком уменьшаем
+                if (Math.abs(cat.vx) > 0.5) {
+                    // Если кот движется в горизонтальном направлении,
+                    // сохраняем это направление с небольшим уменьшением
+                    cat.vx *= 0.85;
+                } else {
+                    // Если горизонтальная скорость очень маленькая,
+                    // можно считать что кот уже прыгает вертикально
+                    cat.vx = 0;
+                }
+
+                cat.rotationSpeed = (Math.random() - 0.5) * 10 * Math.abs(cat.vy / 15);
+            }
+
+            // Проверяем столкновение с левой и правой границами
+            if (cat.x < 0) {
+                cat.x = 0;
+                cat.vx = -cat.vx * BOUNCE_FACTOR;
+            } else if (cat.x + cat.width > windowWidth) {
+                cat.x = windowWidth - cat.width;
+                cat.vx = -cat.vx * BOUNCE_FACTOR;
+            }
+
+            // Если кот упал за нижнюю границу (для безопасности)
+            if (cat.y > windowHeight * 2) {
+                cat.y = -cat.height;
+                cat.x = Math.random() * (windowWidth - cat.width);
+                cat.vy = 0;
+            }
+        } else {
+            // Если кот перетаскивается, обновляем его скорость перетаскивания
+            const dt = (now - cat.lastTime) / 20;
+            if (dt > 0) {
+                cat.dragVelocityX = (cat.x - cat.lastX) / dt;
+                cat.dragVelocityY = (cat.y - cat.lastY) / dt;
+            }
+            cat.lastX = cat.x;
+            cat.lastY = cat.y;
+        }
+
+        cat.lastTime = now;
+
+        // Обновляем позицию элемента в DOM
+        updateCatPosition(cat);
+    });
+
+    requestAnimationFrame(animate);
+}
+
+// Обновляем позицию элемента кота
+function updateCatPosition(cat) {
+    cat.element.style.left = `${cat.x}px`;
+    cat.element.style.top = `${cat.y}px`;
+    cat.element.style.transform = `rotate(${cat.rotation}deg)`;
+}
+
+// Начало перетаскивания
+function startDragging(e, cat) {
+    cat.dragging = true;
+    cat.lastMouseX = e.clientX;
+    cat.lastMouseY = e.clientY;
+    cat.vx = 0;
+    cat.vy = 0;
+
+    // Добавляем обработчики для перемещения и окончания перетаскивания
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('touchmove', onTouchMove, {passive: false});
+    document.addEventListener('touchend', onTouchEnd);
+
+    function onMouseMove(e) {
+        if (cat.dragging) {
+            const dx = e.clientX - cat.lastMouseX;
+            const dy = e.clientY - cat.lastMouseY;
+
+            cat.x += dx;
+            cat.y += dy;
+
+            cat.lastMouseX = e.clientX;
+            cat.lastMouseY = e.clientY;
+        }
+    }
+
+    function onTouchMove(e) {
+        e.preventDefault();
+        if (cat.dragging) {
+            const dx = e.touches[0].clientX - cat.lastMouseX;
+            const dy = e.touches[0].clientY - cat.lastMouseY;
+
+            cat.x += dx;
+            cat.y += dy;
+
+            cat.lastMouseX = e.touches[0].clientX;
+            cat.lastMouseY = e.touches[0].clientY;
+        }
+    }
+
+    function onMouseUp() {
+        endDragging();
+
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    function onTouchEnd() {
+        endDragging();
+
+        document.removeEventListener('touchmove', onTouchMove);
+        document.removeEventListener('touchend', onTouchEnd);
+    }
+
+    function endDragging() {
+        cat.dragging = false;
+
+        // Добавляем импульс от броска с ограничением максимальной скорости
+        // Сохраняем направление движения сильнее для лучшего смещения
+        cat.vx = Math.min(Math.max(cat.dragVelocityX * THROW_STRENGTH, -12), 12);
+        cat.vy = Math.min(Math.max(cat.dragVelocityY * THROW_STRENGTH, -12), 12);
+
+        // Запоминаем направление последнего броска для сохранения инерции при отскоке
+        cat.lastThrowDirectionX = Math.sign(cat.vx);
+
+        // Добавляем небольшое вращение, пропорциональное скорости
+        const speed = Math.sqrt(cat.vx * cat.vx + cat.vy * cat.vy);
+        cat.rotationSpeed = (Math.random() - 0.5) * speed;
+    }
+}
+
+// Запускаем анимацию
+animate();

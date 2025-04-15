@@ -117,6 +117,50 @@
 {{ include('notice_toast.html') }}
 
 
+    <style>
+
+        .cat {
+          position: absolute;
+          width: 350px;
+          height: 350px;
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: center;
+          user-select: none;
+          cursor: grab;
+          transition: transform 0.1s;
+          z-index: 99999;
+        }
+        .cat:active {
+          cursor: grabbing;
+        }
+
+        .floating-button {
+          position: fixed;
+          bottom: 00px;
+          right: 00px;
+          z-index: 1000; /* Поверх всего */
+          width: 60px;
+          height: 60px;
+          cursor: pointer;
+          transition: transform 0.2s;
+        }
+
+        .floating-button img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
+        .floating-button:hover {
+          transform: scale(1.1);
+        }
+
+    </style>
+    <div data-bs-toggle="tooltip" title="С днем защитника животных" id="addCatButton" class="floating-button">
+        <img src="https://sphereweb.net/cats/main_cat.png" alt="Add Cats" />
+    </div>
+
 
 {{ include('struct_js.html') }}
 

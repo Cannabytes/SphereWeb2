@@ -548,7 +548,7 @@
             name: name,
         }, true)
             .then(function (response) {
-                console.log("Server response:", response);
+                responseAnalysis(response);
 
                 if (response && response.success === true) {
                     // Формируем разметку с использованием response.id
@@ -592,7 +592,7 @@
             name: name,
         }, true)
             .then(function (response) {
-                console.log("Server response:", response);
+                responseAnalysis(response);
 
                 if (response && response.success === true) {
                     // Формируем разметку с использованием response.id
