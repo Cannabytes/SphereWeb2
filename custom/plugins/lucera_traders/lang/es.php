@@ -16,5 +16,6 @@ return [
     '_hour' => 'hora',
     '_hourI' => 'horas',
     '_status' => 'Estado',
-    'lucera_traders' => 'Comerciantes'
+    'lucera_traders' => 'Comerciantes',
+    'items_to_sell' => 'Artículos en venta',
 ];

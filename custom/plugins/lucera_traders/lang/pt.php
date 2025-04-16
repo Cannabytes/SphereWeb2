@@ -17,4 +17,6 @@ return [
     '_hourI' => 'horas',
     '_status' => 'Status',
     'lucera_traders' => 'Comerciantes',
+    'items_to_sell' => 'Itens à venda',
+
 ];

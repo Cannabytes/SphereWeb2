@@ -17,4 +17,5 @@ return [
     '_hourI' => 'ώρες',
     '_status' => 'Κατάσταση',
     'lucera_traders' => 'Έμποροι',
+    'items_to_sell' => 'Αντικείμενα προς πώληση',
 ];
