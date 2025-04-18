@@ -261,7 +261,7 @@ class server
                     $serverStatus->setEnable($cache['isEnable']);
                     $serverStatus->setLoginServer($cache['loginServer'] ?? false);
                     $serverStatus->setGameServer($cache['gameServer'] ?? false);
-                    $serverStatus->setGameServerRealConnection($status['gameServerRealConnection'] ?? false);
+                    $serverStatus->setGameServerRealConnection($cache['gameServerRealConnection'] ?? false);
                     $serverStatus->setEnableLoginServerMySQL($cache['loginServerDB'] ?? false);
                     $serverStatus->setEnableGameServerMySQL($cache['gameServerDB'] ?? false);
                     $serverStatus->setOnline($cache['online'] ?? 0);

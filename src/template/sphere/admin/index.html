@@ -491,9 +491,13 @@
 
 
             <div class="card">
-                <div class="card-body">
-                    <h4 class="mb-2 fw-semibold">Sphere Launcher</h4>
-                    <p>
+                    <div class="card-header bg-light p-2 d-flex justify-content-between align-items-center">
+                        <h6 class="card-title mb-0">
+                            Sphere Launcher
+                        </h6>
+                    </div>
+                <div class="card-body p-2">
+                     <p>
                         {{ phrase('sphere_launcher_description') }}
                     </p>
                     <a href="/admin/launcher" class="btn btn-light">{{ phrase('connect') }}</a>
@@ -501,15 +505,24 @@
             </div>
 
             <div class="card">
-                <div class="card-body">
-                    <h4 class="mb-2 fw-semibold">{{phrase('found_bug_question')}}</h4>
+                    <div class="card-header bg-light p-2 d-flex justify-content-between align-items-center">
+                        <h6 class="card-title mb-0">
+                            {{phrase('found_bug_question')}}
+                        </h6>
+                    </div>
+
+                <div class="card-body p-2">
                     <p>{{phrase('found_issue_server_build_missing_idea_contact_sphere_chat')|raw}}</p>
                 </div>
             </div>
 
             <div class="card">
-                <div class="card-body">
-                    <h4 class="mb-2 fw-semibold">{{phrase('admin_recommendations')}}</h4>
+                  <div class="card-header bg-light p-2 d-flex justify-content-between align-items-center">
+                        <h6 class="card-title mb-0">
+                            {{phrase('admin_recommendations')}}
+                        </h6>
+                    </div>
+                <div class="card-body p-2">
 
 <ul class="list-unstyled mb-4">
   <!-- SUPER-GUARD -->

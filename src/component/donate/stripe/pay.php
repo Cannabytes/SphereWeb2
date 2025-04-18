@@ -48,7 +48,18 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        $sum = intval($donate->getSphereCoinCost() >= 1 ? ($_POST['count'] * ($donate->getRatioUSD() / $donate->getSphereCoinCost())) : ($_POST['count'] * ($donate->getRatioUSD() * $donate->getSphereCoinCost())));
+        // Вычисляем стоимость в долларах с сохранением дробной части
+        $sumUSD = $donate->getSphereCoinCost() >= 1
+            ? ($_POST['count'] * ($donate->getRatioUSD() / $donate->getSphereCoinCost()))
+            : ($_POST['count'] * ($donate->getRatioUSD() * $donate->getSphereCoinCost()));
+
+        // Проверка на минимальную сумму (50 центов)
+        if ($sumUSD < 0.5) {
+            board::notice(false, "Минимальная сумма для Stripe: $0.50");
+        }
+
+        // Конвертация в центы для Stripe и явное преобразование в целое число
+        $sumCents = (int)round($sumUSD * 100);
 
         try {
             \Stripe\Stripe::setApiKey(self::getConfigValue('secret_key')); // Замените YOUR_SECRET_KEY своим секретным ключом Stripe
@@ -58,7 +69,7 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
                     [
                         'price_data' => [
                             'currency' => 'usd',
-                            'unit_amount' => $sum,
+                            'unit_amount' => $sumCents,
                             'product_data' => [
                                 'name' => 'Donation',
                             ],
@@ -66,10 +77,8 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
                         'quantity' => 1,
                     ],
                 ],
-                'payment_intent_data' => [
-                    'metadata' => [
-                        'user_id' => user::self()->getId(),
-                    ],
+                'metadata' => [
+                    'user_id' => user::self()->getId(),
                 ],
                 'mode' => 'payment',
                 'success_url' => \Ofey\Logan22\component\request\url::host("/balance"),
@@ -104,26 +113,59 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
         \Stripe\Stripe::setApiKey(self::getConfigValue('secret_key'));
 
         switch ($event->type) {
-            case 'payment_intent.succeeded':
-                $id = $event->data->id;
-                $paymentIntent = $event->data->object;
-                $metadata = $paymentIntent->metadata;
-                $user_id = $metadata['user_id'];
-                $amount = $paymentIntent->amount / 100; // перевод в доллары, потому что приходит по умолчанию в центах
-                $currency = $paymentIntent->currency;
+            case 'checkout.session.completed':
+                $session = $event->data->object;
+                $user_id = $session->metadata->user_id ?? null;
 
-                donate::control_uuid($id, get_called_class());
+                if (!$user_id) {
+                    // Если нет user_id в метаданных сессии, попробуем получить его из payment_intent
+                    if ($session->payment_intent) {
+                        $paymentIntent = \Stripe\PaymentIntent::retrieve($session->payment_intent);
+                        $user_id = $paymentIntent->metadata->user_id ?? null;
+                    }
+                }
+
+                if (!$user_id) {
+                    http_response_code(400);
+                    echo 'Не найден user_id в метаданных';
+                    exit();
+                }
+
+                $amount = $session->amount_total / 100; // перевод в доллары, потому что приходит по умолчанию в центах
+                $currency = $session->currency;
+
+                donate::control_uuid($session->id, get_called_class());
                 $amount = donate::currency($amount, $currency);
-                self::telegramNotice(user::getUserId($user_id), $paymentIntent->amount / 100, $currency, $amount, get_called_class());
-                user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
+                self::telegramNotice(user::getUserId($user_id), $amount, $currency, $amount, get_called_class());
+                user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system: get_called_class());
                 donate::addUserBonus($user_id, $amount);
                 echo 'YES';
                 break;
+
+            case 'payment_intent.succeeded':
+                $paymentIntent = $event->data->object;
+                $user_id = $paymentIntent->metadata->user_id ?? null;
+
+                if (!$user_id) {
+                    http_response_code(400);
+                    echo 'Не найден user_id в метаданных payment_intent';
+                    exit();
+                }
+
+                $amount = $paymentIntent->amount / 100; // перевод в доллары, потому что приходит по умолчанию в центах
+                $currency = $paymentIntent->currency;
+
+                donate::control_uuid($paymentIntent->id, get_called_class());
+                $amount = donate::currency($amount, $currency);
+                self::telegramNotice(user::getUserId($user_id), $amount, $currency, $amount, get_called_class());
+                user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system: get_called_class());
+                donate::addUserBonus($user_id, $amount);
+                echo 'YES';
+                break;
+
             default:
                 echo 'No';
                 break;
         }
-
     }
-
 }
