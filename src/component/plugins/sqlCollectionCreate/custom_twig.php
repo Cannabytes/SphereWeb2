@@ -8,6 +8,9 @@ class custom_twig
     static public function get_struct_func($name): ?array
     {
         return match ($name) {
+            'getAccount' => self::struct_get_account(),
+            'countOnline' => self::struct_count_online(),
+            'getCharactersAccount' => self::struct_characters_account(),
             'statistic_castle' => self::struct_statistic_castle(),
             'statistic_clan' => self::struct_statistic_clan(),
             'statistic_exp' => self::struct_statistic_exp(),
@@ -16,6 +19,37 @@ class custom_twig
             'statistic_pvp' => self::struct_statistic_pvp(),
             default => null,
         };
+    }
+
+    static public function struct_get_account(): array {
+        return [
+            'login',
+            'password',
+        ];
+    }
+
+    static public function struct_count_online(): array {
+        return [
+            'online',
+        ];
+    }
+
+    static public function struct_characters_account(): array {
+        return [
+            'player_id',
+            'player_name',
+            'pvp',
+            'pk',
+            'sex',
+            'online',
+            'time_in_game',
+            'class_id',
+            'level',
+            'clan_name',
+            'clan_level',
+            'clan_crest',
+            'alliance_crest',
+        ];
     }
 
     static public function struct_statistic_castle(): array
@@ -92,7 +126,7 @@ class custom_twig
             'clan_name',
             'clan_level',
             'class_id',
-            'level', 
+            'level',
             'clan_crest',
             'alliance_crest'
         ];

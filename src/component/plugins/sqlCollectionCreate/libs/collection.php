@@ -41,7 +41,7 @@ class collection
         $query = $_POST['query'];
         $params = $_POST['params'] ?? null;
         $query_name = $_POST['query_name'];
-        $serverId = $_POST['server_id'] ?? null;
+        $serverId = (int)$_POST['server_id'] ?? null;
 
         $request = \Ofey\Logan22\component\sphere\server::send(type::GAME_SERVER_REQUEST, [
             'query' => clear::cleanSQLQuery($query),
@@ -51,8 +51,17 @@ class collection
 
         $struct = null;
 
-        if (in_array($query_name, ['statistic_castle', 'statistic_clan', 'statistic_exp', 'statistic_online', 'statistic_pk', 'statistic_pvp'])) {
+        if (in_array($query_name, ['getAccount', 'countOnline', 'getCharactersAccount', 'statistic_castle', 'statistic_clan', 'statistic_exp', 'statistic_online', 'statistic_pk', 'statistic_pvp'])) {
             switch ($query_name) {
+                case "getAccount":
+                    $struct = custom_twig::struct_get_account();
+                    break;
+                case "countOnline":
+                    $struct = custom_twig::struct_count_online();
+                    break;
+                case "getCharactersAccount":
+                    $struct = custom_twig::struct_characters_account();
+                    break;
                 case "statistic_castle":
                     $struct = custom_twig::struct_statistic_castle();
                     break;
