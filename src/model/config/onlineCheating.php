@@ -184,10 +184,10 @@ class onlineCheatingTimeDetails
         $this->time       = $value['time'];
         $this->multiplier = $value['multiplier'];
         if ($this->time == null or $this->time == "") {
-            return null;
+            return;
         }
         if ($this->multiplier == null or $this->multiplier == "") {
-            return null;
+            return;
         }
 
         return $this;

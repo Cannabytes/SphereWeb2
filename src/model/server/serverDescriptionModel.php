@@ -29,7 +29,6 @@ class serverDescriptionModel
         $this->link       = $page['link'];
         $this->dateCreate = new DateTime($page['date_create']);
         $this->dateUpdate = new DateTime($page['date_update']);
-        return true;
     }
 
     /**

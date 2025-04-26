@@ -90,7 +90,6 @@ class serverModel
         $this->referral = new referral($this->id);
         $this->stackableItem = new serverStackable($server['stackableItem'] ?? null);
         $this->bonus = new serverBonus($server['bonus'] ?? null);
-        return $this;
     }
 
     private ?serverBonus $bonus = null;
@@ -105,7 +104,7 @@ class serverModel
         return $this->stackableItem;
     }
 
-    public function getReferral()
+    public function getReferral(): ?referral
     {
         return $this->referral;
     }

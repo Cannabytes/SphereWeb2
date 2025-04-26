@@ -69,7 +69,7 @@ class userModel
     public function __construct(?int $userId = null)
     {
         if ($userId == null) {
-            return $this;
+            return;
         }
         $user = sql::getRow(
             "SELECT `id`, `email`, `password`, `name`, `signature`, `ip`, `date_create`, `date_update`, `access_level`, `donate_point`, `avatar`, `avatar_background`, `timezone`, `country`, `city`, `server_id`, `lang`, `last_activity` FROM `users` WHERE id = ? LIMIT 1",
@@ -157,10 +157,8 @@ class userModel
             $this->warehouse = $this->warehouse() ?? null;
             $this->accounts = null;
 
-            return $this;
         }
 
-        return null;
     }
 
     // Найден ли такой пользователь

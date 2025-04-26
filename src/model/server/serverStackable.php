@@ -19,7 +19,6 @@ class serverStackable
             $this->stackableItems = $stackableItems['stackableItems'] ?? [];
             $this->splittableItems = $stackableItems['splittableItems'] ?? [];
         }
-        return $this;
     }
 
     public function set($allowAllItemsStacking = false, $allowAllItemsSplitting = false, $stackableItems = [], $splittableItems = [])
