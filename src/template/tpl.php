@@ -784,6 +784,11 @@ class tpl
             return support::getSection($thread_id);
         }));
 
+
+        $twig->addFunction(new TwigFunction('getThreadsNoReadCount', function () {
+            return support::getThreadsNoReadCount();
+        }));
+
         $twig->addFunction(new TwigFunction('balance_to_dollars', function ($dc = 0) {
             return $dc * (config::load()->donate()->getRatioUSD() / config::load()->donate()->getSphereCoinCost());
 

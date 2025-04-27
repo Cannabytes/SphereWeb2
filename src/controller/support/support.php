@@ -84,6 +84,82 @@ class support
         return self::$sections;
     }
 
+    private static ?int $noReadCountThreads = null;
+    public static function getThreadsNoReadCount(): int
+    {
+        if (self::$noReadCountThreads!=null){
+            return self::$noReadCountThreads;
+        }
+        // Проверяем, является ли пользователь администратором
+        $isAdmin = user::self()->isAdmin() || self::isUserModerator();
+
+        if ($isAdmin) {
+            // Для администратора: все непрочитанные чаты
+            $threads = sql::getRows("SELECT id FROM support_thread");
+
+            // Получаем идентификаторы прочитанных тем для админа
+            $threadsRead = sql::getRows("SELECT topic_id FROM `support_read_topics` WHERE user_id = ?", [
+                user::self()->getId(),
+            ]);
+
+            // Преобразуем в простой массив идентификаторов прочитанных тем
+            $readIds = array_column($threadsRead, 'topic_id');
+
+            // Счетчик непрочитанных тем для админа
+            $unreadCount = 0;
+
+            // Подсчитываем количество непрочитанных тем
+            foreach ($threads as $thread) {
+                if (!in_array($thread['id'], $readIds)) {
+                    $unreadCount++;
+                }
+            }
+
+            return self::$noReadCountThreads = $unreadCount;
+        } else {
+            // Для обычного пользователя: только его чаты с непрочитанными сообщениями
+            $userId = user::self()->getId();
+
+            // Получаем все темы пользователя и темы, где ему ответили
+            $threads = sql::getRows("
+            SELECT st.id 
+            FROM support_thread st
+            WHERE st.owner_id = ? 
+            OR st.id IN (
+                SELECT DISTINCT sm.thread_id 
+                FROM support_message sm 
+                WHERE sm.thread_id IN (
+                    SELECT DISTINCT st2.id 
+                    FROM support_thread st2 
+                    WHERE st2.owner_id = ?
+                )
+                AND sm.user_id != ?
+            )
+        ", [$userId, $userId, $userId]);
+
+            // Получаем идентификаторы прочитанных тем для пользователя
+            $threadsRead = sql::getRows("SELECT topic_id FROM `support_read_topics` WHERE user_id = ?", [
+                $userId,
+            ]);
+
+            // Преобразуем в простой массив идентификаторов прочитанных тем
+            $readIds = array_column($threadsRead, 'topic_id');
+
+            // Счетчик непрочитанных тем для пользователя
+            $unreadCount = 0;
+
+            // Подсчитываем количество непрочитанных тем
+            foreach ($threads as $thread) {
+                if (!in_array($thread['id'], $readIds)) {
+                    $unreadCount++;
+                }
+            }
+
+            return self::$noReadCountThreads = $unreadCount;
+
+        }
+    }
+
     private static function getThreads($id = null): array
     {
         if ($id != null) {
@@ -251,7 +327,6 @@ class support
     public static function show(): void
     {
         self::isEnable();
-
         tpl::addVar([
             'main' => true,
             'sections' => self::sections(),

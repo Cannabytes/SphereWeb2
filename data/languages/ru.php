@@ -1614,7 +1614,7 @@ return array(
 	'system_phrase' => 'Системные',
 	'tab' => 'вкладку',
 	'Technical support is disabled' => 'Техническая поддержка отключена',
-	'technical support' => 'Техническая поддержка',
+	'technical support' => 'Поддержка',
 	'technical support_desc_1' => 'Если Вы столкнулись с проблемой, и Вам необходима помощь, есть несколько путей.',
 	'technical support_desc_10' => 'Поддержка Sphere на Вашем проекте, добавление новых наработок, фиксов и т.д.',
 	'technical support_desc_11' => 'Стоимость услуги обсуждается индивидуально, в зависимости от сложности задачи.<br>По всем вопросам писать в телеграмм - <a href=\'https://t.me/white_hungry_rabbit\' target=\'_blank\'>Телеграмм разработчика</a>',

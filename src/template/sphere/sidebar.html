@@ -51,13 +51,12 @@
 
         {% if getUser().isAuth() %}
 
-
          <li class="slide warehouse {{classColorMenu()}}">
           <a href="javascript:void(0);" class="side-menu__item" data-bs-toggle="modal" data-bs-target="#warehouseModal">
             <i class="las la-warehouse side-menu__icon"></i>
 
             <span class="side-menu__label">{{phrase('warehouse')}}</span>
-			<span class="badge bg-info-transparent ms-2 countWarehouseItems">{{ getUser().countWarehouseItems() }}</span>
+			<span class="badge bg-info-transparent ms-2 countWarehouseItems {% if getUser().countWarehouseItems() == 0 %}d-none{% endif %}">{{ getUser().countWarehouseItems() }}</span>
           </a>
         </li>
 
@@ -109,6 +108,9 @@
             <a href="/support" class="side-menu__item">
             <i class="bi bi-question-circle side-menu__icon"></i>
             <span class="side-menu__label">{{phrase("technical support")}}</span>
+              {% if getThreadsNoReadCount() >= 1 %}
+                <span class="badge bg-success-transparent ms-2 ">{{ getThreadsNoReadCount() }}</span>
+              {% endif %}
           </a>
         </li>
         {% endif %}
