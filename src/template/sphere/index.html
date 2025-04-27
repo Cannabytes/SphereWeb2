@@ -277,15 +277,15 @@
                   <tbody id="player_account_list">
                   {% for account in getUser().getAccounts() %}
                   <tr class="account-row">
-                    <td>{{ account.getAccount() }}
+                    <td>{{ account.getAccount()|raw }}
 
-                        <i data-account="{{account.getAccount()}}" role="button" class="bi bi-person-dash deleteAccount"
+                        <i data-account="{{account.getAccount()|raw}}" role="button" class="bi bi-person-dash deleteAccount"
                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{phrase('account_deletion')}}"
                         ></i>
 
                      </td>
                     <td>
-                    <i role="button" class="fe fe-settings btn-change-password" data-account="{{account.getAccount()}}"
+                    <i role="button" class="fe fe-settings btn-change-password" data-account="{{account.getAccount()|raw}}"
                        data-bs-toggle="modal" data-bs-effect="effect-slide-in-right"
                        data-bs-target="#changepassword">
                       {% if account.isPasswordHide() %}
@@ -299,7 +299,7 @@
 
                       {% if account.getCharactersCount() > 0 %}
 
-                    <div class="toggle-characters" data-account="{{account.getAccount()}}">
+                    <div class="toggle-characters" data-account="{{account.getAccount()|raw}}">
                     <div class="avatar-list-stacked">
 
                       {% for i, character in account.getCharacters() %}
@@ -321,7 +321,7 @@
                   </tr>
                   {% if account.getCharactersCount() > 0 %}
 
-              <tr class="character-container character-row-{{account.getAccount()}}" style="display: none;">
+              <tr class="character-container character-row-{{account.getAccount()|raw}}" style="display: none;">
                 <td colspan="3" class="p-0">
                   <div class="p-2 bg-light">
                     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-2">
@@ -388,7 +388,7 @@
                                     <hr class="my-2">
                                     <form method="post" action="/player/relocation">
                                       <div class="mb-2 form-check">
-                                        <input name="account" type="hidden" value="{{account.getAccount()}}">
+                                        <input name="account" type="hidden" value="{{account.getAccount()|raw}}">
                                         <input name="player" type="hidden" value="{{character.getPlayerName()}}">
                                         <input checked name="itemsToWarehouse" type="checkbox"
                                                class="form-check-input"

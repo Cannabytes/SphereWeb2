@@ -133,12 +133,6 @@ class advancedWebServerInfo
                     lang::get_phrase('recommended_to_disable_for_security') :
                     lang::get_phrase('properly_configured')
             ],
-            'allow_url_fopen' => [
-                'value' => ini_get('allow_url_fopen') ? 'ON' : 'OFF',
-                'status' => ini_get('allow_url_fopen') ? 'warning' : 'success',
-                'description' => lang::get_phrase('url_wrappers_permission'),
-                'recommendation' => lang::get_phrase('disable_if_not_used')
-            ],
             'display_errors' => [
                 'value' => ini_get('display_errors') ? 'ON' : 'OFF',
                 'status' => ini_get('display_errors') ? 'warning' : 'success',
@@ -205,7 +199,13 @@ class advancedWebServerInfo
                 'status' => (intval(ini_get('max_file_uploads')) >= 20) ? 'success' : 'warning',
                 'description' => lang::get_phrase('maximum_number_of_files'),
                 'recommendation' => lang::get_phrase('20_or_more_is_recommended')
-            ]
+            ],
+            'allow_url_fopen' => [
+                'value' => ini_get('allow_url_fopen') ? 'ON' : 'OFF',
+                'status' => ini_get('allow_url_fopen') ? 'success' : 'warning',
+                'description' => lang::get_phrase('url_wrappers_permission'),
+                'recommendation' => lang::get_phrase('it_is_recommended_to_enable')
+            ],
         ];
     }
 

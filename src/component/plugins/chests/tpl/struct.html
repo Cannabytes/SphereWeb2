@@ -3,8 +3,8 @@
     <div class="chests-container" data-chests="{{ chests|json_encode|escape('html_attr') }}">
         {% for id, chest in chests %}
             <div class="chest-item chest-type-{{ chest.type|lower }}"
-                 data-chest-id="{{ id }}"
-                 data-chest-name="{{ id }}"
+                 data-chest-id="{{ id|raw }}"
+                 data-chest-name="{{ id|raw }}"
                  data-chest-price="{{ chest.price }}"
                  data-chest-icon="{{ chest.icon }}">
 
@@ -91,11 +91,11 @@
                 </div>
                 <div class="chest-header" style='background-image: url({{ chest.background|default('/src/component/plugins/chests/tpl/images/background/bg-1.png') }});'>
                     <div class="chest-icon mt-4">
-                        <img src="/src/component/plugins/chests/tpl/images/chest/chest-{{ chest.icon }}.webp" alt="{{ id }}">
+                        <img src="/src/component/plugins/chests/tpl/images/chest/chest-{{ chest.icon }}.webp" alt="{{ id|raw }}">
                     </div>
 
                     <div class="chest-info">
-                        <h3 class="chest-name">{{ id }}</h3>
+                        <h3 class="chest-name">{{ id|raw }}</h3>
                         <div class="chest-type {% if chest.type == 'No Use' %}d-none{% endif %}">{{ chest.type }}</div>
                     </div>
 
@@ -267,9 +267,9 @@ document.addEventListener('DOMContentLoaded', function() {
 window.chestData = {};
 
 {% for id, chest in chests %}
-window.chestData["{{ id }}"] = {
-  id: "{{ id }}",
-  name: "{{ id }}",
+window.chestData["{{ id|raw }}"] = {
+  id: "{{ id|raw }}",
+  name: "{{ id|raw }}",
   price: {{ chest.price }},
 type: "{{ chest.type }}",
       icon: {{ chest.icon }},

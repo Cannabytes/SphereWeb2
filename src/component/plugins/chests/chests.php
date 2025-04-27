@@ -382,7 +382,7 @@ class chests
 
         $caseServer = server::sendCustom("/api/plugin/chests/open", [
             "serverId" => user::self()->getServerId(),
-            "name" => $case_name,
+            "name" => htmlspecialchars_decode($case_name, ENT_QUOTES),
         ])->show()->getResponse();
         $case = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
         $case = $case[$case_name];
