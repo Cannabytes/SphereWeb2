@@ -720,10 +720,11 @@
 
     $(document).on('click', '.toggle-characters', function() {
       var accountName = $(this).data('account');
-      var characterRow = $('.character-row-' + accountName);
+      var characterRow = $('.character-row-' + CSS.escape(accountName));
       $('.character-container').not(characterRow).hide();
       characterRow.toggle();
     });
+
   });
 </script>
 {% endblock %}
