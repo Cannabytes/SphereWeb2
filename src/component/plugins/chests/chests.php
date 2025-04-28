@@ -407,9 +407,6 @@ class chests
                 throw new \Exception("Ошибка при списании средств");
             }
 
-            // Начало транзакции
-            sql::beginTransaction();
-
             // Проверка существования предмета
             $itemInfo = item::getItem($item['id'], \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getKnowledgeBase());
             if (!$itemInfo || !$itemInfo->isExists()) {
@@ -440,9 +437,6 @@ class chests
                 'price' => $price,
             ]);
 
-            // Фиксация транзакции
-            sql::commit();
-
             // Обновление склада пользователя
             user::self()->getWarehouse(true);
 
@@ -455,8 +449,6 @@ class chests
             ]);
 
         } catch (\Exception $e) {
-            // Обработка ошибок и откат транзакции
-            sql::rollBack();
             board::error($e->getMessage());
         }
     }
