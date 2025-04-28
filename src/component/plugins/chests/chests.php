@@ -403,9 +403,7 @@ class chests
             }
 
             // Списание средств
-            if (!user::self()->donateDeduct($price)) {
-                throw new \Exception("Ошибка при списании средств");
-            }
+            user::self()->donateDeduct($price);
 
             // Проверка существования предмета
             $itemInfo = item::getItem($item['id'], \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getKnowledgeBase());
