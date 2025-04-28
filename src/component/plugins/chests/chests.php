@@ -402,13 +402,13 @@ class chests
                 throw new \Exception(sprintf("Для покупки у Вас не хватает %s SphereCoin", $price - user::self()->getDonate()));
             }
 
-            // Начало транзакции
-            sql::beginTransaction();
-
             // Списание средств
             if (!user::self()->donateDeduct($price)) {
                 throw new \Exception("Ошибка при списании средств");
             }
+
+            // Начало транзакции
+            sql::beginTransaction();
 
             // Проверка существования предмета
             $itemInfo = item::getItem($item['id'], \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getKnowledgeBase());
