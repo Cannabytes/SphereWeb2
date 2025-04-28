@@ -369,8 +369,9 @@ class chests
     {
         // Проверка пользователя на авторизацию
         validation::user_protection();
-        if (plugin::getPluginActive("chests")==false){
+        if (!plugin::getPluginActive("chests")) {
             board::error("disabled");
+            return;
         }
 
         // Валидация входных данных
@@ -380,39 +381,39 @@ class chests
             return;
         }
 
-        $caseServer = server::sendCustom("/api/plugin/chests/open", [
-            "serverId" => user::self()->getServerId(),
-            "name" => htmlspecialchars_decode($case_name, ENT_QUOTES),
-        ])->show()->getResponse();
-        $case = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
-        $case = $case[$case_name];
-        // Преобразование цены в целое число
-        $price = (float)$case['price'];
-        if ($price < 0) {
-            board::error("Некорректная цена кейса");
-            return;
-        }
-
-        $item = $caseServer['item'];
-
         try {
-            // Проверка баланса пользователя перед началом транзакции
+            // Начало транзакции
+            sql::beginTransaction();
+
+            $caseServer = server::sendCustom("/api/plugin/chests/open", [
+                "serverId" => user::self()->getServerId(),
+                "name" => htmlspecialchars_decode($case_name, ENT_QUOTES),
+            ])->show()->getResponse();
+
+            $case = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
+            $case = $case[$case_name];
+
+            // Преобразование цены в целое число
+            $price = (float)$case['price'];
+            if ($price < 0) {
+                throw new \Exception("Некорректная цена кейса");
+            }
+
+            $item = $caseServer['item'];
+
             $canAffordPurchase = user::self()->canAffordPurchase($price);
             if (!$canAffordPurchase) {
                 throw new \Exception(sprintf("Для покупки у Вас не хватает %s SphereCoin", $price - user::self()->getDonate()));
             }
 
-            // Списание средств
             user::self()->donateDeduct($price);
 
-            // Проверка существования предмета
             $itemInfo = item::getItem($item['id'], \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getKnowledgeBase());
             if (!$itemInfo || !$itemInfo->isExists()) {
                 throw new \Exception("Предмет не найден");
             }
             $item['itemInfo'] = $itemInfo;
 
-            // Добавление предмета в склад пользователя
             $enchant = isset($item['enchant']) ? (int)$item['enchant'] : 0;
             $result = user::self()->addToWarehouse(
                 user::self()->getServerId(),
@@ -426,7 +427,6 @@ class chests
                 throw new \Exception("Ошибка при добавлении предмета в склад");
             }
 
-            // Добавляем запись в логи
             user::self()->addLog(\Ofey\Logan22\model\log\logTypes::LOG_CHEST_WIN, "chest_win", [
                 'chest_id' => $case_name,
                 'item_id' => $item['id'],
@@ -435,10 +435,10 @@ class chests
                 'price' => $price,
             ]);
 
-            // Обновление склада пользователя
+            sql::commit();
+
             user::self()->getWarehouse(true);
 
-            // Возвращаем успешный результат
             board::alert([
                 'ok' => true,
                 'item' => $item,
@@ -447,6 +447,10 @@ class chests
             ]);
 
         } catch (\Exception $e) {
+            // В случае ошибки откатываем транзакцию
+            if (sql::isError() || sql::getException() !== null) {
+                sql::rollBack();
+            }
             board::error($e->getMessage());
         }
     }

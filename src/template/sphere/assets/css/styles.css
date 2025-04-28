@@ -18671,7 +18671,6 @@ code[class*=language-] {
   margin: 0;
 }
 
-.mail-navigation,
 .total-mails,
 .mail-recepients {
   height: calc(100vh - 8rem);
