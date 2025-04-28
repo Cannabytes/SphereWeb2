@@ -396,19 +396,22 @@ class chests
         $item = $caseServer['item'];
 
         try {
-            sql::beginTransaction();
-            // Проверка баланса пользователя
+            // Проверка баланса пользователя перед началом транзакции
             $canAffordPurchase = user::self()->canAffordPurchase($price);
             if (!$canAffordPurchase) {
                 throw new \Exception(sprintf("Для покупки у Вас не хватает %s SphereCoin", $price - user::self()->getDonate()));
             }
 
+            // Начало транзакции
+            sql::beginTransaction();
+
             // Списание средств
             if (!user::self()->donateDeduct($price)) {
                 throw new \Exception("Ошибка при списании средств");
             }
+
             // Проверка существования предмета
-            $itemInfo = item::getItem($item['id'], \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getKnowledgeBase() );
+            $itemInfo = item::getItem($item['id'], \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getKnowledgeBase());
             if (!$itemInfo || !$itemInfo->isExists()) {
                 throw new \Exception("Предмет не найден");
             }
@@ -427,7 +430,7 @@ class chests
             if (!$result['success']) {
                 throw new \Exception("Ошибка при добавлении предмета в склад");
             }
-            sql::commit();
+
             // Добавляем запись в логи
             user::self()->addLog(\Ofey\Logan22\model\log\logTypes::LOG_CHEST_WIN, "chest_win", [
                 'chest_id' => $case_name,
@@ -436,6 +439,9 @@ class chests
                 'enchant' => $enchant,
                 'price' => $price,
             ]);
+
+            // Фиксация транзакции
+            sql::commit();
 
             // Обновление склада пользователя
             user::self()->getWarehouse(true);
@@ -449,7 +455,7 @@ class chests
             ]);
 
         } catch (\Exception $e) {
-            // Обработка ошибок
+            // Обработка ошибок и откат транзакции
             sql::rollBack();
             board::error($e->getMessage());
         }
