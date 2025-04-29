@@ -10,7 +10,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
-ini_set('error_log', 'errors.log');
+ini_set('error_log', 'errors.txt');
 
 use Ofey\Logan22\model\db\sql;
 
@@ -28,9 +28,14 @@ class update
                 return;
             }
             $data = json_decode($json, true);
-            if (__TOKEN__ == $data['token']) {
 
-                //Проверка на явное отключение
+            if (!isset($data['token'])) {
+                header("HTTP/1.1 301 Moved Permanently");
+                header("Location: /main");
+                exit();
+            }
+
+            if (__TOKEN__ == $data['token']) {
                 include "src/model/db/sql.php";
                 if($this->isDisabled()){
                     http_response_code(418);
@@ -41,9 +46,6 @@ class update
                 $this->__TOKEN__ = __TOKEN__;
                 $this->checkNewCommit();
 
-                include "uploads/update_sql.php";
-                new updateSql();
-                include "uploads/cleaning.php";
             }
         } else {
             header("HTTP/1.1 301 Moved Permanently");
@@ -160,10 +162,10 @@ class update
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true); // Указываем, что это POST запрос
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json); // Передаем JSON данные
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Возвращаем результат в переменную
-        curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
         curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
         $response = curl_exec($ch);
         if ($response === false) {
