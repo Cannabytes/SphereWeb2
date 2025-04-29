@@ -104,12 +104,32 @@ class inventory
 
     }
 
+    private static function validateIntArray(string $key, string $errorMessage): array
+    {
+        $input = filter_input(INPUT_POST, $key, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+
+        if (empty($input) || !is_array($input)) {
+            board::error($errorMessage);
+        }
+
+        foreach ($input as $value) {
+            if (filter_var($value, FILTER_VALIDATE_INT) === false) {
+                board::error($errorMessage);
+            }
+        }
+
+        return array_map('intval', $input);
+    }
+
     public static function warehouseToGame()
     {
         $objectItems = $_POST['items'] ?? board::error(lang::get_phrase('no_items_provided'));
         $account = $_POST['account'] ?? board::error(lang::get_phrase('no_account_provided'));
         $player = $_POST['player'] ?? board::error(lang::get_phrase('no_player_name_provided'));
         $arrObjectItems = [];
+
+        self::validateIntArray('items', lang::get_phrase('no_items_provided'));
+
         foreach (user::self()->getWarehouse() as $warehouse) {
             if (in_array($warehouse->getId(), $objectItems)) {
                 $arrObjectItems[] = [
@@ -177,9 +197,21 @@ class inventory
             board::error("Disabled");
         }
 
-        $account = $_POST['account'] ?? board::error(lang::get_phrase('Account not transferred'));
-        $player = $_POST['player'] ?? board::error(lang::get_phrase('Player name not passed'));
-        $coins = $_POST['coin'] ?? board::error(lang::get_phrase('Coins not transferred'));
+        $requiredParams = [
+            'account' => 'Account not transferred',
+            'player' => 'Player name not passed',
+            'coin' => 'Coins not transferred'
+        ];
+
+        foreach ($requiredParams as $param => $errorMsg) {
+            if (empty($_POST[$param])) {
+                board::error(lang::get_phrase($errorMsg));
+            }
+        }
+
+        $account = $_POST['account'];
+        $player = $_POST['player'];
+        $coins = (int)$_POST['coin'];
 
         if (!filter_var($coins, FILTER_VALIDATE_INT)) {
             board::error(lang::get_phrase('Enter an integer'));
@@ -190,8 +222,9 @@ class inventory
         if (user::self()->getAccounts($account) === null) {
             board::error(lang::get_phrase('There is no such account'));
         }
+
         //Проверяем существование игрока в аккаунте
-        if (!$playerInfo = user::self()->isPlayer($player)) {
+        if (!user::self()->isPlayer($player)) {
             board::error(lang::get_phrase('There is no such player in the account'));
         }
 

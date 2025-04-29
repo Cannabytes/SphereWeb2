@@ -178,5 +178,81 @@ class request {
         }
     }
 
+    private static function validateString(string $key, string $errorMessage): string
+    {
+        $value = filter_input(INPUT_POST, $key, FILTER_UNSAFE_RAW);
+        if ($value === null || $value === false || trim($value) === '') {
+            board::error($errorMessage);
+        }
+        return htmlspecialchars(trim($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    private static function validateInt(string $key, string $errorMessage): int
+    {
+        $value = filter_input(INPUT_POST, $key, FILTER_VALIDATE_INT);
+
+        if ($value === false || $value === null) {
+            board::error($errorMessage);
+        }
+
+        return $value;
+    }
+
+    private static function validateFloat(string $key, string $errorMessage): float
+    {
+        $value = filter_input(INPUT_POST, $key, FILTER_VALIDATE_FLOAT);
+
+        if ($value === false || $value === null) {
+            board::error($errorMessage);
+        }
+
+        return $value;
+    }
+
+    private static function validateEmail(string $key, string $errorMessage): string
+    {
+        $value = filter_input(INPUT_POST, $key, FILTER_VALIDATE_EMAIL);
+
+        if ($value === false || $value === null) {
+            board::error($errorMessage);
+        }
+
+        return $value;
+    }
+
+    private static function validateUrl(string $key, string $errorMessage): string
+    {
+        $value = filter_input(INPUT_POST, $key, FILTER_VALIDATE_URL);
+
+        if ($value === false || $value === null) {
+            board::error($errorMessage);
+        }
+
+        return $value;
+    }
+
+    private static function validateBool(string $key, string $errorMessage): bool
+    {
+        $value = filter_input(INPUT_POST, $key, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+
+        if ($value === null) {
+            board::error($errorMessage);
+        }
+
+        return $value;
+    }
+
+    private static function validateArray(string $key, string $errorMessage): array
+    {
+        $value = filter_input(INPUT_POST, $key, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+
+        if ($value === false || $value === null || !is_array($value)) {
+            board::error($errorMessage);
+        }
+
+        return $value;
+    }
+
+
 
 }

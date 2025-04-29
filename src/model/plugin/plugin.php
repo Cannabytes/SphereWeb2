@@ -146,6 +146,7 @@ class plugin
                 } elseif (!$isEnabled && isset(self::$plugins[$pluginName])) {
                     unset(self::$plugins[$pluginName]);
                 }
+
                 $activePlugins = array_keys(self::$plugins);
 
                 // Сначала удаляем старые записи

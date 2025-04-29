@@ -5,10 +5,13 @@ namespace Ofey\Logan22\component\cron;
 use Exception;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
+use PDO;
+use PDOException;
 
 class arrival
 {
-    private static $request;
+    private static array $request = [];
+
     //Когда приходит уведомление от сферы АПИ с обновлением каких либо данных
     public static function receiving(): void
     {
@@ -29,19 +32,15 @@ class arrival
         }
     }
 
-    private static function processCommand(string $command)
+    private static function processCommand(string $command): void
     {
-        switch ($command) {
-            case 'update_rates':
-                self::update_rates();
-                break;
-            case 'update_databases':
-                self::updateDB();
-                break;
-            default:
-                error_log("Unknown command: $command");
-                break;
-        }
+        match ($command) {
+            'update_rates' => self::update_rates(),
+            'update_databases' => self::updateDB(),
+            'clear_errors' => self::clearErrors(),
+            'referrals_bonus_check' => self::referrals_bonus_check(),
+            default => error_log("Unknown command: $command"),
+        };
     }
 
     //Обновления курса валют
@@ -56,6 +55,19 @@ class arrival
         $other->save();
     }
 
+    public static function executeSqlScript($sql): false|int
+    {
+        try {
+            $pdo = sql::instance();
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->setAttribute(PDO::MYSQL_ATTR_MULTI_STATEMENTS, true);
+            $success = $pdo->exec($sql);
+            return $success;
+        } catch (PDOException $e) {
+            throw new Exception('SQL Error: ' . $e->getMessage());
+        }
+    }
+
     private static function updateDB()
     {
         $query = self::$request['query'];
@@ -63,16 +75,36 @@ class arrival
             $isSelect = stripos(trim($query), 'SELECT') === 0;
 
             if ($isSelect) {
-                $result = sql::getRows($query); // предполагаем, что у класса sql есть такой метод
+                $result = sql::getRows($query);
                 echo json_encode(['success' => true, 'data' => $result]);
             } else {
-                $result = sql::query($query);
+                $result = self::executeSqlScript($query);
                 echo json_encode(['success' => true, 'affected_rows' => $result]);
             }
         } catch (Exception $e) {
             error_log('SQL Error: ' . $e->getMessage());
             echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         }
+    }
+
+    private static function clearErrors(): void
+    {
+        $errorFiles = [
+            'errors.txt',
+            'errors.log',
+            'sql_error_log.txt',
+        ];
+
+        foreach ($errorFiles as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+    }
+
+    private static function referrals_bonus_check()
+    {
+
     }
 
 }
