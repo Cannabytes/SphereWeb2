@@ -97,7 +97,7 @@ class inventory
         board::alert([
             "ok" => true,
             "message" => lang::get_phrase('item_split_success'),
-            "items" => user::self()->getWarehouseToArray(),
+            "warehouse" => user::self()->getWarehouseToArray(),
             "isAllowAllItemsSplitting" => \Ofey\Logan22\model\server\server::getServer()->stackableItem()->isAllowAllItemsSplitting(),
             "splittableItems" => \Ofey\Logan22\model\server\server::getServer()->stackableItem()->getSplittableItems(),
         ]);

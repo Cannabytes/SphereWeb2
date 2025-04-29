@@ -5,6 +5,7 @@ namespace Ofey\Logan22\component\plugins\chests;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\component\request\request;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
@@ -374,12 +375,7 @@ class chests
             return;
         }
 
-        // Валидация входных данных
-        $case_name = isset($_POST['chest_id']) ? htmlspecialchars(trim($_POST['chest_id'])) : '';
-        if (empty($case_name)) {
-            board::error("Не указан ID кейса");
-            return;
-        }
+        $case_name = request::validateString('chest_id', 'Не указан ID кейса');
 
         try {
             // Начало транзакции

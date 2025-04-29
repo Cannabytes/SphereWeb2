@@ -11,12 +11,12 @@
         <div class="row">
           <div class="col-xl-6 mb-2">
             <label for="change_u_name" class="form-label">{{ phrase(27) }}<sup><i
-              class="ri-star-s-fill text-success fs-8"></i></sup></label>
+                  class="ri-star-s-fill text-success fs-8"></i></sup></label>
             <input name="name" type="text" class="form-control" id="change_u_name" value="{{getUser().getName()}}">
           </div>
           <div class="col-xl-6 mb-2">
             <label for="change_u_timezone" class="form-label">{{ phrase('timezone') }}<sup><i
-              class="ri-star-s-fill text-success fs-8"></i></sup></label>
+                  class="ri-star-s-fill text-success fs-8"></i></sup></label>
             <select name="timezone" class="form-control" id="change_u_timezone">
               {% for timezone in timezone_list() %}
               <option {% if getUser().getTimezone() == timezone %}selected {% endif %}value="{{timezone}}">{{timezone}}</option>
@@ -175,10 +175,10 @@
     $('#muchSphereCoin').on('keypress keydown input', function (event) {
       const key = event.which || event.keyCode;
       if (
-        (key < 48 || key > 57) &&
-        (key < 96 || key > 105) &&
-        key !== 8 &&
-        (key < 37 || key > 40)
+            (key < 48 || key > 57) &&
+            (key < 96 || key > 105) &&
+            key !== 8 &&
+            (key < 37 || key > 40)
       ) {
         event.preventDefault();
       }
@@ -746,26 +746,221 @@ $('#splitItemModal').on('hidden.bs.modal', function() {
 });
 
 
-const style = document.createElement('style');
-style.innerHTML = `
-    /* Стили для корректного отображения вложенных модальных окон */
-    body.modal-open .modal-backdrop.show ~ .modal-backdrop.show {
-      opacity: 0.5 !important;
-      z-index: 1070 !important;
-    }
+/**
+ * Система управления модальными окнами для правильной работы вложенных модальных окон
+ * Этот код заменяет предыдущую реализацию, вызывающую конфликты
+ */
+(function() {
+  // Проверяем, существует ли уже этот объект
+  if (window.modalManager) return;
 
-    /* Убираем удваивание отступа справа при открытии второго модального окна */
-    body.modal-open.modal-split-open {
-      padding-right: 17px !important;
-    }
+  // Создаем менеджер модальных окон
+  window.modalManager = {
+    // Стек открытых модальных окон
+    _openedModals: [],
 
-    /* Повышенный z-index для содержимого модального окна разбития */
-    #splitItemModal .modal-content.elevated-modal {
-      position: relative;
-      z-index: 1080;
+    // Инициализация менеджера
+    init: function() {
+      // Добавляем базовые стили для модальных окон
+      const styles = `
+        /* Базовый z-index для модальных окон */
+        .modal {
+          z-index: 1050;
+        }
+
+        /* Базовый z-index для backdrop */
+        .modal-backdrop {
+          z-index: 1040;
+        }
+
+        /* Стили для вложенных модальных окон */
+        .modal.level-1 {
+          z-index: 1060 !important;
+        }
+
+        .modal-backdrop.level-1 {
+          z-index: 1050 !important;
+        }
+
+        .modal.level-2 {
+          z-index: 1070 !important;
+        }
+
+        .modal-backdrop.level-2 {
+          z-index: 1060 !important;
+        }
+
+        /* Для корректного отображения вложенных модальных окон */
+        body.multiple-modals-open {
+          overflow: hidden;
+        }
+
+        /* Предотвращаем скрытие модального окна */
+        body.multiple-modals-open .modal.show {
+          overflow-x: hidden;
+          overflow-y: auto;
+        }
+      `;
+
+      const styleElem = document.createElement('style');
+      styleElem.innerHTML = styles;
+      document.head.appendChild(styleElem);
+
+      // Обработчики событий для модальных окон
+      this._setupEventListeners();
+    },
+
+    // Настройка обработчиков событий
+    _setupEventListeners: function() {
+      const self = this;
+
+      // Отслеживаем открытие модального окна
+      $(document).on('shown.bs.modal', '.modal', function(e) {
+        const modalId = $(this).attr('id');
+
+        // Если это новое модальное окно (не то, что уже в стеке)
+        if (!self._openedModals.includes(modalId)) {
+          self._openedModals.push(modalId);
+
+          // Добавляем класс для отслеживания множественных модальных окон
+          if (self._openedModals.length > 1) {
+            $('body').addClass('multiple-modals-open');
+          }
+
+          // Назначаем уровень для модального окна и последнего backdrop
+          const level = self._openedModals.length - 1;
+          $(this).addClass('level-' + level);
+
+          // Находим последний добавленный backdrop и назначаем ему класс уровня
+          $('.modal-backdrop').last().addClass('level-' + level);
+
+          // Исправляем z-index для правильного порядка
+          self._adjustModalLevels();
+        }
+      });
+
+      // Отслеживаем закрытие модального окна
+      $(document).on('hidden.bs.modal', '.modal', function(e) {
+        const modalId = $(this).attr('id');
+
+        // Удаляем модальное окно из стека
+        const index = self._openedModals.indexOf(modalId);
+        if (index > -1) {
+          self._openedModals.splice(index, 1);
+
+          // Удаляем класс уровня
+          $(this).removeClass(function(index, className) {
+            return (className.match(/(^|\s)level-\S+/g) || []).join(' ');
+          });
+
+          // Если больше нет открытых модальных окон, удаляем класс
+          if (self._openedModals.length <= 1) {
+            $('body').removeClass('multiple-modals-open');
+          }
+
+          // Удаляем лишние backdrop элементы
+          self._cleanupBackdrops();
+
+          // Перенастраиваем уровни оставшихся модальных окон
+          self._adjustModalLevels();
+        }
+      });
+
+      // Кнопка для открытия модального окна разбиения предметов
+      $(document).on('click', '.js-split-item-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Логика открытия модального окна разбиения предметов
+        const $listItem = $(this).closest('.js-warehouse-item');
+        const $checkbox = $listItem.find('.js-warehouse-item-checkbox');
+
+        // Получаем данные предмета и заполняем модальное окно
+        const objectId = $checkbox.data('object-id');
+        const itemName = $listItem.find('.js-item-name').text().trim();
+        const itemIcon = $listItem.find('.js-item-icon').attr('src');
+        const itemCount = $listItem.data('item-count') || 1;
+
+        $('#splitItemIcon').attr('src', itemIcon);
+        $('#splitItemName').text(itemName);
+        $('#splitItemCount').text('Доступно: ' + itemCount);
+
+        // Настраиваем поле ввода
+        const $quantityInput = $('#splitItemQuantity');
+        $quantityInput.attr('max', itemCount - 1);
+        $quantityInput.val(1);
+        $quantityInput.removeClass('is-invalid');
+
+        // Валидация при изменении значения
+        $quantityInput.off('input').on('input', function() {
+          const value = parseInt($(this).val());
+          const max = parseInt($(this).attr('max'));
+
+          if (isNaN(value) || value < 1 || value > max) {
+            $(this).addClass('is-invalid');
+            $('#confirmSplitItem').prop('disabled', true);
+          } else {
+            $(this).removeClass('is-invalid');
+            $('#confirmSplitItem').prop('disabled', false);
+          }
+        });
+
+        // Сохраняем ID объекта в кнопке подтверждения
+        $('#confirmSplitItem').data('object-id', objectId).prop('disabled', false);
+
+        // Открываем модальное окно разбиения
+        const splitModal = new bootstrap.Modal(document.getElementById('splitItemModal'));
+        splitModal.show();
+      });
+    },
+
+    // Корректировка уровней модальных окон
+    _adjustModalLevels: function() {
+      // Перенастраиваем уровни для всех открытых модальных окон
+      for (let i = 0; i < this._openedModals.length; i++) {
+        const modalId = this._openedModals[i];
+        const modal = $('#' + modalId);
+
+        // Удаляем все предыдущие классы уровней
+        modal.removeClass(function(index, className) {
+          return (className.match(/(^|\s)level-\S+/g) || []).join(' ');
+        });
+
+        // Добавляем новый класс уровня
+        modal.addClass('level-' + i);
+      }
+
+      // Находим все backdrop и корректируем их классы
+      $('.modal-backdrop').each(function(index) {
+        $(this).removeClass(function(idx, className) {
+          return (className.match(/(^|\s)level-\S+/g) || []).join(' ');
+        });
+
+        if (index < this._openedModals.length) {
+          $(this).addClass('level-' + index);
+        }
+      }.bind(this));
+    },
+
+    // Удаление лишних backdrop элементов
+    _cleanupBackdrops: function() {
+      // Проверяем количество backdrop элементов
+      const backdropCount = $('.modal-backdrop').length;
+      const modalCount = this._openedModals.length;
+
+      // Если backdrop больше, чем открытых модальных окон, удаляем лишние
+      if (backdropCount > modalCount) {
+        // Оставляем только нужное количество backdrop
+        $('.modal-backdrop').slice(modalCount).remove();
+      }
     }
-  `;
-document.head.appendChild(style);
+  };
+
+  // Инициализация менеджера модальных окон при загрузке страницы
+  $(document).ready(function() {
+    window.modalManager.init();
+  });
+})();
 
 /**
  * Обработчик подтверждения разбития предмета
@@ -1019,5 +1214,3 @@ $(document).ready(function() {
 </script>
 
 {% endif %}
-
-

@@ -73,7 +73,6 @@ class arrival
         $query = self::$request['query'];
         try {
             $isSelect = stripos(trim($query), 'SELECT') === 0;
-
             if ($isSelect) {
                 $result = sql::getRows($query);
                 echo json_encode(['success' => true, 'data' => $result]);

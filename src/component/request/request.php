@@ -178,16 +178,16 @@ class request {
         }
     }
 
-    private static function validateString(string $key, string $errorMessage): string
+    public static function validateString(string $key, string $errorMessage): string
     {
         $value = filter_input(INPUT_POST, $key, FILTER_UNSAFE_RAW);
         if ($value === null || $value === false || trim($value) === '') {
             board::error($errorMessage);
         }
-        return htmlspecialchars(trim($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        return html_entity_decode(trim($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
-    private static function validateInt(string $key, string $errorMessage): int
+    public static function validateInt(string $key, string $errorMessage): int
     {
         $value = filter_input(INPUT_POST, $key, FILTER_VALIDATE_INT);
 
@@ -198,7 +198,7 @@ class request {
         return $value;
     }
 
-    private static function validateFloat(string $key, string $errorMessage): float
+    public static function validateFloat(string $key, string $errorMessage): float
     {
         $value = filter_input(INPUT_POST, $key, FILTER_VALIDATE_FLOAT);
 
@@ -209,7 +209,7 @@ class request {
         return $value;
     }
 
-    private static function validateEmail(string $key, string $errorMessage): string
+    public static function validateEmail(string $key, string $errorMessage): string
     {
         $value = filter_input(INPUT_POST, $key, FILTER_VALIDATE_EMAIL);
 
@@ -220,7 +220,7 @@ class request {
         return $value;
     }
 
-    private static function validateUrl(string $key, string $errorMessage): string
+    public static function validateUrl(string $key, string $errorMessage): string
     {
         $value = filter_input(INPUT_POST, $key, FILTER_VALIDATE_URL);
 
@@ -231,7 +231,7 @@ class request {
         return $value;
     }
 
-    private static function validateBool(string $key, string $errorMessage): bool
+    public static function validateBool(string $key, string $errorMessage): bool
     {
         $value = filter_input(INPUT_POST, $key, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
 
@@ -242,7 +242,7 @@ class request {
         return $value;
     }
 
-    private static function validateArray(string $key, string $errorMessage): array
+    public static function validateArray(string $key, string $errorMessage): array
     {
         $value = filter_input(INPUT_POST, $key, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 

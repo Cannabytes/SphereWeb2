@@ -10,6 +10,8 @@ use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
+use PDO;
+use ReflectionClass;
 use RuntimeException;
 
 class plugin
@@ -135,36 +137,50 @@ class plugin
             if (!$pluginName || !$setting) {
                 throw new InvalidArgumentException('Отсутствуют обязательные параметры');
             }
-            $serverId = isset($_POST['serverId']) && $_POST['serverId'] == 0
-                ? 0
-                : user::self()->getServerId();
+
+            // Получаем serverId из POST или используем serverId пользователя
+            $serverId = isset($_POST['serverId']) ? (int)$_POST['serverId'] : user::self()->getServerId();
+
+            // Если это общий плагин - установим serverId = 0
+            if (isset($_POST['serverId']) && $_POST['serverId'] == 0) {
+                $serverId = 0;
+            }
+
             if ($setting === 'enablePlugin') {
                 $isEnabled = filter_var($value, FILTER_VALIDATE_BOOL);
 
-                if ($isEnabled && !in_array($pluginName, array_keys(self::$plugins))) {
-                    self::$plugins[$pluginName] = $pluginName;
-                } elseif (!$isEnabled && isset(self::$plugins[$pluginName])) {
-                    unset(self::$plugins[$pluginName]);
-                }
-
-                $activePlugins = array_keys(self::$plugins);
-
-                // Сначала удаляем старые записи
-                $deleteResult = sql::run(
-                    "DELETE FROM `settings` WHERE `key` = ? AND `serverId` = ?",
-                    ['__PLUGIN__', $serverId]
+                // Получаем текущий список активных плагинов для данного сервера
+                $query = sql::run(
+                    "SELECT `setting` FROM `settings` WHERE `key` = '__PLUGIN__' AND `serverId` = ?",
+                    [$serverId]
                 );
 
-                if ($deleteResult === false) {
-                    throw new RuntimeException('Ошибка при удалении старых настроек');
+                $activePlugins = [];
+                if ($query && $row = $query->fetch(PDO::FETCH_ASSOC)) {
+                    $activePlugins = json_decode($row['setting'], true) ?: [];
                 }
 
-                // Выполняем вставку
+                // Обновляем список активных плагинов
+                if ($isEnabled && !in_array($pluginName, $activePlugins)) {
+                    $activePlugins[] = $pluginName;
+                } elseif (!$isEnabled) {
+                    $activePlugins = array_filter($activePlugins, function($plugin) use ($pluginName) {
+                        return $plugin !== $pluginName;
+                    });
+                }
+
+                // Удаляем старую запись
+                sql::run(
+                    "DELETE FROM `settings` WHERE `key` = '__PLUGIN__' AND `serverId` = ?",
+                    [$serverId]
+                );
+
+                // Вставляем обновленную запись
                 $insertResult = sql::run(
                     "INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES (?, ?, ?, ?)",
                     [
                         '__PLUGIN__',
-                        json_encode($activePlugins, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                        json_encode(array_values($activePlugins), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                         $serverId,
                         time::mysql()
                     ]
@@ -172,6 +188,47 @@ class plugin
 
                 if ($insertResult === false) {
                     throw new RuntimeException('Ошибка при сохранении настроек плагина');
+                }
+
+                // Сохраняем или обновляем настройки самого плагина
+                if ($isEnabled) {
+                    // Получаем данные плагина
+                    $pluginData = [
+                        'showMainPage' => true,
+                        'addToMenu' => true
+                    ];
+
+                    // Если плагин уже настроен, получаем его текущие настройки
+                    $existingQuery = sql::run(
+                        "SELECT `setting` FROM `settings` WHERE `key` = ? AND `serverId` = ?",
+                        ["__PLUGIN__{$pluginName}", $serverId]
+                    );
+
+                    if ($existingQuery && $row = $existingQuery->fetch(PDO::FETCH_ASSOC)) {
+                        $existingSettings = json_decode($row['setting'], true) ?: [];
+                        $pluginData = array_merge($pluginData, $existingSettings);
+                    }
+
+                    // Удаляем старые настройки
+                    sql::run(
+                        "DELETE FROM `settings` WHERE `key` = ? AND `serverId` = ?",
+                        ["__PLUGIN__{$pluginName}", $serverId]
+                    );
+
+                    // Вставляем обновленные настройки
+                    $insertPluginResult = sql::run(
+                        "INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES (?, ?, ?, ?)",
+                        [
+                            "__PLUGIN__{$pluginName}",
+                            json_encode($pluginData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                            $serverId,
+                            time::mysql()
+                        ]
+                    );
+
+                    if ($insertPluginResult === false) {
+                        throw new RuntimeException('Ошибка при сохранении настроек плагина');
+                    }
                 }
 
                 board::success("Настройки плагина успешно сохранены");
