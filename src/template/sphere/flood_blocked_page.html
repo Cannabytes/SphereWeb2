@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доступ временно ограничен</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        body {
+            overflow: hidden;
+            background-color: #0a0a15;
+            color: #fff;
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            background-color: rgba(10, 15, 30, 0.75);
+            border-radius: 4px;
+            box-shadow: 0 0 40px rgba(0, 255, 170, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 170, 0.3);
+            animation: neon-pulse 3s infinite;
+            overflow: hidden;
+        }
+
+        /* Добавляем линии в стиле киберпанк для контейнера */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #00ffa9, transparent);
+            animation: neon-line 3s infinite;
+        }
+
+        .container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, transparent, #00ffa9, transparent);
+            animation: neon-line-vertical 4s infinite;
+            animation-delay: 1s;
+        }
+
+        @keyframes neon-line {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes neon-line-vertical {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        @keyframes neon-pulse {
+            0% {
+                box-shadow: 0 0 20px rgba(0, 255, 170, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(0, 255, 170, 0.6);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(0, 255, 170, 0.3);
+            }
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #00ffa9;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.7);
+        }
+
+        .warning-icon {
+            font-size: 64px;
+            margin: 20px 0;
+            animation: warning-pulse 1.5s infinite;
+            filter: drop-shadow(0 0 15px rgba(0, 255, 170, 0.7));
+        }
+
+        @keyframes warning-pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .message {
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-size: 16px;
+            text-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
+        }
+
+        .timer {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 30px 0;
+            color: #00ffa9;
+            text-shadow: 0 0 15px rgba(0, 255, 170, 0.7);
+            letter-spacing: 3px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .timer::before,
+        .timer::after {
+            content: '[';
+            font-size: 36px;
+            position: absolute;
+            left: -20px;
+            color: #00ffa9;
+            opacity: 0.8;
+        }
+
+        .timer::after {
+            content: ']';
+            left: auto;
+            right: -20px;
+        }
+
+        .lock-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.2;
+        }
+
+        strong {
+            color: #00ffa9;
+            font-weight: 700;
+        }
+
+        /* Цифровой глюк-эффект */
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+            }
+            20% {
+                transform: translate(-2px, 2px);
+            }
+            40% {
+                transform: translate(-2px, -2px);
+            }
+            60% {
+                transform: translate(2px, 2px);
+            }
+            80% {
+                transform: translate(2px, -2px);
+            }
+            100% {
+                transform: translate(0);
+            }
+        }
+
+        h1 {
+            position: relative;
+            animation: glitch 3s infinite;
+        }
+
+        h1::before,
+        h1::after {
+            content: 'Доступ временно ограничен';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        h1::before {
+            color: #0ff;
+            z-index: -1;
+            animation: glitch 3s infinite;
+            animation-delay: 0.1s;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+            transform: translate(-2px, 0);
+        }
+
+        h1::after {
+            color: #f0f;
+            z-index: -2;
+            animation: glitch 2.7s infinite;
+            animation-delay: 0.15s;
+            clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+            transform: translate(2px, 0);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div class="container">
+        <h1>Доступ временно ограничен</h1>
+        <div class="warning-icon">⚠️</div>
+        <div class="message">
+            <p><strong>Превышен лимит запросов</strong></p>
+            <p>Наша система обнаружила необычно высокую активность с вашего IP-адреса.</p>
+            <p>В целях безопасности мы временно ограничили ваш доступ на <strong>{{blockTimeMinutes}}</strong> минут.</p>
+            <p>Пожалуйста, подождите некоторое время перед повторным запросом.</p>
+        </div>
+        <div class="timer" id="countdown">{{initialMinutes}}:{{initialSeconds}}</div>
+    </div>
+
+    <script>
+        // Дожидаемся загрузки DOM перед инициализацией
+        document.addEventListener('DOMContentLoaded', function() {
+            // Объект для управления сценой Three.js
+            const CyberpunkScene = {
+                // Основные объекты Three.js
+                scene: null,
+                camera: null,
+                renderer: null,
+
+                // Коллекции объектов для анимации
+                particles: [],
+                lightBeams: [],
+                raindrops: [],
+                parallaxObjects: [],
+
+                // Настройки сцены
+                config: {
+                    particleCount: 200,
+                    maxRange: 1000,
+                    minRange: 500,
+                    cameraSpeed: 15, // Увеличенная скорость полета
+                    cameraHeight: 250,
+                    cameraZ: 1000,
+                    fogDensity: 0.0025, // Увеличенная плотность тумана для размытия горизонта
+                    lightBeamsCount: 30,
+                    rainCount: 1500,
+                    gridSize: 8000,
+                    gridDivisions: 100,
+                    parallaxLayersCount: 3
+                },
+
+                // Инициализация сцены
+                init: function() {
+                    // Создаем основные объекты Three.js
+                    this.scene = new THREE.Scene();
+                    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+                    this.renderer = new THREE.WebGLRenderer({
+                        canvas: document.getElementById('canvas'),
+                        alpha: true,
+                        antialias: true
+                    });
+
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                    this.renderer.setPixelRatio(window.devicePixelRatio);
+
+                    // Настройка тумана для размытия горизонта
+                    this.scene.fog = new THREE.FogExp2(0x000820, this.config.fogDensity);
+
+                    // Настройка камеры для полета
+                    this.camera.position.set(0, this.config.cameraHeight, this.config.cameraZ);
+                    this.camera.lookAt(0, this.config.cameraHeight - 50, this.config.cameraZ - 1000);
+
+                    // Создаем объекты сцены
+                    this.createGrid();
+                    this.createParticles();
+                    this.createLightBeams();
+                    this.createRain();
+                    this.createCenterLock();
+                    this.createParallaxLayers();
+
+                    // Добавляем обработчик изменения размера окна
+                    window.addEventListener('resize', () => this.onWindowResize());
+
+                    // Запускаем анимацию
+                    this.animate();
+                },
+
+                // Создание неоновой сетки с градиентным затуханием на горизонте
+                createGrid: function() {
+                    // Создаем большую сетку для эффекта бесконечного движения
+                    const gridSize = this.config.gridSize;
+                    const divisions = this.config.gridDivisions;
+
+                    // Создаем две сетки для плавного перехода
+                    this.grid1 = new THREE.GridHelper(gridSize, divisions, 0x00ff66, 0x008833);
+                    this.grid2 = new THREE.GridHelper(gridSize, divisions, 0x00ff66, 0x008833);
+
+                    this.grid1.position.set(0, -100, 0);
+                    // Располагаем вторую сетку впереди для бесконечного эффекта
+                    this.grid2.position.set(0, -100, -gridSize);
+
+                    // Добавляем эффект размытия для сетки с поддержкой прозрачности по y-координате
+                    const gridMaterial = new THREE.LineBasicMaterial({
+                        color: 0x00ff88,
+                        transparent: true,
+                        opacity: 0.8,
+                        blending: THREE.AdditiveBlending,
+                        vertexColors: true
+                    });
+
+                    // Применяем затухание цвета на горизонте
+                    const positions = this.grid1.geometry.attributes.position;
+                    const colors = [];
+
+                    for (let i = 0; i < positions.count; i++) {
+                        // Создаем градиент прозрачности на основе расстояния от центра
+                        const y = positions.getY(i);
+                        const z = positions.getZ(i);
+                        const distance = Math.sqrt(y * y + z * z) / (gridSize / 2);
+                        const opacity = Math.max(0, 1 - distance * 0.8);
+
+                        // Настраиваем цвет с учетом прозрачности
+                        colors.push(0, opacity, opacity * 0.5);
+                    }
+
+                    this.grid1.geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                    this.grid2.geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+                    // Применяем материал к обеим сеткам
+                    this.grid1.material = gridMaterial.clone();
+                    this.grid2.material = gridMaterial.clone();
+
+                    this.scene.add(this.grid1);
+                    this.scene.add(this.grid2);
+                },
+
+                // Создание частиц
+                createParticles: function() {
+                    const lockGeometry = new THREE.IcosahedronGeometry(2, 0);
+                    const material = new THREE.MeshBasicMaterial({
+                        color: 0x00ff88,
+                        wireframe: true,
+                    });
+
+                    for (let i = 0; i < this.config.particleCount; i++) {
+                        const particle = new THREE.Mesh(lockGeometry, material);
+
+                        // Случайное положение
+                        particle.position.x = Math.random() * this.config.maxRange - this.config.minRange;
+                        particle.position.y = Math.random() * this.config.maxRange - this.config.minRange;
+                        particle.position.z = Math.random() * this.config.maxRange - this.config.minRange;
+
+                        // Случайное вращение
+                        particle.rotation.x = Math.random() * 2 * Math.PI;
+                        particle.rotation.y = Math.random() * 2 * Math.PI;
+                        particle.rotation.z = Math.random() * 2 * Math.PI;
+
+                        // Скорость вращения
+                        particle.rotationSpeed = {
+                            x: (Math.random() - 0.5) * 0.01,
+                            y: (Math.random() - 0.5) * 0.01,
+                            z: (Math.random() - 0.5) * 0.01
+                        };
+
+                        this.scene.add(particle);
+                        this.particles.push(particle);
+                    }
+                },
+
+                // Создание световых лучей
+                createLightBeams: function() {
+                    for (let i = 0; i < this.config.lightBeamsCount; i++) {
+                        const beamGeometry = new THREE.CylinderGeometry(0, 5, 120, 8);
+                        const beamMaterial = new THREE.MeshBasicMaterial({
+                            color: new THREE.Color(
+                                  Math.random() * 0.1,
+                                  Math.random() * 0.5 + 0.5,
+                                  Math.random() * 0.5 + 0.5
+                            ),
+                            transparent: true,
+                            opacity: 0.4,
+                            blending: THREE.AdditiveBlending
+                        });
+
+                        const beam = new THREE.Mesh(beamGeometry, beamMaterial);
+                        beam.position.set(
+                              (Math.random() - 0.5) * 2000,
+                              50,
+                              Math.random() * 4000 - 2000
+                        );
+                        beam.rotation.x = Math.PI;
+                        beam.scale.set(1, Math.random() * 4 + 3, 1);
+
+                        this.scene.add(beam);
+                        this.lightBeams.push({
+                            mesh: beam,
+                            initialZ: beam.position.z
+                        });
+                    }
+                },
+
+                // Создание киберпанк-дождя
+                createRain: function() {
+                    for (let i = 0; i < this.config.rainCount; i++) {
+                        const rainGeometry = new THREE.BufferGeometry();
+                        const points = [
+                            new THREE.Vector3(0, 0, 0),
+                            new THREE.Vector3(0, -30, 0)
+                        ];
+                        rainGeometry.setFromPoints(points);
+
+                        const rainMaterial = new THREE.LineBasicMaterial({
+                            color: 0x00ffaa,
+                            transparent: true,
+                            opacity: Math.random() * 0.3 + 0.2,
+                            blending: THREE.AdditiveBlending
+                        });
+
+                        const raindrop = new THREE.Line(rainGeometry, rainMaterial);
+                        const initialY = Math.random() * 1000 + 100;
+                        const initialZ = Math.random() * 4000 - 2000;
+
+                        raindrop.position.set(
+                              (Math.random() - 0.5) * 2000,
+                              initialY,
+                              initialZ
+                        );
+
+                        this.scene.add(raindrop);
+                        this.raindrops.push({
+                            mesh: raindrop,
+                            speed: Math.random() * 15 + 10,
+                            initialY: initialY,
+                            initialZ: initialZ
+                        });
+                    }
+                },
+
+                // Создание центрального "замка" - киберпанк-объекта
+                createCenterLock: function() {
+                    const centerLockGeometry = new THREE.TorusKnotGeometry(50, 10, 100, 16);
+                    const centerLockMaterial = new THREE.MeshBasicMaterial({
+                        color: 0x00ff88,
+                        wireframe: true,
+                        transparent: true,
+                        opacity: 0.8
+                    });
+
+                    const centerLock = new THREE.Mesh(centerLockGeometry, centerLockMaterial);
+                    centerLock.position.set(0, 0, -300);
+                    this.scene.add(centerLock);
+
+                    // Сохраняем ссылку для анимации
+                    this.centerLock = centerLock;
+                },
+
+                // Создание слоев параллакса
+                createParallaxLayers: function() {
+                    const colors = [0x00ffaa, 0x00aaff, 0xff00aa];
+
+                    for (let layer = 0; layer < this.config.parallaxLayersCount; layer++) {
+                        const layerGroup = new THREE.Group();
+                        const layerDepth = (layer + 1) * -2000; // Распределяем слои по глубине
+                        const layerSpeed = (this.config.parallaxLayersCount - layer) / this.config.parallaxLayersCount; // Скорость слоя для эффекта параллакса
+
+                        // Добавляем геометрические объекты на слой параллакса
+                        for (let i = 0; i < 30; i++) {
+                            let geometry;
+
+                            // Разная геометрия для разных слоев
+                            if (layer === 0) {
+                                geometry = new THREE.TetrahedronGeometry(Math.random() * 20 + 10);
+                            } else if (layer === 1) {
+                                geometry = new THREE.OctahedronGeometry(Math.random() * 30 + 15);
+                            } else {
+                                geometry = new THREE.DodecahedronGeometry(Math.random() * 40 + 20);
+                            }
+
+                            const material = new THREE.MeshBasicMaterial({
+                                color: colors[layer],
+                                wireframe: true,
+                                transparent: true,
+                                opacity: 0.2 + (0.1 * (this.config.parallaxLayersCount - layer))
+                            });
+
+                            const object = new THREE.Mesh(geometry, material);
+
+                            // Распределяем объекты по слою
+                            const spread = 3000;
+                            object.position.set(
+                                  (Math.random() - 0.5) * spread,
+                                  (Math.random() - 0.5) * spread / 2,
+                                  layerDepth + (Math.random() - 0.5) * 1000
+                            );
+
+                            // Добавляем случайное вращение
+                            object.rotation.set(
+                                  Math.random() * Math.PI * 2,
+                                  Math.random() * Math.PI * 2,
+                                  Math.random() * Math.PI * 2
+                            );
+
+                            // Добавляем данные для анимации
+                            object.userData = {
+                                rotationSpeed: {
+                                    x: (Math.random() - 0.5) * 0.01,
+                                    y: (Math.random() - 0.5) * 0.01,
+                                    z: (Math.random() - 0.5) * 0.01
+                                },
+                                initialZ: object.position.z,
+                                parallaxSpeed: layerSpeed
+                            };
+
+                            layerGroup.add(object);
+                        }
+
+                        this.scene.add(layerGroup);
+                        this.parallaxObjects.push({
+                            group: layerGroup,
+                            speed: layerSpeed,
+                            initialZ: layerDepth
+                        });
+                    }
+                },
+
+                // Обработка изменения размера окна
+                onWindowResize: function() {
+                    this.camera.aspect = window.innerWidth / window.innerHeight;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                },
+
+                // Анимация объектов сцены
+                animate: function() {
+                    const self = this;
+                    requestAnimationFrame(function() {
+                        self.animate();
+                    });
+
+                    // Анимация центрального замка
+                    if (this.centerLock) {
+                        this.centerLock.rotation.x += 0.005;
+                        this.centerLock.rotation.y += 0.01;
+                    }
+
+                    // Анимация движения сетки для эффекта полета
+                    if (this.grid1 && this.grid2) {
+                        // Перемещаем обе сетки
+                        this.grid1.position.z += this.config.cameraSpeed;
+                        this.grid2.position.z += this.config.cameraSpeed;
+
+                        // Когда первая сетка уходит за камеру, перемещаем её вперед за вторую
+                        if (this.grid1.position.z > this.config.cameraZ + this.config.gridSize / 2) {
+                            this.grid1.position.z = this.grid2.position.z - this.config.gridSize;
+                        }
+
+                        // Аналогично для второй сетки
+                        if (this.grid2.position.z > this.config.cameraZ + this.config.gridSize / 2) {
+                            this.grid2.position.z = this.grid1.position.z - this.config.gridSize;
+                        }
+                    }
+
+                    // Анимация полета над сеткой - частицы
+                    for (let i = 0; i < this.particles.length; i++) {
+                        const particle = this.particles[i];
+
+                        // Вращение
+                        particle.rotation.x += particle.rotationSpeed.x;
+                        particle.rotation.y += particle.rotationSpeed.y;
+                        particle.rotation.z += particle.rotationSpeed.z;
+
+                        // Сдвигаем назад чтобы создать эффект движения
+                        particle.position.z += this.config.cameraSpeed;
+
+                        // Если частица слишком далеко позади, перемещаем её вперед
+                        if (particle.position.z > this.config.cameraZ + 500) {
+                            particle.position.z -= 4000;
+                        }
+                    }
+
+                    // Анимация световых лучей
+                    for (let i = 0; i < this.lightBeams.length; i++) {
+                        const beam = this.lightBeams[i];
+                        beam.mesh.position.z += this.config.cameraSpeed;
+                        if (beam.mesh.position.z > this.config.cameraZ + 500) {
+                            beam.mesh.position.z -= 4000;
+                        }
+                    }
+
+                    // Анимация дождя
+                    for (let i = 0; i < this.raindrops.length; i++) {
+                        const drop = this.raindrops[i];
+
+                        // Дождь падает вниз
+                        drop.mesh.position.y -= drop.speed;
+
+                        // Движение в направлении полета
+                        drop.mesh.position.z += this.config.cameraSpeed;
+
+                        // Если капля дождя упала слишком низко или далеко позади, сбрасываем её
+                        if (drop.mesh.position.y < -100 || drop.mesh.position.z > this.config.cameraZ + 500) {
+                            drop.mesh.position.y = drop.initialY;
+                            drop.mesh.position.z -= 4000;
+                        }
+                    }
+
+                    // Анимация объектов параллакса
+                    for (let i = 0; i < this.parallaxObjects.length; i++) {
+                        const layer = this.parallaxObjects[i];
+                        const layerGroup = layer.group;
+
+                        // Перемещаем весь слой с разной скоростью для эффекта параллакса
+                        layerGroup.position.z += this.config.cameraSpeed * layer.speed;
+
+                        // Если слой ушел за камеру, перемещаем его обратно
+                        if (layerGroup.position.z > this.config.cameraZ + 2000) {
+                            layerGroup.position.z = -6000;
+                        }
+
+                        // Вращаем каждый объект в слое
+                        layerGroup.children.forEach(object => {
+                            const userData = object.userData;
+
+                            object.rotation.x += userData.rotationSpeed.x;
+                            object.rotation.y += userData.rotationSpeed.y;
+                            object.rotation.z += userData.rotationSpeed.z;
+                        });
+                    }
+
+                    this.renderer.render(this.scene, this.camera);
+                }
+            };
+
+            // Функция для обратного отсчета времени с использованием TWIG-переменной blockUntil
+            function startCountdown() {
+                const countdownElement = document.getElementById('countdown');
+                let remainingTime = {{blockUntil}};
+
+                function updateCountdown() {
+                    const minutes = Math.floor(remainingTime / 60);
+                    const seconds = remainingTime % 60;
+
+                    countdownElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                    if (remainingTime > 0) {
+                        remainingTime--;
+                        setTimeout(updateCountdown, 1000);
+                    } else {
+                        countdownElement.textContent = 'Доступ восстановлен';
+                        countdownElement.style.color = '#00ff7f';
+
+                        // Добавляем мигание при завершении
+                        let flashCount = 0;
+                        const flashInterval = setInterval(() => {
+                            document.querySelector('.container').style.backgroundColor =
+                                  flashCount % 2 === 0 ? 'rgba(0, 100, 0, 0.8)' : 'rgba(30, 30, 60, 0.8)';
+
+                            flashCount++;
+                            if (flashCount > 5) {
+                                clearInterval(flashInterval);
+
+                                // Автоматическое обновление страницы после короткой задержки
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1000);
+                            }
+                        }, 300);
+                    }
+                }
+
+                updateCountdown();
+            }
+
+            // Инициализация WebGL сцены и запуск таймера
+            CyberpunkScene.init();
+            startCountdown();
+        });
+    </script>
+</body>
+</html>
