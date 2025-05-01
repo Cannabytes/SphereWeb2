@@ -1,25 +1,377 @@
-<div class="toast-container position-fixed top-0 end-0 p-3">
-  <div id="successToast" class="toast" role="alert" aria-live="assertive"
-       aria-atomic="true">
-    <div class="toast-header text-default">
-      <img class="bd-placeholder-img rounded me-2" src="{{config().logo().getLogo()}}"
-           alt="...">
+<!-- HTML разметка -->
+<div class="toast-container position-fixed p-4">
+  <div id="successToast" class="toast custom-toast success-toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header border-0">
+      <div class="toast-icon-wrapper">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 11.0857V12.0057C21.9988 14.1621 21.3005 16.2604 20.0093 17.9875C18.7182 19.7147 16.9033 20.9782 14.8354 21.5896C12.7674 22.201 10.5573 22.1276 8.53447 21.3803C6.51168 20.633 4.78465 19.2518 3.61096 17.4428C2.43727 15.6338 1.87979 13.4938 2.02168 11.342C2.16356 9.19029 2.99721 7.14205 4.39828 5.5028C5.79935 3.86354 7.69279 2.72111 9.79619 2.24587C11.8996 1.77063 14.1003 1.98806 16.07 2.86572" stroke="#2ecc71" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 4L12 14.01L9 11.01" stroke="#2ecc71" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <strong class="me-auto" id="successTitleMessageNotice"></strong>
-      <button type="button" class="btn-close" data-bs-dismiss="toast"
-              aria-label="Close"></button>
+      <button type="button" class="btn-close shadow-none" data-bs-dismiss="toast" aria-label="Закрыть"></button>
     </div>
     <div class="toast-body" id="successContentMessageNotice"></div>
+    <div class="toast-progress-bar"></div>
   </div>
 
-  <div id="dangerToast" class="toast" role="alert" aria-live="assertive"
-       aria-atomic="true">
-    <div class="toast-header text-danger ">
-      <img class="bd-placeholder-img rounded me-2" src="{{config().logo().getLogo()}}"
-           alt="...">
+  <div id="dangerToast" class="toast custom-toast danger-toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header border-0">
+      <div class="toast-icon-wrapper">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M15 9L9 15" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 9L15 15" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <strong class="me-auto" id="dangerTitleMessageNotice"></strong>
-      <button type="button" class="btn-close" data-bs-dismiss="toast"
-              aria-label="Close"></button>
+      <button type="button" class="btn-close shadow-none" data-bs-dismiss="toast" aria-label="Закрыть"></button>
     </div>
     <div class="toast-body" id="dangerContentMessageNotice"></div>
+    <div class="toast-progress-bar"></div>
+  </div>
+
+  <div id="warningToast" class="toast custom-toast warning-toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header border-0">
+      <div class="toast-icon-wrapper">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10.29 3.86L1.82 18C1.64537 18.3024 1.55296 18.6453 1.55199 18.9945C1.55101 19.3437 1.6415 19.6871 1.81442 19.9905C1.98734 20.2939 2.23675 20.5467 2.53773 20.7239C2.83871 20.901 3.18082 20.9962 3.53 21H20.47C20.8192 20.9962 21.1613 20.901 21.4623 20.7239C21.7633 20.5467 22.0127 20.2939 22.1856 19.9905C22.3585 19.6871 22.449 19.3437 22.448 18.9945C22.447 18.6453 22.3546 18.3024 22.18 18L13.71 3.86C13.5317 3.56611 13.2807 3.32312 12.9812 3.15448C12.6817 2.98585 12.3437 2.89725 12 2.89725C11.6563 2.89725 11.3183 2.98585 11.0188 3.15448C10.7193 3.32312 10.4683 3.56611 10.29 3.86Z" stroke="#f39c12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 9V13" stroke="#f39c12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 17H12.01" stroke="#f39c12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <strong class="me-auto" id="warningTitleMessageNotice"></strong>
+      
+      <button type="button" class="btn-close shadow-none" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+    </div>
+    <div class="toast-body" id="warningContentMessageNotice"></div>
+    <div class="toast-progress-bar"></div>
+  </div>
+
+  <div id="infoToast" class="toast custom-toast info-toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header border-0">
+      <div class="toast-icon-wrapper">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 16V12" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 8H12.01" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <strong class="me-auto" id="infoTitleMessageNotice"></strong>
+      
+      <button type="button" class="btn-close shadow-none" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+    </div>
+    <div class="toast-body" id="infoContentMessageNotice"></div>
+    <div class="toast-progress-bar"></div>
   </div>
 </div>
+
+<!-- CSS стили -->
+<style>
+.toast-container {
+  top: 20px;
+  right: 20px;
+  max-width: 350px;
+  z-index: 1060;
+}
+
+.custom-toast {
+  backdrop-filter: blur(10px);
+  border: none !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  margin-bottom: 15px;
+  opacity: 1 !important;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  padding-bottom: 8px; /* Дополнительный отступ для прогресс-бара */
+}
+
+.custom-toast:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.success-toast {
+  background: linear-gradient(120deg, rgba(235, 250, 242, 0.95), rgba(235, 255, 245, 0.97)) !important;
+  box-shadow: 0 10px 30px rgba(40, 167, 69, 0.12);
+  border-left: 4px solid rgba(40, 167, 69, 0.8) !important;
+}
+
+.danger-toast {
+  background: linear-gradient(120deg, rgba(255, 240, 240, 0.95), rgba(255, 245, 245, 0.97)) !important;
+  box-shadow: 0 10px 30px rgba(220, 53, 69, 0.12);
+  border-left: 4px solid rgba(220, 53, 69, 0.8) !important;
+}
+
+.warning-toast {
+  background: linear-gradient(120deg, rgba(255, 248, 230, 0.95), rgba(255, 250, 235, 0.97)) !important;
+  box-shadow: 0 10px 30px rgba(255, 193, 7, 0.12);
+  border-left: 4px solid rgba(255, 193, 7, 0.8) !important;
+}
+
+.info-toast {
+  background: linear-gradient(120deg, rgba(235, 245, 255, 0.95), rgba(240, 250, 255, 0.97)) !important;
+  box-shadow: 0 10px 30px rgba(23, 162, 184, 0.12);
+  border-left: 4px solid rgba(23, 162, 184, 0.8) !important;
+}
+
+.toast-header {
+  background-color: transparent !important;
+  padding: 12px 15px 0px 15px;
+  display: flex;
+  align-items: center;
+}
+
+.toast-body {
+  padding: 12px 15px 12px 52px;
+  color: #444;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.toast-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-right: 12px;
+}
+
+.toast-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Добавляем тонкую рамку вокруг иконки */
+.success-toast .toast-icon-wrapper {
+  background-color: rgba(46, 204, 113, 0.1);
+  border-radius: 50%;
+  padding: 6px;
+}
+
+.danger-toast .toast-icon-wrapper {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: 50%;
+  padding: 6px;
+}
+
+.warning-toast .toast-icon-wrapper {
+  background-color: rgba(243, 156, 18, 0.1);
+  border-radius: 50%;
+  padding: 6px;
+}
+
+.info-toast .toast-icon-wrapper {
+  background-color: rgba(52, 152, 219, 0.1);
+  border-radius: 50%;
+  padding: 6px;
+}
+
+.toast-progress-bar {
+  height: 2px;
+  width: calc(75% - 8px);
+  position: absolute;
+  bottom: 4px;
+  left: 40px;
+  background-color: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.success-toast .toast-progress-bar::after {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #28a745;
+  animation: progress 5s cubic-bezier(0.1, 0.3, 0.4, 1) forwards;
+  border-radius: 4px;
+}
+
+.danger-toast .toast-progress-bar::after {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #dc3545;
+  animation: progress 5s cubic-bezier(0.1, 0.3, 0.4, 1) forwards;
+  border-radius: 4px;
+}
+
+.warning-toast .toast-progress-bar::after {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #ffc107;
+  animation: progress 5s cubic-bezier(0.1, 0.3, 0.4, 1) forwards;
+  border-radius: 4px;
+}
+
+.info-toast .toast-progress-bar::after {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #17a2b8;
+  animation: progress 5s cubic-bezier(0.1, 0.3, 0.4, 1) forwards;
+  border-radius: 4px;
+}
+
+@keyframes progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.toast-time {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.btn-close:focus {
+  box-shadow: none;
+}
+
+/* Анимация появления */
+.toast.show {
+  animation: toast-in 0.3s ease forwards;
+}
+
+@keyframes toast-in {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  70% {
+    transform: translateX(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+</style>
+
+<!-- JavaScript код -->
+<script>
+$(document).ready(function() {
+  // Счетчик для стека уведомлений
+  let toastCounter = 0;
+  const maxToasts = 4; // Максимальное количество одновременных уведомлений
+  let toastsQueue = []; // Очередь уведомлений
+
+  // Функция для отображения уведомления
+  function showToast(type, title, message, duration = 5000) {
+    const toastId = `#${type}Toast`;
+    const titleId = `#${type}TitleMessageNotice`;
+    const contentId = `#${type}ContentMessageNotice`;
+    const toastTime = $(`${toastId} .toast-time`);
+
+    // Установка заголовка и содержимого
+    $(titleId).text(title);
+    $(contentId).html(message);
+
+    // Обновляем время
+    toastTime.text('только что');
+
+    // Создаем новый экземпляр Bootstrap Toast
+    const toastElement = new bootstrap.Toast(document.querySelector(toastId), {
+      autohide: true,
+      delay: duration
+    });
+
+    // Проверяем количество активных уведомлений
+    if (toastCounter >= maxToasts) {
+      // Добавляем в очередь
+      toastsQueue.push({
+        type: type,
+        title: title,
+        message: message,
+        duration: duration
+      });
+      return;
+    }
+
+    // Увеличиваем счетчик
+    toastCounter++;
+
+    // Обновляем позицию (смещение) для эффекта стека
+    const offset = (toastCounter - 1) * 8;
+    $(toastId).css('transform', `translateY(${offset}px)`);
+
+    // Отображаем уведомление
+    toastElement.show();
+
+    // Обновляем анимацию прогресс-бара
+    const progressBar = $(`${toastId} .toast-progress-bar::after`);
+    progressBar.css('animation-duration', `${duration}ms`);
+
+    // Сбрасываем анимацию для перезапуска
+    progressBar.remove();
+    $(`${toastId} .toast-progress-bar`).append('<div></div>');
+    $(`${toastId} .toast-progress-bar div`).css({
+      'position': 'absolute',
+      'height': '100%',
+      'width': '100%',
+      'background-color': progressBar.css('background-color'),
+      'animation': `progress ${duration}ms cubic-bezier(0.1, 0.3, 0.4, 1) forwards`,
+      'border-radius': '4px'
+    });
+
+    // Обработка события закрытия
+    $(toastId).on('hidden.bs.toast', function() {
+      toastCounter--;
+
+      // Показываем следующее уведомление из очереди, если есть
+      if (toastsQueue.length > 0 && toastCounter < maxToasts) {
+        const nextToast = toastsQueue.shift();
+        setTimeout(function() {
+          showToast(nextToast.type, nextToast.title, nextToast.message, nextToast.duration);
+        }, 300);
+      }
+
+      // Сбрасываем событие, чтобы избежать накопления обработчиков
+      $(toastId).off('hidden.bs.toast');
+    });
+  }
+
+  // Объект с методами для разных типов уведомлений
+  window.Notifications = {
+    success: function(title, message, duration = 5000) {
+      showToast('success', title, message, duration);
+      return true;
+    },
+    danger: function(title, message, duration = 5000) {
+      showToast('danger', title, message, duration);
+      return true;
+    },
+    warning: function(title, message, duration = 5000) {
+      showToast('warning', title, message, duration);
+      return true;
+    },
+    info: function(title, message, duration = 5000) {
+      showToast('info', title, message, duration);
+      return true;
+    },
+    // Очистить все уведомления
+    clearAll: function() {
+      $('.toast').toast('hide');
+      toastsQueue = [];
+      return true;
+    }
+  };
+
+  // Примеры использования:
+  // Notifications.success('Успех!', 'Операция выполнена успешно.');
+  // Notifications.danger('Ошибка!', 'Произошла ошибка при выполнении операции.');
+  // Notifications.warning('Внимание!', 'Вы уверены, что хотите продолжить?');
+  // Notifications.info('Информация', 'Новое обновление доступно.');
+  // Notifications.clearAll(); // Очистить все уведомления
+});
+</script>
