@@ -689,6 +689,10 @@
 <script>
   $(document).on('click', '.account_prefix', function () {
     AjaxSend('/registration/account/prefix', 'POST', {}, true).then(function (prefix) {
+      if(prefix.type === "notice") {
+        responseAnalysis(prefix);
+        return;
+      }
       $('.account_prefix').text(prefix);
     });
   });
