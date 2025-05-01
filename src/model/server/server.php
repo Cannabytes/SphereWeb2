@@ -215,7 +215,7 @@ class server
              */
             foreach ($serverCache as $cache) {
                 $totalSeconds = time::diff(time::mysql(), $cache['date_create']);
-                if ($totalSeconds >= config::load()->cache()->getStatus()) {
+                if ($totalSeconds >= 60) {
                     $update = true;
                     break;
                 }
