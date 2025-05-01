@@ -63,6 +63,14 @@ class session
 
         // Запускаем сборщик мусора с вероятностью 1%
         self::runGarbageCollectorWithProbability();
+
+        // Регистрируем функцию автосохранения при завершении скрипта
+        register_shutdown_function([self::class, 'autoSaveSession']);
+    }
+
+    public static function autoSaveSession(): void
+    {
+        self::saveSession();
     }
 
     /**
@@ -504,7 +512,7 @@ class session
 
     /**
      * Полное удаление сессии
-    */
+     */
     public static function destroy()
     {
         if (!isset($_COOKIE['sphere_session'])) {
@@ -576,7 +584,7 @@ class session
      *
      * @return void
      */
-    private static function saveSession(): void
+    private static function saveSession()
     {
         if (!isset($_COOKIE['sphere_session'])) {
             return;
@@ -586,10 +594,10 @@ class session
         $userId = $_SESSION['id'] ?? null;
 
         sql::run("
-            UPDATE `sessions` 
-            SET `data` = ?, `last_activity` = ?, `user_id` = ? 
-            WHERE `session_id` = ?
-        ", [
+			UPDATE `sessions` 
+			SET `data` = ?, `last_activity` = ?, `user_id` = ? 
+			WHERE `session_id` = ?
+		", [
             json_encode($_SESSION),
             time(),
             $userId,

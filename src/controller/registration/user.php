@@ -40,7 +40,7 @@ class user
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             board::notice(false, lang::get_phrase(213));
         }
-        $password = request::setting('password', new request_config(max: 32));
+        $password = request::setting('password', new request_config(min: 4, max: 32, rules: "/^[a-zA-Z0-9_]+$/"));
         $account_name = isset($_POST['account']) && trim($_POST['account']) !== '' ? trim($_POST['account']) : null;
         if ($account_name != null) {
             player_account::valid_login($account_name);

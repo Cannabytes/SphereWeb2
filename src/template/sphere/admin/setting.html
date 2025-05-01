@@ -48,10 +48,6 @@
                         </li>
                         <li class="nav-item m-1">
                             <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                               href="#cache" aria-selected="true">{{ phrase(320) }}</a>
-                        </li>
-                        <li class="nav-item m-1">
-                            <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
                                href="#other" aria-selected="true">{{ phrase(568) }}</a>
                         </li>
                         <li class="nav-item m-1">
@@ -800,75 +796,6 @@
                                 <span id="saveEmail" class="btn btn-success-light m-1 btn-sm">{{ phrase(89) }} <i
                                         class="bi bi-sd-card ms-2"></i></span>
                             </div>
-                        </div>
-                        <div class="tab-pane p-0" id="cache" role="tabpanel">
-                            <div class="card-body">
-                                {{phrase('cache_time_in_seconds')}}
-                                <div class="row g-3 mt-0">
-
-                                    <div class="col-md-2">
-                                        <label class="form-label">{{ phrase(62) }}</label>
-                                        <input id="forumCache" value="{{config().cache().getForum()}}" type="number"
-                                               class="form-control"
-                                               placeholder="60"
-                                               aria-label="Форум">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="form-label">{{ phrase(86) }}</label>
-                                        <input id="statusCache" value="{{config().cache().getStatus()}}" type="number"
-                                               class="form-control"
-                                               placeholder="60"
-                                               aria-label="{{ phrase(86) }}">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="form-label">PvP</label>
-                                        <input id="pvpCache" value="{{config().cache().getPvP()}}" type="number"
-                                               class="form-control"
-                                               placeholder="60" aria-label="PK">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="form-label">PK</label>
-                                        <input id="pkCache" value="{{config().cache().getPvP()}}" type="number"
-                                               class="form-control"
-                                               placeholder="60" aria-label="PvP">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="form-label">{{ phrase(49) }}</label>
-                                        <input id="clanCache" value="{{config().cache().getClan()}}" type="number"
-                                               class="form-control"
-                                               placeholder="60"
-                                               aria-label="{{ phrase(49) }}">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="form-label">{{ phrase(50) }}</label>
-                                        <input id="castleCache" value="{{config().cache().getCastle()}}" type="number"
-                                               class="form-control"
-                                               placeholder="60"
-                                               aria-label="Castle">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="form-label">{{ phrase('menu_referrals') }}</label>
-                                        <input id="referralCache" value="{{config().cache().getReferral()}}"
-                                               type="number"
-                                               class="form-control" placeholder="60"
-                                               aria-label="{{ phrase('menu_referrals') }}">
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
-                <span id="saveCache" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }} <i
-                        class="bi bi-sd-card ms-2"></i></span>
-                            </div>
-
                         </div>
                         <div class="tab-pane p-0" id="other" role="tabpanel">
                             <ul class="list-group list-group-flush rounded">
@@ -2269,19 +2196,6 @@
             $('#other textarea').each(function () {
                 let id = $(this).attr('id');
                 let value = $(this).val();
-                formData[id] = value;
-            });
-            AjaxSend('/admin/config/save', 'POST', formData, false);
-        });
-
-        $('#saveCache').on('click', function (e) {
-            e.preventDefault();
-            let formData = {
-                __config_name__: '__config_cache__',
-            };
-            $('#cache input').each(function () {
-                let id = $(this).attr('id');
-                value = $(this).val();
                 formData[id] = value;
             });
             AjaxSend('/admin/config/save', 'POST', formData, false);

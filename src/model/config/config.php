@@ -27,8 +27,6 @@ class config
 
     private ?email $email = null;
 
-    private ?cache $cache = null;
-
     private ?other $other = null;
 
     private ?template $template = null;
@@ -142,7 +140,6 @@ class config
         $this->onlineCheating = new onlineCheating(self::findConfigByKeySetting('__config_cheating__'));
         $this->registration = new registration(self::findConfigByKeySetting('__config_registration__'));
         $this->email = new email(self::findConfigByKeySetting('__config_email__'));
-        $this->cache = new cache(self::findConfigByKeySetting('__config_cache__'));
         $this->other = new other(self::findConfigByKeySetting('__config_other__'));
         $this->template = new template(self::findConfigByKeySetting('__config_template__'));
         $this->enabled = new enabled(self::findConfigByKeySetting('__config_enabled__'));
@@ -194,14 +191,6 @@ class config
     public function email(): email
     {
         return $this->email;
-    }
-
-    /**
-     * Информация о кешировании
-     */
-    public function cache(): cache
-    {
-        return $this->cache;
     }
 
     /**

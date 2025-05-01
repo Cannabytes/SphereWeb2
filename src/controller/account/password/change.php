@@ -10,6 +10,8 @@ namespace Ofey\Logan22\controller\account\password;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\component\request\request;
+use Ofey\Logan22\component\request\request_config;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\controller\config\config;
@@ -26,20 +28,17 @@ class change
     {
         validation::user_protection();
         $login         = $_POST['login'] ?? board::error('Login not received');
-        $password      = $_POST['password'] ?? board::error(lang::get_phrase('Enter password'));
         $password_hide = false;
         if(!isset($_POST['password_hide'])){
             $password_hide = true;
         }
-
-        $passwordMinLength = 4;
-        $passwordMaxLength = 32;
-        if (mb_strlen($password) < $passwordMinLength || mb_strlen($password) > $passwordMaxLength) {
-            board::error(lang::get_phrase('password_max_min_sim', $passwordMinLength, $passwordMaxLength), 400);
-        }
+        $password = request::setting(
+            'password',
+            new request_config(min: 4, max: 32, rules: "/^[a-zA-Z0-9_]+$/")
+        );
 
         $accountFind = false;
-        //Проверяем сущестоввание такого аккаунта
+        //Проверяем существование аккаунта
         foreach (user::self()->getAccounts() AS $account){
             if($account->getAccount()==$login){
                 $accountFind = true;

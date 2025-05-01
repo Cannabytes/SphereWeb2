@@ -34,7 +34,7 @@ class account
         }
         $password = request::setting(
             'password',
-            new request_config(min: 4, max: 60)
+            new request_config(min: 4, max: 32, rules: "/^[a-zA-Z0-9_]+$/")
         );
         $password_hide = !isset($_POST['password_hide']) || !filter_var($_POST['password_hide'], FILTER_VALIDATE_BOOLEAN);
 

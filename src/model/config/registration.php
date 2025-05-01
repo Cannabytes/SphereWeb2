@@ -1,6 +1,8 @@
 <?php
 namespace Ofey\Logan22\model\config;
 
+use Ofey\Logan22\component\session\session;
+
 class registration
 {
 
