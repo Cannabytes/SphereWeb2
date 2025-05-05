@@ -192,7 +192,7 @@
                                                     </div>
 
                                                     <div class="col-xl-12">
-                                                        <button data-login-id="{{loginServer.id}}" id="refresh_login_server" type="button" class="btn btn-primary btn-sm mb-3">Обновить БД</button>
+                                                        <button data-login-id="{{loginServer.id}}"  type="button" class="btn btn-primary btn-sm mb-3 refresh_login_server">Обновить БД</button>
                                                     </div>
 
                                                 </div>
@@ -848,7 +848,7 @@
         })
     });
 
-    $("#refresh_login_server").on("click", function () {
+    $(".refresh_login_server").on("click", function () {
         let loginId = $(this).attr('data-login-id');
         let host = $("#login_host_" + loginId).val();
         let port = $("#login_port_" + loginId).val();
