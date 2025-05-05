@@ -17,7 +17,13 @@ class relocation
     {
         $account = $_POST['account'] ?? board::error("No account");
         $player = $_POST['player'] ?? board::error("No player");
-        $itemsToWarehouse = isset($_POST['itemsToWarehouse']) && (bool)$_POST['itemsToWarehouse'];
+
+        if(\Ofey\Logan22\model\server\server::getServer()->isResetItemsToWarehouse()){
+            $itemsToWarehouse = isset($_POST['itemsToWarehouse']) && (bool)$_POST['itemsToWarehouse'];
+        }else{
+            $itemsToWarehouse = false;
+        }
+
         $x = 147451;
         $y = 25877;
         $z = -2008;

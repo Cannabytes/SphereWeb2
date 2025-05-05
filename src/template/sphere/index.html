@@ -390,10 +390,14 @@
                                       <div class="mb-2 form-check">
                                         <input name="account" type="hidden" value="{{account.getAccount()|raw}}">
                                         <input name="player" type="hidden" value="{{character.getPlayerName()}}">
+
+                                       {% if getServer().isResetItemsToWarehouse() == true %}
                                         <input checked name="itemsToWarehouse" type="checkbox"
                                                class="form-check-input"
                                                id="check_{{character.getPlayerId()}}">
                                         <label class="form-check-label small text-wrap" for="check_{{character.getPlayerId()}}">{{phrase('send_items_wh')}}</label>
+                                       {% endif %}
+
                                       </div>
                                       <button type="submit" class="btn btn-success btn-sm w-100 text-nowrap">
                                         <span class="d-inline-block text-truncate" style="max-width: 85%;">{{phrase(364)}}</span>
@@ -430,6 +434,7 @@
                                 </div>
                               </div>
                               {% endif %}
+
                             </div>
                           </div>
                         </div>

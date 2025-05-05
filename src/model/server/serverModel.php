@@ -45,6 +45,8 @@ class serverModel
 
     // Есть ли данный сервер на сервере сферы
     private bool $resetHWID = false;
+    private ?bool $resetItemsToWarehouse = false;
+
     private ?bool $isSphereServer = null;
 
     private ?donate $donate = null;
@@ -77,6 +79,7 @@ class serverModel
         $this->position = filter_var($server['position'] ?? 0, FILTER_VALIDATE_INT);
         $this->maxOnline = filter_var($server['maxOnline'] ?? 200, FILTER_VALIDATE_INT);
         $this->resetHWID = filter_var($server['resetHWID'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->resetItemsToWarehouse = filter_var($server['resetItemsToWarehouse'] ?? false, FILTER_VALIDATE_BOOLEAN);
         if ($server_data) {
             foreach ($server_data as $data) {
                 $this->server_data[] = new serverDataModel($data);
@@ -175,6 +178,11 @@ class serverModel
     public function isResetHWID(): bool
     {
         return $this->resetHWID;
+    }
+
+    public function isResetItemsToWarehouse(): bool
+    {
+        return $this->resetItemsToWarehouse;
     }
 
     public function isDefault(): ?bool
