@@ -22,7 +22,7 @@ class telegram
         }
         if ($chatId != "") {
             $message = "Привет, это тестовое сообщение от SphereWeb";
-            if ($bot->sendMessage((string)$chatId, $message, 308)) {
+            if ($bot->sendMessage((string)$chatId, $message)) {
                 board::success("Сообщение успешно отправлено");
             } else {
                 board::error("Ошибка при отправке сообщения");
