@@ -48,30 +48,36 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        // Вычисляем стоимость в долларах с сохранением дробной части
-        $sumUSD = $donate->getSphereCoinCost() >= 1
-            ? ($_POST['count'] * ($donate->getRatioUSD() / $donate->getSphereCoinCost()))
-            : ($_POST['count'] * ($donate->getRatioUSD() * $donate->getSphereCoinCost()));
+        // Вычисляем стоимость в евро с сохранением дробной части
+        $sumEUR = $donate->getSphereCoinCost() >= 1
+            ? ($_POST['count'] * ($donate->getRatioEUR() / $donate->getSphereCoinCost()))
+            : ($_POST['count'] * ($donate->getRatioEUR() * $donate->getSphereCoinCost()));
 
         // Проверка на минимальную сумму (50 центов)
-        if ($sumUSD < 0.5) {
+        if ($sumEUR < 0.5) {
             board::notice(false, "Минимальная сумма для Stripe: $0.50");
         }
 
         // Конвертация в центы для Stripe и явное преобразование в целое число
-        $sumCents = (int)round($sumUSD * 100);
+        $sumCents = (int)round($sumEUR * 100);
 
         try {
             \Stripe\Stripe::setApiKey(self::getConfigValue('secret_key')); // Замените YOUR_SECRET_KEY своим секретным ключом Stripe
             $session = Session::create([
-                'payment_method_types' => ['card'],
+
+                'payment_method_types' => ['card', 'klarna', 'billie', 'ideal', 'amazon_pay', 'link', 'mobilepay', 'multibanco', 'bancontact', 'blik', 'eps', 'sepa_debit', 'samsung_pay', 'naver_pay', 'kakao_pay', 'payco', 'kr_card', 'wechat_pay'],
+                'payment_method_options' => [
+                    'wechat_pay' => [
+                        'client' => 'web',
+                    ],
+                ],
                 'line_items' => [
                     [
                         'price_data' => [
-                            'currency' => 'usd',
+                            'currency' => 'eur',
                             'unit_amount' => $sumCents,
                             'product_data' => [
-                                'name' => 'Donation',
+                                'name' => 'Donate to project',
                             ],
                         ],
                         'quantity' => 1,
@@ -89,6 +95,7 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
             board::error($e->getMessage());
         }
     }
+
 
     //Получение информации об оплате
     function webhook(): void
