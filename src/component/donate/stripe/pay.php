@@ -16,6 +16,10 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
     //Включить только для true
     protected static bool $forAdmin = false;
 
+    protected static string $name = 'Stripe';
+
+    protected static array $country = ['world'];
+
     private array $allowIP = [
     ];
 

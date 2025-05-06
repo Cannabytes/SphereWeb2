@@ -18,6 +18,10 @@ class palych extends \Ofey\Logan22\model\donate\pay_abstract
     //Включить только для true
     protected static bool $forAdmin = false;
 
+    protected static string $name = 'Palych';
+
+    protected static array $country = ['ru', 'crypto'];
+
     private array $allowIP = [
     ];
 

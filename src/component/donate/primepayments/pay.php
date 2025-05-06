@@ -17,6 +17,10 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract
     //Включить только для true
     protected static bool $forAdmin = false;
 
+    protected static string $name = 'PrimePayments';
+
+    protected static array $country = ['ru'];
+
     private array $allowIP = [];
 
     /*

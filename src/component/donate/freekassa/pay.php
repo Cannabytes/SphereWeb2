@@ -16,6 +16,10 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
     //Включить только для администратора
     protected static bool $forAdmin = false;
 
+    protected static string $name = 'FreeKassa';
+
+    protected static array $country = ['ru', 'ua', 'crypto'];
+
     public static function inputs(): array
     {
         return [
@@ -24,7 +28,6 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
             'secret_key_2' => '',
         ];
     }
-
 
     private string $currency_default = 'RUB';
 

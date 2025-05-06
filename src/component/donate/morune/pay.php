@@ -16,6 +16,10 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
     //Включить только для true
     protected static bool $forAdmin = false;
 
+    protected static string $name = 'Morune';
+
+    protected static array $country = ['ru'];
+
     private array $allowIP = [];
 
     public static function inputs(): array

@@ -19,48 +19,29 @@ use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
+use ReflectionClass;
 
 class pay
 {
 
     public static function pay(): void
     {
-        $all_donate_system = fileSys::get_dir_files("src/component/donate", [
-          'basename' => true,
-          'fetchAll' => true,
-        ]);
-        $donateSysNames    = [];
-
         if(server::get_count_servers()==0){
             error::error404("Ошибка: Необходимо подключить хотя бы один сервер и настроить его платежную систему.");
             return;
         }
-
+        $donateSysNames    = [];
         $donate = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getDonateConfig();
         foreach ($donate->getDonateSystems() as $system) {
             if ( ! $system->isEnable()) {
                 continue;
             }
-            if (method_exists($system, 'forAdmin')) {
-                if ($system->forAdmin() and ! user::self()->isAdmin()) {
-                    continue;
-                }
-            }
-            if (method_exists($system, 'getDescription')) {
-                $donateSysNames[] = [
-                  'name'        => $system->getName(),
-                  'description' => $system->getDescription(),
-                ];
-            } else {
-                $donateSysNames[] = ['name' => $system->getName()];
-            }
+            $donateSysNames[] = $system;
         }
 
         tpl::addVar("donate_history_pay_self", donate::donate_history_pay_self());
         tpl::addVar("title", lang::get_phrase(233));
-
         tpl::addVar("pay_system_default", $donate->getPaySystemDefault());
-
 
         $donateSum = sql::run("SELECT SUM(point) AS `count` FROM `donate_history_pay` WHERE user_id = ?", [user::self()->getId()])->fetch()['count'] ?? 0;
         $bonusTable   = $donate->getTableCumulativeDiscountSystem();
@@ -75,10 +56,8 @@ class pay
         $donate_history_pay = sql::getRows("SELECT * FROM `donate_history_pay` WHERE user_id = ? ORDER BY id DESC", [user::self()->getId()]);
 
         tpl::addVar("donate_history_pay", $donate_history_pay);
-
         tpl::addVar("count_all_donate_bonus", $donateSum);
         tpl::addVar("count_all_donate_bonus_percent", $percent);
-
         tpl::addVar("donateSysNames", $donateSysNames);
         tpl::display("/pay.html");
     }

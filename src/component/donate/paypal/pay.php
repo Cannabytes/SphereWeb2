@@ -15,6 +15,10 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
     // Включена/отключена платежная система
     protected static bool $enable = true;
 
+    protected static string $name = 'PayPal';
+
+    protected static array $country = ['world'];
+
     private $api_mode = 'LIVE';
 
     protected string $currency_default = 'USD';

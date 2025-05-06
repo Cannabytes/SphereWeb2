@@ -10,6 +10,10 @@ use Ofey\Logan22\model\user\user;
 
 class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
 
+    protected static string $name = 'YooMoney';
+
+    protected static array $country = ['ru'];
+
     public static function inputs(): array
     {
         return [

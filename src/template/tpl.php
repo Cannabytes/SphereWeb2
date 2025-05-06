@@ -11,6 +11,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\captcha\google;
 use Ofey\Logan22\component\chronicle\client;
 use Ofey\Logan22\component\chronicle\race_class;
+use Ofey\Logan22\component\country\country;
 use Ofey\Logan22\component\estate\castle;
 use Ofey\Logan22\component\estate\clanhall;
 use Ofey\Logan22\component\estate\fort;
@@ -25,6 +26,7 @@ use Ofey\Logan22\component\time\microtime;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\component\webserver\info\advancedWebServerInfo;
+use Ofey\Logan22\controller\admin\setDonateServer;
 use Ofey\Logan22\controller\admin\startpack;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\stream\stream;
@@ -86,10 +88,12 @@ class tpl
 
     private static array $pluginsAllCustomAndComponents = [];
 
+    private static false|array $donateSysCache = [];
+
     public static function template_design_route(): ?array
     {
         $fileRoute = $_SERVER['DOCUMENT_ROOT'] . "/template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName(
-          ) . "/route.php";
+            ) . "/route.php";
         if (file_exists($fileRoute)) {
             require_once $fileRoute;
             if (isset($pages)) {
@@ -132,7 +136,7 @@ class tpl
         }
 
         $loader = new FilesystemLoader([
-          fileSys::get_dir(self::$templatePath),
+            fileSys::get_dir(self::$templatePath),
         ]);
         if (is_dir(fileSys::get_dir("/custom/plugins"))) {
             $loader->addPath(fileSys::get_dir("/custom/plugins"));
@@ -159,7 +163,7 @@ class tpl
 
         //Ищем в плагинах все дополнительные функции, которые дополняют шаблоны
         $all_plugins_dir = fileSys::get_dir_files("/src/component/plugins", [
-          'fetchAll' => true,
+            'fetchAll' => true,
         ]);
         $twigCustomFile  = "custom_twig.php";
         foreach ($all_plugins_dir as $pluginDir) {
@@ -185,7 +189,7 @@ class tpl
         }
 
         $all_plugins_dir = fileSys::get_dir_files("/custom/plugins", [
-          'fetchAll' => true,
+            'fetchAll' => true,
         ]);
         $twigCustomFile  = "custom_twig.php";
         foreach ($all_plugins_dir as $pluginDir) {
@@ -359,8 +363,8 @@ class tpl
         $twig->addFunction(new TwigFunction('isAjaxRequest', function () {
             if (self::$isAjax === null) {
                 self::$isAjax = ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(
-                                                                                  $_SERVER['HTTP_X_REQUESTED_WITH']
-                                                                                ) == 'xmlhttprequest');
+                        $_SERVER['HTTP_X_REQUESTED_WITH']
+                    ) == 'xmlhttprequest');
             }
 
             return self::$isAjax;
@@ -466,6 +470,64 @@ class tpl
             ];
 
             return $replacements[$name] ?? $name;
+        }));
+
+
+        $twig->addFunction(new TwigFunction('get_donate_paysystem', function ($getSystem = null) {
+            if(self::$donateSysCache){
+                if($getSystem != null){
+                    return self::$donateSysCache[$getSystem];
+                }
+                return self::$donateSysCache;
+            }
+            $all_donate_system = fileSys::get_dir_files("src/component/donate", [
+                'basename' => true,
+                'fetchAll' => true,
+                'only_non_empty_folders' => true,
+            ]);
+            $key = array_search("monobank", $all_donate_system);
+            if ($key !== false) {
+                unset($all_donate_system[$key]);
+            }
+            foreach ($all_donate_system as $system) {
+                $sn = new $system();
+                self::$donateSysCache[$system] = $sn;
+            }
+            if($getSystem != null){
+                return self::$donateSysCache[$getSystem];
+            }
+            return self::$donateSysCache;
+        }));
+
+        $twig->addFunction(new TwigFunction('uniqueCountries', function ($paymentSystems) {
+            $allCountries = [];
+            foreach ($paymentSystems as $system) {
+                $allCountries = array_merge($allCountries, $system->getCountry());
+            }
+            $uniqueCountries = array_unique($allCountries);
+
+            // Определяем порядок стран (приоритет)
+            $countryOrder = [
+                'ru' => 0,   // Россия - первая
+                'ua' => 1,   // Украина - вторая
+                'world' => 2, // World - третья
+                'crypto' => 3 // Crypto - четвертая
+            ];
+
+            usort($uniqueCountries, function($a, $b) use ($countryOrder) {
+                $orderA = $countryOrder[$a] ?? 999;
+                $orderB = $countryOrder[$b] ?? 999;
+                return $orderA - $orderB;
+            });
+            return $uniqueCountries;
+        }));
+
+        $twig->addFunction(new TwigFunction('getCountryName', function ($country) {
+            return \Ofey\Logan22\component\country\country::get_countries($country);
+        }));
+
+        $twig->addFunction(new TwigFunction('getCountrySVG', function ($country) {
+            return \Ofey\Logan22\component\country\country::getSVG($country);
         }));
 
         $twig->addFunction(new TwigFunction('keywords_start_page', function () {
@@ -575,7 +637,7 @@ class tpl
                     $output         .= "<tr>";
                     $output         .= "<td>" . $method->name . "</td>";
                     $output         .= "<td>" . ($method->isPublic() ? "<span class='text-success'>public</span>" : ($method->isProtected(
-                      ) ? "protected" : "<span class='text-danger'>private</span>")) . "</td>";
+                        ) ? "protected" : "<span class='text-danger'>private</span>")) . "</td>";
                     $output         .= "<td>" . ($method->isStatic() ? "да" : "нет") . "</td>";
                     $output         .= "<td>" . $returnTypeText . "</td>";
                     $output         .= "<td>" . ($docComment ?: "Нет комментария") . "</td>";
@@ -633,12 +695,12 @@ class tpl
 
             $lang         = \Ofey\Logan22\controller\config\config::load()->lang()->lang_user_default() == "ru" ? 0 : 1;
             $times_values = [
-              ['сек.', 'sec.'],
-              ['мин.', 'min.'],
-              ['час.', 'h.'],
-              ['д.', 'd.'],
-              ['мес.', 'm.'],
-              ['лет', 'y.'],
+                ['сек.', 'sec.'],
+                ['мин.', 'min.'],
+                ['час.', 'h.'],
+                ['д.', 'd.'],
+                ['мес.', 'm.'],
+                ['лет', 'y.'],
             ];
             $divisors     = [1, 60, 3600, 86400, 2592000, 31104000];
             for ($pow = count($divisors) - 1; $pow >= 0; $pow--) {
@@ -683,9 +745,9 @@ class tpl
             }
 
             return preg_match(
-              "/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i"
-              ,
-              $_SERVER["HTTP_USER_AGENT"]
+                "/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i"
+                ,
+                $_SERVER["HTTP_USER_AGENT"]
             );
         }));
 
@@ -911,7 +973,7 @@ class tpl
 
         //Deprecated 04.10.2024
         $twig->addFunction(new TwigFunction('stream_link_rev', function ($link){
-           return stream::getSrc($link);
+            return stream::getSrc($link);
         }));
 
         $twig->addFunction(new TwigFunction('statistic_get_pvp', function ($server_id = 0, $limit = 0): ?array {
@@ -1078,17 +1140,17 @@ class tpl
 
         $twig->addFunction(new TwigFunction('all_phrase', function () {
             $languages = fileSys::get_dir_files("/data/languages", [
-              'basename' => true,
-              'sort'     => false,
-              'fetchAll' => true,
+                'basename' => true,
+                'sort'     => false,
+                'fetchAll' => true,
             ]);
 
             $languages = array_map(function ($item) {
                 return preg_replace('/\.php$/', '', $item);
             },
-              array_filter($languages, function ($item) {
-                  return str_ends_with($item, '.php');
-              }));
+                array_filter($languages, function ($item) {
+                    return str_ends_with($item, '.php');
+                }));
 
             $combinedArray = [];
             foreach ($languages as $language) {
@@ -1116,10 +1178,10 @@ class tpl
 
         $twig->addFunction(new TwigFunction('all_phrase_custom', function () {
             $languages     = fileSys::get_dir_files("/data/languages/custom", [
-              'basename' => true,
-              'suffix'   => '.php',
-              'sort'     => false,
-              'fetchAll' => true,
+                'basename' => true,
+                'suffix'   => '.php',
+                'sort'     => false,
+                'fetchAll' => true,
             ]);
             $combinedArray = [];
             foreach ($languages as $language) {
@@ -1129,11 +1191,10 @@ class tpl
                 }
             }
 
-            // Добавляем пустые строки для отсутствующих языковых значений
             foreach ($combinedArray as $key => $phrases) {
                 foreach ($languages as $language) {
                     if ( ! array_key_exists($language, $phrases)) {
-                        $combinedArray[$key][$language] = ""; // Добавляем пустую строку
+                        $combinedArray[$key][$language] = "";
                     }
                 }
             }
@@ -1156,6 +1217,10 @@ class tpl
             return "[no phrase to lang: {$userLang}]";
         }));
 
+        $twig->addFunction(new TwigFunction('getCountryList', function () {
+            return country::getCountryList();
+        }));
+
         $twig->addFunction(new TwigFunction('server_online_status', function () {
             $onlinePlayers = online::server_online_status();
             if (empty($onlinePlayers)) {
@@ -1176,10 +1241,10 @@ class tpl
         }));
 
         $twig->addFunction(
-          new TwigFunction(
-            'json_decode',
-            fn(string $value, ?bool $assoc = null) => json_decode($value, $assoc, 512, \JSON_THROW_ON_ERROR),
-          )
+            new TwigFunction(
+                'json_decode',
+                fn(string $value, ?bool $assoc = null) => json_decode($value, $assoc, 512, \JSON_THROW_ON_ERROR),
+            )
         );
 
         $twig->addFunction(new TwigFunction('json_encode', function ($jsonTxt) {
@@ -1231,16 +1296,16 @@ class tpl
             $totalCount = count($referrals);
             if ($totalCount === 0) {
                 return [
-                  'completed' => 0,
-                  'continues' => 0,
-                  'made'      => 0,
+                    'completed' => 0,
+                    'continues' => 0,
+                    'made'      => 0,
                 ];
             }
 
             return [
-              'completed' => $completedCount,
-              'continues' => $totalCount - $completedCount,
-              'made'      => $completedCount / $totalCount * 100,
+                'completed' => $completedCount,
+                'continues' => $totalCount - $completedCount,
+                'made'      => $completedCount / $totalCount * 100,
             ];
         }));
 
@@ -1419,10 +1484,10 @@ class tpl
     {
         self::$categoryCabinet = true;
         if (file_exists(
-          ("template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/object.php")
+            ("template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/object.php")
         )) {
             $additionalVars = require (
-              "template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/object.php"
+                "template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/object.php"
             );
             if (is_array($additionalVars)) {
                 self::$allTplVars = array_merge(self::$allTplVars, $additionalVars);

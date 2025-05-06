@@ -18,6 +18,10 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
     //Включить только для администратора
     protected static bool $forAdmin = false;
 
+    protected static string $name = 'BetaTransfer';
+
+    protected static array $country = ['ru'];
+
     public static function inputs(): array
     {
         return [

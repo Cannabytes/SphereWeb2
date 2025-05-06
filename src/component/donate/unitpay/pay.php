@@ -14,6 +14,10 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
     //Включить только для администратора
     protected static bool $forAdmin = false;
 
+    protected static string $name = 'Unitpay';
+
+    protected static array $country = ['ru'];
+
     private string $currency_default = 'RUB';
 
     public static function inputs(): array

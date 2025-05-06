@@ -18,6 +18,10 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
     //Включить только для true
     protected static bool $forAdmin = false;
 
+    protected static string $name = 'Pally';
+
+    protected static array $country = ['ru', 'ua'];
+
     private array $allowIP = [
         '138.201.53.39',
         '176.9.155.22',

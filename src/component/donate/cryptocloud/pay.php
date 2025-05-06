@@ -10,6 +10,10 @@ use Ofey\Logan22\model\user\user;
 class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
 {
 
+    protected static string $name = 'CryptoCloud';
+
+    protected static array $country = ['world'];
+
     /****** SETTING *****/
 
     //Включена/отключена платежная система

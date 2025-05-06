@@ -11,6 +11,10 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
 
     private string $currency = 'RUB';
 
+    protected static string $name = 'YooKassa';
+
+    protected static array $country = ['ru'];
+
 	private string $shopId = '';
 	
 	private string $secretKey = '';

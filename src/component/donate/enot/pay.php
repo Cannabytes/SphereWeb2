@@ -16,6 +16,10 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
     //Включить только для true
     protected static bool $forAdmin = false;
 
+    protected static string $name = 'Enot';
+
+    protected static array $country = ['ru'];
+
     private array $allowIP = [
       '5.187.7.207',
       '149.202.68.3 ',

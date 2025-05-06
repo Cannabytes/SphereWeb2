@@ -16,6 +16,10 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
 
     private array $allowIP = [];
 
+    protected static string $name = 'AaioPay';
+
+    protected static array $country = ['ru'];
+
     private string $currency_default = 'UAH';
 
     public static function inputs(): array

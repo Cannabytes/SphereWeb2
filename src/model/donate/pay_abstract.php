@@ -20,6 +20,29 @@ class pay_abstract {
         }
     }
 
+    public static function getOriginalName(): string {
+        return get_called_class();
+    }
+
+    public static function getName(): string {
+        return property_exists(static::class, 'name') ? static::$name : get_called_class();
+    }
+
+    public static function getCountry($v = null): array|bool
+    {
+        if($v == null){
+            return property_exists(static::class, 'country') ? static::$country : ["world"];
+        }
+        $country = property_exists(static::class, 'country') ? static::$country : false;
+        $countryList = [];
+        foreach($country AS $c){
+            if($c == $v){
+                $countryList[] = $c;
+            }
+        }
+        return $countryList;
+    }
+
     /**
      * Используется для определения конфигурации платежной системы
      *

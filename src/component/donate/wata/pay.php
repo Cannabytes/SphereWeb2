@@ -15,6 +15,10 @@ class wata extends \Ofey\Logan22\model\donate\pay_abstract
     //Включена/отключена платежная система
     protected static bool $enable = true;
 
+    protected static string $name = 'Wata';
+
+    protected static array $country = ['ru'];
+
     //Включить только для true
     protected static bool $forAdmin = false;
 
