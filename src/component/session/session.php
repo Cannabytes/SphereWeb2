@@ -30,7 +30,7 @@ class session
     // Максимальное количество GET запросов за период
     private static int $maxGetActionsPerPeriod = 60;
     // Время бана в секундах при превышении лимита GET запросов
-    private static int $getFloodBanSeconds = 30;
+    private static int $getFloodBanSeconds = 60;
 
     // Настройки для POST запросов
     // Максимальное количество POST запросов за период
