@@ -272,20 +272,20 @@
 {# Получаем все уникальные страны #}
 {% set countries = [] %}
 {% for donate in allDonateSystems %}
+
     {% if donate.enable %}
         {% set countryList = null %}
 
-        {# Пытаемся получить страны из объекта donateSystem #}
-        {% set donateCountries = attribute(donate, 'country') %}
-        {% if donateCountries is iterable %}
-            {% set countryList = donateCountries %}
-        {% else %}
-            {% set ds = get_donate_paysystem(donate.name) %}
-            {% if ds and ds.getCountry() is iterable %}
-                {% set countryList = ds.getCountry() %}
-            {% endif %}
-        {% endif %}
-
+{# Пытаемся получить страны из объекта donateSystem #}
+{% set donateCountries = attribute(donate, 'country') %}
+{% if donateCountries is iterable and donateCountries|length > 0 %}
+    {% set countryList = donateCountries %}
+{% else %}
+    {% set ds = get_donate_paysystem(donate.name) %}
+    {% if ds and ds.getCountry() is iterable and ds.getCountry()|length > 0 %}
+        {% set countryList = ds.getCountry() %}
+    {% endif %}
+{% endif %}
         {# Добавляем страны в общий список #}
         {% if countryList is iterable %}
             {% for country in countryList %}
@@ -304,7 +304,6 @@
     'world': 3,
     'crypto': 4
 } %}
-
 {# Создаем массив для сортировки с приоритетами #}
 {% set countriesWithPriority = [] %}
 {% for country in countries %}
@@ -356,36 +355,36 @@
             <ul class="ps-3 mb-0 list-unstyled">
                 {% set countryPaymentSystems = [] %}
 
-                {# Собираем все активные платежные системы для текущей страны #}
-                {% for donate in allDonateSystems %}
-                    {% if donate.enable %}
-                        {% set countryList = null %}
-                        {% set ds = get_donate_paysystem(donate.name) %}
+               {# Собираем все активные платежные системы для текущей страны #}
+				{% for donate in allDonateSystems %}
+					{% if donate.enable %}
+						{% set countryList = null %}
+						{% set ds = get_donate_paysystem(donate.name) %}
 
-                        {# Пытаемся получить страны из объекта donateSystem #}
-                        {% set donateCountries = attribute(donate, 'country') %}
-                        {% if donateCountries is iterable %}
-                            {% set countryList = donateCountries %}
-                        {% else %}
-                            {# Fallback: используем класс по умолчанию #}
-                            {% if ds and ds.getCountry() is iterable %}
-                                {% set countryList = ds.getCountry() %}
-                            {% endif %}
-                        {% endif %}
+						{# Пытаемся получить страны из объекта donateSystem #}
+						{% set donateCountries = attribute(donate, 'country') %}
+						{% if donateCountries is iterable and donateCountries|length > 0 %}
+							{% set countryList = donateCountries %}
+						{% else %}
+							{# Fallback: используем класс по умолчанию #}
+							{% if ds and ds.getCountry() is iterable and ds.getCountry()|length > 0 %}
+								{% set countryList = ds.getCountry() %}
+							{% endif %}
+						{% endif %}
 
-                        {# Проверяем, содержит ли список стран текущую страну #}
-                        {% if countryList is iterable and country in countryList %}
-                            {% set countryPaymentSystems = countryPaymentSystems|merge([{
-                                'donate': donate,
-                                'name': donate.name,
-                                'description': donate.description,
-                                'sortValue': attribute(donate, 'sortValue'),
-                                'dsName': ds ? ds.getName() : donate.name,
-                                'dsDescription': ds ? ds.getDescription() : null
-                            }]) %}
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
+						{# Проверяем, содержит ли список стран текущую страну #}
+						{% if countryList is iterable and country in countryList %}
+							{% set countryPaymentSystems = countryPaymentSystems|merge([{
+								'donate': donate,
+								'name': donate.name,
+								'description': donate.description,
+								'sortValue': attribute(donate, 'sortValue'),
+								'dsName': ds ? ds.getName() : donate.name,
+								'dsDescription': ds ? ds.getDescription() : null
+							}]) %}
+						{% endif %}
+					{% endif %}
+				{% endfor %}
 
                 {# Сортируем по sortValue #}
                 {% set sortedSystems = countryPaymentSystems|sort((a, b) => a.sortValue <=> b.sortValue) %}
@@ -634,7 +633,7 @@
             </div>
         </div>
     </div>
-	<!-- End:: row-7 -->
+    <!-- End:: row-7 -->
 
 
 </div>

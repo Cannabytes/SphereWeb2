@@ -5,6 +5,11 @@ namespace Ofey\Logan22\component\country;
 class country {
 
     private static array $countries = [
+        'ru' => 'Russia',
+        'ua' => 'Ukraine',
+        'world' => 'World',
+        'crypto' => 'Crypto',
+
         'au' => 'Australia',
         'at' => 'Austria',
         'az' => 'Azerbaijan',
@@ -169,7 +174,6 @@ class country {
         'pt' => 'Portugal',
         'pr' => 'Puerto Rico',
         're' => 'Reunion',
-        'ru' => 'Russia',
         'rw' => 'Rwanda',
         'ro' => 'Romania',
         'sv' => 'El Salvador',
@@ -209,7 +213,6 @@ class country {
         'tr' => 'Turkey',
         'ug' => 'Uganda',
         'uz' => 'Uzbekistan',
-        'ua' => 'Ukraine',
         'wf' => 'Wallis and Futuna',
         'uy' => 'Uruguay',
         'fo' => 'Faroe Islands',
@@ -234,8 +237,6 @@ class country {
         'za' => 'South Africa',
         'jm' => 'Jamaica',
         'jp' => 'Japan',
-        'world' => 'World',
-        'crypto' => 'Crypto',
     ];
 
     public static function get_countries($code = "none"): string {
