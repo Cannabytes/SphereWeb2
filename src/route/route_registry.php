@@ -9,10 +9,8 @@ use Ofey\Logan22\model\plugin\plugin;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
-session::init();
-$isFileDB = false;
 if (file_exists(fileSys::get_dir('/data/db.php'))) {
-    $isFileDB = true;
+    session::init();
     \Ofey\Logan22\controller\config\dsys::initPaySysClass();
     config::load();
     plugin::loading();
