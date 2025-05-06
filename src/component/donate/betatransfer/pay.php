@@ -20,7 +20,7 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
 
     protected static string $name = 'BetaTransfer';
 
-    protected static array $country = ['ru'];
+    protected static array $country = ['ru', 'ua', 'crypto'];
 
     public static function inputs(): array
     {

@@ -124,14 +124,14 @@
     letter-spacing: 0.5px;
     border-radius: 50px;
  }
- 
+
  .dark-mode .cost-accordion .accordion-item {
     background-color: rgba(255, 255, 255, 0.05);
  }
  .dark-mode .cost-accordion .accordion-button:not(.collapsed) {
     background-color: rgba(var(--primary-rgb), 0.2);
  }
- 
+
  .cost-summary.flash {
     animation: flash-animation 0.5s ease-out;
  }
@@ -147,8 +147,8 @@
 
  .value-bubble {
     position: absolute;
-    min-width: 60px; 
-    height: auto; 
+    min-width: 60px;
+    height: auto;
     padding: 3px 8px;
     background: #4a89dc;
     color: white;
@@ -163,13 +163,13 @@
     transition: opacity 0.3s, width 0.2s;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
     z-index: 999;
-    white-space: nowrap; 
-    font-size: 12px; 
+    white-space: nowrap;
+    font-size: 12px;
     line-height: 1.2;
  }
 
 
- 
+
  .noUi-target {
     height: 15px !important;
     border: none !important;
@@ -179,40 +179,40 @@
     width: 100% !important;
  }
 
- 
+
  .noUi-connect {
     background: linear-gradient(to right, #4a89dc, #5a99ec) !important;
     animation: colorShift 4s infinite ease-in-out !important;
  }
 
- 
+
  .noUi-handle,
  .noUi-handle.noUi-handle-lower,
  .noUi-handle.noUi-handle-upper,
  div.noUi-handle {
     width: 32px !important;
     height: 32px !important;
-    border-radius: 0 !important; 
-    border: none !important; 
-    background-color: transparent !important; 
-    box-shadow: none !important; 
+    border-radius: 0 !important;
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
     cursor: pointer !important;
     right: -16px !important;
     top: -8px !important;
 
-    
+
     background-image: url("{{item.getIcon()}}") !important;
-    background-size: 32px 32px !important; 
+    background-size: 32px 32px !important;
     background-position: center center !important;
     background-repeat: no-repeat !important;
 
-    
+
     z-index: 20 !important;
     overflow: visible !important;
  }
 
 
- 
+
  .noUi-handle:before,
  .noUi-handle:after,
  .noUi-handle.noUi-handle-lower:before,
@@ -220,13 +220,13 @@
     display: none !important;
  }
 
- 
+
  .noUi-handle::after {
     content: "" !important;
     display: none !important;
  }
 
- 
+
  .noUi-handle::before {
     content: "" !important;
     position: absolute !important;
@@ -247,7 +247,7 @@
        height: 15px !important;
     }
 
-    
+
     .noUi-handle,
     .noUi-handle.noUi-handle-lower,
     .noUi-handle.noUi-handle-upper,
@@ -267,63 +267,92 @@
 </style>
 
 
+
+
 				<h6 class="card-title text-center fw-semibold mt-2">{{phrase('sel_payment_sys')}}</h6>
 
 
 				{% set countryType = getUser().getCountry() %}
 
+				{% set uniqueCountries = uniqueCountries(get_donate_paysystem()) %}
+
 				{% if countryType != "ru" and countryType != "ua" %}
 					{% set countryType = "world" %}
 				{% endif %}
 
-                                <ul class="nav nav-tabs tab-style-2 nav-justified d-sm-flex d-block" id="myTab1" role="tablist">
+				{% set normalizedCountryType = countryType|lower %}
 
-								{% for country in uniqueCountries(get_donate_paysystem()) %}
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link {% if countryType == country %}active{% endif %}" id="{{country}}-tab" data-bs-toggle="tab"
-                                                data-bs-target="#{{country}}-tab-pane" type="button" role="tab"
-                                                aria-controls="{{country}}-tab-pane" aria-selected="true">
-{{getCountrySVG(country)|raw}} {{getCountryName(country)}}</button>
-                                    </li>
+				<ul class="nav nav-tabs mb-3 nav-justified nav-style-1 d-sm-flex d-block" id="myTab1" role="tablist">
+					{% for country in uniqueCountries %}
+						{# Проверяем, есть ли платежные системы для этой страны #}
+						{% set hasPaymentSystems = false %}
+						{% for donSys in donateSysNames %}
+							{% set ds = get_donate_paysystem(donSys.name) %}
+							{% if country in ds.getCountry() %}
+								{% set hasPaymentSystems = true %}
+							{% endif %}
+						{% endfor %}
+
+						{# Отображаем вкладку только если для страны есть платежные системы #}
+						{% if hasPaymentSystems %}
+						<li class="nav-item " role="presentation">
+    <button class="nav-link d-flex flex-column align-items-center {% if normalizedCountryType == country %}active{% endif %}"
+            id="{{country}}-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#{{country}}-tab-pane"
+            type="button"
+            role="tab"
+            aria-controls="{{country}}-tab-pane"
+            aria-selected="{% if normalizedCountryType == country %}true{% else %}false{% endif %}">
+        <div class="mb-1">{{getCountrySVG(country)|raw}}</div>
+        <div class="fs-5">{{getCountryName(country)}}</div>
+    </button>
+</li>
+						{% endif %}
+					{% endfor %}
+				</ul>
+
+				<div class="tab-content" id="myTabContent">
+					{% for country in uniqueCountries %}
+						{# Проверяем наличие платежных систем #}
+						{% set hasPaymentSystems = false %}
+						{% for donSys in donateSysNames %}
+							{% set ds = get_donate_paysystem(donSys.name) %}
+							{% if country in ds.getCountry() %}
+								{% set hasPaymentSystems = true %}
+							{% endif %}
+						{% endfor %}
+
+						{% if hasPaymentSystems %}
+							<div class="tab-pane fade text-muted {% if normalizedCountryType == country %}show active{% endif %}" id="{{country}}-tab-pane" role="tabpanel"
+                                 aria-labelledby="{{country}}-tab" tabindex="0">
+								<ul class="ps-3 mb-0 list-unstyled">
+								{% for donSys in donateSysNames %}
+									{% set ds = get_donate_paysystem(donSys.name) %}
+									{% if country in ds.getCountry() %}
+									<li class="shadow">
+									<div class="payment-system-item" data-name="{{donSys.name}}">
+										<div class="payment-system-content">
+											<div class="payment-system-header">
+												<h4 class="payment-system-name">{{ds.getName()}}</h4>
+											</div>
+											<div class="payment-system-description">
+												{{donSys.description}}
+											</div>
+										</div>
+										<div class="payment-system-radio">
+											<input type="radio" class="form-check-input" name="paysystem" id="{{country}}-{{donSys.name}}" value="{{donSys.name}}">
+											<label class="form-check-label" for="{{country}}-{{donSys.name}}"></label>
+										</div>
+									</div>
+									</li>
+									{% endif %}
 								{% endfor %}
-
-                                </ul>
-
-                                <div class="tab-content" id="myTabContent">
-
-									{% for country in uniqueCountries(get_donate_paysystem()) %}
-                                    <div class="tab-pane fade text-muted {% if countryType == country %}show active{% endif %}" id="{{country}}-tab-pane" role="tabpanel"
-                                         aria-labelledby="{{country}}-tab" tabindex="0">
-
-
-                                        <ul class="ps-3 mb-0 list-unstyled ">
-{% for donSys in donateSysNames %}
-		{% set ds = get_donate_paysystem(donSys.name) %}
-		{% if country in ds.getCountry() %}
-		<li class="shadow">
-		<div class="payment-system-item" data-name="{{donSys.name}}">
-			<div class="payment-system-content">
-				<div class="payment-system-header">
-					<h4 class="payment-system-name">{{ds.getName()}}</h4>
-
+								</ul>
+							</div>
+						{% endif %}
+					{% endfor %}
 				</div>
-				<div class="payment-system-description">
-					{{donSys.description}}
-				</div>
-			</div>
-			<div class="payment-system-radio">
-				<input type="radio" class="form-check-input" name="paysystem" id="ru-{{donSys.name}}" value="{{donSys.name}}">
-				<label class="form-check-label" for="ru-{{donSys.name}}"></label>
-			</div>
-		</div>
-		</li>
-		{% endif %}
-	{% endfor %}
-                                        </ul>
-                                    </div>
-									{% endfor %}
-
-                                 </div>
 
 
 
