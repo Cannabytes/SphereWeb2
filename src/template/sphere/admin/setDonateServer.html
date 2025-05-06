@@ -17,7 +17,7 @@
                     </div>
                     <div class="d-flex">
                         <button class="btn btn-sm btn-success btn-wave waves-light waves-effect waves-light saveDonateConfig"><i
-                                class="ri-add-line fw-semibold align-middle me-1"></i> {{ phrase(271) }}</button>
+                              class="ri-add-line fw-semibold align-middle me-1"></i> {{ phrase(271) }}</button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -188,10 +188,10 @@
                                                                 <div class="hstack gap-2 flex-wrap">
                                                                     <a href="javascript:void(0);"
                                                                        class="text-info fs-14 lh-1"><i
-                                                                            class="ri-edit-line"></i></a>
+                                                                          class="ri-edit-line"></i></a>
                                                                     <a href="javascript:void(0);"
                                                                        class="text-danger fs-14 lh-1"><i
-                                                                            class="ri-delete-bin-5-line"></i></a>
+                                                                          class="ri-delete-bin-5-line"></i></a>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -254,10 +254,10 @@
                                                                 <div class="hstack gap-2 flex-wrap">
                                                                     <a href="javascript:void(0);"
                                                                        class="text-info fs-14 lh-1"><i
-                                                                            class="ri-edit-line"></i></a>
+                                                                          class="ri-edit-line"></i></a>
                                                                     <a href="javascript:void(0);"
                                                                        class="text-danger fs-14 lh-1"><i
-                                                                            class="ri-delete-bin-5-line"></i></a>
+                                                                          class="ri-delete-bin-5-line"></i></a>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -327,10 +327,10 @@
                                                                 <div class="hstack gap-2 flex-wrap">
                                                                     <a href="javascript:void(0);"
                                                                        class="text-info fs-14 lh-1"><i
-                                                                            class="ri-edit-line"></i></a>
+                                                                          class="ri-edit-line"></i></a>
                                                                     <a href="javascript:void(0);"
                                                                        class="text-danger fs-14 lh-1"><i
-                                                                            class="ri-delete-bin-5-line"></i></a>
+                                                                          class="ri-delete-bin-5-line"></i></a>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -402,10 +402,10 @@
                                                                 <div class="hstack gap-2 flex-wrap">
                                                                     <a href="javascript:void(0);"
                                                                        class="text-info fs-14 lh-1"><i
-                                                                            class="ri-edit-line"></i></a>
+                                                                          class="ri-edit-line"></i></a>
                                                                     <a href="javascript:void(0);"
                                                                        class="text-danger fs-14 lh-1"><i
-                                                                            class="ri-delete-bin-5-line"></i></a>
+                                                                          class="ri-delete-bin-5-line"></i></a>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -450,10 +450,10 @@
                                                                 <div class="hstack gap-2 flex-wrap">
                                                                     <a href="javascript:void(0);"
                                                                        class="text-info fs-14 lh-1"><i
-                                                                            class="ri-edit-line"></i></a>
+                                                                          class="ri-edit-line"></i></a>
                                                                     <a href="javascript:void(0);"
                                                                        class="text-danger fs-14 lh-1"><i
-                                                                            class="ri-delete-bin-5-line"></i></a>
+                                                                          class="ri-delete-bin-5-line"></i></a>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -593,8 +593,8 @@
                                                     <th scope="row">
                                                                                 <span class="avatar avatar-sm">
                                                                                     <img
-                                                                                            src="{{data.item.getIcon()}}"
-                                                                                            alt="img">
+                                                                                          src="{{data.item.getIcon()}}"
+                                                                                          alt="img">
                                                                                 </span>
                                                     </th>
                                                     <td>{{data.id}}</td>
@@ -602,7 +602,7 @@
                                                     <td>{{data.enchant}}</td>
                                                     <td><a href="javascript:void(0);"
                                                            class="text-danger fs-14 lh-1 removeTableItemsBonus"><i
-                                                            class="ri-delete-bin-5-line"></i></a></td>
+                                                          class="ri-delete-bin-5-line"></i></a></td>
                                                 </tr>
                                                 {% endfor %}
                                                 </tbody>
@@ -672,7 +672,7 @@
                                                  aria-controls="{{donate.name}}"
                                                  aria-selected="false" tabindex="-1"
                                                  data-order="{{i}}"
-                                                 data-name="{{donate.name}}">  <!-- Сохраняем имя элемента -->
+                                                 data-name="{{donate.name}}">
                                                 {{donate.name}}
 
                                                 <div class="ms-auto">
@@ -793,22 +793,105 @@
                                                             <hr>
                                                             <div class="form-floating mb-3">
                                                                 <input
-                                                                        value="{{donate.getDescription()}}"
-                                                                        type="text"
-                                                                        class="form-control"
-                                                                        id="description_{{donate.getName()}}"
-                                                                        placeholder="">
+                                                                      value="{{donate.getDescription()}}"
+                                                                      type="text"
+                                                                      class="form-control"
+                                                                      id="description_{{donate.getName()}}"
+                                                                      placeholder="">
                                                                 <label for="description_{{donate.getName()}}">{{
                                                                     phrase('payment_system_description') }}</label>
                                                             </div>
 
-                                                            <div class="border rounded-3 p-3">
+                                                            <div class="border rounded-3 p-3 mb-3">
                                                                 <p class="fs-15 fw-semibold mb-2">Webhook</p>
                                                                 <p class="fs-12 text-muted">На сайте платежной системы в
                                                                     качестве уведомлений после успешной оплаты укажите
                                                                     POST запрос на адрес:</p>
                                                                 {{donate.getWebhookUrl()}}
                                                             </div>
+
+
+{% set userCountryList = donate.getCountry() %}
+{% set checkListCountry = userCountryList is not empty ? userCountryList : get_donate_paysystem(donate.getName()).getCountry() %}
+{% set countryList = getCountryList() %}
+
+<div class="border rounded-3 p-3">
+    <p class="fs-15 fw-semibold mb-2">Платежная система для каких пользователей</p>
+
+    <!-- Первые 4 элемента в двухколоночном макете -->
+    <div class="row">
+        {% for dn, country in countryList|slice(0, 4) %}
+            <div class="col-md-6">
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input form-checked-success"
+                           type="checkbox"
+                           role="switch"
+                           id="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}"
+                           name="country_{{ donate.getName() }}[]"
+                           value="{{ dn|e('html_attr') }}"
+                           {{ (dn in checkListCountry) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}">
+                        {{ country|e }}
+                    </label>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Кнопка для раскрытия остальных элементов -->
+    {% if countryList|length > 4 %}
+        <button class="btn btn-link btn-sm p-0 fw-semibold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#additionalcountry-{{ donate.getName() }}"
+                aria-expanded="false"
+                aria-controls="additionalcountry-{{ donate.getName() }}">
+            Показать все ({{ countryList|length - 4 }} еще)
+        </button>
+
+    <!-- Скрытые элементы в аккордионе -->
+        <div class="collapse mt-2" id="additionalcountry-{{ donate.getName() }}">
+            <div class="row">
+                {% for dn, country in countryList|slice(4) %}
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input form-checked-success"
+                                   type="checkbox"
+                                   role="switch"
+                                   id="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}"
+                                   name="country_{{ donate.getName() }}[]"
+                                   value="{{ dn|e('html_attr') }}"
+                                   {{ (dn in checkListCountry) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}">
+                                {{ country|e }}
+                            </label>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+                                                            <!-- Дополнительный стиль для кнопки аккордиона -->
+<style>
+    button[data-bs-toggle="collapse"]::after {
+        content: " ▼";
+        font-size: 0.8em;
+        transition: transform 0.2s ease;
+    }
+
+    button[data-bs-toggle="collapse"][aria-expanded="true"]::after {
+        transform: rotate(180deg);
+        content: " ▼";
+    }
+
+    button[data-bs-toggle="collapse"]:not(.collapsed)::after {
+        transform: rotate(180deg);
+    }
+</style>
+
+
 
                                                             <input type="hidden" value="{{donate.getSortValue()}}"
                                                                    id="sort_{{donate.getName()}}" class="sort-input">
@@ -852,7 +935,7 @@
 
     $(document).on('click', '.saveDonateConfig', function () {
         let tableItemsBonus = {};
-         $('#bonus_Item_donation .nav-tabs .nav-link').each(function () {
+        $('#bonus_Item_donation .nav-tabs .nav-link').each(function () {
             var tabId = $(this).attr('id');
             var tabPaneId = $(this).attr('aria-controls');
             var tabValue = $(this).text().trim(); // Используем текст вкладки как ключ
@@ -975,17 +1058,17 @@
 
         let icon = '';
         AjaxSend('/admin/client/item/info', 'POST', {'itemID': itemId}, true).then(function (response) {
-                icon = response.item.icon;
-                let table = activeTabPane.find('table');
-                let newRow = '<tr>' +
-                    '<th scope="row"><span class="avatar avatar-sm"><img src="' + icon + '" alt="img"></span></th>' +
-                    '<td>' + itemId + '</td>' +
-                    '<td>' + count + '</td>' +
-                    '<td>' + enchant + '</td>' +
-                    '<td><a href="javascript:void(0);" class="text-danger fs-14 lh-1 removeTableItemsBonus"><i class="ri-delete-bin-5-line"></i></a></td>' +
-                    '</tr>';
-                table.find('tbody').append(newRow);
-            },
+                  icon = response.item.icon;
+                  let table = activeTabPane.find('table');
+                  let newRow = '<tr>' +
+                        '<th scope="row"><span class="avatar avatar-sm"><img src="' + icon + '" alt="img"></span></th>' +
+                        '<td>' + itemId + '</td>' +
+                        '<td>' + count + '</td>' +
+                        '<td>' + enchant + '</td>' +
+                        '<td><a href="javascript:void(0);" class="text-danger fs-14 lh-1 removeTableItemsBonus"><i class="ri-delete-bin-5-line"></i></a></td>' +
+                        '</tr>';
+                  table.find('tbody').append(newRow);
+              },
         );
 
     });
@@ -1083,7 +1166,7 @@
             var isEnabled = $('#is_enable_' + payName).is(':checked'); // Проверяем, включена ли система
             var forAdmin = $('#forAdmin_' + payName).is(':checked'); // Проверяем, является ли система по умолчанию для администратора
             var description = $('#description_' + payName).val(); // Получаем описание платежной системы
-            var sort = $('#sort_' + payName).val(); // Получаем описание платежной системы
+            var sort = $('#sort_' + payName).val(); // Получаем сортировку платежной системы
 
             var inputsData = {};
             // Итерируем через все поля ввода текущей платежной системы
@@ -1093,6 +1176,11 @@
                 inputsData[inputName] = inputValue; // Сохраняем данные поля
             });
 
+            // Собираем данные о выбранных странах для текущей платежной системы
+            var country = [];
+            $('input[name="country_' + payName + '[]"]:checked').each(function() {
+                country.push($(this).val());
+            });
 
             // Собираем и сохраняем данные платежной системы
             systemsData.push({
@@ -1102,6 +1190,7 @@
                     inputs: inputsData,
                     description: description,
                     sort: sort,
+                    country: country
                 },
             });
         });
@@ -1284,6 +1373,7 @@
     }
 
     // Функция заполнения платежных систем
+    // Функция заполнения платежных систем
     function fillPaymentSystems(systems) {
         // Очищаем существующие табы и контент
         $('#v-pills-tab').empty();
@@ -1321,6 +1411,7 @@
                 <div class="d-sm-flex">
                     <div data-pay-name="${name}">
                         <div class="my-md-auto mt-4 ms-md-3">
+                            <!-- Переключатель включения платежной системы -->
                             <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
                                 <div>
                                     <p class="fs-14 mb-1 fw-semibold">Включить платежную систему ${name}</p>
@@ -1335,6 +1426,7 @@
                                 </div>
                             </div>
 
+                            <!-- Переключатель только для админа -->
                             <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
                                 <div>
                                     <p class="fs-14 mb-1 fw-semibold">Только для админа ${name}</p>
@@ -1384,21 +1476,26 @@
 
             <input type="hidden" value="${data.sort}"
                    id="sort_${name}" class="sort-input">
-        </div>
-    </div>
-</div>
         `);
 
             // Добавляем таб и контент
             $('#v-pills-tab').append($tab);
             $('#v-pills-tabContent').append($content);
-        });
-        $(`#description_${name}`).val(data.description);
-        $(`#sort_${name}`).val(data.sort);
 
-        // Заполняем дополнительные поля
-        Object.entries(data.inputs || {}).forEach(([key, value]) => {
-            $(`[data-name="${key}"]`).val(value);
+            // Заполняем дополнительные поля
+            $(`#description_${name}`).val(data.description);
+            $(`#sort_${name}`).val(data.sort);
+
+            Object.entries(data.inputs || {}).forEach(([key, value]) => {
+                $(`[data-name="${key}"]`).val(value);
+            });
+
+            // ВАЖНО: Заполняем чекбоксы стран
+            if (data.country && Array.isArray(data.country)) {
+                data.country.forEach(country => {
+                    $(`input[name="country_${name}[]"][value="${country}"]`).prop('checked', true);
+                });
+            }
         });
     }
 
@@ -1421,4 +1518,3 @@
 
 </script>
 {% endblock %}
-

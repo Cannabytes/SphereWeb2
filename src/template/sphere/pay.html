@@ -4,9 +4,7 @@
 
 {% block content %}
 <div class="container-fluid">
-    <!-- ROW-1 OPEN -->
     <div class="row" style="display: flex; flex-wrap: wrap; align-items: stretch;">
-        <!-- COL-END -->
 
         <div class="col-xl-4" style="display: flex; flex-direction: column;">
             <div class="card" style="flex: 1 1 auto; height: 100%;">
@@ -34,9 +32,7 @@
         </div>
     </div>
 
-   <!-- Контейнер для ползунка noUiSlider -->
     <div class="mt-3 mb-5">
-        <!-- Сам ползунок -->
         <div id="coinsRangeSlider" class="mt-2"></div>
 		    <div id="rangeValueBubble" class="value-bubble"></div>
     </div>
@@ -101,88 +97,88 @@
 <style>
 
  .cost-accordion .accordion-button {
-    padding: 1rem;
-    border-radius: 12px !important;
-    font-weight: 600;
+     padding: 1rem;
+     border-radius: 12px !important;
+     font-weight: 600;
  }
  .cost-accordion .accordion-button:not(.collapsed) {
-    color: var(--primary);
-    background-color: rgba(var(--primary-rgb), 0.05);
-    box-shadow: none;
+     color: var(--primary);
+     background-color: rgba(var(--primary-rgb), 0.05);
+     box-shadow: none;
  }
  .cost-accordion .accordion-item {
-    border-radius: 12px !important;
-    background-color: rgba(var(--info-rgb), 0.05);
-    overflow: hidden;
+     border-radius: 12px !important;
+     background-color: rgba(var(--info-rgb), 0.05);
+     overflow: hidden;
  }
  .cost-accordion .accordion-button::after {
-    margin-left: 10px;
+     margin-left: 10px;
  }
  .cost-accordion .cost-summary {
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    border-radius: 50px;
+     font-size: 1rem;
+     font-weight: 600;
+     letter-spacing: 0.5px;
+     border-radius: 50px;
  }
 
  .dark-mode .cost-accordion .accordion-item {
-    background-color: rgba(255, 255, 255, 0.05);
+     background-color: rgba(255, 255, 255, 0.05);
  }
  .dark-mode .cost-accordion .accordion-button:not(.collapsed) {
-    background-color: rgba(var(--primary-rgb), 0.2);
+     background-color: rgba(var(--primary-rgb), 0.2);
  }
 
  .cost-summary.flash {
-    animation: flash-animation 0.5s ease-out;
+     animation: flash-animation 0.5s ease-out;
  }
  @keyframes flash-animation {
-    0% {
-       background-color: rgba(var(--success-rgb), 0.5);
-    }
-    100% {
-       background-color: rgba(var(--primary-rgb), 0.2);
-    }
+     0% {
+         background-color: rgba(var(--success-rgb), 0.5);
+     }
+     100% {
+         background-color: rgba(var(--primary-rgb), 0.2);
+     }
  }
 
 
  .value-bubble {
-    position: absolute;
-    min-width: 60px;
-    height: auto;
-    padding: 3px 8px;
-    background: #4a89dc;
-    color: white;
-    font-weight: bold;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transform: translateY(-40px);
-    pointer-events: none;
-    transition: opacity 0.3s, width 0.2s;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-    z-index: 999;
-    white-space: nowrap;
-    font-size: 12px;
-    line-height: 1.2;
+     position: absolute;
+     min-width: 60px;
+     height: auto;
+     padding: 3px 8px;
+     background: #4a89dc;
+     color: white;
+     font-weight: bold;
+     border-radius: 5px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     opacity: 0;
+     transform: translateY(-40px);
+     pointer-events: none;
+     transition: opacity 0.3s, width 0.2s;
+     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+     z-index: 999;
+     white-space: nowrap;
+     font-size: 12px;
+     line-height: 1.2;
  }
 
 
 
  .noUi-target {
-    height: 15px !important;
-    border: none !important;
-    border-radius: 7px !important;
-    box-shadow: none !important;
-    margin-top: 30px !important;
-    width: 100% !important;
+     height: 15px !important;
+     border: none !important;
+     border-radius: 7px !important;
+     box-shadow: none !important;
+     margin-top: 30px !important;
+     width: 100% !important;
  }
 
 
  .noUi-connect {
-    background: linear-gradient(to right, #4a89dc, #5a99ec) !important;
-    animation: colorShift 4s infinite ease-in-out !important;
+     background: linear-gradient(to right, #4a89dc, #5a99ec) !important;
+     animation: colorShift 4s infinite ease-in-out !important;
  }
 
 
@@ -190,25 +186,25 @@
  .noUi-handle.noUi-handle-lower,
  .noUi-handle.noUi-handle-upper,
  div.noUi-handle {
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 0 !important;
-    border: none !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    cursor: pointer !important;
-    right: -16px !important;
-    top: -8px !important;
+     width: 32px !important;
+     height: 32px !important;
+     border-radius: 0 !important;
+     border: none !important;
+     background-color: transparent !important;
+     box-shadow: none !important;
+     cursor: pointer !important;
+     right: -16px !important;
+     top: -8px !important;
 
 
-    background-image: url("{{item.getIcon()}}") !important;
-    background-size: 32px 32px !important;
-    background-position: center center !important;
-    background-repeat: no-repeat !important;
+     background-image: url("{{item.getIcon()}}") !important;
+     background-size: 32px 32px !important;
+     background-position: center center !important;
+     background-repeat: no-repeat !important;
 
 
-    z-index: 20 !important;
-    overflow: visible !important;
+     z-index: 20 !important;
+     overflow: visible !important;
  }
 
 
@@ -217,144 +213,205 @@
  .noUi-handle:after,
  .noUi-handle.noUi-handle-lower:before,
  .noUi-handle.noUi-handle-lower:after {
-    display: none !important;
+     display: none !important;
  }
 
 
  .noUi-handle::after {
-    content: "" !important;
-    display: none !important;
+     content: "" !important;
+     display: none !important;
  }
 
 
  .noUi-handle::before {
-    content: "" !important;
-    position: absolute !important;
-    top: 3px !important;
-    left: 3px !important;
-    right: 3px !important;
-    bottom: 3px !important;
-    background-image: url("{{item.getIcon()}}") !important;
-    background-size: contain !important;
-    background-position: center center !important;
-    background-repeat: no-repeat !important;
-    z-index: 30 !important;
+     content: "" !important;
+     position: absolute !important;
+     top: 3px !important;
+     left: 3px !important;
+     right: 3px !important;
+     bottom: 3px !important;
+     background-image: url("{{item.getIcon()}}") !important;
+     background-size: contain !important;
+     background-position: center center !important;
+     background-repeat: no-repeat !important;
+     z-index: 30 !important;
  }
 
 
  @media (min-width: 768px) {
-    .noUi-target {
-       height: 15px !important;
-    }
+     .noUi-target {
+         height: 15px !important;
+     }
 
 
-    .noUi-handle,
-    .noUi-handle.noUi-handle-lower,
-    .noUi-handle.noUi-handle-upper,
-    div.noUi-handle {
-       width: 32px !important;
-       height: 32px !important;
-       top: -8px !important;
-    }
+     .noUi-handle,
+     .noUi-handle.noUi-handle-lower,
+     .noUi-handle.noUi-handle-upper,
+     div.noUi-handle {
+         width: 32px !important;
+         height: 32px !important;
+         top: -8px !important;
+     }
  }
 
  @keyframes colorShift {
-    0% { filter: hue-rotate(0deg); }
-    50% { filter: hue-rotate(30deg); }
-    100% { filter: hue-rotate(0deg); }
+     0% { filter: hue-rotate(0deg); }
+     50% { filter: hue-rotate(30deg); }
+     100% { filter: hue-rotate(0deg); }
  }
 
 </style>
 
+<h6 class="card-title text-center fw-semibold mt-2">{{phrase('sel_payment_sys')}}</h6>
 
 
 
-				<h6 class="card-title text-center fw-semibold mt-2">{{phrase('sel_payment_sys')}}</h6>
+{% set allDonateSystems = getServer().donate().getDonateSystems() %}
+{% set userCountry = getUser().getCountry()|lower %}
 
+{# Получаем все уникальные страны #}
+{% set countries = [] %}
+{% for donate in allDonateSystems %}
+    {% if donate.enable %}
+        {% set countryList = null %}
 
-				{% set countryType = getUser().getCountry() %}
+        {# Пытаемся получить страны из объекта donateSystem #}
+        {% set donateCountries = attribute(donate, 'country') %}
+        {% if donateCountries is iterable %}
+            {% set countryList = donateCountries %}
+        {% else %}
+            {% set ds = get_donate_paysystem(donate.name) %}
+            {% if ds and ds.getCountry() is iterable %}
+                {% set countryList = ds.getCountry() %}
+            {% endif %}
+        {% endif %}
 
-				{% set uniqueCountries = uniqueCountries(get_donate_paysystem()) %}
+        {# Добавляем страны в общий список #}
+        {% if countryList is iterable %}
+            {% for country in countryList %}
+                {% if country not in countries %}
+                    {% set countries = countries|merge([country]) %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
 
-				{% if countryType != "ru" and countryType != "ua" %}
-					{% set countryType = "world" %}
-				{% endif %}
+{# Определяем порядок сортировки #}
+{% set countryOrder = {
+    'ru': 1,
+    'ua': 2,
+    'world': 3,
+    'crypto': 4
+} %}
 
-				{% set normalizedCountryType = countryType|lower %}
+{# Создаем массив для сортировки с приоритетами #}
+{% set countriesWithPriority = [] %}
+{% for country in countries %}
+    {% set priority = countryOrder[country] ?? 99 %}
+    {% set countriesWithPriority = countriesWithPriority|merge([{
+        'country': country,
+        'priority': priority
+    }]) %}
+{% endfor %}
 
-				<ul class="nav nav-tabs mb-3 nav-justified nav-style-1 d-sm-flex d-block" id="myTab1" role="tablist">
-					{% for country in uniqueCountries %}
-						{# Проверяем, есть ли платежные системы для этой страны #}
-						{% set hasPaymentSystems = false %}
-						{% for donSys in donateSysNames %}
-							{% set ds = get_donate_paysystem(donSys.name) %}
-							{% if country in ds.getCountry() %}
-								{% set hasPaymentSystems = true %}
-							{% endif %}
-						{% endfor %}
+{# Сортируем по приоритету #}
+{% set sortedCountriesWithPriority = countriesWithPriority|sort((a, b) => a.priority <=> b.priority) %}
 
-						{# Отображаем вкладку только если для страны есть платежные системы #}
-						{% if hasPaymentSystems %}
-						<li class="nav-item " role="presentation">
-    <button class="nav-link d-flex flex-column align-items-center {% if normalizedCountryType == country %}active{% endif %}"
-            id="{{country}}-tab"
-            data-bs-toggle="tab"
-            data-bs-target="#{{country}}-tab-pane"
-            type="button"
-            role="tab"
-            aria-controls="{{country}}-tab-pane"
-            aria-selected="{% if normalizedCountryType == country %}true{% else %}false{% endif %}">
-        <div class="mb-1">{{getCountrySVG(country)|raw}}</div>
-        <div class="fs-5">{{getCountryName(country)}}</div>
-    </button>
-</li>
-						{% endif %}
-					{% endfor %}
-				</ul>
+{# Извлекаем отсортированные страны #}
+{% set countries = [] %}
+{% for item in sortedCountriesWithPriority %}
+    {% set countries = countries|merge([item.country]) %}
+{% endfor %}
 
-				<div class="tab-content" id="myTabContent">
-					{% for country in uniqueCountries %}
-						{# Проверяем наличие платежных систем #}
-						{% set hasPaymentSystems = false %}
-						{% for donSys in donateSysNames %}
-							{% set ds = get_donate_paysystem(donSys.name) %}
-							{% if country in ds.getCountry() %}
-								{% set hasPaymentSystems = true %}
-							{% endif %}
-						{% endfor %}
+{% if userCountry not in ["ru", "ua"] %}
+    {% set userCountry = "world" %}
+{% endif %}
 
-						{% if hasPaymentSystems %}
-							<div class="tab-pane fade text-muted {% if normalizedCountryType == country %}show active{% endif %}" id="{{country}}-tab-pane" role="tabpanel"
-                                 aria-labelledby="{{country}}-tab" tabindex="0">
-								<ul class="ps-3 mb-0 list-unstyled">
-								{% for donSys in donateSysNames %}
-									{% set ds = get_donate_paysystem(donSys.name) %}
-									{% if country in ds.getCountry() %}
-									<li class="shadow">
-									<div class="payment-system-item" data-name="{{donSys.name}}">
-										<div class="payment-system-content">
-											<div class="payment-system-header">
-												<h4 class="payment-system-name">{{ds.getName()}}</h4>
-											</div>
-											<div class="payment-system-description">
-												{{donSys.description}}
-											</div>
-										</div>
-										<div class="payment-system-radio">
-											<input type="radio" class="form-check-input" name="paysystem" id="{{country}}-{{donSys.name}}" value="{{donSys.name}}">
-											<label class="form-check-label" for="{{country}}-{{donSys.name}}"></label>
-										</div>
-									</div>
-									</li>
-									{% endif %}
-								{% endfor %}
-								</ul>
-							</div>
-						{% endif %}
-					{% endfor %}
-				</div>
+<ul class="nav nav-tabs mb-3 nav-justified nav-style-1 d-sm-flex d-block" id="myTab1" role="tablist">
+    {% for country in countries %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link d-flex flex-column align-items-center {% if userCountry == country %}active{% endif %}"
+                    id="{{country}}-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#{{country}}-tab-pane"
+                    type="button"
+                    role="tab"
+                    aria-controls="{{country}}-tab-pane"
+                    aria-selected="{% if userCountry == country %}true{% else %}false{% endif %}">
+                <div class="mb-1">{{getCountrySVG(country)|raw}}</div>
+                <div class="fs-5">{{getCountryName(country)}}</div>
+            </button>
+        </li>
+    {% endfor %}
+</ul>
 
+<div class="tab-content" id="myTabContent">
+    {% for country in countries %}
+        <div class="tab-pane fade text-muted {% if userCountry == country %}show active{% endif %}"
+             id="{{country}}-tab-pane"
+             role="tabpanel"
+             aria-labelledby="{{country}}-tab"
+             tabindex="0">
+            <ul class="ps-3 mb-0 list-unstyled">
+                {% set countryPaymentSystems = [] %}
 
+                {# Собираем все активные платежные системы для текущей страны #}
+                {% for donate in allDonateSystems %}
+                    {% if donate.enable %}
+                        {% set countryList = null %}
+                        {% set ds = get_donate_paysystem(donate.name) %}
+
+                        {# Пытаемся получить страны из объекта donateSystem #}
+                        {% set donateCountries = attribute(donate, 'country') %}
+                        {% if donateCountries is iterable %}
+                            {% set countryList = donateCountries %}
+                        {% else %}
+                            {# Fallback: используем класс по умолчанию #}
+                            {% if ds and ds.getCountry() is iterable %}
+                                {% set countryList = ds.getCountry() %}
+                            {% endif %}
+                        {% endif %}
+
+                        {# Проверяем, содержит ли список стран текущую страну #}
+                        {% if countryList is iterable and country in countryList %}
+                            {% set countryPaymentSystems = countryPaymentSystems|merge([{
+                                'donate': donate,
+                                'name': donate.name,
+                                'description': donate.description,
+                                'sortValue': attribute(donate, 'sortValue'),
+                                'dsName': ds ? ds.getName() : donate.name,
+                                'dsDescription': ds ? ds.getDescription() : null
+                            }]) %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                {# Сортируем по sortValue #}
+                {% set sortedSystems = countryPaymentSystems|sort((a, b) => a.sortValue <=> b.sortValue) %}
+
+                {% for payment in sortedSystems %}
+                    <li class="shadow">
+                        <div class="payment-system-item" data-name="{{payment.name}}">
+                            <div class="payment-system-content">
+                                <div class="payment-system-header">
+                                    <h4 class="payment-system-name">{{payment.dsName}}</h4>
+                                </div>
+                                <div class="payment-system-description">
+                                    {{payment.description ?: payment.dsDescription}}
+                                </div>
+                            </div>
+                            <div class="payment-system-radio">
+                                <input type="radio" class="form-check-input" name="paysystem" id="{{country}}-{{payment.name}}" value="{{payment.name}}">
+                                <label class="form-check-label" for="{{country}}-{{payment.name}}"></label>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
 
 
 
@@ -577,7 +634,7 @@
             </div>
         </div>
     </div>
-   <!-- End:: row-7 -->
+	<!-- End:: row-7 -->
 
 
 </div>
@@ -595,44 +652,44 @@
 
 
 .tab-pane ul {
-   list-style: none !important;
-   padding-left: 0 !important;
-   margin-bottom: 0 !important;
+    list-style: none !important;
+    padding-left: 0 !important;
+    margin-bottom: 0 !important;
 }
 
 
 .payment-system-item {
-   display: flex;
-   align-items: center;
-   padding: 10px;
-   margin-bottom: 10px;
-   border-radius: 8px;
-   border-left: 4px solid transparent;
-   position: relative;
-   transition: all 0.3s ease;
-   cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border-left: 4px solid transparent;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 
 .payment-system-radio input[type="radio"] {
-   position: absolute;
-   opacity: 0;
-   height: 0;
-   width: 0;
-   pointer-events: none;
+    position: absolute;
+    opacity: 0;
+    height: 0;
+    width: 0;
+    pointer-events: none;
 }
 
 
 .payment-system-item.selected {
-   border-left: 4px solid #0d6efd;
-   background-color: rgba(13, 110, 253, 0.08);
-   box-shadow: 0 2px 8px rgba(13, 110, 253, 0.15);
+    border-left: 4px solid #0d6efd;
+    background-color: rgba(13, 110, 253, 0.08);
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.15);
 }
 
 
 .payment-system-item.selected .payment-system-name {
-   color: #0d6efd;
-   font-weight: 600;
+    color: #0d6efd;
+    font-weight: 600;
 }
 
 </style>
@@ -651,622 +708,622 @@
     * Включает функционал для работы с валютами, бонусами и системами оплаты
     */
    (function($) {
-      'use strict';
+       'use strict';
 
-      // ======================================================================
-      // Модуль управления валютами и локализацией
-      // ======================================================================
-      const CurrencyManager = (function() {
-         // Определение валюты пользователя на основе его страны
-         const userCountry = '{{ getUser().getCountry() }}'.toLowerCase();
-         let preferredCurrency = 'usd';
+       // ======================================================================
+       // Модуль управления валютами и локализацией
+       // ======================================================================
+       const CurrencyManager = (function() {
+           // Определение валюты пользователя на основе его страны
+           const userCountry = '{{ getUser().getCountry() }}'.toLowerCase();
+           let preferredCurrency = 'usd';
 
-         /**
-          * Инициализация предпочитаемой валюты на основе страны пользователя
-          * @returns {string} Код валюты
-          */
-         const initialize = () => {
-            // Назначение валюты на основе страны
-            if (userCountry === 'ua') {
-               preferredCurrency = 'uah';
-            } else if (userCountry === 'ru') {
-               preferredCurrency = 'rub';
-            } else if (userCountry === 'eu' || userCountry.match(/^(de|fr|it|es|pt|nl|be|ie|at|fi|lt|lv|ee|sk|si|gr|mt|cy)$/)) {
-               preferredCurrency = 'eur';
-            }
-
-            // Установка активной вкладки на основе страны пользователя
-            setActiveCountryTab();
-
-            return preferredCurrency;
-         };
-
-         /**
-          * Устанавливает активную вкладку на основе страны пользователя
-          */
-         const setActiveCountryTab = () => {
-            // Определяем нормализованную страну для табов
-            let tabCountry = userCountry;
-            if (tabCountry !== 'ru' && tabCountry !== 'ua') {
-               tabCountry = 'world';
-            }
-
-            // Выбираем соответствующий таб
-            const tabId = `#${tabCountry}-tab`;
-            let $tabElement = $(tabId);
-
-            // Запасные варианты, если основной таб не найден
-            if ($tabElement.length === 0) {
-               $tabElement = $('#world-tab');
-            }
-
-            if ($tabElement.length === 0) {
-               $tabElement = $('#myTab1 .nav-link').first();
-            }
-
-            // Активируем таб, если он найден
-            if ($tabElement.length > 0) {
-               const tabInstance = new bootstrap.Tab($tabElement[0]);
-               tabInstance.show();
-            }
-         };
-
-         /**
-          * Обновляет отображение стоимости в разных валютах
-          * @param {number} coinCount - Количество монет для расчета стоимости
-          */
-         const updateCurrencyValues = (coinCount) => {
-            // Нормализация значения
-            if (isNaN(coinCount) || coinCount === '') {
-               coinCount = 1;
-            }
-
-            // Обновление основной стоимости
-            $('.cost-summary').attr('data-default-currency', preferredCurrency);
-
-            const mainCost = (coinCount * parseFloat($(`[data-count="${preferredCurrency}"]`).data('cost'))).toFixed(1);
-            const currencySymbol = preferredCurrency.toUpperCase();
-
-            // Обновляем значение с анимацией
-            $('.cost-summary').text(`${mainCost} ${currencySymbol}`);
-            $('.cost-summary').addClass('flash');
-
-            setTimeout(() => {
-               $('.cost-summary').removeClass('flash');
-            }, 500);
-
-            // Обновляем все дополнительные валюты
-            $('[data-count]').each(function() {
-               const cost = parseFloat($(this).data('cost'));
-               const newValue = (coinCount * cost).toFixed(1);
-               $(this).text(newValue);
-            });
-         };
-
-         return {
-            initialize,
-            updateCurrencyValues,
-            getCurrency: () => preferredCurrency,
-            getCountry: () => userCountry
-         };
-      })();
-
-      // ======================================================================
-      // Модуль расчета бонусов
-      // ======================================================================
-      const BonusManager = (function() {
-         // Таблица бонусов из сервера
-         let bonusTiers = [];
-
-         /**
-          * Инициализация менеджера бонусов
-          */
-         const initialize = () => {
-            let getTableEnableOneTimeBonus = {{ getServer().donate().getTableEnableOneTimeBonus()|json_encode(constant('JSON_PRETTY_PRINT'))|raw }};
-
-            // Преобразование строки в объект, если необходимо
-            if (typeof getTableEnableOneTimeBonus === 'string') {
-               try {
-                  getTableEnableOneTimeBonus = JSON.parse(getTableEnableOneTimeBonus);
-               } catch (e) {
-                  console.error('Ошибка при парсинге таблицы бонусов:', e);
-                  getTableEnableOneTimeBonus = [];
-               }
-            }
-
-            // Преобразование объекта в массив, если необходимо
-            if (!Array.isArray(getTableEnableOneTimeBonus)) {
-               if (typeof getTableEnableOneTimeBonus === 'object') {
-                  getTableEnableOneTimeBonus = Object.values(getTableEnableOneTimeBonus);
-               } else {
-                  getTableEnableOneTimeBonus = [];
-               }
-            }
-
-            // Сортировка по убыванию количества монет
-            bonusTiers = getTableEnableOneTimeBonus.sort((a, b) => {
-               return parseInt(b.coin) - parseInt(a.coin);
-            });
-
-            // Подсветка текущего бонуса в таблице
-            selectTablePanel();
-         };
-
-         /**
-          * Рассчитывает количество бонусных монет на основе введенного значения
-          * @param {number} enteredValue - Количество монет для покупки
-          * @returns {number} Количество бонусных монет
-          */
-         const calculateBonusCoins = (enteredValue) => {
-            enteredValue = parseInt(enteredValue, 10) || 0;
-            let totalBonusCoins = 0;
-
-            // Находим подходящий уровень бонуса
-            for (let i = 0; i < bonusTiers.length; i++) {
-               if (enteredValue >= parseInt(bonusTiers[i].coin)) {
-                  const bonusPercent = parseInt(bonusTiers[i].percent);
-                  totalBonusCoins = Math.floor(enteredValue * bonusPercent / 100);
-                  break;
-               }
-            }
-
-            return totalBonusCoins;
-         };
-
-         /**
-          * Выделяет соответствующую строку в таблице бонусов
-          */
-         const selectTablePanel = () => {
-            const currentPercent = parseFloat('{{count_all_donate_bonus_percent}}');
-
-            $('tr[data-percent]').each(function() {
-               const rowPercent = parseFloat($(this).data('percent'));
-
-               if (rowPercent === currentPercent) {
-                  $(this).find('td').addClass('bg-success-transparent text-success p-2 px-3');
-               }
-            });
-         };
-
-         /**
-          * Выделяет соответствующий блок бонуса на основе введенного количества монет
-          * @param {number} coinCount - Количество монет
-          */
-         const selectBonusPanel = (coinCount) => {
-            // Нормализация значения
-            if (isNaN(coinCount) || coinCount === '') {
-               coinCount = 1;
-            }
-
-            let maxCost = 0;
-            let $maxCostElement = null;
-
-            // Находим наибольший доступный бонус
-            $('.bonus_items').each(function() {
-               const cost = parseInt($(this).data('cost'), 10);
-               if (cost > maxCost && coinCount >= cost) {
-                  maxCost = cost;
-                  $maxCostElement = $(this);
-               }
-            });
-
-            // Сбрасываем предыдущие выделения
-            $('.bonus_items').removeClass('alert alert-success');
-
-            // Выделяем подходящий элемент
-            if ($maxCostElement) {
-               $maxCostElement.addClass('alert alert-success');
-            }
-         };
-
-         return {
-            initialize,
-            calculateBonusCoins,
-            selectBonusPanel
-         };
-      })();
-
-      // ======================================================================
-      // Модуль управления количеством монет и слайдером
-      // ======================================================================
-      const CoinsInputManager = (function() {
-         let slider = null;
-         const $inputField = $('#numberOfCoinsPurchased');
-         const min = 1;
-         const max = parseInt($inputField.attr('max'));
-
-         /**
-          * Инициализация обработчиков изменения количества монет
-          */
-         const initialize = () => {
-            // Обработчик ввода в поле
-            $inputField.on('input', function() {
-               this.value = this.value.replace(/[^0-9]/g, '');
-               let value = this.value === '' ? '' : parseInt(this.value);
-
-               // Проверка на мин/макс значения
-               if (value === '') {
-                  this.value = '';
-               } else if (value < min || isNaN(value)) {
-                  this.value = min;
-               } else if (value > max) {
-                  this.value = max;
+           /**
+            * Инициализация предпочитаемой валюты на основе страны пользователя
+            * @returns {string} Код валюты
+            */
+           const initialize = () => {
+               // Назначение валюты на основе страны
+               if (userCountry === 'ua') {
+                   preferredCurrency = 'uah';
+               } else if (userCountry === 'ru') {
+                   preferredCurrency = 'rub';
+               } else if (userCountry === 'eu' || userCountry.match(/^(de|fr|it|es|pt|nl|be|ie|at|fi|lt|lv|ee|sk|si|gr|mt|cy)$/)) {
+                   preferredCurrency = 'eur';
                }
 
-               // Обновление UI
-               CurrencyManager.updateCurrencyValues(this.value);
-               BonusManager.selectBonusPanel(this.value);
+               // Установка активной вкладки на основе страны пользователя
+               setActiveCountryTab();
 
-               // Обновление слайдера, если он инициализирован
-               if (slider && slider.noUiSlider) {
-                  slider.noUiSlider.set(this.value);
+               return preferredCurrency;
+           };
+
+           /**
+            * Устанавливает активную вкладку на основе страны пользователя
+            */
+           const setActiveCountryTab = () => {
+               // Определяем нормализованную страну для табов
+               let tabCountry = userCountry;
+               if (tabCountry !== 'ru' && tabCountry !== 'ua') {
+                   tabCountry = 'world';
                }
-            });
 
-            // Настройка кнопок +/-
-            setupQuantityButtons();
-         };
+               // Выбираем соответствующий таб
+               const tabId = `#${tabCountry}-tab`;
+               let $tabElement = $(tabId);
 
-         /**
-          * Настройка кнопок увеличения/уменьшения количества
-          */
-         const setupQuantityButtons = () => {
-            let incrementTimer;
-            let decrementTimer;
-
-            // Обработчик кнопки "минус"
-            $("#product-quantity-minus").on("mousedown", function() {
-               decrementTimer = setInterval(function() {
-                  const currentValue = parseInt($inputField.val());
-
-                  if (!isNaN(currentValue)) {
-                     const newValue = currentValue - 1;
-                     if (newValue >= min) {
-                        $inputField.val(newValue);
-                     } else {
-                        $inputField.val(min);
-                        clearInterval(decrementTimer);
-                     }
-                  } else {
-                     $inputField.val(min);
-                  }
-
-                  BonusManager.selectBonusPanel($inputField.val());
-                  CurrencyManager.updateCurrencyValues($inputField.val());
-               }, 50);
-            }).on("mouseup mouseleave", function() {
-               clearInterval(decrementTimer);
-               CurrencyManager.updateCurrencyValues($inputField.val());
-            });
-
-            // Обработчик кнопки "плюс"
-            $("#product-quantity-plus").on("mousedown", function() {
-               incrementTimer = setInterval(function() {
-                  const currentValue = parseInt($inputField.val());
-
-                  if (!isNaN(currentValue)) {
-                     const newValue = currentValue + 1;
-                     if (newValue <= max) {
-                        $inputField.val(newValue);
-                     } else {
-                        $inputField.val(max);
-                        clearInterval(incrementTimer);
-                     }
-                  } else {
-                     $inputField.val('1');
-                  }
-
-                  BonusManager.selectBonusPanel($inputField.val());
-                  CurrencyManager.updateCurrencyValues($inputField.val());
-               }, 50);
-            }).on("mouseup mouseleave", function() {
-               clearInterval(incrementTimer);
-               CurrencyManager.updateCurrencyValues($inputField.val());
-            });
-
-            // Обработчики одиночных кликов
-            $("#product-quantity-minus, #product-quantity-plus").on("click", function() {
-               CurrencyManager.updateCurrencyValues($inputField.val());
-            });
-         };
-
-         /**
-          * Инициализация слайдера для выбора количества монет
-          */
-         const initializeSlider = () => {
-            const $bubble = $('#rangeValueBubble');
-            slider = document.getElementById('coinsRangeSlider');
-
-            if (!slider || typeof noUiSlider === 'undefined') {
-               console.error('Слайдер или библиотека noUiSlider не найдены');
-               return;
-            }
-
-            // Функция форматирования чисел для пипсов
-            const formatNumber = (value) => {
-               if (value >= 1000000) {
-                  return (value / 1000000).toFixed(1) + 'M';
-               } else if (value >= 1000) {
-                  return (value / 1000).toFixed(0) + 'K';
+               // Запасные варианты, если основной таб не найден
+               if ($tabElement.length === 0) {
+                   $tabElement = $('#world-tab');
                }
-               return value;
-            };
 
-            // Определение шага для пипсов
-            const range = max - min;
-            let pipStep;
-
-            if (range <= 100) {
-               pipStep = 10;
-            } else if (range <= 1000) {
-               pipStep = 100;
-            } else if (range <= 10000) {
-               pipStep = 1000;
-            } else {
-               pipStep = Math.ceil(range / 5);
-            }
-
-            // Создание слайдера
-            noUiSlider.create(slider, {
-               start: [parseInt($inputField.val())],
-               connect: [true, false],
-               step: 1,
-               range: {
-                  'min': min,
-                  'max': max
-               },
-               format: {
-                  to: function(value) {
-                     return Math.round(value);
-                  },
-                  from: function(value) {
-                     return Math.round(value);
-                  }
-               },
-               pips: {
-                  mode: 'values',
-                  values: [min, min + pipStep, min + 2*pipStep, min + 3*pipStep, min + 4*pipStep, max],
-                  density: 4,
-                  format: {
-                     to: function(value) {
-                        return formatNumber(value);
-                     }
-                  }
+               if ($tabElement.length === 0) {
+                   $tabElement = $('#myTab1 .nav-link').first();
                }
-            });
 
-            // Функция обновления пузырька со значением
-            const updateBubble = (value) => {
-               const handle = slider.querySelector('.noUi-handle');
-               const handlePos = handle.getBoundingClientRect();
-               const sliderPos = slider.getBoundingClientRect();
-               const bubbleWidth = $bubble.outerWidth();
+               // Активируем таб, если он найден
+               if ($tabElement.length > 0) {
+                   const tabInstance = new bootstrap.Tab($tabElement[0]);
+                   tabInstance.show();
+               }
+           };
 
-               // Расчет горизонтальной позиции
-               let leftPos = handlePos.left + handle.offsetWidth/2 - sliderPos.left - bubbleWidth/2;
+           /**
+            * Обновляет отображение стоимости в разных валютах
+            * @param {number} coinCount - Количество монет для расчета стоимости
+            */
+           const updateCurrencyValues = (coinCount) => {
+               // Нормализация значения
+               if (isNaN(coinCount) || coinCount === '') {
+                   coinCount = 1;
+               }
 
-               // Ограничение позиции в пределах слайдера
-               const minLeft = 0;
-               const maxLeft = sliderPos.width - bubbleWidth;
-               leftPos = Math.max(minLeft, Math.min(maxLeft, leftPos));
+               // Обновление основной стоимости
+               $('.cost-summary').attr('data-default-currency', preferredCurrency);
 
-               // Применение стилей
-               $bubble.css({
-                  opacity: 1,
-                  left: leftPos + 'px',
-                  transform: 'translateY(-45px)'
+               const mainCost = (coinCount * parseFloat($(`[data-count="${preferredCurrency}"]`).data('cost'))).toFixed(1);
+               const currencySymbol = preferredCurrency.toUpperCase();
+
+               // Обновляем значение с анимацией
+               $('.cost-summary').text(`${mainCost} ${currencySymbol}`);
+               $('.cost-summary').addClass('flash');
+
+               setTimeout(() => {
+                   $('.cost-summary').removeClass('flash');
+               }, 500);
+
+               // Обновляем все дополнительные валюты
+               $('[data-count]').each(function() {
+                   const cost = parseFloat($(this).data('cost'));
+                   const newValue = (coinCount * cost).toFixed(1);
+                   $(this).text(newValue);
+               });
+           };
+
+           return {
+               initialize,
+               updateCurrencyValues,
+               getCurrency: () => preferredCurrency,
+               getCountry: () => userCountry
+           };
+       })();
+
+       // ======================================================================
+       // Модуль расчета бонусов
+       // ======================================================================
+       const BonusManager = (function() {
+           // Таблица бонусов из сервера
+           let bonusTiers = [];
+
+           /**
+            * Инициализация менеджера бонусов
+            */
+           const initialize = () => {
+               let getTableEnableOneTimeBonus = {{ getServer().donate().getTableEnableOneTimeBonus()|json_encode(constant('JSON_PRETTY_PRINT'))|raw }};
+
+               // Преобразование строки в объект, если необходимо
+               if (typeof getTableEnableOneTimeBonus === 'string') {
+                   try {
+                       getTableEnableOneTimeBonus = JSON.parse(getTableEnableOneTimeBonus);
+                   } catch (e) {
+                       console.error('Ошибка при парсинге таблицы бонусов:', e);
+                       getTableEnableOneTimeBonus = [];
+                   }
+               }
+
+               // Преобразование объекта в массив, если необходимо
+               if (!Array.isArray(getTableEnableOneTimeBonus)) {
+                   if (typeof getTableEnableOneTimeBonus === 'object') {
+                       getTableEnableOneTimeBonus = Object.values(getTableEnableOneTimeBonus);
+                   } else {
+                       getTableEnableOneTimeBonus = [];
+                   }
+               }
+
+               // Сортировка по убыванию количества монет
+               bonusTiers = getTableEnableOneTimeBonus.sort((a, b) => {
+                   return parseInt(b.coin) - parseInt(a.coin);
                });
 
-               // Расчет и отображение бонуса
-               const bonusCoins = BonusManager.calculateBonusCoins(value);
+               // Подсветка текущего бонуса в таблице
+               selectTablePanel();
+           };
 
-               if (bonusCoins > 0) {
-                  $bubble.css('min-width', '80px');
-                  $bubble.text(`${value} | Bonus: +${bonusCoins}`);
-               } else {
-                  $bubble.text(value);
-                  $bubble.css('min-width', '40px');
+           /**
+            * Рассчитывает количество бонусных монет на основе введенного значения
+            * @param {number} enteredValue - Количество монет для покупки
+            * @returns {number} Количество бонусных монет
+            */
+           const calculateBonusCoins = (enteredValue) => {
+               enteredValue = parseInt(enteredValue, 10) || 0;
+               let totalBonusCoins = 0;
+
+               // Находим подходящий уровень бонуса
+               for (let i = 0; i < bonusTiers.length; i++) {
+                   if (enteredValue >= parseInt(bonusTiers[i].coin)) {
+                       const bonusPercent = parseInt(bonusTiers[i].percent);
+                       totalBonusCoins = Math.floor(enteredValue * bonusPercent / 100);
+                       break;
+                   }
                }
 
-               CurrencyManager.updateCurrencyValues(value);
-            };
+               return totalBonusCoins;
+           };
 
-            // Обработчики событий слайдера
-            slider.noUiSlider.on('update', function(values, handle) {
-               const value = parseInt(values[handle]);
+           /**
+            * Выделяет соответствующую строку в таблице бонусов
+            */
+           const selectTablePanel = () => {
+               const currentPercent = parseFloat('{{count_all_donate_bonus_percent}}');
 
-               // Обновляем значение в поле ввода
-               $inputField.val(value);
+               $('tr[data-percent]').each(function() {
+                   const rowPercent = parseFloat($(this).data('percent'));
 
-               // Обновляем отображение
-               updateBubble(value);
-               BonusManager.selectBonusPanel(value);
-            });
+                   if (rowPercent === currentPercent) {
+                       $(this).find('td').addClass('bg-success-transparent text-success p-2 px-3');
+                   }
+               });
+           };
 
-            slider.noUiSlider.on('start', function() {
-               const value = parseInt(slider.noUiSlider.get());
-               updateBubble(value);
-            });
+           /**
+            * Выделяет соответствующий блок бонуса на основе введенного количества монет
+            * @param {number} coinCount - Количество монет
+            */
+           const selectBonusPanel = (coinCount) => {
+               // Нормализация значения
+               if (isNaN(coinCount) || coinCount === '') {
+                   coinCount = 1;
+               }
 
-            slider.noUiSlider.on('end', function() {
+               let maxCost = 0;
+               let $maxCostElement = null;
+
+               // Находим наибольший доступный бонус
+               $('.bonus_items').each(function() {
+                   const cost = parseInt($(this).data('cost'), 10);
+                   if (cost > maxCost && coinCount >= cost) {
+                       maxCost = cost;
+                       $maxCostElement = $(this);
+                   }
+               });
+
+               // Сбрасываем предыдущие выделения
+               $('.bonus_items').removeClass('alert alert-success');
+
+               // Выделяем подходящий элемент
+               if ($maxCostElement) {
+                   $maxCostElement.addClass('alert alert-success');
+               }
+           };
+
+           return {
+               initialize,
+               calculateBonusCoins,
+               selectBonusPanel
+           };
+       })();
+
+       // ======================================================================
+       // Модуль управления количеством монет и слайдером
+       // ======================================================================
+       const CoinsInputManager = (function() {
+           let slider = null;
+           const $inputField = $('#numberOfCoinsPurchased');
+           const min = 1;
+           const max = parseInt($inputField.attr('max'));
+
+           /**
+            * Инициализация обработчиков изменения количества монет
+            */
+           const initialize = () => {
+               // Обработчик ввода в поле
+               $inputField.on('input', function() {
+                   this.value = this.value.replace(/[^0-9]/g, '');
+                   let value = this.value === '' ? '' : parseInt(this.value);
+
+                   // Проверка на мин/макс значения
+                   if (value === '') {
+                       this.value = '';
+                   } else if (value < min || isNaN(value)) {
+                       this.value = min;
+                   } else if (value > max) {
+                       this.value = max;
+                   }
+
+                   // Обновление UI
+                   CurrencyManager.updateCurrencyValues(this.value);
+                   BonusManager.selectBonusPanel(this.value);
+
+                   // Обновление слайдера, если он инициализирован
+                   if (slider && slider.noUiSlider) {
+                       slider.noUiSlider.set(this.value);
+                   }
+               });
+
+               // Настройка кнопок +/-
+               setupQuantityButtons();
+           };
+
+           /**
+            * Настройка кнопок увеличения/уменьшения количества
+            */
+           const setupQuantityButtons = () => {
+               let incrementTimer;
+               let decrementTimer;
+
+               // Обработчик кнопки "минус"
+               $("#product-quantity-minus").on("mousedown", function() {
+                   decrementTimer = setInterval(function() {
+                       const currentValue = parseInt($inputField.val());
+
+                       if (!isNaN(currentValue)) {
+                           const newValue = currentValue - 1;
+                           if (newValue >= min) {
+                               $inputField.val(newValue);
+                           } else {
+                               $inputField.val(min);
+                               clearInterval(decrementTimer);
+                           }
+                       } else {
+                           $inputField.val(min);
+                       }
+
+                       BonusManager.selectBonusPanel($inputField.val());
+                       CurrencyManager.updateCurrencyValues($inputField.val());
+                   }, 50);
+               }).on("mouseup mouseleave", function() {
+                   clearInterval(decrementTimer);
+                   CurrencyManager.updateCurrencyValues($inputField.val());
+               });
+
+               // Обработчик кнопки "плюс"
+               $("#product-quantity-plus").on("mousedown", function() {
+                   incrementTimer = setInterval(function() {
+                       const currentValue = parseInt($inputField.val());
+
+                       if (!isNaN(currentValue)) {
+                           const newValue = currentValue + 1;
+                           if (newValue <= max) {
+                               $inputField.val(newValue);
+                           } else {
+                               $inputField.val(max);
+                               clearInterval(incrementTimer);
+                           }
+                       } else {
+                           $inputField.val('1');
+                       }
+
+                       BonusManager.selectBonusPanel($inputField.val());
+                       CurrencyManager.updateCurrencyValues($inputField.val());
+                   }, 50);
+               }).on("mouseup mouseleave", function() {
+                   clearInterval(incrementTimer);
+                   CurrencyManager.updateCurrencyValues($inputField.val());
+               });
+
+               // Обработчики одиночных кликов
+               $("#product-quantity-minus, #product-quantity-plus").on("click", function() {
+                   CurrencyManager.updateCurrencyValues($inputField.val());
+               });
+           };
+
+           /**
+            * Инициализация слайдера для выбора количества монет
+            */
+           const initializeSlider = () => {
+               const $bubble = $('#rangeValueBubble');
+               slider = document.getElementById('coinsRangeSlider');
+
+               if (!slider || typeof noUiSlider === 'undefined') {
+                   console.error('Слайдер или библиотека noUiSlider не найдены');
+                   return;
+               }
+
+               // Функция форматирования чисел для пипсов
+               const formatNumber = (value) => {
+                   if (value >= 1000000) {
+                       return (value / 1000000).toFixed(1) + 'M';
+                   } else if (value >= 1000) {
+                       return (value / 1000).toFixed(0) + 'K';
+                   }
+                   return value;
+               };
+
+               // Определение шага для пипсов
+               const range = max - min;
+               let pipStep;
+
+               if (range <= 100) {
+                   pipStep = 10;
+               } else if (range <= 1000) {
+                   pipStep = 100;
+               } else if (range <= 10000) {
+                   pipStep = 1000;
+               } else {
+                   pipStep = Math.ceil(range / 5);
+               }
+
+               // Создание слайдера
+               noUiSlider.create(slider, {
+                   start: [parseInt($inputField.val())],
+                   connect: [true, false],
+                   step: 1,
+                   range: {
+                       'min': min,
+                       'max': max
+                   },
+                   format: {
+                       to: function(value) {
+                           return Math.round(value);
+                       },
+                       from: function(value) {
+                           return Math.round(value);
+                       }
+                   },
+                   pips: {
+                       mode: 'values',
+                       values: [min, min + pipStep, min + 2*pipStep, min + 3*pipStep, min + 4*pipStep, max],
+                       density: 4,
+                       format: {
+                           to: function(value) {
+                               return formatNumber(value);
+                           }
+                       }
+                   }
+               });
+
+               // Функция обновления пузырька со значением
+               const updateBubble = (value) => {
+                   const handle = slider.querySelector('.noUi-handle');
+                   const handlePos = handle.getBoundingClientRect();
+                   const sliderPos = slider.getBoundingClientRect();
+                   const bubbleWidth = $bubble.outerWidth();
+
+                   // Расчет горизонтальной позиции
+                   let leftPos = handlePos.left + handle.offsetWidth/2 - sliderPos.left - bubbleWidth/2;
+
+                   // Ограничение позиции в пределах слайдера
+                   const minLeft = 0;
+                   const maxLeft = sliderPos.width - bubbleWidth;
+                   leftPos = Math.max(minLeft, Math.min(maxLeft, leftPos));
+
+                   // Применение стилей
+                   $bubble.css({
+                       opacity: 1,
+                       left: leftPos + 'px',
+                       transform: 'translateY(-45px)'
+                   });
+
+                   // Расчет и отображение бонуса
+                   const bonusCoins = BonusManager.calculateBonusCoins(value);
+
+                   if (bonusCoins > 0) {
+                       $bubble.css('min-width', '80px');
+                       $bubble.text(`${value} | Bonus: +${bonusCoins}`);
+                   } else {
+                       $bubble.text(value);
+                       $bubble.css('min-width', '40px');
+                   }
+
+                   CurrencyManager.updateCurrencyValues(value);
+               };
+
+               // Обработчики событий слайдера
+               slider.noUiSlider.on('update', function(values, handle) {
+                   const value = parseInt(values[handle]);
+
+                   // Обновляем значение в поле ввода
+                   $inputField.val(value);
+
+                   // Обновляем отображение
+                   updateBubble(value);
+                   BonusManager.selectBonusPanel(value);
+               });
+
+               slider.noUiSlider.on('start', function() {
+                   const value = parseInt(slider.noUiSlider.get());
+                   updateBubble(value);
+               });
+
+               slider.noUiSlider.on('end', function() {
+                   setTimeout(function() {
+                       $bubble.css('opacity', '0');
+                   }, 1000);
+               });
+
+               // Обработчик клика по слайдеру
+               $(slider).on('click', function(e) {
+                   const rect = this.getBoundingClientRect();
+                   const percent = (e.clientX - rect.left) / rect.width;
+                   const value = min + Math.round(percent * (max - min));
+
+                   if (value >= min && value <= max) {
+                       slider.noUiSlider.set(value);
+                   }
+               });
+
+               // Предотвращение стандартного обработчика touchstart
+               $(slider).on('touchstart touchmove', function(e) {
+                   if (e.type === 'touchstart') {
+                       e.preventDefault();
+                   }
+               });
+
+               // Добавление обработчиков кликов на пипсы
                setTimeout(function() {
-                  $bubble.css('opacity', '0');
-               }, 1000);
-            });
+                   const pips = slider.querySelectorAll('.noUi-value');
 
-            // Обработчик клика по слайдеру
-            $(slider).on('click', function(e) {
-               const rect = this.getBoundingClientRect();
-               const percent = (e.clientX - rect.left) / rect.width;
-               const value = min + Math.round(percent * (max - min));
+                   function clickOnPip() {
+                       const value = Number(this.getAttribute('data-value'));
+                       slider.noUiSlider.set(value);
+                   }
 
-               if (value >= min && value <= max) {
-                  slider.noUiSlider.set(value);
-               }
-            });
+                   for (let i = 0; i < pips.length; i++) {
+                       pips[i].style.cursor = 'pointer';
+                       pips[i].addEventListener('click', clickOnPip);
+                   }
+               }, 100);
+           };
 
-            // Предотвращение стандартного обработчика touchstart
-            $(slider).on('touchstart touchmove', function(e) {
-               if (e.type === 'touchstart') {
-                  e.preventDefault();
-               }
-            });
+           return {
+               initialize,
+               initializeSlider,
+               getCurrentValue: () => parseInt($inputField.val()),
+               getMinValue: () => min,
+               getMaxValue: () => max
+           };
+       })();
 
-            // Добавление обработчиков кликов на пипсы
-            setTimeout(function() {
-               const pips = slider.querySelectorAll('.noUi-value');
+       // ======================================================================
+       // Модуль платежных систем
+       // ======================================================================
+       const PaymentSystemManager = (function() {
+           /**
+            * Инициализация менеджера платежных систем
+            */
+           const initialize = () => {
+               // Активация платежной системы по умолчанию
+               activateRadio("{{getServer().donate().getPaySystemDefault()}}");
 
-               function clickOnPip() {
-                  const value = Number(this.getAttribute('data-value'));
-                  slider.noUiSlider.set(value);
-               }
-
-               for (let i = 0; i < pips.length; i++) {
-                  pips[i].style.cursor = 'pointer';
-                  pips[i].addEventListener('click', clickOnPip);
-               }
-            }, 100);
-         };
-
-         return {
-            initialize,
-            initializeSlider,
-            getCurrentValue: () => parseInt($inputField.val()),
-            getMinValue: () => min,
-            getMaxValue: () => max
-         };
-      })();
-
-      // ======================================================================
-      // Модуль платежных систем
-      // ======================================================================
-      const PaymentSystemManager = (function() {
-         /**
-          * Инициализация менеджера платежных систем
-          */
-         const initialize = () => {
-            // Активация платежной системы по умолчанию
-            activateRadio("{{getServer().donate().getPaySystemDefault()}}");
-
-            // Обработчик выбора платежной системы
-            $(document).on("click", ".selectDonSys", function(e) {
-               const name = $(this).data("name");
-               activateRadio(name);
-            });
-
-            // Обработчик клика на элемент платежной системы
-            $('.payment-system-item').on('click', function(e) {
-               // Пропускаем, если клик был на инпуте
-               if (e.target.tagName === 'INPUT') {
-                  return;
-               }
-
-               // Сбрасываем выделение других элементов
-               $('.payment-system-item').removeClass('selected');
-
-               // Выделяем текущий элемент
-               $(this).addClass('selected');
-
-               // Выбираем радиокнопку внутри элемента
-               const radioBtn = $(this).find('input[type="radio"]');
-               radioBtn.prop('checked', true);
-            });
-
-            // Обработчик изменения радиокнопки
-            $('input[name="paysystem"]').on('change', function() {
-               $('.payment-system-item').removeClass('selected');
-               $(this).closest('.payment-system-item').addClass('selected');
-            });
-
-            // Выделение изначально выбранной системы
-            const initialSelected = $('input[name="paysystem"]:checked');
-            if (initialSelected.length > 0) {
-               initialSelected.closest('.payment-system-item').addClass('selected');
-            }
-
-            // Обработчик кнопки оплаты
-            $('#paynext').on('click', function() {
-               const selectedPaySystem = getSelectedPaySystemValue();
-
-               if (!selectedPaySystem) {
-                  return false;
-               }
-
-               $.ajax({
-                  type: "POST",
-                  url: `/donate/transfer/${selectedPaySystem}/createlink`,
-                  data: {
-                     count: CoinsInputManager.getCurrentValue()
-                  },
-                  success: function(redirectLink) {
-                     if (redirectLink['ok'] === false) {
-                        noticeError(redirectLink['message']);
-                     } else {
-                        const linkText = "{{phrase('Click to go to the payment page')}}";
-                        $("#linkPay").html(`<a href="${redirectLink}" target="_blank">${linkText}</a>`);
-                        window.open(redirectLink, '_blank');
-                     }
-                  }
+               // Обработчик выбора платежной системы
+               $(document).on("click", ".selectDonSys", function(e) {
+                   const name = $(this).data("name");
+                   activateRadio(name);
                });
-            });
-         };
 
-         /**
-          * Активирует радиокнопку платежной системы по имени
-          * @param {string} name - Имя платежной системы
-          */
-         const activateRadio = (name) => {
-            $('input[name="paysystem"]').prop('checked', false);
-            $('.payment-system-item').removeClass('selected');
-            $(`input[name="paysystem"][value="${name}"]`).prop('checked', true);
-            $(`.payment-system-item[data-name="${name}"]`).addClass('selected');
-         };
+               // Обработчик клика на элемент платежной системы
+               $('.payment-system-item').on('click', function(e) {
+                   // Пропускаем, если клик был на инпуте
+                   if (e.target.tagName === 'INPUT') {
+                       return;
+                   }
 
-         /**
-          * Получает значение выбранной платежной системы
-          * @returns {string|undefined} Имя выбранной платежной системы
-          */
-         const getSelectedPaySystemValue = () => {
-            const selectedValue = $('input[name="paysystem"]:checked').val();
+                   // Сбрасываем выделение других элементов
+                   $('.payment-system-item').removeClass('selected');
 
-            if (selectedValue) {
-               return selectedValue;
-            } else {
-               noticeError('{{phrase("sel_payment_sys")}}');
-               return undefined;
-            }
-         };
+                   // Выделяем текущий элемент
+                   $(this).addClass('selected');
 
-         return {
-            initialize,
-            activateRadio,
-            getSelectedPaySystemValue
-         };
-      })();
+                   // Выбираем радиокнопку внутри элемента
+                   const radioBtn = $(this).find('input[type="radio"]');
+                   radioBtn.prop('checked', true);
+               });
 
-      // ======================================================================
-      // Инициализация приложения
-      // ======================================================================
-      $(document).ready(function() {
-         // Инициализация всех модулей
-         CurrencyManager.initialize();
-         BonusManager.initialize();
-         CoinsInputManager.initialize();
-         PaymentSystemManager.initialize();
+               // Обработчик изменения радиокнопки
+               $('input[name="paysystem"]').on('change', function() {
+                   $('.payment-system-item').removeClass('selected');
+                   $(this).closest('.payment-system-item').addClass('selected');
+               });
 
-         // Инициализация слайдера (если доступен)
-         if (document.getElementById('coinsRangeSlider')) {
-            CoinsInputManager.initializeSlider();
-         }
+               // Выделение изначально выбранной системы
+               const initialSelected = $('input[name="paysystem"]:checked');
+               if (initialSelected.length > 0) {
+                   initialSelected.closest('.payment-system-item').addClass('selected');
+               }
 
-         // Обновление начальных значений
-         const initialValue = CoinsInputManager.getCurrentValue();
-         CurrencyManager.updateCurrencyValues(initialValue);
-         BonusManager.selectBonusPanel(initialValue);
+               // Обработчик кнопки оплаты
+               $('#paynext').on('click', function() {
+                   const selectedPaySystem = getSelectedPaySystemValue();
 
-         // Экспорт getSelectedPaySystemValue в глобальную область видимости
-         window.getSelectedPaySystemValue = PaymentSystemManager.getSelectedPaySystemValue;
-      });
+                   if (!selectedPaySystem) {
+                       return false;
+                   }
+
+                   $.ajax({
+                       type: "POST",
+                       url: `/donate/transfer/${selectedPaySystem}/createlink`,
+                       data: {
+                           count: CoinsInputManager.getCurrentValue()
+                       },
+                       success: function(redirectLink) {
+                           if (redirectLink['ok'] === false) {
+                               noticeError(redirectLink['message']);
+                           } else {
+                               const linkText = "{{phrase('Click to go to the payment page')}}";
+                               $("#linkPay").html(`<a href="${redirectLink}" target="_blank">${linkText}</a>`);
+                               window.open(redirectLink, '_blank');
+                           }
+                       }
+                   });
+               });
+           };
+
+           /**
+            * Активирует радиокнопку платежной системы по имени
+            * @param {string} name - Имя платежной системы
+            */
+           const activateRadio = (name) => {
+               $('input[name="paysystem"]').prop('checked', false);
+               $('.payment-system-item').removeClass('selected');
+               $(`input[name="paysystem"][value="${name}"]`).prop('checked', true);
+               $(`.payment-system-item[data-name="${name}"]`).addClass('selected');
+           };
+
+           /**
+            * Получает значение выбранной платежной системы
+            * @returns {string|undefined} Имя выбранной платежной системы
+            */
+           const getSelectedPaySystemValue = () => {
+               const selectedValue = $('input[name="paysystem"]:checked').val();
+
+               if (selectedValue) {
+                   return selectedValue;
+               } else {
+                   noticeError('{{phrase("sel_payment_sys")}}');
+                   return undefined;
+               }
+           };
+
+           return {
+               initialize,
+               activateRadio,
+               getSelectedPaySystemValue
+           };
+       })();
+
+       // ======================================================================
+       // Инициализация приложения
+       // ======================================================================
+       $(document).ready(function() {
+           // Инициализация всех модулей
+           CurrencyManager.initialize();
+           BonusManager.initialize();
+           CoinsInputManager.initialize();
+           PaymentSystemManager.initialize();
+
+           // Инициализация слайдера (если доступен)
+           if (document.getElementById('coinsRangeSlider')) {
+               CoinsInputManager.initializeSlider();
+           }
+
+           // Обновление начальных значений
+           const initialValue = CoinsInputManager.getCurrentValue();
+           CurrencyManager.updateCurrencyValues(initialValue);
+           BonusManager.selectBonusPanel(initialValue);
+
+           // Экспорт getSelectedPaySystemValue в глобальную область видимости
+           window.getSelectedPaySystemValue = PaymentSystemManager.getSelectedPaySystemValue;
+       });
 
    })(jQuery);
  </script>

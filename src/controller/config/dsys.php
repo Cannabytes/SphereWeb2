@@ -27,7 +27,7 @@ class dsys
                 include $routePath;
                 try {
                     if (class_exists($system)) {
-                        $classInstance = new $system(); // где $system - имя класса
+                        $classInstance = new $system();
                         self::$classArray[$system] = $classInstance;
                     }
                 } catch (Exception $e) {
