@@ -25,7 +25,6 @@ use Ofey\Logan22\template\tpl;
 class change
 {
 
-
     public static function save()
     {
         $isChange = false;
@@ -143,7 +142,6 @@ class change
     }
 
     //Смена аватарки на свой
-
     public static function show_avatar_page(): void
     {
         validation::user_protection();
@@ -163,100 +161,6 @@ class change
         tpl::display("select_avatar.html");
     }
 
-    public static function set_self_avatar()
-    {
-        validation::user_protection();
-        tpl::addVar([
-            "PRICE_CHANGE_AVATAR" => PRICE_CHANGE_AVATAR,
-        ]);
-        tpl::display("userModel/profile/set_avatar.html");
-    }
-
-    public static function set_self_avatar_load()
-    {
-        validation::user_protection();
-        $files = $_FILES['files'] ?? null;
-        if ($files == null) {
-            return;
-        }
-
-        if (PRICE_CHANGE_AVATAR > auth::get_donate_point()) {
-            board::error("У Вас недостаточно денег. Стоимость смены аватарки " . PRICE_CHANGE_AVATAR . " " . lang::get_phrase("Sphere-Coin") . ".");
-        }
-
-        //проверка на наличие файлов
-        if ($files) {
-            //Из массива $files оставляем только первый массив
-            $file = array_map(function ($file) {
-                return $file[0];
-            }, $files);
-
-            $handle = new Upload($file['tmp_name']);
-            if ($handle->uploaded) {
-                $handle->allowed = ['image/*'];
-                $handle->mime_check = true;
-                $handle->file_max_size = 5 * 1024 * 1024; // Разрешенная максимальная загрузка 4mb
-
-                $filename = "user_" . md5(time() . mt_rand(0, 1000000));
-
-                $handle->file_new_name_body = $filename;
-                $handle->image_resize = true;
-                $handle->image_x = 450;
-                $handle->image_ratio_y = true;
-                $handle->file_name_body_pre = 'thumb_';
-                $handle->image_convert = 'webp';
-                $handle->webp_quality = 95;
-                $handle->process('./uploads/avatar');
-                if (!$handle->processed) {
-                    board::notice(false, $handle->error);
-                }
-
-                $handle->file_new_name_body = $filename;
-                $handle->image_resize = true;
-                $handle->image_x = 1200;
-                $handle->image_ratio_y = true;
-                $handle->image_convert = 'webp';
-                $handle->webp_quality = 95;
-                $handle->process('./uploads/avatar');
-                if ($handle->processed) {
-                    $handle->clean();
-
-                    if (mb_substr(auth::get_avatar(), 0, 5) == "user_") {
-                        unlink("uploads/avatar/" . auth::get_avatar());
-                    }
-                    donate::taking_money(PRICE_CHANGE_AVATAR, auth::get_id());
-                    auth::set_donate_point(auth::get_donate_point() - PRICE_CHANGE_AVATAR);
-
-                    auth::set_avatar($filename . ".webp");
-                    userlog::add("new_avatar", 548);
-                    \Ofey\Logan22\model\user\profile\change::set_avatar($filename . ".webp");
-                    board::alert([
-                        'type' => 'notice_set_avatar',
-                        'ok' => true,
-                        'message' => lang::get_phrase(197),
-                        'src' => "/uploads/avatar/thumb_" . $filename . ".webp",
-                        'count_sphere_coin' => auth::get_donate_point(),
-                    ]);
-
-                }
-                if ($handle->error) {
-                    $fileName = $files['file'];
-                    $msg = lang::get_phrase(455) . " '" . $fileName . "'\n" . lang::get_phrase(456) . " : " . $handle->error;
-                    board::notice(false, $msg);
-                }
-            }
-        }
-    }
-
-    public static function show_background_avatar_page(): void
-    {
-        validation::user_protection();
-        tpl::addVar([
-            "title" => lang::get_phrase(193),
-            "avatars" => fileSys::file_list('src/template/logan22/assets/images/navatarback'),
-        ]);
-        tpl::display("userModel/option/select_background_avatar.html");
-    }
 
     public static function save_avatar(): void
     {

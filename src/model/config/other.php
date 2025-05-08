@@ -46,6 +46,7 @@ class other
     private int $maxAccount = 10;
 
     private string $contactAdmin = "";
+    private string $balanceNotice = "";
 
     private bool $autoUpdate = true;
     private bool $isShow404error = false;
@@ -71,6 +72,7 @@ class other
         $this->linkMainPage = $setting['linkMainPage'] ?? $this->linkMainPage;
         $this->maxAccount = (int)(is_array($setting) ? ($setting['max_account'] ?? $this->maxAccount) : $this->maxAccount);
         $this->contactAdmin = $setting['contactAdmin'] ?? $this->contactAdmin;
+        $this->balanceNotice = $setting['balanceNotice'] ?? $this->balanceNotice;
         $this->autoUpdate = filter_var($setting['autoUpdate'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->isShow404error = filter_var($setting['isShow404error'] ?? false, FILTER_VALIDATE_BOOLEAN);
     }
@@ -183,6 +185,11 @@ class other
         return $this->contactAdmin;
     }
 
+    public function getBalanceNotice(): string
+    {
+        return trim($this->balanceNotice);
+    }
+
     public function save(): void
     {
         $data = json_encode([
@@ -201,7 +208,8 @@ class other
             'keywords' => $this->keywords,
             'linkMainPage' => $this->linkMainPage,
             'max_account' => $this->maxAccount,
-            'contactAdmin' => $this->contactAdmin,
+            'contactAdmin' => trim($this->contactAdmin),
+            'balanceNotice' => trim($this->balanceNotice),
         ]);
 
         sql::sql("DELETE FROM `settings` WHERE `key` = ? AND serverId = ? ", [

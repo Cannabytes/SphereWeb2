@@ -286,10 +286,6 @@ class donate
         }
     }
 
-    /*
-     * Покупка предмета, передача предмета игровому персонажу
-     */
-
     /**
      * Получение информации о товарах в магазине.
      *
@@ -359,8 +355,6 @@ class donate
         return $shopInfo;
     }
 
-    //Имлементация отправки на персонажа
-
     /**
      * @param $array
      * @param $methodName
@@ -405,7 +399,7 @@ class donate
         try {
             //Формальная проверка, что у пользователя вообще есть ли деньги.
             if (auth::get_donate_point() < 0) {
-               board::error('Insufficient funds');
+                board::error('Insufficient funds');
             }
             $lastUsage = $_SESSION['COOLDOWN_DONATE_TRANSACTION'] ?? 0;
             if (time() - $lastUsage < self::$COOLDOWN_SECONDS) {
@@ -517,8 +511,6 @@ class donate
             ])->show()->getResponse();
             if (isset($json['data']) && $json['data'] === true) {
                 $objectItems = $json['objects'];
-
-
                 if (\Ofey\Logan22\controller\config\config::load()->notice()->isBuyShop()) {
                     $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_buy_to_player');
                     $msg = strtr($template, [
@@ -527,11 +519,8 @@ class donate
                     ]);
                     telegram::sendTelegramMessage($msg, config::load()->notice()->getBuyShopThreadId());
                 }
-
                 user::self()->removeWarehouseObjectId($objectItems);
-
                 $db->commit();
-
                 board::alert([
                     'type' => 'notice',
                     'ok' => true,
@@ -544,7 +533,6 @@ class donate
             }
 
             $db->commit();
-
             board::alert([
                 'type' => 'notice',
                 'ok' => true,
@@ -557,27 +545,8 @@ class donate
         }
     }
 
-    public static function taking_money($dp, $user_id)
-    {
-        //        if(auth::get_donate_point() < 0){
-        //            board::notice(false, "Not enough money");
-        //        }
-        //        if(auth::get_donate_point() == 0){
-        //            board::notice(false, "Вам необходимо иметь на балансе {$dp} SphereCoin");
-        //        }
-        //        if ((auth::get_donate_point() - $dp) >= 0) {
-        //            sql::run("UPDATE `users` SET `donate_point` = `donate_point`-? WHERE `id` = ?", [
-        //                $dp,
-        //                $user_id,
-        //            ]);
-        //            auth::set_donate_point(auth::get_donate_point() - $dp);
-        //        }else{
-        //            board::error("Ошибка");
-        //        }
-    }
 
     //Уменьшение коинов
-
     public static function donate_history_pay_self($user_id = null): array
     {
         if (!$user_id) {
@@ -660,7 +629,6 @@ class donate
 
 
     //Сумма зачисления денег с учетом курса валют конфига
-
     public static function getBonusDiscount($user_id, $table)
     {
         $amount = sql::run("SELECT SUM(point) AS `count` FROM donate_history_pay WHERE user_id = ? and sphere=0", [$user_id])->fetch()['count'] ?? 0;
@@ -809,12 +777,10 @@ class donate
             return;
         }
         $addSphereCoin = ($sphereCoin * $percent / 100);
-        //TODO: Добавить логирование о действий пользователя
         user::getUserId($user_id)->donateAdd($addSphereCoin)->AddHistoryDonate(amount: $addSphereCoin, message: lang::get_phrase('bonus for cumulative system', $percent, $addSphereCoin), pay_system:  "cumulativeBonus");
     }
 
     //Выдача бонуса предметом, за N сумму доната единоразвым платежем
-
     public static function isOnlyAdmin($donateClass): void
     {
         if (method_exists($donateClass, 'forAdmin')) {
@@ -822,58 +788,6 @@ class donate
                 board::error('Only for Admin');
             }
         }
-    }
-
-    /**
-     * Функция для «умного» расчёта количества коинов.
-     * Если sphereCoinCost >= 1, используем стандартную формулу деления.
-     * Если sphereCoinCost < 1, автоматически переходим к формуле умножения.
-     *
-     * @param float $count Количество штук
-     * @param float $ratioUSD Стоимость в долларах
-     * @param float $sphereCoinCost Кол-во коинов за 1 доллар
-     *
-     * @return float Итоговое количество коинов
-     */
-    function getOrderAmount($count, $ratioUSD, $sphereCoinCost): float
-    {
-        if ($sphereCoinCost >= 1.0) {
-            return $count * ($ratioUSD / $sphereCoinCost);
-        } else {
-            return $count * ($ratioUSD * $sphereCoinCost);
-        }
-    }
-
-    /**
-     * Получение информации о предмете из БД
-     */
-    static private function donate_item_info($item_id, $server_id)
-    {
-        return sql::run("SELECT * FROM donate WHERE id = ? AND server_id = ?", [
-            $item_id,
-            $server_id,
-        ])->fetch();
-    }
-
-    /*
-     * Подсчет N значений в массиве
-     */
-
-    private static function findValueForN($inputN, $keyValueObject = 0)
-    {
-        if (!is_array($keyValueObject)) {
-            return 0;
-        }
-        $result = null;
-        foreach ($keyValueObject as $key => $value) {
-            $currentKey = (int)$key;
-            if ($currentKey > $inputN) {
-                break;
-            }
-            $result = $value;
-        }
-
-        return $result;
     }
 
 }

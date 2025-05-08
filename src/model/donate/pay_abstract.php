@@ -12,7 +12,6 @@ class pay_abstract {
 
     function sphereCoinSmartCalc(float $count, float $ratio, float $sphereCoinCost): float
     {
-        // Если sphereCoinCost ≥ 1, используем деление, иначе — умножение
         if ($sphereCoinCost >= 1.0) {
             return $count * ($ratio / $sphereCoinCost);
         } else {
@@ -20,12 +19,12 @@ class pay_abstract {
         }
     }
 
-    public static function getOriginalName(): string {
-        return get_called_class();
+    public static function getCustomName(): string {
+        return static::$name ?? get_called_class();
     }
 
     public static function getName(): string {
-        return property_exists(static::class, 'name') ? static::$name : get_called_class();
+        return get_called_class();
     }
 
     public static function getCountry($v = null): array|bool

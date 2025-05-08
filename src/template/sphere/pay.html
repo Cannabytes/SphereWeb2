@@ -262,7 +262,7 @@
 
 </style>
 
-<h6 class="card-title text-center fw-semibold mt-2">{{phrase('sel_payment_sys')}}</h6>
+<h6 class="card-title text-center fw-semibold mt-1">{{phrase('sel_payment_sys')}}</h6>
 
 
 
@@ -380,7 +380,8 @@
 								'description': donate.description,
 								'sortValue': attribute(donate, 'sortValue'),
 								'dsName': ds ? ds.getName() : donate.name,
-								'dsDescription': ds ? ds.getDescription() : null
+								'dsDescription': ds ? ds.getDescription() : null,
+								'dsCustomName': donate.getCustomName() ?? donate.name,
 							}]) %}
 						{% endif %}
 					{% endif %}
@@ -394,7 +395,7 @@
                         <div class="payment-system-item" data-name="{{payment.name}}">
                             <div class="payment-system-content">
                                 <div class="payment-system-header">
-                                    <h4 class="payment-system-name">{{payment.dsName}}</h4>
+                                    <h4 class="payment-system-name">{{ payment.dsCustomName }}</h4>
                                 </div>
                                 <div class="payment-system-description">
                                     {{payment.description ?: payment.dsDescription}}
@@ -418,15 +419,22 @@
                 <div class="card-footer text-center">
                     <div class="btn-list">
                         <button id="paynext" type="button"
-                                class="btn btn-success btn-wave waves-effect waves-light"
+                                class="btn btn-success btn-wave waves-effect waves-light shadow"
                                 style="transition: all 0.3s;"
                                 onmouseover="this.style.backgroundColor='#dc3545'; this.style.borderColor='#dc3545'"
                                 onmouseout="this.style.backgroundColor='#198754'; this.style.borderColor='#198754'">
                             {{phrase('pay')}}
                         </button>
                         <div id="linkPay"></div>
+
                     </div>
+
                 </div>
+
+				{% if config().other().getBalanceNotice() is not empty %}
+					<div class="alert alert-primary alert-dismissible fade show custom-alert-icon shadow" role="alert">{{ config().other().getBalanceNotice()|raw }}</div>
+				{% endif %}
+
             </div>
         </div>
         </div>

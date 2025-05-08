@@ -147,6 +147,7 @@ class donate
                         'inputs' => $inputs,
                         'webhook' => $system::getWebhook(),
                         'country' => $system::getCountry(),
+                        'customName' => $system::getCustomName(),
                     ];
                 } else {
                     $donateSysNames[] = [
@@ -155,6 +156,7 @@ class donate
                         'inputs' => $inputs,
                         'webhook' => $system::getWebhook(),
                         'country' => $system::getCountry(),
+                        'customName' => $system::getCustomName(),
                     ];
                 }
             }
@@ -168,7 +170,8 @@ class donate
                 $forAdmin = $system['forAdmin'] ?? false;
                 $webhook = $system['webhook'];
                 $country = $system['country'];
-                $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, $webhook, 1000, $country);
+                $customName = $system['customName'] ?? "";
+                $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, $webhook, 1000, $country, $customName);
             }
             $this->donateSystems = $donateSys;
         }
@@ -188,72 +191,8 @@ class donate
         if ($key !== false) {
             unset($all_donate_system[$key]);
         }
-        $donateSysNames = [];
-        foreach ($all_donate_system as $systemName) {
-            $system = dsys::getClone($systemName);
-            if (!$system::isEnable()) {
-                continue;
-            }
-            if (method_exists($system, 'forAdmin')) {
-                if ($system::forAdmin() and auth::get_access_level() != 'admin') {
-                    continue;
-                }
-            }
-            $inputs = [];
 
-            if (method_exists($system, 'inputs')) {
-                $inputs = $system::inputs();
-            }
-            if (method_exists($system, 'inputs')) {
-                $inputs = $system::inputs();
-            }
-            if (method_exists($system, 'getDescription')) {
-                $desc = $system::getDescription();
-                if ($desc == null){
-                    $desc = basename($systemName);
-                }else{
-                    $desc = $system::getDescription() ?? "";
-                }
-                $donateSysNames[] = [
-                    'name' => basename($systemName),
-                    'desc' => $desc,
-                    'inputs' => $inputs,
-                    'country' => $system::getCountry(),
-                ];
-            } else {
-                $donateSysNames[] = [
-                    'name' => basename($systemName),
-                    'desc' => basename($systemName),
-                    'inputs' => $inputs,
-                    'country' => $system::getCountry(),
-                ];
-            }
-        }
         $fileDonateSys = [];
-
-        foreach ($donateSysNames as $donateSysName) {
-            $isExist = false;
-            foreach ($this->donateSystems as $system) {
-                $systemName = key($system);
-                if ($donateSysName['name'] == $systemName) {
-                    $donateSysName['sort'] = $system['sort'] ?? 1000;
-                    $isExist = true;
-                    break;
-                }
-            }
-            if ($isExist) {
-                continue;
-            }
-            $systemName = $donateSysName['name'];
-            $enable = $donateSysName['enable'] ?? false;
-            $inputs = $donateSysName['inputs'] ?? [];
-            $description = $donateSysName['desc'] ?? "";
-            $forAdmin = $donateSysName['forAdmin'] ?? false;
-            $sort = $system[$systemName]['sort'] ?? 1000;
-            $country = $system[$systemName]['country'] ?? [];
-            $fileDonateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort, country: $country);
-
-        }
         $donateSys = [];
         foreach ($this->donateSystems as $system) {
             $systemName = key($system);
@@ -263,7 +202,12 @@ class donate
             $forAdmin = $system[$systemName]['forAdmin'] ?? false;
             $sort = $system[$systemName]['sort'] ?? 1000;
             $country = $system[$systemName]['country'] ?? [];
-            $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort, country: $country);
+            if(!isset($system[$systemName]['customName']) or empty($system[$systemName]['customName'])){
+                $customName = $systemName;
+            }else{
+                $customName = $system[$systemName]['customName'] ?? $systemName;
+            }
+            $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort, country: $country, customName: $customName);
         }
         $donateSys = array_merge($donateSys, $fileDonateSys);
         usort($donateSys, function ($a, $b) {
@@ -498,7 +442,9 @@ class donateSystem
 
     private array $country = [];
 
-    public function __construct($enable, $name, $inputs, $description = "", $forAdmin = false, $webhookUrl = null, $sort = 1000, $country = [])
+    private string $customName = "";
+
+    public function __construct($enable, $name, $inputs, $description = "", $forAdmin = false, $webhookUrl = null, $sort = 1000, $country = [], $customName = "")
     {
         $this->enable = filter_var($enable, FILTER_VALIDATE_BOOLEAN);
         $this->name = $name;
@@ -508,6 +454,7 @@ class donateSystem
         $this->webhookUrl = $webhookUrl;
         $this->sortValue = $sort;
         $this->country = $country;
+        $this->customName = $customName ?? $name;
 
         if (!is_array($inputs) && !is_object($inputs)) {
             return;
@@ -517,6 +464,11 @@ class donateSystem
             $this->inputs[$name] = $value;
         }
 
+    }
+
+    public function getCustomName(): string
+    {
+        return $this->customName;
     }
 
     public function getCountry(): array

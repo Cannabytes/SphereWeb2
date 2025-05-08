@@ -793,6 +793,16 @@
                                                             <hr>
                                                             <div class="form-floating mb-3">
                                                                 <input
+                                                                      value="{{ donate.getCustomName() }}"
+                                                                      type="text"
+                                                                      class="form-control"
+                                                                      id="payname_{{donate.getName()}}"
+                                                                      placeholder="">
+                                                                <label for="payname_{{donate.getName()}}">Название системы</label>
+                                                            </div>
+
+                                                            <div class="form-floating mb-3">
+                                                                <input
                                                                       value="{{donate.getDescription()}}"
                                                                       type="text"
                                                                       class="form-control"
@@ -802,22 +812,14 @@
                                                                     phrase('payment_system_description') }}</label>
                                                             </div>
 
-                                                            <div class="border rounded-3 p-3 mb-3">
-                                                                <p class="fs-15 fw-semibold mb-2">Webhook</p>
-                                                                <p class="fs-12 text-muted">На сайте платежной системы в
-                                                                    качестве уведомлений после успешной оплаты укажите
-                                                                    POST запрос на адрес:</p>
-                                                                {{donate.getWebhookUrl()}}
-                                                            </div>
 
 
 {% set userCountryList = donate.getCountry() %}
 {% set checkListCountry = userCountryList is not empty ? userCountryList : get_donate_paysystem(donate.getName()).getCountry() %}
 {% set countryList = getCountryList() %}
 
-<div class="border rounded-3 p-3">
+<div class="border rounded-3 p-3 mb-3">
     <p class="fs-15 fw-semibold mb-2">Платежная система для каких пользователей</p>
-
     <!-- Первые 4 элемента в двухколоночном макете -->
     <div class="row">
         {% for dn, country in countryList|slice(0, 4) %}
@@ -873,7 +875,6 @@
     {% endif %}
 </div>
 
-                                                            <!-- Дополнительный стиль для кнопки аккордиона -->
 <style>
     button[data-bs-toggle="collapse"]::after {
         content: " ▼";
@@ -891,6 +892,14 @@
     }
 </style>
 
+
+                                                            <div class="border rounded-3 p-3">
+                                                                <p class="fs-15 fw-semibold mb-2">Webhook</p>
+                                                                <p class="fs-12 text-muted">На сайте платежной системы в
+                                                                    качестве уведомлений после успешной оплаты укажите
+                                                                    POST запрос на адрес:</p>
+                                                                {{donate.getWebhookUrl()}}
+                                                            </div>
 
 
                                                             <input type="hidden" value="{{donate.getSortValue()}}"
@@ -1167,6 +1176,7 @@
             var forAdmin = $('#forAdmin_' + payName).is(':checked'); // Проверяем, является ли система по умолчанию для администратора
             var description = $('#description_' + payName).val(); // Получаем описание платежной системы
             var sort = $('#sort_' + payName).val(); // Получаем сортировку платежной системы
+            var customName =  $('#payname_' + payName).val();
 
             var inputsData = {};
             // Итерируем через все поля ввода текущей платежной системы
@@ -1190,7 +1200,8 @@
                     inputs: inputsData,
                     description: description,
                     sort: sort,
-                    country: country
+                    country: country,
+                    customName: customName,
                 },
             });
         });
