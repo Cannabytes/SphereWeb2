@@ -7,7 +7,8 @@
     <div class="row">
         <div class="col-md-12 col-lg-12 col-xl-12">
             <div class="row">
-                <div class="col-xl-12 ">
+
+                <div class="col-xl-12">
                     <div class="card custom-card ">
                         <div class="card-header justify-content-between ">
                             <div class="card-title fw-semibold">
@@ -94,6 +95,29 @@
                     </div>
                 </div>
 
+{# Инициализация пустого массива для всех категорий #}
+{% set allCategories = [] %}
+
+{% for id, object in getShopItems() %}
+    {% for item in object %}
+        {% set itemCategories = item.getCategory() %}
+
+        {# Проверяем тип возвращаемого значения #}
+        {% if itemCategories is iterable and itemCategories is not empty %}
+            {# Если это массив, итерируем по нему #}
+            {% for category in itemCategories %}
+                {% if category not in allCategories %}
+                    {% set allCategories = allCategories|merge([category]) %}
+                {% endif %}
+            {% endfor %}
+        {% elseif itemCategories is not empty %}
+            {# Если это строка и она не пустая, добавляем её как одну категорию #}
+            {% if itemCategories not in allCategories %}
+                {% set allCategories = allCategories|merge([itemCategories]) %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endfor %}
 
                 <div id="products_list" class="row">
                     {% for id, object in getShopItems() %}
@@ -114,11 +138,13 @@
                                     </thead>
                                     <tbody>
                                     {% set TotalCost = 0 %}
+									{% set categoryName = "none" %}
                                     {% for item in object %}
+									{% set categoryName = item.getCategory() %}
                                     {% set TotalCost = TotalCost + item.getCost() %}
                                     <tr>
                                         <td><span class="avatar avatar-sm "><img
-                                                src="{{item.getItemInfo().getIcon()}}" alt=""></span>
+                                              src="{{item.getItemInfo().getIcon()}}" alt=""></span>
                                         </td>
                                         <td>{{item.getItemId()}}</td>
                                         <td>{{item.getItemInfo().getItemName()}}</td>
@@ -134,6 +160,21 @@
                                 </table>
                             </div>
                             <div class="card-footer">{{ phrase('total_cost') }}: {{TotalCost}} Donate Coin</div>
+
+<div class="d-flex align-items-center mt-2">
+    <div class="me-2">{{phrase('Category')}}: </div>
+    <select class="category-select form-select" style="width: 250px;">
+        <option value="none" data-new="false">Нет</option>
+
+        {% for category in allCategories %}
+            <option value="{{category}}" {% if category == categoryName %}selected{% endif %}>{{category}}</option>
+        {% endfor %}
+
+        <option value="new" data-new="true">+ {{phrase('add_new_category')}}</option>
+    </select>
+</div>
+
+
                         </div>
                     </div>
 
@@ -159,83 +200,159 @@
 {% block js %}
 <script>
 
-    function recalculateTotal() {
-        var total = 0;
-        $('#product_sheet tbody tr').each(function() {
-            var cost = parseFloat($(this).find('td:eq(4)').text()); // Стоимость товара
-            total += cost;
+    initCategorySelects();
+
+    function initCategorySelects() {
+        $('.category-select').each(function() {
+            if (!$(this).data('initialized')) {
+                $(this).data('initialized', true);
+
+                $(this).on('change', function() {
+                    let selectedValue = $(this).val();
+                    let shopId = $(this).closest('.col-xl-6').data('shop-id');
+
+                    if (selectedValue === 'new') {
+                        let newCategory = prompt("{{phrase('enter_new_category_name')}}");
+                        if (newCategory && newCategory.trim() !== '') {
+                            // Добавляем новую опцию во ВСЕ селекты категорий на странице
+                            $('.category-select').each(function() {
+                                // Проверяем, существует ли уже такая опция
+                                if ($(this).find(`option[value="${newCategory}"]`).length === 0) {
+                                    $(this).find('option:last').before(
+                                          $('<option></option>')
+                                                .val(newCategory)
+                                                .text(newCategory)
+                                    );
+                                }
+                            });
+
+                            // Устанавливаем выбранное значение для текущего селекта
+                            $(this).val(newCategory);
+
+                            // Обновляем категорию продукта на сервере
+                            updateProductCategory(shopId, newCategory);
+                        } else {
+                            // Если категория не была добавлена, возвращаем предыдущее значение
+                            $(this).val($(this).data('previous-value') || 'none');
+                        }
+                    } else {
+                        // Сохраняем текущее значение
+                        $(this).data('previous-value', selectedValue);
+
+                        if ($(this).data('loaded')) {
+                            updateProductCategory(shopId, selectedValue);
+                        } else {
+                            $(this).data('loaded', true);
+                        }
+                    }
+                });
+
+                $(this).data('loaded', true);
+                $(this).data('previous-value', $(this).val());
+            }
         });
-        return parseFloat(total.toFixed(2));
     }
 
+    function updateProductCategory(shopId, category) {
+        let data = {
+            shopId: shopId,
+            category: category
+        };
 
-    $(document).ready(function() {
-        $('#AddToProducts').click(function() {
-            var items = $('#product_sheet tbody tr').map(function() {
-                return {
-                    itemId: $(this).find('td').eq(1).text(),
-                    itemName: $(this).find('td').eq(2).text(),
-                    count: $(this).find('td').eq(3).text(),
-                    cost: $(this).find('td').eq(4).text(),
-                    enchant: $(this).find('td').eq(5).text()
-                };
-            }).get();
-
-            AjaxSend("/admin/shop", "POST", { items }, true).then(function(response) {
-                if (response.ok === false){
-                    noticeError(response.message);
-                }
-                if (response.ok && response.items && response.items.length > 0) {
-                    let totalCost = 0;
-                    const rowsHtml = response.items.map((item) => {
-                        totalCost += item.cost; // Подсчет общей стоимости
-                        return `<tr>
-                            <td><span class="avatar avatar-sm"><img src="${item.item.icon}" alt=""></span></td>
-                            <td>${item.itemId}</td>
-                            <td>${item.item.itemName}</td>
-                            <td>${item.count}</td>
-                            <td>${item.cost}</td>
-                            <td>${item.enchant}</td>
-                            <td>
-                                <button data-object-id="${item.id}" class="btn btn-danger-light btn-icon ms-1 btn-sm removeItem"><i class="ri-delete-bin-5-line"></i></button>
-                            </td>
-                        </tr>`;
-                    }).join('');
-
-                    const newTableHtml = `<div data-shop-id="${response.id}" class="col-xl-6">
-                                    <div class="card custom-card">
-                                        <div class="table-responsive">
-                                            <table class="table table-sm text-nowrap table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th style="width: 1px"></th>
-                                                        <th style="width: 1px">Item ID</th>
-                                                        <th>Item Name</th>
-                                                        <th>Count</th>
-                                                        <th>Cost</th>
-                                                        <th>Enchant</th>
-                                                        <th></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    ${rowsHtml}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div class="card-footer">Общая стоимость: ${totalCost} SphereCoin</div>
-                                    </div>
-                                  </div>`;
-
-                    // Добавление новой таблицы в DOM
-                    $('#products_list').append(newTableHtml);
-                    $('#product_sheet tbody').empty();
-                }
-            });
+        AjaxSend("/admin/shop/update/category", "POST", data, true).then(function(response) {
+            if (response.ok) {
+                noticeSuccess('{{phrase("category_updated_successfully")}}');
+            } else {
+                noticeError(response.message || '{{phrase("error_updating_category")}}');
+            }
         });
+    }
 
+    $('#AddToProducts').click(function() {
+        var items = $('#product_sheet tbody tr').map(function() {
+            return {
+                itemId: $(this).find('td').eq(1).text(),
+                itemName: $(this).find('td').eq(2).text(),
+                count: $(this).find('td').eq(3).text(),
+                cost: $(this).find('td').eq(4).text(),
+                enchant: $(this).find('td').eq(5).text()
+            };
+        }).get();
+
+        AjaxSend("/admin/shop", "POST", { items }, true).then(function(response) {
+            if (response.ok === false){
+                noticeError(response.message);
+            }
+            if (response.ok && response.items && response.items.length > 0) {
+                let totalCost = 0;
+                const rowsHtml = response.items.map((item) => {
+                    totalCost += parseFloat(item.cost);
+                    return `<tr>
+                        <td><span class="avatar avatar-sm"><img src="${item.item.icon}" alt=""></span></td>
+                        <td>${item.itemId}</td>
+                        <td>${item.item.itemName}</td>
+                        <td>${item.count}</td>
+                        <td>${item.cost}</td>
+                        <td>${item.enchant}</td>
+                        <td>
+                            <button data-object-id="${item.id}" class="btn btn-danger-light btn-icon ms-1 btn-sm removeItem"><i class="ri-delete-bin-5-line"></i></button>
+                        </td>
+                    </tr>`;
+                }).join('');
+
+                // Получаем все текущие категории для нового селекта
+                let categoryOptions = '';
+                $('.category-select').first().find('option').each(function() {
+                    if ($(this).val() !== 'new') {
+                        let selected = $(this).val() === 'none' ? 'selected' : '';
+                        categoryOptions += `<option value="${$(this).val()}" ${selected}>${$(this).text()}</option>`;
+                    }
+                });
+
+                // Добавляем опцию "добавить новую категорию"
+                categoryOptions += `<option value="new" data-new="true">+ {{phrase('add_new_category')}}</option>`;
+
+                const newTableHtml = `<div data-shop-id="${response.id}" class="col-xl-6">
+                                <div class="card custom-card">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm text-nowrap table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 1px"></th>
+                                                    <th style="width: 1px">Item ID</th>
+                                                    <th>Item Name</th>
+                                                    <th>Count</th>
+                                                    <th>Cost</th>
+                                                    <th>Enchant</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${rowsHtml}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="card-footer">{{ phrase('total_cost') }}: ${totalCost} Donate Coin</div>
+                                    <div class="d-flex align-items-center mt-2">
+                                        <div class="me-2">{{phrase('Category')}}: </div>
+                                        <select class="category-select form-select" style="width: 250px;">
+                                            ${categoryOptions}
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>`;
+
+                $('#products_list').append(newTableHtml);
+                $('#product_sheet tbody').empty();
+                $("#product_cost_select").text("0");
+
+                // Инициализируем новые селекты категорий
+                setTimeout(function() {
+                    initCategorySelects();
+                }, 100);
+            }
+        });
     });
-
-
 
 
     $('#addItemToTable').click(function() {
@@ -281,21 +398,17 @@
         let table = $(this).closest('table');
         let shopId = panel.data('shop-id');
         let objectId = $(this).data("object-id");
-        // Сохранение ссылки на текущий контекст `this`
         let self = this;
         AjaxSend("/admin/shop/remove/item", "POST", {shopId: shopId, objectId: objectId}, true).then(function (response) {
             let rowCount = table.find('tbody tr').length;
             if (rowCount === 1) {
-                // Использование сохранённой ссылки на `this`
                 $(self).closest('.col-xl-6').remove();
             } else {
-                // Использование сохранённой ссылки на `this`
                 $(self).closest('tr').remove();
                 console.log('Оставшееся количество строк в таблице: ', rowCount - 1);
             }
         })
         let total = recalculateTotal();
-        // Предполагаю, что `total` используется далее в коде
     });
 
     $(document).on('click', '.removeItemSelect', function() {

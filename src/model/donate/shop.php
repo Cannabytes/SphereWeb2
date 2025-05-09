@@ -10,6 +10,7 @@ use Ofey\Logan22\model\item\item;
 class shop
 {
     private string $id;
+    private string $category = '';
 
     public function getId(): int
     {
@@ -123,6 +124,16 @@ class shop
     {
         $this->enchant = $enchant;
         return $this;
+    }
+
+    public function setCategory($category): void
+    {
+        $this->category = $category;
+    }
+
+    public function getCategory(): string
+    {
+        return $this->category;
     }
 
     public function toArray(): array

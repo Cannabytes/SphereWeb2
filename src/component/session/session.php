@@ -111,7 +111,6 @@ class session
             `last_activity` INT UNSIGNED NOT NULL,
             `data` TEXT NOT NULL,
             `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            -- Дополнительные поля для защиты от флуда
             `get_action_count` INT UNSIGNED NOT NULL DEFAULT 0,
             `post_action_count` INT UNSIGNED NOT NULL DEFAULT 0,
             `get_last_action_time` INT UNSIGNED NULL DEFAULT NULL,

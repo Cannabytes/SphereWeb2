@@ -476,7 +476,7 @@ class tpl
         $twig->addFunction(new TwigFunction('get_donate_paysystem', function ($getSystem = null) {
             if(self::$donateSysCache){
                 if($getSystem != null){
-                    return self::$donateSysCache[$getSystem];
+                    return self::$donateSysCache[$getSystem] ?? null;
                 }
                 return self::$donateSysCache;
             }
@@ -485,19 +485,19 @@ class tpl
                 'fetchAll' => true,
                 'only_non_empty_folders' => true,
             ]);
-            $key = array_search("monobank", $all_donate_system);
-            if ($key !== false) {
-                unset($all_donate_system[$key]);
-            }
+            self::$donateSysCache = [];
             foreach ($all_donate_system as $system) {
-                $sn = new $system();
-                self::$donateSysCache[$system] = $sn;
+                if ($system !== "monobank") { // Игнорируем monobank вместо удаления из массива
+                    $sn = new $system();
+                    self::$donateSysCache[$system] = $sn;
+                }
             }
             if($getSystem != null){
-                return self::$donateSysCache[$getSystem];
+                return self::$donateSysCache[$getSystem] ?? null;
             }
             return self::$donateSysCache;
         }));
+
 
         $twig->addFunction(new TwigFunction('uniqueCountries', function ($paymentSystems) {
             $allCountries = [];

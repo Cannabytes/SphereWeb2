@@ -2124,4 +2124,5 @@ Password: %%password%%',
     'need_set_install' => 'Установить SSL',
     'expires in days' => 'Истекает через %d дн.',
     'valid for more days' => 'Действителен ещё %d дн.',
+    'without_category' => 'Без категории',
 );

@@ -2097,6 +2097,6 @@ Contraseña: %%password%%',
     'need_set_install' => 'Instalar SSL',
     'expires in days' => 'Expira en %d días',
     'valid for more days' => 'Válido por %d días más',
-
+    'without_category' => 'Sin categoría',
 
     ];

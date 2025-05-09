@@ -338,6 +338,7 @@ class donate
                 }
                 $objectID = (int)$items['id'];
                 $serverId = $items['serverId'];
+                $category = $items['category'];
                 foreach ($items['items'] as $item) {
                     $shopObj = new shop();
                     $shopObj->setId($item['objectId']);
@@ -347,6 +348,7 @@ class donate
                     $shopObj->setItemId($item['itemId']);
                     $shopObj->setEnchant($item['enchant']);
                     $shopObj->setItemInfo($item['itemId']);
+                    $shopObj->setCategory($category);
                     $shopInfo[$objectID][] = $shopObj;
                 }
             }

@@ -8,18 +8,14 @@
 namespace Ofey\Logan22\controller\donate;
 
 use Ofey\Logan22\component\alert\board;
-use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\lang\lang;
-use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\page\error;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\server\server;
-use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
-use ReflectionClass;
 
 class pay
 {

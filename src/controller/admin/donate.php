@@ -12,6 +12,8 @@ use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\request\request;
 use Ofey\Logan22\component\request\request_config;
 use Ofey\Logan22\controller\config\config;
+use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\donate\shop;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\template\async;
@@ -127,6 +129,18 @@ class donate {
         validation::user_protection("admin");
         $user_id = $_POST['user_id'];
         echo json_encode(\Ofey\Logan22\model\donate\donate::donate_history_pay_self($user_id));
+    }
+
+    public static function change_category_item(): void
+    {
+        validation::user_protection("admin");
+        $shopId = $_POST['shopId'] ?? board::error("Не указан ID магазина");
+        $category = $_POST['category'] ?? "none";
+        sql::run("UPDATE `shop_items` SET `category` = ? WHERE id = ?", [
+            $category,
+            $shopId,
+        ]);
+        board::success("success");
     }
 
 

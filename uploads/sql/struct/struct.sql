@@ -481,6 +481,7 @@ CREATE TABLE `shop_items`  (
   `id` int NOT NULL AUTO_INCREMENT,
   `serverId` int NULL DEFAULT NULL,
   `items` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL,
+  `category` varchar(120) NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
@@ -1112,5 +1113,25 @@ ADD CONSTRAINT `forum_poll_votes_ibfk_2` FOREIGN KEY (`option_id`)
 REFERENCES `forum_poll_options` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
 ADD CONSTRAINT `forum_poll_votes_ibfk_3` FOREIGN KEY (`user_id`)
 REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+
+CREATE TABLE IF NOT EXISTS `sessions` (
+   `session_id` VARCHAR(64) NOT NULL PRIMARY KEY,
+   `user_id` INT NULL DEFAULT NULL,
+   `ip_address` VARCHAR(45) NOT NULL,
+   `user_agent` TEXT NOT NULL,
+   `last_activity` INT UNSIGNED NOT NULL,
+   `data` TEXT NOT NULL,
+   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   `get_action_count` INT UNSIGNED NOT NULL DEFAULT 0,
+   `post_action_count` INT UNSIGNED NOT NULL DEFAULT 0,
+   `get_last_action_time` INT UNSIGNED NULL DEFAULT NULL,
+   `post_last_action_time` INT UNSIGNED NULL DEFAULT NULL,
+   `get_banned_until` INT UNSIGNED NULL DEFAULT NULL,
+   `post_banned_until` INT UNSIGNED NULL DEFAULT NULL,
+   INDEX `idx_last_activity` (`last_activity`),
+   INDEX `idx_user_id` (`user_id`),
+   INDEX `idx_get_banned_until` (`get_banned_until`),
+   INDEX `idx_post_banned_until` (`post_banned_until`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

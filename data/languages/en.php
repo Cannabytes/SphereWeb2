@@ -2099,7 +2099,7 @@ Password: %%password%%',
     'need_set_install' => 'Install SSL',
     'expires in days' => 'Expires in %d days',
     'valid for more days' => 'Valid for %d more days',
-
+    'without_category' => 'Without category',
 
 
 ];

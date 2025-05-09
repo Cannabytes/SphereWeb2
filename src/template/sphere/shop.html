@@ -3,234 +3,663 @@
 {% block title %}{{ phrase(215) }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-  <div class="row">
+<div class="container-fluid shop-container">
+  <div class="row g-4">
     <div class="col-xxl-12">
       <div class="card custom-card" id="cart-container-delete">
-        <div class="card-header">
-          <div class="card-title">
-             {{phrase(215)}}
-          </div>
+        <div class="card-header border-bottom d-flex align-items-center">
+          <h3 class="card-title mb-0">
+            {{phrase(215)}}
+          </h3>
         </div>
+
+        {# Собираем все уникальные категории и подсчитываем количество товаров #}
+        {% set allCategories = [] %}
+        {% set totalItems = 0 %}
+        {% set hasNoneCategory = false %}
+        {% set noneCategoryCount = 0 %}
+        
+        {# Первый проход - собираем категории #}
         {% for objectId, products in getShopItems() %}
-        <div class="card-body" data-base-count="{{product.getCount()}}">
-          <div class="table-responsive">
-            <table class="table table-sm table-bordered ">
-              <thead>
-              <tr>
-                <th scope="col" style="width: 30%">{{phrase('product')}}</th>
-                <th scope="col"  style="width: 60%"></th>
-                <th scope="col">{{phrase('price')}}</th>
-              </tr>
-              </thead>
-
-              {% for i, product in products %}
-              <tbody>
-              <tr>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="me-2">
-                                            <span class="avatar avatar-lg">
-                                                <img src="{{product.getItemInfo().getIcon()}}" alt="">
-                                            </span>
-                    </div>
-                    <div>
-                      <div class="mb-1">
-                        {% if product.enchant >= 1 %}
-                        <span class="fw-semibold text-muted"><span
-                          class="badge bg-success fs-11 rounded-1">+{{product.enchant}}</span></span>
-                        {% endif %}
-                        <span
-                          class="me-1 d-inline-flex align-items-center">{{product.getItemInfo().getAddName()}}</span>
-                        <span class="fw-semibold text-muted">{{product.getItemInfo().getItemName()}}</span>
-                        x<span data-cost="{{product.getCount()}}" class="product-count">{{product.getCount()}}</span>
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  {{product.getItemInfo().getDescription()}}
-                </td>
-                <td data-base-price="{{product.getCost()}}">
-                  <div class="fw-semibold fs-14">
-                    {{product.getCost()}}
-                  </div>
-                </td>
-              </tr>
-              </tbody>
-              {% endfor %}
-            </table>
-            <div class="bd-example mb-0">
-              <div class="d-flex flex-column flex-sm-row mb-0">
-
-                  {% set isStackable = true %}
-                <div class="mt-2">
-                  {% for i, product in products %}
-                  {% if product.getItemInfo().getIsStackable() == false %}
-                  {% set isStackable = false %}
-                  {% endif %}
-                  {% endfor %}
-
-                  {% if isStackable == true %}
-                  <div class="input-group border rounded flex-nowrap">
-                    <input min="1" type="number"
-                           class="form-control form-control-sm border-0 text-center w-100 quantity"
-                           aria-label="quantity" value="1">
-                  </div>
-                  {% endif %}
-                </div>
-
-                <div class="mt-2 d-grid d-sm-block col-sm-auto">
-                  <button data-isStackable="{{isStackable}}"
-                          data-count-buy="1"
-                          data-cost="{{ sumGetValue(products, 'getCost') }}"
-                          data-object-id="{{objectId}}"
-                          data-bs-target="#openShop"
-                          data-bs-toggle="modal"
-                          class="btn btn-sm btn-success shadow-success btn-wave waves-effect waves-light showSelectBuy">
-                    {{phrase('buy_for')}} {{ sumGetValue(products, 'getCost') }}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+            {% set totalItems = totalItems + 1 %}
+            {% set itemCategory = products[0].getCategory() %}
+            
+            {% if itemCategory is empty or itemCategory == 'none' %}
+                {% set hasNoneCategory = true %}
+                {% set noneCategoryCount = noneCategoryCount + 1 %}
+            {% else %}
+                {% if itemCategory not in allCategories %}
+                    {% set allCategories = allCategories|merge([itemCategory]) %}
+                {% endif %}
+            {% endif %}
         {% endfor %}
-      </div>
-      
-      
-      <div class="modal fade" id="openShop" tabindex="-1"
-           aria-labelledby="openShopLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <div class="card-title">
-                {{phrase('purchase')}}
-              </div>
+        
+        {# Если есть предметы без категории, добавляем 'none' в список категорий #}
+        {% if hasNoneCategory %}
+            {% set allCategories = ['none']|merge(allCategories) %}
+        {% endif %}
 
-              <div>
-                <ul class="nav nav-tabs justify-content-end nav-tabs-header mb-0" role="tablist">
-                  <li class="nav-item">
-                    <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
-                       href="#shopSendItemsToPlayer" aria-selected="true">{{phrase('send_to_char')}}</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                       href="#shopSendItemsToWarhouse" aria-selected="true">{{phrase('send_to_wh')}}</a>
-                  </li>
+        {% if totalItems > 0 %}
+            {# Вкладки категорий с красивым дизайном #}
+            <div class="shop-categories-container">
+              <div class="shop-categories-wrapper">
+                <ul class="category-tabs" id="categoryTabs" role="tablist">
+                  {% for category in allCategories %}
+                    {# Подсчитываем количество товаров для текущей категории #}
+                    {% set categoryItemCount = 0 %}
+                    {% for objectId, products in getShopItems() %}
+                        {% if (category == 'none' and (products[0].getCategory() is empty or products[0].getCategory() == 'none')) 
+                            or (category != 'none' and products[0].getCategory() == category) %}
+                            {% set categoryItemCount = categoryItemCount + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if category != 'none' or noneCategoryCount > 0 %}
+                        <li class="category-tab-item" role="presentation">
+                          <button class="category-tab-link {% if loop.first %}active{% endif %}"
+                                  id="category-tab-{{ loop.index }}"
+                                  data-bs-toggle="tab"
+                                  data-bs-target="#category-content-{{ loop.index }}"
+                                  type="button"
+                                  role="tab"
+                                  aria-controls="category-content-{{ loop.index }}"
+                                  aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
+                            <span class="category-name">
+                              {% if category == 'none' %}
+                                {{ phrase('without_category') }}
+                              {% else %}
+                                {{ phrase(category) }}
+                              {% endif %}
+                            </span>
+                            <span class="category-count">{{ categoryItemCount }}</span>
+                          </button>
+                        </li>
+                    {% endif %}
+                  {% endfor %}
                 </ul>
               </div>
-
-
             </div>
+
+            {# Содержимое вкладок с анимацией #}
+            <div class="card-body">
+              <div class="tab-content" id="categoryTabsContent">
+                {% set firstActiveTab = true %}
+                {% for category in allCategories %}
+                  {% if category != 'none' or noneCategoryCount > 0 %}
+                    <div class="tab-pane fade {% if firstActiveTab %}show active{% set firstActiveTab = false %}{% endif %}"
+                         id="category-content-{{ loop.index }}"
+                         role="tabpanel"
+                         aria-labelledby="category-tab-{{ loop.index }}">
+                      
+                      {# Заголовок категории с визуальным выделением #}
+                      <div class="category-header">
+                        <h4 class="category-title">
+                          {% if category == 'none' %}
+                            {{ phrase('without_category') }}
+                          {% else %}
+                            {{ phrase(category) }}
+                          {% endif %}
+                        </h4>
+                        <div class="category-divider"></div>
+                      </div>
+                      
+                      <div class="row g-3 row-cards">
+                        {% set itemsInCategory = 0 %}
+                        
+                        {% for objectId, products in getShopItems() %}
+                          {# Проверяем категорию первого товара (предполагаем, что в группе товары одной категории) #}
+                          {% if (category == 'none' and (products[0].getCategory() is empty or products[0].getCategory() == 'none')) 
+                             or (category != 'none' and products[0].getCategory() == category) %}
+                            {% set itemsInCategory = itemsInCategory + 1 %}
+                            
+                            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                              <div class="card h-100 shop-item-card shadow-sm" data-base-count="{{products[0].getCount()}}">
+                                <div class="card-header p-3 d-flex align-items-center">
+                                  <span class="avatar avatar-lg me-3">
+                                    <img src="{{products[0].getItemInfo().getIcon()}}" alt="">
+                                  </span>
+                                  <div>
+                                    <h5 class="card-title mb-1">
+                                      {% if products[0].enchant >= 1 %}
+                                      <span class="badge bg-success fs-11 rounded-1">+{{products[0].enchant}}</span>
+                                      {% endif %}
+                                      <span class="fw-bold text-dark">
+                                        {{products[0].getItemInfo().getItemName()}}
+                                      </span>
+                                    </h5>
+                                    <div class="text-muted fs-13">
+                                      {{products[0].getItemInfo().getAddName()}}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="card-body p-3">
+                                  <p class="card-text mb-3">
+                                    {{products[0].getItemInfo().getDescription()}}
+                                  </p>
+                                  <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                      <span class="fs-14 fw-semibold">{{phrase('price')}}: </span>
+                                      <span class="fs-14 fw-semibold item-price" data-base-price="{{products[0].getCost()}}">
+                                        {{products[0].getCost()}}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <span class="fs-14">x<span data-cost="{{products[0].getCount()}}" class="product-count">
+                                        {{products[0].getCount()}}
+                                      </span></span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="card-footer p-3">
+                                  <div class="d-flex flex-column flex-sm-row align-items-center">
+                                    {% set isStackable = true %}
+                                    {% for i, product in products %}
+                                      {% if product.getItemInfo().getIsStackable() == false %}
+                                        {% set isStackable = false %}
+                                      {% endif %}
+                                    {% endfor %}
+
+                                    {% if isStackable == true %}
+                                    <div class="input-group input-group-sm border rounded me-sm-3 mb-2 mb-sm-0 w-auto">
+                                      <input
+                                            min="1"
+                                            type="number"
+                                            class="form-control border-0 text-center quantity"
+                                            aria-label="quantity"
+                                            value="1">
+                                    </div>
+                                    {% endif %}
+
+                                    <button
+                                          class="btn btn-sm btn-purchase w-100 showSelectBuy"
+                                          data-isStackable="{{isStackable}}"
+                                          data-count-buy="1"
+                                          data-cost="{{ sumGetValue(products, 'getCost') }}"
+                                          data-object-id="{{objectId}}"
+                                          data-bs-toggle="modal"
+                                          data-bs-target="#openShop">
+                                      {{phrase('buy_for')}} {{ sumGetValue(products, 'getCost') }}
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          {% endif %}
+                        {% endfor %}
+                        
+                        {# Если нет товаров в категории, показываем сообщение (не должно происходить из-за проверки выше) #}
+                        {% if itemsInCategory == 0 %}
+                        <div class="col-12">
+                          <div class="empty-category">
+                            <div class="empty-category-icon">
+                              <i class="fe fe-package"></i>
+                            </div>
+                            <h5 class="empty-category-title">
+                              {{ phrase('no_products_in_category')|default('В этой категории нет товаров') }}
+                            </h5>
+                            <p class="empty-category-text">
+                              {{ phrase('check_other_categories')|default('Пожалуйста, проверьте другие категории') }}
+                            </p>
+                          </div>
+                        </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+        {% else %}
+            {# Если нет товаров вообще, показываем сообщение #}
+            <div class="card-body">
+              <div class="empty-shop">
+                <div class="empty-shop-icon">
+                  <i class="fe fe-shopping-bag"></i>
+                </div>
+                <h4 class="empty-shop-title">
+                  {{ phrase('no_products_available')|default('Предметов на продаже еще нет') }}
+                </h4>
+                <p class="empty-shop-text">
+                  {{ phrase('check_back_later')|default('Пожалуйста, загляните позже') }}
+                </p>
+              </div>
+            </div>
+        {% endif %}
+      </div>
+
+      <!-- Модальное окно покупки -->
+      <div class="modal fade" id="openShop" tabindex="-1" aria-labelledby="openShopLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header d-flex align-items-center justify-content-between">
+              <h5 class="modal-title" id="openShopLabel">
+                {{phrase('purchase')}}
+              </h5>
+              <ul class="nav nav-tabs nav-tabs-header border-0" role="tablist">
+                <li class="nav-item">
+                  <a
+                        class="nav-link active"
+                        data-bs-toggle="tab"
+                        href="#shopSendItemsToPlayer"
+                        role="tab"
+                        aria-selected="true">
+                    {{phrase('send_to_char')}}
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a
+                        class="nav-link"
+                        data-bs-toggle="tab"
+                        href="#shopSendItemsToWarhouse"
+                        role="tab"
+                        aria-selected="false">
+                    {{phrase('send_to_wh')}}
+                  </a>
+                </li>
+              </ul>
+            </div>
+
             <div class="modal-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="card custom-card overflow-hidden mb-3" id="itemListSell"></div>
 
-              <div class="card-body">
-
-                <div class="row">
-
-                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                    <div class="card custom-card overflow-hidden" id="itemListSell">
-                    </div>
-                    <div class="input-group border rounded flex-nowrap quantityClass">
-                      <input id="quantityModal" min="1" type="number"
-                             class="form-control form-control-sm border-0 text-center w-100 quantityModal"
-                             aria-label="quantity" value="1">
-                    </div>
+                  <div class="input-group input-group-sm border rounded quantityClass">
+                    <input
+                          id="quantityModal"
+                          min="1"
+                          type="number"
+                          class="form-control border-0 text-center quantityModal"
+                          aria-label="quantity"
+                          value="1">
                   </div>
+                </div>
 
-                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-
-                    <div class="tab-content">
-                      <div class="tab-pane show active text-muted" id="shopSendItemsToPlayer"
-                           role="tabpanel">
-                        <div class="card-body">
-                          <div class="mx-auto">
-                            {{phrase(76)}}
-
-                            <select {% if getUser().getCountPlayers()== 0 %}disabled{% endif
-                                    %} class="form-control" data-trigger id="playerName">
-                              {% if getUser().getCountPlayers() == 0 %}
-                              <option>{{phrase('no_chars')}}</option>
+                <div class="col-md-6">
+                  <div class="tab-content">
+                    <div class="tab-pane show active text-muted" id="shopSendItemsToPlayer" role="tabpanel">
+                      <div class="card-body px-0">
+                        <div class="mb-2 fw-semibold">
+                          {{phrase(76)}}
+                        </div>
+                        <select
+                              class="form-control form-select form-select-sm mb-3"
+                              data-trigger
+                              id="playerName"
+                              {% if getUser().getCountPlayers() == 0 %}disabled{% endif %}>
+                          
+                          {% if getUser().getCountPlayers() == 0 %}
+                            <option>{{phrase('no_chars')}}</option>
+                          {% else %}
+                            {% for i, account in getUser().getAccounts() %}
+                            <optgroup label="{{phrase(480)}}: {{account.getAccount}}">
+                              {% if account.getCharactersCount() == 0 %}
+                                <option disabled>&nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_chars')}}</option>
                               {% else %}
-                              {% for i, account in getUser().getAccounts() %}
-                              <optgroup label="{{phrase(480)}}: {{account.getAccount}}">
-                                {% if account.getCharactersCount() == 0 %}
-                                <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_chars')}} </option>
-                                {% else %}
                                 {% for i, character in account.getCharacters() %}
                                 <option data-account="{{account.getAccount()}}" value="{{character.getPlayerName()}}">
                                   &nbsp;&nbsp;&nbsp;&nbsp; {{character.getPlayerName()}}
                                 </option>
                                 {% endfor %}
-                                {% endif %}
-                              </optgroup>
-                              {% endfor %}
                               {% endif %}
-                            </select>
+                            </optgroup>
+                            {% endfor %}
+                          {% endif %}
+                        </select>
 
-                            <div class="d-flex flex-wrap align-items-center">
-                              <div class="me-2 fw-semibold">
-                                {{phrase(72)}} :
-                              </div>
-                              <span class="fs-12 text-muted shopCostBuy">0</span>
-                            </div>
-
-                            <button data-object-id="0" id="purchase" type="button"
-                                    class="btn btn-success btn-wave waves-effect waves-light">
-                              {{phrase('buy_send_to_char')}}
-                            </button>
-                          </div>
+                        <div class="d-flex flex-wrap align-items-center mb-3">
+                          <span class="me-2 fw-semibold">{{phrase(72)}} :</span>
+                          <span class="fs-12 text-muted shopCostBuy">0</span>
                         </div>
-                      </div>
 
-                      <div class="tab-pane text-muted" id="shopSendItemsToWarhouse"
-                           role="tabpanel">
-                        <div class="card-body">
-
-                          <div class="d-flex flex-wrap align-items-center">
-                            <div class="me-2 fw-semibold">
-                              {{phrase(72)}} :
-                            </div>
-                            <span class="fs-12 text-muted shopCostBuy">0</span>
-                          </div>
-
-                          <button data-object-id="0" id="toWarehouse" type="button"
-                                  class="btn btn-success btn-wave waves-effect waves-light">
-                            {{phrase('buy_send_to_wh')}}
-                          </button>
-                        </div>
+                        <button
+                              data-object-id="0"
+                              id="purchase"
+                              type="button"
+                              class="btn btn-success btn-sm btn-wave w-100 mb-2">
+                          {{phrase('buy_send_to_char')}}
+                        </button>
                       </div>
                     </div>
-                  </div>
 
+                    <div class="tab-pane text-muted" id="shopSendItemsToWarhouse" role="tabpanel">
+                      <div class="card-body px-0">
+                        <div class="d-flex flex-wrap align-items-center mb-3">
+                          <span class="me-2 fw-semibold">{{phrase(72)}} :</span>
+                          <span class="fs-12 text-muted shopCostBuy">0</span>
+                        </div>
+                        <button
+                              data-object-id="0"
+                              id="toWarehouse"
+                              type="button"
+                              class="btn btn-success btn-sm btn-wave w-100">
+                          {{phrase('buy_send_to_wh')}}
+                        </button>
+                      </div>
+                    </div>
+                  </div><!-- /tab-content -->
                 </div>
               </div>
-
-
             </div>
           </div>
         </div>
+      </div><!-- /modal -->
 
-
-      </div>
     </div>
   </div>
 </div>
 {% endblock %}
 
+
+{% block css %}
+<style>
+  /* Базовые стили для магазина */
+  .shop-container {
+    padding: 1rem 0;
+  }
+  .shop-item-card {
+    transition: all 0.25s ease;
+    border: 1px solid rgba(0,0,0,.08);
+  }
+  .shop-item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,.1);
+  }
+  .btn-purchase {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+    transition: all 0.2s ease;
+  }
+  .btn-purchase:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+  }
+
+  /* Улучшенные стили для категорий */
+  .shop-categories-container {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0,0,0,.05);
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  .shop-categories-wrapper {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.5rem 1rem;
+  }
+
+  .shop-categories-wrapper::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  .shop-categories-wrapper::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+    border-radius: 10px;
+  }
+
+  .shop-categories-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+  }
+
+  .category-tabs {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .category-tab-item {
+    margin-right: 0.5rem;
+  }
+
+  .category-tab-link {
+    display: flex;
+    align-items: center;
+    padding: 0.7rem 1.2rem;
+    border-radius: 20px;
+    color: #555;
+    border: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .category-tab-link:hover {
+    color: #000;
+  }
+
+  .category-tab-link.active {
+    background-color: #dc3545;
+    color: white;
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.25);
+  }
+
+  .category-tab-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background-color: #dc3545;
+    border-radius: 3px;
+  }
+
+  .category-name {
+    margin-right: 0.5rem;
+  }
+
+  .category-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background-color: rgba(255,255,255,0.3);
+    color: inherit;
+    border-radius: 11px;
+    transition: all 0.2s ease;
+  }
+
+  .category-tab-link:hover .category-count {
+    background-color: rgba(255,255,255,0.4);
+  }
+
+  .category-tab-link.active .category-count {
+    background-color: rgba(255,255,255,0.4);
+    color: #fff;
+  }
+
+  /* Заголовки категорий */
+  .category-header {
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .category-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 0.5rem;
+  }
+
+  .category-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: #dc3545;
+  }
+
+  .category-divider {
+    margin-top: 0.5rem;
+    height: 1px;
+    background: linear-gradient(to right, #dc3545, rgba(0,0,0,0.05));
+  }
+
+  /* Анимации для вкладок */
+  .tab-pane {
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+
+  .tab-pane:not(.show) {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+  }
+
+  .tab-pane.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Стилизация для пустых категорий и пустого магазина */
+  .empty-category, .empty-shop {
+    padding: 4rem 2rem;
+    text-align: center;
+    background-color: rgba(0,0,0,0.02);
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .empty-category-icon, .empty-shop-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    color: rgba(0,0,0,0.15);
+  }
+
+  .empty-category-title, .empty-shop-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: #555;
+  }
+
+  .empty-category-text, .empty-shop-text {
+    color: #888;
+    font-size: 1.1rem;
+  }
+
+  .empty-shop {
+    background: linear-gradient(145deg, rgba(220, 53, 69, 0.03), rgba(0,0,0,0.01));
+    box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+    border-radius: 1rem;
+    padding: 5rem 2rem;
+  }
+
+  .empty-shop-icon {
+    font-size: 5rem;
+    color: rgba(220, 53, 69, 0.15);
+    margin-bottom: 2rem;
+  }
+
+  /* Улучшения для карточек товаров */
+  .shop-item-card .card-header {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    background-color: rgba(0,0,0,0.02);
+    transition: background-color 0.2s ease;
+  }
+
+  .shop-item-card:hover .card-header {
+    background-color: rgba(0,0,0,0.03);
+  }
+
+  .shop-item-card .avatar {
+    transition: transform 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .shop-item-card:hover .avatar {
+    transform: scale(1.05);
+  }
+
+  .shop-item-card .card-title {
+    transition: color 0.2s ease;
+  }
+
+  .shop-item-card:hover .card-title {
+    color: #dc3545 !important;
+  }
+
+  /* Адаптивность для маленьких экранов */
+  @media (max-width: 767.98px) {
+    .category-tab-link {
+      padding: 0.6rem 1rem;
+    }
+
+    .category-title {
+      font-size: 1.25rem;
+    }
+
+    .empty-category, .empty-shop {
+      padding: 3rem 1rem;
+    }
+
+    .empty-shop-icon {
+      font-size: 4rem;
+    }
+  }
+</style>
+{% endblock %}
+
+
 {% block js %}
 <script>
-
   $(document).ready(function () {
+    
+    $('#categoryTabs .category-tab-link').on('click', function() {
+      $(this).addClass('pulse-animation');
+      setTimeout(() => {
+        $(this).removeClass('pulse-animation');
+      }, 500);
+    });
+
+    
+    function scrollActiveCategoryIntoView() {
+      const $activeTab = $('.category-tab-link.active').parent();
+      if ($activeTab.length) {
+        const $container = $('.shop-categories-wrapper');
+        const containerWidth = $container.width();
+        const tabPosition = $activeTab.position().left;
+        const tabWidth = $activeTab.width();
+
+        const scrollLeft = tabPosition - (containerWidth / 2) + (tabWidth / 2);
+        $container.animate({ scrollLeft: scrollLeft }, 300);
+      }
+    }
+
+    
+    scrollActiveCategoryIntoView();
+    $('#categoryTabs .category-tab-link').on('shown.bs.tab', scrollActiveCategoryIntoView);
+
+    
     $('#purchase').on('click', function () {
       let objectId = $(this).attr('data-object-id');
       let playerName = $('#playerName').val();
-
       let account = $('#playerName').find('option:selected').data('account');
-      console.log(account);
-
       let quantity = parseInt($('#quantityModal').val()) || 1;
+
       AjaxSend('/shop/purchase', 'POST', {
         shopId: objectId,
         playerName: playerName,
@@ -242,10 +671,11 @@
       });
     });
 
+    
     $('#toWarehouse').on('click', function () {
       let objectId = $(this).attr('data-object-id');
-      console.log(objectId);
-      let quantity = parseInt($('#quantity').val()) || 1;
+      let quantity = parseInt($('#quantityModal').val()) || 1;
+
       AjaxSend('/shop/towarehouse', 'POST', {
         shopId: objectId,
         quantity: quantity,
@@ -255,76 +685,89 @@
       });
     });
 
+    
     $('.showSelectBuy').on('click', function () {
       let objectId = $(this).attr('data-object-id');
       let isStack = $(this).attr('data-isstackable');
-      if (isStack) {
-        $('#quantity').show();
-        $('.quantityClass').show();
-      } else {
-        let cost = $(this).attr('data-cost');
-        $('.shopCostBuy').text(cost);
-        $('#quantity').hide();
-        $('.quantityClass').hide();
-      }
-      let quantity = $(this).closest('.d-flex').find('.quantity').val();
-      if (!isStack) {
+      let quantityInput = $(this).closest('.d-flex').find('.quantity');
+      let quantity = quantityInput.length ? (parseInt(quantityInput.val()) || 1) : 1;
+
+      
+      if (isStack === "false") {
         quantity = 1;
+        $('#quantityModal').val(1);
+        $('#quantityModal').closest('.quantityClass').hide();
+      } else {
+        $('#quantityModal').val(quantity);
+        $('#quantityModal').closest('.quantityClass').show();
       }
+
+      let cost = $(this).attr('data-cost');
+      $('.shopCostBuy').text( (isStack === "false") ? cost : (cost * quantity) );
+
       AjaxSend('/admin/shop/get', 'POST', { objectId: objectId }, true).then(function (response) {
         let html = '<ul class="list-group followers-list">';
         response.forEach(function (item) {
-          html += '<li class="list-group-item" data-base-count="' + item.count + '" data-base-price="' + item.cost + '" >' +
-            '<div class="d-sm-flex align-items-top">' +
-            '<span class="avatar avatar-sm">' +
-            '<img src="' + item.item.icon + '" alt="">' +
-            '</span>' +
-            '<div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">' +
-            '<p class="mb-0 lh-1">' + item.item.itemName + ' x<span class="dynamic-count">' + quantity * item.count + '</span></p>' +
-            '<span class="fs-11 text-muted op-7">{{phrase("price")}} : ' + quantity * item.cost + '</span>' +
-            '</div>' +
-            '</div>' +
-            '</li>';
+          let totalCount = item.count * quantity;
+          let totalPrice = item.cost * quantity;
+          html += `
+            <li class="list-group-item" 
+                data-base-count="${item.count}"
+                data-base-price="${item.cost}">
+              <div class="d-sm-flex align-items-top">
+                <span class="avatar avatar-sm">
+                  <img src="${item.item.icon}" alt="">
+                </span>
+                <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
+                  <p class="mb-0 lh-1">
+                    ${item.item.itemName} x<span class="dynamic-count">${totalCount}</span>
+                  </p>
+                  <span class="fs-11 text-muted op-7">
+                    {{phrase("price")}} : ${totalPrice}
+                  </span>
+                </div>
+              </div>
+            </li>
+          `;
         });
         html += '</ul>';
         $('#itemListSell').html(html);
       });
 
-      $(this).attr('data-count-buy', quantity);
+      
       $('#purchase').attr('data-object-id', objectId);
       $('#toWarehouse').attr('data-object-id', objectId);
 
       $('#openShop').modal('show');
     });
 
+    
     function updatePriceAndCountForCard($quantityInput) {
-      let totalCost = 0;
-      let $cardBody = $quantityInput.closest('.card-body');
+      let $card = $quantityInput.closest('.shop-item-card');
       let quantity = parseInt($quantityInput.val()) || 1;
-      $('#quantity').val(quantity);
+      let baseCount = parseInt($card.find('.product-count').data('cost'));
+      let basePrice = parseFloat($card.find('.item-price').data('base-price'));
 
-      $cardBody.find('table tbody tr').each(function () {
-        let $row = $(this);
-        let baseCount = parseInt($row.find('.product-count').data('cost'));
-        let basePrice = parseFloat($row.find('td[data-base-price]').data('base-price'));
+      let totalProductCount = baseCount * quantity;
+      let totalPrice = basePrice * quantity;
 
-        let totalProductCount = baseCount * quantity;
-        let totalPrice = basePrice * quantity;
+      $card.find('.product-count').text(totalProductCount);
+      $card.find('.item-price').text(totalPrice.toFixed(0));
 
-        $row.find('.product-count').text(totalProductCount);
-        $row.find('.fw-semibold.fs-14').text(totalPrice.toFixed(0));
-        totalCost += totalPrice;
-      });
+      let $button = $card.find('.showSelectBuy');
+      $button.text('{{phrase("buy_for")}} ' + totalPrice.toFixed(0));
+      $button.attr('data-cost', totalPrice);
 
-      updateAllShopCostBuy(totalCost);
-      $cardBody.find('.showSelectBuy').text('{{phrase("buy_for")}} ' + totalCost.toFixed(0));
-      $("#quantityModal").val(quantity);
-
-      // Обновляем данные в модальном окне
-      updateModalData(quantity, totalCost);
+      
+      if ($('#openShop').hasClass('show')
+            && $('#purchase').attr('data-object-id') === $button.attr('data-object-id')) {
+        updateModalData(quantity, totalPrice);
+      }
     }
 
+    
     function updateModalData(quantity, totalCost) {
+      let totalModalPrice = 0;
       $('#itemListSell .list-group-item').each(function() {
         let $item = $(this);
         let baseCount = parseInt($item.data('base-count'));
@@ -334,47 +777,41 @@
         let newPrice = basePrice * quantity;
 
         $item.find('.dynamic-count').text(newCount);
-        $item.find('.fs-11.text-muted.op-7').text('{{phrase("price")}} : ' + newPrice.toFixed(0));
+        $item.find('.text-muted.op-7').text('{{phrase("price")}} : ' + newPrice.toFixed(0));
+        totalModalPrice += newPrice;
       });
-
-      updateAllShopCostBuy(totalCost);
+      $('.shopCostBuy').text(totalModalPrice.toFixed(0));
     }
 
-    function updateAllShopCostBuy(totalCost) {
-      $('.shopCostBuy').text(totalCost.toFixed(0));
-    }
-
+    
     $('body').on('input change', '.quantity', function () {
       updatePriceAndCountForCard($(this));
     });
 
+    
     $('.quantityModal').on('input change', function() {
       let quantity = parseInt($(this).val()) || 1;
-      let totalCost = 0;
-
-      $('#itemListSell .list-group-item').each(function() {
-        let $item = $(this);
-        let baseCount = parseInt($item.data('base-count'));
-        let basePrice = parseFloat($item.data('base-price'));
-
-        let newCount = baseCount * quantity;
-        let newPrice = basePrice * quantity;
-        totalCost += newPrice;
-        console.log(basePrice, newPrice, totalCost)
-
-        $item.find('.dynamic-count').text(newCount);
-        $('.shopCostBuy').text(newPrice.toFixed(0));
-      });
-
-      updateAllShopCostBuy(totalCost);
+      updateModalData(quantity, 0); 
     });
 
+    
     $('.quantity').each(function () {
       updatePriceAndCountForCard($(this));
     });
 
+    
+    $('head').append(`
+      <style>
+        @keyframes pulse-animation {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+        .pulse-animation {
+          animation: pulse-animation 0.5s ease;
+        }
+      </style>
+    `);
   });
-
-
 </script>
 {% endblock %}
