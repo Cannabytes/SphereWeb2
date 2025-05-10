@@ -2125,4 +2125,5 @@ Password: %%password%%',
     'expires in days' => 'Истекает через %d дн.',
     'valid for more days' => 'Действителен ещё %d дн.',
     'without_category' => 'Без категории',
+    'phrase_id' => 'ID фразы',
 );

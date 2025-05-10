@@ -2076,5 +2076,6 @@ Password: %%password%%',
     'expires in days' => 'Λήγει σε %d ημέρες',
     'valid for more days' => 'Έγκυρο για ακόμη %d ημέρες',
     'without_category' => 'Χωρίς κατηγορία',
+    'phrase_id' => 'ID φρασής',
 
     ];

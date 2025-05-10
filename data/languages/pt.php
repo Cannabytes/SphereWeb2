@@ -2093,5 +2093,6 @@ Password: %%password%%',
     'expires in days' => 'Expira em %d dias',
     'valid for more days' => 'Válido por mais %d dias',
     'without_category' => 'Sem categoria',
+    'phrase_id' => 'ID da frase',
 
     ];

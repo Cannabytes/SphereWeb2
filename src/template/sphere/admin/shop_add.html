@@ -212,7 +212,7 @@
                     let shopId = $(this).closest('.col-xl-6').data('shop-id');
 
                     if (selectedValue === 'new') {
-                        let newCategory = prompt("{{phrase('enter_new_category_name')}}");
+                        let newCategory = prompt("{{phrase('phrase_id')}}");
                         if (newCategory && newCategory.trim() !== '') {
                             // Добавляем новую опцию во ВСЕ селекты категорий на странице
                             $('.category-select').each(function() {
@@ -261,7 +261,6 @@
 
         AjaxSend("/admin/shop/update/category", "POST", data, true).then(function(response) {
             if (response.ok) {
-                noticeSuccess('{{phrase("category_updated_successfully")}}');
             } else {
                 noticeError(response.message || '{{phrase("error_updating_category")}}');
             }
