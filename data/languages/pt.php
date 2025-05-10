@@ -2094,5 +2094,7 @@ Password: %%password%%',
     'valid for more days' => 'Válido por mais %d dias',
     'without_category' => 'Sem categoria',
     'phrase_id' => 'ID da frase',
+    'registrations' => 'Registrações',
+    'complex_statistics' => 'Estatística complexa',
 
-    ];
+];

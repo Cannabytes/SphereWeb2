@@ -2077,5 +2077,7 @@ Password: %%password%%',
     'valid for more days' => 'Έγκυρο για ακόμη %d ημέρες',
     'without_category' => 'Χωρίς κατηγορία',
     'phrase_id' => 'ID φρασής',
+    'registrations' => 'Εγγραφές',
+    'complex_statistics' => 'Συνολική στατιστική',
 
-    ];
+];

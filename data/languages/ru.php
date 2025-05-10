@@ -2126,4 +2126,7 @@ Password: %%password%%',
     'valid for more days' => 'Действителен ещё %d дн.',
     'without_category' => 'Без категории',
     'phrase_id' => 'ID фразы',
+    'registrations' => 'Регистрации',
+    'complex_statistics' => 'Комплексная статистика',
+
 );

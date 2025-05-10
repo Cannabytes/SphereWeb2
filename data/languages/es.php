@@ -2099,5 +2099,7 @@ Contraseña: %%password%%',
     'valid for more days' => 'Válido por %d días más',
     'without_category' => 'Sin categoría',
     'phrase_id' => 'ID de frase',
+    'registrations' => 'Registros',
+    'complex_statistics' => 'Estadística compleja',
 
-    ];
+];

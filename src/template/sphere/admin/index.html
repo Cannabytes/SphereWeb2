@@ -156,7 +156,6 @@
 {% endif %}
 
 <script>
-    // Инициализация всплывающих подсказок
     document.addEventListener('DOMContentLoaded', function() {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
@@ -166,6 +165,7 @@
 </script>
 
             <div class="card custom-card">
+
                 <div class="card-body">
                     <div class="d-flex align-items-top justify-content-between mb-0 ">
 
@@ -560,6 +560,15 @@
         </div>
         <div class="col-xxl-9">
             <div class="row">
+
+				<div class="col-xl-12">
+					<div class="card">
+						<div class="border-bottom-0 card-body">
+							<div id="echart-stats" class="echart-charts"></div>
+						</div>
+					</div>
+				</div>
+
                 <div class="col-xl-12">
                     <div class="custom-card">
                         <div class="card-body p-0">
@@ -1354,5 +1363,406 @@
 <script src="{{template}}/assets/libs/sweetalert2/sweetalert2.min.js?v=0.0.2"></script>
 <script src="{{template}}/assets/js/sweetalertdb.js?v=0.0.3"></script>
 
+<script src="{{template}}/assets/libs/echarts/echarts.min.js"></script>
+<script>
+$(document).ready(function() {
+    var registrationsData = {{ getUserRegistrations()|json_encode|raw }};
+    var donationsData = {{ getUserDonations()|json_encode|raw }};
 
+    var registrationDates = [];
+    var registrationCounts = [];
+
+    registrationsData.sort(function(a, b) {
+        return new Date(a.registration_date) - new Date(b.registration_date);
+    });
+
+    for (var i = 0; i < registrationsData.length; i++) {
+        var dateObj = new Date(registrationsData[i].registration_date);
+        var formattedDate = dateObj.getDate() + '.' + (dateObj.getMonth() + 1) + '.' + dateObj.getFullYear();
+
+        registrationDates.push(formattedDate);
+        registrationCounts.push(registrationsData[i].registrations_count);
+    }
+
+    var donationsByDate = {};
+
+    for (var i = 0; i < donationsData.length; i++) {
+        var donationDate = donationsData[i].date.split(' ')[0];
+        var donationPoint = parseInt(donationsData[i].point);
+
+        if (!donationsByDate[donationDate]) {
+            donationsByDate[donationDate] = 0;
+        }
+
+        donationsByDate[donationDate] += donationPoint;
+    }
+
+    var donationDates = [];
+    var donationAmounts = [];
+
+    var sortedDonationDates = Object.keys(donationsByDate).sort();
+
+    for (var i = 0; i < sortedDonationDates.length; i++) {
+        var dateObj = new Date(sortedDonationDates[i]);
+        var formattedDate = dateObj.getDate() + '.' + (dateObj.getMonth() + 1) + '.' + dateObj.getFullYear();
+
+        donationDates.push(formattedDate);
+        donationAmounts.push(donationsByDate[sortedDonationDates[i]]);
+    }
+
+    var serversData = [];
+    var serverNames = [];
+    var serverColors = [
+        '#f7b731', // Желтый
+        '#e82646', // Красный
+        '#49b6f5', // Голубой
+        '#28c76f', // Зеленый
+        '#6c757d', // Серый
+        '#fd7e14', // Оранжевый
+        '#6f42c1', // Фиолетовый
+        '#20c997'  // Бирюзовый
+    ];
+
+    {% for server in getServers() %}
+    var serverName = "{{ server.getName() }}";
+    var serverData = {{ getStatisticOnline(server.getId())|json_encode|raw }};
+
+    var onlineByDate = {};
+
+    for (var date in serverData) {
+        var totalOnline = 0;
+        var hoursCount = 0;
+
+        for (var hour in serverData[date]) {
+            var onlineValue = serverData[date][hour];
+            if (onlineValue !== null && onlineValue !== undefined && !isNaN(onlineValue)) {
+                totalOnline += onlineValue;
+                hoursCount++;
+            }
+        }
+
+        // Вычисляем среднее значение онлайна за день
+        if (hoursCount > 0) {
+            onlineByDate[date] = Math.round(totalOnline / hoursCount);
+        } else {
+            onlineByDate[date] = 0;
+        }
+    }
+
+    var onlineDates = [];
+    var onlineValues = [];
+
+    var sortedOnlineDates = Object.keys(onlineByDate).sort();
+
+    for (var i = 0; i < sortedOnlineDates.length; i++) {
+        var dateObj = new Date(sortedOnlineDates[i]);
+        var formattedDate = dateObj.getDate() + '.' + (dateObj.getMonth() + 1) + '.' + dateObj.getFullYear();
+
+        onlineDates.push(formattedDate);
+        onlineValues.push(onlineByDate[sortedOnlineDates[i]]);
+    }
+
+    serversData.push({
+        name: serverName,
+        dates: onlineDates,
+        values: onlineValues
+    });
+
+    serverNames.push(serverName);
+    {% endfor %}
+
+    var allDates = [...registrationDates, ...donationDates];
+
+    for (var i = 0; i < serversData.length; i++) {
+        allDates = [...allDates, ...serversData[i].dates];
+    }
+
+    allDates = [...new Set(allDates)];
+
+    allDates.sort(function(a, b) {
+        var partsA = a.split('.');
+        var partsB = b.split('.');
+        var dateA = new Date(partsA[2], partsA[1] - 1, partsA[0]);
+        var dateB = new Date(partsB[2], partsB[1] - 1, partsB[0]);
+        return dateA - dateB;
+    });
+
+    var fullRegistrationData = [];
+    var fullDonationData = [];
+    var fullServersData = [];
+
+    for (var i = 0; i < allDates.length; i++) {
+        var regIndex = registrationDates.indexOf(allDates[i]);
+        var donIndex = donationDates.indexOf(allDates[i]);
+
+        fullRegistrationData.push(regIndex !== -1 ? registrationCounts[regIndex] : 0);
+        fullDonationData.push(donIndex !== -1 ? donationAmounts[donIndex] : 0);
+    }
+
+    for (var i = 0; i < serversData.length; i++) {
+        var serverFullData = [];
+
+        for (var j = 0; j < allDates.length; j++) {
+            var serverDateIndex = serversData[i].dates.indexOf(allDates[j]);
+            serverFullData.push(serverDateIndex !== -1 ? serversData[i].values[serverDateIndex] : 0);
+        }
+
+        fullServersData.push(serverFullData);
+    }
+
+    var dom = document.getElementById('echart-stats');
+    var myChart = echarts.init(dom, null, {
+        renderer: 'canvas',
+        useDirtyRect: false
+    });
+
+    var allSeries = [
+        {
+            name: '{{phrase("registrations")}}',
+            type: 'line',
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 5,
+            sampling: 'average',
+            yAxisIndex: 0,
+            itemStyle: {
+                color: '#6c5ffc'
+            },
+            areaStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                        offset: 0,
+                        color: 'rgba(108, 95, 252, 0.5)'
+                    },
+                    {
+                        offset: 1,
+                        color: 'rgba(108, 95, 252, 0.1)'
+                    }
+                ])
+            },
+            data: fullRegistrationData
+        },
+        {
+            name: '{{phrase("LOG_DONATE_SUCCESS_DESC")}}',
+            type: 'line',
+            smooth: true,
+            symbol: 'diamond',
+            symbolSize: 6,
+            yAxisIndex: 1,
+            itemStyle: {
+                color: '#05c3fb'
+            },
+            areaStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                        offset: 0,
+                        color: 'rgba(5, 195, 251, 0.5)'
+                    },
+                    {
+                        offset: 1,
+                        color: 'rgba(5, 195, 251, 0.1)'
+                    }
+                ])
+            },
+            data: fullDonationData
+        }
+    ];
+
+    for (var i = 0; i < serversData.length; i++) {
+        allSeries.push({
+            name: serversData[i].name,
+            type: 'line',
+            smooth: true,
+            symbol: 'triangle',
+            symbolSize: 6,
+            yAxisIndex: 2,
+            itemStyle: {
+                color: serverColors[i % serverColors.length]
+            },
+            areaStyle: {
+                opacity: 0.3,
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                        offset: 0,
+                        color: serverColors[i % serverColors.length]
+                    },
+                    {
+                        offset: 1,
+                        color: 'rgba(' +
+                              Math.floor(Math.random() * 100 + 155) + ', ' +
+                              Math.floor(Math.random() * 100 + 155) + ', ' +
+                              Math.floor(Math.random() * 100 + 155) + ', 0.1)'
+                    }
+                ])
+            },
+            data: fullServersData[i]
+        });
+    }
+
+    var legendData = ['{{phrase("registrations")}}', '{{phrase("LOG_DONATE_SUCCESS_DESC")}}'].concat(serverNames);
+
+    var option = {
+        grid: {
+            left: "3%",
+            right: "5%",
+            bottom: "25%",
+            top: "22%",
+            containLabel: true
+        },
+        title: {
+            text: '{{phrase("complex_statistics")}}',
+            left: 'center',
+            textStyle: {
+                color: '#555'
+            }
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                label: {
+                    backgroundColor: '#6a7985'
+                }
+            },
+            formatter: function(params) {
+                var result = params[0].name + '<br/>';
+                for (var i = 0; i < params.length; i++) {
+                    var color = params[i].color;
+                    var marker = '<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:' + color + '"></span>';
+
+                    if (params[i].seriesName === '{{phrase("registrations")}}') {
+                        result += marker + params[i].seriesName + ': ' + params[i].value + ' {{phrase(103)|lower}}.<br/>';
+                    } else if (params[i].seriesName === '{{phrase("LOG_DONATE_SUCCESS_DESC")}}') {
+                        result += marker + params[i].seriesName + ': ' + params[i].value + ' points<br/>';
+                    } else {
+                        result += marker + 'Online [' + params[i].seriesName + ']: ' + params[i].value + ' {{phrase(103)|lower}}.<br/>';
+                    }
+                }
+                return result;
+            }
+        },
+        legend: {
+            data: legendData,
+            top: '8%',
+            textStyle: {
+                color: '#777'
+            },
+            type: serversData.length > 3 ? 'scroll' : 'plain',
+            pageButtonPosition: 'end'
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: {},
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                restore: {}
+            },
+            right: '2%',
+            top: '3%'
+        },
+        dataZoom: [
+            {
+                type: 'inside',
+                start: 50,
+                end: 100,
+                zoomLock: false
+            },
+            {
+                type: 'slider',
+                show: true,
+                start: 50,
+                end: 100,
+                height: 30,
+                bottom: 5,
+                borderColor: '#ccc',
+                fillerColor: 'rgba(108, 95, 252, 0.2)',
+                handleStyle: {
+                    color: '#6c5ffc',
+                    borderColor: '#6c5ffc'
+                }
+            }
+        ],
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: allDates,
+            axisLabel: {
+                rotate: 45,
+                interval: 'auto',
+                formatter: function(value) {
+                    return value;
+                }
+            },
+            axisLine: {
+                lineStyle: {
+                    color: "#8c9097"
+                }
+            }
+        },
+        yAxis: [
+            {
+                type: 'value',
+                name: '{{phrase("registrations")}}',
+                position: 'left',
+                axisLabel: {
+                    formatter: '{value} {{phrase(103)|lower}}.'
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: "#6c5ffc"
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: "rgba(142, 156, 173,0.1)"
+                    }
+                }
+            },
+            {
+                type: 'value',
+                name: 'Points',
+                position: 'right',
+                offset: 80,
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: "#05c3fb"
+                    }
+                },
+                splitLine: {
+                    show: false
+                }
+            },
+            {
+                type: 'value',
+                name: '{{phrase("online")}}',
+                position: 'right',
+                axisLabel: {
+                    formatter: '{value} {{phrase(103)|lower}}'
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: "#f7b731"
+                    }
+                },
+                splitLine: {
+                    show: false
+                }
+            }
+        ],
+        series: allSeries
+    };
+
+    if (option && typeof option === 'object') {
+        myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', function() {
+        myChart.resize();
+    });
+});
+</script>
 {% endblock %}

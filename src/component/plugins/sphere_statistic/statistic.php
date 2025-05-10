@@ -10,6 +10,15 @@ use Ofey\Logan22\template\tpl;
 
 class statistic {
 
+    public function getUserRegistration(): array
+    {
+        return sql::getRows("SELECT DATE(`date_create`) AS registration_date, COUNT(*) AS registrations_count 
+                                    FROM `users` 
+                                    WHERE `date_create` > 0 
+                                    GROUP BY DATE(`date_create`) 
+                                    ORDER BY registration_date DESC");
+    }
+
     public function show() {
         validation::user_protection("admin");
         $settings = include __DIR__ . "/settings.php";
@@ -18,13 +27,7 @@ class statistic {
             error::error404("Плагин отключен");
         }
 
-        $registrations_count = sql::getRows("SELECT DATE(`date_create`) AS registration_date, COUNT(*) AS registrations_count 
-                                    FROM `users` 
-                                    WHERE `date_create` > 0 
-                                    GROUP BY DATE(`date_create`) 
-                                    ORDER BY registration_date DESC");
-
-        tpl::addVar("registrations_count", $registrations_count);
+        tpl::addVar("registrations_count", self::getUserRegistration());
         tpl::displayPlugin("/sphere_statistic/tpl/show.html");
     }
 

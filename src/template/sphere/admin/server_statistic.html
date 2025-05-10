@@ -42,9 +42,7 @@
 
 <script>
   // Получаем данные из шаблона Twig
-  var serverData = {{ data|json_encode|raw }};
-  var serverTime = "{{ server_time }}";
-  var timeZone = "{{ timeZone }}";
+  var serverData = {{ getStatisticOnline(serverId)|json_encode|raw }};
 
   // Функция для преобразования данных в формат ApexCharts
   var convertToChartData = function(data) {

@@ -2101,6 +2101,7 @@ Password: %%password%%',
     'valid for more days' => 'Valid for %d more days',
     'without_category' => 'Without category',
     'phrase_id' => 'Phrase ID',
-
+    'registrations' => 'Registrations',
+    'complex_statistics' => 'Complex Statistics',
 
 ];
