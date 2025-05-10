@@ -1362,10 +1362,22 @@
 {% block js %}
 <script src="{{template}}/assets/libs/sweetalert2/sweetalert2.min.js?v=0.0.2"></script>
 <script src="{{template}}/assets/js/sweetalertdb.js?v=0.0.3"></script>
-
 <script src="{{template}}/assets/libs/echarts/echarts.min.js"></script>
+
 <script>
+{% set getItemIdToGameTransfer = get_item_info(getServer().donate().getItemIdToGameTransfer()) %}
+
 $(document).ready(function() {
+    // Получаем коэффициент конвертации в USD
+    {% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
+    {% if sphereCoinCost >= 1 %}
+    {% set USD = getServer().donate().getRatioUSD() / sphereCoinCost %}
+    {% else %}
+    {% set USD = getServer().donate().getRatioUSD() * sphereCoinCost %}
+    {% endif %}
+
+    var usdRatio = {{ USD|json_encode|raw }};
+
     var registrationsData = {{ getUserRegistrations()|json_encode|raw }};
     var donationsData = {{ getUserDonations()|json_encode|raw }};
 
@@ -1399,7 +1411,7 @@ $(document).ready(function() {
 
     var donationDates = [];
     var donationAmounts = [];
-
+    var donationUsdAmounts = [];
     var sortedDonationDates = Object.keys(donationsByDate).sort();
 
     for (var i = 0; i < sortedDonationDates.length; i++) {
@@ -1408,6 +1420,8 @@ $(document).ready(function() {
 
         donationDates.push(formattedDate);
         donationAmounts.push(donationsByDate[sortedDonationDates[i]]);
+        var usdAmount = parseFloat((donationsByDate[sortedDonationDates[i]] * usdRatio).toFixed(2));
+        donationUsdAmounts.push(usdAmount);
     }
 
     var serversData = [];
@@ -1489,6 +1503,7 @@ $(document).ready(function() {
 
     var fullRegistrationData = [];
     var fullDonationData = [];
+    var fullDonationUsdData = [];
     var fullServersData = [];
 
     for (var i = 0; i < allDates.length; i++) {
@@ -1497,6 +1512,7 @@ $(document).ready(function() {
 
         fullRegistrationData.push(regIndex !== -1 ? registrationCounts[regIndex] : 0);
         fullDonationData.push(donIndex !== -1 ? donationAmounts[donIndex] : 0);
+        fullDonationUsdData.push(donIndex !== -1 ? donationUsdAmounts[donIndex] : 0);
     }
 
     for (var i = 0; i < serversData.length; i++) {
@@ -1509,6 +1525,10 @@ $(document).ready(function() {
 
         fullServersData.push(serverFullData);
     }
+
+    // Вычисляем общую сумму пожертвований
+    var totalDonations = fullDonationData.reduce(function(a, b) { return a + b; }, 0);
+    var totalDonationsUsd = fullDonationUsdData.reduce(function(a, b) { return a + b; }, 0);
 
     var dom = document.getElementById('echart-stats');
     var myChart = echarts.init(dom, null, {
@@ -1601,6 +1621,7 @@ $(document).ready(function() {
 
     var legendData = ['{{phrase("registrations")}}', '{{phrase("LOG_DONATE_SUCCESS_DESC")}}'].concat(serverNames);
 
+    // Базовая конфигурация графика
     var option = {
         grid: {
             left: "3%",
@@ -1610,10 +1631,13 @@ $(document).ready(function() {
             containLabel: true
         },
         title: {
-            text: '{{phrase("complex_statistics")}}',
+            text: '{{phrase("complex_statistics")}}' + ' ($' + totalDonationsUsd.toFixed(2) + ')',
             left: 'center',
             textStyle: {
                 color: '#555'
+            },
+            subtextStyle: {
+                color: '#05c3fb'
             }
         },
         tooltip: {
@@ -1633,7 +1657,9 @@ $(document).ready(function() {
                     if (params[i].seriesName === '{{phrase("registrations")}}') {
                         result += marker + params[i].seriesName + ': ' + params[i].value + ' {{phrase(103)|lower}}.<br/>';
                     } else if (params[i].seriesName === '{{phrase("LOG_DONATE_SUCCESS_DESC")}}') {
-                        result += marker + params[i].seriesName + ': ' + params[i].value + ' points<br/>';
+                        var dateIndex = allDates.indexOf(params[i].name);
+                        var usdValue = fullDonationUsdData[dateIndex];
+                        result += marker + params[i].seriesName + ': ' + params[i].value + ' {{ getItemIdToGameTransfer.itemName }} ($' + usdValue.toFixed(2) + ')<br/>';
                     } else {
                         result += marker + 'Online [' + params[i].seriesName + ']: ' + params[i].value + ' {{phrase(103)|lower}}.<br/>';
                     }
@@ -1648,7 +1674,8 @@ $(document).ready(function() {
                 color: '#777'
             },
             type: serversData.length > 3 ? 'scroll' : 'plain',
-            pageButtonPosition: 'end'
+            pageButtonPosition: 'end',
+            selectedMode: true
         },
         toolbox: {
             feature: {
@@ -1721,12 +1748,18 @@ $(document).ready(function() {
             },
             {
                 type: 'value',
-                name: 'Points',
+                name: 'USD',
                 position: 'right',
                 offset: 80,
                 axisLabel: {
-                    formatter: '{value}'
+                    formatter: function(value) {
+                        var usdValue = (value * usdRatio).toFixed(2);
+                        return '$' + usdValue;
+                    },
+                    margin: 8
                 },
+                scale: true,
+                min: 0,
                 axisLine: {
                     lineStyle: {
                         color: "#05c3fb"
@@ -1756,13 +1789,114 @@ $(document).ready(function() {
         series: allSeries
     };
 
-    if (option && typeof option === 'object') {
-        myChart.setOption(option);
-    }
+    myChart.setOption(option);
+
+    var axisState = {
+        registration: true,
+        donation: true,
+        server: true
+    };
+
+    myChart.on('legendselectchanged', function(params) {
+        var selectedSeries = params.selected;
+
+        // Проверяем текущее состояние осей
+        var newRegistrationState = selectedSeries['{{phrase("registrations")}}'] === true;
+        var newDonationState = selectedSeries['{{phrase("LOG_DONATE_SUCCESS_DESC")}}'] === true;
+
+        var newServerState = false;
+        for (var i = 0; i < serverNames.length; i++) {
+            if (selectedSeries[serverNames[i]] === true) {
+                newServerState = true;
+                break;
+            }
+        }
+
+        var stateChanged = (
+              newRegistrationState !== axisState.registration ||
+              newDonationState !== axisState.donation ||
+              newServerState !== axisState.server
+        );
+
+        axisState.registration = newRegistrationState;
+        axisState.donation = newDonationState;
+        axisState.server = newServerState;
+
+        if (stateChanged) {
+            var newYAxis = [
+                {
+                    type: 'value',
+                    name: '{{phrase("registrations")}}',
+                    position: 'left',
+                    axisLabel: {
+                        formatter: '{value} {{phrase(103)|lower}}.'
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: "#6c5ffc"
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: "rgba(142, 156, 173,0.1)"
+                        }
+                    },
+                    show: newRegistrationState
+                },
+                {
+                    type: 'value',
+                    name: 'USD',
+                    position: newRegistrationState ? 'right' : 'left',
+                    offset: newRegistrationState ? 80 : 0,
+                    axisLabel: {
+                        formatter: function(value) {
+                            var usdValue = (value * usdRatio).toFixed(2);
+                            return '$' + usdValue;
+                        },
+                        margin: 8
+                    },
+                    scale: true,
+                    min: 0,
+                    axisLine: {
+                        lineStyle: {
+                            color: "#05c3fb"
+                        }
+                    },
+                    splitLine: {
+                        show: false
+                    },
+                    show: newDonationState
+                },
+                {
+                    type: 'value',
+                    name: '{{phrase("online")}}',
+                    position: 'right',
+                    axisLabel: {
+                        formatter: '{value} {{phrase(103)|lower}}'
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: "#f7b731"
+                        }
+                    },
+                    splitLine: {
+                        show: false
+                    },
+                    show: newServerState
+                }
+            ];
+
+            myChart.setOption({
+                yAxis: newYAxis
+            });
+        }
+    });
 
     window.addEventListener('resize', function() {
         myChart.resize();
     });
 });
 </script>
+
+
 {% endblock %}
