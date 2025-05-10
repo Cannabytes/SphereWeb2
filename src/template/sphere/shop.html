@@ -106,105 +106,133 @@
                       <div class="row g-3 row-cards">
                         {% set itemsInCategory = 0 %}
                         
-                        {% for objectId, products in getShopItems() %}
-                          {# Проверяем категорию первого товара (предполагаем, что в группе товары одной категории) #}
-                          {% if (category == 'none' and (products[0].getCategory() is empty or products[0].getCategory() == 'none')) 
-                             or (category != 'none' and products[0].getCategory() == category) %}
-                            {% set itemsInCategory = itemsInCategory + 1 %}
-                            
-                            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                              <div class="card h-100 shop-item-card shadow-sm" data-base-count="{{products[0].getCount()}}">
-                                <div class="card-header p-3 d-flex align-items-center">
-                                  <span class="avatar avatar-lg me-3">
-                                    <img src="{{products[0].getItemInfo().getIcon()}}" alt="">
-                                  </span>
-                                  <div>
-                                    <h5 class="card-title mb-1">
-                                      {% if products[0].enchant >= 1 %}
-                                      <span class="badge bg-success fs-11 rounded-1">+{{products[0].enchant}}</span>
-                                      {% endif %}
-                                      <span class="fw-bold text-dark">
-                                        {{products[0].getItemInfo().getItemName()}}
-                                      </span>
-                                    </h5>
-                                    <div class="text-muted fs-13">
-                                      {{products[0].getItemInfo().getAddName()}}
-                                    </div>
-                                  </div>
-                                </div>
+{% for objectId, products in getShopItems() %}
+  <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+    <div class="card h-100 shop-item-card shadow-sm" data-product-count="{{ products|length }}">
 
-                                <div class="card-body p-3">
-                                  <p class="card-text mb-3">
-                                    {{products[0].getItemInfo().getDescription()}}
-                                  </p>
-                                  <div class="d-flex align-items-center justify-content-between">
-                                    <div>
-                                      <span class="fs-14 fw-semibold">{{phrase('price')}}: </span>
-                                      <span class="fs-14 fw-semibold item-price" data-base-price="{{products[0].getCost()}}">
-                                        {{products[0].getCost()}}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span class="fs-14">x<span data-cost="{{products[0].getCount()}}" class="product-count">
-                                        {{products[0].getCount()}}
-                                      </span></span>
-                                    </div>
-                                  </div>
-                                </div>
+      {% if products|length == 1 %}
+      <!-- Отображение для одиночного предмета -->
+        <div class="card-header p-3 d-flex align-items-center">
+          <span class="avatar avatar-lg me-3">
+            <img src="{{ products[0].getItemInfo().getIcon() }}" alt="">
+          </span>
+          <div>
+            <h5 class="card-title mb-1">
+              {% if products[0].enchant >= 1 %}
+                <span class="badge bg-success fs-11 rounded-1">+{{ products[0].enchant }}</span>
+              {% endif %}
+              <span class="fw-bold text-dark">
+                {{ products[0].getItemInfo().getItemName() }}
+              </span>
+            </h5>
+            <div class="text-muted fs-13">
+              {{ products[0].getItemInfo().getAddName() }}
+            </div>
+          </div>
+        </div>
 
-                                <div class="card-footer p-3">
-                                  <div class="d-flex flex-column flex-sm-row align-items-center">
-                                    {% set isStackable = true %}
-                                    {% for i, product in products %}
-                                      {% if product.getItemInfo().getIsStackable() == false %}
-                                        {% set isStackable = false %}
-                                      {% endif %}
-                                    {% endfor %}
+        <div class="card-body p-3">
+          <p class="card-text mb-3">
+            {{ products[0].getItemInfo().getDescription() }}
+          </p>
 
-                                    {% if isStackable == true %}
-                                    <div class="input-group input-group-sm border rounded me-sm-3 mb-2 mb-sm-0 w-auto">
-                                      <input
-                                            min="1"
-                                            type="number"
-                                            class="form-control border-0 text-center quantity"
-                                            aria-label="quantity"
-                                            value="1">
-                                    </div>
-                                    {% endif %}
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="fs-14 fw-semibold">{{ phrase('price') }}: </span>
+              <span class="fs-14 fw-semibold item-price" data-base-price="{{ products[0].getCost() }}">
+                {{ products[0].getCost() }}
+              </span>
+            </div>
+            <div>
+              <span class="fs-14">x<span data-cost="{{ products[0].getCount() }}" class="product-count">
+                {{ products[0].getCount() }}
+              </span></span>
+            </div>
+          </div>
+        </div>
 
-                                    <button
-                                          class="btn btn-sm btn-purchase w-100 showSelectBuy"
-                                          data-isStackable="{{isStackable}}"
-                                          data-count-buy="1"
-                                          data-cost="{{ sumGetValue(products, 'getCost') }}"
-                                          data-object-id="{{objectId}}"
-                                          data-bs-toggle="modal"
-                                          data-bs-target="#openShop">
-                                      {{phrase('buy_for')}} {{ sumGetValue(products, 'getCost') }}
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+      {% else %}
+
+
+        <div class="card-body p-3">
+          <div class="package-items mb-3">
+            <div class="table-responsive">
+              <table class="table table-sm table-hover">
+                <tbody>
+                  {% for product in products %}
+                    <tr>
+                      <td class="py-2" style="width: 40px">
+                        <span class="avatar avatar-sm">
+                          <img src="{{ product.getItemInfo().getIcon() }}" alt="">
+                        </span>
+                      </td>
+                      <td class="py-2">
+                        <div class="fw-medium">
+                          {% if product.enchant >= 1 %}
+                            <span class="badge bg-success fs-10 rounded-1">+{{ product.enchant }}</span>
                           {% endif %}
-                        {% endfor %}
-                        
-                        {# Если нет товаров в категории, показываем сообщение (не должно происходить из-за проверки выше) #}
-                        {% if itemsInCategory == 0 %}
-                        <div class="col-12">
-                          <div class="empty-category">
-                            <div class="empty-category-icon">
-                              <i class="fe fe-package"></i>
-                            </div>
-                            <h5 class="empty-category-title">
-                              {{ phrase('no_products_in_category')|default('В этой категории нет товаров') }}
-                            </h5>
-                            <p class="empty-category-text">
-                              {{ phrase('check_other_categories')|default('Пожалуйста, проверьте другие категории') }}
-                            </p>
-                          </div>
+                          {{ product.getItemInfo().getItemName() }}
                         </div>
+                        {% if product.getItemInfo().getAddName() %}
+                          <small class="text-muted">{{ product.getItemInfo().getAddName() }}</small>
                         {% endif %}
+                      </td>
+                      <td class="py-2 text-end">
+                        <span class="badge bg-light text-dark">x{{ product.getCount() }}</span>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class=" align-items-center justify-content-between">
+            <span class="fs-14 fw-semibold">{{ phrase('price') }}: </span>
+            <span class="fs-14 fw-semibold item-price" data-base-price="{{ sumGetValue(products, 'getCost') }}">
+              {{ sumGetValue(products, 'getCost') }}
+            </span>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="card-footer p-3">
+        <div class="d-flex flex-column flex-sm-row align-items-center">
+          {% set isStackable = true %}
+          {% for product in products %}
+            {% if product.getItemInfo().getIsStackable() == false %}
+              {% set isStackable = false %}
+            {% endif %}
+          {% endfor %}
+
+          {% if isStackable == true and products|length == 1 %}
+            <div class="input-group input-group-sm border rounded me-sm-3 mb-2 mb-sm-0 w-auto">
+              <input
+                    min="1"
+                    type="number"
+                    class="form-control border-0 text-center quantity"
+                    aria-label="quantity"
+                    value="1">
+            </div>
+          {% endif %}
+
+          <button
+                class="btn btn-sm btn-purchase w-100 showSelectBuy"
+                data-is-stackable="{{ isStackable ? 'true' : 'false' }}"
+                data-count-buy="1"
+                data-cost="{{ sumGetValue(products, 'getCost') }}"
+                data-object-id="{{ objectId }}"
+                data-bs-toggle="modal"
+                data-bs-target="#openShop">
+            {{ phrase('buy_for') }} {{ sumGetValue(products, 'getCost') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+
+
                       </div>
                     </div>
                   {% endif %}
@@ -289,7 +317,7 @@
                               data-trigger
                               id="playerName"
                               {% if getUser().getCountPlayers() == 0 %}disabled{% endif %}>
-                          
+
                           {% if getUser().getCountPlayers() == 0 %}
                             <option>{{phrase('no_chars')}}</option>
                           {% else %}
@@ -355,7 +383,9 @@
 
 {% block css %}
 <style>
-  /* Базовые стили для магазина */
+
+
+
   .shop-container {
     padding: 1rem 0;
   }
@@ -627,7 +657,7 @@
 {% block js %}
 <script>
   $(document).ready(function () {
-    
+
     $('#categoryTabs .category-tab-link').on('click', function() {
       $(this).addClass('pulse-animation');
       setTimeout(() => {
@@ -635,7 +665,7 @@
       }, 500);
     });
 
-    
+
     function scrollActiveCategoryIntoView() {
       const $activeTab = $('.category-tab-link.active').parent();
       if ($activeTab.length) {
@@ -649,11 +679,11 @@
       }
     }
 
-    
+
     scrollActiveCategoryIntoView();
     $('#categoryTabs .category-tab-link').on('shown.bs.tab', scrollActiveCategoryIntoView);
 
-    
+
     $('#purchase').on('click', function () {
       let objectId = $(this).attr('data-object-id');
       let playerName = $('#playerName').val();
@@ -671,7 +701,7 @@
       });
     });
 
-    
+
     $('#toWarehouse').on('click', function () {
       let objectId = $(this).attr('data-object-id');
       let quantity = parseInt($('#quantityModal').val()) || 1;
@@ -685,15 +715,17 @@
       });
     });
 
-    
+
     $('.showSelectBuy').on('click', function () {
       let objectId = $(this).attr('data-object-id');
-      let isStack = $(this).attr('data-isstackable');
+      let isStackable = $(this).attr('data-is-stackable') === 'true';
+      let $card = $(this).closest('.shop-item-card');
+      let isPackage = $card.attr('data-product-count') > 1;
+
       let quantityInput = $(this).closest('.d-flex').find('.quantity');
       let quantity = quantityInput.length ? (parseInt(quantityInput.val()) || 1) : 1;
 
-      
-      if (isStack === "false") {
+      if (!isStackable || isPackage) {
         quantity = 1;
         $('#quantityModal').val(1);
         $('#quantityModal').closest('.quantityClass').hide();
@@ -703,45 +735,54 @@
       }
 
       let cost = $(this).attr('data-cost');
-      $('.shopCostBuy').text( (isStack === "false") ? cost : (cost * quantity) );
+      $('.shopCostBuy').text((!isStackable || isPackage) ? cost : (cost * quantity));
 
       AjaxSend('/admin/shop/get', 'POST', { objectId: objectId }, true).then(function (response) {
         let html = '<ul class="list-group followers-list">';
+
         response.forEach(function (item) {
-          let totalCount = item.count * quantity;
-          let totalPrice = item.cost * quantity;
+          let totalCount = item.count;
+
+          if (isStackable && !isPackage) {
+            totalCount = item.count * quantity;
+          }
+
+          let totalPrice = isPackage ? item.cost : (item.cost * quantity);
+
           html += `
-            <li class="list-group-item" 
-                data-base-count="${item.count}"
-                data-base-price="${item.cost}">
-              <div class="d-sm-flex align-items-top">
-                <span class="avatar avatar-sm">
-                  <img src="${item.item.icon}" alt="">
-                </span>
-                <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
-                  <p class="mb-0 lh-1">
-                    ${item.item.itemName} x<span class="dynamic-count">${totalCount}</span>
-                  </p>
-                  <span class="fs-11 text-muted op-7">
-                    {{phrase("price")}} : ${totalPrice}
-                  </span>
-                </div>
-              </div>
-            </li>
-          `;
+			<li class="list-group-item"
+				data-base-count="${item.count}"
+				data-base-price="${item.cost}">
+			  <div class="d-sm-flex align-items-top">
+				<span class="avatar avatar-sm">
+				  <img src="${item.item.icon}" alt="">
+				</span>
+				<div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
+				  <p class="mb-0 lh-1">
+					${item.item.itemName}
+					${item.enchant > 0 ? '<span class="badge bg-success fs-10 rounded-1">+' + item.enchant + '</span>' : ''}
+					x<span class="dynamic-count">${totalCount}</span>
+				  </p>
+				  <span class="fs-11 text-muted op-7">
+					${item.item.add_name ? item.item.add_name + ' | ' : ''}
+					{{phrase("price")}} : ${totalPrice}
+				  </span>
+				</div>
+			  </div>
+			</li>
+		  `;
         });
         html += '</ul>';
         $('#itemListSell').html(html);
       });
 
-      
       $('#purchase').attr('data-object-id', objectId);
       $('#toWarehouse').attr('data-object-id', objectId);
 
       $('#openShop').modal('show');
     });
 
-    
+
     function updatePriceAndCountForCard($quantityInput) {
       let $card = $quantityInput.closest('.shop-item-card');
       let quantity = parseInt($quantityInput.val()) || 1;
@@ -758,14 +799,14 @@
       $button.text('{{phrase("buy_for")}} ' + totalPrice.toFixed(0));
       $button.attr('data-cost', totalPrice);
 
-      
+
       if ($('#openShop').hasClass('show')
             && $('#purchase').attr('data-object-id') === $button.attr('data-object-id')) {
         updateModalData(quantity, totalPrice);
       }
     }
 
-    
+
     function updateModalData(quantity, totalCost) {
       let totalModalPrice = 0;
       $('#itemListSell .list-group-item').each(function() {
@@ -783,23 +824,23 @@
       $('.shopCostBuy').text(totalModalPrice.toFixed(0));
     }
 
-    
+
     $('body').on('input change', '.quantity', function () {
       updatePriceAndCountForCard($(this));
     });
 
-    
+
     $('.quantityModal').on('input change', function() {
       let quantity = parseInt($(this).val()) || 1;
-      updateModalData(quantity, 0); 
+      updateModalData(quantity, 0);
     });
 
-    
+
     $('.quantity').each(function () {
       updatePriceAndCountForCard($(this));
     });
 
-    
+
     $('head').append(`
       <style>
         @keyframes pulse-animation {

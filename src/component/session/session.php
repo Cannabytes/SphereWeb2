@@ -22,6 +22,9 @@ class session
     // Время жизни сессии в секундах (365 дней)
     private static int|float $sessionLifetime = 86400 * 365;
 
+    //Время жизни сессии для неавторизованных пользователей
+    private static int|float $sessionLifetimeGuest = 120;
+
     // Вероятность срабатывания GC - сборщика мусора (1%)
     private static int $gcProbability = 1;
     private static int $gcDivisor = 100;
@@ -34,7 +37,7 @@ class session
 
     // Настройки для POST запросов
     // Максимальное количество POST запросов за период
-    private static int $maxPostActionsPerPeriod = 20;
+    private static int $maxPostActionsPerPeriod = 40;
     // Время бана в секундах при превышении лимита POST запросов
     private static int $postFloodBanSeconds = 120;
 
@@ -617,7 +620,9 @@ class session
         }
 
         $cutoff = time() - $maxLifetime;
+        $cutGuestOff = time() - self::$sessionLifetimeGuest;
 
+        sql::run("DELETE FROM `sessions` WHERE `user_id` IS NULL and `last_activity` < ?", [$cutGuestOff]);
         sql::run("DELETE FROM `sessions` WHERE `last_activity` < ?", [$cutoff]);
 
         sql::run("
