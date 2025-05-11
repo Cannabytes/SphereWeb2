@@ -122,24 +122,33 @@ class donate
                 'fetchAll' => true,
                 'only_non_empty_folders' => true,
             ]);
+
             $key = array_search("monobank", $all_donate_system);
             if ($key !== false) {
                 unset($all_donate_system[$key]);
             }
+
             $donateSysNames = [];
             foreach ($all_donate_system as $system) {
+                if (!class_exists($system)) {
+                    continue;
+                }
+
                 if (!$system::isEnable()) {
                     continue;
                 }
+
                 if (method_exists($system, 'forAdmin')) {
-                    if ($system::forAdmin() and auth::get_access_level() != 'admin') {
+                    if ($system::forAdmin() && auth::get_access_level() != 'admin') {
                         continue;
                     }
                 }
+
                 $inputs = [];
                 if (method_exists($system, 'inputs')) {
                     $inputs = $system::inputs();
                 }
+
                 if (method_exists($system, 'getDescription')) {
                     $donateSysNames[] = [
                         'name' => basename($system),
@@ -166,7 +175,7 @@ class donate
                 $systemName = $system['name'] ?? "";
                 $enable = $system['enable'] ?? false;
                 $inputs = $system['inputs'];
-                $description = $system['description'] ?? "";
+                $description = $system['desc'] ?? ""; // Исправлено с 'description' на 'desc'
                 $forAdmin = $system['forAdmin'] ?? false;
                 $webhook = $system['webhook'];
                 $country = $system['country'];
@@ -174,6 +183,7 @@ class donate
                 $currency = $system['currency'] ?? null;
                 $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, $webhook, 1000, $country, $customName, $currency);
             }
+
             $this->donateSystems = $donateSys;
         }
     }
