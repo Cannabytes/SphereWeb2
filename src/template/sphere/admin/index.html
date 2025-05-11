@@ -561,6 +561,7 @@
         <div class="col-xxl-9">
             <div class="row">
 
+                {% if config().enabled().isEnableEmulation() == false and getServerCount() >= 1 %}
 				<div class="col-xl-12">
 					<div class="card">
 						<div class="border-bottom-0 card-body">
@@ -568,6 +569,7 @@
 						</div>
 					</div>
 				</div>
+                {% endif %}
 
                 <div class="col-xl-12">
                     <div class="custom-card">
@@ -1362,13 +1364,12 @@
 {% block js %}
 <script src="{{template}}/assets/libs/sweetalert2/sweetalert2.min.js?v=0.0.2"></script>
 <script src="{{template}}/assets/js/sweetalertdb.js?v=0.0.3"></script>
-<script src="{{template}}/assets/libs/echarts/echarts.min.js"></script>
 
+{% if config().enabled().isEnableEmulation() == false and getServerCount() >= 1 %}
+<script src="{{template}}/assets/libs/echarts/echarts.min.js"></script>
 <script>
 {% set getItemIdToGameTransfer = get_item_info(getServer().donate().getItemIdToGameTransfer()) %}
-
 $(document).ready(function() {
-    // Получаем коэффициент конвертации в USD
     {% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
     {% if sphereCoinCost >= 1 %}
     {% set USD = getServer().donate().getRatioUSD() / sphereCoinCost %}
@@ -1897,6 +1898,6 @@ $(document).ready(function() {
     });
 });
 </script>
-
+{% endif %}
 
 {% endblock %}

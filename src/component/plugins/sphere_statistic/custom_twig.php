@@ -13,17 +13,23 @@ class custom_twig
 
     public function getUserRegistrations(): array
     {
+        if (config::load()->enabled()->isEnableEmulation() && \Ofey\Logan22\model\server\server::get_count_servers() == 0) {
+            return [];
+        }
         return (new statistic())->getUserRegistration();
     }
 
     public function getUserDonations(): array
     {
+        if (config::load()->enabled()->isEnableEmulation() && \Ofey\Logan22\model\server\server::get_count_servers() == 0) {
+            return [];
+        }
         return sql::getRows("SELECT `point`, `date` FROM `donate_history_pay` ORDER BY `id` DESC");
     }
 
     public function getStatisticOnline($serverId): array
     {
-        if (config::load()->enabled()->isEnableEmulation()) {
+        if (config::load()->enabled()->isEnableEmulation() && \Ofey\Logan22\model\server\server::get_count_servers() == 0) {
             return [];
         }
         $serverStatistic = sql::getRow("SELECT * FROM `statistic_online` WHERE `server_id` = ?", [$serverId]);
