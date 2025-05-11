@@ -18,7 +18,7 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
 
     protected static string $name = 'AaioPay';
 
-    protected static array $country = ['ru'];
+    protected static array $country = ['ru', 'ua', 'crypto'];
 
     private string $currency_default = 'UAH';
 
