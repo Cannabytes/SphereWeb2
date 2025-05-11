@@ -46,14 +46,14 @@ class donate
             $item->setCount($shopItem['count']);
             $item->setItemId($shopItem['item_id']);
             $item->setIsPack($shopItem['is_pack']);
-            $item->setIsPack($shopItem['is_pack']);
             $item->setPackName($shopItem['pack_name']);
+            $item->setCategory($shopItem['category'] ?? '');
             $item->setItemInfo($shopItem['item_id']);
             $items[] = $item;
         }
-
         return $items;
-    } // Время задержки в секундах до последующей попытки купить что-то
+    }
+
 
     /**
      * @param           $uuid - Индификатор

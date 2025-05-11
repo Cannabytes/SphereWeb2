@@ -2,15 +2,12 @@
 
 namespace Ofey\Logan22\model\donate;
 
-use Ofey\Logan22\component\fileSys\fileSys;
-use Ofey\Logan22\component\image\client_icon;
-use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\item\item;
 
 class shop
 {
     private string $id;
-    private string $category = '';
+    private null|string $category = '';
 
     public function getId(): int
     {
@@ -100,7 +97,7 @@ class shop
     private ?item $item;
     public function setItemInfo(int $itemId): void
     {
-       $this->item = item::getItem($itemId);
+        $this->item = item::getItem($itemId);
     }
 
     public function getItemInfo(): item
@@ -131,7 +128,7 @@ class shop
         $this->category = $category;
     }
 
-    public function getCategory(): string
+    public function getCategory(): string|null
     {
         return $this->category;
     }

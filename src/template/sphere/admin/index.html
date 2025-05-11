@@ -1440,27 +1440,30 @@ $(document).ready(function() {
 
     {% for server in getServers() %}
     var serverName = "{{ server.getName() }}";
-    var serverData = {{ getStatisticOnline(server.getId())|json_encode|raw }};
+    var serverDataRaw = {{ getStatisticOnline(server.getId())|json_encode|raw }};
+    var serverData = (serverDataRaw && typeof serverDataRaw === 'object') ? serverDataRaw : {};
 
     var onlineByDate = {};
 
-    for (var date in serverData) {
-        var totalOnline = 0;
-        var hoursCount = 0;
+    if (Object.keys(serverData).length > 0) {
+        for (var date in serverData) {
+            var totalOnline = 0;
+            var hoursCount = 0;
 
-        for (var hour in serverData[date]) {
-            var onlineValue = serverData[date][hour];
-            if (onlineValue !== null && onlineValue !== undefined && !isNaN(onlineValue)) {
-                totalOnline += onlineValue;
-                hoursCount++;
+            for (var hour in serverData[date]) {
+                var onlineValue = serverData[date][hour];
+                if (onlineValue !== null && onlineValue !== undefined && !isNaN(onlineValue)) {
+                    totalOnline += onlineValue;
+                    hoursCount++;
+                }
             }
-        }
 
-        // Вычисляем среднее значение онлайна за день
-        if (hoursCount > 0) {
-            onlineByDate[date] = Math.round(totalOnline / hoursCount);
-        } else {
-            onlineByDate[date] = 0;
+            // Вычисляем среднее значение онлайна за день
+            if (hoursCount > 0) {
+                onlineByDate[date] = Math.round(totalOnline / hoursCount);
+            } else {
+                onlineByDate[date] = 0;
+            }
         }
     }
 

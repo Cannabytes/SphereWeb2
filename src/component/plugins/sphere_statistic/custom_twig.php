@@ -27,24 +27,39 @@ class custom_twig
         return sql::getRows("SELECT `point`, `date` FROM `donate_history_pay` ORDER BY `id` DESC");
     }
 
-    public function getStatisticOnline($serverId): array
+    public function getStatisticOnline($serverId): array|false
     {
         if (config::load()->enabled()->isEnableEmulation() && \Ofey\Logan22\model\server\server::get_count_servers() == 0) {
-            return [];
+            return false;
         }
+
         $serverStatistic = sql::getRow("SELECT * FROM `statistic_online` WHERE `server_id` = ?", [$serverId]);
-        if(!$serverStatistic){
+
+        if (!$serverStatistic || time::diff($serverStatistic['time'], time::mysql()) >= 60*10) {
             $response = server::send(type::SERVER_STATISTIC_ONLINE, ['id' => $serverId])->show(false)->getResponse();
-            $data = $response['data'] ?? [];
-            sql::run("INSERT INTO `statistic_online` (`server_id`, `count_online_player`, `time`) VALUES (?, ?, ?);", [$serverId, json_encode($data), time::mysql()]);
-        }else if(time::diff($serverStatistic['time'],time::mysql()) >= 60*10) {
-            $response = server::send(type::SERVER_STATISTIC_ONLINE, ['id' => $serverId])->show()->getResponse();
-            $data = $response['data'] ?? [];
-            sql::run("UPDATE `statistic_online` SET `count_online_player` = ?, `time` = ? WHERE `server_id` = ?", [json_encode($data), time::mysql(), $serverId]);
-        }else{
+
+            if (isset($response['error'])) {
+                $data = [];
+            } else {
+                $data = $response['data'] ?? [];
+            }
+
+            if (!$serverStatistic) {
+                sql::run("INSERT INTO `statistic_online` (`server_id`, `count_online_player`, `time`) VALUES (?, ?, ?);",
+                    [$serverId, json_encode($data), time::mysql()]);
+            } else {
+                sql::run("UPDATE `statistic_online` SET `count_online_player` = ?, `time` = ? WHERE `server_id` = ?",
+                    [json_encode($data), time::mysql(), $serverId]);
+            }
+        } else {
             $data = json_decode($serverStatistic['count_online_player'], true);
         }
-        return $data ?? [];
+
+        if (empty($data) || !is_array($data)) {
+            return false;
+        }
+
+        return $data;
     }
 
 }
