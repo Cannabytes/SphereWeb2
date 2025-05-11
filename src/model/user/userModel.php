@@ -595,7 +595,7 @@ class userModel
                 }
                 $this->addLog(logTypes::LOG_ITEM_STACK, "item_stack", [
                     "items" => $itemsToRemove,
-                    "data" => json_encode($data),
+                    "data" => json_encode($data, JSON_UNESCAPED_UNICODE),
                 ]);
                 // Удаляем дублирующиеся предметы
                 $this->removeWarehouseObjectId($itemsToRemove);
@@ -1204,7 +1204,7 @@ class userModel
             $request['password'] = '_REMOVED_';
         }
 
-        $request = json_encode($_REQUEST);
+        $request = json_encode($_REQUEST, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $method = $_SERVER['REQUEST_METHOD'];
         $action = $_SERVER['REQUEST_URI'];
         $trace = debug_backtrace()[0];
@@ -1261,7 +1261,7 @@ class userModel
     ): array
     {
         //Добавление лога
-        $this->addLog(logTypes::LOG_WAREHOUSE_ADD, "LOG_WAREHOUSE_ADD", [$server_id, $item_id, $count, $enchant, $phrase]);
+        $this->addLog(logTypes::LOG_WAREHOUSE_ADD, "LOG_WAREHOUSE_ADD", [$server_id, $item_id, $count, $enchant, lang::get_phrase($phrase)]);
 
         if ($server_id == 0) {
             $server_id = $this->serverId();

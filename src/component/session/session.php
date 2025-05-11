@@ -11,6 +11,7 @@ namespace Ofey\Logan22\component\session;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
 class session
@@ -58,8 +59,10 @@ class session
         // Загружаем данные сессии
         self::loadSession($sessionId);
 
-        // Проверяем защиту от флуда
-        self::checkFloodProtection();
+        if(!user::self()->isAdmin()){
+            // Проверяем защиту от флуда
+            self::checkFloodProtection();
+        }
 
         // Обработка HTTP_REFERER для статистики
         self::handleHttpReferer();
@@ -168,24 +171,20 @@ class session
      */
     private static function loadSession(string $sessionId): void
     {
-        // Проверяем существование сессии в БД
         $sessionData = sql::getRow("
             SELECT `data` 
             FROM `sessions` 
             WHERE `session_id` = ?
         ", [$sessionId]);
 
-        // Инициализируем глобальный массив $_SESSION
         $_SESSION = [];
 
         if ($sessionData) {
-            // Десериализуем данные сессии
             $data = json_decode($sessionData['data'], true);
             if (is_array($data)) {
                 $_SESSION = $data;
             }
 
-            // Обновляем время последней активности
             self::updateLastActivity($sessionId);
         } else {
             // Создаем новую сессию
@@ -269,10 +268,10 @@ class session
     ", [$sessionId]);
 
         if (!$sessionRecord) {
-            return; // Сессия не найдена
+            return;
         }
 
-        // Проверяем, не находится ли пользователь в бане
+
         if ($sessionRecord[$banField] !== null && $sessionRecord[$banField] > $currentTime) {
             $timeout = $sessionRecord[$banField] - $currentTime;
             if($requestType === 'POST'){

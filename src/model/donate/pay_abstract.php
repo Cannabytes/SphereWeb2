@@ -13,10 +13,11 @@ class pay_abstract {
     function sphereCoinSmartCalc(float $count, float $ratio, float $sphereCoinCost): float
     {
         if ($sphereCoinCost >= 1.0) {
-            return $count * ($ratio / $sphereCoinCost);
+            $result = $count * ($ratio / $sphereCoinCost);
         } else {
-            return $count * ($ratio * $sphereCoinCost);
+            $result = $count * ($ratio * $sphereCoinCost);
         }
+        return round($result, 2);
     }
 
     public static function getCustomName(): string {

@@ -70,9 +70,8 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
         $auth_url = $this->api_mode === 'LIVE' ? "https://api-m.paypal.com/v1/oauth2/token" : "https://api-m.sandbox.paypal.com/v1/oauth2/token";
 
         $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
-        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
+        $amount = self::sphereCoinSmartCalc($count, $donate->getRatio($currency), $donate->getSphereCoinCost());
 
-        // Запрос для получения токена
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $auth_url);
         curl_setopt($ch, CURLOPT_HEADER, false);
