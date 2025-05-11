@@ -336,7 +336,6 @@ class donate
     {
         if (config::load()->other()->isExchangeRates()) {
             $exchangeRates = config::load()->other()->getExchangeRates();
-            var_dump($exchangeRates);exit;
             if (is_array($exchangeRates) && isset($exchangeRates[$currency])) {
                 return $exchangeRates[$currency];
             }
@@ -426,9 +425,10 @@ class donate
     }
 
     /**
-     * @return null|array|donateSystem[]
+     * @param null $sysName
+     * @return donateSystem|array|null
      */
-    public function getDonateSystems($sysName = null)
+    public function getDonateSystems($sysName = null): donateSystem|array|null
     {
         if($sysName!==null){
             foreach($this->donateSystems as $system){
