@@ -736,7 +736,6 @@
                                     <div class="col-md-8">
                                         <div class="tab-content" id="v-pills-tabContent">
                                             {% for i, donate in server.donate().getDonateSystems() %}
-
                                             <div class="tab-pane {% if i == 0 %}active show{% endif %} donatePanelWrite"
                                                  id="{{donate.getName()}}" role="tabpanel"
                                                  tabindex="0"
@@ -812,10 +811,19 @@
                                                                     phrase('payment_system_description') }}</label>
                                                             </div>
 
-
-
+{# Получаем платежную систему один раз, если она потребуется #}
+{% set paysystem = null %}
+{% set currency = donate.getCurrency() %}
 {% set userCountryList = donate.getCountry() %}
-{% set checkListCountry = userCountryList is not empty ? userCountryList : get_donate_paysystem(donate.getName()).getCountry() %}
+
+{# Определяем, нужно ли инициализировать платежную систему #}
+{% if (currency == "" or currency == null) or userCountryList is empty %}
+    {% set paysystem = get_donate_paysystem(donate.getName()) %}
+{% endif %}
+
+{# Устанавливаем значения с учетом дефолтных #}
+{% set currency = currency ?: (paysystem ? paysystem.getCurrency() : "") %}
+{% set checkListCountry = userCountryList is not empty ? userCountryList : (paysystem ? paysystem.getCountry() : []) %}
 {% set countryList = getCountryList() %}
 
 <div class="border rounded-3 p-3 mb-3">
@@ -839,7 +847,6 @@
             </div>
         {% endfor %}
     </div>
-
     <!-- Кнопка для раскрытия остальных элементов -->
     {% if countryList|length > 4 %}
         <button class="btn btn-link btn-sm p-0 fw-semibold"
@@ -850,7 +857,6 @@
                 aria-controls="additionalcountry-{{ donate.getName() }}">
             Показать все ({{ countryList|length - 4 }} еще)
         </button>
-
     <!-- Скрытые элементы в аккордионе -->
         <div class="collapse mt-2" id="additionalcountry-{{ donate.getName() }}">
             <div class="row">
@@ -873,6 +879,18 @@
             </div>
         </div>
     {% endif %}
+</div>
+<div class="border rounded-3 p-3 mb-3">
+    <div class="row">
+        <div class="col-xl-12">
+            <p class="fw-semibold mb-2">Default currency</p>
+            <select class="form-control" data-trigger name="currency" id="currency-{{ donate.getName() }}">
+                {% for curr in currencies_name_list() %}
+                <option {% if currency == curr %}selected{% endif %} value="{{ curr }}">{{ curr }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
 </div>
 
 <style>
@@ -1169,30 +1187,27 @@
     function collectPaymentSystemsData() {
         var systemsData = [];
 
-        // Итерируем через все блоки платежных систем
         $('[data-pay-name]').each(function () {
-            var payName = $(this).data('pay-name'); // Получаем имя платежной системы
-            var isEnabled = $('#is_enable_' + payName).is(':checked'); // Проверяем, включена ли система
-            var forAdmin = $('#forAdmin_' + payName).is(':checked'); // Проверяем, является ли система по умолчанию для администратора
-            var description = $('#description_' + payName).val(); // Получаем описание платежной системы
-            var sort = $('#sort_' + payName).val(); // Получаем сортировку платежной системы
+            var payName = $(this).data('pay-name');
+            var isEnabled = $('#is_enable_' + payName).is(':checked');
+            var forAdmin = $('#forAdmin_' + payName).is(':checked');
+            var description = $('#description_' + payName).val();
+            var sort = $('#sort_' + payName).val();
             var customName =  $('#payname_' + payName).val();
+            var currency =  $('#currency-' + payName).val();
 
             var inputsData = {};
-            // Итерируем через все поля ввода текущей платежной системы
             $(this).find('[data-name]').each(function () {
-                var inputName = $(this).data('name'); // Получаем имя поля
-                var inputValue = $(this).val(); // Получаем значение поля
-                inputsData[inputName] = inputValue; // Сохраняем данные поля
+                var inputName = $(this).data('name');
+                var inputValue = $(this).val();
+                inputsData[inputName] = inputValue;
             });
 
-            // Собираем данные о выбранных странах для текущей платежной системы
             var country = [];
             $('input[name="country_' + payName + '[]"]:checked').each(function() {
                 country.push($(this).val());
             });
 
-            // Собираем и сохраняем данные платежной системы
             systemsData.push({
                 [payName]: {
                     enable: isEnabled,
@@ -1202,6 +1217,7 @@
                     sort: sort,
                     country: country,
                     customName: customName,
+                    currency: currency,
                 },
             });
         });
@@ -1218,7 +1234,7 @@
             data: {
                 serverId: serverId
             },
-            dataType: 'json', // Указываем, что ожидаем JSON
+            dataType: 'json',
             success: function(data) {
                 if (data) {
                     fillFormData(data);
@@ -1489,7 +1505,6 @@
                    id="sort_${name}" class="sort-input">
         `);
 
-            // Добавляем таб и контент
             $('#v-pills-tab').append($tab);
             $('#v-pills-tabContent').append($content);
 
@@ -1501,7 +1516,6 @@
                 $(`[data-name="${key}"]`).val(value);
             });
 
-            // ВАЖНО: Заполняем чекбоксы стран
             if (data.country && Array.isArray(data.country)) {
                 data.country.forEach(country => {
                     $(`input[name="country_${name}[]"][value="${country}"]`).prop('checked', true);
@@ -1510,21 +1524,33 @@
         });
     }
 
-    // Функция уведомления об ошибке
     function notifyError(message) {
-        // Здесь можно добавить вашу логику отображения уведомлений
         console.error(message);
     }
 
-    // Добавляем обработчик события для загрузки данных с другого сервера
     $(document).ready(function() {
-        // Обработчик изменения выбранного сервера
         $("#getSettingServer").on('change', function() {
             const serverId = $(this).val();
             if (serverId) {
                 loadDonateSettings(serverId);
             }
         });
+    });
+
+    $(document).ready(function() {
+        var genericExamples = document.querySelectorAll("[data-trigger]");
+        for (let i = 0; i < genericExamples.length; ++i) {
+            var element = genericExamples[i];
+            var selectedValue = element.value;
+
+            new Choices(element, {
+                allowHTML: false,
+                placeholderValue: "This is a placeholder set in the config",
+                searchPlaceholderValue: "Search",
+                items: [selectedValue],
+                choices: [selectedValue]
+            });
+        }
     });
 
 </script>

@@ -20,6 +20,8 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
 
     protected static array $country = ['world'];
 
+    protected static string $currency_default = 'RUB';
+
     private array $allowIP = [
     ];
 
@@ -52,18 +54,16 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        // Вычисляем стоимость в евро с сохранением дробной части
-        $sumEUR = $donate->getSphereCoinCost() >= 1
-            ? ($_POST['count'] * ($donate->getRatioEUR() / $donate->getSphereCoinCost()))
-            : ($_POST['count'] * ($donate->getRatioEUR() * $donate->getSphereCoinCost()));
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
 
         // Проверка на минимальную сумму (50 центов)
-        if ($sumEUR < 0.5) {
+        if ($amount < 0.5) {
             board::notice(false, "Минимальная сумма для Stripe: $0.50");
         }
 
         // Конвертация в центы для Stripe и явное преобразование в целое число
-        $sumCents = (int)round($sumEUR * 100);
+        $sumCents = (int)round($amount * 100);
 
         try {
             \Stripe\Stripe::setApiKey(self::getConfigValue('secret_key')); // Замените YOUR_SECRET_KEY своим секретным ключом Stripe
@@ -78,7 +78,7 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
                 'line_items' => [
                     [
                         'price_data' => [
-                            'currency' => 'eur',
+                            'currency' => $currency,
                             'unit_amount' => $sumCents,
                             'product_data' => [
                                 'name' => 'Donate to project',

@@ -33,7 +33,7 @@ class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
     protected static bool $forAdmin = false;
 
 
-    protected string $currency_default = 'USD';
+    protected static string $currency_default = 'USD';
 
     private array $allowIP = [];
 
@@ -74,13 +74,13 @@ class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioUSD(), $donate->getSphereCoinCost());
-
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
         $response = $this->getResponse('https://api.cryptocloud.plus/v2/invoice/create', [
           'shop_id'  => self::getConfigValue('shopId'),
-          'amount'   => $order_amount,
+          'amount'   => $amount,
           'order_id' => user::self()->getId() . '@' . time(),
-          'currency' => $this->currency_default,
+          'currency' => $currency,
           'email'    => user::self()->getEmail(),
         ]);
 

@@ -63,6 +63,10 @@ class pay_abstract {
         return static::$enable;
     }
 
+    public static function getCurrency(): ?string {
+        return static::$currency_default ?? null;
+    }
+
     public static function forAdmin(): bool{
         return static::$forAdmin;
     }

@@ -21,6 +21,8 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract
 
     protected static array $country = ['ru'];
 
+    protected static string $currency_default = 'RUB';
+
     private array $allowIP = [];
 
     /*
@@ -62,13 +64,14 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
 
         $data = [
           'action'     => 'initPayment',
           'project'    => self::getConfigValue('project_id'),
-          'sum'        => $order_amount,
-          'currency'   => 'RUB',
+          'sum'        => $amount,
+          'currency'   => $currency,
           'innerID'    => user::self()->getId(),
           'payWay'     => '1',
           'email'      => user::self()->getEmail(),
@@ -78,7 +81,7 @@ class primepayments extends \Ofey\Logan22\model\donate\pay_abstract
         $data['sign'] = md5(
           self::getConfigValue(
             'secret_1'
-          ) . $data['action'] . $data['project'] . $order_amount . $data['currency'] . $data['innerID'] . $data['email'] . $data['payWay']
+          ) . $data['action'] . $data['project'] . $amount . $data['currency'] . $data['innerID'] . $data['email'] . $data['payWay']
         );
         $ch           = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://pay.primepayments.io/API/v2/');

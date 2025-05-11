@@ -14,6 +14,8 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
 
     protected static array $country = ['ru'];
 
+    protected static string $currency_default = 'RUB';
+
     public static function inputs(): array
     {
         return [
@@ -22,7 +24,6 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
         ];
     }
 
-    private $currency_default = 'RUB';
     private array $allowIP = [];
 
     //Включена/отключена платежная система
@@ -52,11 +53,12 @@ class yoomoney extends \Ofey\Logan22\model\donate\pay_abstract {
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
 
         $params = [
             'receiver' => self::getConfigValue('shopId'),
-            'sum' => (string)$order_amount,
+            'sum' => (string)$amount,
             "quickpay-form" => 'donate',
             'label' => user::self()->getId(),
             'paymentType' => 'AC',

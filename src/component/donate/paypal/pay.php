@@ -21,7 +21,7 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
 
     private $api_mode = 'LIVE';
 
-    protected string $currency_default = 'USD';
+    protected static string $currency_default = 'USD';
 
     public static function isEnable(): bool
     {
@@ -69,8 +69,8 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
 
         $auth_url = $this->api_mode === 'LIVE' ? "https://api-m.paypal.com/v1/oauth2/token" : "https://api-m.sandbox.paypal.com/v1/oauth2/token";
 
-        // Расчет суммы заказа
-        $order_amount = $donate->getSphereCoinCost() >= 1 ? ($count * ($donate->getRatioUSD() / $donate->getSphereCoinCost())) : ($count * ($donate->getRatioUSD() * $donate->getSphereCoinCost()));
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
 
         // Запрос для получения токена
         $ch = curl_init();
@@ -109,8 +109,8 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
             [
               'custom_id'     => user::self()->getId(),
               'amount'      => [
-                'value'         => $order_amount,
-                'currency_code' => 'USD',
+                'value'         => $amount,
+                'currency_code' => $currency,
               ],
               'description' => 'Payment for donation', // Добавьте описание для заказа
             ],

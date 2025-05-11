@@ -29,7 +29,7 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
         ];
     }
 
-    private string $currency_default = 'RUB';
+    protected static string $currency_default = 'RUB';
 
     /*
      * Список IP адресов, от которых может прити уведомление от платежной системы.
@@ -58,16 +58,15 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
-
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
         $merchant_id = self::getConfigValue('merchant_id');
         $order_id = user::self()->getEmail();
         $secret_word = self::getConfigValue('secret_key_1');
-        $currency = $this->currency_default;
-        $sign = md5($merchant_id . ':' . $order_amount . ':' . $secret_word . ':' . $currency . ':' . $order_id);
+        $sign = md5($merchant_id . ':' . $amount . ':' . $secret_word . ':' . $currency . ':' . $order_id);
         $params = [
             'm'         => $merchant_id,
-            'oa'        => (string)$order_amount,
+            'oa'        => (string)$amount,
             "currency"  => $currency,
             's'         => $sign,
             'o'         => $order_id,

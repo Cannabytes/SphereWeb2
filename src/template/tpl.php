@@ -1354,6 +1354,10 @@ class tpl
             return \Ofey\Logan22\component\mail\mail::getTemplates();
         }));
 
+        $twig->addFunction(new TwigFunction('currencies_name_list', function () {
+            return \Ofey\Logan22\component\country\currencies::getNames();
+        }));
+
         $twig->addFunction(new TwigFunction("logsAll", function ($limit = 100) {
             return log::getLogs($limit);
         }));

@@ -22,6 +22,8 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
 
     protected static array $country = ['ru', 'ua'];
 
+    protected static string $currency_default = 'RUB';
+
     private array $allowIP = [
         '138.201.53.39',
         '176.9.155.22',
@@ -54,15 +56,17 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
         if ($_POST['count'] > $donate->getMaxSummaPaySphereCoin()) {
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
-        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
+
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
 
         $data = [
-            'amount' => $order_amount,
+            'amount' => $amount,
             'order_id' => (string)(time() . mt_rand(1, 999)),
             'type' => 'normal',
             'shop_id' => self::getConfigValue('shop_id'),
             'custom' => user::self()->getId(),
-            'currency_in' => 'RUB',
+            'currency_in' => $currency,
             'payer_pays_commission' => 1,
             'payer_email' => user::self()->getEmail(),
         ];

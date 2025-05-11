@@ -15,6 +15,8 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
 
     protected static array $country = ['ru'];
 
+    protected static string $currency_default = 'RUB';
+
 	private string $shopId = '';
 	
 	private string $secretKey = '';
@@ -71,16 +73,18 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
         if ($_POST['count'] > $donate->getMaxSummaPaySphereCoin()) {
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
-        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
 
-		$userId = auth::get_id();
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
+
+        $userId = auth::get_id();
 		$params = [
 			'metadata' => [
 				'userId' => $userId
 			],
 			'amount' => [
-				'value' => $order_amount,
-				'currency' => $this->currency
+				'value' => $amount,
+				'currency' => $currency
 			],
 			'capture' => true,
 			'confirmation' => [

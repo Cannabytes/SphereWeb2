@@ -20,7 +20,7 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
 
     protected static array $country = ['ru', 'ua', 'crypto'];
 
-    private string $currency_default = 'UAH';
+    protected static string $currency_default = 'UAH';
 
     public static function inputs(): array
     {
@@ -47,8 +47,8 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
 
-        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
-
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
         // Генерируем случайный идентификатор заказа
         $order_id = uniqid();
         // Очищаем идентификатор заказа от недопустимых символов
@@ -56,13 +56,14 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
         // Обрезаем идентификатор заказа до максимальной длины, если нужно
         $order_id = substr($order_id, 0, 64);
 
+
         // Формируем строку для хеширования
         $sign_string = self::getConfigValue('merchant_id') . ':' . number_format(
             $amount,
             2,
             '.',
             ''
-          ) . ':' . $this->currency_default . ':' . self::getConfigValue('secret_key_1') . ':' . $order_id;
+          ) . ':' . $currency . ':' . self::getConfigValue('secret_key_1') . ':' . $order_id;
 
         // Создаем подпись (хеш)
         $sign = hash('sha256', $sign_string);
@@ -72,7 +73,7 @@ class aaiopay extends \Ofey\Logan22\model\donate\pay_abstract
           'amount'      => number_format($amount, 2, '.', ''),
           'order_id'    => $order_id,
           'sign'        => $sign,
-          'currency'    => $this->currency_default,
+          'currency'    => $currency,
           'desc'        => 'Описание вашего заказа',
           'email'       => user::self()->getEmail(),
         ];

@@ -171,7 +171,8 @@ class donate
                 $webhook = $system['webhook'];
                 $country = $system['country'];
                 $customName = $system['customName'] ?? "";
-                $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, $webhook, 1000, $country, $customName);
+                $currency = $system['currency'] ?? null;
+                $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, $webhook, 1000, $country, $customName, $currency);
             }
             $this->donateSystems = $donateSys;
         }
@@ -202,12 +203,13 @@ class donate
             $forAdmin = $system[$systemName]['forAdmin'] ?? false;
             $sort = $system[$systemName]['sort'] ?? 1000;
             $country = $system[$systemName]['country'] ?? [];
+            $currency = $system[$systemName]['currency'] ?? null;
             if(!isset($system[$systemName]['customName']) or empty($system[$systemName]['customName'])){
                 $customName = $systemName;
             }else{
                 $customName = $system[$systemName]['customName'] ?? $systemName;
             }
-            $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort, country: $country, customName: $customName);
+            $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort, country: $country, customName: $customName, currency: $currency);
         }
         $donateSys = array_merge($donateSys, $fileDonateSys);
         usort($donateSys, function ($a, $b) {
@@ -320,6 +322,24 @@ class donate
     {
         if (config::load()->other()->isExchangeRates()) {
             return config::load()->other()->getExchangeRates()['USD'];
+        }
+        return $this->ratioUSD;
+    }
+
+    /**
+     * Получает коэффициент конвертации для указанной валюты
+     *
+     * @param string $currency Код валюты (RUB, UAH, EUR, USD и т.д.)
+     * @return float|int Коэффициент конвертации
+     */
+    public function getRatio(string $currency): float|int
+    {
+        if (config::load()->other()->isExchangeRates()) {
+            $exchangeRates = config::load()->other()->getExchangeRates();
+            var_dump($exchangeRates);exit;
+            if (is_array($exchangeRates) && isset($exchangeRates[$currency])) {
+                return $exchangeRates[$currency];
+            }
         }
         return $this->ratioUSD;
     }
@@ -444,7 +464,9 @@ class donateSystem
 
     private string $customName = "";
 
-    public function __construct($enable, $name, $inputs, $description = "", $forAdmin = false, $webhookUrl = null, $sort = 1000, $country = [], $customName = "")
+    private ?string $currency = null;
+
+    public function __construct($enable, $name, $inputs, $description = "", $forAdmin = false, $webhookUrl = null, $sort = 1000, $country = [], $customName = "", string|null $currency = null)
     {
         $this->enable = filter_var($enable, FILTER_VALIDATE_BOOLEAN);
         $this->name = $name;
@@ -455,6 +477,7 @@ class donateSystem
         $this->sortValue = $sort;
         $this->country = $country;
         $this->customName = $customName ?? $name;
+        $this->currency = $currency;
 
         if (!is_array($inputs) && !is_object($inputs)) {
             return;
@@ -464,6 +487,11 @@ class donateSystem
             $this->inputs[$name] = $value;
         }
 
+    }
+
+    public function getCurrency(): ?string
+    {
+        return $this->currency;
     }
 
     public function getCustomName(): string

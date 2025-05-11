@@ -22,6 +22,8 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
 
     protected static array $country = ['ru', 'ua', 'crypto'];
 
+    protected static string $currency_default = 'UAH';
+
     public static function inputs(): array
     {
         return [
@@ -130,8 +132,8 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
 
         $donate = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
 
-        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioUAH(), $donate->getSphereCoinCost());
-
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
         if ($amount < 300) {
             board::notice(false, "Минимальное пополнение от 300 UAH");
         }
@@ -139,7 +141,7 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
             board::notice(false, "Максимальная пополнение до 20000 UAH");
         }
 
-        $response = $this->payment(strval(round($amount, 1)), 'UAH', user::self()->getId() . '_' . mt_rand(0, 999999), ['paymentSystem' => 'Card']);
+        $response = $this->payment(strval(round($amount, 1)), $currency, user::self()->getId() . '_' . mt_rand(0, 999999), ['paymentSystem' => 'Card']);
 
         if (isset($response['body'])) {
             $body = $response['body'];

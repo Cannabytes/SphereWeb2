@@ -18,7 +18,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 
     protected static array $country = ['ru'];
 
-    private string $currency_default = 'RUB';
+    protected static string $currency_default = 'RUB';
 
     public static function inputs(): array
     {
@@ -63,23 +63,25 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
         if ($_POST['count'] > $donate->getMaxSummaPaySphereCoin()) {
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
-        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
 
-		$account = user::self()->getId();
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
+
+        $account = user::self()->getId();
 		
-		$signature = hash( 'sha256', $account . '{up}' . $this->currency_default . '{up}' . $this->desc . '{up}' . $order_amount . '{up}' . self::getConfigValue('secretKey') );
+		$signature = hash( 'sha256', $account . '{up}' . $currency . '{up}' . $this->desc . '{up}' . $order_amount . '{up}' . self::getConfigValue('secretKey') );
 
 		$params = [
 			'account' => $account,
-			'currency' => $this->currency_default,
+			'currency' => $currency,
 			'desc' => $this->desc,
-			'sum' => $order_amount,
+			'sum' => $amount,
 			'paymentType' => 'card',			
 			'cashItems' => base64_encode(json_encode([
 				[
 					'name' => $this->desc,
 					'count' => 1,
-					'price' => $order_amount,
+					'price' => $amount,
 				]
 			])),
 			'customerEmail' => user::self()->getEmail(),

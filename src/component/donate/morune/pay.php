@@ -20,6 +20,8 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
 
     protected static array $country = ['ru'];
 
+    protected static string $currency_default = 'RUB';
+
     private array $allowIP = [];
 
     public static function inputs(): array
@@ -47,14 +49,16 @@ class morune extends \Ofey\Logan22\model\donate\pay_abstract
         if ($_POST['count'] > $donate->getMaxSummaPaySphereCoin()) {
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
-        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
+
         $shop_id = self::getConfigValue('shop_id');
         $email = user::self()->getEmail();
-        $secret_word = self::getConfigValue('secret_key');
-        $currency = "RUB";
+
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
+
         $order_id = uniqid();
         $params = [
-            'amount' => $order_amount,
+            'amount' => $amount,
             'order_id' => $order_id,
             'email' => $email,
             'currency' => $currency,

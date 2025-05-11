@@ -22,6 +22,8 @@ class wata extends \Ofey\Logan22\model\donate\pay_abstract
     //Включить только для true
     protected static bool $forAdmin = false;
 
+    protected static string $currency_default = 'RUB';
+
     private array $allowIP = [ 
     ];
 
@@ -48,12 +50,15 @@ class wata extends \Ofey\Logan22\model\donate\pay_abstract
         if ($_POST['count'] > $donate->getMaxSummaPaySphereCoin()) {
             board::notice(false, "Максимальная пополнение: " . $donate->getMaxSummaPaySphereCoin());
         }
-        $order_amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatioRUB(), $donate->getSphereCoinCost());
+
+        $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
+        $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
+
 		$ch = curl_init();
-		$order_amount = number_format((float)$order_amount, 2, '.', '');
+		$order_amount = number_format((float)$amount, 2, '.', '');
 		$data = [
 			"amount"      => $order_amount,   
-			"currency"    => "RUB",   
+			"currency"    => $currency,
 			"orderId" => (string) user::self()->getId(),
 			"successRedirectUrl" => \Ofey\Logan22\component\request\url::host("/donate/pay"),
 			"failRedirectUrl" => \Ofey\Logan22\component\request\url::host("/donate/pay"),
