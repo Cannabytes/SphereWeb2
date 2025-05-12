@@ -344,14 +344,22 @@ class donate
      */
     public function getRatio(string $currency): float|int
     {
-        if (config::load()->other()->isExchangeRates()) {
-            $exchangeRates = config::load()->other()->getExchangeRates();
-            if (is_array($exchangeRates) && isset($exchangeRates[$currency])) {
-                return $exchangeRates[$currency];
-            }
+        $config = config::load()?->other();
+
+        $rate = $config?->isExchangeRates() ? $config->getExchangeRates()[$currency] ?? null : null;
+
+        if ($rate !== null) {
+            return $rate;
         }
-        return $this->ratioUSD;
+
+        return match ($currency) {
+            'RUB' => $this->ratioRUB,
+            'UAH' => $this->ratioUAH,
+            'EUR' => $this->ratioEUR,
+            default => $this->ratioUSD,
+        };
     }
+
 
     /**
      * @return float

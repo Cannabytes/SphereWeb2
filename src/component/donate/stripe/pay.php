@@ -20,7 +20,7 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
 
     protected static array $country = ['world'];
 
-    protected static string $currency_default = 'RUB';
+    protected static string $currency_default = 'USD';
 
     private array $allowIP = [
     ];
