@@ -2138,4 +2138,26 @@ Password: %%password%%',
     'LOG_DELETE_ACCOUNT_DESC' => 'Удаление аккаунтов',
     'LOG_DELETE_ACCOUNT' => 'Удалил аккаунт %s из списка своих аккаунтов',
     'LOG_WAREHOUSE_ADD_DESC' => 'Добавлено на склад пользователей',
+    'add_donate_page_notice' => 'Дополнительная информация или уведомление на странице пожертвования',
+
+    'telegram_support' => 'Тех.поддержка',
+    'telegram_donate' => 'Пожертвования',
+    'telegram_send_to_game' => 'Отправка в игру',
+    'telegram_registration' => 'Регистрация',
+    'telegram_create_account' => 'Созданные аккаунты',
+    'telegram_recovery_password' => 'Восстановление пароля',
+    'telegram_account_change_password' => 'Смена пароля аккаунта',
+    'telegram_profile_change_password' => 'Смена пароля профиля',
+    'telegram_sync' => 'Синхронизация',
+    'telegram_stream' => 'Стримы',
+    'telegram_wheel' => 'Рулетка',
+    'telegram_bonus_code' => 'Бонус-Код',
+    'telegram_buy_start_set' => 'Покупка старт. набора',
+    'telegram_buy_in_shop' => 'Покупка в магазине',
+    'telegram_send_to_warehouse' => 'Отправка на склад',
+    'telegram_send_to_village' => 'Отправка перс. в город',
+
+
+
+
 );

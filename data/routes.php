@@ -2756,4 +2756,18 @@ return array (
             'page' => '',
             'comment' => '',
         ),
+    202 =>
+        array (
+            'enable' => true,
+            'method' => 'POST',
+            'pattern' => '/telegram/notice/create/topics',
+            'func' => 'controller\\admin\\telegram::createNoticeTopics',
+            'access' =>
+                array (
+                    0 => 'admin',
+                ),
+            'weight' => 0,
+            'page' => '',
+            'comment' => '',
+        ),
 );

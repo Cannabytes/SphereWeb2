@@ -138,7 +138,7 @@
 
                                 <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
                   <span id="saveLangData" class="btn btn-success-light m-1 btn-sm">{{phrase(271)}}<i
-                          class="bi bi-sd-card ms-2"></i></span>
+                        class="bi bi-sd-card ms-2"></i></span>
                                 </div>
                             </div>
                         </div>
@@ -497,7 +497,7 @@
                             </div>
                             <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
                 <span id="saveCaptcha" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
-                        class="bi bi-sd-card ms-2"></i></span>
+                      class="bi bi-sd-card ms-2"></i></span>
                             </div>
                         </div>
                         <div class="tab-pane p-0" id="onlineCheating"
@@ -625,7 +625,7 @@
                                 </div>
                                 <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
                   <span id="saveCheatingOnline" class="btn btn-success-light m-1 btn-sm">{{ phrase(89) }}<i
-                          class="bi bi-sd-card ms-2"></i></span>
+                        class="bi bi-sd-card ms-2"></i></span>
                                 </div>
                             </div>
 
@@ -667,7 +667,7 @@
                                                config().registration().getEnableLoadFileRegistration() %}checked="" {%
                                                endif %}>
                                         <label for="enableLoadFileRegistration" class="label-success"></label><span
-                                            class="ms-3">{{phrase('upload_user_registration_info_file')}}</span>
+                                          class="ms-3">{{phrase('upload_user_registration_info_file')}}</span>
                                     </div>
                                 </div>
 
@@ -686,7 +686,7 @@
 
                             <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
                 <span id="saveRegistration" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
-                        class="bi bi-sd-card ms-2"></i></span>
+                      class="bi bi-sd-card ms-2"></i></span>
                             </div>
 
                         </div>
@@ -794,7 +794,7 @@
 
                             <div class="border-top border-block-start-dashed d-flex justify-content-end mt-3 pt-2">
                                 <span id="saveEmail" class="btn btn-success-light m-1 btn-sm">{{ phrase(89) }} <i
-                                        class="bi bi-sd-card ms-2"></i></span>
+                                      class="bi bi-sd-card ms-2"></i></span>
                             </div>
                         </div>
                         <div class="tab-pane p-0" id="other" role="tabpanel">
@@ -1126,7 +1126,7 @@
 
                             <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
                 <span id="saveOther" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }} <i
-                        class="bi bi-sd-card ms-2"></i></span>
+                      class="bi bi-sd-card ms-2"></i></span>
                             </div>
                         </div>
                         <div class="tab-pane p-0" id="template" role="tabpanel">
@@ -1223,7 +1223,7 @@
 
                             <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
                 <span id="saveTemplate" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }} <i
-                        class="bi bi-sd-card ms-2"></i></span>
+                      class="bi bi-sd-card ms-2"></i></span>
                             </div>
                         </div>
 
@@ -1464,7 +1464,7 @@
                             </div>
                             <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
                 <span id="savePalette" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
-                        class="bi bi-sd-card ms-2"></i></span>
+                      class="bi bi-sd-card ms-2"></i></span>
                             </div>
                         </div>
                         <div class="tab-pane p-0" id="addMenu" role="tabpanel">
@@ -1654,7 +1654,16 @@
                                         </div>
 
 
+										<div>
+											<button type="button" class="btn btn-success d-none"
+                                                    id="createNoticeTheme">
+												Создать темы для уведомлений
+											</button>
+										</div>
+
                                     </div>
+
+
 
                                     <h6 class="fw-semibold mb-1  text-center">
                                         Какие уведомления присылать в телеграмм бот
@@ -1684,7 +1693,7 @@
                                                        endif %} id="isTechnicalSupport" name="isTechnicalSupport"
                                                        type="checkbox">
                                                 <label for="isTechnicalSupport" class="label-success"></label><span
-                                                    class="ms-3">Новые сообщения тех.поддержки</span>
+                                                  class="ms-3">Новые сообщения тех.поддержки</span>
                                                     [TID: <span class="tid" data-thread-name="technicalSupport" data-thread-id="{{ config().notice().getTechnicalSupportThreadId() }}">{{ config().notice().getTechnicalSupportThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1695,8 +1704,8 @@
                                                        endif %} id="isDonationCrediting" name="isDonationCrediting"
                                                        type="checkbox">
                                                 <label for="isDonationCrediting" class="label-success"></label><span
-                                                    class="ms-3">При зачислении пожертвования</span>
-                                                    [TID: <span class="tid" data-thread-name="donationCrediting" data-thread-id="{{ config().notice().getDonationCreditingThreadId() }}">{{ config().notice().getDonationCreditingThreadId()|default('no set') }}</span>
+                                                  class="ms-3">При зачислении пожертвования</span>
+                                                    [TID: <span class="tid" data-thread-name="donationCrediting" data-thread-id="{{ config().notice().getDonationCreditingThreadId() }}">{{ config().notice().getDonationCreditingThreadId()|default('no set') }}]</span>
                                             </div>
                                         </div>
 
@@ -1707,10 +1716,9 @@
                                                        %} id="isTranslationGame" name="isTranslationGame"
                                                        type="checkbox">
                                                 <label for="isTranslationGame" class="label-success"></label><span
-                                                    class="ms-3">Перевод <img class='avatar avatar-xs rounded'
-                                                                              src='/uploads/images/icon/etc_coins_gold_i00.webp'> в игру</span>
-                                                    [TID: <span class="tid" data-thread-name="translationGame" data-thread-id="{{ config().notice().getTranslationGameThreadId() }}">{{ config().notice().getTranslationGameThreadId()|default('no set') }}</span>
-
+                                                  class="ms-3">Перевод <img class='avatar avatar-xs rounded'
+                                                                            src='/uploads/images/icon/etc_coins_gold_i00.webp'> в игру</span>
+                                                    [TID: <span class="tid" data-thread-name="translationGame" data-thread-id="{{ config().notice().getTranslationGameThreadId() }}">{{ config().notice().getTranslationGameThreadId()|default('no set') }}]</span>
                                             </div>
                                         </div>
 
@@ -1721,7 +1729,7 @@
                                                        endif %} id="isRegistrationUser" name="isRegistrationUser"
                                                        type="checkbox">
                                                 <label for="isRegistrationUser" class="label-success"></label><span
-                                                    class="ms-3">Регистрация пользователя</span>
+                                                  class="ms-3">Регистрация пользователя</span>
                                                 [TID: <span class="tid" data-thread-name="registrationUser" data-thread-id="{{ config().notice().getRegistrationUserThreadId() }}">{{ config().notice().getRegistrationUserThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1732,7 +1740,7 @@
                                                        endif %} id="isRegistrationAccount" name="isRegistrationAccount"
                                                        type="checkbox">
                                                 <label for="isRegistrationAccount" class="label-success"></label><span
-                                                    class="ms-3">Регистрация аккаунта</span>
+                                                  class="ms-3">Регистрация аккаунта</span>
                                                 [TID: <span class="tid" data-thread-name="registrationAccount" data-thread-id="{{ config().notice().getRegistrationAccountThreadId() }}">{{ config().notice().getRegistrationAccountThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1742,7 +1750,7 @@
                                                 <input {% if config().notice().isForgetPassword() %}checked="" {% endif
                                                        %} id="isForgetPassword" name="isForgetPassword" type="checkbox">
                                                 <label for="isForgetPassword" class="label-success"></label><span
-                                                    class="ms-3">Восстановление пароля</span>
+                                                  class="ms-3">Восстановление пароля</span>
                                                 [TID: <span class="tid" data-thread-name="forgetPassword" data-thread-id="{{ config().notice().getForgetPasswordThreadId() }}">{{ config().notice().getForgetPasswordThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1753,7 +1761,7 @@
                                                        endif %} id="isChangeAccountPassword"
                                                        name="isChangeAccountPassword" type="checkbox">
                                                 <label for="isChangeAccountPassword" class="label-success"></label><span
-                                                    class="ms-3">Смена пароля аккаунту</span>
+                                                  class="ms-3">Смена пароля аккаунту</span>
                                                 [TID: <span class="tid" data-thread-name="changeAccountPassword" data-thread-id="{{ config().notice().getChangeAccountPasswordThreadId() }}">{{ config().notice().getChangeAccountPasswordThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1764,7 +1772,7 @@
                                                        endif %} id="isChangeUserPassword" name="isChangeUserPassword"
                                                        type="checkbox">
                                                 <label for="isChangeUserPassword" class="label-success"></label><span
-                                                    class="ms-3">Смена пароля профиля</span>
+                                                  class="ms-3">Смена пароля профиля</span>
                                                 [TID: <span class="tid" data-thread-name="changeUserPassword" data-thread-id="{{ config().notice().getChangeUserPasswordThreadId() }}">{{ config().notice().getChangeUserPasswordThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1774,7 +1782,7 @@
                                                 <input {% if config().notice().isSyncAccount() %}checked="" {% endif %}
                                                        id="isSyncAccount" name="isSyncAccount" type="checkbox">
                                                 <label for="isSyncAccount" class="label-success"></label><span
-                                                    class="ms-3">Синхронизация аккаунта</span>
+                                                  class="ms-3">Синхронизация аккаунта</span>
                                                 [TID: <span class="tid" data-thread-name="syncAccount" data-thread-id="{{ config().notice().getSyncAccountThreadId() }}">{{ config().notice().getSyncAccountThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1784,7 +1792,7 @@
                                                 <input {% if config().notice().isAddStream() %}checked="" {% endif %}
                                                        id="isAddStream" name="isAddStream" type="checkbox">
                                                 <label for="isAddStream" class="label-success"></label><span
-                                                    class="ms-3">Добавление стрима</span>
+                                                  class="ms-3">Добавление стрима</span>
                                                 [TID: <span class="tid" data-thread-name="addStream" data-thread-id="{{ config().notice().getAddStreamThreadId() }}">{{ config().notice().getAddStreamThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1794,7 +1802,7 @@
                                                 <input {% if config().notice().isUseWheel() %}checked="" {% endif %}
                                                        id="isUseWheel" name="isUseWheel" type="checkbox">
                                                 <label for="isUseWheel" class="label-success"></label><span
-                                                    class="ms-3">Использовании рулетки</span>
+                                                  class="ms-3">Использовании рулетки</span>
                                                 [TID: <span class="tid" data-thread-name="useWheel" data-thread-id="{{ config().notice().getUseWheelThreadId() }}">{{ config().notice().getUseWheelThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1804,7 +1812,7 @@
                                                 <input {% if config().notice().isUseBonusCode() %}checked="" {% endif %}
                                                        id="isUseBonusCode" name="isUseBonusCode" type="checkbox">
                                                 <label for="isUseBonusCode" class="label-success"></label><span
-                                                    class="ms-3">Использование Бонус-Кода</span>
+                                                  class="ms-3">Использование Бонус-Кода</span>
                                                 [TID: <span class="tid" data-thread-name="useBonusCode" data-thread-id="{{ config().notice().getUseBonusCodeThreadId() }}">{{ config().notice().getUseBonusCodeThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1814,7 +1822,7 @@
                                                 <input {% if config().notice().isBuyStartPack() %}checked="" {% endif %}
                                                        id="isBuyStartPack" name="isBuyStartPack" type="checkbox">
                                                 <label for="isBuyStartPack" class="label-success"></label><span
-                                                    class="ms-3">Покупка стартового набора</span>
+                                                  class="ms-3">Покупка стартового набора</span>
                                                 [TID: <span class="tid" data-thread-name="buyStartPack" data-thread-id="{{ config().notice().getBuyStartPackThreadId() }}">{{ config().notice().getBuyStartPackThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1835,7 +1843,7 @@
                                                        endif %} id="isSendWarehouseToGame" name="isSendWarehouseToGame"
                                                        type="checkbox">
                                                 <label for="isSendWarehouseToGame" class="label-success"></label><span
-                                                    class="ms-3">Отправка из склада в игру</span>
+                                                  class="ms-3">Отправка из склада в игру</span>
                                                 [TID: <span class="tid" data-thread-name="sendWarehouseToGame" data-thread-id="{{ config().notice().getSendWarehouseToGameThreadId() }}">{{ config().notice().getSendWarehouseToGameThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1846,7 +1854,7 @@
                                                        endif %} id="isSendPlayerToVillage" name="isSendPlayerToVillage"
                                                        type="checkbox">
                                                 <label for="isSendPlayerToVillage" class="label-success"></label><span
-                                                    class="ms-3">Отправка персонажа в город</span>
+                                                  class="ms-3">Отправка персонажа в город</span>
                                                 [TID: <span class="tid" data-thread-name="sendPlayerToVillage" data-thread-id="{{ config().notice().getSendPlayerToVillageThreadId() }}">{{ config().notice().getSendPlayerToVillageThreadId()|default('no set') }}</span>]
                                             </div>
                                         </div>
@@ -1864,7 +1872,7 @@
                             </div>
                             <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
                             <span id="saveNotice" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }}<i
-                                    class="bi bi-sd-card ms-2"></i></span>
+                                  class="bi bi-sd-card ms-2"></i></span>
                             </div>
                             <script>
                                 url = $("#http_host").text()
@@ -1919,8 +1927,64 @@
         AjaxSend("/telegram/notice/test", "POST", {
             tokenApi: $("#telegramTokenApi").val(),
             chatID: $("#telegramChatID").val()
-        }, false)
+        }, true).then(function (response){
+            responseAnalysis(response);
+            if(response.ok){
+                $("#createNoticeTheme").removeClass("d-none");
+            }
+        });
     })
+
+
+    $("#createNoticeTheme").on("click", function() {
+        AjaxSend("/telegram/notice/create/topics", "POST", {
+            tokenApi: $("#telegramTokenApi").val(),
+            chatID: $("#telegramChatID").val(),
+            topics: {
+                technicalSupport: '{{phrase("telegram_support")}}',
+                donationCrediting: '{{phrase("telegram_donate")}}',
+                translationGame: '{{phrase("telegram_send_to_game")}}',
+                registrationUser: '{{phrase("telegram_registration")}}',
+                registrationAccount: '{{phrase("telegram_create_account")}}',
+                forgetPassword: '{{phrase("telegram_recovery_password")}}',
+                changeAccountPassword: '{{phrase("telegram_account_change_password")}}',
+                changeUserPassword: '{{phrase("telegram_profile_change_password")}}',
+                syncAccount: '{{phrase("telegram_sync")}}',
+                addStream: '{{phrase("telegram_stream")}}',
+                useWheel: '{{phrase("telegram_wheel")}}',
+                useBonusCode: '{{phrase("telegram_bonus_code")}}',
+                buyStartPack: '{{phrase("telegram_buy_start_set")}}',
+                buyShop: '{{phrase("telegram_buy_in_shop")}}',
+                sendWarehouseToGame: '{{phrase("telegram_send_to_warehouse")}}',
+                sendPlayerToVillage: '{{phrase("telegram_send_to_village")}}',
+            },
+        }, true, 60).then(function(response) {
+            if (response.success) {
+                if (response.topics) {
+                    for (const threadName in response.topics) {
+                        const threadId = response.topics[threadName];
+                        const threadElement = $(`.tid[data-thread-name="${threadName}"]`);
+                        if (threadElement.length) {
+                            threadElement.attr('data-thread-id', threadId);
+                            threadElement.text(threadId);
+                        }
+                    }
+                    noticeSuccess(response.message || 'Темы успешно созданы и ID обновлены');
+                }
+            } else {
+                noticeError(response.message || 'Произошла ошибка при создании тем');
+                if (response.errors && response.errors.length) {
+                    response.errors.forEach(error => {
+                        noticeError(error);
+                    });
+                }
+            }
+        }).catch(function(error) {
+            console.error('Ошибка при отправке запроса:', error);
+            noticeError('Произошла ошибка при отправке запроса');
+        });
+    });
+
 
     $(".tid").click(function () {
         const $this = $(this); // сохраняем текущий элемент
@@ -2360,8 +2424,8 @@
         AjaxSend('/admin/template/readme', 'POST', {template: selectedTemplate}, true).then(function (response) {
             let date = new Date(response.date * 1000);
             let formattedDate = ('0' + date.getDate()).slice(-2) + '.' +
-                ('0' + (date.getMonth() + 1)).slice(-2) + '.' +
-                date.getFullYear();
+                  ('0' + (date.getMonth() + 1)).slice(-2) + '.' +
+                  date.getFullYear();
             $('#templateAuthor').html(response.author);
             $('#templateContact').html(response.contact);
             $('#templateDate').text(formattedDate); // Используем отформатированную дату
@@ -2383,7 +2447,7 @@
 <script>
     // Register the plugins
     FilePond.registerPlugin(
-        FilePondPluginImagePreview,
+          FilePondPluginImagePreview,
     );
 
     // Set up FilePond instance
@@ -2465,7 +2529,7 @@
 <script>
     // Register the plugins
     FilePond.registerPlugin(
-        FilePondPluginImagePreview,
+          FilePondPluginImagePreview,
     );
 
     // Set up FilePond instance
