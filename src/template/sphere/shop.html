@@ -656,203 +656,221 @@
 
 {% block js %}
 <script>
-  $(document).ready(function () {
 
-    $('#categoryTabs .category-tab-link').on('click', function() {
-      $(this).addClass('pulse-animation');
-      setTimeout(() => {
-        $(this).removeClass('pulse-animation');
-      }, 500);
-    });
+$(document).ready(function () {
 
-
-    function scrollActiveCategoryIntoView() {
-      const $activeTab = $('.category-tab-link.active').parent();
-      if ($activeTab.length) {
-        const $container = $('.shop-categories-wrapper');
-        const containerWidth = $container.width();
-        const tabPosition = $activeTab.position().left;
-        const tabWidth = $activeTab.width();
-
-        const scrollLeft = tabPosition - (containerWidth / 2) + (tabWidth / 2);
-        $container.animate({ scrollLeft: scrollLeft }, 300);
-      }
-    }
-
-
-    scrollActiveCategoryIntoView();
-    $('#categoryTabs .category-tab-link').on('shown.bs.tab', scrollActiveCategoryIntoView);
-
-
-    $('#purchase').on('click', function () {
-      let objectId = $(this).attr('data-object-id');
-      let playerName = $('#playerName').val();
-      let account = $('#playerName').find('option:selected').data('account');
-      let quantity = parseInt($('#quantityModal').val()) || 1;
-
-      AjaxSend('/shop/purchase', 'POST', {
-        shopId: objectId,
-        playerName: playerName,
-        account: account,
-        quantity: quantity,
-      }, true).then(function (response) {
-        responseAnalysis(response);
-        console.log(response);
-      });
-    });
-
-
-    $('#toWarehouse').on('click', function () {
-      let objectId = $(this).attr('data-object-id');
-      let quantity = parseInt($('#quantityModal').val()) || 1;
-
-      AjaxSend('/shop/towarehouse', 'POST', {
-        shopId: objectId,
-        quantity: quantity,
-      }, true).then(function (response) {
-        responseAnalysis(response);
-        console.log(response);
-      });
-    });
-
-
-    $('.showSelectBuy').on('click', function () {
-      let objectId = $(this).attr('data-object-id');
-      let isStackable = $(this).attr('data-is-stackable') === 'true';
-      let $card = $(this).closest('.shop-item-card');
-      let isPackage = $card.attr('data-product-count') > 1;
-
-      let quantityInput = $(this).closest('.d-flex').find('.quantity');
-      let quantity = quantityInput.length ? (parseInt(quantityInput.val()) || 1) : 1;
-
-      if (!isStackable || isPackage) {
-        quantity = 1;
-        $('#quantityModal').val(1);
-        $('#quantityModal').closest('.quantityClass').hide();
-      } else {
-        $('#quantityModal').val(quantity);
-        $('#quantityModal').closest('.quantityClass').show();
-      }
-
-      let cost = $(this).attr('data-cost');
-      $('.shopCostBuy').text((!isStackable || isPackage) ? cost : (cost * quantity));
-
-      AjaxSend('/admin/shop/get', 'POST', { objectId: objectId }, true).then(function (response) {
-        let html = '<ul class="list-group followers-list">';
-
-        response.forEach(function (item) {
-          let totalCount = item.count;
-
-          if (isStackable && !isPackage) {
-            totalCount = item.count * quantity;
-          }
-
-          let totalPrice = isPackage ? item.cost : (item.cost * quantity);
-
-          html += `
-			<li class="list-group-item"
-				data-base-count="${item.count}"
-				data-base-price="${item.cost}">
-			  <div class="d-sm-flex align-items-top">
-				<span class="avatar avatar-sm">
-				  <img src="${item.item.icon}" alt="">
-				</span>
-				<div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
-				  <p class="mb-0 lh-1">
-					${item.item.itemName}
-					${item.enchant > 0 ? '<span class="badge bg-success fs-10 rounded-1">+' + item.enchant + '</span>' : ''}
-					x<span class="dynamic-count">${totalCount}</span>
-				  </p>
-				  <span class="fs-11 text-muted op-7">
-					${item.item.add_name ? item.item.add_name + ' | ' : ''}
-					{{phrase("price")}} : ${totalPrice}
-				  </span>
-				</div>
-			  </div>
-			</li>
-		  `;
-        });
-        html += '</ul>';
-        $('#itemListSell').html(html);
-      });
-
-      $('#purchase').attr('data-object-id', objectId);
-      $('#toWarehouse').attr('data-object-id', objectId);
-
-      $('#openShop').modal('show');
-    });
-
-
-    function updatePriceAndCountForCard($quantityInput) {
-      let $card = $quantityInput.closest('.shop-item-card');
-      let quantity = parseInt($quantityInput.val()) || 1;
-      let baseCount = parseInt($card.find('.product-count').data('cost'));
-      let basePrice = parseFloat($card.find('.item-price').data('base-price'));
-
-      let totalProductCount = baseCount * quantity;
-      let totalPrice = basePrice * quantity;
-
-      $card.find('.product-count').text(totalProductCount);
-      $card.find('.item-price').text(totalPrice.toFixed(0));
-
-      let $button = $card.find('.showSelectBuy');
-      $button.text('{{phrase("buy_for")}} ' + totalPrice.toFixed(0));
-      $button.attr('data-cost', totalPrice);
-
-
-      if ($('#openShop').hasClass('show')
-            && $('#purchase').attr('data-object-id') === $button.attr('data-object-id')) {
-        updateModalData(quantity, totalPrice);
-      }
-    }
-
-
-    function updateModalData(quantity, totalCost) {
-      let totalModalPrice = 0;
-      $('#itemListSell .list-group-item').each(function() {
-        let $item = $(this);
-        let baseCount = parseInt($item.data('base-count'));
-        let basePrice = parseFloat($item.data('base-price'));
-
-        let newCount = baseCount * quantity;
-        let newPrice = basePrice * quantity;
-
-        $item.find('.dynamic-count').text(newCount);
-        $item.find('.text-muted.op-7').text('{{phrase("price")}} : ' + newPrice.toFixed(0));
-        totalModalPrice += newPrice;
-      });
-      $('.shopCostBuy').text(totalModalPrice.toFixed(0));
-    }
-
-
-    $('body').on('input change', '.quantity', function () {
-      updatePriceAndCountForCard($(this));
-    });
-
-
-    $('.quantityModal').on('input change', function() {
-      let quantity = parseInt($(this).val()) || 1;
-      updateModalData(quantity, 0);
-    });
-
-
-    $('.quantity').each(function () {
-      updatePriceAndCountForCard($(this));
-    });
-
-
-    $('head').append(`
-      <style>
-        @keyframes pulse-animation {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.05); }
-          100% { transform: scale(1); }
-        }
-        .pulse-animation {
-          animation: pulse-animation 0.5s ease;
-        }
-      </style>
-    `);
+  $('#categoryTabs .category-tab-link').on('click', function () {
+    $(this).addClass('pulse-animation');
+    setTimeout(() => {
+      $(this).removeClass('pulse-animation');
+    }, 500);
   });
+
+
+  function scrollActiveCategoryIntoView() {
+    const $activeTab = $('.category-tab-link.active').parent();
+    if ($activeTab.length) {
+      const $container = $('.shop-categories-wrapper');
+      const containerWidth = $container.width();
+      const tabPosition = $activeTab.position().left;
+      const tabWidth = $activeTab.width();
+
+      const scrollLeft = tabPosition - (containerWidth / 2) + (tabWidth / 2);
+      $container.animate({scrollLeft: scrollLeft}, 300);
+    }
+  }
+
+
+  scrollActiveCategoryIntoView();
+  $('#categoryTabs .category-tab-link').on('shown.bs.tab', scrollActiveCategoryIntoView);
+
+
+  $('#purchase').on('click', function () {
+    let objectId = $(this).attr('data-object-id');
+    let playerName = $('#playerName').val();
+    let account = $('#playerName').find('option:selected').data('account');
+    let quantity = parseInt($('#quantityModal').val()) || 1;
+
+    AjaxSend('/shop/purchase', 'POST', {
+      shopId: objectId,
+      playerName: playerName,
+      account: account,
+      quantity: quantity,
+    }, true).then(function (response) {
+      responseAnalysis(response);
+      $('#openShop').modal('hide');
+      console.log(response);
+    });
+  });
+
+
+  $('#toWarehouse').on('click', function () {
+    let objectId = $(this).attr('data-object-id');
+    let quantity = parseInt($('#quantityModal').val()) || 1;
+
+    AjaxSend('/shop/towarehouse', 'POST', {
+      shopId: objectId,
+      quantity: quantity,
+    }, true).then(function (response) {
+      responseAnalysis(response);
+      console.log(response);
+      $('#openShop').modal('hide');
+    });
+  });
+
+
+  $('.showSelectBuy').on('click', function () {
+    let objectId = $(this).attr('data-object-id');
+    let isStackable = $(this).attr('data-is-stackable') === 'true';
+    let $card = $(this).closest('.shop-item-card');
+    let isPackage = $card.attr('data-product-count') > 1;
+
+    let quantityInput = $(this).closest('.d-flex').find('.quantity');
+    let quantity = quantityInput.length ? (parseInt(quantityInput.val()) || 1) : 1;
+
+    if (!isStackable || isPackage) {
+      quantity = 1;
+      $('#quantityModal').val(1);
+      $('#quantityModal').closest('.quantityClass').hide();
+    } else {
+      $('#quantityModal').val(quantity);
+      $('#quantityModal').closest('.quantityClass').show();
+    }
+
+// Получаем базовую цену товара (цена за 1 единицу)
+    let baseCost = parseFloat($(this).attr('data-cost'));
+
+// Устанавливаем общую стоимость (без умножения - в data-cost уже хранится актуальная цена с учетом quantity)
+    $('.shopCostBuy').text(baseCost);
+
+    AjaxSend('/admin/shop/get', 'POST', {objectId: objectId}, true).then(function (response) {
+      let html = '<ul class="list-group followers-list">';
+
+      response.forEach(function (item) {
+        let totalCount = item.count;
+
+        if (isStackable && !isPackage) {
+          totalCount = item.count * quantity;
+        }
+
+        // Сохраняем базовую цену товара без умножения на количество
+        let itemBaseCost = item.cost;
+
+        html += `
+		<li class="list-group-item"
+            data-base-count="${item.count}"
+            data-base-price="${itemBaseCost}">
+		  <div class="d-sm-flex align-items-top">
+			<span class="avatar avatar-sm">
+			  <img src="${item.item.icon}" alt="">
+			</span>
+			<div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
+			  <p class="mb-0 lh-1">
+				${item.item.itemName}
+				${item.enchant > 0 ? '<span class="badge bg-success fs-10 rounded-1">+' + item.enchant + '</span>' : ''}
+				x<span class="dynamic-count">${totalCount}</span>
+			  </p>
+			  <span class="fs-11 text-muted op-7">
+				${item.item.add_name ? item.item.add_name + ' | ' : ''}
+				{{phrase("price")}} : ${baseCost}
+			  </span>
+			</div>
+		  </div>
+		</li>
+	  `;
+      });
+      html += '</ul>';
+      $('#itemListSell').html(html);
+    });
+
+    $('#purchase').attr('data-object-id', objectId);
+    $('#toWarehouse').attr('data-object-id', objectId);
+
+    $('#openShop').modal('show');
+  });
+
+
+  function updatePriceAndCountForCard($quantityInput) {
+    let $card = $quantityInput.closest('.shop-item-card');
+    let quantity = parseInt($quantityInput.val()) || 1;
+    let baseCount = parseInt($card.find('.product-count').data('cost'));
+    let basePrice = parseFloat($card.find('.item-price').data('base-price'));
+
+    let totalProductCount = baseCount * quantity;
+    let totalPrice = basePrice * quantity;
+
+    $card.find('.product-count').text(totalProductCount);
+    $card.find('.item-price').text(totalPrice.toFixed(0));
+
+    let $button = $card.find('.showSelectBuy');
+    $button.text('{{phrase("buy_for")}} ' + totalPrice.toFixed(0));
+    $button.attr('data-cost', totalPrice);
+
+// Обновляем данные в модальном окне, только если оно открыто
+    if ($('#openShop').hasClass('show')
+          && $('#purchase').attr('data-object-id') === $button.attr('data-object-id')) {
+      updateModalData(quantity, totalPrice);
+    }
+  }
+
+
+  function updateModalData(quantity, totalCost) {
+// Устанавливаем общую стоимость непосредственно из totalCost
+    $('.shopCostBuy').text(totalCost.toFixed(0));
+
+    $('#itemListSell .list-group-item').each(function () {
+      let $item = $(this);
+      let baseCount = parseInt($item.data('base-count'));
+
+// Обновляем только количество, цена уже корректная
+      let newCount = baseCount * quantity;
+      $item.find('.dynamic-count').text(newCount);
+
+// Обновляем отображение цены, используя totalCost
+      $item.find('.text-muted.op-7').html(function (i, html) {
+        return html.replace(/Price\s*:\s*\d+(\.\d+)?/, 'Price: ' + totalCost.toFixed(0));
+      });
+    });
+  }
+
+
+  $('body').on('input change', '.quantity', function () {
+    updatePriceAndCountForCard($(this));
+  });
+
+
+  $('.quantityModal').on('input change', function () {
+    let quantity = parseInt($(this).val()) || 1;
+    let objectId = $('#purchase').attr('data-object-id');
+    let $button = $(`.showSelectBuy[data-object-id="${objectId}"]`);
+    let basePrice = parseFloat($button.closest('.shop-item-card').find('.item-price').data('base-price'));
+
+// Вычисляем общую стоимость
+    let totalCost = basePrice * quantity;
+
+// Обновляем данные в модальном окне
+    updateModalData(quantity, totalCost);
+  });
+
+
+  $('.quantity').each(function () {
+    updatePriceAndCountForCard($(this));
+  });
+
+
+  $('head').append(`
+    <style>
+      @keyframes pulse-animation {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      .pulse-animation {
+        animation: pulse-animation 0.5s ease;
+      }
+    </style>
+`);
+});
+
 </script>
 {% endblock %}

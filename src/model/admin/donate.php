@@ -37,9 +37,10 @@ class donate {
                 board::notice(false, "ID Предмета не найдено");
             }
         }
-        sql::run("INSERT INTO `shop_items` (`serverId`, `items`) VALUES (?, ?)",[
+        sql::run("INSERT INTO `shop_items` (`serverId`, `items`, `category`) VALUES (?, ?, ?)",[
             user::self()->getServerId(),
             json_encode($items),
+            'none',
         ]);
         $lastId = sql::lastInsertId();
         if(!$lastId){
