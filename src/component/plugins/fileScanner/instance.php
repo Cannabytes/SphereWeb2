@@ -105,6 +105,7 @@ class instance {
     private function downloadAndUpdateFile(string $file): array {
         $githubUrl = "https://raw.githubusercontent.com/Cannabytes/SphereWeb2/master/" . ltrim($file, '/');
         $localPath = $file;
+        $backupPath = null;
 
         // Проверяем и создаем директорию перед скачиванием файла
         $dir = dirname($localPath);
@@ -184,6 +185,11 @@ class instance {
                 throw new \Exception("Ошибка верификации записанного файла");
             }
 
+            // Удаляем резервную копию после успешного обновления
+            if ($backupPath && file_exists($backupPath)) {
+                @unlink($backupPath);
+            }
+
             return [
                 'success' => true,
                 'message' => 'Файл успешно обновлён'
@@ -191,7 +197,7 @@ class instance {
 
         } catch (\Exception $e) {
             // Восстанавливаем из резервной копии при неудаче
-            if (isset($backupPath) && file_exists($backupPath)) {
+            if ($backupPath && file_exists($backupPath)) {
                 @copy($backupPath, $localPath);
                 @unlink($backupPath);
             }
@@ -202,4 +208,5 @@ class instance {
             ];
         }
     }
+
 }
