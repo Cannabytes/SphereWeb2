@@ -61,11 +61,11 @@ class serverModel
         $this->gameId = $server['game_id'] ?? null;
         $this->disabled = $server['disabled'] ?? false;
         $this->name = $server['name'] ?? '';
-        $this->rateExp = $server['rateExp'] ?? 1;
-        $this->rateSp = $server['rateSp'] ?? 1;
-        $this->rateAdena = $server['rateAdena'] ?? 1;
-        $this->rateDrop = $server['rateDrop'] ?? 1;
-        $this->rateSpoil = $server['rateSpoil'] ?? 1;
+        $this->rateExp = filter_var($server['rateExp'], FILTER_VALIDATE_INT);
+        $this->rateSp = filter_var($server['rateSp'], FILTER_VALIDATE_INT);
+        $this->rateAdena = filter_var($server['rateAdena'], FILTER_VALIDATE_INT);
+        $this->rateDrop = filter_var($server['rateDrop'], FILTER_VALIDATE_INT);
+        $this->rateSpoil = filter_var($server['rateSpoil'], FILTER_VALIDATE_INT);
         $this->chronicle = $server['chronicle'] ?? '';
         $this->chatGameEnabled = $server['chat_game_enabled'] ?? 0;
         $this->launcherEnabled = $server['launcher_enabled'] ?? 0;

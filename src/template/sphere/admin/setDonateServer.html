@@ -735,200 +735,346 @@
 
                                     <div class="col-md-8">
                                         <div class="tab-content" id="v-pills-tabContent">
-                                            {% for i, donate in server.donate().getDonateSystems() %}
-                                            <div class="tab-pane {% if i == 0 %}active show{% endif %} donatePanelWrite"
-                                                 id="{{donate.getName()}}" role="tabpanel"
-                                                 tabindex="0"
-                                                 aria-labelledby="{{donate.getName()}}-tab">
-                                                <div class="d-sm-flex">
-
-                                                    <div data-pay-name="{{donate.getName()}}">
-                                                        <div class="my-md-auto mt-4 ms-md-3">
-
-                                                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
-                                                                <div>
-                                                                    <p class="fs-14 mb-1 fw-semibold">
-                                                                        {{ phrase('enable_payment_system') }}
-                                                                        {{donate.getName()}}</p>
-                                                                </div>
-                                                                <div class="custom-toggle-switch ms-sm-2 ms-0">
-                                                                    <input id="is_enable_{{donate.getName()}}"
-                                                                           name="is_enable_{{donate.getName()}}"
-                                                                           type="checkbox"
-                                                                           {% if donate.isEnable() %}checked{% endif %}>
-                                                                    <label for="is_enable_{{donate.getName()}}"
-                                                                           class="label-primary mb-1"></label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
-                                                                <div>
-                                                                    <p class="fs-14 mb-1 fw-semibold">
-                                                                        {{ phrase('admin_only_enable') }}
-                                                                        {{donate.getName()}}</p>
-                                                                </div>
-                                                                <div class="custom-toggle-switch ms-sm-2 ms-0">
-                                                                    <input id="forAdmin_{{donate.getName()}}"
-                                                                           name="forAdmin_{{donate.getName()}}"
-                                                                           type="checkbox"
-                                                                           {% if donate.forAdmin() %}checked{% endif %}>
-                                                                    <label for="forAdmin_{{donate.getName()}}"
-                                                                           class="label-primary mb-1"></label>
-                                                                </div>
-                                                            </div>
-                                                            {% for key, val in donate.getInputs() %}
-                                                            <div class="form-floating mb-3">
-                                                                <input data-name="{{key}}"
-                                                                       value="{{val}}"
-                                                                       type="text"
-                                                                       class="form-control"
-                                                                       id="donateSys_{{key}}"
-                                                                       placeholder="">
-                                                                <label for="donateSys_{{key}}">{{key}}</label>
-                                                            </div>
-                                                            {% endfor %}
-
-
-                                                            <hr>
-                                                            <div class="form-floating mb-3">
-                                                                <input
-                                                                      value="{{ donate.getCustomName() }}"
-                                                                      type="text"
-                                                                      class="form-control"
-                                                                      id="payname_{{donate.getName()}}"
-                                                                      placeholder="">
-                                                                <label for="payname_{{donate.getName()}}">Название системы</label>
-                                                            </div>
-
-                                                            <div class="form-floating mb-3">
-                                                                <input
-                                                                      value="{{donate.getDescription()}}"
-                                                                      type="text"
-                                                                      class="form-control"
-                                                                      id="description_{{donate.getName()}}"
-                                                                      placeholder="">
-                                                                <label for="description_{{donate.getName()}}">{{
-                                                                    phrase('payment_system_description') }}</label>
-                                                            </div>
-
-{# Получаем платежную систему один раз, если она потребуется #}
-{% set paysystem = null %}
-{% set currency = donate.getCurrency() %}
-{% set userCountryList = donate.getCountry() %}
-
-{# Определяем, нужно ли инициализировать платежную систему #}
-{% if (currency == "" or currency == null) or userCountryList is empty %}
-    {% set paysystem = get_donate_paysystem(donate.getName()) %}
-{% endif %}
-
-{# Устанавливаем значения с учетом дефолтных #}
-{% set currency = currency ?: (paysystem ? paysystem.getCurrency() : "") %}
-{% set checkListCountry = userCountryList is not empty ? userCountryList : (paysystem ? paysystem.getCountry() : []) %}
-{% set countryList = getCountryList() %}
-
-<div class="border rounded-3 p-3 mb-3">
-    <p class="fs-15 fw-semibold mb-2">Платежная система для каких пользователей</p>
-    <!-- Первые 4 элемента в двухколоночном макете -->
-    <div class="row">
-        {% for dn, country in countryList|slice(0, 4) %}
-            <div class="col-md-6">
-                <div class="form-check form-switch mb-2">
-                    <input class="form-check-input form-checked-success"
-                           type="checkbox"
-                           role="switch"
-                           id="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}"
-                           name="country_{{ donate.getName() }}[]"
-                           value="{{ dn|e('html_attr') }}"
-                           {{ (dn in checkListCountry) ? 'checked' : '' }}>
-                    <label class="form-check-label" for="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}">
-                        {{ country|e }}
-                    </label>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-    <!-- Кнопка для раскрытия остальных элементов -->
-    {% if countryList|length > 4 %}
-        <button class="btn btn-link btn-sm p-0 fw-semibold"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#additionalcountry-{{ donate.getName() }}"
-                aria-expanded="false"
-                aria-controls="additionalcountry-{{ donate.getName() }}">
-            Показать все ({{ countryList|length - 4 }} еще)
-        </button>
-    <!-- Скрытые элементы в аккордионе -->
-        <div class="collapse mt-2" id="additionalcountry-{{ donate.getName() }}">
-            <div class="row">
-                {% for dn, country in countryList|slice(4) %}
-                    <div class="col-md-6">
-                        <div class="form-check form-switch mb-2">
-                            <input class="form-check-input form-checked-success"
+{% if server.donate().getDonateSystems()|length > 0 %}
+    {% for i, donate in server.donate().getDonateSystems() %}
+    <div class="tab-pane {% if i == 0 %}active show{% endif %} donatePanelWrite"
+         id="{{donate.getName()}}" role="tabpanel"
+         tabindex="0"
+         aria-labelledby="{{donate.getName()}}-tab">
+        <div class="d-sm-flex">
+            <div data-pay-name="{{donate.getName()}}">
+                <div class="my-md-auto mt-4 ms-md-3">
+                    <!-- Существующий контент системы доната -->
+                    <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div>
+                            <p class="fs-14 mb-1 fw-semibold">
+                                {{ phrase('enable_payment_system') }}
+                                {{donate.getName()}}</p>
+                        </div>
+                        <div class="custom-toggle-switch ms-sm-2 ms-0">
+                            <input id="is_enable_{{donate.getName()}}"
+                                   name="is_enable_{{donate.getName()}}"
                                    type="checkbox"
-                                   role="switch"
-                                   id="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}"
-                                   name="country_{{ donate.getName() }}[]"
-                                   value="{{ dn|e('html_attr') }}"
-                                   {{ (dn in checkListCountry) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}">
-                                {{ country|e }}
-                            </label>
+                                   {% if donate.isEnable() %}checked{% endif %}>
+                            <label for="is_enable_{{donate.getName()}}"
+                                   class="label-primary mb-1"></label>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
-        </div>
-    {% endif %}
-</div>
+
+                    <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div>
+                            <p class="fs-14 mb-1 fw-semibold">
+                                {{ phrase('admin_only_enable') }}
+                                {{donate.getName()}}</p>
+                        </div>
+                        <div class="custom-toggle-switch ms-sm-2 ms-0">
+                            <input id="forAdmin_{{donate.getName()}}"
+                                   name="forAdmin_{{donate.getName()}}"
+                                   type="checkbox"
+                                   {% if donate.forAdmin() %}checked{% endif %}>
+                            <label for="forAdmin_{{donate.getName()}}"
+                                   class="label-primary mb-1"></label>
+                        </div>
+                    </div>
+
+                    {% for key, val in donate.getInputs() %}
+                    <div class="form-floating mb-3">
+                        <input data-name="{{key}}"
+                               value="{{val}}"
+                               type="text"
+                               class="form-control"
+                               id="donateSys_{{key}}"
+                               placeholder="">
+                        <label for="donateSys_{{key}}">{{key}}</label>
+                    </div>
+                    {% endfor %}
+
+                    <hr>
+                    <div class="form-floating mb-3">
+                        <input value="{{ donate.getCustomName() }}"
+                               type="text"
+                               class="form-control"
+                               id="payname_{{donate.getName()}}"
+                               placeholder="">
+                        <label for="payname_{{donate.getName()}}">Название системы</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input value="{{donate.getDescription()}}"
+                               type="text"
+                               class="form-control"
+                               id="description_{{donate.getName()}}"
+                               placeholder="">
+                        <label for="description_{{donate.getName()}}">{{
+                            phrase('payment_system_description') }}</label>
+                    </div>
+
+                    {# Получаем платежную систему один раз, если она потребуется #}
+                    {% set paysystem = null %}
+                    {% set currency = donate.getCurrency() %}
+                    {% set userCountryList = donate.getCountry() %}
+
+                    {# Определяем, нужно ли инициализировать платежную систему #}
+                    {% if (currency == "" or currency == null) or userCountryList is empty %}
+                        {% set paysystem = get_donate_paysystem(donate.getName()) %}
+                    {% endif %}
+
+                    {# Устанавливаем значения с учетом дефолтных #}
+                    {% set currency = currency ?: (paysystem ? paysystem.getCurrency() : "") %}
+                    {% set checkListCountry = userCountryList is not empty ? userCountryList : (paysystem ? paysystem.getCountry() : []) %}
+                    {% set countryList = getCountryList() %}
+
+                    <div class="border rounded-3 p-3 mb-3">
+                        <p class="fs-15 fw-semibold mb-2">Платежная система для каких пользователей</p>
+                        <!-- Первые 4 элемента в двухколоночном макете -->
+                        <div class="row">
+                            {% for dn, country in countryList|slice(0, 4) %}
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input form-checked-success"
+                                               type="checkbox"
+                                               role="switch"
+                                               id="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}"
+                                               name="country_{{ donate.getName() }}[]"
+                                               value="{{ dn|e('html_attr') }}"
+                                               {{ (dn in checkListCountry) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}">
+                                            {{ country|e }}
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <!-- Кнопка для раскрытия остальных элементов -->
+                        {% if countryList|length > 4 %}
+                            <button class="btn btn-link btn-sm p-0 fw-semibold"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#additionalcountry-{{ donate.getName() }}"
+                                    aria-expanded="false"
+                                    aria-controls="additionalcountry-{{ donate.getName() }}">
+                                Показать все ({{ countryList|length - 4 }} еще)
+                            </button>
+                        <!-- Скрытые элементы в аккордионе -->
+                            <div class="collapse mt-2" id="additionalcountry-{{ donate.getName() }}">
+                                <div class="row">
+                                    {% for dn, country in countryList|slice(4) %}
+                                        <div class="col-md-6">
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input form-checked-success"
+                                                       type="checkbox"
+                                                       role="switch"
+                                                       id="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}"
+                                                       name="country_{{ donate.getName() }}[]"
+                                                       value="{{ dn|e('html_attr') }}"
+                                                       {{ (dn in checkListCountry) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}">
+                                                    {{ country|e }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
 <div class="border rounded-3 p-3 mb-3">
     <div class="row">
         <div class="col-xl-12">
             <p class="fw-semibold mb-2">Default currency</p>
-            <select class="form-control" data-trigger name="currency" id="currency-{{ donate.getName() }}">
+            <select class="form-control" data-trigger name="currency" id="currency-{{ donateInfo.name }}">
                 {% for curr in currencies_name_list() %}
-                <option {% if currency == curr %}selected{% endif %} value="{{ curr }}">{{ curr }}</option>
+                    {% if currency is defined and currency is not empty %}
+                        <option {% if currency|lower == curr|lower %}selected{% endif %} value="{{ curr }}">{{ curr }}</option>
+                    {% else %}
+                        <option value="{{ curr }}">{{ curr }}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
         </div>
     </div>
 </div>
 
-<style>
-    button[data-bs-toggle="collapse"]::after {
-        content: " ▼";
-        font-size: 0.8em;
-        transition: transform 0.2s ease;
-    }
+                    <div class="border rounded-3 p-3">
+                        <p class="fs-15 fw-semibold mb-2">Webhook</p>
+                        <p class="fs-12 text-muted">На сайте платежной системы в качестве уведомлений после успешной оплаты укажите POST запрос на адрес:</p>
+                        {{donate.getWebhookUrl()}}
+                    </div>
 
-    button[data-bs-toggle="collapse"][aria-expanded="true"]::after {
-        transform: rotate(180deg);
-        content: " ▼";
-    }
+                    <input type="hidden" value="{{donate.getSortValue()}}" id="sort_{{donate.getName()}}" class="sort-input">
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    {% for i, donateInfo in donateSysNames %}
+    <div class="tab-pane {% if i == 0 %}active show{% endif %} donatePanelWrite"
+         id="{{donateInfo.name}}" role="tabpanel"
+         tabindex="0"
+         aria-labelledby="{{donateInfo.name}}-tab">
+        <div class="d-sm-flex">
+            <div data-pay-name="{{donateInfo.name}}">
+                <div class="my-md-auto mt-4 ms-md-3">
+                    <!-- Контент для дефолтной системы доната -->
+                    <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div>
+                            <p class="fs-14 mb-1 fw-semibold">
+                                {{ phrase('enable_payment_system') }}
+                                {{donateInfo.name}}</p>
+                        </div>
+                        <div class="custom-toggle-switch ms-sm-2 ms-0">
+                            <input id="is_enable_{{donateInfo.name}}"
+                                   name="is_enable_{{donateInfo.name}}"
+                                   type="checkbox">
+                            <label for="is_enable_{{donateInfo.name}}"
+                                   class="label-primary mb-1"></label>
+                        </div>
+                    </div>
 
-    button[data-bs-toggle="collapse"]:not(.collapsed)::after {
-        transform: rotate(180deg);
-    }
-</style>
+                    <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                        <div>
+                            <p class="fs-14 mb-1 fw-semibold">
+                                {{ phrase('admin_only_enable') }}
+                                {{donateInfo.name}}</p>
+                        </div>
+                        <div class="custom-toggle-switch ms-sm-2 ms-0">
+                            <input id="forAdmin_{{donateInfo.name}}"
+                                   name="forAdmin_{{donateInfo.name}}"
+                                   type="checkbox">
+                            <label for="forAdmin_{{donateInfo.name}}"
+                                   class="label-primary mb-1"></label>
+                        </div>
+                    </div>
 
+                    {% for key, val in donateInfo.inputs %}
+                    <div class="form-floating mb-3">
+                        <input data-name="{{key}}"
+                               value="{{val}}"
+                               type="text"
+                               class="form-control"
+                               id="donateSys_{{key}}"
+                               placeholder="">
+                        <label for="donateSys_{{key}}">{{key}}</label>
+                    </div>
+                    {% endfor %}
 
-                                                            <div class="border rounded-3 p-3">
-                                                                <p class="fs-15 fw-semibold mb-2">Webhook</p>
-                                                                <p class="fs-12 text-muted">На сайте платежной системы в
-                                                                    качестве уведомлений после успешной оплаты укажите
-                                                                    POST запрос на адрес:</p>
-                                                                {{donate.getWebhookUrl()}}
-                                                            </div>
+                    <hr>
 
+                    {# Определяем название платежной системы #}
+                    {% set customName = donateInfo.name %}
 
-                                                            <input type="hidden" value="{{donate.getSortValue()}}"
-                                                                   id="sort_{{donate.getName()}}" class="sort-input">
+                    <div class="form-floating mb-3">
+                        <input value="{{ customName }}"
+                               type="text"
+                               class="form-control"
+                               id="payname_{{donateInfo.name}}"
+                               placeholder="">
+                        <label for="payname_{{donateInfo.name}}">Название системы</label>
+                    </div>
 
-                                                        </div>
-                                                    </div>
-                                                </div>
+                    <div class="form-floating mb-3">
+                        <input value="{{donateInfo.desc}}"
+                               type="text"
+                               class="form-control"
+                               id="description_{{donateInfo.name}}"
+                               placeholder="">
+                        <label for="description_{{donateInfo.name}}">{{
+                            phrase('payment_system_description') }}</label>
+                    </div>
+
+                    {# Получаем платежную систему для дефолтных значений #}
+                    {% set paysystem = get_donate_paysystem(donateInfo.name) %}
+                    {% set currency = paysystem ? paysystem.getCurrency() : "" %}
+                    {% set checkListCountry = paysystem ? paysystem.getCountry() : [] %}
+                    {% set countryList = getCountryList() %}
+
+                    <div class="border rounded-3 p-3 mb-3">
+                        <p class="fs-15 fw-semibold mb-2">Платежная система для каких пользователей</p>
+                        <!-- Первые 4 элемента в двухколоночном макете -->
+                        <div class="row">
+                            {% for dn, country in countryList|slice(0, 4) %}
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input form-checked-success"
+                                               type="checkbox"
+                                               role="switch"
+                                               id="country-switch-{{ donateInfo.name }}-{{ dn|e('html_attr') }}"
+                                               name="country_{{ donateInfo.name }}[]"
+                                               value="{{ dn|e('html_attr') }}"
+                                               {{ (dn in checkListCountry) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="country-switch-{{ donateInfo.name }}-{{ dn|e('html_attr') }}">
+                                            {{ country|e }}
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <!-- Кнопка для раскрытия остальных элементов -->
+                        {% if countryList|length > 4 %}
+                            <button class="btn btn-link btn-sm p-0 fw-semibold"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#additionalcountry-{{ donateInfo.name }}"
+                                    aria-expanded="false"
+                                    aria-controls="additionalcountry-{{ donateInfo.name }}">
+                                Показать все ({{ countryList|length - 4 }} еще)
+                            </button>
+                        <!-- Скрытые элементы в аккордионе -->
+                            <div class="collapse mt-2" id="additionalcountry-{{ donateInfo.name }}">
+                                <div class="row">
+                                    {% for dn, country in countryList|slice(4) %}
+                                        <div class="col-md-6">
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input form-checked-success"
+                                                       type="checkbox"
+                                                       role="switch"
+                                                       id="country-switch-{{ donateInfo.name }}-{{ dn|e('html_attr') }}"
+                                                       name="country_{{ donateInfo.name }}[]"
+                                                       value="{{ dn|e('html_attr') }}"
+                                                       {{ (dn in checkListCountry) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="country-switch-{{ donateInfo.name }}-{{ dn|e('html_attr') }}">
+                                                    {{ country|e }}
+                                                </label>
                                             </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
 
-                                            {% endfor %}
+                    <div class="border rounded-3 p-3 mb-3">
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <p class="fw-semibold mb-2">Default currency</p>
+                                <select class="form-control"
+                                        data-trigger
+                                        name="currency"
+                                        id="currency-{{ donateInfo.name }}"
+                                        data-default-currency="{{ currency }}">
+                                    {% for curr in currencies_name_list() %}
+                                    <option value="{{ curr }}">{{ curr }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border rounded-3 p-3">
+                        <p class="fs-15 fw-semibold mb-2">Webhook</p>
+                        <p class="fs-12 text-muted">На сайте платежной системы в качестве уведомлений после успешной оплаты укажите POST запрос на адрес:</p>
+                        /api/webhook/{{ donateInfo.name }}
+                    </div>
+
+                    <input type="hidden" value="{{ i }}" id="sort_{{ donateInfo.name }}" class="sort-input">
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endif %}
                                         </div>
                                     </div>
 
