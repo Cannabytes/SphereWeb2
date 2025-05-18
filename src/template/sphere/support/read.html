@@ -43,8 +43,7 @@
                                     <div class="row">
 
                                         <div class="col-xl-12 mb-2">
-                                            <label for="section" class="form-label">{{ phrase('Which category should I
-                                                move the dialog to?') }}</label>
+                                            <label for="section" class="form-label">{{ phrase('Which category should I move the dialog to?') }}</label>
                                             <select class="form-control" name="section" id="section">
                                                 {% for section in sections %}
                                                 <option {% if section.id== id %}disabled{% endif %}
@@ -116,7 +115,7 @@
                 <div>
                     <div class="d-flex align-items-center">
                         <div class="me-1">
-                <span class="avatar avatar-md online me-2 avatar-rounded mail-msg-avatar">
+                    <span class="avatar avatar-md {% if getUser(post.user_id).isOnline() %}online{% endif %} me-2 avatar-rounded mail-msg-avatar">
                     <img src="{{getUser(post.user_id).getAvatar()}}" alt="">
                 </span>
                         </div>
