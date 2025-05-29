@@ -766,17 +766,15 @@ class serverModel
 
 
 
-
     /**
      * Получает данные из файлового кэша
      *
      * @param string|null $type Тип кэша
      * @param int|null $server_id ID сервера
-     * @param bool $fullData Возвращать полные данные (с метаинформацией)
-     * @return array|null
+     * @return array|null Массив с ключами 'date' и 'data' или null если кэш не найден
      * @throws InvalidArgumentException
      */
-    public function getCache(?string $type = null, int $server_id = null, bool $fullData = false): ?array
+    public function getCache(?string $type = null, $server_id = null): ?array
     {
         if ($server_id === null) {
             $server_id = $this->getId();
@@ -787,7 +785,6 @@ class serverModel
         }
 
         $cacheFilePath = $this->getCacheFilePath($server_id, $type);
-
         if (!file_exists($cacheFilePath) || !is_readable($cacheFilePath)) {
             return null;
         }
@@ -814,16 +811,15 @@ class serverModel
 
             // Извлекаем данные из PHP файла
             $cacheData = $this->extractDataFromPhpFile($content);
-
             if ($cacheData === null) {
                 return null;
             }
 
-            if ($fullData) {
-                return $cacheData;
-            }
-
-            return $cacheData['data'] ?? null;
+            // Возвращаем массив с date и data
+            return [
+                'date' => $cacheData['date_create'] ?? null,
+                'data' => $cacheData['data'] ?? null
+            ];
 
         } catch (Exception $e) {
             error_log("Cache read error for server {$server_id}, type {$type}: " . $e->getMessage());
@@ -1057,7 +1053,6 @@ class serverModel
 
             $encodedData = $matches[1];
             $serializedData = base64_decode($encodedData);
-
             if ($serializedData === false) {
                 return null;
             }
@@ -1082,13 +1077,35 @@ class serverModel
      */
     public function isCacheExpired(string $type, int $maxAge, $server_id = null): bool
     {
-        $cacheData = $this->getCache($type, $server_id, true);
+        if ($server_id === null) {
+            $server_id = $this->getId();
+        }
 
-        if ($cacheData === null || !isset($cacheData['timestamp'])) {
+        $cacheFilePath = $this->getCacheFilePath($server_id, $type);
+
+        if (!file_exists($cacheFilePath)) {
             return true;
         }
 
-        return (time() - $cacheData['timestamp']) > $maxAge;
+        try {
+            $content = file_get_contents($cacheFilePath);
+            if ($content === false) {
+                return true;
+            }
+
+            $cacheData = $this->extractDataFromPhpFile($content);
+
+            if ($cacheData === null || !isset($cacheData['timestamp'])) {
+                return true;
+            }
+
+            return (time() - $cacheData['timestamp']) > $maxAge;
+
+        } catch (Exception $e) {
+            error_log("Cache expiry check error for server {$server_id}, type {$type}: " . $e->getMessage());
+            return true;
+        }
     }
+
 
 }
