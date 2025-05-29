@@ -2,6 +2,9 @@
 
 namespace Ofey\Logan22\model\server;
 
+use Exception;
+use InvalidArgumentException;
+use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\config\donate;
 use Ofey\Logan22\model\config\referral;
@@ -761,27 +764,331 @@ class serverModel
         return json_decode($setting['setting'], true);
     }
 
-    public function getCache(?string $type = null, $server_id = null, $fullData = false)
+
+
+
+    /**
+     * Получает данные из файлового кэша
+     *
+     * @param string|null $type Тип кэша
+     * @param int|null $server_id ID сервера
+     * @param bool $fullData Возвращать полные данные (с метаинформацией)
+     * @return array|null
+     * @throws InvalidArgumentException
+     */
+    public function getCache(?string $type = null, int $server_id = null, bool $fullData = false): ?array
     {
-        if ($server_id == null) {
+        if ($server_id === null) {
             $server_id = $this->getId();
         }
-        $data = sql::getRow("SELECT `data`, `date_create` FROM `server_cache` WHERE `server_id` = ? AND `type` = ? LIMIT 1 ", [$server_id, $type]);
-        if (empty($data)) {
+
+        if (empty($type) || empty($server_id)) {
+            throw new InvalidArgumentException('Type and server_id cannot be empty');
+        }
+
+        $cacheFilePath = $this->getCacheFilePath($server_id, $type);
+
+        if (!file_exists($cacheFilePath) || !is_readable($cacheFilePath)) {
             return null;
         }
-        if ($fullData) {
-            return $data;
+
+        try {
+            // Получаем эксклюзивную блокировку для чтения
+            $fileHandle = fopen($cacheFilePath, 'r');
+            if ($fileHandle === false) {
+                return null;
+            }
+
+            if (!flock($fileHandle, LOCK_SH)) {
+                fclose($fileHandle);
+                return null;
+            }
+
+            $content = file_get_contents($cacheFilePath);
+            flock($fileHandle, LOCK_UN);
+            fclose($fileHandle);
+
+            if ($content === false) {
+                return null;
+            }
+
+            // Извлекаем данные из PHP файла
+            $cacheData = $this->extractDataFromPhpFile($content);
+
+            if ($cacheData === null) {
+                return null;
+            }
+
+            if ($fullData) {
+                return $cacheData;
+            }
+
+            return $cacheData['data'] ?? null;
+
+        } catch (Exception $e) {
+            error_log("Cache read error for server {$server_id}, type {$type}: " . $e->getMessage());
+            return null;
         }
-        return json_decode($data['data'], true);
     }
 
-    public function setCache(string $type, $data): void
+    /**
+     * Сохраняет данные в файловый кэш
+     *
+     * @param string $type Тип кэша
+     * @param mixed $data Данные для сохранения
+     * @param int|null $server_id ID сервера
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    public function setCache(string $type, $data, $server_id = null): bool
     {
-        sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = ?", [$this->getId(), $type]);
-        sql::run("INSERT INTO `server_cache` (`server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)",
-            [$this->getId(), $type, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), time::mysql()]);
+        if ($server_id === null) {
+            $server_id = $this->getId();
+        }
+
+        if (empty($type) || empty($server_id)) {
+            throw new InvalidArgumentException('Type and server_id cannot be empty');
+        }
+
+        $cacheFilePath = $this->getCacheFilePath($server_id, $type);
+        $cacheDir = dirname($cacheFilePath);
+
+        // Создаем директорию если её нет
+        if (!$this->ensureDirectoryExists($cacheDir)) {
+            return false;
+        }
+
+        $cacheContent = [
+            'data' => $data,
+            'date_create' => date('Y-m-d H:i:s'),
+            'timestamp' => time()
+        ];
+
+        $phpContent = $this->generatePhpCacheFile($cacheContent);
+
+        try {
+            // Временный файл для атомарной записи
+            $tempFile = $cacheFilePath . '.tmp.' . uniqid();
+
+            $fileHandle = fopen($tempFile, 'w');
+            if ($fileHandle === false) {
+                return false;
+            }
+
+            if (!flock($fileHandle, LOCK_EX)) {
+                fclose($fileHandle);
+                @unlink($tempFile);
+                return false;
+            }
+
+            $bytesWritten = fwrite($fileHandle, $phpContent);
+            fflush($fileHandle);
+            flock($fileHandle, LOCK_UN);
+            fclose($fileHandle);
+
+            if ($bytesWritten === false) {
+                @unlink($tempFile);
+                return false;
+            }
+
+            // Атомарное перемещение файла
+            if (!rename($tempFile, $cacheFilePath)) {
+                @unlink($tempFile);
+                return false;
+            }
+
+            // Установка прав доступа
+            @chmod($cacheFilePath, 0644);
+
+            return true;
+
+        } catch (Exception $e) {
+            error_log("Cache write error for server {$server_id}, type {$type}: " . $e->getMessage());
+            @unlink($tempFile ?? '');
+            return false;
+        }
     }
 
+    /**
+     * Удаляет кэш для определенного типа и сервера
+     *
+     * @param string $type Тип кэша
+     * @param int|null $server_id ID сервера
+     * @return bool
+     */
+    public function deleteCache(string $type, $server_id = null): bool
+    {
+        if ($server_id === null) {
+            $server_id = $this->getId();
+        }
+
+        $cacheFilePath = $this->getCacheFilePath($server_id, $type);
+
+        if (file_exists($cacheFilePath)) {
+            return @unlink($cacheFilePath);
+        }
+
+        return true;
+    }
+
+    /**
+     * Очищает весь кэш для сервера
+     *
+     * @param int|null $server_id ID сервера
+     * @return bool
+     */
+    public function clearServerCache($server_id = null): bool
+    {
+        if ($server_id === null) {
+            $server_id = $this->getId();
+        }
+
+        $serverCacheDir = $this->getServerCacheDir($server_id);
+
+        if (!is_dir($serverCacheDir)) {
+            return true;
+        }
+
+        try {
+            $files = glob($serverCacheDir . '/*.php');
+            if ($files === false) {
+                return false;
+            }
+
+            foreach ($files as $file) {
+                if (!@unlink($file)) {
+                    return false;
+                }
+            }
+
+            return true;
+        } catch (Exception $e) {
+            error_log("Clear cache error for server {$server_id}: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Получает путь к файлу кэша
+     *
+     * @param int $server_id ID сервера
+     * @param string $type Тип кэша
+     * @return string
+     */
+    private function getCacheFilePath(int $server_id, string $type): string
+    {
+        // Санитизация имени типа для безопасности файловой системы
+        $safeType = preg_replace('/[^a-zA-Z0-9_-]/', '_', $type);
+        return $this->getServerCacheDir($server_id) . '/' . $safeType . '.php';
+    }
+
+    /**
+     * Получает путь к директории кэша сервера
+     *
+     * @param int $server_id ID сервера
+     * @return string
+     */
+    private function getServerCacheDir(int $server_id): string
+    {
+        return fileSys::get_dir('/uploads/cache/server/' . intval($server_id));
+    }
+
+    /**
+     * Создает директорию если её не существует
+     *
+     * @param string $directory Путь к директории
+     * @return bool
+     */
+    private function ensureDirectoryExists(string $directory): bool
+    {
+        if (is_dir($directory)) {
+            return true;
+        }
+
+        try {
+            return mkdir($directory, 0755, true);
+        } catch (Exception $e) {
+            error_log("Directory creation error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Генерирует содержимое PHP файла кэша
+     *
+     * @param array $data Данные для сохранения
+     * @return string
+     */
+    private function generatePhpCacheFile(array $data): string
+    {
+        $serializedData = serialize($data);
+        $encodedData = base64_encode($serializedData);
+
+        $content = "<?php\n";
+        $content .= "// Cache file generated at " . date('Y-m-d H:i:s') . "\n";
+        $content .= "// Direct access is prohibited\n";
+        $content .= "if (!defined('CACHE_ACCESS')) { http_response_code(403); exit('Access Denied'); }\n\n";
+        $content .= "return '" . $encodedData . "';\n";
+        $content .= "?>";
+
+        return $content;
+    }
+
+    /**
+     * Извлекает данные из PHP файла кэша
+     *
+     * @param string $content Содержимое файла
+     * @return array|null
+     */
+    private function extractDataFromPhpFile(string $content): ?array
+    {
+        try {
+            // Разрешаем доступ к кэшу
+            if (!defined('CACHE_ACCESS')) {
+                define('CACHE_ACCESS', true);
+            }
+
+            // Извлекаем закодированные данные
+            preg_match("/return '([^']+)';/", $content, $matches);
+
+            if (empty($matches[1])) {
+                return null;
+            }
+
+            $encodedData = $matches[1];
+            $serializedData = base64_decode($encodedData);
+
+            if ($serializedData === false) {
+                return null;
+            }
+
+            $data = unserialize($serializedData);
+
+            return is_array($data) ? $data : null;
+
+        } catch (Exception $e) {
+            error_log("Cache file parsing error: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Проверяет срок действия кэша
+     *
+     * @param string $type Тип кэша
+     * @param int $maxAge Максимальный возраст в секундах
+     * @param int|null $server_id ID сервера
+     * @return bool
+     */
+    public function isCacheExpired(string $type, int $maxAge, $server_id = null): bool
+    {
+        $cacheData = $this->getCache($type, $server_id, true);
+
+        if ($cacheData === null || !isset($cacheData['timestamp'])) {
+            return true;
+        }
+
+        return (time() - $cacheData['timestamp']) > $maxAge;
+    }
 
 }
