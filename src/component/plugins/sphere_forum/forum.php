@@ -783,7 +783,7 @@ class forum
         `updated_at` = ?, 
         `is_closed` = ?,
         `is_approved` = ?",
-            [$categoryId, user::self()->getId(), $title, 0, time::mysql(), time::mysql(), $isClose, $isApproved]
+            [$categoryId, user::self()->getId(), $title, 0, time::mysql(), time::mysql(), $isClose, (int)$isApproved]
         );
         return sql::lastInsertId();
     }
@@ -2552,13 +2552,15 @@ class forum
             // Записываем информацию в базу
             sql::run(
                 "INSERT INTO forum_attachments SET 
-            user_id = ?,
-            filename = ?,
-            original_filename = ?,
-            file_size = ?,
-            mime_type = ?,
-            created_at = ?",
+                post_id = ?,
+                user_id = ?,
+                filename = ?,
+                original_filename = ?,
+                file_size = ?,
+                mime_type = ?,
+                created_at = ?",
                 [
+                    0,
                     user::self()->getId(),
                     $filename,
                     $files['name'],
