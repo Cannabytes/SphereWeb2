@@ -2,6 +2,7 @@
 <div class="mb-4">
     <div class="chests-container" data-chests="{{ chests|json_encode|escape('html_attr') }}">
         {% for id, chest in chests %}
+
             <div class="chest-item chest-type-{{ chest.type|lower }}"
                  data-chest-id="{{ id|raw }}"
                  data-chest-name="{{ id|raw }}"

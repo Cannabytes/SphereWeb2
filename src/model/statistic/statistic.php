@@ -155,7 +155,7 @@ class statistic
                 return null;
             }
 
-            $cacheData = $server->getCache('statistic');
+            $cacheData = $server->getCache(type: 'statistic', onlyData: false);
             if (!$cacheData || empty($cacheData['data'])) {
                 return null;
             }

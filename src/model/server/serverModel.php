@@ -774,7 +774,7 @@ class serverModel
      * @return array|null Массив с ключами 'date' и 'data' или null если кэш не найден
      * @throws InvalidArgumentException
      */
-    public function getCache(?string $type = null, $server_id = null): ?array
+    public function getCache(?string $type = null, int $server_id = null, $onlyData = true): ?array
     {
         if ($server_id === null) {
             $server_id = $this->getId();
@@ -813,6 +813,10 @@ class serverModel
             $cacheData = $this->extractDataFromPhpFile($content);
             if ($cacheData === null) {
                 return null;
+            }
+
+            if($onlyData){
+                return $cacheData['data'] ?? null;
             }
 
             // Возвращаем массив с date и data
