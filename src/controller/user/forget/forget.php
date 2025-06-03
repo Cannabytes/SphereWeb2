@@ -358,7 +358,7 @@ class forget
         }
 
         sql::run("UPDATE `users_password_forget` SET `active` = ? WHERE `id` = ?", [
-          false,
+            (int)false,
           $data['id'],
         ]);
 

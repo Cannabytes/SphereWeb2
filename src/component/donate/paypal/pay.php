@@ -195,6 +195,7 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
           "Content-Type: application/json",
           "Authorization: Bearer $accessToken",
         ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, '{}'); // важно!
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
         curl_close($ch);

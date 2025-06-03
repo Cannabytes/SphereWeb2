@@ -15,39 +15,130 @@ class httpReferrerPlugin
         validation::user_protection("admin");
 
         $row = sql::getRow("SELECT `data` FROM server_cache WHERE `type` = 'HTTP_REFERER_VIEWS';");
-        $getReferrers = json_decode($row["data"], true);
 
-        foreach ($getReferrers as $i=>&$getReferrer) {
-            if($getReferrer['referer'] == "api.sphereweb.com"){
-                unset($getReferrers[$i]);
+        if (!$row || empty($row["data"])) {
+            tpl::addVar(["getReferrers" => []]);
+            tpl::displayPlugin("/set_http_referrer/tpl/httpreferrer.html");
+            return;
+        }
+
+        $rawReferrers = json_decode($row["data"], true);
+
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($rawReferrers)) {
+            // Ошибка декодирования JSON или данные не являются массивом
+            tpl::addVar(["getReferrers" => []]);
+            tpl::displayPlugin("/set_http_referrer/tpl/httpreferrer.html");
+            return;
+        }
+
+        $processedReferrerDetails = [];
+
+        // 1. Обрабатываем каждую запись реферера, получаем данные из SQL
+        foreach ($rawReferrers as $rawReferrerEntry) {
+            if (!isset($rawReferrerEntry['referer']) || !isset($rawReferrerEntry['count'])) {
                 continue;
             }
-            $getReferrer['count'] = count($getReferrer['count']);
-            $s = sql::getRows("SELECT (SELECT COUNT(DISTINCT user_id) FROM user_variables WHERE var = 'HTTP_REFERER' AND val = ?) AS total_users,
-                                        SUM(dhp.point) AS total_points FROM donate_history_pay dhp
-                                    WHERE dhp.user_id IN ( SELECT `user_id` FROM `user_variables` WHERE `var` = 'HTTP_REFERER' AND `val` = ? );",[
-                $getReferrer['referer'],
-                $getReferrer['referer'],
-            ]);
-            $getReferrer['user_count'] = $s[0]['total_users'];
-            $getReferrer['total_donations'] = $s[0]['total_points'];
+
+            $originalRefererUrl = $rawReferrerEntry['referer'];
+
+            $host = parse_url($originalRefererUrl, PHP_URL_HOST);
+            if (empty($host) && !preg_match('#^https?://#i', $originalRefererUrl)) {
+                $host = parse_url('http://' . $originalRefererUrl, PHP_URL_HOST);
+            }
+
+            if (!$host || !filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+                continue;
+            }
+
+            if ($host === "api.sphereweb.com") {
+                continue;
+            }
+
+            $currentCount = is_array($rawReferrerEntry['count']) ? count($rawReferrerEntry['count']) : (int)$rawReferrerEntry['count'];
+
+            $sqlData = sql::getRows(
+                "SELECT (SELECT COUNT(DISTINCT user_id) FROM user_variables WHERE var = 'HTTP_REFERER' AND val = ?) AS total_users,
+                    SUM(dhp.point) AS total_points FROM donate_history_pay dhp
+                WHERE dhp.user_id IN ( SELECT `user_id` FROM `user_variables` WHERE `var` = 'HTTP_REFERER' AND `val` = ? );",
+                [
+                    $originalRefererUrl,
+                    $originalRefererUrl,
+                ]
+            );
+
+            $processedReferrerDetails[] = [
+                'domain'          => $host,
+                'count'           => $currentCount,
+                'user_count'      => $sqlData[0]['total_users'] ?? 0,
+                'total_donations' => $sqlData[0]['total_points'] ?? 0,
+            ];
         }
 
-        $getViews     = $this->getView();
-        foreach ($getReferrers as $i => &$getReferrer) {
-            foreach ($getViews as $getView) {
-                if (isset($getView['referer']) && $getView['referer'] === "api.sphereweb.com") {
-                    unset($getViews[$i]);
+        $aggregatedDataByDomain = [];
+        foreach ($processedReferrerDetails as $detail) {
+            $domain = $detail['domain'];
+            if (!isset($aggregatedDataByDomain[$domain])) {
+                $aggregatedDataByDomain[$domain] = [
+                    'referer'         => $domain, // В качестве "реферера" теперь выступает домен
+                    'count'           => 0,
+                    'user_count'      => 0,
+                    'total_donations' => 0,
+                    'views'           => 0, // Инициализируем просмотры
+                ];
+            }
+            $aggregatedDataByDomain[$domain]['count']           += $detail['count'];
+            $aggregatedDataByDomain[$domain]['user_count']      += $detail['user_count'];
+            $aggregatedDataByDomain[$domain]['total_donations'] += $detail['total_donations'];
+        }
+
+        $rawViews = $this->getView();
+        $aggregatedViewsByDomain = [];
+
+        if (is_array($rawViews)) {
+            foreach ($rawViews as $viewEntry) {
+                if (!isset($viewEntry['referer']) || !isset($viewEntry['count'])) {
                     continue;
                 }
-                if (isset($getReferrer['referer'], $getView['referer']) && $getReferrer['referer'] === $getView['referer']) {
-                    $totalCount           = array_sum(array_values($getView['count']));
-                    $getReferrer['views'] = $totalCount;
+
+                $viewRefererUrl = $viewEntry['referer'];
+
+                $host = parse_url($viewRefererUrl, PHP_URL_HOST);
+                if (empty($host) && !preg_match('#^https?://#i', $viewRefererUrl)) {
+                    $host = parse_url('http://' . $viewRefererUrl, PHP_URL_HOST);
                 }
+
+                if (!$host || !filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+                    continue;
+                }
+
+                if ($host === "api.sphereweb.com") {
+                    continue;
+                }
+
+                $totalCountForView = 0;
+                if (is_array($viewEntry['count'])) {
+                    $totalCountForView = array_sum(array_values($viewEntry['count']));
+                } elseif (is_numeric($viewEntry['count'])) {
+                    $totalCountForView = (int)$viewEntry['count'];
+                }
+
+                if (!isset($aggregatedViewsByDomain[$host])) {
+                    $aggregatedViewsByDomain[$host] = 0;
+                }
+                $aggregatedViewsByDomain[$host] += $totalCountForView;
             }
         }
+
+        foreach ($aggregatedDataByDomain as $domain => &$data) {
+            if (isset($aggregatedViewsByDomain[$domain])) {
+                $data['views'] = $aggregatedViewsByDomain[$domain];
+            }
+        }
+        unset($data);
+        $finalReferrers = array_values($aggregatedDataByDomain);
+
         tpl::addVar([
-            "getReferrers" => $getReferrers,
+            "getReferrers" => $finalReferrers,
         ]);
         tpl::displayPlugin("/set_http_referrer/tpl/httpreferrer.html");
     }

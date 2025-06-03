@@ -165,19 +165,74 @@ class change
     public static function save_avatar(): void
     {
         validation::user_protection();
-        $avatar = $_POST['avatar'] ?? null;
-        if ($avatar == null) {
+        $avatar_input = $_POST['avatar'] ?? null;
+
+        if (empty($avatar_input)) {
             board::notice(false, lang::get_phrase(194));
+            return;
         }
-        if (62 < mb_strlen($avatar))
+
+        $avatar_filename = basename($avatar_input);
+
+        if (empty($avatar_filename) || $avatar_filename === '.' || $avatar_filename === '..') {
+            board::notice(false, lang::get_phrase("Некорректный формат имени файла аватара"));
+            return;
+        }
+
+        if (mb_strlen($avatar_filename) > 62) {
             board::notice(false, lang::get_phrase(195));
-        if (!file_exists(fileSys::localdir("/uploads/avatar/" . $avatar, true)))
+            return;
+        }
+
+        if (!preg_match('/^[a-zA-Z0-9._-]+$/u', $avatar_filename)) {
+            board::notice(false, lang::get_phrase('Имя файла аватара содержит недопустимые символы'));
+            return;
+        }
+
+        if (str_starts_with($avatar_filename, '.')) {
+            board::notice(false, lang::get_phrase('Имя файла аватара не должно быть скрытым файлом'));
+            return;
+        }
+
+        $file_info = pathinfo($avatar_filename);
+        $extension = strtolower($file_info['extension'] ?? '');
+        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+
+        if (empty($extension) || !in_array($extension, $allowed_extensions)) {
+            board::notice(false, lang::get_phrase('Недопустимое расширение файла. Разрешены: jpg, jpeg, png, gif'));
+            return;
+        }
+
+        $path_to_avatar_file = fileSys::localdir("/uploads/avatar/" . $avatar_filename, true);
+        if (!file_exists($path_to_avatar_file)) {
+            board::notice(false, lang::get_phrase(196)); // "Файл аватара не найден."
+            return;
+        }
+
+        $real_avatar_root_path = realpath(fileSys::localdir("/uploads/avatar/", true));
+        $real_avatar_file_path = realpath($path_to_avatar_file);
+
+        if ($real_avatar_root_path === false || $real_avatar_file_path === false) {
+            error_log("Avatar security check: realpath failed for dir or file. Dir: " . fileSys::localdir("/uploads/avatar/", true) . " File: " . $path_to_avatar_file);
             board::notice(false, lang::get_phrase(196));
-        user::self()->setAvatar($avatar)->addLog(logTypes::LOG_CHANGE_AVATAR, "LOG_CHANGE_AVATAR", []);
+            return;
+        }
+
+        if (!str_starts_with($real_avatar_file_path, $real_avatar_root_path . DIRECTORY_SEPARATOR)) {
+            board::notice(false, lang::get_phrase('Файл аватара находится за пределами разрешенной директории'));
+            return;
+        }
+
+        if (dirname($real_avatar_file_path) !== $real_avatar_root_path) {
+            board::notice(false, lang::get_phrase('Файл аватара находится в недопустимой поддиректории'));
+            return;
+        }
+
+        user::self()->setAvatar($avatar_filename)->addLog(logTypes::LOG_CHANGE_AVATAR, "LOG_CHANGE_AVATAR", []);
         board::alert([
             'ok' => true,
             'message' => lang::get_phrase(197),
-            'src' => ("/uploads/avatar/" . $avatar),
+            'src' => ("/uploads/avatar/" . $avatar_filename),
         ]);
     }
 
