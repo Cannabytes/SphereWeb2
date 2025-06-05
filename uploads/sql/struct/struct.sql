@@ -965,7 +965,7 @@ CREATE TABLE `forum_moderator_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `moderator_id` int(11) NOT NULL,
   `action` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `target_type` enum('thread','post') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `target_type` enum('thread','post','moderator') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `target_id` int(11) NOT NULL,
   `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
