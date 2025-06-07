@@ -2156,6 +2156,7 @@ Email: %%email%l%
     'telegram_buy_in_shop' => 'Купівля в магазині',
     'telegram_send_to_warehouse' => 'Відправка на склад',
     'telegram_send_to_village' => 'Відправка перс. в місто',
-
+    'no_products_available' => 'Ще немає товарів для продажу',
+    'check_back_later' => 'Будь ласка, зайдіть пізніше',
 ];
 

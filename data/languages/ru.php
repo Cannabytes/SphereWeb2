@@ -2156,6 +2156,8 @@ Password: %%password%%',
     'telegram_buy_in_shop' => 'Покупка в магазине',
     'telegram_send_to_warehouse' => 'Отправка на склад',
     'telegram_send_to_village' => 'Отправка перс. в город',
+    'no_products_available' => 'Предметов на продаже еще нет',
+    'check_back_later' => 'Пожалуйста, загляните позже',
 
 
 

@@ -2123,5 +2123,6 @@ Password: %%password%%',
     'telegram_buy_in_shop' => 'Comprar na loja',
     'telegram_send_to_warehouse' => 'Enviar para o armazém',
     'telegram_send_to_village' => 'Enviar personagem para a cidade',
-
+    'no_products_available' => 'Ainda não há itens à venda',
+    'check_back_later' => 'Por favor, volte mais tarde',
 ];

@@ -2106,5 +2106,6 @@ Password: %%password%%',
     'telegram_buy_in_shop' => 'Αγορά στο κατάστημα',
     'telegram_send_to_warehouse' => 'Αποστολή στην αποθήκη',
     'telegram_send_to_village' => 'Αποστολή χαρακτήρα στην πόλη',
-
+    'no_products_available' => 'Δεν υπάρχουν ακόμη διαθέσιμα προϊόντα προς πώληση',
+    'check_back_later' => 'Παρακαλώ ελέγξτε ξανά αργότερα',
 ];

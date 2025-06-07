@@ -2128,5 +2128,6 @@ Contraseña: %%password%%',
     'telegram_buy_in_shop' => 'Comprar en la tienda',
     'telegram_send_to_warehouse' => 'Enviar al almacén',
     'telegram_send_to_village' => 'Enviar personaje a la ciudad',
-
+    'no_products_available' => 'Aún no hay artículos en venta',
+    'check_back_later' => 'Por favor, vuelva más tarde',
 ];
