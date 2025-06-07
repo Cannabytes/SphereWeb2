@@ -112,7 +112,6 @@ class stripe extends \Ofey\Logan22\model\donate\pay_abstract
         if(!$input){
             return;
         }
-        file_put_contents(__DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r($input, true) . PHP_EOL, FILE_APPEND);
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
         try {
             $event = \Stripe\Webhook::constructEvent($input, $_SERVER['HTTP_STRIPE_SIGNATURE'], self::getConfigValue('webhook_secret_key'));

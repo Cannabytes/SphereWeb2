@@ -122,7 +122,6 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
             exit;
         }
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
-        file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $_REQUEST, true ) . PHP_EOL, FILE_APPEND );
 
 		$method = $_REQUEST['method'] ?? '';
 		$userId = $_REQUEST['params']['account'] ?? -1;

@@ -102,7 +102,6 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
             echo 'disabled';
             exit;
         }
-        file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $_REQUEST, true ) . PHP_EOL, FILE_APPEND );
 
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 

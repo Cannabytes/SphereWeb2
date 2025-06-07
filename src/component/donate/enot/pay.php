@@ -105,8 +105,6 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
         }
         $input = file_get_contents('php://input');
 
-        file_put_contents(__DIR__ . '/debug.php', '<?php ' . print_r($input, true) . print_r($_SERVER, true) . PHP_EOL, FILE_APPEND);
-
         $requestData = json_decode($input, true);
 
         $signature = $_SERVER['HTTP_X_API_SHA256_SIGNATURE'] ?? '';

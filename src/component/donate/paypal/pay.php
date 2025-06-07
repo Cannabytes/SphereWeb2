@@ -158,7 +158,6 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
         }
         // Получаем данные из тела запроса
         $input = file_get_contents('php://input');
-        file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $input, true ) . PHP_EOL, FILE_APPEND );
 
         $data = json_decode($input, true);
 

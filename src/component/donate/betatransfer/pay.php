@@ -178,8 +178,6 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
             echo 'disabled';
             exit;
         }
-        file_put_contents( __DIR__ . '/debug.php', '<?php _REQUEST: ' . print_r( $_REQUEST, true ) . PHP_EOL, FILE_APPEND );
-
         if(empty(self::getConfigValue('public_api_key')) OR empty(self::getConfigValue('secret_api_key'))){
             board::error("betatransfer token is empty");
         }

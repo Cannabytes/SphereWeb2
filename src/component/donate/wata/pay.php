@@ -114,7 +114,6 @@ class wata extends \Ofey\Logan22\model\donate\pay_abstract
 		}
 
 		$input = file_get_contents("php://input");
-		$this->logRequest($input);
 		\Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 		
 		if (!$this->checkSign($input)) {
@@ -140,12 +139,6 @@ class wata extends \Ofey\Logan22\model\donate\pay_abstract
 		donate::addUserBonus($userId, $amount);
 		
 		echo 'YES';
-	}
-
-	private function logRequest($input): void
-	{
-		file_put_contents(__DIR__ . '/input.php', '<?php // REQUEST: ' . print_r($input, true) . PHP_EOL, FILE_APPEND);
-		file_put_contents(__DIR__ . '/server.php', '<?php // REQUEST: ' . print_r($_SERVER, true) . PHP_EOL, FILE_APPEND);
 	}
 
 	private function checkSign($rawBody): bool
