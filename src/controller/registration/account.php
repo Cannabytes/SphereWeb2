@@ -21,17 +21,27 @@ class account
     // POST: /registration/account
     public static function requestNewAccount()
     {
-        $login = request::setting(
-            'login',
-            new request_config(min: 4, max: 16, rules: "/^[a-zA-Z0-9_]+$/")
-        );
         $prefixEnable = config::load()->registration()->getEnablePrefix();
         $prefixType = config::load()->registration()->getPrefixType();
+        $minOfChars = config::load()->registration()->getMinimumNumberOfCharactersRegistrationAccount();
+        if ($prefixEnable) {
+            $minOfChars += mb_strlen($_SESSION['account_prefix']);
+        }
+        $login = request::setting(
+            'login',
+            new request_config(
+                min: $minOfChars,
+                max: config::load()->registration()->getMaximumNumberOfCharactersRegistrationAccount(),
+                rules: "/^[a-zA-Z0-9_]+$/"
+            )
+        );
+
         if ($prefixEnable) {
             $prefix = $_SESSION['account_prefix'] ?? "";
             $login = $prefixType == "prefix" ? $prefix . $login : $login . $prefix;
             unset($_SESSION['account_prefix']);
         }
+
         $password = request::setting(
             'password',
             new request_config(min: 4, max: 32, rules: "/^[a-zA-Z0-9_]+$/")

@@ -42,10 +42,26 @@ class user
         }
         $password = request::setting('password', new request_config(min: 4, max: 32, rules: "/^[a-zA-Z0-9_]+$/"));
         $account_name = isset($_POST['account']) && trim($_POST['account']) !== '' ? trim($_POST['account']) : null;
+
+
         if ($account_name != null) {
-            player_account::valid_login($account_name);
             player_account::valid_password($password);
         }
+
+        $minOfChars = config::load()->registration()->getMinimumNumberOfCharactersRegistrationAccount();
+        $prefixEnable = config::load()->registration()->getEnablePrefix();
+        if ($prefixEnable) {
+            $minOfChars += mb_strlen($_SESSION['account_prefix']);
+        }
+        $account_name = request::setting(
+            'account',
+            new request_config(
+                min: $minOfChars,
+                max: config::load()->registration()->getMaximumNumberOfCharactersRegistrationAccount(),
+                rules: "/^[a-zA-Z0-9_]+$/"
+            )
+        );
+
 
         config::load()->captcha()->validator();
         if (auth::is_user($email)) {

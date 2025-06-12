@@ -74,7 +74,7 @@ class forum {
 
     public static function get_url($link = ''): string {
         if(self::$url == '') {
-            self::$url = FORUM_URL;
+            self::$url = "/";
         }
         return self::$url;
     }
@@ -107,12 +107,8 @@ class forum {
         if ($actualCache) {
             return $actualCache;
         }
-        if (fdb::$error != null) {
-            return fdb::$error;
-        }
-        if (fdb::$error) {
-            echo fdb::$messageError;
-            return fdb::$error;
+        if (fdb::isError()) {
+            return fdb::isError();
         }
         cache::save(dir::forum->show(), $last_message);
         return $last_message;
@@ -135,8 +131,8 @@ class forum {
                             ORDER BY xf_post.post_id DESC LIMIT ?;', [
             $n,
         ]);
-        if(fdb::$error) {
-            return fdb::$messageError;
+        if(fdb::isError()) {
+            return fdb::isError();
         }
         return $query->fetchAll();
     }

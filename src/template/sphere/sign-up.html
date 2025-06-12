@@ -452,17 +452,36 @@
             <input required name="email" type="text" class="form-control form-control-lg" id="email" placeholder="example@example.com">
           </div>
           <div class="col-xl-12">
-            <label for="account" class="form-label text-default">{{ phrase(480) }}</label>
-            <div class="input-group mb-3">
-              {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() == 'prefix' %}
-              <button class="btn btn-light account_prefix" type="button">{{config().registration().genPrefix()}}</button>
-              {% endif %}
-              <input name="account" type="text" class="form-control form-control-lg" id="account" placeholder="">
-              {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() == 'suffix' %}
-              <button class="btn btn-light account_prefix" type="button">{{config().registration().genPrefix()}}</button>
-              {% endif %}
-            </div>
-          </div>
+  <label for="account" class="form-label text-default d-flex justify-content-between align-items-center">
+    <span>{{ phrase(480) }}</span>
+
+    <span class="label-details">
+      {% set maxChars = config().registration().getMaximumNumberOfCharactersRegistrationAccount() %}
+
+      <small class="form-text text-muted">
+        {{ phrase('minMaxCharacters',
+          config().registration().getMinimumNumberOfCharactersRegistrationAccount(),
+          config().registration().getMaximumNumberOfCharactersRegistrationAccount()
+        )}}
+      </small>
+      <small id="accountCharCounter" class="form-text text-muted">
+        {{ phrase(312) }}: {{ maxChars }}
+      </small>
+    </span>
+  </label>
+  <div class="input-group mb-3">
+    {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() == 'prefix' %}
+      <button class="btn btn-light account_prefix" type="button">{{config().registration().genPrefix()}}</button>
+    {% endif %}
+    <input name="account" type="text" class="form-control form-control-lg" id="account" placeholder=""
+           minlength="{{ config().registration().getMinimumNumberOfCharactersRegistrationAccount() }}"
+           maxlength="{{ maxChars }}"
+    >
+    {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() == 'suffix' %}
+      <button class="btn btn-light account_prefix" type="button">{{config().registration().genPrefix()}}</button>
+    {% endif %}
+  </div>
+</div>
           <div class="col-xl-12 mb-2">
             <label for="signin-password" class="form-label text-default d-block">{{ phrase('password') }}<i class="text-danger">*</i>
               <a href="#"
@@ -702,6 +721,101 @@ $(document).ready(function() {
     });
   });
 
+  function transliterate(text) {
+    const layoutMap = {
+      'й': 'q', 'ц': 'w', 'у': 'e', 'к': 'r', 'е': 't', 'н': 'y', 'г': 'u', 'ш': 'i', 'щ': 'o', 'з': 'p', 'х': '[', 'ъ': ']',
+      'ф': 'a', 'ы': 's', 'в': 'd', 'а': 'f', 'п': 'g', 'р': 'h', 'о': 'j', 'л': 'k', 'д': 'l', 'ж': ';', 'э': "'",
+      'я': 'z', 'ч': 'x', 'с': 'c', 'м': 'v', 'и': 'b', 'т': 'n', 'ь': 'm', 'б': ',', 'ю': '.',
+      'і': 's', 'ї': ']', 'є': "'",
+      'Й': 'Q', 'Ц': 'W', 'У': 'E', 'К': 'R', 'Е': 'T', 'Н': 'Y', 'Г': 'U', 'Ш': 'I', 'Щ': 'O', 'З': 'P', 'Х': '[', 'Ъ': ']',
+      'Ф': 'A', 'Ы': 'S', 'В': 'D', 'А': 'F', 'П': 'G', 'Р': 'H', 'О': 'J', 'Л': 'K', 'Д': 'L', 'Ж': ';', 'Э': "'",
+      'Я': 'Z', 'Ч': 'X', 'С': 'C', 'М': 'V', 'И': 'B', 'Т': 'N', 'Ь': 'M', 'Б': ',', 'Ю': '.',
+      'І': 'S', 'Ї': ']', 'Є': "'",
+
+      'α': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'ζ': 'z', 'η': 'h', 'θ': 'u', 'ι': 'i', 'κ': 'k', 'λ': 'l', 'μ': 'm',
+      'ν': 'n', 'ξ': 'j', 'ο': 'o', 'π': 'p', 'ρ': 'r', 'σ': 's', 'ς': 's', 'τ': 't', 'υ': 'y', 'φ': 'f', 'χ': 'x', 'ψ': 'c', 'ω': 'v',
+      'Α': 'A', 'Β': 'B', 'Γ': 'G', 'Δ': 'D', 'Ε': 'E', 'Ζ': 'Z', 'Η': 'H', 'Θ': 'U', 'Ι': 'I', 'Κ': 'K', 'Λ': 'L', 'Μ': 'M',
+      'Ν': 'N', 'Ξ': 'J', 'Ο': 'O', 'Π': 'P', 'Ρ': 'R', 'Σ': 'S', 'Τ': 'T', 'Υ': 'Y', 'Φ': 'F', 'Χ': 'X', 'Ψ': 'C', 'Ω': 'V',
+
+      'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ý': 'y',
+      'à': 'a', 'è': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u',
+      'â': 'a', 'ê': 'e', 'î': 'i', 'ô': 'o', 'û': 'u',
+      'ã': 'a', 'õ': 'o', 'ñ': 'n', 'ç': 'c', 'ë': 'e', 'ï': 'i', 'ü': 'u',
+      'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U', 'Ý': 'Y',
+      'À': 'A', 'È': 'E', 'Ì': 'I', 'Ò': 'O', 'Ù': 'U',
+      'Â': 'A', 'Ê': 'E', 'Î': 'I', 'Ô': 'O', 'Û': 'U',
+      'Ã': 'A', 'Õ': 'O', 'Ñ': 'N', 'Ç': 'C', 'Ë': 'E', 'Ï': 'I', 'Ü': 'U',
+      'ß': 'ss'
+    };
+
+    let result = '';
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      result += layoutMap[char] || char;
+    }
+    return result;
+  }
+
+
+  function updateCounterUI() {
+    const $input = $('#account');
+    const $counter = $('#accountCharCounter');
+    const $prefixButton = $('.account_prefix');
+
+    if ($input.length === 0 || $counter.length === 0) {
+      return;
+    }
+
+    const maxChars = parseInt($input.attr('maxlength'), 10);
+    const prefixLen = $prefixButton.length > 0 ? $prefixButton.text().trim().length : 0;
+    const currentLen = $input.val().length;
+
+    const remaining = maxChars - prefixLen - currentLen;
+    $counter.text('{{ phrase(312) }}: ' + remaining);
+
+    if (remaining < 0) {
+      $counter.removeClass('text-muted').addClass('text-danger');
+    } else {
+      $counter.removeClass('text-danger').addClass('text-muted');
+    }
+  }
+
+
+  function enforceCharacterLimit() {
+    const $input = $('#account');
+    if ($input.length === 0) return;
+
+    const maxChars = parseInt($input.attr('maxlength'), 10);
+    const prefixLen = $('.account_prefix').text().trim().length;
+    const allowedInputLength = maxChars - prefixLen;
+
+    if ($input.val().length > allowedInputLength) {
+      const truncatedValue = $input.val().substring(0, allowedInputLength);
+      $input.val(truncatedValue);
+    }
+  }
+
+
+  $(document).on('input', '#account', function() {
+    const originalValue = $(this).val();
+    let newValue = transliterate(originalValue);
+    newValue = newValue.replace(/[^a-zA-Z0-9_]/g, '');
+
+    if (originalValue !== newValue) {
+      const start = this.selectionStart;
+      const end = this.selectionEnd;
+
+      $(this).val(newValue);
+
+      this.setSelectionRange(start, end);
+    }
+
+    enforceCharacterLimit();
+    updateCounterUI();
+  });
+
+  updateCounterUI();
+
   // Обработчик для генерации паролей
   $(document).on('click', '.thisPassword', function() {
     $('#signin-password').val($(this).text());
@@ -719,6 +833,8 @@ $(document).ready(function() {
   $(document).on('click', '.account_prefix', function() {
     AjaxSend('/registration/account/prefix', 'POST', {}, true).then(function(prefix) {
       $('.account_prefix').text(prefix);
+      enforceCharacterLimit();
+      updateCounterUI();
     });
   });
 

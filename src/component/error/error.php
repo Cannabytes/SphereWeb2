@@ -207,7 +207,6 @@ class error
         register_shutdown_function([self::class, 'fatal_error_handler']);
         set_exception_handler([self::class, 'exception_handler']);
         register_shutdown_function([self::class, 'fatal_error_handler']);
-
     }
 
 }

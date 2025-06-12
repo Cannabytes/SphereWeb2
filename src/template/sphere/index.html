@@ -137,115 +137,148 @@
               {{phrase('ctrl_chars')}}.
               {% else %}
 
-              <form action="/registration/account" method="POST">
-                <div class="row mb-0">
-                  <div class="input-group mb-3">
-                    <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between">
-                      {{ phrase(40) }} - {{ getServer().getName() }} x{{ getServer().getRateExp() }} ({{ getServer().getChronicle() }})
-                      <span data-bs-toggle="modal" data-bs-target="#syncAccount" >
-                        <label role="button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
-                        {{ phrase('Do you already have an account?') }}
-                        </label>
-                      </span>
-                    </div>
-                  </div>
+             <form action="/registration/account" method="POST">
+            <div class="row mb-0">
+        <div class="input-group mb-0">
+            <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between">
+                {{ phrase(40) }} - {{ getServer().getName() }} x{{ getServer().getRateExp() }} ({{ getServer().getChronicle() }})
+                <span data-bs-toggle="modal" data-bs-target="#syncAccount" >
+                    <label role="button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
+                    {{ phrase('Do you already have an account?') }}
+                    </label>
+                </span>
+            </div>
+        </div>
 
-                  <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>
-                  <div class="col-sm-4">
-                    <div class="input-group mb-3">
-                      {% if config().registration().getEnablePrefix() and config().registration().getPrefixType()
-                      == 'prefix' %}
-                      <button class="btn btn-light account_prefix" type="button">
-                        {{config().registration().genPrefix()}}
-                      </button>
-                      {% endif %}
-                      <input minlength="3" maxlength="16" type="text" class="form-control" name="login"
-                             id="accountRegistration" placeholder="" aria-label="Example text with button addon"
-                             aria-describedby="button-addon1">
-                      {% if config().registration().getEnablePrefix() and config().registration().getPrefixType()
-                      == 'suffix' %}
-                      <button class="btn btn-light account_prefix" type="button">
-                        {{config().registration().genPrefix()}}
-                      </button>
-                      {% endif %}
-                    </div>
-                  </div>
-                </div>
+<div class="row">
+    <div class="offset-sm-2 col-sm-4 d-flex justify-content-between">
 
-                <div class="row mb-0">
-                  <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
-                  <div class="col-sm-4">
-                    <input type="password" class="form-control" name="password" id="passwordRegistration"
-                           autocomplete="new-password">
-                  </div>
-                </div>
-                <fieldset class="row mb-3">
-                  <legend class="col-form-label col-sm-2 pt-0"></legend>
-                  <div class="col-sm-10">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="password_hide" name="password_hide">
-                      <label class="form-check-label" for="password_hide">
-                        {{phrase('lv_pwd_vis')}}
-                      </label>
-                    </div>
-                  </div>
-                </fieldset>
+        <small id="" class="form-text text-muted">
+            {{ phrase('minMaxCharacters',
+                config().registration().getMinimumNumberOfCharactersRegistrationAccount(),
+                config().registration().getMaximumNumberOfCharactersRegistrationAccount()
+            )}}
+        </small>
 
-                {% if getUser().isAuth() == false %}
+        <small id="accountCharCounter" class="form-text text-muted">
+            {{ phrase(312) }}: {{ maxChars }}
+        </small>
 
-                {% if config().isGoogleCaptcha() %}
-                <input class="captchaToken" type="hidden" name="captcha">
-                {% else %}
-                <div class="row mb-4">
-                  <div class="col-6">
+    </div>
+</div>
+
+    <div class="row mb-3">
+        <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>
+        <div class="col-sm-4">
+            <div class="input-group">
+                {% set maxChars = config().registration().getMaximumNumberOfCharactersRegistrationAccount() %}
+                {% set prefixEnabled = config().registration().getEnablePrefix() %}
+                {% set prefixType = config().registration().getPrefixType() %}
+                {% set prefix = config().registration().genPrefix() %}
+
+                {% if prefixEnabled and prefixType == 'prefix' %}
+                <button class="btn btn-light account_prefix" type="button">
+                    <span class="prefix-text">{{ prefix }}</span>
+                </button>
+                {% endif %}
+
+                <input
+                      type="text"
+                      class="form-control"
+                      name="login"
+                      id="accountRegistration"
+                      minlength="{{ config().registration().getMinimumNumberOfCharactersRegistrationAccount() }}"
+                      maxlength="{{ maxChars }}"
+                      placeholder="{{ phrase(480) }}"
+                      aria-label="Login input"
+                      aria-describedby="accountCharCounter"
+                      autocomplete="off"
+                >
+
+                {% if prefixEnabled and prefixType == 'suffix' %}
+                <button class="btn btn-light account_prefix" type="button">
+                    <span class="prefix-text">{{ prefix }}</span>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mb-0">
+        <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
+        <div class="col-sm-4">
+            <input type="password" minlength="4" maxlength="32" class="form-control" name="password" id="passwordRegistration"
+                   autocomplete="new-password">
+        </div>
+    </div>
+    <fieldset class="row mb-3">
+        <legend class="col-form-label col-sm-2 pt-0"></legend>
+        <div class="col-sm-10">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="password_hide" name="password_hide">
+                <label class="form-check-label" for="password_hide">
+                    {{phrase('lv_pwd_vis')}}
+                </label>
+            </div>
+        </div>
+    </fieldset>
+
+    {% if getUser().isAuth() == false %}
+        {% if config().isGoogleCaptcha() %}
+            <input class="captchaToken" type="hidden" name="captcha">
+        {% else %}
+            <div class="row mb-4">
+                <div class="col-6">
                     <div class="form-floating" style="">
-                      <img src="" class="lightbox-thumb img-thumb captcha_img"/>
+                        <img src="" class="lightbox-thumb img-thumb captcha_img"/>
                     </div>
-                  </div>
-                  <div class="col-6">
+                </div>
+                <div class="col-6">
                     <div class="form-floating">
-                      <input type="text" class="form-control" id="auth_captcha" name="captcha"
-                             placeholder="Captcha">
-                      <label class="form-label" for="auth_captcha">Captcha</label>
+                        <input type="text" class="form-control" id="auth_captcha" name="captcha"
+                               placeholder="Captcha">
+                        <label class="form-label" for="auth_captcha">Captcha</label>
                     </div>
-                  </div>
                 </div>
-                {% endif %}
+            </div>
+        {% endif %}
+    {% endif %}
 
-                {% endif %}
-
-                <div class="container px-0 mb-0">
-                  <div class="row d-flex justify-content-between align-items-center">
-                    <div class="col-12 col-sm-6 text-center text-sm-start mb-2 mb-sm-0">
-                      <button type="submit" data-func="messageRegistrationAccount"
-                              class="btn btn-success shadow-success btn-wave waves-effect waves-light w-100 w-sm-auto">
-                          {{phrase('reg_new_acc')}}
-                      </button>
-                    </div>
-
-                    <div class="col-12 col-sm-6 text-center text-sm-end">
-                      <div data-bs-toggle="tooltip" data-bs-placement="top"
-                           data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
-                          <span data-bs-toggle="modal" data-bs-target="#syncAccount"
-                                data-bs-placement="top"
-                                class="btn btn-success shadow-info btn-wave waves-effect waves-light w-100 w-sm-auto">
-                              {{phrase('bind_game_account')}}
-                          </span>
-                      </div>
-                    </div>
-                  </div>
+    <div class="container px-0 mb-0">
+        <div class="row d-flex justify-content-between align-items-center">
+            <div class="col-12 col-sm-6 text-center text-sm-start mb-2 mb-sm-0">
+                <button type="submit" data-func="messageRegistrationAccount"
+                        class="btn btn-success shadow-success btn-wave waves-effect waves-light w-100 w-sm-auto">
+                    {{phrase('reg_new_acc')}}
+                </button>
+            </div>
+            <div class="col-12 col-sm-6 text-center text-sm-end">
+                <div data-bs-toggle="tooltip" data-bs-placement="top"
+                     data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
+                    <span data-bs-toggle="modal" data-bs-target="#syncAccount"
+                          data-bs-placement="top"
+                          class="btn btn-success shadow-info btn-wave waves-effect waves-light w-100 w-sm-auto">
+                        {{phrase('bind_game_account')}}
+                    </span>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <div id="registrationDataMessage" class="ps-0 mt-3 mb-0 d-none">
-                  <span id="registrationMessage" class="badge border bg-danger-transparent rounded-1">
-                    {{ phrase(214) }}
-                  </span>
-                </div>
+    <div id="registrationDataMessage" class="ps-0 mt-3 mb-0 d-none">
+        <span id="registrationMessage" class="badge border bg-danger-transparent rounded-1">
+            {{ phrase(214) }}
+        </span>
+    </div>
 
-              </form>
+
               {% endif %}
             </div>
+             </form>
 
+
+        </div>
 
 
 
@@ -452,11 +485,11 @@
               {% endif %}
               {% endif %}
           </div>
-        </div>
       </div>
     </div>
   </div>
 
+</div>
 </div>
 
 {% if getUser().isAuth() %}
@@ -692,15 +725,111 @@
 </script>
 
 <script>
-  $(document).on('click', '.account_prefix', function () {
-    AjaxSend('/registration/account/prefix', 'POST', {}, true).then(function (prefix) {
-      if(prefix.type === "notice") {
-        responseAnalysis(prefix);
-        return;
-      }
-      $('.account_prefix').text(prefix);
+
+    function transliterate(text) {
+        const layoutMap = {
+            'й': 'q', 'ц': 'w', 'у': 'e', 'к': 'r', 'е': 't', 'н': 'y', 'г': 'u', 'ш': 'i', 'щ': 'o', 'з': 'p', 'х': '[', 'ъ': ']',
+            'ф': 'a', 'ы': 's', 'в': 'd', 'а': 'f', 'п': 'g', 'р': 'h', 'о': 'j', 'л': 'k', 'д': 'l', 'ж': ';', 'э': "'",
+            'я': 'z', 'ч': 'x', 'с': 'c', 'м': 'v', 'и': 'b', 'т': 'n', 'ь': 'm', 'б': ',', 'ю': '.',
+            'і': 's', 'ї': ']', 'є': "'",
+            'Й': 'Q', 'Ц': 'W', 'У': 'E', 'К': 'R', 'Е': 'T', 'Н': 'Y', 'Г': 'U', 'Ш': 'I', 'Щ': 'O', 'З': 'P', 'Х': '[', 'Ъ': ']',
+            'Ф': 'A', 'Ы': 'S', 'В': 'D', 'А': 'F', 'П': 'G', 'Р': 'H', 'О': 'J', 'Л': 'K', 'Д': 'L', 'Ж': ';', 'Э': "'",
+            'Я': 'Z', 'Ч': 'X', 'С': 'C', 'М': 'V', 'И': 'B', 'Т': 'N', 'Ь': 'M', 'Б': ',', 'Ю': '.',
+            'І': 'S', 'Ї': ']', 'Є': "'",
+
+            'α': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'ζ': 'z', 'η': 'h', 'θ': 'u', 'ι': 'i', 'κ': 'k', 'λ': 'l', 'μ': 'm',
+            'ν': 'n', 'ξ': 'j', 'ο': 'o', 'π': 'p', 'ρ': 'r', 'σ': 's', 'ς': 's', 'τ': 't', 'υ': 'y', 'φ': 'f', 'χ': 'x', 'ψ': 'c', 'ω': 'v',
+            'Α': 'A', 'Β': 'B', 'Γ': 'G', 'Δ': 'D', 'Ε': 'E', 'Ζ': 'Z', 'Η': 'H', 'Θ': 'U', 'Ι': 'I', 'Κ': 'K', 'Λ': 'L', 'Μ': 'M',
+            'Ν': 'N', 'Ξ': 'J', 'Ο': 'O', 'Π': 'P', 'Ρ': 'R', 'Σ': 'S', 'Τ': 'T', 'Υ': 'Y', 'Φ': 'F', 'Χ': 'X', 'Ψ': 'C', 'Ω': 'V',
+
+            'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ý': 'y',
+            'à': 'a', 'è': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u',
+            'â': 'a', 'ê': 'e', 'î': 'i', 'ô': 'o', 'û': 'u',
+            'ã': 'a', 'õ': 'o', 'ñ': 'n', 'ç': 'c', 'ë': 'e', 'ï': 'i', 'ü': 'u',
+            'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U', 'Ý': 'Y',
+            'À': 'A', 'È': 'E', 'Ì': 'I', 'Ò': 'O', 'Ù': 'U',
+            'Â': 'A', 'Ê': 'E', 'Î': 'I', 'Ô': 'O', 'Û': 'U',
+            'Ã': 'A', 'Õ': 'O', 'Ñ': 'N', 'Ç': 'C', 'Ë': 'E', 'Ï': 'I', 'Ü': 'U',
+            'ß': 'ss'
+        };
+
+        let result = '';
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            result += layoutMap[char] || char;
+        }
+        return result;
+    }
+
+
+    function updateCounterUI() {
+        const $input = $('#accountRegistration');
+        const $counter = $('#accountCharCounter');
+        const $prefixButton = $('.account_prefix');
+
+        if ($input.length === 0 || $counter.length === 0) {
+            return;
+        }
+
+        const maxChars = parseInt($input.attr('maxlength'), 10);
+        const prefixLen = $prefixButton.length > 0 ? $prefixButton.text().trim().length : 0;
+        const currentLen = $input.val().length;
+
+        const remaining = maxChars - prefixLen - currentLen;
+        $counter.text('{{ phrase(312) }}: ' + remaining);
+
+        if (remaining < 0) {
+            $counter.removeClass('text-muted').addClass('text-danger');
+        } else {
+            $counter.removeClass('text-danger').addClass('text-muted');
+        }
+    }
+
+
+    function enforceCharacterLimit() {
+        const $input = $('#accountRegistration');
+        if ($input.length === 0) return;
+
+        const maxChars = parseInt($input.attr('maxlength'), 10);
+        const prefixLen = $('.account_prefix').text().trim().length;
+        const allowedInputLength = maxChars - prefixLen;
+
+        if ($input.val().length > allowedInputLength) {
+            const truncatedValue = $input.val().substring(0, allowedInputLength);
+            $input.val(truncatedValue);
+        }
+    }
+
+    $(document).on('input', '#accountRegistration', function() {
+        const originalValue = $(this).val();
+        let newValue = transliterate(originalValue);
+        newValue = newValue.replace(/[^a-zA-Z0-9_]/g, '');
+
+        if (originalValue !== newValue) {
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+
+            $(this).val(newValue);
+
+            this.setSelectionRange(start, end);
+        }
+
+        enforceCharacterLimit();
+        updateCounterUI();
     });
-  });
+
+    updateCounterUI();
+
+    $(document).on('click', '.account_prefix', function () {
+        AjaxSend('/registration/account/prefix', 'POST', {}, true).then(function (prefix) {
+            if(prefix.type === "notice") {
+                responseAnalysis(prefix);
+                return;
+            }
+            $('.account_prefix').text(prefix);
+            updateCounterUI();
+        });
+    });
 </script>
 
 <script>

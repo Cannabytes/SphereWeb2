@@ -2108,4 +2108,10 @@ Password: %%password%%',
     'telegram_send_to_village' => 'Αποστολή χαρακτήρα στην πόλη',
     'no_products_available' => 'Δεν υπάρχουν ακόμη διαθέσιμα προϊόντα προς πώληση',
     'check_back_later' => 'Παρακαλώ ελέγξτε ξανά αργότερα',
+
+    "minimumNumberOfCharactersRegistrationAccount" => "Ελάχιστος αριθμός χαρακτήρων στο λογαριασμό",
+    "maximumNumberOfCharactersRegistrationAccount" => "Μέγιστος αριθμός χαρακτήρων στο λογαριασμό",
+    "countCharactersOfPrefix" => "Αριθμός χαρακτήρων στο πρόθεμα",
+    "minMaxCharacters" => "Ελάχ: %d / Μέγ: %d",
+    "randomCharacters" => "Τυχαία",
 ];

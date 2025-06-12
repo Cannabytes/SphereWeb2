@@ -660,6 +660,18 @@
                                 </div>
 
 
+                                <div class="col-12">
+                                    {{ phrase('countCharactersOfPrefix') }}:
+                                    <select class="form-select" id="prefixCharacters" name="prefixCharacters">
+                                        <option {% if config().registration().getPrefixCharacters()=="1" %}selected=""{% endif %} value="1">1</option>
+                                        <option {% if config().registration().getPrefixCharacters()=="2" %}selected=""{% endif %} value="2">2</option>
+                                        <option {% if config().registration().getPrefixCharacters()=="3" %}selected=""{% endif %} value="3">3</option>
+                                        <option {% if config().registration().getPrefixCharacters()=="1-2" %}selected=""{% endif %} value="1-2">{{ phrase('randomCharacters') }}: 1-2</option>
+                                        <option {% if config().registration().getPrefixCharacters()=="1-3" %}selected=""{% endif %} value="1-3">{{ phrase('randomCharacters') }}: 1-3</option>
+                                        <option {% if config().registration().getPrefixCharacters()=="2-3" %}selected=""{% endif %} value="2-3">{{ phrase('randomCharacters') }}: 2-3</option>
+                                    </select>
+                                </div>
+
                                 <div class="col-auto">
                                     <div class="custom-toggle-switch d-flex align-items-center mb-4">
                                         <input id="enableLoadFileRegistration" name="enableLoadFileRegistration"
@@ -681,6 +693,30 @@
                                            class="form-control" id="phraseRegistrationDownloadFile"
                                            placeholder="Phrase ID">
                                 </div>
+
+                                <div class="col-auto">
+                                    <label class="" for="maximumNumberOfCharactersRegistrationAccount">
+                                        {{phrase('minimumNumberOfCharactersRegistrationAccount')}}<br>
+                                    </label>
+                                    <input value="{{ config().registration().getMinimumNumberOfCharactersRegistrationAccount() }}"
+                                           type="number"
+                                           min="2"
+                                           max="32"
+                                           class="form-control" id="minimumNumberOfCharactersRegistrationAccount"
+                                           placeholder="Min count">
+                                </div>
+
+                                <div class="col-auto">
+                                    <label class="" for="maximumNumberOfCharactersRegistrationAccount">
+                                        {{phrase('maximumNumberOfCharactersRegistrationAccount')}}<br>
+                                    </label>
+                                    <input value="{{ config().registration().getMaximumNumberOfCharactersRegistrationAccount() }}"
+                                           type="number"
+                                           max="32"
+                                           class="form-control" id="maximumNumberOfCharactersRegistrationAccount"
+                                           placeholder="Max count">
+                                </div>
+
 
                             </div>
 

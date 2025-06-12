@@ -2160,6 +2160,11 @@ Password: %%password%%',
     'check_back_later' => 'Пожалуйста, загляните позже',
 
 
+    "minimumNumberOfCharactersRegistrationAccount" => "Минимальное кол-во символов в аккаунте",
+    "maximumNumberOfCharactersRegistrationAccount" => "Максимальное кол-во символов в аккаунте",
+    "countCharactersOfPrefix" => "Кол-во символов в префиксе",
+    "minMaxCharacters" => "Мин: %d / Макс: %d",
+    "randomCharacters" => "Случайно",
 
 
 );

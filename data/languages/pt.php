@@ -2125,4 +2125,10 @@ Password: %%password%%',
     'telegram_send_to_village' => 'Enviar personagem para a cidade',
     'no_products_available' => 'Ainda não há itens à venda',
     'check_back_later' => 'Por favor, volte mais tarde',
+
+    "minimumNumberOfCharactersRegistrationAccount" => "Número mínimo de caracteres na conta",
+    "maximumNumberOfCharactersRegistrationAccount" => "Número máximo de caracteres na conta",
+    "countCharactersOfPrefix" => "Número de caracteres no prefixo",
+    "minMaxCharacters" => "Mín: %d / Máx: %d",
+    "randomCharacters" => "Aleatório",
 ];

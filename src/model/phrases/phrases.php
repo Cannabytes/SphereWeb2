@@ -35,23 +35,18 @@ class phrases
         }
 
         foreach ($phraseFormat as $key => $values) {
-            // Название файла
             $fileName = $directory . $key . '.php';
 
-            // Начало файла с массивом
             $data = "<?php\nreturn [\n";
 
-            // Добавление каждой пары ключ-значение с экранированием кавычек
             foreach ($values as $subKey => $value) {
                 $value = str_replace("\"", "'", $value);
                 $escapedValue = addslashes($value);
                 $data .= "\t'$subKey' => '{$escapedValue}',\n";
             }
 
-            // Закрытие массива и файла
             $data .= "];\n";
 
-            // Запись в файл
             try {
                 $result = file_put_contents($fileName, $data);
                 if ($result === false) {
@@ -79,7 +74,6 @@ class phrases
             }
         }
 
-        // Директория для сохранения файлов
         $directory = fileSys::get_dir('/data/languages/custom/');
         if (!file_exists($directory)) {
             mkdir($directory, 0777, true);
@@ -90,23 +84,14 @@ class phrases
         }
 
         foreach ($phraseFormat as $key => $values) {
-            // Название файла
             $fileName = $directory . $key . '.php';
-
-            // Начало файла с массивом
             $data = "<?php\nreturn [\n";
-
-            // Добавление каждой пары ключ-значение с экранированием кавычек
             foreach ($values as $subKey => $value) {
                 $value = str_replace("\"", "'", $value);
                 $escapedValue = addslashes($value);
                 $data .= "\t'$subKey' => '{$escapedValue}',\n";
             }
-
-            // Закрытие массива и файла
             $data .= "];\n";
-
-            // Запись в файл
             try {
                 $result = file_put_contents($fileName, $data);
                 if ($result === false) {
