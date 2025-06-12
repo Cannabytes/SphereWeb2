@@ -2131,4 +2131,6 @@ Password: %%password%%',
     "countCharactersOfPrefix" => "Número de caracteres no prefixo",
     "minMaxCharacters" => "Mín: %d / Máx: %d",
     "randomCharacters" => "Aleatório",
+    "allow_user_delete_account" => "Permitir que os usuários excluam suas contas",
+    "allow_user_delete_account_description" => "Se ativado, os usuários poderão excluir sua conta de sua área pessoal (a conta não será excluída do banco de dados do jogo)",
 ];

@@ -6,6 +6,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\registration\user;
 use Ofey\Logan22\model\log\logTypes;
 
@@ -13,6 +14,9 @@ class account
 {
     public static function delete(): void
     {
+        if (!config::load()->other()->getIsAllowDeleteAccount()){
+            board::error("disabled");
+        }
         // Проверка наличия аккаунта в POST запросе
         $account = trim($_POST['account'] ?? '');
         if (empty($account)) {

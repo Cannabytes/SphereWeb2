@@ -1047,6 +1047,24 @@
                                 </li>
 
                                 <li class="list-group-item">
+                                    <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                                        <div>
+                                            <p class="fs-14 mb-1 fw-semibold">
+                                                {{ phrase('allow_user_delete_account') }} </p>
+                                            <p class="fs-12 mb-0 text-muted">{{ phrase('allow_user_delete_account_description') }}</p>
+                                        </div>
+                                        <div>
+                                            <div class="custom-toggle-switch float-sm-end">
+                                                <input id="isAllowDeleteAccount" name="isAllowDeleteAccount" type="checkbox" {% if
+                                                       config().other().isAllowDeleteAccount()
+                                                       %}checked="" {% endif %}>
+                                                <label for="isAllowDeleteAccount" class="label-success mb-1"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="list-group-item">
                                     <div class="row gx-5 gy-3">
                                         <div class="col-xl-12">
                                             <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">

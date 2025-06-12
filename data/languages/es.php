@@ -2136,4 +2136,7 @@ Contraseña: %%password%%',
     "countCharactersOfPrefix" => "Número de caracteres en el prefijo",
     "minMaxCharacters" => "Mín: %d / Máx: %d",
     "randomCharacters" => "Aleatorio",
+    "allow_user_delete_account" => "Permitir a los usuarios eliminar sus cuentas",
+    "allow_user_delete_account_description" => "Si está habilitado, los usuarios podrán eliminar su cuenta desde su área personal (la cuenta no se eliminará de la base de datos del juego)",
+
 ];

@@ -250,7 +250,8 @@ class support
                 $screens = json_encode($screens);
             }
         }
-        sql::run("INSERT INTO `support_thread` ( `thread_id`, `owner_id`, `last_user_id`, `private`, `date_update`, `date_create`) VALUES (?, ?, ?, ?, ?, ?)", [
+        sql::run("INSERT INTO `support_thread` (`last_message_id`, `thread_id`, `owner_id`, `last_user_id`, `private`, `date_update`, `date_create`) VALUES (?, ?, ?, ?, ?, ?, ?)", [
+            0,
             $section,
             \Ofey\Logan22\model\user\user::self()->getId(),
             \Ofey\Logan22\model\user\user::self()->getId(),

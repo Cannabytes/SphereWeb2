@@ -2164,5 +2164,8 @@ Email: %%email%l%
     "countCharactersOfPrefix" => "Кількість символів у префіксі",
     "minMaxCharacters" => "Мін: %d / Макс: %d",
     "randomCharacters" => "Випадково",
+    "allow_user_delete_account" => "Дозволити користувачам видаляти свої акаунти",
+    "allow_user_delete_account_description" => "Якщо ввімкнено, користувачі зможуть видалити свій акаунт з особистого кабінету (акаунт не буде видалено з бази даних гри)",
+
 ];
 

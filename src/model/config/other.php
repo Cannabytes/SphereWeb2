@@ -50,6 +50,7 @@ class other
 
     private bool $autoUpdate = true;
     private bool $isShow404error = false;
+    private bool $isAllowDeleteAccount = true;
 
     public function __construct($setting)
     {
@@ -75,6 +76,12 @@ class other
         $this->balanceNotice = $setting['balanceNotice'] ?? $this->balanceNotice;
         $this->autoUpdate = filter_var($setting['autoUpdate'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->isShow404error = filter_var($setting['isShow404error'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->isAllowDeleteAccount = filter_var($setting['isAllowDeleteAccount'] ?? true, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    public function getIsAllowDeleteAccount(): mixed
+    {
+        return $this->isAllowDeleteAccount;
     }
 
     public function isEnableMenuPageLink(): bool

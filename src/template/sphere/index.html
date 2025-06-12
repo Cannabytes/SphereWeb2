@@ -312,9 +312,11 @@
                   <tr class="account-row">
                     <td>{{ account.getAccount()|raw }}
 
+                        {% if config().other().getIsAllowDeleteAccount() %}
                         <i data-account="{{account.getAccount()|raw}}" role="button" class="bi bi-person-dash deleteAccount"
                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{phrase('account_deletion')}}"
                         ></i>
+                        {% endif %}
 
                      </td>
                     <td>
@@ -494,6 +496,7 @@
 
 {% if getUser().isAuth() %}
 
+{% if config().other().getIsAllowDeleteAccount() %}
 <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -543,6 +546,7 @@
     });
   });
 </script>
+{% endif %}
 
 
 

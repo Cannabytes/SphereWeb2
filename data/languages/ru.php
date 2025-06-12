@@ -2165,6 +2165,8 @@ Password: %%password%%',
     "countCharactersOfPrefix" => "Кол-во символов в префиксе",
     "minMaxCharacters" => "Мин: %d / Макс: %d",
     "randomCharacters" => "Случайно",
+    "allow_user_delete_account" => "Разрешить пользователям удалять свои аккаунты",
+    "allow_user_delete_account_description" => "Если включено, пользователи смогут удалить из ЛК свой аккаунт (аккаунт не будет удален из базы данных игры)",
 
 
 );
