@@ -201,6 +201,7 @@ class player_account
                 "isDownload" => config::load()->registration()->getEnableLoadFileRegistration(),
                 "title"      => $_SERVER['SERVER_NAME'] . " - " . $login . ".txt",
                 "content"    => trim($content),
+                "prefix" => config::load()->registration()->genPrefix(),
               ]
             );
         }

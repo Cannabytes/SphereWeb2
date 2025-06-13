@@ -544,7 +544,9 @@ function noticeError(message) {
 
 function ResponseNoticeRegistration(response) {
     noticeSuccess(response.message)
-
+    if (response.prefix) {
+        $(".prefix-text").text(response.prefix);
+    }
     if(response.isDownload){
         var blob = new Blob([response.content], { type: "text/plain" });
         var link = document.createElement("a");

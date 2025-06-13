@@ -22,24 +22,22 @@ class account
     public static function requestNewAccount()
     {
         $prefixEnable = config::load()->registration()->getEnablePrefix();
-        $prefixType = config::load()->registration()->getPrefixType();
-        $minOfChars = config::load()->registration()->getMinimumNumberOfCharactersRegistrationAccount();
-        if ($prefixEnable) {
-            $minOfChars += mb_strlen($_SESSION['account_prefix']);
-        }
-        $login = request::setting(
-            'login',
-            new request_config(
-                min: $minOfChars,
-                max: config::load()->registration()->getMaximumNumberOfCharactersRegistrationAccount(),
-                rules: "/^[a-zA-Z0-9_]+$/"
-            )
-        );
 
+        $login = $_POST['login'] ?? board::error('Login not received');
+        if(!preg_match("/^[a-zA-Z0-9_]+$/", $login)){
+            board::response("notice", ["message" => lang::get_phrase(210), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]);
+        }
+
+        $loginChars = mb_strlen($login);
         if ($prefixEnable) {
-            $prefix = $_SESSION['account_prefix'] ?? "";
-            $login = $prefixType == "prefix" ? $prefix . $login : $login . $prefix;
-            unset($_SESSION['account_prefix']);
+            $loginChars += mb_strlen($_SESSION['account_prefix']);
+        }
+
+        if (config::load()->registration()->getMinimumNumberOfCharactersRegistrationAccount() > $loginChars) {
+            board::response("notice", ["message" => lang::get_phrase(208), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]);
+        }
+        if (config::load()->registration()->getMaximumNumberOfCharactersRegistrationAccount() < $loginChars) {
+            board::response("notice", ["message" => lang::get_phrase(209), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]);
         }
 
         $password = request::setting(
@@ -117,6 +115,7 @@ class account
                         "title" => $_SERVER['SERVER_NAME'] . " - " . $login . ".txt",
                         "content" => $content,
                         "redirect" => fileSys::localdir("/accounts"),
+                        "prefix" => config::load()->registration()->genPrefix(),
                     ]
                 );
             }
