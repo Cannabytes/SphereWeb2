@@ -324,6 +324,105 @@ class server
         return $instance;
     }
 
+    /**
+     * Отправляет кастомный GET-запрос на Sphere API и возвращает сырой ответ,
+     * предназначенный для скачивания файлов.
+     * Повторяет всю логику авторизации из sendCustom.
+     *
+     * @param string $url - Путь запроса, например, /api/download/launcher/file.exe
+     * @return array{content: string|false, http_code: int, error: string}
+     */
+    public static function sendCustomDownload(string $url): array
+    {
+        self::isOffline();
+        if (self::$isOfflineServer === true) {
+            return [
+                'content' => false,
+                'http_code' => 0,
+                'error' => 'Sphere Server is offline',
+            ];
+        }
+
+        // --- Логика формирования URL и заголовков (полностью скопирована из sendCustom) ---
+        self::$error = false;
+        if (self::$installLink != null) {
+            $link = self::$installLink;
+        } else {
+            $link = config::load()->sphereApi()->getIp() . ':' . config::load()->sphereApi()->getPort();
+        }
+
+        $port = config::load()->sphereApi()->getPort();
+        $protocol = ($port >= 61400 && $port <= 62000) ? 'https' : 'http';
+
+        $full_url = "{$protocol}://{$link}{$url}";
+
+        $ch = curl_init();
+        $headers = [
+            'Authorization: BoberKurwa',
+        ];
+        if (self::$user !== null) {
+            if (self::$server_id == null) {
+                self::$server_id = self::$user->getServerId();
+            }
+            $headers[] = "User-Id: " . self::$user->getId();
+            $headers[] = "User-Email: " . self::$user->getEmail();
+            $headers[] = "User-Server-Id: " . self::$server_id;
+            $headers[] = "User-IP: " . self::$user->getIp();
+            $headers[] = "User-isBot: " . 0;
+        } else {
+            $server_id = \Ofey\Logan22\model\server\server::getLastServer()?->getId();
+            if(isset($_SESSION['server_id'])){
+                $server_id = $_SESSION['server_id'];
+            }
+            $headers[] = "User-Id: " . 0;
+            if (type::SPHERE_INSTALL != $url) {
+                $headers[] = "User-Server-Id: " . $server_id;
+            }
+        }
+
+        $headers[] = "Token: " . self::getToken();
+        $host = $_SERVER['HTTP_HOST'];
+        if (empty($host) || !self::is_valid_domain(parse_url($host, PHP_URL_HOST))) {
+            $host = $_SERVER['SERVER_NAME'];
+        }
+
+        $parsedHost = parse_url($host, PHP_URL_HOST) ?: $host;
+        $parsedHost = preg_replace('/:\d+$/', '', $parsedHost);
+        $headers[] = "Domain: " . $parsedHost;
+        // --- Конец логики формирования URL и заголовков ---
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_URL, $full_url);
+        // Это GET-запрос, поэтому POST и POSTFIELDS не указываем
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60); // Увеличенный таймаут для скачивания
+        curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
+
+        // Отключаем проверку SSL для самоподписанных сертификатов Go
+        if ($protocol === 'https') {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        }
+
+        self::$countRequest++;
+        $responseContent = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+
+        if ($responseContent === false) {
+            self::$isOfflineServer = true;
+            self::$error = 'Ошибка соединения со Sphere API при скачивании файла: ' . $curlError;
+        }
+
+        curl_close($ch);
+
+        return [
+            'content' => $responseContent,
+            'http_code' => $httpCode,
+            'error' => $curlError,
+        ];
+    }
+
     public static function isOffline(): ?bool
     {
         if (self::$tokenDisable) {

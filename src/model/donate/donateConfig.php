@@ -14,7 +14,9 @@ class donateConfig
 
     private int $minSummaPaySphereCoin = 1;
 
-    private int $maxSummaPaySphereCoin = 99998;
+    private int $maxSummaPaySphereCoin = 50000;
+
+    private int $defaultSummaPaySphereCoin = 1;
 
     private int|float $sphereCoinCost = 1;
 

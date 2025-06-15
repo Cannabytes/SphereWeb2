@@ -2167,6 +2167,6 @@ Password: %%password%%',
     "randomCharacters" => "Случайно",
     "allow_user_delete_account" => "Разрешить пользователям удалять свои аккаунты",
     "allow_user_delete_account_description" => "Если включено, пользователи смогут удалить из ЛК свой аккаунт (аккаунт не будет удален из базы данных игры)",
-
+    "default amount" => "Сумма по-умолчанию",
 
 );

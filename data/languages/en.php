@@ -2140,5 +2140,6 @@ Password: %%password%%',
     "randomCharacters" => "Random",
     "allow_user_delete_account" => "Allow users to delete their accounts",
     "allow_user_delete_account_description" => "If enabled, users will be able to delete their account from their personal area (the account will not be deleted from the game database)",
+    "default amount" => "Default amount",
 
 ];

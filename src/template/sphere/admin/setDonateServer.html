@@ -83,6 +83,20 @@
                                     </div>
                                 </div>
 
+                                 <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+
+                                     <div>
+                                        <p class="fs-14 mb-1 fw-semibold">Сумма по-умолчанию</p>
+                                    </div>
+
+                                    <div class="col-xl-3">
+                                        <input value="{{server.donate().getDefaultSummaPaySphereCoin()}}" type="number"
+                                               class="form-control" id="defaultSummaPaySphereCoin" placeholder="1">
+                                    </div>
+
+                                </div>
+
+
                                 <hr>
 
                                 <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
@@ -1128,6 +1142,7 @@
             paySystemDefault: $('#paySystemDefault').val(),
             minSummaPaySphereCoin: $('#minSummaPaySphereCoin').val(),
             maxSummaPaySphereCoin: $('#maxSummaPaySphereCoin').val(),
+            defaultSummaPaySphereCoin: $('#defaultSummaPaySphereCoin').val(),
             sphereCoinCost: $('#sphereCoinCost').val(),
             ratioUSD: $('#ratioUSD').val(),
             ratioEUR: $('#ratioEUR').val(),
