@@ -25,11 +25,6 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
     protected static string $currency_default = 'RUB';
 
     private array $allowIP = [
-        '138.201.53.39',
-        '176.9.155.22',
-        '2.58.70.63',
-        '213.136.76.226',
-        '213.136.84.70',
     ];
 
     public static function inputs(): array
