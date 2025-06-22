@@ -155,8 +155,8 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 
         donate::control_uuid($_REQUEST['params']['unitpayId'], get_called_class());
 
-        $amount = donate::currency($amount, $this->currency_default);
-        self::telegramNotice(user::getUserId($userId), $_REQUEST['params']['orderSum'], $this->currency_default, $amount, get_called_class());
+        $amount = donate::currency($amount, self::getCurrency());
+        self::telegramNotice(user::getUserId($userId), $_REQUEST['params']['orderSum'], self::getCurrency(), $amount, get_called_class());
         user::getUserId($userId)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
         donate::addUserBonus($userId, $amount);
 
