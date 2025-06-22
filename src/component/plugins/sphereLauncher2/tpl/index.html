@@ -1106,38 +1106,129 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const generateJsonBtn = document.getElementById('generate-json-btn');
     generateJsonBtn.addEventListener('click', () => {
+        // Получаем список языков, он нам понадобится для приложений
+        const supportedLanguages = ['ru', 'en', 'es', 'pt', 'uk', 'el'];
+
         const config = {
-            download: { csv: [], archives: [] },
+            download: {
+                csv: [],
+                archives: []
+            },
             application: [],
-            lastLauncherVersion: document.getElementById('json-launcher-version').value,
-            launcherLink: document.getElementById('json-launcher-link').value,
+            lastLauncherVersion: document.getElementById('json-launcher-version').value || '1.0.0',
+            launcherLink: document.getElementById('json-launcher-link').value || '',
             news: {}
         };
-        document.querySelectorAll('#csv-list li span').forEach(span => config.download.csv.push(span.textContent));
-        document.querySelectorAll('#archive-list li span').forEach(span => config.download.archives.push(span.textContent));
-        document.querySelectorAll('#app-list li').forEach(item => {
-            const translations = JSON.parse(item.dataset.translations || '{}');
-            config.application.push({
-                name: [translations],
-                exe: item.dataset.exe,
-                args: item.dataset.args
-            });
+
+        // --- 1. Сбор ссылок на CSV ---
+        // Сначала берем уже добавленные из списка
+        document.querySelectorAll('#csv-list li').forEach(item => {
+            const span = item.querySelector('span');
+            if (span && span.textContent.trim()) {
+                config.download.csv.push(span.textContent.trim());
+            }
         });
+        // НОВОЕ: Проверяем поле для ввода на случай, если там есть недобавленная ссылка
+        const csvInput = document.getElementById('csv-input');
+        if (csvInput.value.trim()) {
+            config.download.csv.push(csvInput.value.trim());
+        }
+
+        // --- 2. Сбор ссылок на архивы ---
+        // Аналогично CSV, сначала из списка
+        document.querySelectorAll('#archive-list li').forEach(item => {
+            const span = item.querySelector('span');
+            if (span && span.textContent.trim()) {
+                config.download.archives.push(span.textContent.trim());
+            }
+        });
+        // НОВОЕ: И потом из поля для ввода
+        const archiveInput = document.getElementById('archive-input');
+        if (archiveInput.value.trim()) {
+            config.download.archives.push(archiveInput.value.trim());
+        }
+
+        // --- 3. Сбор приложений ---
+        // Из списка
+        document.querySelectorAll('#app-list li').forEach(item => {
+            if (item.dataset.exe && item.dataset.translations) {
+                const translations = JSON.parse(item.dataset.translations || '{}');
+                config.application.push({
+                    name: [translations],
+                    exe: item.dataset.exe,
+                    args: item.dataset.args || ''
+                });
+            }
+        });
+        // НОВОЕ: Проверяем поля для ввода нового приложения
+        const appExeInput = document.getElementById('app-exe-input');
+        if (appExeInput.value.trim()) {
+            const nameTranslations = {};
+            let hasAnyName = false;
+            supportedLanguages.forEach(lang => {
+                const input = document.getElementById(`app-name-${lang}`);
+                if (input && input.value.trim()) {
+                    nameTranslations[lang] = input.value.trim();
+                    hasAnyName = true;
+                }
+            });
+            // Добавляем, только если указан exe и хотя бы одно название
+            if (hasAnyName) {
+                config.application.push({
+                    name: [nameTranslations],
+                    exe: appExeInput.value.trim(),
+                    args: document.getElementById('app-args-input').value.trim() || ''
+                });
+            }
+        }
+
+        // --- 4. Сбор новостей ---
+        // Из уже созданных групп
         document.querySelectorAll('.news-language-group').forEach(group => {
             const lang = group.dataset.lang;
-            config.news[lang] = [];
-            group.querySelectorAll('li').forEach(item => {
-                config.news[lang].push({
-                    name: item.dataset.name,
-                    description: item.dataset.description,
-                    image: item.dataset.image,
-                    link: item.dataset.link,
-                    date: item.dataset.date
+            if (lang) {
+                if (!config.news[lang]) {
+                    config.news[lang] = [];
+                }
+                group.querySelectorAll('ul li').forEach(item => {
+                    if (item.dataset.name && item.dataset.description && item.dataset.date) {
+                        config.news[lang].push({
+                            name: item.dataset.name,
+                            description: item.dataset.description,
+                            image: item.dataset.image || '',
+                            link: item.dataset.link || '',
+                            date: item.dataset.date
+                        });
+                    }
                 });
-            });
+            }
         });
+        // НОВОЕ: Проверяем поля для ввода новой новости
+        const newsNameInput = document.getElementById('news-name-input');
+        const newsDescInput = document.getElementById('news-desc-input');
+        const newsDateInput = document.getElementById('news-date-input');
+        // Добавляем, только если заполнены обязательные поля
+        if (newsNameInput.value.trim() && newsDescInput.value.trim() && newsDateInput.value.trim()) {
+            const lang = document.getElementById('news-lang-select').value;
+            const newsItem = {
+                name: newsNameInput.value.trim(),
+                description: newsDescInput.value.trim(),
+                image: document.getElementById('news-image-input').value.trim() || '',
+                link: document.getElementById('news-link-input').value.trim() || '',
+                date: newsDateInput.value.trim()
+            };
+            if (!config.news[lang]) {
+                config.news[lang] = [];
+            }
+            config.news[lang].push(newsItem);
+        }
+
+
+        // --- 5. Генерация и скачивание файла ---
         const jsonString = JSON.stringify(config, null, 2);
-        const blob = new Blob([jsonString], {type: 'application/json'});
+        const blob = new Blob([jsonString], {
+            type: 'application/json'
+        });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
