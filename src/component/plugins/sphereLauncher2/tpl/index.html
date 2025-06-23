@@ -662,10 +662,15 @@ document.addEventListener('DOMContentLoaded', function () {
         statusMessage.innerText = message;
     }
 
+    // =========================================================================
+    // НАЧАЛО ИСПРАВЛЕННОЙ ЛОГИКИ
+    // =========================================================================
+
     function handleCompileRequest(event) {
         event.preventDefault();
         compileBtn.disabled = true;
 
+        // --- 1. Сбор данных и ссылок на файлы ---
         const buildData = {
             dataUrl: document.getElementById('dataUrl').value,
             title: document.getElementById('pageTitle').value,
@@ -677,6 +682,7 @@ document.addEventListener('DOMContentLoaded', function () {
             registrationLink: document.getElementById('registerLink').value,
             forumLink: document.getElementById('forumLink').value,
             fullscreen: document.getElementById('fullscreenSwitch').checked,
+            // Base64 поля будут заполнены позже
             iconBase64: "",
             customHtmlBase64: "",
             customCssBase64: "",
@@ -693,7 +699,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const MAX_SIZE = 100 * 1024; // 100 КБ
         const MAX_LOGO_SIZE = 250 * 1024; // 250 КБ для лого
 
-        // --- 1. Синхронные проверки ---
+        // --- 2. Синхронные проверки ---
         if (iconFile && iconFile.size > MAX_SIZE) {
             alert('Ошибка: Размер иконки не должен превышать 100 КБ.');
             compileBtn.disabled = false;
@@ -701,14 +707,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (buildData.template === 'custom') {
-            // Проверяем, что хотя бы HTML файл выбран
             if (!customHtmlFile) {
                 alert('Для своего шаблона необходимо выбрать как минимум файл index.html.');
                 compileBtn.disabled = false;
                 return;
             }
-
-            // Проверяем размеры файлов, только если они были выбраны
             if (customHtmlFile.size > MAX_SIZE) {
                 alert('Ошибка: Размер HTML файла не должен превышать 100 КБ.');
                 compileBtn.disabled = false;
@@ -731,7 +734,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // --- 2. Асинхронные операции ---
+        // --- 3. Единая асинхронная цепочка ---
         const readFileAsBase64 = (file) => new Promise((resolve, reject) => {
             if (!file) return resolve("");
             const reader = new FileReader();
@@ -740,26 +743,8 @@ document.addEventListener('DOMContentLoaded', function () {
             reader.readAsDataURL(file);
         });
 
-        Promise.all([
-            readFileAsBase64(iconFile),
-            readFileAsBase64(customHtmlFile),
-            readFileAsBase64(customCssFile),
-            readFileAsBase64(customLangFile),
-            readFileAsBase64(customLogoFile),
-        ]).then(([iconBase64, customHtml, customCss, customLang, customLogo]) => {
-            buildData.iconBase64 = iconBase64;
-            buildData.customHtmlBase64 = customHtml;
-            buildData.customCssBase64 = customCss;
-            buildData.customLangJsonBase64 = customLang;
-            buildData.customLogoBase64 = customLogo;
-            sendInitialRequest(buildData);
-        }).catch(err => {
-            alert('Ошибка при чтении файла: ' + err.message);
-            compileBtn.disabled = false;
-        });
-
         const checkImageDimensions = (file) => new Promise((resolve, reject) => {
-            if (!file) return resolve();
+            if (!file) return resolve(); // Если файла нет, проверять нечего
             const image = new Image();
             image.onload = () => {
                 if (image.width > 128 || image.height > 128) {
@@ -772,18 +757,10 @@ document.addEventListener('DOMContentLoaded', function () {
             image.src = URL.createObjectURL(file);
         });
 
-        const startProcessing = (data) => {
-            compileForm.style.display = 'none';
-            statusContainer.style.display = 'block';
-            errorContainer.style.display = 'none';
-            resultContainer.style.display = 'none';
-            updateProgress(0, 'Отправка запроса на сервер...');
-            sendInitialRequest(data);
-        };
-
+        // Шаг 3.1: Сначала проверяем размеры иконки
         checkImageDimensions(iconFile)
               .then(() => {
-                  // Размеры иконки в порядке, читаем все файлы
+                  // Шаг 3.2: Если размеры в порядке, читаем ВСЕ файлы в Base64
                   return Promise.all([
                       readFileAsBase64(iconFile),
                       readFileAsBase64(customHtmlFile),
@@ -793,28 +770,32 @@ document.addEventListener('DOMContentLoaded', function () {
                   ]);
               })
               .then(([iconBase64, customHtml, customCss, customLang, customLogo]) => {
-                  // Все файлы прочитаны, обновляем buildData
+                  // Шаг 3.3: После успешного чтения всех файлов, заполняем объект данных
                   buildData.iconBase64 = iconBase64;
                   buildData.customHtmlBase64 = customHtml;
                   buildData.customCssBase64 = customCss;
                   buildData.customLangJsonBase64 = customLang;
                   buildData.customLogoBase64 = customLogo;
-                  startProcessing(buildData);
+
+                  // Шаг 3.4: Отправляем запрос на сервер ТОЛЬКО ОДИН РАЗ
+                  sendInitialRequest(buildData);
               })
               .catch(err => {
-                  alert('Ошибка: ' + err.message);
+                  // Единый обработчик ошибок для всей цепочки
+                  alert('Ошибка подготовки данных: ' + err.message);
                   compileBtn.disabled = false;
               });
     }
 
-
     function sendInitialRequest(data) {
+        // Подготовка UI
         compileForm.style.display = 'none';
         statusContainer.style.display = 'block';
         errorContainer.style.display = 'none';
         resultContainer.style.display = 'none';
         updateProgress(0, 'Отправка запроса на сервер...');
 
+        // Отправка запроса
         fetch('/admin/plugin/sphereLauncher2/compile', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -822,14 +803,16 @@ document.addEventListener('DOMContentLoaded', function () {
         })
               .then(response => {
                   if (!response.ok) {
+                      // Обрабатываем ошибки типа "Busy" (409) и другие
                       return response.json().then(errorData => {
-                          throw new Error(errorData.error || 'Произошла неизвестная серверная ошибка.');
+                          throw new Error(errorData.error || `Сервер вернул ошибку ${response.status}`);
                       });
                   }
                   return response.json();
               })
               .then(result => {
                   if (result.error) {
+                      // Обрабатываем ошибки, которые могли прийти с кодом 200 OK
                       throw new Error(result.error);
                   }
                   if (result.task_id) {
@@ -840,14 +823,19 @@ document.addEventListener('DOMContentLoaded', function () {
                   }
               })
               .catch(err => {
+                  // Отображение ошибки в UI
                   statusContainer.style.display = 'block';
                   errorContainer.style.display = 'block';
                   errorMessage.innerText = err.message;
                   resultContainer.style.display = 'block';
-                  downloadBtn.style.display = 'none';
-                  compileBtn.disabled = false;
+                  downloadBtn.style.display = 'none'; // Прячем кнопку скачивания при ошибке
+                  compileBtn.disabled = false; // Разблокируем кнопку, чтобы можно было попробовать снова
               });
     }
+
+    // =========================================================================
+    // КОНЕЦ ИСПРАВЛЕННОЙ ЛОГИКИ
+    // =========================================================================
 
     // НОВАЯ ФУНКЦИЯ для запуска поллинга
     function startPolling(taskId) {
