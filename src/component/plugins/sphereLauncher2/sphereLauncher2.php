@@ -55,12 +55,19 @@ class sphereLauncher2
         server::setTimeout(10);
         $response = server::sendCustom("/api/compile", $data_array)->getResponse();
         header('Content-Type: application/json');
+
+        // ИЗМЕНЕНИЕ: Добавлена проверка на ошибку "Busy"
         if (isset($response['error'])) {
+            // Если Go-сервер вернул ошибку "Busy" (со статусом 409 Conflict)
             if ($response['error'] == 'Busy') {
-                echo json_encode(['error' => lang::get_phrase('sp_busy')]);
+                // Устанавливаем соответствующий HTTP статус и возвращаем локализованное сообщение
+                http_response_code(409); // Conflict
+                // Предполагается, что у вас есть фраза 'sp_busy' в файлах локализации
+                echo json_encode(['error' => lang::get_phrase('sp_busy', 'Компилятор занят. Пожалуйста, подождите завершения текущей задачи.')]);
                 return;
             }
         }
+
         echo json_encode($response);
     }
 
