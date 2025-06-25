@@ -99,7 +99,7 @@ class freekassa extends \Ofey\Logan22\model\donate\pay_abstract {
 
         $amount = donate::currency($_REQUEST['AMOUNT'], self::getCurrency());
 
-        self::telegramNotice(user::getUserId($user_id), $_POST['AMOUNT'], self::getCurrency(), $amount, get_called_class());
+        self::telegramNotice(user::getUserId($user_id), $_REQUEST['AMOUNT'], self::getCurrency(), $amount, get_called_class());
         user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
         donate::addUserBonus($user_id, $amount);
 

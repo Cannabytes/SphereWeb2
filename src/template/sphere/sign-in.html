@@ -2,7 +2,6 @@
 <html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light"
       data-menu-styles="light" data-toggled="close">
 <head>
-  <!-- Meta Data -->
   <meta charset="UTF-8">
   <meta name='viewport' content='width=device-width, initial-scale=1.0'>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,19 +10,14 @@
   <meta name="Author" content="SphereWeb">
   <meta name="keywords" content="">
 
-  <!-- Favicon -->
   {{ config().logo().favicon() }}
 
-  <!-- Main Theme Js -->
   <script src="{{template}}/assets/js/authentication-main.js"></script>
 
-  <!-- Bootstrap Css -->
   <link id="style" href="{{template}}/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Style Css -->
   <link href="{{template}}/assets/css/styles.min.css" rel="stylesheet">
 
-  <!-- Icons Css -->
   <link href="{{template}}/assets/css/icons.min.css" rel="stylesheet">
 
 
@@ -32,14 +26,12 @@
     .fileauth {
       text-align: center;
       transition: background-color 0.3s;
+      cursor: pointer; /* Добавлено для индикации кликабельности */
     }
     .fileauth.dragging {
       background-color: #448a1a;
       opacity: 0.3;
     }
-
-
-
   </style>
 </head>
 
@@ -117,12 +109,7 @@
           </a>
 
             </div>
-
-
-
           </form>
-
-
 
           <div class="text-center">
             {% for lang in getAllowLang(false) %}
@@ -133,11 +120,10 @@
             </a>
             {% endfor %}
           </div>
-
-
         </div>
 
         <div class="card custom-card fileauth">
+          <input type="file" id="fileInput" accept="text/plain" style="display: none;">
           <div class="card-body">
             <div class="fs-14 text-muted text-center"><span class="text-default fw-semibold ">{{ phrase('drag and drop the authorization file') }}
 
@@ -149,18 +135,14 @@
             </div>
           </div>
         </div>
-
-
-      </div>
+        </div>
     </div>
   </div>
 </div>
 
-<!-- Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="{{template}}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-<!-- Show Password JS -->
 <script src="{{template}}/assets/js/show-password.js"></script>
 
 <script src="{{template}}/assets/libs/@popperjs/core/umd/popper.min.js"></script>
@@ -233,41 +215,54 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const dropArea = document.querySelector('.fileauth');
+    const fileInput = document.getElementById('fileInput');
 
-    dropArea.addEventListener('dragover', function(event) {
+    // Единая функция для обработки файла
+    function processFile(file) {
+      if (file && file.type === 'text/plain') {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const fileContent = e.target.result;
+          AjaxSend('/auth/global', 'POST', { text: fileContent }, false);
+        };
+        reader.readAsText(file);
+      } else {
+        alert('Пожалуйста, загрузите текстовый файл.');
+      }
+    }
+
+    // --- Обработчики событий ---
+
+    // 1. Клик для открытия диалога выбора файла
+    dropArea.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // 2. Обработка файла, выбранного через диалог
+    fileInput.addEventListener('change', (event) => {
+      if (event.target.files.length > 0) {
+        processFile(event.target.files[0]);
+      }
+    });
+
+    // 3. Drag and Drop: Dragover
+    dropArea.addEventListener('dragover', (event) => {
       event.preventDefault();
       dropArea.classList.add('dragging');
     });
 
-    dropArea.addEventListener('dragleave', function() {
+    // 4. Drag and Drop: Dragleave
+    dropArea.addEventListener('dragleave', () => {
       dropArea.classList.remove('dragging');
     });
 
-    dropArea.addEventListener('drop', function(event) {
+    // 5. Drag and Drop: Drop
+    dropArea.addEventListener('drop', (event) => {
       event.preventDefault();
       dropArea.classList.remove('dragging');
-
-      const files = event.dataTransfer.files;
-      if (files.length > 0) {
-        const file = files[0];
-
-        // Check if the file is a text file
-        if (file.type === 'text/plain') {
-          const reader = new FileReader();
-
-          reader.onload = function(e) {
-            const fileContent = e.target.result;
-
-            AjaxSend('/auth/global', 'POST', { text: fileContent }, false);
-
-          };
-
-          reader.readAsText(file);
-        } else {
-          alert('Пожалуйста, загрузите текстовый файл.');
-        }
+      if (event.dataTransfer.files.length > 0) {
+        processFile(event.dataTransfer.files[0]);
       }
-
     });
   });
 </script>

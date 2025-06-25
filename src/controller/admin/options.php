@@ -24,6 +24,7 @@ use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\install\install;
 use Ofey\Logan22\model\item\item;
+use Ofey\Logan22\model\log\logTypes;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
@@ -680,6 +681,7 @@ class options
             $server_id,
             time::mysql(),
         ]);
+        user::self()->addLog(logTypes::LOG_SAVE_CONFIG, 581);
         board::success("Настройки сохранены");
     }
 
@@ -698,6 +700,7 @@ class options
             $serverId,
             time::mysql(),
         ]);
+        user::self()->addLog(logTypes::LOG_SAVE_CONFIG, 581);
         board::success("Настройки сохранены");
     }
 
