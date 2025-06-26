@@ -126,7 +126,7 @@ class donate
      */
     static public function products()
     {
-        $server_id = auth::get_default_server();
+        $server_id = server::getDefaultServer();
         if (!$server_id) {
             tpl::addVar("message", "Not Server");
             tpl::display("page/error.html");
@@ -171,7 +171,7 @@ class donate
         $db = sql::instance();
         $db->beginTransaction();
         try {
-            if (auth::get_donate_point() < 0) {
+            if (user::self()->getDonate() < 0) {
                 board::error(lang::get_phrase('Insufficient funds'));
             }
             $lastUsage = $_SESSION['COOLDOWN_DONATE_TRANSACTION'] ?? 0;
@@ -400,7 +400,7 @@ class donate
         $db->beginTransaction();
         try {
             //Формальная проверка, что у пользователя вообще есть ли деньги.
-            if (auth::get_donate_point() < 0) {
+            if (user::self()->getDonate() < 0) {
                 board::error('Insufficient funds');
             }
             $lastUsage = $_SESSION['COOLDOWN_DONATE_TRANSACTION'] ?? 0;
@@ -552,7 +552,7 @@ class donate
     public static function donate_history_pay_self($user_id = null): array
     {
         if (!$user_id) {
-            $user_id = auth::get_id();
+            $user_id = user::self()->getId();
         }
         $pays = sql::getRows(
             "SELECT
