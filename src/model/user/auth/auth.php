@@ -138,9 +138,6 @@ class auth
 
     public static function user_enter(): void
     {
-        // Сначала убедимся, что таблица для логов готова
-        self::checkAndPrepareLogTable();
-
         if (\Ofey\Logan22\model\user\user::getUserId()->isAuth()) {
             board::notice(false, lang::get_phrase(160));
         }
@@ -174,6 +171,9 @@ class auth
 
     public static function addAuthLog(int $userId = 0, $fingerprint = null): void
     {
+        // Сначала убедимся, что таблица для логов готова
+        self::checkAndPrepareLogTable();
+
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
         $ip = self::getRealIP();
         $device = self::getDeviceType($userAgent);
