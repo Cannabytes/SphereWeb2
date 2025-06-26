@@ -198,7 +198,7 @@ class auth
             }
         }
 
-        sql::sql("INSERT INTO user_auth_log (user_id, ip, country, city, browser, os, device, user_agent, fingerprint, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+        sql::run("INSERT INTO user_auth_log (user_id, ip, country, city, browser, os, device, user_agent, fingerprint, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
             $userId,
             $ip,
             $country,
