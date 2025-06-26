@@ -261,12 +261,9 @@
 <!-- JavaScript код -->
 <script>
 $(document).ready(function() {
-  // Счетчик для стека уведомлений
   let toastCounter = 0;
-  const maxToasts = 4; // Максимальное количество одновременных уведомлений
-  let toastsQueue = []; // Очередь уведомлений
-
-  // Функция для отображения уведомления
+  const maxToasts = 4;
+  let toastsQueue = [];
   function showToast(type, title, message, duration = 5000) {
     const toastId = `#${type}Toast`;
     const titleId = `#${type}TitleMessageNotice`;
@@ -340,8 +337,6 @@ $(document).ready(function() {
       $(toastId).off('hidden.bs.toast');
     });
   }
-
-  // Объект с методами для разных типов уведомлений
   window.Notifications = {
     success: function(title, message, duration = 5000) {
       showToast('success', title, message, duration);
@@ -367,11 +362,5 @@ $(document).ready(function() {
     }
   };
 
-  // Примеры использования:
-  // Notifications.success('Успех!', 'Операция выполнена успешно.');
-  // Notifications.danger('Ошибка!', 'Произошла ошибка при выполнении операции.');
-  // Notifications.warning('Внимание!', 'Вы уверены, что хотите продолжить?');
-  // Notifications.info('Информация', 'Новое обновление доступно.');
-  // Notifications.clearAll(); // Очистить все уведомления
 });
 </script>

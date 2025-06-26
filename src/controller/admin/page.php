@@ -18,35 +18,6 @@ use Ofey\Logan22\template\tpl;
 
 class page {
 
-    //Изменение комментария
-    public static function editComment(){
-        if(auth::get_ban_page()) board::notice(false, "You are not allowed to do this");
-        validation::user_protection("admin");
-        $comment_id = request::setting('comment_id', new request_config(isNumber: true));
-        $comment_msg = request::setting('comment_message', new request_config(max: 2000, required: true));
-        if (\Ofey\Logan22\model\page\page::edit($comment_msg, $comment_id)){
-            board::notice(true, "Обновлено");
-        }else{
-            board::notice(true, "Ошибка редактирования");
-        }
-    }
-
-
-    //Удаление комментария из страницы
-    public static function deleteComment(){
-        if(auth::get_ban_page()){
-            board::notice(false, "You are not allowed to do this");
-        }
-        validation::user_protection("admin");
-        $comment_id = request::setting('comment_id', new request_config(isNumber: true));
-        if (\Ofey\Logan22\model\page\page::delete($comment_id)){
-            board::notice(true, "Удалено");
-        }else{
-            board::notice(true, "Ошибка удаления");
-        }
-    }
-
-
     static public function list() {
         validation::user_protection("admin");
         tpl::addVar([

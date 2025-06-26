@@ -16,15 +16,6 @@ use Ofey\Logan22\template\tpl;
 
 class bonus {
 
-
-    public static function update_inventory(){
-        auth::setBonus();
-        $async = new async("basic/base.html");
-        $async->block("inventory", "inventory", "replace", true);
-        $async->block("title", "title");
-        $async->send();
-    }
-
     //Бонус код
     public static function code() {
         tpl::display("/bonus/bonus.html");

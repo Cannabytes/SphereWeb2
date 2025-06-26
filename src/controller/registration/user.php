@@ -53,15 +53,17 @@ class user
         if ($prefixEnable) {
             $minOfChars += mb_strlen($_SESSION['account_prefix']);
         }
-        $account_name = request::setting(
-            'account',
-            new request_config(
-                min: $minOfChars,
-                max: config::load()->registration()->getMaximumNumberOfCharactersRegistrationAccount(),
-                rules: "/^[a-zA-Z0-9_]+$/"
-            )
-        );
 
+        if($account_name){
+            $account_name = request::setting(
+                'account',
+                new request_config(
+                    min: $minOfChars,
+                    max: config::load()->registration()->getMaximumNumberOfCharactersRegistrationAccount(),
+                    rules: "/^[a-zA-Z0-9_]+$/"
+                )
+            );
+        }
 
         config::load()->captcha()->validator();
         if (auth::is_user($email)) {

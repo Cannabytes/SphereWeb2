@@ -21,23 +21,4 @@ class info {
         tpl::display("/account/accounts.html");
     }
 
-    public static function player_list($account, $server_id = null): void {
-        validation::user_protection();
-        if ($server_id == null) {
-            $server_id = auth::get_default_server();
-        }
-        $data = sql::run("SELECT `email` FROM `player_accounts` WHERE login = ?", [$account])->fetch();
-        if ($data['email'] != auth::get_email()) {
-            redirect::location("/main");
-        }
-        $characters = character::all_characters($account, $server_id);
-        $characters = player_account::get_forbidden_players($characters, $server_id);
-
-        tpl::addVar([
-            'account'              => $account,
-            'server_id'            => $server_id,
-            'characters'           => $characters,
-        ]);
-        tpl::display("/account/players_list.html");
-    }
 }

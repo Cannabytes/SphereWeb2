@@ -25,11 +25,6 @@ class auth {
         \Ofey\Logan22\model\user\auth\auth::user_enter();
     }
 
-    public static function auth_admin_code(){
-        validation::user_protection("admin");
-        \Ofey\Logan22\model\user\auth\auth::auth_admin_code();
-    }
-
     public static function logout() {
         if(user::getUserId()->isAuth()) {
             \Ofey\Logan22\model\user\auth\auth::logout();

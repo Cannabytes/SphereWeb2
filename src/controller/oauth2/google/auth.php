@@ -17,9 +17,9 @@ class auth
     public static function callback()
     {
         $tokenData = $_GET;
-
         $unique_id = $tokenData['unique_id'];
         $host = $tokenData['host'];
+        $fingerprint = $tokenData['fp'] ?? null;
         $getterUrl = "{$host}/google/getter.php";
         $postData = [
             'unique_id' => $unique_id
@@ -63,6 +63,7 @@ class auth
 
             $emailData = user::getUserByEmail($email);
             if ($emailData != null) {
+                \Ofey\Logan22\model\user\auth\auth::addAuthLog($emailData->getId(), $fingerprint ?? null);
                 session::add('id', $emailData->getId());
                 session::add('email', $emailData->getEmail());
                 session::add('password', "GOOGLE");
@@ -91,6 +92,7 @@ class auth
             $insert = sql::run($insertUserSQL, $insertArrays);
             $userID = sql::lastInsertId();
             if ($insert) {
+                \Ofey\Logan22\model\user\auth\auth::addAuthLog($userID, $fingerprint ?? null);
                 session::add('id', $userID);
                 session::add('email', $email);
                 session::add('password', "GOOGLE");

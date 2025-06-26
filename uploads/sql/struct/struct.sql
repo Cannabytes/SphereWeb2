@@ -529,13 +529,17 @@ CREATE TABLE `statistic_online`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `user_auth_log`;
 CREATE TABLE `user_auth_log`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NULL DEFAULT NULL,
-  `ip` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `country` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `city` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `browser` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `date` datetime NULL DEFAULT NULL,
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `ip` varchar(60) DEFAULT NULL,
+  `country` varchar(60) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `browser` varchar(600) DEFAULT NULL,
+  `fingerprint` varchar(255) DEFAULT NULL,
+  `date` datetime DEFAULT NULL,
+  `os` varchar(100) DEFAULT NULL,
+  `device` varchar(100) DEFAULT NULL,
+  `user_agent` varchar(600) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 

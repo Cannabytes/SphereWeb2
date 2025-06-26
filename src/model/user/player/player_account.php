@@ -300,46 +300,6 @@ class player_account
         ])->fetch();
     }
 
-    public static function show_all_account_player($email = null, $server_id = null)
-    {
-        if ($email === null) {
-            if ( ! auth::get_is_auth()) {
-                return;
-            }
-            $email = auth::get_email();
-        }
-
-        if ($server_id === null) {
-            return sql::getRows(
-              "SELECT id, login, `password`, email, ip, server_id, password_hide, date_create, date_update FROM player_accounts WHERE email = ? ORDER BY date_create",
-              [
-                $email,
-              ]
-            );
-        }
-
-        if (is_int((int)$server_id)) {
-            return sql::getRows(
-              "SELECT id, login, `password`, email, ip, server_id, password_hide, date_create, date_update FROM player_accounts WHERE email = ? AND server_id = ? ORDER BY date_create",
-              [
-                $email,
-                $server_id,
-              ]
-            );
-        }
-
-        return sql::getRows(
-          "SELECT id, login, `password`, email, ip, server_id, password_hide, date_create, date_update FROM player_accounts WHERE email = ? AND server_id = ? ORDER BY date_create",
-          [
-            $email,
-            auth::get_default_server(),
-          ]
-        );
-    }
-
-    //Возвращаем список всех аккаунтов пользователя
-    //$default_server - вернуть данные своих аккаунтов только сервера который по умолчанию
-
     public static function addItem($server_id, $item_id, $item_count, $item_enchant, $char_name = null)
     {
         if ($char_name == null) {

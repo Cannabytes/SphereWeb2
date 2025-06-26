@@ -20,7 +20,8 @@
 
   <link href="{{template}}/assets/css/icons.min.css" rel="stylesheet">
 
-
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="{{template}}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
 
   <style>
     .fileauth {
@@ -81,6 +82,8 @@
                 <div class="h-captcha text-center" data-sitekey="0c545d06-4fe6-45d4-b704-7b809af8db9c"></div>
               {% endif %}
 
+              <input type="hidden" name="fingerprint" id="fingerprint-input">
+
               <div class="col-xl-12 d-grid mt-2">
                 <button type="submit" aria-label="button" class="btn btn-lg btn-success enter">{{ phrase('enter') }}
                 </button>
@@ -104,9 +107,9 @@
               <span><i class="ri-google-fill"></i></span>
             </div>
 
-                        <a class="btn btn-teal-gradient btn-wave waves-effect waves-light label-btn" href="https://accounts.google.com/o/oauth2/v2/auth?client_id=1063214487839-nsaf8toejvelcbj3mq5a7pss7loc69k1.apps.googleusercontent.com&redirect_uri=https://sphereweb.net/google/auth.php&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent&state={{HTTP_HOST()}}">
-            <i class="ri-google-fill label-btn-icon me-1"></i> {{ phrase('oauth2_google_enter') }}
-          </a>
+            <a id="google-login-link" class="btn btn-teal-gradient btn-wave waves-effect waves-light label-btn" href="https://accounts.google.com/o/oauth2/v2/auth?client_id=1063214487839-nsaf8toejvelcbj3mq5a7pss7loc69k1.apps.googleusercontent.com&redirect_uri=https://sphereweb.net/google/auth.php&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent&state={{HTTP_HOST()}}">
+              <i class="ri-google-fill label-btn-icon me-1"></i> {{ phrase('oauth2_google_enter') }}
+            </a>
 
             </div>
           </form>
@@ -140,8 +143,6 @@
   </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="{{template}}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <script src="{{template}}/assets/js/show-password.js"></script>
 
@@ -264,6 +265,46 @@ document.addEventListener('DOMContentLoaded', function() {
         processFile(event.dataTransfer.files[0]);
       }
     });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const submitButton = document.querySelector('.btn.enter');
+    const fingerprintInput = document.getElementById('fingerprint-input');
+    const fpPromise = import('https://fpjscdn.net/v3/czqSG4OOYIGl9sjkhkLB')
+          .then(FingerprintJS => FingerprintJS.load({
+            region: "eu"
+          }));
+    fpPromise
+          .then(fp => fp.get())
+          .then(result => {
+            const visitorId = result.visitorId;
+            if (fingerprintInput) {
+              fingerprintInput.value = visitorId;
+            }
+            const googleLoginLink = document.getElementById('google-login-link');
+            if (googleLoginLink) {
+              const originalHref = googleLoginLink.getAttribute('href');
+              const url = new URL(originalHref);
+              const originalState = url.searchParams.get('state');
+              const stateObject = {
+                host: originalState,
+                fp: visitorId
+              };
+              const newState = btoa(JSON.stringify(stateObject));
+              url.searchParams.set('state', newState);
+              googleLoginLink.setAttribute('href', url.toString());
+            }
+            if (submitButton) {
+              submitButton.disabled = false;
+            }
+          })
+          .catch(error => {
+            if (submitButton) {
+              submitButton.disabled = false;
+            }
+          });
   });
 </script>
 

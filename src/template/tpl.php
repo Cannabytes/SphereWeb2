@@ -958,11 +958,6 @@ class tpl
             return generation::word();
         }));
 
-        //Список аккаунтов пользователя
-        $twig->addFunction(new TwigFunction('show_all_account_player', function () {
-            return player_account::show_all_account_player();
-        }));
-
         $twig->addFunction(new TwigFunction('streams', function () {
             return stream::getStreams();
         }));
