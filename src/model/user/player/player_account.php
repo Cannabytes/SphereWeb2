@@ -209,12 +209,11 @@ class player_account
 
     static function count_account()
     {
-        if ( ! auth::get_is_auth()) {
-            return;
+        if (!user::self()->isAuth()){
+            return 0;
         }
-
         return sql::run("SELECT COUNT(*) as `count` FROM player_accounts WHERE email = ?", [
-          auth::get_email(),
+          user::self()->getEmail(),
         ])->fetch()["count"];
     }
 
