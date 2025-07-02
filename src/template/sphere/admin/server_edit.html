@@ -43,13 +43,12 @@
                                                        value="{{server.getRateDrop()}}" placeholder="1">
                                             </div>
 
-
                                             <div class="col-xl-2">
                                                 <label for="platform" class="form-label">Platform</label>
-                                                <select disabled class="form-control" data-trigger
+                                                <select class="form-control" data-trigger
                                                         name="platform" id="platform">
-                                                    <option selected value="java">Java</option>
-                                                    <option disabled value="pts">PTS</option>
+                                                    <option {% if server.getPlatform() == 'java' %}selected{% endif %} value="java">Java</option>
+                                                    <option {% if server.getPlatform() == 'pts' %}selected{% endif %} value="pts">PTS</option>
                                                 </select>
                                             </div>
 
@@ -71,7 +70,21 @@
                                                 </select>
                                             </div>
 
-
+                                           <div class="col-xl-4 pts_cached_data d-none">
+                                                <label for="cached_ip" class="form-label">CacheD IP</label>
+                                                <input name="cached_ip" type="text" class="form-control" id="cached_ip"
+                                                    value="{{cached.IP}}"   placeholder="158.211.11.124">
+                                            </div>
+                                            <div class="col-xl-4 pts_cached_data d-none">
+                                              <label for="cached_port" class="form-label">CacheD Port</label>
+                                                <input name="cached_port" type="text" class="form-control" id="cached_port"
+                                                       value="{{cached.Port}}" placeholder="2012">
+                                            </div>
+                                            <div class="col-xl-4 pts_cached_data d-none">
+                                                 <label for="cached_WebAdmin" class="form-label">WebAdmin</label>
+                                                <input name="cached_WebAdmin" type="text" class="form-control" id="cached_WebAdmin"
+                                                       value="{{cached.WebAdmin}}" placeholder="WebAdmin">
+                                            </div>
 
 
                                             <hr class="hr">
@@ -545,9 +558,8 @@
 </script>
 
 <script>
-
     const collectionInfo = JSON.parse('{{collections|raw}}');
-
+    const collectionInfoPTS = JSON.parse('{{collectionsPTS|raw}}');
 
     //Добавление логин-сервера
     $("#add_new_login_server").on("click", function () {
@@ -698,33 +710,42 @@
 
 
     $(document).ready(function() {
-        // Функция для проверки пересечения массивов
+
+        $('#platform').on('change', handlePlatformChange);
+        handlePlatformChange.call($('#platform'));
+
         function hasCommonElement(arr1, arr2) {
             return arr1.some(item => arr2.includes(Number(item)));
         }
 
         // Функция обновления списка сборок
         function updateCollections(selectedProtocols) {
-            const currentValue = $('#collection').val(); // Сохраняем текущее значение
+            // Очищаем текущий список
             $('#collection').empty();
 
+            // Определяем, какую коллекцию использовать
+            const currentCollectionInfo = $('#platform').val() === 'pts' ? collectionInfoPTS : collectionInfo;
+
+            // Преобразуем строку протоколов в массив чисел
             const protocols = selectedProtocols.map(Number);
 
-            const availableCollections = collectionInfo.filter(collection =>
+            // Фильтруем доступные сборки
+            const availableCollections = currentCollectionInfo.filter(collection =>
                   hasCommonElement(protocols, collection.protocols)
             );
 
+            // Добавляем опции в select
             if (availableCollections.length > 0) {
                 availableCollections.forEach(collection => {
                     $('#collection').append(
                           $('<option>', {
                               value: collection.name,
-                              text: collection.name,
-                              selected: collection.name === "{{server.getCollection()}}" // Устанавливаем selected для нужной опции
+                              text: collection.name
                           })
                     );
                 });
             } else {
+                // Если нет доступных сборок, добавляем placeholder
                 $('#collection').append(
                       $('<option>', {
                           value: '',
@@ -733,11 +754,6 @@
                           selected: true
                       })
                 );
-            }
-
-            // Восстанавливаем значение, если оно было
-            if (currentValue) {
-                $('#collection').val(currentValue);
             }
         }
 
@@ -753,6 +769,26 @@
 
             updateCollections(protocols);
         });
+
+        function handlePlatformChange() {
+            const selectedOption = $('#version_client').find('option:selected');
+            const protocolsStr = selectedOption.data('protocol');
+            const protocols = typeof protocolsStr === 'string'
+                  ? JSON.parse(protocolsStr.replace(/[\[\]]/g, '').split(','))
+                  : protocolsStr;
+
+            if($(this).val() === 'pts') {
+                $("#login_port").val(1433);
+                $("#game_port").val(1433);
+                $(".pts_cached_data").removeClass("d-none")
+            }else{
+                $("#login_port").val(3306);
+                $("#game_port").val(3306);
+                $(".pts_cached_data").addClass("d-none")
+            }
+
+            updateCollections(protocols);
+        }
 
         // Инициализация при загрузке страницы
         const initialProtocols = $('#version_client option:selected').data('protocol');

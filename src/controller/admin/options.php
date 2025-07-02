@@ -82,8 +82,6 @@ class options
     //POST - Регистрация сервера
     public static function create_server(): void
     {
-        $loginArr = [];
-
         $name = $_POST['name'] ?? "Bartz_" . random_int(1, 999);
         $rateExp = (int)$_POST['rateExp'] ?? 1;
         $rateSp = (int)$_POST['rateSp'] ?? 1;
@@ -103,22 +101,44 @@ class options
         $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? 2106;
         $statusGameServerIP = $_POST['statusGameServerIP'] ?? "";
         $statusGameServerPort = (int)$_POST['statusGameServerPort'] ?? 7777;
+        $platform = $_POST['platform'] ?? null;
+        $cached_ip = $_POST['cached_ip'] ?? null;
+        $cached_port = $_POST['cached_port'] ?? null;
+        $cached_WebAdmin = $_POST['cached_WebAdmin'] ?? null;
 
-        if (!filter_var($statusLoginServerIP, FILTER_VALIDATE_IP)) {
-            if ($enableStatusServer) {
-                board::error("IP адрес для проверки логин-сервера недействителен.");
-            } else {
-                $statusLoginServerIP = "0.0.0.0";
+        if($platform == "pts"){
+            if (!filter_var($cached_ip, FILTER_VALIDATE_IP)) {
+                if ($cached_ip) {
+                    board::error("IP адрес для проверки CacheD недействителен.");
+                }
+            }
+
+            if (!filter_var($cached_port, FILTER_VALIDATE_INT)) {
+                if ($cached_port) {
+                    board::error("Порт для проверки CacheD недействителен.");
+                }
             }
         }
-        if (!filter_var($statusGameServerIP, FILTER_VALIDATE_IP)) {
-            if ($enableStatusServer) {
-                board::error("IP адрес для проверки гейм сервера недействителен.");
-            } else {
-                $statusGameServerIP = "0.0.0.0";
+
+        if($_POST['loginserver'] == 0){
+            if (!filter_var($statusLoginServerIP, FILTER_VALIDATE_IP)) {
+                if ($enableStatusServer) {
+                    board::error("IP адрес для проверки логин-сервера недействителен.");
+                } else {
+                    $statusLoginServerIP = "0.0.0.0";
+                }
             }
         }
 
+        if($_POST['gameserver'] == 0){
+            if (!filter_var($statusGameServerIP, FILTER_VALIDATE_IP)) {
+                if ($enableStatusServer) {
+                    board::error("IP адрес для проверки гейм сервера недействителен.");
+                } else {
+                    $statusGameServerIP = "0.0.0.0";
+                }
+            }
+        }
 
         if (isset($_POST['loginserver'])) {
             $loginserver = (int)$_POST['loginserver'] ?? 0;
@@ -140,12 +160,16 @@ class options
             "statusGameServerPort" => $statusGameServerPort,
         ];
 
-        $data = \Ofey\Logan22\component\sphere\server::send(type::ADD_NEW_SERVER, array_merge([
+        $data = \Ofey\Logan22\component\sphere\server::send(type::ADD_NEW_SERVER, [
             "loginServerID" => $loginserver,
             "gameServerID" => $gameserver,
             "collection" => $collection,
             "statusServer" => $statusServer,
-        ], $loginArr))->show()->getResponse();
+            "platform" => $platform,
+            "cachedIP" => $cached_ip,
+            "cachedPort" => (int)$cached_port,
+            "cachedWebAdmin" => $cached_WebAdmin,
+        ])->show()->getResponse();
 
         if (isset($data['id'])) {
             $id = $data['id'];
@@ -171,6 +195,7 @@ class options
                 "maxOnline" => $maxOnline,
                 "timezone" => $timezone,
                 "resetHWID" => $resetHWID,
+                "platform" => $platform,
             ];
 
             sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
@@ -224,6 +249,10 @@ class options
         }
         $server = \Ofey\Logan22\model\server\server::getServer($server_id);
         $database = \Ofey\Logan22\component\sphere\server::send(type::GET_DATABASE_LIST)->show()->getResponse();
+        $cached = [];
+        if($server->getPlatform() == "pts"){
+            $cached = \Ofey\Logan22\component\sphere\server::send(type::GET_CACHED, ["id" => $server->getId()])->show()->getResponse();
+        }
 
         $defaultDB = $database['defaultDB'];
         $gameServers = $database['gameservers'];
@@ -257,7 +286,54 @@ class options
             'timezone_list_default' => timezone::all(),
 
             "server" => $server,
+            "cached" => $cached,
             "collections" => json_encode($collections['collections']),
+            "collectionsPTS" => json_encode([
+                [
+                    "id" => 0,
+                    "name" => "AdvExt",
+                    "desc" => "ПТС сборка",
+                    "hash" => "",
+                    "protocols" => [
+                        //GF
+                        83,
+                        87,
+                        83,
+
+                        // Epilogue
+                        148,
+                        152,
+                        146,
+
+                        // HF
+                        267,
+                        268,
+                        271,
+                        273,
+                        253,
+                        268,
+
+                        // ИЛ
+                        737,
+                        740,
+                        744,
+                        746,
+                    ],
+                ],
+                [
+                    "id" => 1,
+                    "name" => "Vaganth",
+                    "desc" => "ПТС сборка",
+                    "hash" => "",
+                    "protocols" => [
+                        // ИЛ
+                        737,
+                        740,
+                        744,
+                        746,
+                    ],
+                ],
+            ]),
         ]);
         tpl::display("/admin/server_edit.html");
     }
@@ -278,6 +354,24 @@ class options
         $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? 2106;
         $statusGameServerIP = $_POST['statusGameServerIP'] ?? "";
         $statusGameServerPort = (int)$_POST['statusGameServerPort'] ?? 7777;
+        $platform = $_POST['platform'] ?? null;
+        $cached_ip = $_POST['cached_ip'] ?? null;
+        $cached_port = $_POST['cached_port'] ?? null;
+        $cached_WebAdmin = $_POST['cached_WebAdmin'] ?? null;
+
+        if($platform == "pts"){
+            if (!filter_var($cached_ip, FILTER_VALIDATE_IP)) {
+                if ($cached_ip) {
+                    board::error("IP адрес для проверки CacheD недействителен.");
+                }
+            }
+
+            if (!filter_var($cached_port, FILTER_VALIDATE_INT)) {
+                if ($cached_port) {
+                    board::error("Порт для проверки CacheD недействителен.");
+                }
+            }
+        }
 
         $statusLoginServerIP = preg_replace("/^https?:\/\//", "", $statusLoginServerIP);
         $statusGameServerIP = preg_replace("/^https?:\/\//", "", $statusGameServerIP);
@@ -299,9 +393,6 @@ class options
                 }
             }
         }
-
-
-
 
         $loginServerID = $_POST['loginserver'] ?? board::error("Set DB LoginServer");
         $gameserverID = $_POST['gameserver'] ?? board::error("Set DB GameServer");
@@ -345,6 +436,7 @@ class options
             "resetHWID" => $resetHWID,
             "default" => $server->isDefault(),
             'position' => $server->getPosition(),
+            'platform' => $platform,
         ];
 
         $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -368,6 +460,10 @@ class options
                 "statusGameServerIP" => $statusGameServerIP,
                 "statusGameServerPort" => (int)$statusGameServerPort,
             ],
+            "platform" => $platform,
+            "cachedIP" => $cached_ip,
+            "cachedPort" => (int)$cached_port,
+            "cachedWebAdmin" => $cached_WebAdmin,
         ])->show()->getResponse();
 
         if (isset($data["success"])) {
@@ -643,6 +739,52 @@ class options
             "title" => lang::get_phrase(221),
             "chronicleBaseList" => fileSys::dir_list("src/component/image/icon/items"),
             "collections" => json_encode($collections['collections']),
+            "collectionsPTS" => json_encode([
+                [
+                    "id" => 0,
+                    "name" => "AdvExt",
+                    "desc" => "ПТС сборка",
+                    "hash" => "",
+                    "protocols" => [
+                        //GF
+                        83,
+                        87,
+                        83,
+
+                        // Epilogue
+                        148,
+                        152,
+                        146,
+
+                        // HF
+                        267,
+                        268,
+                        271,
+                        273,
+                        253,
+                        268,
+
+                        // ИЛ
+                        737,
+                        740,
+                        744,
+                        746,
+                    ],
+                ],
+                [
+                    "id" => 1,
+                    "name" => "Vaganth",
+                    "desc" => "ПТС сборка",
+                    "hash" => "",
+                    "protocols" => [
+                        // ИЛ
+                        737,
+                        740,
+                        744,
+                        746,
+                    ],
+                ],
+            ]),
         ]);
         tpl::display("/admin/server_add.html");
     }
@@ -742,6 +884,7 @@ class options
         $port = $_POST['port'] ?? '';
         $user = $_POST['user'] ?? '';
         $password = $_POST['password'] ?? '';
+        $platform = $_POST['platform'] ?? 'java';
 
         // Проверка на пустые значения
         if (empty($host) || empty($port) || empty($user)) {
@@ -753,12 +896,15 @@ class options
             return;
         }
 
-        $data = \Ofey\Logan22\component\sphere\server::send(type::CONNECT_DB, [
-            "host" => $host,
-            "port" => $port,
-            "user" => $user,
-            "password" => $password,
-        ])->getResponse();
+        $data = \Ofey\Logan22\component\sphere\server::send(
+            $platform === 'java' ? type::CONNECT_DB : type::CONNECT_DB_MSSQL,
+            [
+                "host" => $host,
+                "port" => $port,
+                "user" => $user,
+                "password" => $password,
+            ]
+        )->getResponse();
 
         if (isset($data["databases"])) {
             board::alert([

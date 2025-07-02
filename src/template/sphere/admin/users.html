@@ -12,7 +12,11 @@
         <div class="card-header">
           <div class="card-title">
             <a href="/admin" class="avatar border text-muted me-2">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path
+                  d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z">
+                </path>
+              </svg>
             </a>
             {{ phrase('users') }} ( {{getUsers()|length}} )
           </div>
@@ -21,41 +25,56 @@
           <span class="table-responsive">
             <table id="datatable-users" class="table table-bordered text-nowrap w-100">
               <thead>
-              <tr>
-                <th>ID</th>
-                <th>{{ phrase('user') }}</th>
-                <th>{{ phrase(114) }}</th>
-                <th>Дата входа</th>
-                <th>{{ phrase('donate_coin') }}</th>
-              </tr>
+                <tr>
+                  <th>ID</th>
+                  <th>{{ phrase('user') }}</th>
+                  <th>Отпечаток</th>
+                  <th>{{ phrase(114) }}</th>
+                  <th>Дата входа</th>
+                  <th>{{ phrase('donate_coin') }}</th>
+                </tr>
               </thead>
               <tbody>
-              {% for i, user in getUsers() %}
-              <tr>
-                <td style="width: 1px;">{{user.getId()}}</td>
-                <td>
-                  <div class="d-flex align-items-center  mt-auto">
-                    <div class="avatar  avatar-md me-1 cover-image" data-bs-image-src="{{user.getAvatar()}}"
-                         style="background: url('{{user.getAvatar()}}') center center;"></div>
-                    <div>
-                      <a href="/admin/user/info/{{user.getId()}}" class="text-default">{{user.getEmail()}} <br> {{user.getName()}}</a>
-                      <small class="d-block text-muted">{{user.getDateCreate()|date("d F, Y")}}</small>
+                {% for i, user in getUsers() %}
+                <tr>
+                  <td style="width: 1px;">{{user.getId()}}</td>
+                  <td>
+                    <div class="d-flex align-items-center  mt-auto">
+                      <div class="avatar  avatar-md me-1 cover-image" data-bs-image-src="{{user.getAvatar()}}"
+                        style="background: url('{{user.getAvatar()}}') center center;"></div>
+                      <div>
+                        <a href="/admin/user/info/{{user.getId()}}" class="text-default">{{user.getEmail()}} <br>
+                          {{user.getName()}}</a>
+                        <small class="d-block text-muted">{{user.getDateCreate()|date("d F, Y")}}</small>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td style="width: 1px;">{{user.getDateCreate()}}</td>
-                <td style="width: 1px;">{{user.getLastActive()}}</td>
-                <td style="width: 1px;" class="text-center">
-                <span data-user-id="{{user.getId()}}" data-user-balance="{{user.getDonate()}}"
+                  </td>
+
+                  {% set fingerprints = user.getFingerprints() %}
+                  {% if fingerprints %}
+                      <td style="width: 1px;">
+                          {% for finger in fingerprints %}
+                              {{ finger }}{% if not loop.last %}, {% endif %}
+                          {% endfor %}
+                      </td>
+                  {% else %}
+                      <td style="width: 1px;"></td>
+                  {% endif %}
+
+                  <td style="width: 1px;">{{user.getDateCreate()}}</td>
+                  <td style="width: 1px;">{{user.getLastActive()}}</td>
+                  <td style="width: 1px;" class="text-center">
+                    <span data-user-id="{{user.getId()}}" data-user-balance="{{user.getDonate()}}"
                       class="reply-btn btn btn-sm btn-success sendToBalance">
-                <i class="ri-add-circle-line"></i>
-                </span><br>
-                  <span id="user_id_count_{{user.getId()}}" data-user-balance="{{user.getDonate()}}">{{user.getDonate()}}</span>
-          </td>
-          </tr>
-          {% endfor %}
-          </tbody>
-          </table>
+                      <i class="ri-add-circle-line"></i>
+                    </span><br>
+                    <span id="user_id_count_{{user.getId()}}"
+                      data-user-balance="{{user.getDonate()}}">{{user.getDonate()}}</span>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </span>
         </div>
       </div>
@@ -64,19 +83,19 @@
 </div>
 
 <div class="modal fade" id="balance" tabindex="-1" aria-labelledby="balance" data-bs-keyboard="false"
-     aria-hidden="true">
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <input type="hidden" name="userid" value="">
       <div class="modal-header">
         <h6 class="modal-title" id="staticBackdropLabel">{{phrase('balance_topup')}}</h6>
         </h6>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <div class="modal-body">
-        {{phrase('user_balance')}} : <span class="fs-15 fw-semibold" id="user-balance-show"></span> {{phrase('donate_coin')}}
+        {{phrase('user_balance')}} : <span class="fs-15 fw-semibold" id="user-balance-show"></span>
+        {{phrase('donate_coin')}}
         <br>
         <label for="countBalanceSend" class="form-label">{{phrase('add_donate_coins')}}</label>
         <input value="" type="text" class="form-control" name="count" id="countBalanceSend" placeholder="100">
@@ -165,7 +184,7 @@
         'count': count,
         'addBonus': addBonus,
       }, true).then(function (data) {
-        if(data.ok) {
+        if (data.ok) {
           let userBalance = $("#user_id_count_" + userid).attr("data-user-balance");
           let countInt = parseInt(count);
           userBalance = parseInt(userBalance);
@@ -175,11 +194,11 @@
             let newBalance = userBalance + countInt;
             $("#user_id_count_" + userid).attr("data-user-balance", newBalance);
             $('#user_id_count_' + userid).text(newBalance);
-            $('.sendToBalance[data-user-id="'+userid+'"]').attr("data-user-balance", newBalance);
+            $('.sendToBalance[data-user-id="' + userid + '"]').attr("data-user-balance", newBalance);
             $('#user-balance-show').text(newBalance);
           }
           noticeSuccess("{{phrase('balance_topup_successful')}}");
-        }else{
+        } else {
           noticeError(data.message);
         }
         $("#countBalanceSend").val("");
@@ -196,4 +215,3 @@
 
 
 {% endblock %}
-

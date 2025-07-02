@@ -460,7 +460,9 @@
                                     <p class="small mb-2 text-break">{{phrase('reset_hwid_emerg_fn')}}.</p>
                                     <button type="submit"
                                             class="btn btn-success btn-sm w-100 removeHWID text-nowrap"
-                                            data-obj="{{character.getPlayerId()}}">
+                                            data-obj="{{character.getPlayerId()}}"
+                                            data-account="{{account.getAccount()}}"
+                                    >
                                       <span class="d-inline-block text-truncate" style="max-width: 85%;">{{phrase('reset_hwid')}}</span>
                                       <i class="ri-lock-unlock-line ms-1"></i>
                                     </button>
@@ -641,8 +643,10 @@
 
   $(document).on('click', '.removeHWID', function () {
     var obj = $(this).data('obj');
+    var account = $(this).data('account');
     AjaxSend('/player/reset/hwid', 'POST', {
       player_id: obj,
+      account: account
     }).then(function (response) {
       console.log(response);
     });

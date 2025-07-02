@@ -25,6 +25,7 @@ class serverModel
     private int $rateAdena = 1;
     private int $rateDrop = 1;
     private int $rateSpoil = 1;
+    private string $platform = "java";
     private ?string $dateStartServer = null;
     private string $chronicle;
     private int $chatGameEnabled;
@@ -69,6 +70,7 @@ class serverModel
         $this->rateAdena = filter_var($server['rateAdena'] ?? 1, FILTER_VALIDATE_INT);
         $this->rateDrop = filter_var($server['rateDrop'] ?? 1, FILTER_VALIDATE_INT);
         $this->rateSpoil = filter_var($server['rateSpoil'] ?? 1, FILTER_VALIDATE_INT);
+        $this->platform = $server['platform'] ?? 'java';
         $this->chronicle = $server['chronicle'] ?? '';
         $this->chatGameEnabled = $server['chat_game_enabled'] ?? 0;
         $this->launcherEnabled = $server['launcher_enabled'] ?? 0;
@@ -462,6 +464,10 @@ class serverModel
         $this->rateSpoil = $rateSpoil;
 
         return $this;
+    }
+
+    public function getPlatform(): string {
+        return $this->platform;
     }
 
     /**

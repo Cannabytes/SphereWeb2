@@ -1538,9 +1538,28 @@ class userModel
             session::add("lang", $lang);
         }
         if ($this->isAuth) {
+            try {
+                $lang = sql::getRow("SELECT `lang` FROM `users` WHERE `id` = ?", [$this->getId()])['lang'];
+            } catch (PDOException $e) {
+                var_dump($e->getMessage());
+            }
+
+
             sql::run("UPDATE `users` SET `lang` = ? WHERE `id` = ?", [$lang, $this->getId()]);
         }
         redirect::location($_SERVER['HTTP_REFERER'] ?? "/main");
     }
+
+    public function getFingerprints(): array
+    {
+        $rows = sql::getRows(
+            "SELECT DISTINCT `fingerprint` FROM `user_auth_log` WHERE `user_id` = ?",
+            [$this->getId()]
+        );
+
+        return array_column($rows, 'fingerprint'); // вернёт массив строк
+    }
+
+
 
 }

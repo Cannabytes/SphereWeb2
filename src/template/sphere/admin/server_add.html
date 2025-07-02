@@ -47,10 +47,10 @@
 
                                             <div class="col-xl-2">
                                                 <label for="platform" class="form-label">Platform</label>
-                                                <select disabled class="form-control" data-trigger
+                                                <select class="form-control" data-trigger
                                                         name="platform" id="platform">
                                                     <option selected value="java">Java</option>
-                                                    <option disabled value="pts">PTS</option>
+                                                    <option value="pts">PTS</option>
                                                 </select>
                                             </div>
 
@@ -74,6 +74,26 @@
                                                     {% endfor %}
                                                 </select>
                                             </div>
+
+
+                                            <div class="col-xl-4 pts_cached_data d-none">
+                                                <label for="cached_ip" class="form-label">CacheD IP</label>
+                                                <input name="cached_ip" type="text" class="form-control" id="cached_ip"
+                                                       placeholder="158.211.11.124">
+                                            </div>
+                                            <div class="col-xl-4 pts_cached_data d-none">
+                                              <label for="cached_port" class="form-label">CacheD Port</label>
+                                                <input name="cached_port" type="text" class="form-control" id="cached_port"
+                                                     value="2012"  placeholder="2012">
+                                            </div>
+                                            <div class="col-xl-4 pts_cached_data d-none">
+                                                 <label for="cached_WebAdmin" class="form-label">WebAdmin</label>
+                                                <input name="cached_WebAdmin" type="text" class="form-control" id="cached_WebAdmin"
+                                                       placeholder="WebAdmin">
+                                            </div>
+
+
+
 
 
                                             <hr class="hr">
@@ -535,10 +555,14 @@
 
 <script>
     const collectionInfo = JSON.parse('{{collections|raw}}');
-
+    const collectionInfoPTS = JSON.parse('{{collectionsPTS|raw}}');
 
 
     $(document).ready(function() {
+
+        $('#platform').on('change', handlePlatformChange);
+        handlePlatformChange.call($('#platform'));
+
         // Функция для проверки пересечения массивов
         function hasCommonElement(arr1, arr2) {
             return arr1.some(item => arr2.includes(Number(item)));
@@ -549,11 +573,14 @@
             // Очищаем текущий список
             $('#collection').empty();
 
+            // Определяем, какую коллекцию использовать
+            const currentCollectionInfo = $('#platform').val() === 'pts' ? collectionInfoPTS : collectionInfo;
+
             // Преобразуем строку протоколов в массив чисел
             const protocols = selectedProtocols.map(Number);
 
             // Фильтруем доступные сборки
-            const availableCollections = collectionInfo.filter(collection =>
+            const availableCollections = currentCollectionInfo.filter(collection =>
                   hasCommonElement(protocols, collection.protocols)
             );
 
@@ -593,6 +620,27 @@
             updateCollections(protocols);
         });
 
+        function handlePlatformChange() {
+            const selectedOption = $('#version_client').find('option:selected');
+            const protocolsStr = selectedOption.data('protocol');
+            const protocols = typeof protocolsStr === 'string'
+                  ? JSON.parse(protocolsStr.replace(/[\[\]]/g, '').split(','))
+                  : protocolsStr;
+
+            if($(this).val() === 'pts') {
+                $("#login_port").val(1433);
+                $("#game_port").val(1433);
+                $(".pts_cached_data").removeClass("d-none")
+            }else{
+                $("#login_port").val(3306);
+                $("#game_port").val(3306);
+                $(".pts_cached_data").addClass("d-none")
+            }
+
+            updateCollections(protocols);
+        }
+
+
         // Инициализация при загрузке страницы
         const initialProtocols = $('#version_client option:selected').data('protocol');
         if (initialProtocols) {
@@ -618,14 +666,14 @@
             password: $("#login_password").val(),
             name: name,
         }, true)
-            .then(function (response) {
-                responseAnalysis(response);
+              .then(function (response) {
+                  responseAnalysis(response);
 
-                console.log("Server response:", response);
+                  console.log("Server response:", response);
 
-                if (response && response.success === true) {
-                    // Формируем разметку с использованием response.id
-                    let newLoginDB = `
+                  if (response && response.success === true) {
+                      // Формируем разметку с использованием response.id
+                      let newLoginDB = `
                 <div class="form-check form-switch mb-2">
                     <input class="form-check-input" type="radio"
                            name="loginserver" value="${response.id}"
@@ -635,21 +683,21 @@
                     </label>
                 </div>`;
 
-                    // Убираем выбор с других радиокнопок
-                    $("#logindblist input[type='radio']").prop("checked", false);
+                      // Убираем выбор с других радиокнопок
+                      $("#logindblist input[type='radio']").prop("checked", false);
 
-                    // Добавляем новую разметку в div с id="logindblist"
-                    $("#logindblist").append(newLoginDB);
+                      // Добавляем новую разметку в div с id="logindblist"
+                      $("#logindblist").append(newLoginDB);
 
-                    // Ставим галочку для нового радио
-                    $(`#logindb_${response.id}`).prop("checked", true);
+                      // Ставим галочку для нового радио
+                      $(`#logindb_${response.id}`).prop("checked", true);
 
-                    $('#add_new_login_server_panel').collapse('hide')
-                }
-            })
-            .catch(function (error) {
-                console.error("Error during Ajax call:", error);
-            });
+                      $('#add_new_login_server_panel').collapse('hide')
+                  }
+              })
+              .catch(function (error) {
+                  console.error("Error during Ajax call:", error);
+              });
     });
 
     $("#add_new_game_server").on("click", function () {
@@ -663,14 +711,14 @@
             password: $("#game_password").val(),
             name: name,
         }, true)
-            .then(function (response) {
-                responseAnalysis(response);
+              .then(function (response) {
+                  responseAnalysis(response);
 
-                console.log("Server response:", response);
+                  console.log("Server response:", response);
 
-                if (response && response.success === true) {
-                    // Формируем разметку с использованием response.id
-                    let newGameDB = `
+                  if (response && response.success === true) {
+                      // Формируем разметку с использованием response.id
+                      let newGameDB = `
                 <div class="form-check form-switch mb-2">
                     <input class="form-check-input" type="radio"
                            name="gameserver" value="${response.id}"
@@ -680,21 +728,21 @@
                     </label>
                 </div>`;
 
-                    // Снимаем все галочки
-                    $("#gamedblist input[type='checkbox']").prop("checked", false);
+                      // Снимаем все галочки
+                      $("#gamedblist input[type='checkbox']").prop("checked", false);
 
-                    $("#gamedblist").append(newGameDB);
+                      $("#gamedblist").append(newGameDB);
 
-                    // Ставим галочку для нового чекбокса
-                    $(`#gamedb_${response.id}`).prop("checked", true);
+                      // Ставим галочку для нового чекбокса
+                      $(`#gamedb_${response.id}`).prop("checked", true);
 
-                    $('#add_new_game_server_panel').collapse('hide')
+                      $('#add_new_game_server_panel').collapse('hide')
 
-                }
-            })
-            .catch(function (error) {
-                console.error("Error during Ajax call:", error);
-            });
+                  }
+              })
+              .catch(function (error) {
+                  console.error("Error during Ajax call:", error);
+              });
     });
 
 
@@ -707,6 +755,7 @@
                 "port": $("#login_port").val(),
                 "user": $("#login_user").val(),
                 "password": $("#login_password").val(),
+                "platform": $("#platform").val(),
             },
             dataType: 'json',
             success: function (response) {
@@ -737,6 +786,7 @@
                 "port": $("#game_port").val(),
                 "user": $("#game_user").val(),
                 "password": $("#game_password").val(),
+                "platform": $("#platform").val(),
             },
             dataType: 'json',
             success: function (response) {

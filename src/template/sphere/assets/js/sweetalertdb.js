@@ -47,15 +47,30 @@ $(".connectionQualityCheck").on("click", function () {
                 return;
             }
 
-            const formatTime = (ms) => (ms / 1000000).toFixed(3) + ' мсек';
+            const formatTime = (ms) => Math.round(ms) + ' мсек';
+            const formatUptime = (sec) => {
+                const d = Math.floor(sec / 86400);
+                const h = Math.floor((sec % 86400) / 3600);
+                const m = Math.floor((sec % 3600) / 60);
+                return `${d}д ${h}ч ${m}м`;
+            };
 
-            // Формируем HTML-контент на основе данных JSON
             let responseHtml = `
-                <p><strong>Качество соединения:</strong> ${data.evaluate || 'Нет данных'}</p>
-                <p><strong>Время соединения:</strong> ${data.connectionTime ? formatTime(data.connectionTime) : 'Нет данных'}</p>
-                <p><strong>Время пинга:</strong> ${data.pingTime ? formatTime(data.pingTime) : 'Нет данных'}</p>
-                <p><strong>Время выполнения запроса:</strong> ${data.queryTime ? formatTime(data.queryTime) : 'Нет данных'}</p>
-            `;
+            <p><strong>Качество соединения:</strong> ${data.evaluate || 'Нет данных'}</p>
+            <p><strong>Время соединения:</strong> ${data.connectionTime !== undefined ? formatTime(data.connectionTime) : 'Нет данных'}</p>
+            <p><strong>Время пинга:</strong> ${data.pingTime !== undefined ? formatTime(data.pingTime) : 'Нет данных'}</p>
+            <p><strong>Время выполнения запроса:</strong> ${data.queryTime !== undefined ? formatTime(data.queryTime) : 'Нет данных'}</p>
+            <hr>
+            <p><strong>Платформа:</strong> ${data.platform || '—'}</p>
+            <p><strong>Имя БД:</strong> ${data.name || '—'}</p>
+            <p><strong>Тип БД:</strong> ${data.db_type || '—'}</p>
+            <p><strong>Версия:</strong><br><pre style="white-space:pre-wrap;">${data.db_version || '—'}</pre></p>
+            <p><strong>Хост:</strong> ${data.host || '—'}</p>
+            <p><strong>Порт:</strong> ${data.port || '—'}</p>
+            <hr>
+            <p><strong>Сессий:</strong> ${data.stats?.sessions ?? '—'}</p>
+            <p><strong>Аптайм:</strong> ${data.stats?.uptime_sec !== undefined ? formatUptime(data.stats.uptime_sec) : '—'}</p>
+        `;
 
             Swal.update({
                 html: responseHtml,
@@ -69,6 +84,7 @@ $(".connectionQualityCheck").on("click", function () {
             });
         }
     });
+
 });
 
 

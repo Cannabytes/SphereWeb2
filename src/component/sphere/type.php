@@ -20,6 +20,8 @@ enum type
     case SERVER_COLLECTIONS;
     //Соединение с базой данных
     case CONNECT_DB;
+    //Соединение с БД MSSQL
+    case CONNECT_DB_MSSQL;
     //Обновление базы данных
     case CONNECT_DB_UPDATE;
     //Добавление нового соединения с БД
@@ -77,6 +79,7 @@ enum type
     case CONNECTION_QUALITY_DATABASE;
     case PORT_QUALITY_DATABASE;
     case DONATE_STATISTIC;
+    case GET_CACHED;
 
     case GET_GAME_SERVERS; //DEPRECATED
     case GET_LOGIN_SERVERS; //DEPRECATED
@@ -113,7 +116,7 @@ enum type
 
     case GEO_IP;
 
-    static function url(type $type): string
+    public static function url(type $type): string
     {
         return match ($type) {
             self::SPHERE_INSTALL => '/api/admin/install',
@@ -126,9 +129,9 @@ enum type
             self::STARTPACK_TO_GAME => '/api/user/player/startpack/add',
             self::RELOCATION => '/api/user/player/relocation',
             self::DELETE_ACCOUNT => '/api/user/player/account/delete',
-
             self::SERVER_COLLECTIONS => '/api/server/collections',
             self::CONNECT_DB => '/api/server/mysql/connection',
+            self::CONNECT_DB_MSSQL => '/api/server/mssql/connection',
             self::CONNECT_DB_UPDATE => '/api/server/update/mysql',
             self::ADD_NEW_CONNECT_DB => '/api/server/add/db',
             self::ADD_NEW_SERVER => '/api/server/add',
@@ -140,7 +143,6 @@ enum type
             self::SERVER_LIST => '/api/server/list',
             self::SERVER_FULL_INFO => '/api/server/full/info',
             self::GAME_SERVER_REQUEST => '/api/server/request/mysql',
-
             self::GET_DATABASE_LIST => '/api/server/get/databases',
             self::DELETE_DATABASE => '/api/server/delete/db',
             self::CONNECTION_QUALITY_DATABASE => '/api/server/quality/db',
@@ -153,15 +155,12 @@ enum type
             self::LOAD_ACCOUNTS_PROGRESS => '/api/server/load/accounts/progress',
             self::GET_ERRORS => '/api/server/get/errors',
             self::CLEAR_ERRORS => '/api/server/errors/clear',
-
             self::DELETE_LOGINSERVER => '/api/server/delete/loginservers',
             self::UPDATE_LOGINSERVER => '/api/server/update/loginserver',
             self::UPDATE_GAMESERVER => '/api/server/update/gameserver',
-
             self::SYNCHRONIZATION => '/api/user/accounts/synchronization',
             self::SERVER_STATISTIC_ONLINE => '/api/server/statistic/online',
             self::SERVER_RECONNECT => '/api/server/reconnect',
-
             self::GAME_WHEEL_SAVE => '/api/game/wheel/save',
             self::GAME_WHEEL => '/api/game/wheel/start',
             self::GET_WHEEL_ITEMS => '/api/game/wheel/items',
@@ -169,40 +168,27 @@ enum type
             self::GAME_WHEEL_EDIT_NAME => '/api/game/wheel/edit/name',
             self::GAME_WHEEL_REMOVE => '/api/game/wheel/remove',
             self::GAME_WHEEL_PAY_ROULETTE => '/api/game/wheel/pay',
-
             self::RESET_HWID => '/api/user/player/reset/hwid',
-
             self::GET_COMMIT_LAST => '/api/github/last/commit',
             self::GET_COMMIT_FILES => '/api/github/commit/files',
-
             self::LAUNCHER_CREATE_TOKEN => '/api/launcher/create/token',
-
             self::SPHERE_DONATE => "/api/donate",
             self::DONATE_STATISTIC => "/api/statistic/server/donate",
-
             self::CREATE_SUPER_USER_EMAIL_CHECK => "/api/user/global/add/email/check",
             self::AUTH_SUPER_USER => "/api/user/global/auth",
             self::CHECK_SUPER_USER_EMAIL_CONFIRM => '/api/user/global/add/get/check',
-
             self::ERROR_REPORT => '/api/error/report',
-
             self::RENEW_LICENSE => '/api/license/renew',
-
             self::EXCHANGER => '/api/exchanger',
-
             self::SET_SERVER_ENABLED => '/api/server/set/enabled',
-
             self::ITEM_INCREASE_ADD => '/api/item/increase/add',
             self::ITEM_INCREASE_DELETE => '/api/item/increase/delete',
             self::ITEM_INCREASE_ITEMS => '/api/item/increase/items',
             self::ITEM_INCREASE_PAY => '/api/item/increase/pay',
-
             self::FILE_SCANNER => '/api/file/scanner',
-
             self::BUY_BALANCE_PACK => '/api/balance/buy/pack',
-
             self::GEO_IP => '/api/geo/ip',
-
+            self::GET_CACHED => '/api/server/get/cached',
             default => null,
         };
     }
