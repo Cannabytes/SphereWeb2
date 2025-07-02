@@ -29,12 +29,12 @@ class auth
         if (self::$userInfo != null) {
             return self::$userInfo;
         }
-        $sql      = 'SELECT users.*,  users_permission.* FROM users LEFT JOIN users_permission ON users.id = users_permission.user_id WHERE email = ?;';
+        $sql = 'SELECT users.*,  users_permission.* FROM users LEFT JOIN users_permission ON users.id = users_permission.user_id WHERE email = ?;';
         $userInfo = sql::run($sql, [$email])->fetch();
-        if ( ! $nCheck) {
+        if (!$nCheck) {
             return false;
         }
-        if ( ! $userInfo) {
+        if (!$userInfo) {
             return false;
         }
 
@@ -47,8 +47,8 @@ class auth
         if ($userMem = self::isUserInfoMemory($user_id)) {
             return $userMem;
         }
-        $sql                   = 'SELECT users.*,  users_permission.* FROM users LEFT JOIN users_permission ON users.id = users_permission.user_id WHERE id = ?;';
-        $userInfo              = sql::run($sql, [$user_id])->fetch();
+        $sql = 'SELECT users.*,  users_permission.* FROM users LEFT JOIN users_permission ON users.id = users_permission.user_id WHERE id = ?;';
+        $userInfo = sql::run($sql, [$user_id])->fetch();
         self::$usersMemArray[] = $userInfo;
 
         return $userInfo;
@@ -109,8 +109,22 @@ class auth
                 sql::run("ALTER TABLE `user_auth_log` ADD COLUMN `fingerprint` VARCHAR(255) NULL");
             }
 
+            // Проверяем наличие автоинкремента у поля id
+            if (isset($existingColumns['id'])) {
+                $idColumnInfo = null;
+                foreach ($columnsInfo as $column) {
+                    if ($column['Field'] === 'id') {
+                        $idColumnInfo = $column;
+                        break;
+                    }
+                }
+                // Если поле id не автоинкрементное, то меняем его
+                if ($idColumnInfo && stripos($idColumnInfo['Extra'], 'auto_increment') === false) {
+                    sql::run("ALTER TABLE `user_auth_log` MODIFY COLUMN `id` int NOT NULL AUTO_INCREMENT");
+                }
+            }
+
         } catch (Exception $e) {
-            // Если таблицы не существует (SQLSTATE[42S02]), создаем ее с новой структурой
             if ($e->getCode() === '42S02') {
                 sql::run("
                     CREATE TABLE `user_auth_log`  (
@@ -126,10 +140,9 @@ class auth
                       `fingerprint` varchar(255) NULL,
                       `date` datetime NULL DEFAULT NULL,
                       PRIMARY KEY (`id`)
-                    ) ENGINE = InnoDB;
+                    ) ENGINE = InnoDB AUTO_INCREMENT=1;
                 ");
             } else {
-                // В случае другой ошибки, можно ее записать в лог, чтобы не прерывать работу
                 error_log("Ошибка проверки таблицы user_auth_log: " . $e->getMessage());
             }
         }
@@ -141,24 +154,24 @@ class auth
         if (\Ofey\Logan22\model\user\user::getUserId()->isAuth()) {
             board::notice(false, lang::get_phrase(160));
         }
-        if ( ! isset($_POST['email']) or ! isset($_POST['password'])) {
+        if (!isset($_POST['email']) or !isset($_POST['password'])) {
             board::notice(false, lang::get_phrase(161));
         }
-        $email    = request::setting('email', new request_config(isEmail: true));
+        $email = request::setting('email', new request_config(isEmail: true));
         $email = trim($email);
         $password = request::setting('password', new request_config(max: 32));
         config::load()->captcha()->validator();
 
         $user_info = self::exist_user($email);
-        if ( ! $user_info) {
+        if (!$user_info) {
             board::notice(false, lang::get_phrase(164));
         }
-        if($user_info['password']=="GOOGLE"){
+        if ($user_info['password'] == "GOOGLE") {
             board::error("Войдите через Google");
         }
         if (password_verify($password, $user_info['password'])) {
             self::addAuthLog($user_info['id'], $_POST['fingerprint'] ?? null);
-            session::add('id', (int)$user_info['id']);
+            session::add('id', (int) $user_info['id']);
             session::add('email', $email);
             session::add('password', $password);
             board::response("notice", ["message" => lang::get_phrase(165), "ok" => true, "redirect" => "/main"]);
@@ -210,6 +223,7 @@ class auth
             $fingerprint,
             time::mysql()
         ]);
+
     }
 
     private static function getRealIP(): string
