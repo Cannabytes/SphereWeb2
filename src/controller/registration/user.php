@@ -70,13 +70,20 @@ class user
             board::response("notice", ["message" => lang::get_phrase(201, $email), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false,]);
         }
 
-        $account_name = registration::add($email, $password, $account_name);
+        $fingerprint = $_POST['fingerprint'] ?? null;
+        if (!preg_match('/^[a-zA-Z0-9]{20,64}$/', $fingerprint)) {
+            board::error("Invalid fingerprint");
+        }
+
+        $account_name = registration::add($email, $password, $account_name, $fingerprint);
         if (session::get("HTTP_REFERER")) {
             sql::run('INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)', [0, $_SESSION['id'], "HTTP_REFERER", session::get("HTTP_REFERER"),]);
         }
 
         \Ofey\Logan22\model\user\user::self()->setId($_SESSION['id']);
         \Ofey\Logan22\model\user\user::self()->addLog(logTypes::LOG_REGISTRATION_USER, "LOG_REGISTRATION_USER", [$email]);
+
+        auth::addAuthLog($_SESSION['id'], $fingerprint);
 
         $mailTemplate = mail::getTemplates();
 
