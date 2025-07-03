@@ -93,7 +93,7 @@ class tpl
     public static function template_design_route(): ?array
     {
         $fileRoute = $_SERVER['DOCUMENT_ROOT'] . "/template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName(
-            ) . "/route.php";
+        ) . "/route.php";
         if (file_exists($fileRoute)) {
             require_once $fileRoute;
             if (isset($pages)) {
@@ -113,7 +113,7 @@ class tpl
      */
     public static function getHTML(async $anyn)
     {
-        $twig     = self::preload($anyn->get_fileTpl());
+        $twig = self::preload($anyn->get_fileTpl());
         $template = $twig->load($anyn->get_fileTpl());
         foreach ($anyn->blocks as &$a) {
             $a['html'] = $template->renderBlock($a['html'], self::$allTplVars);
@@ -125,7 +125,7 @@ class tpl
     private static function preload(): Environment
     {
         self::$ajaxLoad = false;
-        if ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             self::$ajaxLoad = true;
         }
         $relativePath = str_replace($_SERVER['DOCUMENT_ROOT'], '', dirname($_SERVER["SCRIPT_FILENAME"]));
@@ -161,11 +161,33 @@ class tpl
         $twig = self::generalfunc($twig);
         $twig = self::user_var_func($twig);
 
+        // === КАСТОМНЫЕ ФУНКЦИИ TWIG ИЗ custom/tempfunc/ ===
+        $customFuncDir = fileSys::get_dir("/custom/tempfunc/");
+        if (is_dir($customFuncDir)) {
+            foreach (glob($customFuncDir . '*.php') as $funcFile) {
+                $funcDefs = include $funcFile;
+                if (is_array($funcDefs)) {
+                    // Если это одна функция (ассоциативный массив)
+                    if (isset($funcDefs['name'], $funcDefs['callback'])) {
+                        $twig->addFunction(new \Twig\TwigFunction($funcDefs['name'], $funcDefs['callback']));
+                    } else {
+                        // Если это массив функций
+                        foreach ($funcDefs as $funcDef) {
+                            if (is_array($funcDef) && isset($funcDef['name'], $funcDef['callback'])) {
+                                $twig->addFunction(new \Twig\TwigFunction($funcDef['name'], $funcDef['callback']));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // === КОНЕЦ КАСТОМНЫХ ФУНКЦИЙ ===
+
         //Ищем в плагинах все дополнительные функции, которые дополняют шаблоны
         $all_plugins_dir = fileSys::get_dir_files("/src/component/plugins", [
             'fetchAll' => true,
         ]);
-        $twigCustomFile  = "custom_twig.php";
+        $twigCustomFile = "custom_twig.php";
         foreach ($all_plugins_dir as $pluginDir) {
             $filePath = $pluginDir . '/' . $twigCustomFile;
             if (is_readable($filePath)) {
@@ -177,7 +199,7 @@ class tpl
                     $className = $namespace . "\\" . $className;
                     if (class_exists($className)) {
                         $customTwig = new $className();
-                        $methods    = get_class_methods($customTwig);
+                        $methods = get_class_methods($customTwig);
                         foreach ($methods as $method) {
                             if (is_callable([$customTwig, $method]) && (new ReflectionMethod($customTwig, $method))->isPublic()) {
                                 $twig->addFunction(new \Twig\TwigFunction($method, [$customTwig, $method]));
@@ -191,7 +213,7 @@ class tpl
         $all_plugins_dir = fileSys::get_dir_files("/custom/plugins", [
             'fetchAll' => true,
         ]);
-        $twigCustomFile  = "custom_twig.php";
+        $twigCustomFile = "custom_twig.php";
         foreach ($all_plugins_dir as $pluginDir) {
             $filePath = $pluginDir . '/' . $twigCustomFile;
             if (is_readable($filePath)) {
@@ -203,7 +225,7 @@ class tpl
                     $className = $namespace . "\\" . $className;
                     if (class_exists($className)) {
                         $customTwig = new $className();
-                        $methods    = get_class_methods($customTwig);
+                        $methods = get_class_methods($customTwig);
                         foreach ($methods as $method) {
                             if (is_callable([$customTwig, $method]) && (new ReflectionMethod($customTwig, $method))->isPublic()) {
                                 $twig->addFunction(new \Twig\TwigFunction($method, [$customTwig, $method]));
@@ -214,13 +236,13 @@ class tpl
             }
         }
 
-        self::$allTplVars['dir']       = fileSys::localdir();
-//        $self                          = url::host() . $relativePath . self::$templatePath;
-        $self                          = self::$templatePath;
+        self::$allTplVars['dir'] = fileSys::localdir();
+        //        $self                          = url::host() . $relativePath . self::$templatePath;
+        $self = self::$templatePath;
 
-        self::$allTplVars['protocol']  = url::scheme();
-        self::$allTplVars['path']      = $relativePath;
-        self::$allTplVars['template']  = $self;
+        self::$allTplVars['protocol'] = url::scheme();
+        self::$allTplVars['path'] = $relativePath;
+        self::$allTplVars['template'] = $self;
         self::$allTplVars['pointTime'] = microtime::pointTime();
 
         return $twig;
@@ -231,10 +253,10 @@ class tpl
      */
     public static function lang_template_load($tpl)
     {
-        if ( ! is_dir(dirname($tpl))) {
+        if (!is_dir(dirname($tpl))) {
             return;
         }
-        if ( ! file_exists($tpl)) {
+        if (!file_exists($tpl)) {
             return;
         }
         \Ofey\Logan22\controller\config\config::load()->lang()->load_template_lang_packet($tpl);
@@ -310,8 +332,8 @@ class tpl
 
         $twig->addFunction(new TwigFunction('get_plugins_include', function ($includeName) {
             if (empty(self::$pluginsAllCustomAndComponents)) {
-                $pluginsAllCustom                    = self::processPluginsDir("custom/plugins/");
-                $pluginsAllComponents                = self::processPluginsDir("src/component/plugins/");
+                $pluginsAllCustom = self::processPluginsDir("custom/plugins/");
+                $pluginsAllComponents = self::processPluginsDir("src/component/plugins/");
                 self::$pluginsAllCustomAndComponents = array_merge($pluginsAllCustom, $pluginsAllComponents);
             }
 
@@ -329,7 +351,7 @@ class tpl
 
             // Сортируем плагины с полем SORT по возрастанию
             usort($pluginsWithSort, function ($a, $b) {
-                return  $b['SORT'] <=> $a['SORT'] ;
+                return $b['SORT'] <=> $a['SORT'];
             });
 
             // Объединяем массивы: сначала отсортированные, затем остальные
@@ -362,9 +384,9 @@ class tpl
 
         $twig->addFunction(new TwigFunction('isAjaxRequest', function () {
             if (self::$isAjax === null) {
-                self::$isAjax = ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(
-                        $_SERVER['HTTP_X_REQUESTED_WITH']
-                    ) == 'xmlhttprequest');
+                self::$isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(
+                    $_SERVER['HTTP_X_REQUESTED_WITH']
+                ) == 'xmlhttprequest');
             }
 
             return self::$isAjax;
@@ -474,8 +496,8 @@ class tpl
 
 
         $twig->addFunction(new TwigFunction('get_donate_paysystem', function ($getSystem = null) {
-            if(self::$donateSysCache){
-                if($getSystem != null){
+            if (self::$donateSysCache) {
+                if ($getSystem != null) {
                     return self::$donateSysCache[$getSystem] ?? null;
                 }
                 return self::$donateSysCache;
@@ -492,7 +514,7 @@ class tpl
                     self::$donateSysCache[$system] = $sn;
                 }
             }
-            if($getSystem != null){
+            if ($getSystem != null) {
                 return self::$donateSysCache[$getSystem] ?? null;
             }
             return self::$donateSysCache;
@@ -514,7 +536,7 @@ class tpl
                 'crypto' => 3 // Crypto - четвертая
             ];
 
-            usort($uniqueCountries, function($a, $b) use ($countryOrder) {
+            usort($uniqueCountries, function ($a, $b) use ($countryOrder) {
                 $orderA = $countryOrder[$a] ?? 999;
                 $orderB = $countryOrder[$b] ?? 999;
                 return $orderA - $orderB;
@@ -583,15 +605,15 @@ class tpl
         $twig->addFunction(new TwigFunction('formatFloatToHuman', function ($value) {
             // Сначала удостоверимся, что у нас есть число
             if (!is_numeric($value)) {
-                return (string)$value;
+                return (string) $value;
             }
 
             // Приводим к float
-            $floatValue = (float)$value;
+            $floatValue = (float) $value;
 
             // Если у числа нет дробной части (7.0 == 7)
             if (floor($floatValue) == $floatValue) {
-                return (string)(int)$floatValue;
+                return (string) (int) $floatValue;
             }
 
             // Если дробная часть есть, аккуратно преобразуем в строку
@@ -610,38 +632,38 @@ class tpl
         $twig->addFunction(new TwigFunction("ss", function ($data) {
             // Определение базового типа данных
             $typeDescription = gettype($data);
-            $output          = "<div class='modal fade' id='myModal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>";
-            $output          .= "<div class='modal-dialog modal-xl' role='document'>";
-            $output          .= "<div class='modal-content'>";
-            $output          .= "<div class='modal-header'>";
-            $output          .= "<h5 class='modal-title' id='myModalLabel'>Тип данных: $typeDescription</h5>";
-            $output          .= "<button type='button' class='close' data-dismiss='modal' aria-label='Close'>";
-            $output          .= "<span aria-hidden='true'>&times;</span>";
-            $output          .= "</button>";
-            $output          .= "</div>"; // Закрытие modal-header
-            $output          .= "<div class='modal-body'>";
+            $output = "<div class='modal fade' id='myModal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>";
+            $output .= "<div class='modal-dialog modal-xl' role='document'>";
+            $output .= "<div class='modal-content'>";
+            $output .= "<div class='modal-header'>";
+            $output .= "<h5 class='modal-title' id='myModalLabel'>Тип данных: $typeDescription</h5>";
+            $output .= "<button type='button' class='close' data-dismiss='modal' aria-label='Close'>";
+            $output .= "<span aria-hidden='true'>&times;</span>";
+            $output .= "</button>";
+            $output .= "</div>"; // Закрытие modal-header
+            $output .= "<div class='modal-body'>";
 
             if (is_object($data)) {
                 // Это объект
                 $typeDescription = 'Объект класса: ' . get_class($data);
-                $reflection      = new ReflectionClass($data);
-                $methods         = $reflection->getMethods();
-                $output          .= "<table class='table'>";
-                $output          .= "<thead><tr><th>Метод</th><th>Видимость</th><th>Статичный</th><th>Возвращаемый тип</th><th>Комментарий</th></tr></thead>";
-                $output          .= "<tbody>";
+                $reflection = new ReflectionClass($data);
+                $methods = $reflection->getMethods();
+                $output .= "<table class='table'>";
+                $output .= "<thead><tr><th>Метод</th><th>Видимость</th><th>Статичный</th><th>Возвращаемый тип</th><th>Комментарий</th></tr></thead>";
+                $output .= "<tbody>";
                 foreach ($methods as $method) {
-                    $returnType     = $method->getReturnType();
+                    $returnType = $method->getReturnType();
                     $returnTypeText = $returnType ?: 'void';
-                    $docComment     = $method->getDocComment();
-                    $docComment     = htmlspecialchars($docComment); // Экранирование специальных символов
-                    $output         .= "<tr>";
-                    $output         .= "<td>" . $method->name . "</td>";
-                    $output         .= "<td>" . ($method->isPublic() ? "<span class='text-success'>public</span>" : ($method->isProtected(
-                        ) ? "protected" : "<span class='text-danger'>private</span>")) . "</td>";
-                    $output         .= "<td>" . ($method->isStatic() ? "да" : "нет") . "</td>";
-                    $output         .= "<td>" . $returnTypeText . "</td>";
-                    $output         .= "<td>" . ($docComment ?: "Нет комментария") . "</td>";
-                    $output         .= "</tr>";
+                    $docComment = $method->getDocComment();
+                    $docComment = htmlspecialchars($docComment); // Экранирование специальных символов
+                    $output .= "<tr>";
+                    $output .= "<td>" . $method->name . "</td>";
+                    $output .= "<td>" . ($method->isPublic() ? "<span class='text-success'>public</span>" : ($method->isProtected(
+                    ) ? "protected" : "<span class='text-danger'>private</span>")) . "</td>";
+                    $output .= "<td>" . ($method->isStatic() ? "да" : "нет") . "</td>";
+                    $output .= "<td>" . $returnTypeText . "</td>";
+                    $output .= "<td>" . ($docComment ?: "Нет комментария") . "</td>";
+                    $output .= "</tr>";
                 }
                 $output .= "</tbody></table>";
             } else {
@@ -689,11 +711,11 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('formatSeconds', function ($secs = 0) {
-            if ( ! is_numeric($secs)) {
+            if (!is_numeric($secs)) {
                 return 'Некорректное значение';
             }
 
-            $lang         = \Ofey\Logan22\controller\config\config::load()->lang()->lang_user_default() == "ru" ? 0 : 1;
+            $lang = \Ofey\Logan22\controller\config\config::load()->lang()->lang_user_default() == "ru" ? 0 : 1;
             $times_values = [
                 ['сек.', 'sec.'],
                 ['мин.', 'min.'],
@@ -702,7 +724,7 @@ class tpl
                 ['мес.', 'm.'],
                 ['лет', 'y.'],
             ];
-            $divisors     = [1, 60, 3600, 86400, 2592000, 31104000];
+            $divisors = [1, 60, 3600, 86400, 2592000, 31104000];
             for ($pow = count($divisors) - 1; $pow >= 0; $pow--) {
                 if ($secs >= $divisors[$pow]) {
                     $time = $secs / $divisors[$pow];
@@ -729,7 +751,7 @@ class tpl
 
         //Обрезаем число до 10 символов (на некоторых сборках в микротайме хранится время) и выводим в формате времени
         $twig->addFunction(new TwigFunction('unitToDate', function ($var) {
-            return date("H:i d.m.Y", (int)substr($var, 0, 10));
+            return date("H:i d.m.Y", (int) substr($var, 0, 10));
         }));
 
         $twig->addFunction(new TwigFunction('get_chronicles_by_protocol', function ($protocol) {
@@ -740,7 +762,7 @@ class tpl
             return $v == 0 ? 'male' : 'female';
         }));
         $twig->addFunction(new TwigFunction('MobileDetect', function () {
-            if ( ! isset($_SERVER["HTTP_USER_AGENT"])) {
+            if (!isset($_SERVER["HTTP_USER_AGENT"])) {
                 return false;
             }
 
@@ -753,13 +775,13 @@ class tpl
 
         $twig->addFunction(new TwigFunction('get_youtube_id', function ($link) {
             $video_id = explode("?v=", $link);
-            if ( ! isset($video_id[1])) {
+            if (!isset($video_id[1])) {
                 $video_id = explode("youtu.be/", $link);
             }
             if (empty($video_id[1])) {
                 $video_id = explode("/v/", $link);
             }
-            $video_id       = explode("&", $video_id[1]);
+            $video_id = explode("&", $video_id[1]);
             $youtubeVideoID = $video_id[0];
             if ($youtubeVideoID) {
                 return $youtubeVideoID;
@@ -769,7 +791,7 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('getServer', function ($id = null) {
-            if($id==null){
+            if ($id == null) {
                 $id = user::self()->getServerId();
             }
             return server::getServer($id);
@@ -842,7 +864,7 @@ class tpl
             return (sprintf("/uploads/avatar/%s", $img));
         }));
 
-        $twig->addFunction(new TwigFunction('get_support_thread_name', function ($thread_id){
+        $twig->addFunction(new TwigFunction('get_support_thread_name', function ($thread_id) {
             return support::getSection($thread_id);
         }));
 
@@ -908,7 +930,7 @@ class tpl
 
         $twig->addFunction(new TwigFunction('grade_img', function ($crystal_type): string {
             $grade_img = '';
-            $dirGrade  = ("/uploads/images/grade");
+            $dirGrade = ("/uploads/images/grade");
             switch ($crystal_type) {
                 case 'd':
                     $grade_img = "<img src='{$dirGrade}/d.png' style='width:20px'>";
@@ -945,7 +967,7 @@ class tpl
         $twig->addFunction(new TwigFunction('generation_words_password', function ($count = 10): array {
             $words = [];
             for ($i = 0; $i < $count; $i++) {
-                $word    = generation::word();
+                $word = generation::word();
                 $mt_rand = mt_rand(0, mt_rand(100, 999));
                 $words[] = $word . $mt_rand;
             }
@@ -962,12 +984,12 @@ class tpl
             return stream::getStreams();
         }));
 
-        $twig->addFunction(new TwigFunction('stream_get_platform' , function ($link) {
+        $twig->addFunction(new TwigFunction('stream_get_platform', function ($link) {
             return stream::stream_get_platform($link);
         }));
 
         //Deprecated 04.10.2024
-        $twig->addFunction(new TwigFunction('stream_link_rev', function ($link){
+        $twig->addFunction(new TwigFunction('stream_link_rev', function ($link) {
             return stream::getSrc($link);
         }));
 
@@ -1091,9 +1113,9 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('classColorMenu', function () {
-            if(config::load()->menu()->isNeonEffects()) {
+            if (config::load()->menu()->isNeonEffects()) {
                 $color = config::load()->menu()->getMenuStyle();
-                return "glow-element glow-{$color}" ;
+                return "glow-element glow-{$color}";
             }
             return "";
         }));
@@ -1121,12 +1143,12 @@ class tpl
 
         $twig->addFunction(new TwigFunction('news_poster', function ($image, $full = false) {
             $uploadsPath = "uploads/images/news/";
-            if ( ! $full) {
+            if (!$full) {
                 $image = "thumb_" . $image;
             }
-            $imagePath     = $uploadsPath . $image;
+            $imagePath = $uploadsPath . $image;
             $fullImagePath = ($imagePath);
-            if ( ! file_exists(fileSys::getSubDir() . $fullImagePath)) {
+            if (!file_exists(fileSys::getSubDir() . $fullImagePath)) {
                 return ("/src/template/sphere/assets/images/logo_news_d.jpg");
             }
 
@@ -1136,16 +1158,18 @@ class tpl
         $twig->addFunction(new TwigFunction('all_phrase', function () {
             $languages = fileSys::get_dir_files("/data/languages", [
                 'basename' => true,
-                'sort'     => false,
+                'sort' => false,
                 'fetchAll' => true,
             ]);
 
-            $languages = array_map(function ($item) {
-                return preg_replace('/\.php$/', '', $item);
-            },
+            $languages = array_map(
+                function ($item) {
+                    return preg_replace('/\.php$/', '', $item);
+                },
                 array_filter($languages, function ($item) {
                     return str_ends_with($item, '.php');
-                }));
+                })
+            );
 
             $combinedArray = [];
             foreach ($languages as $language) {
@@ -1158,7 +1182,7 @@ class tpl
             // Добавляем пустые строки для отсутствующих языковых значений
             foreach ($combinedArray as $key => $phrases) {
                 foreach ($languages as $language) {
-                    if ( ! array_key_exists($language, $phrases)) {
+                    if (!array_key_exists($language, $phrases)) {
                         $combinedArray[$key][$language] = ""; // Добавляем пустую строку
                     }
                 }
@@ -1172,10 +1196,10 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('all_phrase_custom', function () {
-            $languages     = fileSys::get_dir_files("/data/languages/custom", [
+            $languages = fileSys::get_dir_files("/data/languages/custom", [
                 'basename' => true,
-                'suffix'   => '.php',
-                'sort'     => false,
+                'suffix' => '.php',
+                'sort' => false,
                 'fetchAll' => true,
             ]);
             $combinedArray = [];
@@ -1188,7 +1212,7 @@ class tpl
 
             foreach ($combinedArray as $key => $phrases) {
                 foreach ($languages as $language) {
-                    if ( ! array_key_exists($language, $phrases)) {
+                    if (!array_key_exists($language, $phrases)) {
                         $combinedArray[$key][$language] = "";
                     }
                 }
@@ -1271,7 +1295,7 @@ class tpl
 
         //Кол-во завершенных и не завершенных рефералов
         $twig->addFunction(new TwigFunction('referral_count', function ($referrals) {
-            if ( ! is_array($referrals)) {
+            if (!is_array($referrals)) {
                 throw new InvalidArgumentException('Argument must be an array.');
             }
 
@@ -1293,14 +1317,14 @@ class tpl
                 return [
                     'completed' => 0,
                     'continues' => 0,
-                    'made'      => 0,
+                    'made' => 0,
                 ];
             }
 
             return [
                 'completed' => $completedCount,
                 'continues' => $totalCount - $completedCount,
-                'made'      => $completedCount / $totalCount * 100,
+                'made' => $completedCount / $totalCount * 100,
             ];
         }));
 
@@ -1340,7 +1364,7 @@ class tpl
 
         $twig->addFunction(new TwigFunction('referral_link', function () {
             $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https://' : 'http://';
-            $name   = user::self()->getName() ?: user::self()->getId();
+            $name = user::self()->getName() ?: user::self()->getId();
 
             return $scheme . $_SERVER['HTTP_HOST'] . "/signup/" . mb_strtolower($name);
         }));
@@ -1366,7 +1390,7 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('action', function ($name, array $params = []) {
-            if ( ! empty($params)) {
+            if (!empty($params)) {
                 return action::get($name, ...$params);
             } else {
                 return action::get($name);
@@ -1383,7 +1407,7 @@ class tpl
 
         $twig->addFunction(new TwigFunction("getDirPlugin", function ($setting) {
             $ads = "/src/component/plugins/";
-            if($setting['isCustom']){
+            if ($setting['isCustom']) {
                 $ads = "/custom/plugins/";
             }
             return $ads . $setting['PLUGIN_DIR_NAME'];
@@ -1410,7 +1434,7 @@ class tpl
                 $pluginsPath = "custom/plugins";
             }
             $pluginPath = "{$pluginsPath}/{$plugin_name}/{$config}";
-            $plugins    = fileSys::dir_list($pluginsPath);
+            $plugins = fileSys::dir_list($pluginsPath);
             if (in_array($plugin_name, $plugins)) {
                 $configFile = ($pluginPath);
                 if (file_exists($configFile)) {
@@ -1433,7 +1457,7 @@ class tpl
                 continue;
             }
             $settingsPath = fileSys::get_dir("$dir/$value/settings.php");
-            if ( ! file_exists($settingsPath)) {
+            if (!file_exists($settingsPath)) {
                 unset($pluginsDir[$key]);
                 continue;
             }
@@ -1449,7 +1473,7 @@ class tpl
                 $setting['isCustom'] = false;
             }
             self::$pluginNames[] = $value;
-            $pluginsAll[$key]    = $setting;
+            $pluginsAll[$key] = $setting;
         }
 
         return $pluginsAll;
@@ -1458,8 +1482,8 @@ class tpl
     public static function pluginsAll(): array
     {
         if (empty(self::$pluginsAllCustomAndComponents)) {
-            $pluginsAllCustom                    = self::processPluginsDir("custom/plugins/");
-            $pluginsAllComponents                = self::processPluginsDir("src/component/plugins/");
+            $pluginsAllCustom = self::processPluginsDir("custom/plugins/");
+            $pluginsAllComponents = self::processPluginsDir("src/component/plugins/");
             self::$pluginsAllCustomAndComponents = array_merge($pluginsAllCustom, $pluginsAllComponents);
         }
 
@@ -1482,10 +1506,12 @@ class tpl
     public static function displayDemo(string $template)
     {
         self::$categoryCabinet = true;
-        if (file_exists(
-            ("template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/object.php")
-        )) {
-            $additionalVars = require (
+        if (
+            file_exists(
+                ("template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/object.php")
+            )
+        ) {
+            $additionalVars = require(
                 "template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/object.php"
             );
             if (is_array($additionalVars)) {
@@ -1495,15 +1521,16 @@ class tpl
         self::display($template);
     }
 
-    static function customizeFilePath(string $filePath, bool $relativePath = false): string {
+    static function customizeFilePath(string $filePath, bool $relativePath = false): string
+    {
         $pathInfo = pathinfo($filePath);
         if (!isset($pathInfo['dirname'], $pathInfo['filename'], $pathInfo['extension'])) {
             return $filePath;
         }
         $customFileName = 'custom_' . $pathInfo['filename'] . '.' . $pathInfo['extension'];
-        if($relativePath) {
+        if ($relativePath) {
             return ltrim(self::$templatePath . $pathInfo['dirname'], "/") . '/' . $customFileName;
-        }else{
+        } else {
             return ltrim($pathInfo['dirname'], '/') . '/' . $customFileName;
         }
     }
@@ -1517,7 +1544,8 @@ class tpl
      * @param string $tplName Имя шаблона, который вызвал ошибку
      * @return void
      */
-    private static function handleTwigError(Exception $e, $tplName) {
+    private static function handleTwigError(Exception $e, $tplName)
+    {
         // Определяем тип ошибки
         $errorType = get_class($e);
 
@@ -1580,7 +1608,8 @@ class tpl
      * @param array $templateVars Переменные шаблона
      * @return array Дополнительная информация о контексте ошибки
      */
-    private static function analyzeErrorContext(Exception $e, $tplName, $templateVars) {
+    private static function analyzeErrorContext(Exception $e, $tplName, $templateVars)
+    {
         $contextInfo = [
             'functionCalls' => [],
             'relatedVariables' => [],
@@ -1591,8 +1620,8 @@ class tpl
 
         // Анализ ошибок связанных с неверным количеством аргументов
         if (preg_match('/The arguments array must contain (\d+) items, (\d+) given/', $errorMessage, $matches)) {
-            $requiredArgs = (int)$matches[1];
-            $givenArgs = (int)$matches[2];
+            $requiredArgs = (int) $matches[1];
+            $givenArgs = (int) $matches[2];
 
             $contextInfo['argumentError'] = [
                 'required' => $requiredArgs,
@@ -1682,7 +1711,8 @@ class tpl
      * @param string $tplName Имя шаблона
      * @return string Содержимое шаблона или сообщение об ошибке
      */
-    private static function getTemplateContent($tplName) {
+    private static function getTemplateContent($tplName)
+    {
         $twig = self::preload();
 
         try {
@@ -1722,7 +1752,8 @@ class tpl
      * @param string $code Код шаблона
      * @return string Отформатированный HTML
      */
-    private static function formatTemplateCode($code) {
+    private static function formatTemplateCode($code)
+    {
         // Подсветка синтаксиса Twig
         $code = htmlspecialchars($code);
 
@@ -1754,7 +1785,8 @@ class tpl
      * @param array $vars Переменные шаблона
      * @return string Отформатированный HTML
      */
-    private static function formatTemplateVars($vars) {
+    private static function formatTemplateVars($vars)
+    {
         $html = '<dl class="var-list">';
 
         foreach ($vars as $name => $value) {
@@ -1778,7 +1810,8 @@ class tpl
      * @param int $depth Текущая глубина вложенности
      * @return string Описание значения
      */
-    private static function formatVarDescription($value, $depth = 0) {
+    private static function formatVarDescription($value, $depth = 0)
+    {
         $maxDepth = 2; // Максимальная глубина для вложенных структур
 
         if ($depth > $maxDepth) {
@@ -1897,7 +1930,8 @@ class tpl
      * @param int $context Количество строк контекста до и после ошибки
      * @return string HTML код с предварительным просмотром
      */
-    private static function getCodePreview($filePath, $errorLine, $context = 5) {
+    private static function getCodePreview($filePath, $errorLine, $context = 5)
+    {
         if (!file_exists($filePath) || !is_readable($filePath)) {
             return '<p>Файл не найден или не доступен для чтения.</p>';
         }
@@ -1929,7 +1963,8 @@ class tpl
      * @param Exception $e Объект исключения
      * @return string HTML код со стеком вызовов
      */
-    private static function getFormattedStackTrace(Exception $e) {
+    private static function getFormattedStackTrace(Exception $e)
+    {
         $trace = $e->getTrace();
         $html = '';
 
@@ -1953,7 +1988,7 @@ class tpl
 
             // Аргументы
             if (isset($frame['args']) && is_array($frame['args'])) {
-                $args = array_map(function($arg) {
+                $args = array_map(function ($arg) {
                     if (is_object($arg)) {
                         return 'Object(' . get_class($arg) . ')';
                     } elseif (is_array($arg)) {
@@ -1984,7 +2019,8 @@ class tpl
      *
      * @return array Информация о функциях Twig
      */
-    private static function analyzeTwigFunctions() {
+    private static function analyzeTwigFunctions()
+    {
         $functions = [];
 
         // Пытаемся найти определение функции phrase()
@@ -2023,7 +2059,8 @@ class tpl
      *
      * @return array Список имен функций
      */
-    private static function getAvailableTwigFunctions() {
+    private static function getAvailableTwigFunctions()
+    {
         $functions = [];
 
         // Пытаемся получить список из экземпляра Twig
@@ -2055,9 +2092,21 @@ class tpl
         } catch (Exception $e) {
             // В случае ошибки возвращаем базовый список функций Twig
             $functions = [
-                'block', 'constant', 'cycle', 'date', 'dump', 'include',
-                'max', 'min', 'parent', 'random', 'range', 'source',
-                'template_from_string', 'phrase', 'logTypes'
+                'block',
+                'constant',
+                'cycle',
+                'date',
+                'dump',
+                'include',
+                'max',
+                'min',
+                'parent',
+                'random',
+                'range',
+                'source',
+                'template_from_string',
+                'phrase',
+                'logTypes'
             ];
         }
 
@@ -2073,7 +2122,8 @@ class tpl
      * @param array $contextInfo Дополнительная информация о контексте
      * @return void
      */
-    private static function renderFallbackErrorPage(Exception $originalException, $tplName, ?Exception $renderException = null, array $contextInfo = []) {
+    private static function renderFallbackErrorPage(Exception $originalException, $tplName, ?Exception $renderException = null, array $contextInfo = [])
+    {
         $html = '<!DOCTYPE html>
     <html>
     <head>
@@ -2155,7 +2205,8 @@ class tpl
      * @param string $tplName Имя шаблона для отображения
      * @return void
      */
-    public static function display($tplName) {
+    public static function display($tplName)
+    {
         // Проверка, есть ли кастомный файл вместо стандартного
         if (file_exists(self::customizeFilePath($tplName, true))) {
             $tplName = self::customizeFilePath($tplName, false);
@@ -2168,7 +2219,7 @@ class tpl
             if (self::$ajaxLoad) {
                 $template = $twig->load($tplName);
                 if ($template->hasBlock("content")) {
-                    $html  = $template->renderBlock("content", self::$allTplVars);
+                    $html = $template->renderBlock("content", self::$allTplVars);
                     $title = $template->hasBlock("title") ? $template->renderBlock("title") : null;
                     board::html($html, $title);
                 } else {
@@ -2194,9 +2245,10 @@ class tpl
         if (isset($parts[0]) && $parts[0] !== '') {
             $pluginDirName = $parts[0];
         } else {
-            echo "Первая папка не найдена.";exit;
+            echo "Первая папка не найдена.";
+            exit;
         }
-        $plugin_type   = Route::get_plugin_type($pluginDirName);
+        $plugin_type = Route::get_plugin_type($pluginDirName);
         if ($plugin_type == "component") {
             self::addVar("template_plugin", ("/src/component/plugins/{$pluginDirName}"));
         } elseif ("custom") {
@@ -2205,8 +2257,8 @@ class tpl
         $twig = self::preload($tplName);
         if (self::$ajaxLoad) {
             $template = $twig->load($tplName);
-            $html     = $template->renderBlock("content", self::$allTplVars);
-            $title    = $template->renderBlock("title");
+            $html = $template->renderBlock("content", self::$allTplVars);
+            $title = $template->renderBlock("title");
             board::html($html, $title);
         } else {
             $template = $twig->load($tplName);
@@ -2234,7 +2286,7 @@ class tpl
     {
         $plugins = fileSys::dir_list($pl_dir);
         foreach ($plugins as $key => $value) {
-            if ( ! file_exists(fileSys::dir_list("{$pl_dir}/$value/settings.php"))) {
+            if (!file_exists(fileSys::dir_list("{$pl_dir}/$value/settings.php"))) {
                 unset($plugins[$key]);
             }
         }
@@ -2246,7 +2298,7 @@ class tpl
                     continue;
                 }
             }
-            if ( ! isset($setting['INCLUDES'])) {
+            if (!isset($setting['INCLUDES'])) {
                 unset($plugins[$key]);
                 continue;
             }

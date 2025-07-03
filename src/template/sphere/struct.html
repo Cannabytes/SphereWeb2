@@ -1,9 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr"
-      {% for key, value in config().palette().getAll() %}
-      {{key}}="{{value}}"
-      {% endfor %}
->
+<html lang="en" dir="ltr" {% for key, value in config().palette().getAll() %} {{key}}="{{value}}" {% endfor %}>
+
 <head>
 
   <!-- Meta Data -->
@@ -21,15 +18,18 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="{{ config().other().getAllTitlePage() }}">
 
-  {{ config().logo().favicon()  }}
+  {{ config().logo().favicon() }}
 
   {% if config().other().isL2Cursor() %}
   <style>
     body {
-      cursor: url('{{template}}/assets/cursor/lineage2/default.cur'), auto;
+      cursor: url('{{template}}/assets/cursor/lineage2/default.cur'),
+      auto;
     }
+
     a:hover {
-      cursor: url('{{template}}/assets/cursor/lineage2/link.cur'), pointer;
+      cursor: url('{{template}}/assets/cursor/lineage2/link.cur'),
+      pointer;
     }
   </style>
   {% endif %}
@@ -67,7 +67,6 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
   <style>
-
     /* Скрыть кнопку вызова меню на экранах больше 992px */
     @media (min-width: 992px) {
       .sidemenu-toggle {
@@ -81,72 +80,70 @@
         display: block !important;
       }
     }
-
-
   </style>
 
 </head>
 
 <body>
 
-{{ include('modals.html') }}
+  {{ include('modals.html') }}
 
+  <div class="page">
+    <!-- app-header -->
+    {{ include('header.html') }}
 
-<div class="page">
-  <!-- app-header -->
-  {{ include('header.html') }}
+    <!-- Start::app-sidebar -->
+    {{ include('sidebar.html') }}
 
-  <!-- Start::app-sidebar -->
-  {{ include('sidebar.html') }}
+    <!-- Start::app-content -->
+    <div class="main-content app-content">
+      {% block content %}{% endblock %}
+    </div>
+    <!-- End::app-content -->
 
-  <!-- Start::app-content -->
-  <div class="main-content app-content">
-    {% block content %}{% endblock %}
   </div>
-  <!-- End::app-content -->
-
-</div>
 
 
-<!-- Scroll To Top -->
-<div class="scrollToTop">
-  <span class="arrow"><i class="ri-arrow-up-s-fill fs-20"></i></span>
-</div>
-<div id="responsive-overlay"></div>
+  <!-- Scroll To Top -->
+  <div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill fs-20"></i></span>
+  </div>
+  <div id="responsive-overlay"></div>
 
-{{ include('notice_toast.html') }}
+  {{ include('notice_toast.html') }}
 
-{{ include('struct_js.html') }}
+  {{ include('struct_js.html') }}
 
 
-<script>
-  var currentPath = window.location.pathname;
-  // Перебираем все ссылки в меню
-  $('.side-menu__item').each(function () {
-    var $this = $(this); // Текущий элемент в цикле
-    var href = $this.attr('href');
+  <script>
+    var currentPath = window.location.pathname;
+    // Перебираем все ссылки в меню
+    $('.side-menu__item').each(function () {
+      var $this = $(this); // Текущий элемент в цикле
+      var href = $this.attr('href');
 
-    // Определяем, нужно ли подсветить текущую ссылку
-    var isActive = (href === currentPath) ||
-          (href === '/' && currentPath === '/') ||
-          (href !== '/' && href !== 'javascript:void(0);' && currentPath.startsWith(href));
+      // Определяем, нужно ли подсветить текущую ссылку
+      var isActive = (href === currentPath) ||
+        (href === '/' && currentPath === '/') ||
+        (href !== '/' && href !== 'javascript:void(0);' && currentPath.startsWith(href));
 
-    // Если ссылка активна, применяем стили
-    if (isActive) {
-      // Добавляем класс text-success для выделения
-      $this.addClass('text-success');
+      // Если ссылка активна, применяем стили
+      if (isActive) {
+        // Добавляем класс text-success для выделения
+        $this.addClass('text-success');
 
-      // Проходим через все родительские элементы и открываем их
-      $this.parentsUntil('.side-menu', '.slide-menu').show();
-      $this.parentsUntil('.side-menu', '.has-sub').each(function () {
-        $(this).children('.side-menu__item').find('.fe-chevron-right')
-              .removeClass('fe-chevron-right')
-              .addClass('fe-chevron-down');
-      });
-    }
-  });
-</script>
-{% block js %}{% endblock %}
-<!-- Load: {{pointTime}} sec. / Query count: {{get_db_count_request()}} / Sphere Api Request: {{get_sphere_api_count_request()}} -->
+        // Проходим через все родительские элементы и открываем их
+        $this.parentsUntil('.side-menu', '.slide-menu').show();
+        $this.parentsUntil('.side-menu', '.has-sub').each(function () {
+          $(this).children('.side-menu__item').find('.fe-chevron-right')
+            .removeClass('fe-chevron-right')
+            .addClass('fe-chevron-down');
+        });
+      }
+    });
+  </script>
+  {% block js %}{% endblock %}
+  <!-- Load: {{pointTime}} sec. / Query count: {{get_db_count_request()}} / Sphere Api Request: {{get_sphere_api_count_request()}} -->
 </body>
+
 </html>
