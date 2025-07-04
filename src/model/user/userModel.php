@@ -1538,13 +1538,6 @@ class userModel
             session::add("lang", $lang);
         }
         if ($this->isAuth) {
-            try {
-                $lang = sql::getRow("SELECT `lang` FROM `users` WHERE `id` = ?", [$this->getId()])['lang'];
-            } catch (PDOException $e) {
-                var_dump($e->getMessage());
-            }
-
-
             sql::run("UPDATE `users` SET `lang` = ? WHERE `id` = ?", [$lang, $this->getId()]);
         }
         redirect::location($_SERVER['HTTP_REFERER'] ?? "/main");
