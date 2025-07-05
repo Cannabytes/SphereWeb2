@@ -780,7 +780,7 @@ class serverModel
      * @return array|null Массив с ключами 'date' и 'data' или null если кэш не найден
      * @throws InvalidArgumentException
      */
-    public function getCache(?string $type = null, int $server_id = null, $onlyData = true): ?array
+    public function getCache(?string $type = null, ?int $server_id = null, $onlyData = true): ?array
     {
         if ($server_id === null) {
             $server_id = $this->getId();
@@ -846,7 +846,7 @@ class serverModel
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function setCache(string $type, $data, $server_id = null): bool
+    public function setCache(string $type, $data, ?int $server_id = null): bool
     {
         if ($server_id === null) {
             $server_id = $this->getId();
