@@ -143,7 +143,7 @@ class fileSys {
      *
      * @return bool
      */
-    static public function is_timeout(int $eventTime, int $second = null): bool {
+    static public function is_timeout(int $eventTime, ?int $second = null): bool {
         return abs(time() - $eventTime) > $second;
     }
 

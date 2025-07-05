@@ -29,48 +29,62 @@ class statistic
     }
 
     /**
-     * Получает статистику сервера с кэшированием
+     * Получает статистику сервера с кэшированием и сохраняет её в self::$statistic
      *
      * @param int|null $server_id ID сервера
-     * @return array|false Статистика сервера или false в случае ошибки
+     * @return void
      * @throws Exception
      */
-    private static function getStatistic(int $server_id = null): false|array
+    private static function getStatistic(?int $server_id = null): void
     {
-        // Проверка наличия серверов
+        // Initialize statistic array if not set
+        if (self::$statistic === null) {
+            self::$statistic = [];
+        }
+
+        // Check if servers exist
         if (server::get_count_servers() === 0) {
-            return false;
+            self::$statistic = false;
+            return;
         }
 
-        // Проверка глобального флага статистики
+        // Check global statistic flag
         if (self::$statistic === false) {
-            return false;
+            return;
         }
 
-        // Определение ID сервера
+        // Resolve server ID
         $server_id = self::resolveServerId($server_id);
         if (!$server_id) {
-            return false;
+            return;
         }
 
-        // Возврат кэшированных данных из памяти
+        // Return if already cached in memory
         if (self::isStatisticCachedInMemory($server_id)) {
-            return self::$statistic[$server_id];
+            return;
         }
 
-        // Получение данных из эмуляции
+        // Get data from emulation if enabled
         if (self::isEmulationEnabled()) {
-            return self::getEmulationStatistic($server_id);
+            $result = self::getEmulationStatistic($server_id);
+            if ($result !== false) {
+                self::$statistic[$server_id] = $result;
+            }
+            return;
         }
 
-        // Получение данных из файлового кэша
+        // Get data from file cache
         $cachedData = self::getCachedStatistic($server_id);
         if ($cachedData !== null) {
-            return $cachedData;
+            self::$statistic[$server_id] = $cachedData;
+            return;
         }
 
-        // Получение свежих данных с сервера
-        return self::fetchFreshStatistic($server_id);
+        // Get fresh data from server
+        $freshData = self::fetchFreshStatistic($server_id);
+        if ($freshData !== false) {
+            self::$statistic[$server_id] = $freshData;
+        }
     }
 
     /**
@@ -86,7 +100,7 @@ class statistic
             return $user?->getServerId();
         }
 
-        return (int)$server_id;
+        return (int) $server_id;
     }
 
     /**
@@ -263,7 +277,7 @@ class statistic
                 continue;
             }
 
-            $server_id = (int)$server_id;
+            $server_id = (int) $server_id;
 
             // Инициализация массива для сервера если не существует
             if (!isset(self::$statistic[$server_id])) {

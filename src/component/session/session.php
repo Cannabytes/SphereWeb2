@@ -612,7 +612,7 @@ class session
      * @param int|null $maxLifetime Максимальное время жизни сессии в секундах
      * @return bool
      */
-    public static function gc(int $maxLifetime = null): bool
+    public static function gc(?int $maxLifetime = null): bool
     {
         if ($maxLifetime === null) {
             $maxLifetime = self::$sessionLifetime;
