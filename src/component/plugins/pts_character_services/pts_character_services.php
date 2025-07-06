@@ -14,7 +14,7 @@ use Ofey\Logan22\template\tpl;
 class pts_character_services
 {
 
-    private array $setting = [];
+    private ?array $setting = [];
 
     public function __construct()
     {
@@ -28,8 +28,7 @@ class pts_character_services
     {
         \Ofey\Logan22\model\admin\validation::user_protection("admin");
         if (!isset($this->setting['available_colors'])) {
-            board::error(lang::get_phrase("error_no_colors"));
-            return;
+            $this->setting['available_colors'] = [];
         }
         $availableColors = $this->setting['available_colors'];
         tpl::addVar("available_colors", json_encode($availableColors));
