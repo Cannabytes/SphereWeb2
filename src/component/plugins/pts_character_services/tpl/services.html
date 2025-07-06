@@ -28,11 +28,11 @@
                     </h5>
                     <span class="badge bg-primary fs-6" title="{{phrase('title_service_cost')}}">{{
                         data.costs.change_name }}
-                        {{phrase('currency_coins')}}</span>
+                        {{phrase('donate_coin')}}</span>
                 </div>
                 <div class="card-body py-3 position-relative">
                     <p class="card-text text-muted">{{phrase('service_change_name_desc')}}</p>
-                    <a class="btn btn-lg btn-outline-primary mt-2 d-flex align-items-center justify-content-center gap-2"
+                    <a class="btn btn-lg btn-outline-primary mt-2 d-flex align-items-center justify-content-center gap-2 {% if getUser().isGuest() %}disabled{% endif %}"
                         data-bs-target="#changeNameModal" data-bs-toggle="modal" href="#"
                         title="{{phrase('title_change_name')}}">
                         <i class="ri-edit-line"></i> {{phrase('btn_change_name')}}
@@ -55,11 +55,11 @@
                     </h5>
                     <span class="badge bg-success fs-6" title="{{phrase('title_service_cost')}}">{{
                         data.costs.move_account }}
-                        {{phrase('currency_coins')}}</span>
+                        {{phrase('donate_coin')}}</span>
                 </div>
                 <div class="card-body py-3 position-relative">
                     <p class="card-text text-muted">{{phrase('service_move_account_desc')}}</p>
-                    <a class="btn btn-lg btn-outline-success mt-2 d-flex align-items-center justify-content-center gap-2"
+                    <a class="btn btn-lg btn-outline-success mt-2 d-flex align-items-center justify-content-center gap-2 {% if getUser().isGuest() %}disabled{% endif %}"
                         data-bs-target="#moveCharacterModal" data-bs-toggle="modal" href="#"
                         title="{{phrase('title_move_character')}}">
                         <i class="ri-user-shared-line"></i> {{phrase('btn_move_character')}}
@@ -82,11 +82,11 @@
                     </h5>
                     <span class="badge bg-danger fs-6" title="{{phrase('title_service_cost')}}">{{
                         data.costs.delete_character }}
-                        {{phrase('currency_coins')}}</span>
+                        {{phrase('donate_coin')}}</span>
                 </div>
                 <div class="card-body py-3 position-relative">
                     <p class="card-text text-muted">{{phrase('service_delete_character_desc')}}</p>
-                    <a class="btn btn-lg btn-outline-danger mt-2 d-flex align-items-center justify-content-center gap-2"
+                    <a class="btn btn-lg btn-outline-danger mt-2 d-flex align-items-center justify-content-center gap-2 {% if getUser().isGuest() %}disabled{% endif %}"
                         data-bs-target="#deleteCharacterModal" data-bs-toggle="modal" href="#"
                         title="{{phrase('title_delete_character')}}">
                         <i class="ri-delete-bin-line"></i> {{phrase('btn_delete_character')}}
@@ -109,11 +109,11 @@
                     </h5>
                     <span class="badge bg-purple text-light fs-6" style="background: #8e44ad;"
                         title="{{phrase('title_service_cost')}}">{{ data.costs.change_name_color }}
-                        {{phrase('currency_coins')}}</span>
+                        {{phrase('donate_coin')}}</span>
                 </div>
                 <div class="card-body py-3 position-relative">
                     <p class="card-text text-muted">{{phrase('service_change_name_color_desc')}}</p>
-                    <a class="btn btn-lg btn-outline-secondary mt-2 d-flex align-items-center justify-content-center gap-2"
+                    <a class="btn btn-lg btn-outline-secondary mt-2 d-flex align-items-center justify-content-center gap-2 {% if getUser().isGuest() %}disabled{% endif %}"
                         data-bs-target="#changeNameColorModal" data-bs-toggle="modal" href="#"
                         title="{{phrase('title_change_color')}}">
                         <i class="ri-palette-line"></i> {{phrase('btn_change_color')}}
@@ -126,6 +126,7 @@
     </div>
 </div>
 
+{% if getUser().isAuth() %}
 <!-- Модальное окно для смены имени персонажа -->
 <div aria-hidden="true" aria-labelledby="changeNameModalLabel" class="modal fade" id="changeNameModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -316,7 +317,7 @@
         </div>
     </div>
 </div>
-
+{% endif %}
 
 <style>
     .service-card {
@@ -427,6 +428,7 @@
 {% endblock %}
 
 {% block js %}
+{% if getUser().isAuth() %}
 <script>
     const pluginName = "{{pluginName}}";
     const pluginActive = "{{pluginActive}}";
@@ -623,6 +625,5 @@
 
     });
 </script>
-<script src="{{template}}/assets/js/spherePlugin.js?v=0.0.4"></script>
-
+{% endif %}
 {% endblock %}

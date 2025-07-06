@@ -88,9 +88,6 @@ return [
     "account_group" => "Аккаунт:",
     "no_characters" => "Нет персонажей",
 
-    // Валюта
-    "currency_coins" => "монет",
-
     // Состояния загрузки
     "loading" => "Загрузка...",
 

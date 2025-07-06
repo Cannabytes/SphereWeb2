@@ -1,6 +1,7 @@
 <?php
 
 use Ofey\Logan22\component\plugins\pts_character_services;
+use Ofey\Logan22\model\admin\validation;
 
 $routes = [
     [
@@ -16,6 +17,7 @@ $routes = [
         "pattern" => "/admin/plugin/pts_character_services",
         "file" => "pts_character_services.php",
         "call" => function () {
+            validation::user_protection("admin");
             (new pts_character_services\pts_character_services())->setting();
         },
     ],
@@ -24,6 +26,7 @@ $routes = [
         "pattern" => "/admin/plugin/pts_character_services/setting/save",
         "file" => "pts_character_services.php",
         "call" => function () {
+            validation::user_protection("admin");
             (new pts_character_services\pts_character_services())->save();
         },
     ],
@@ -32,6 +35,7 @@ $routes = [
         "pattern" => "/character/services/change/name",
         "file" => "services.php",
         "call" => function () {
+            validation::user_protection();
             (new pts_character_services\pts_character_services())->changeName();
         },
     ],
@@ -40,6 +44,7 @@ $routes = [
         "pattern" => "/character/services/move",
         "file" => "services.php",
         "call" => function () {
+            validation::user_protection();
             (new pts_character_services\pts_character_services())->moveCharacter();
         },
     ],
@@ -48,6 +53,7 @@ $routes = [
         "pattern" => "/character/services/delete",
         "file" => "services.php",
         "call" => function () {
+            validation::user_protection();
             (new pts_character_services\pts_character_services())->deleteCharacter();
         },
     ],
@@ -57,6 +63,7 @@ $routes = [
         "pattern" => "/character/services/change/color",
         "file" => "services.php",
         "call" => function () {
+            validation::user_protection();
             (new pts_character_services\pts_character_services())->changeNameColor();
         },
     ],

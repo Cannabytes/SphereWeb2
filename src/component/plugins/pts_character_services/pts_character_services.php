@@ -38,7 +38,6 @@ class pts_character_services
 
     public function save(): void
     {
-        \Ofey\Logan22\model\admin\validation::user_protection("admin");
         $server = server::getServer(user::self()->getServerId());
 
         if ($server->getPlatform() != "pts") {
