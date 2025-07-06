@@ -346,22 +346,6 @@
     max-height: 100%;
 }
 
-.item-enchant {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
 
 .item-details-n {
     flex: 1;
@@ -1122,9 +1106,6 @@
     /* круг по умолчанию */
 }
 
-/* Улучшаем анимацию выигрыша */
-.winning-container {
-}
 
 .winning-item {
     transform: scale(0);
@@ -1208,4 +1189,276 @@
 /* Улучшенная анимация для выигрышного предмета */
 .winning-item-highlight {
     transition: all 0.3s ease !important;
+}
+
+/* Стили для одного выигранного предмета */
+.single-winning-item-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+    background: rgba(30, 32, 41, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    max-width: 400px; /* Ограничиваем ширину для красивого отображения одного предмета */
+    margin: 0 auto;
+}
+
+.single-winning-item-header h4 {
+    font-size: 28px;
+    color: #ffd700; /* Золотой цвет для заголовка */
+    margin-bottom: 10px;
+}
+
+.single-winning-item-header p {
+    font-size: 18px;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.single-winning-item-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.single-winning-item-image-container {
+    position: relative;
+    width: 150px; /* Увеличиваем размер изображения */
+    height: 150px;
+    margin-bottom: 20px;
+    border-radius: 50%; /* Круглая рамка */
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 215, 0, 0) 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: item-glow 2s infinite alternate; /* Анимация свечения */
+}
+
+.single-winning-item-image {
+    max-width: 100%;
+    max-height: 100%;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.7)); /* Эффект свечения */
+}
+
+.single-winning-item-details {
+    margin-top: 10px;
+}
+
+.single-winning-item-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.single-winning-item-count {
+    font-size: 18px;
+    color: #ddd;
+}
+
+/* Анимация свечения для одного предмета */
+@keyframes item-glow {
+    0% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+    100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+}
+
+/* Общие стили для контейнера нескольких выигранных предметов */
+.multiple-winning-items-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Стили для списка выигранных предметов (строкой) */
+.winning-items-list {
+    display: flex;
+    flex-wrap: wrap; /* Разрешаем перенос на следующую строку */
+    justify-content: center;
+    gap: 15px; /* Отступ между карточками */
+    margin-top: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    width: 100%; /* Занимаем всю доступную ширину */
+}
+
+/* КЛЮЧЕВЫЕ ИЗМЕНЕНИЯ: Карточка отдельного выигранного предмета в списке */
+.winning-item-card-inline {
+    background: rgba(30, 32, 41, 0.9);
+    border-radius: 8px;
+    padding: 10px; /* Отступы внутри карточки */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+
+    /* Делаем содержимое карточки горизонтальным */
+    display: flex;
+    flex-direction: row; /* Изображение и текст будут в ряд */
+    align-items: center; /* Выравнивание элементов по центру по вертикали */
+    justify-content: flex-start; /* Выравнивание содержимого к началу карточки */
+
+    /* Настраиваем размер для вида "списка в ряд" */
+    width: auto; /* Ширина будет подстраиваться под содержимое */
+    min-width: 180px; /* Минимальная ширина карточки, чтобы она не была слишком маленькой */
+    max-width: 280px; /* Максимальная ширина карточки, чтобы не растягивалась слишком сильно */
+    height: 80px; /* Фиксированная высота для унифицированного вида элементов списка */
+    min-height: auto; /* Отменяем предыдущую минимальную высоту */
+}
+
+.winning-item-image-container-inline {
+    position: relative;
+    width: 60px; /* Уменьшаем размер контейнера изображения */
+    height: 60px; /* Уменьшаем размер контейнера изображения */
+    margin-right: 10px; /* Отступ справа от изображения */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0; /* Убираем нижний отступ, так как теперь в строке */
+}
+
+.winning-item-image-inline {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.winning-item-details-inline {
+    display: flex;
+    flex-direction: column; /* Название и количество остаются вертикально */
+    justify-content: center;
+    flex-grow: 1; /* Разрешаем деталям занимать оставшееся пространство */
+    text-align: left; /* Выравнивание текста влево */
+}
+
+.winning-item-name-inline {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 2px;
+    white-space: normal;
+    word-wrap: break-word;
+    height: auto; /* Высота подстраивается под содержимое */
+    max-height: 3.2em; /* Сохраняем ограничение на 2 строки */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.winning-item-count-inline {
+    font-size: 12px;
+    color: #ddd;
+}
+
+/* Общие стили для зачарования */
+.item-enchant {
+    position: absolute;
+    top: -5px; /* Возможно, потребуется корректировка для нового расположения */
+    right: -5px; /* Возможно, потребуется корректировка для нового расположения */
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    z-index: 3;
+}
+
+/* Новые стили для разделенного контейнера выигрыша */
+.winning-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.winning-items-table-container {
+    width: 100%;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.winning-items-table-custom {
+    width: 100%;
+    color: #fff;
+    border-color: rgba(255, 215, 0, 0.3);
+}
+
+.winning-items-table-custom th {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 215, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.winning-items-table-custom td {
+    border-color: rgba(255, 255, 255, 0.1);
+    vertical-align: middle;
+}
+
+.winning-items-table-custom tr:hover td {
+    background-color: rgba(255, 215, 0, 0.1);
+}
+
+
+.item-enchant-table {
+    display: inline-block;
+    padding: 2px 8px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    margin-left: 5px;
+}
+
+.winning-left-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-right: 20px;
+    max-width: 40%;
+}
+
+.winning-right-panel {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-left: 20px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .winning-container {
+        flex-direction: column;
+    }
+
+    .winning-left-panel,
+    .winning-right-panel {
+        max-width: 100%;
+        padding: 0;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 20px;
+        margin-top: 20px;
+    }
+
+    .winning-right-panel {
+        max-height: 300px;
+    }
 }

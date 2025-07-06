@@ -109,11 +109,9 @@
             </div>
         {% endfor %}
     </div>
-</div>
 
 <!-- Обновленная структура модального окна для открытия кейса -->
 <div class="modal fade modal-blur" id="chestModal" tabindex="-1" aria-labelledby="chestModalLabel" aria-hidden="true">
-    <!-- Кнопка закрытия модального окна -->
     <button type="button" class="custom-modal-close" data-bs-dismiss="modal" aria-label="Закрыть">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -121,6 +119,12 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-body">
+                <div id="translation-data" style="display: none;"
+                     data-happy-win-chest="{{ phrase('happy_win_chest') }}"
+                     data-you-win-chest="{{ phrase('you_win_chest') }}"
+                     data-open-more-chest="{{ phrase('open_more_chest') }}">
+                </div>
+
                 <div class="chest-modal-container">
 
                     <div class="chest-items-container">
@@ -158,37 +162,12 @@
                                 <img id="chest-animation-img" src="" alt="Открытие кейса">
                             </div>
                             <div class="items-flying-container">
-                                <!-- Летающие предметы появятся здесь -->
-                            </div>
+                                </div>
                         </div>
                     </div>
 
-                  <!-- Контейнер для рулетки будет добавлен динамически через JavaScript -->
-
-                  <!-- Контейнер для отображения выигрыша -->
-                    <div class="winning-container d-none">
-                        <div class="winning-effect"></div>
-                        <div class="winning-item">
-                            <div class="winning-item-header">
-                                <h4>{{phrase('happy_win_chest')}}</h4>
-                                <p>{{phrase('you_win_chest')}}:</p>
-                            </div>
-                            <div class="winning-item-content">
-                                <div class="winning-item-image-container">
-                                    <img id="winning-item-image" src="" alt="Выигрыш">
-                                    <div class="winning-item-shine"></div>
-                                </div>
-                                <div class="winning-item-details-n">
-                                    <h4 id="winning-item-name"></h4>
-                                    <p id="winning-item-count"></p>
-                                    <p id="winning-item-enchant" class="enchant-badge"></p>
-                                </div>
-                            </div>
-                            <div class="winning-actions mt-4">
-                                <button id="open-again-btn" class="btn-open-again">{{phrase('open_more_chest')}}</button>
-                            </div>
+                  <div class="winning-container d-none">
                         </div>
-                    </div>
                 </div>
             </div>
         </div>

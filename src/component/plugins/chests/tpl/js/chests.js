@@ -368,10 +368,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Анимация магических кристаллов
     function showCrystalsAnimation(chestId, winningItems, warehouseItemMap) { // Теперь принимает массив winningItems и warehouseItemMap
+
         const chest = window.chestData && window.chestData[chestId];
         if (!chest || !chest.items || !chest.items.length) {
-            console.error('Данные кейса не найдены:', chestId);
-            showWinningItem(winningItems); // Передаем все выигранные предметы
+            console.error('Данные кейса не найдены или пусты:', chestId, chest);
+            showWinningItem(winningItems);
+            return;
+        }
+
+        // Проверяем, что есть предметы для заполнения кристаллов
+        if (chest.items.length === 0) {
+            console.error('Нет предметов в кейсе для заполнения кристаллов');
+            showWinningItem(winningItems);
             return;
         }
 
@@ -421,115 +429,115 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Заполнение кристаллов предметами
-    function populateCrystals(allPossibleItems, winningItems, warehouseItemMap) { // Теперь принимает массив winningItems и warehouseItemMap
+    function populateCrystals(allPossibleItems, winningItems, warehouseItemMap) {
         const crystalsGrid = document.querySelector('.crystals-grid');
         if (!crystalsGrid) return;
 
-        // Очищаем сетку
         crystalsGrid.innerHTML = '';
 
-        // Создаем массив предметов для кристаллов
+        // Создаем массив для кристаллов
         const crystalItems = [];
-
-        // Кеш для отслеживания использованных предметов, чтобы избежать повторов
         const usedItemIds = new Set();
 
-        // Helper to get item details for populating crystals
-        const getCrystalItemDetails = (item, map) => {
-            const itemId = item.id;
-            const matchedWarehouseItem = map.get(itemId);
-
-            const defaultDetails = {
-                name: '???',
-                add_name: '',
-                icon: '',
-                crystal_type: null,
-                enchant: 0
-            };
-
-            let finalDetails = { ...defaultDetails };
-
-            if (matchedWarehouseItem) {
-                const itemInfo = matchedWarehouseItem.itemInfo || {};
-                finalDetails.name = itemInfo.itemName || defaultDetails.name;
-                finalDetails.add_name = itemInfo.addName || defaultDetails.add_name;
-                finalDetails.icon = itemInfo.icon || defaultDetails.icon;
-                finalDetails.crystal_type = itemInfo.crystal_type || defaultDetails.crystal_type;
-                finalDetails.enchant = matchedWarehouseItem.enchant || defaultDetails.enchant;
-            }
-
-            return {
-                id: itemId,
-                name: finalDetails.name,
-                icon: finalDetails.icon,
-                count: item.count || 1, // Количество берется из переданного объекта 'item'
-                enchant: finalDetails.enchant,
-                crystal_type: finalDetails.crystal_type
-            };
-        };
-
-
-        // Добавляем все выигрышные предметы в crystalItems и помечаем их как winning
+        // 1. Сначала добавляем выигрышные предметы
         winningItems.forEach(winItem => {
-            // winItem уже имеет полные детали из предыдущего сопоставления,
-            // но getCrystalItemDetails все равно будет использовать карту для единообразия.
             const details = getCrystalItemDetails(winItem, warehouseItemMap);
             crystalItems.push({ ...details, isWinning: true });
             usedItemIds.add(details.id);
         });
 
-        // Определяем, сколько слотов осталось заполнить
-        const remainingSlots = settings.crystalsCount - crystalItems.length;
+        // 2. Добавляем случайные предметы из кейса для оставшихся слотов
+        const remainingSlots = Math.max(0, settings.crystalsCount - crystalItems.length);
 
-        // Создаем пул предметов для заполнения оставшихся слотов
-        // Сначала уникальные, невыигранные предметы
-        const fillableItems = allPossibleItems.filter(item => !usedItemIds.has(item.id));
+        // Фильтруем предметы, которые еще не использованы
+        const availableItems = allPossibleItems.filter(item => !usedItemIds.has(item.id));
 
-        // Если уникальных не хватает, повторяем
-        let currentFillableItems = [...fillableItems];
-        while (currentFillableItems.length < remainingSlots) {
-            currentFillableItems = currentFillableItems.concat(fillableItems);
+        // Если доступных предметов меньше чем нужно, разрешаем повторения
+        for (let i = 0; i < remainingSlots; i++) {
+            const randomIndex = Math.floor(Math.random() * availableItems.length);
+            const randomItem = availableItems[randomIndex];
+            const details = getCrystalItemDetails(randomItem, warehouseItemMap);
+            crystalItems.push(details);
         }
-        currentFillableItems = currentFillableItems.slice(0, remainingSlots); // Обрезаем до нужного количества
 
-        // Добавляем их в массив кристаллов, используя getCrystalItemDetails и warehouseItemMap
-        currentFillableItems.forEach(item => {
-            crystalItems.push(getCrystalItemDetails(item, warehouseItemMap));
-        });
-
-        // Перемешиваем весь массив, чтобы выигрышные предметы были в случайных местах
+        // Перемешиваем массив
         shuffleArray(crystalItems);
 
         // Создаем HTML для кристаллов
         for (let i = 0; i < settings.crystalsCount; i++) {
             const item = crystalItems[i];
-            // Безопасная проверка на существование item перед доступом к его свойствам
-            const itemIcon = item ? item.icon : '';
-            const itemName = item ? item.name : '???';
-            const itemCount = item ? item.count : '0';
-            const enchantBadge = item && item.enchant > 0
+            const itemExists = item && item.id;
+
+            const itemIcon = itemExists ? item.icon : '';
+            const itemName = itemExists ? item.name : '???';
+            const itemCount = itemExists ? item.count : '0';
+            const enchantBadge = itemExists && item.enchant > 0
                 ? `<div class="crystal-enchant">+${item.enchant}</div>`
                 : '';
 
             const crystalHTML = `
-                <div class="magic-crystal ${item && item.isWinning ? 'winning-crystal' : ''}" data-index="${i}" data-item-id="${item ? item.id : ''}">
-                    <div class="crystal-cover">
-                        <div class="crystal-glow"></div>
-                        <div class="crystal-runes"></div>
-                    </div>
-                    <div class="crystal-content">
-                        <div class="crystal-item-container">
-                            <img src="${itemIcon}" alt="${itemName}" class="crystal-item-image">
-                            ${enchantBadge}
-                        </div>
-                        <div class="crystal-item-name">${itemName}</div>
-                        <div class="crystal-item-count">x${itemCount}</div>
-                    </div>
+            <div class="magic-crystal ${itemExists && item.isWinning ? 'winning-crystal' : ''}" 
+                 data-index="${i}" 
+                 data-item-id="${itemExists ? item.id : ''}">
+                <div class="crystal-cover">
+                    <div class="crystal-glow"></div>
+                    <div class="crystal-runes"></div>
                 </div>
-            `;
-
+                <div class="crystal-content">
+                    <div class="crystal-item-container">
+                        <img src="${itemIcon}" alt="${itemName}" class="crystal-item-image">
+                        ${enchantBadge}
+                    </div>
+                    <div class="crystal-item-name">${itemName}</div>
+                    <div class="crystal-item-count">x${itemCount}</div>
+                </div>
+            </div>
+        `;
             crystalsGrid.innerHTML += crystalHTML;
         }
+    }
+
+    function getCrystalItemDetails(item, map) {
+        if (!item || !item.id) {
+            return {
+                id: '',
+                name: '???',
+                icon: '',
+                count: 0,
+                enchant: 0,
+                crystal_type: null
+            };
+        }
+
+        const itemId = item.id;
+        const matchedWarehouseItem = map.get(itemId);
+
+        const defaultDetails = {
+            name: item.name || '???',
+            add_name: item.add_name || '',
+            icon: item.icon || '',
+            crystal_type: item.crystal_type || null,
+            enchant: item.enchant || 0,
+            count: item.count || 1
+        };
+
+        if (matchedWarehouseItem) {
+            const itemInfo = matchedWarehouseItem.itemInfo || {};
+            return {
+                id: itemId,
+                name: itemInfo.itemName || defaultDetails.name,
+                add_name: itemInfo.addName || defaultDetails.add_name,
+                icon: itemInfo.icon || defaultDetails.icon,
+                crystal_type: itemInfo.crystal_type || defaultDetails.crystal_type,
+                enchant: matchedWarehouseItem.enchant || defaultDetails.enchant,
+                count: item.count || defaultDetails.count
+            };
+        }
+
+        return {
+            id: itemId,
+            ...defaultDetails
+        };
     }
 
     // Анимация открытия кристаллов
@@ -641,8 +649,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    // Показ выигрышного предмета(ов)
-    function showWinningItem(winningItems) { // Теперь принимает массив winningItems
+// Показ выигрышного предмета(ов)
+    function showWinningItem(winningItems) {
         restoreModalOpacity();
 
         const winningContainer = document.querySelector('.winning-container');
@@ -651,47 +659,64 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Очищаем предыдущие выигрыши, если они были
-        let winningItemsListContainer = winningContainer.querySelector('.winning-items-list');
-        if (!winningItemsListContainer) {
-            winningItemsListContainer = document.createElement('div');
-            winningItemsListContainer.classList.add('winning-items-list');
-            winningContainer.appendChild(winningItemsListContainer);
-        }
-        winningItemsListContainer.innerHTML = ''; // Очищаем контейнер
+        // Получаем переведенные фразы
+        const translationDataElement = document.getElementById('translation-data');
+        const happyWinChestText = translationDataElement ? translationDataElement.dataset.happyWinChest : 'Поздравляем!';
+        const youWinChestText = translationDataElement ? translationDataElement.dataset.youWinChest : 'Вы выиграли';
+        const openMoreChestText = translationDataElement ? translationDataElement.dataset.openMoreChest : 'Открыть ещё';
 
-        // Добавляем каждый выигранный предмет
+        // Очищаем предыдущие выигрыши и скрываем все по умолчанию
+        winningContainer.innerHTML = '';
+        winningContainer.classList.remove('d-none');
+        winningContainer.style.display = 'flex';
+
+        // Создаем новую структуру с двумя панелями
+        winningContainer.innerHTML = `
+        <div class="winning-left-panel">
+            <div class="winning-item-header">
+                <h4>${happyWinChestText}</h4>
+                <p>${youWinChestText}:</p>
+            </div>
+            <div class="winning-actions mt-4">
+                <button id="open-again-btn" class="btn-open-again">${openMoreChestText}</button>
+            </div>
+        </div>
+        <div class="winning-right-panel">
+            <div class="table-responsive winning-items-table-container">
+                <table class="table text-nowrap table-bordered border-success winning-items-table-custom">
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+        const winningItemsTableBody = winningContainer.querySelector('.winning-items-table-custom tbody');
+
+        // Заполняем таблицу выигранными предметами
         winningItems.forEach(item => {
-            const enchantBadge = item.enchant > 0
-                ? `<div class="item-enchant">+${item.enchant}</div>`
-                : '';
-
-            const itemHTML = `
-                <div class="winning-item-card">
-                    <div class="winning-item-image-container">
-                        <img src="${item.icon}" alt="${item.name}" class="winning-item-image">
-                        ${enchantBadge}
-                    </div>
-                    <div class="winning-item-details">
-                        <p class="winning-item-name">${item.name} ${item.add_name ? item.add_name : ''}</p>
-                        <span class="winning-item-count">x${item.count}</span>
-                    </div>
-                </div>
-            `;
-            winningItemsListContainer.innerHTML += itemHTML; // Добавляем карточку предмета
+            const enchantText = item.enchant > 0 ? `+${item.enchant}` : '';
+            const rowHTML = `
+            <tr>
+                <td style="width: 40px;">
+                    <img src="${item.icon}" alt="${item.name}" class="avatar avatar-sm">
+                </td>
+                <td>
+                    ${enchantText} ${item.name} ${item.add_name ? item.add_name : ''}
+                </td>
+                <td>
+                    x${item.count}
+                </td>
+            </tr>
+        `;
+            winningItemsTableBody.innerHTML += rowHTML;
         });
 
-
-        // Эффекты для редких предметов (если есть хотя бы один S-тип)
+        // Эффекты для редких предметов
         const hasSpecialItem = winningItems.some(item => item.crystal_type === 's');
         if (hasSpecialItem) {
             setTimeout(() => createConfettiEffect(winningContainer), 300);
         }
 
-
-        // Показываем контейнер
-        winningContainer.classList.remove('d-none');
-        winningContainer.style.display = 'flex';
         setTimeout(() => {
             winningContainer.style.opacity = '1';
         }, 10);
