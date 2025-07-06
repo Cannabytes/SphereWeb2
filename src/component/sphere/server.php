@@ -87,6 +87,8 @@ class server
         self::$installLink = $link;
     }
 
+
+
     private static int $timeout = 5;
     static public function setTimeout(int $timeout = 5): void
     {
@@ -111,7 +113,21 @@ class server
         } else {
             $link = config::load()->sphereApi()->getIp() . ':' . config::load()->sphereApi()->getPort();
         }
-        $json = json_encode($arr) ?? "";
+
+        array_walk_recursive($arr, function (&$item, $key) {
+            if (is_string($item)) {
+                $item = mb_convert_encoding($item, 'UTF-8', mb_detect_encoding($item, 'UTF-8, ISO-8859-1, windows-1251', true));
+            }
+        });
+
+        $json = json_encode($arr, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES, 2048);
+
+        if ($json === false) {
+            $err = "JSON Error Code (after increasing depth): " . json_last_error() . "\n";
+            $err .= "JSON Error Message (after increasing depth): " . json_last_error_msg() . "\n";
+            board::error($err);
+        }
+
         $url = $link . type::url($type) ?? board::error("Не указан URL запроса");
 
         if (!preg_match('/^https?:\/\//i', $url)) {

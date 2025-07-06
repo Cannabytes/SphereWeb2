@@ -1,0 +1,280 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{phrase('settings_title')}}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card custom-card shadow-sm border-0 rounded-4">
+                <div class="card-header justify-content-between">
+                    <div class="card-title">
+                        <i class="bi bi-person-lines-fill me-2 fs-4"></i>
+                        {{phrase('settings_header')}}
+                    </div>
+                    <div class="prism-toggle">
+                        <div class="custom-toggle-switch d-flex align-items-center">
+                            <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}" type="checkbox" {%
+                                if pluginActive %}checked{% endif %}>
+                            <label for="enablePlugin" class="label-success"></label>
+                            <span class="ms-3">{{phrase('Activating the plugin')}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body py-3">
+                    <form id="pts-character-services-settings" method="post"
+                        action="/admin/plugin/pts_character_services/setting/save">
+                        <div class="mb-3">
+                            <label class="form-label">{{phrase('select_available_services')}}</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="services[change_name]"
+                                    id="service-change-name" checked>
+                                <label class="form-check-label"
+                                    for="service-change-name">{{phrase('service_change_name')}}</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="services[move_account]"
+                                    id="service-move-account" checked>
+                                <label class="form-check-label"
+                                    for="service-move-account">{{phrase('service_move_account')}}</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="services[delete_character]"
+                                    id="service-delete-character" checked>
+                                <label class="form-check-label"
+                                    for="service-delete-character">{{phrase('service_delete_character')}}</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="services[change_name_color]"
+                                    id="service-change-name-color" checked>
+                                <label class="form-check-label"
+                                    for="service-change-name-color">{{phrase('service_change_name_color')}}</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{phrase('service_cost_label')}}</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">{{phrase('input_change_name')}}</span>
+                                <input type="number" class="form-control" name="costs[change_name]" value="100" min="0">
+                            </div>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">{{phrase('input_move_character')}}</span>
+                                <input type="number" class="form-control" name="costs[move_account]" value="200"
+                                    min="0">
+                            </div>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">{{phrase('input_delete_character')}}</span>
+                                <input type="number" class="form-control" name="costs[delete_character]" value="50"
+                                    min="0">
+                            </div>
+
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">{{phrase('input_change_name_color')}}</span>
+                                <input type="number" class="form-control" name="costs[change_name_color]" value="75"
+                                    min="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{phrase('available_colors_label')}}</label>
+                            <div class="color-palette-container">
+                                <div class="row" id="colorPalette">
+                                    <!-- {{phrase('colors_will_be_added')}} -->
+                                </div>
+                                <div class="mt-3">
+                                    <div class="input-group">
+                                        <input type="color" class="form-control form-control-color" id="newColorPicker"
+                                            value="#ff0000">
+                                        <button type="button" class="btn btn-outline-primary" id="addColorBtn">
+                                            <i class="bi bi-plus-circle me-1"></i>{{phrase('btn_add_color')}}
+                                        </button>
+                                    </div>
+                                    <small class="form-text text-muted">{{phrase('color_palette_help')}}</small>
+                                </div>
+                                <input type="hidden" name="available_colors" id="availableColorsInput" value="">
+                            </div>
+                        </div>
+                        <button {% if getServer().getPlatform() == 'java' %}disabled{% endif %} type="submit" class="btn btn-primary">{{phrase('save_settings')}}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    const pluginName = "{{pluginName}}";
+    const pluginActive = "{{pluginActive}}";
+    const serverId = "{{getServer().getId()}}";
+</script>
+<script src="{{template}}/assets/js/spherePlugin.js?v=0.0.4"></script>
+
+<style>
+    .color-palette-container {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+    }
+
+    .color-item {
+        position: relative;
+        margin-bottom: 0.5rem;
+    }
+
+    .color-preview {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .color-preview:hover {
+        transform: scale(1.1);
+    }
+
+    .color-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .color-hex {
+        font-family: monospace;
+        font-weight: bold;
+        color: #495057;
+    }
+
+    .remove-color {
+        background: none;
+        border: none;
+        color: #dc3545;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 50%;
+        transition: background-color 0.2s;
+    }
+
+    .remove-color:hover {
+        background-color: #f8d7da;
+    }
+
+    .form-control-color {
+        width: 60px !important;
+        height: 38px;
+        padding: 0.375rem;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const colorPalette = document.getElementById('colorPalette');
+        const newColorPicker = document.getElementById('newColorPicker');
+        const addColorBtn = document.getElementById('addColorBtn');
+        const availableColorsInput = document.getElementById('availableColorsInput');
+
+        // Массив для хранения цветов
+        let availableColors = [];
+
+        // Функция для добавления цвета в палитру
+        function addColorToPalette(color) {
+            if (availableColors.includes(color)) {
+                alert('{{ phrase("color_already_added") }}');
+                return;
+            }
+
+            availableColors.push(color);
+            updateColorPalette();
+            updateHiddenInput();
+        }
+
+        // Функция для удаления цвета из палитры
+        function removeColorFromPalette(color) {
+            const index = availableColors.indexOf(color);
+            if (index > -1) {
+                availableColors.splice(index, 1);
+                updateColorPalette();
+                updateHiddenInput();
+            }
+        }
+
+        // Функция для обновления отображения палитры
+        function updateColorPalette() {
+            colorPalette.innerHTML = '';
+
+            availableColors.forEach(color => {
+                const colorItem = document.createElement('div');
+                colorItem.className = 'col-md-3 col-sm-4 col-6 color-item';
+
+                colorItem.innerHTML = `
+                <div class="d-flex align-items-center p-2 bg-white rounded border">
+                    <div class="color-info">
+                        <div class="color-preview" style="background-color: ${color};" title="${color}"></div>
+                        <span class="color-hex">${color}</span>
+                    </div>
+                    <button type="button" class="remove-color ms-auto" onclick="removeColorFromPalette('${color}')" title="{{phrase('title_remove_color')}}">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </div>
+            `;
+
+                colorPalette.appendChild(colorItem);
+            });
+        }
+
+        // Функция для обновления скрытого поля
+        function updateHiddenInput() {
+            availableColorsInput.value = JSON.stringify(availableColors);
+        }
+
+        // Обработчик для кнопки добавления цвета
+        addColorBtn.addEventListener('click', function () {
+            const selectedColor = newColorPicker.value;
+            addColorToPalette(selectedColor);
+        });
+
+        // Обработчик для Enter в color picker
+        newColorPicker.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const selectedColor = newColorPicker.value;
+                addColorToPalette(selectedColor);
+            }
+        });
+
+        // Загружаем сохраненные цвета или используем цвета по умолчанию
+        let savedColors = [];
+        try {
+            const availableColorsData = '{{available_colors|default("[]")|raw}}';
+
+            if (availableColorsData && availableColorsData !== '[]') {
+                savedColors = JSON.parse(availableColorsData);
+            }
+        } catch (e) {
+            console.error('Ошибка парсинга цветов:', e);
+            savedColors = [];
+        }
+
+        if (savedColors && savedColors.length > 0) {
+            availableColors = savedColors;
+        } else {
+            // Добавляем несколько цветов по умолчанию при загрузке
+            const defaultColors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#800080'];
+            defaultColors.forEach(color => {
+                availableColors.push(color);
+            });
+        }
+
+        updateColorPalette();
+        updateHiddenInput();
+
+        // Делаем функцию removeColorFromPalette глобальной
+        window.removeColorFromPalette = removeColorFromPalette;
+    });
+</script>
+
+{% endblock %}

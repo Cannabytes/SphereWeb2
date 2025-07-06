@@ -23,22 +23,27 @@
         <div class="mail-navigation">
             <div class="d-grid align-items-top p-2 border-bottom">
                 <a href="{% if getUser().isAuth() %}/support/new{% else %}/login{% endif %}" type="button"
-                   class="btn btn-primary btn-sm d-flex align-items-center justify-content-center">
+                    class="btn btn-primary btn-sm d-flex align-items-center justify-content-center">
                     <i class="ri-add-circle-line fs-16 align-middle me-1"></i>{{ phrase('Ask a question') }}
                 </a>
+                {% if not getUser().isAdmin() and not isUserModerator and threads|length == 0 %}
+                <div class="mt-2 text-center">
+                    <small class="text-muted">{{ phrase('Create your first support request') }}</small>
+                </div>
+                {% endif %}
             </div>
             <div>
                 <ul class="list-unstyled mail-main-nav" id="mail-main-nav">
                     {% for section in sections %}
-                    <li class="">
+                    <li class="{% if currentSection is defined and currentSection == section.id %}active{% endif %}">
                         <a href="/support/thread/{{section.id}}">
                             <div class="d-flex align-items-center">
-                                            <span class="me-2 lh-1">
-                                                <i class="ri-inbox-archive-line align-middle fs-14"></i>
-                                            </span>
+                                <span class="me-2 lh-1">
+                                    <i class="ri-inbox-archive-line align-middle fs-14"></i>
+                                </span>
                                 <span class="flex-fill text-nowrap">
-                                                {{phrase(section.thread_name)}}
-                                            </span>
+                                    {{phrase(section.thread_name)}}
+                                </span>
                                 <span class="badge bg-info-transparent rounded-1">{{section.thread_count}}</span>
                             </div>
                         </a>
@@ -49,11 +54,11 @@
                 {% if getUser().isAdmin() %}
                 <div class="card-footer text-center">
                     <a href="/support/admin/add/section" data-bs-toggle="modal" data-bs-target="#add-section"
-                       class="btn btn-sm btn-primary-light m-1"><i
+                        class="btn btn-sm btn-primary-light m-1"><i
                             class="ri-bar-chart-horizontal-line me-2 align-middle d-inline-block"></i>{{
                         phrase('Categories') }}</a>
                     <a href="/support/admin/add/moderator" data-bs-toggle="modal" data-bs-target="#add-moderator"
-                       class="btn btn-sm btn-success-light m-1"><i
+                        class="btn btn-sm btn-success-light m-1"><i
                             class="ri-group-line me-2 align-middle d-inline-block"></i>{{ phrase('Add moderator') }}</a>
                 </div>
                 {% endif %}
@@ -64,21 +69,20 @@
 
 
         <div class="modal modal-lg fade" id="add-section" tabindex="-1" aria-labelledby="add-sectionLabel"
-             aria-hidden="true">
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h6 class="modal-title" id="add-sectionLabel">{{ phrase('Categories') }}</h6>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body px-4">
                         <div class="row">
                             <div class="col-xl-6 mb-2">
                                 <label for="phraseId" class="form-label"><a target="_blank"
-                                                                            href="/admin/phrases/custom">{{
-                                    phrase('Phrase ID category name') }}</a><sup><i
-                                        class="ri-star-s-fill text-danger fs-8"></i></sup></label>
+                                        href="/admin/phrases/custom">{{
+                                        phrase('Phrase ID category name') }}</a><sup><i
+                                            class="ri-star-s-fill text-danger fs-8"></i></sup></label>
                                 <input type="text" class="form-control" id="phraseId" value="">
                                 <button id="add_section" type="button" class="btn btn-sm btn-success mt-2"><i
                                         class="ri-stack-line me-2"></i> {{ phrase(438) }}
@@ -86,7 +90,7 @@
                                 <script>
                                     $("#add_section").on("click", function () {
                                         phraseId = $("#phraseId").val();
-                                        AjaxSend("/support/admin/add/section", "POST", {phraseId: phraseId}, false);
+                                        AjaxSend("/support/admin/add/section", "POST", { phraseId: phraseId }, false);
                                     })
                                 </script>
                             </div>
@@ -98,7 +102,7 @@
                                     {% for section in sections %}
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="{{section.id}}"
-                                               id="remove_section_{{section.id}}">
+                                            id="remove_section_{{section.id}}">
                                         <label class="form-check-label" for="remove_section_{{section.id}}">
                                             {{phrase(section.thread_name)}}
                                         </label>
@@ -120,7 +124,7 @@
                                             noticeError("Нет выбранных элементов")
                                             return;
                                         }
-                                        AjaxSend("/support/admin/delete/section", "POST", {ids: ids}, false)
+                                        AjaxSend("/support/admin/delete/section", "POST", { ids: ids }, false)
                                     });
                                 </script>
 
@@ -129,30 +133,28 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light"
-                                data-bs-dismiss="modal">{{ phrase('close') }}
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ phrase('close') }}
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-       {% if getUser().isAdmin() %}
+        {% if getUser().isAdmin() %}
         <div class="modal modal-lg fade" id="add-moderator" tabindex="-1" aria-labelledby="add-moderatorLabel"
-             aria-hidden="true">
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h6 class="modal-title" id="add-moderatorLabel">{{ phrase('Setting up moderators') }}</h6>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body px-4">
                         <div class="row">
 
                             <div class="col-xl-6 mb-2">
                                 <label for="selectEmailToModerator" class="form-label">{{ phrase('user') }}<sup><i
-                                        class="ri-star-s-fill text-success fs-8"></i></sup></label>
+                                            class="ri-star-s-fill text-success fs-8"></i></sup></label>
                                 <select class="form-control" name="toMail" id="selectEmailToModerator">
                                     {% for user in getUsers() %}
                                     <option value="{{user.getEmail()}}">{{user.getEmail()}}</option>
@@ -215,27 +217,27 @@
                                     {% for section in sections %}
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="{{section.id}}"
-                                               id="moderator_section_{{section.id}}">
+                                            id="moderator_section_{{section.id}}">
                                         <label class="form-check-label" for="moderator_section_{{section.id}}">
                                             {{phrase(section.thread_name)}}
                                         </label>
 
                                         <div class="table-responsive">
                                             <table data-section-id="{{section.id}}"
-                                                   id="section_moderator_list_{{section.id}}"
-                                                   class="table table-sm table-bordered table-hover text-nowrap">
+                                                id="section_moderator_list_{{section.id}}"
+                                                class="table table-sm table-bordered table-hover text-nowrap">
                                                 <tbody>
-                                                {% for moderator in section.moderators %}
-                                                <tr>
-                                                    <td class="email-cell">{{moderator}}</td>
-                                                    <td class="action-cell">
-                                                        <button type="button"
+                                                    {% for moderator in section.moderators %}
+                                                    <tr>
+                                                        <td class="email-cell">{{moderator}}</td>
+                                                        <td class="action-cell">
+                                                            <button type="button"
                                                                 class="btn btn-sm btn-danger remove-moderator">
-                                                            Удалить
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                {% endfor %}
+                                                                Удалить
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -277,15 +279,14 @@
                                     }
                                 });
 
-                                AjaxSend("/support/admin/update/moderator", "POST", {data});
+                                AjaxSend("/support/admin/update/moderator", "POST", { data });
                             });
 
                         </script>
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light"
-                                data-bs-dismiss="modal">{{phrase('close')}}
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase('close')}}
                         </button>
                     </div>
                 </div>
@@ -298,23 +299,53 @@
                 <div class="mail-option-read d-md-flex d-block">
                     {% if main %}
                     <a aria-label="anchor" href="javascript:location.reload();" class="vertical-phone"
-                       data-bs-toggle="tooltip" data-bs-original-title="Refresh">
+                        data-bs-toggle="tooltip" data-bs-original-title="Refresh">
                         <i class="bx bx-refresh"></i>
                     </a>
                     {% else %}
                     <a aria-label="anchor" href="/support" class="vertical-phone" data-bs-toggle="tooltip"
-                       data-bs-original-title="Back to inbox">
+                        data-bs-original-title="Back to inbox">
                         <i class="bx bx-left-arrow-alt"></i>
                     </a>
                     <a aria-label="anchor" href="javascript:location.reload();" class="vertical-phone"
-                       data-bs-toggle="tooltip" data-bs-original-title="Refresh">
+                        data-bs-toggle="tooltip" data-bs-original-title="Refresh">
                         <i class="bx bx-refresh"></i>
                     </a>
                     {% endif %}
                 </div>
 
+                {% if currentSection is defined and currentSection != null %}
+                <div class="ms-3">
+                    <h6 class="mb-0 text-primary">
+                        <i class="ri-inbox-archive-line me-1"></i>
+                        {{ phrase(sections[currentSection].thread_name) }}
+                    </h6>
+                </div>
+                {% endif %}
             </div>
             <div class="mail-messages" id="mail-messages">
+                {% if not getUser().isAdmin() and not isUserModerator %}
+                <div class="alert alert-info mb-3">
+                    <i class="ri-information-line me-2"></i>
+                    <strong>Ваши обращения:</strong>
+                    {% if currentSection is defined and currentSection != null %}
+                    Здесь отображаются ваши обращения в категории "{{ phrase(sections[currentSection].thread_name) }}".
+                    {% else %}
+                    Здесь отображаются все ваши обращения в техническую поддержку.
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if threads|length == 0 %}
+                <div class="text-center py-5">
+                    <i class="ri-inbox-line fs-48 text-muted mb-3"></i>
+                    <h5 class="text-muted">{{ phrase('No support requests') }}</h5>
+                    <p class="text-muted">{{ phrase('You have not created any support requests yet') }}</p>
+                    <a href="/support/new" class="btn btn-primary">
+                        <i class="ri-add-circle-line me-2"></i>{{ phrase('Create first request') }}
+                    </a>
+                </div>
+                {% else %}
                 <ul class="list-unstyled mb-0">
 
                     {% for thread in threads %}
@@ -327,46 +358,49 @@
                                 <a aria-label="anchor" href="javascript:void(0);" class="main-mail-star">
                                     {% if thread.is_close %}
                                     <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('is_close') }}"
-                                       class="bi bi-lock"></i>
+                                        class="bi bi-lock"></i>
                                     {% else %}
                                     <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('is_open') }}"
-                                       class="bi bi-unlock"></i>
+                                        class="bi bi-unlock"></i>
                                     {% endif %}
                                 </a>
                                 <a aria-label="anchor" href="javascript:void(0);" class="main-mail-star">
                                     {% if thread.private %}
                                     <i data-bs-toggle="tooltip"
-                                       data-bs-original-title="{{ phrase('Viewing is closed') }}"
-                                       class="bi bi-eye-slash"></i>
+                                        data-bs-original-title="{{ phrase('Viewing is closed') }}"
+                                        class="bi bi-eye-slash"></i>
                                     {% else %}
                                     <i data-bs-toggle="tooltip" data-bs-original-title="{{ phrase('Viewing is open') }}"
-                                       class="bi bi-eye"></i>
+                                        class="bi bi-eye"></i>
                                     {% endif %}
                                 </a>
                             </div>
 
 
                             <div class="flex-fill ms-0">
-                                {% if thread.owner_id == getUser().getId() or getUser().isAdmin() or isUserModerator or thread.private == false %}
+                                {% if thread.owner_id == getUser().getId() or getUser().isAdmin() or isUserModerator or
+                                thread.private == false %}
                                 <a href="/support/read/{{thread.id}}" class="text-decoration-none">{% endif %}
                                     <div class="d-flex align-items-center">
-            <span class="avatar avatar-lg me-1">
-                <img src="{{getUser(thread.last_user_id).getAvatar()}}" alt="img">
-            </span>
+                                        <span class="avatar avatar-lg me-1">
+                                            <img src="{{getUser(thread.last_user_id).getAvatar()}}" alt="img">
+                                        </span>
                                         <!-- Основной контейнер с фиксированной шириной -->
                                         <div class="w-75"> <!-- Используем w-75 для ширины 75% -->
                                             <span class="d-block mb-0">
-                    <!-- Имя треда с обрезкой -->
-                    <span class="text-muted d-inline-block text-truncate w-75">
-                        {{ phrase(sectionInfo.thread_name) }}
-                        от
-                        {{getUser(thread.owner_id).getName()}}
-                    </span>
-                </span>
+                                                <!-- Имя треда с обрезкой -->
+                                                <span class="text-muted d-inline-block text-truncate w-75">
+                                                    {{ phrase(sectionInfo.thread_name) }}
+                                                    {% if getUser().isAdmin() or isUserModerator %}
+                                                    от {{getUser(thread.owner_id).getName()}}
+                                                    {% endif %}
+                                                </span>
+                                            </span>
                                             <!-- Сообщение с обрезкой -->
                                             <div class="text-muted small d-block text-truncate">
                                                 {{getUser(thread.last_user_id).getName()}}:
-                                                {% if thread.private and thread.owner_id != getUser().getId() and getUser().isAdmin() == false and isUserModerator == false %}
+                                                {% if thread.private and thread.owner_id != getUser().getId() and
+                                                getUser().isAdmin() == false and isUserModerator == false %}
                                                 <i class="bi bi-eye-slash"></i>
                                                 {% else %}
                                                 {{strip_html_tags(thread.message)}}
@@ -380,7 +414,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    {% if thread.owner_id == getUser().getId() or getUser().isAdmin() or isUserModerator %}</a>{% endif %}
+                                    {% if thread.owner_id == getUser().getId() or getUser().isAdmin() or isUserModerator
+                                    %}
+                                </a>{% endif %}
                             </div>
 
                         </div>
@@ -390,6 +426,7 @@
 
 
                 </ul>
+                {% endif %}
             </div>
         </div>
     </div>

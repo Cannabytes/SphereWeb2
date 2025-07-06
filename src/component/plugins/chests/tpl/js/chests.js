@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Элементы интерфейса
     const modal = document.getElementById('chestModal');
     const openButton = document.getElementById('open-chest-button');
+    const openButtonGroup = document.querySelector('.open-button-container .btn-group');
+    const openChestDropdownItems = document.querySelectorAll('.dropdown-menu .dropdown-item[data-open-chest-count]');
+    const openChestMainBtn = document.getElementById('open-chest-button'); // Главная кнопка "Открыть кейс"
 
     // Настройки анимации
     const settings = {
@@ -44,8 +47,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
+            // Получаем количество открываемых сундуков. По умолчанию 1.
+            const numberOfChestsToOpen = parseInt(this.dataset.openChestCount || '1', 10);
+
             // Начинаем процесс открытия
-            startOpeningProcess(chestId);
+            startOpeningProcess(chestId, numberOfChestsToOpen);
+        });
+    }
+
+    // Обработчики событий для кнопок открытия кейсов в выпадающем списке
+    if (openChestDropdownItems.length > 0) {
+        openChestDropdownItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const count = this.dataset.openChestCount;
+                if (count) {
+                    openChestMainBtn.textContent = `Открыть ${count} сундуков`;
+                    openChestMainBtn.dataset.openChestCount = count;
+                    openButtonGroup.classList.add('multi-open-selected');
+                }
+            });
         });
     }
 
@@ -137,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Процесс открытия кейса
-    function startOpeningProcess(chestId) {
+    function startOpeningProcess(chestId, numberOfChestsToOpen = 1) {
         // Скрываем предпросмотр и список предметов
         makeModalTransparent();
 
@@ -151,35 +172,113 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             showOpeningAnimation(chestId);
 
-            AjaxSend('/fun/chests/callback', 'POST', {chest_id: chestId}, true)
+            AjaxSend('/fun/chests/callback', 'POST', {
+                chest_id: chestId,
+                count_open: numberOfChestsToOpen
+            }, true)
                 .then(response => {
                     responseAnalysis(response);
 
-                    if (!response || (!response.ok && !response.success) || !response.item) {
+                    if (!response || (!response.ok && !response.success)) {
                         throw new Error('Некорректные данные ответа');
                     }
 
-                    // Получаем данные о выигрышном предмете
-                    const winningItem = {
-                        id: response.item.id,
-                        count: response.item.count,
-                        enchant: response.item.enchant || 0,
-                        name: response.item.itemInfo.itemName,
-                        add_name: response.item.itemInfo.addName || '',
-                        icon: response.item.itemInfo.icon,
-                        crystal_type: response.item.itemInfo.crystal_type || ''
-                    };
+                    let winningItems = [];
+                    const allWarehouseItems = response.warehouse || [];
+
+                    // Создаем карту для быстрого поиска полной информации о предмете по его itemId
+                    const warehouseItemMap = new Map();
+                    allWarehouseItems.forEach(warehouseItem => {
+                        if (warehouseItem.itemId) {
+                            warehouseItemMap.set(warehouseItem.itemId, warehouseItem);
+                        }
+                    });
+
+                    // Обрабатываем предметы, которые были фактически выиграны (из response.items)
+                    if (response.items && Array.isArray(response.items)) {
+                        winningItems = response.items.map(wonItem => {
+                            const itemId = wonItem.id; // Это ID определения предмета
+                            const matchedWarehouseItem = warehouseItemMap.get(itemId);
+
+                            // Значения по умолчанию, если соответствующий предмет не найден (резерв)
+                            const defaultDetails = {
+                                name: 'Неизвестный предмет',
+                                add_name: '',
+                                icon: '',
+                                crystal_type: null,
+                                enchant: 0
+                            };
+
+                            let finalDetails = { ...defaultDetails }; // Начинаем со значений по умолчанию
+
+                            if (matchedWarehouseItem) {
+                                const itemInfo = matchedWarehouseItem.itemInfo || {};
+                                finalDetails.name = itemInfo.itemName || defaultDetails.name;
+                                finalDetails.add_name = itemInfo.addName || defaultDetails.add_name;
+                                finalDetails.icon = itemInfo.icon || defaultDetails.icon;
+                                finalDetails.crystal_type = itemInfo.crystal_type || defaultDetails.crystal_type;
+                                finalDetails.enchant = matchedWarehouseItem.enchant || defaultDetails.enchant; // Зачарование находится в warehouseItem
+                            }
+
+                            return {
+                                id: itemId, // ID определения предмета
+                                count: wonItem.count, // Количество из выигранного предмета
+                                enchant: finalDetails.enchant,
+                                name: finalDetails.name,
+                                add_name: finalDetails.add_name,
+                                icon: finalDetails.icon,
+                                crystal_type: finalDetails.crystal_type
+                            };
+                        });
+                    } else if (response.item) {
+                        // Этот путь менее вероятен, учитывая предоставленный JSON, но сохраняем для надежности
+                        const wonItem = response.item;
+                        const itemId = wonItem.id;
+                        const matchedWarehouseItem = warehouseItemMap.get(itemId);
+
+                        const defaultDetails = {
+                            name: 'Неизвестный предмет',
+                            add_name: '',
+                            icon: '',
+                            crystal_type: null,
+                            enchant: 0
+                        };
+
+                        let finalDetails = { ...defaultDetails };
+
+                        if (matchedWarehouseItem) {
+                            const itemInfo = matchedWarehouseItem.itemInfo || {};
+                            finalDetails.name = itemInfo.itemName || defaultDetails.name;
+                            finalDetails.add_name = itemInfo.addName || defaultDetails.add_name;
+                            finalDetails.icon = itemInfo.icon || defaultDetails.icon;
+                            finalDetails.crystal_type = itemInfo.crystal_type || defaultDetails.crystal_type;
+                            finalDetails.enchant = matchedWarehouseItem.enchant || defaultDetails.enchant;
+                        }
+
+                        winningItems.push({
+                            id: itemId,
+                            count: wonItem.count,
+                            enchant: finalDetails.enchant,
+                            name: finalDetails.name,
+                            add_name: finalDetails.add_name,
+                            icon: finalDetails.icon,
+                            crystal_type: finalDetails.crystal_type
+                        });
+                    } else {
+                        throw new Error('Ответ не содержит информацию о предметах');
+                    }
 
                     // Скрываем анимацию открытия
                     setTimeout(() => {
                         const openingContainer = document.querySelector('.opening-animation-container');
                         fadeOut(openingContainer);
 
-                        // Запускаем анимацию магических кристаллов
-                        setTimeout(() => showCrystalsAnimation(chestId, winningItem), 300);
+                        // Запускаем анимацию магических кристаллов, передаем массив выигранных предметов и карту склада
+                        setTimeout(() => showCrystalsAnimation(chestId, winningItems, warehouseItemMap), 300);
                     }, 1500);
                 })
                 .catch(error => {
+                    console.error('Ошибка при открытии кейса:', error);
                     restoreModalOpacity();
                     resetModalState();
                 });
@@ -268,11 +367,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // ======== НОВАЯ АНИМАЦИЯ - МАГИЧЕСКИЕ КРИСТАЛЛЫ ========
 
     // Анимация магических кристаллов
-    function showCrystalsAnimation(chestId, winningItem) {
+    function showCrystalsAnimation(chestId, winningItems, warehouseItemMap) { // Теперь принимает массив winningItems и warehouseItemMap
         const chest = window.chestData && window.chestData[chestId];
         if (!chest || !chest.items || !chest.items.length) {
             console.error('Данные кейса не найдены:', chestId);
-            showWinningItem(winningItem);
+            showWinningItem(winningItems); // Передаем все выигранные предметы
             return;
         }
 
@@ -280,16 +379,16 @@ document.addEventListener('DOMContentLoaded', function() {
         createCrystalsContainer();
 
         // Получаем коллекцию предметов из кейса
-        const items = [...chest.items];
+        const allPossibleItems = [...chest.items];
 
         // Заполняем кристаллы предметами
-        populateCrystals(items, winningItem);
+        populateCrystals(allPossibleItems, winningItems, warehouseItemMap); // Передаем все выигранные предметы и warehouseItemMap
 
         // Воспроизводим звук
         playSound('crystals_appear');
 
         // Запускаем анимацию открытия кристаллов
-        revealCrystals(winningItem);
+        revealCrystals(winningItems); // Передаем все выигранные предметы
     }
 
     // Создание контейнера для кристаллов
@@ -322,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Заполнение кристаллов предметами
-    function populateCrystals(items, winningItem) {
+    function populateCrystals(allPossibleItems, winningItems, warehouseItemMap) { // Теперь принимает массив winningItems и warehouseItemMap
         const crystalsGrid = document.querySelector('.crystals-grid');
         if (!crystalsGrid) return;
 
@@ -334,66 +433,97 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Кеш для отслеживания использованных предметов, чтобы избежать повторов
         const usedItemIds = new Set();
-        usedItemIds.add(winningItem.id);
 
-        // Определяем, сколько уникальных предметов доступно
-        const uniqueItems = items.filter(item => !usedItemIds.has(item.id));
+        // Helper to get item details for populating crystals
+        const getCrystalItemDetails = (item, map) => {
+            const itemId = item.id;
+            const matchedWarehouseItem = map.get(itemId);
 
-        // Если предметов недостаточно, используем повторно
-        const getRandomItem = () => {
-            if (uniqueItems.length > 0) {
-                // Выбор случайного уникального предмета
-                const randomIndex = Math.floor(Math.random() * uniqueItems.length);
-                const item = uniqueItems[randomIndex];
+            const defaultDetails = {
+                name: '???',
+                add_name: '',
+                icon: '',
+                crystal_type: null,
+                enchant: 0
+            };
 
-                // Удаляем использованный предмет из списка уникальных
-                uniqueItems.splice(randomIndex, 1);
-                return item;
-            } else {
-                // Если уникальных предметов не осталось, выбираем случайный из всех
-                return items[Math.floor(Math.random() * items.length)];
+            let finalDetails = { ...defaultDetails };
+
+            if (matchedWarehouseItem) {
+                const itemInfo = matchedWarehouseItem.itemInfo || {};
+                finalDetails.name = itemInfo.itemName || defaultDetails.name;
+                finalDetails.add_name = itemInfo.addName || defaultDetails.add_name;
+                finalDetails.icon = itemInfo.icon || defaultDetails.icon;
+                finalDetails.crystal_type = itemInfo.crystal_type || defaultDetails.crystal_type;
+                finalDetails.enchant = matchedWarehouseItem.enchant || defaultDetails.enchant;
             }
+
+            return {
+                id: itemId,
+                name: finalDetails.name,
+                icon: finalDetails.icon,
+                count: item.count || 1, // Количество берется из переданного объекта 'item'
+                enchant: finalDetails.enchant,
+                crystal_type: finalDetails.crystal_type
+            };
         };
 
-        // Добавляем случайные предметы из кейса
-        for (let i = 0; i < settings.crystalsCount - 1; i++) {
-            crystalItems.push(getRandomItem());
-        }
 
-        // Добавляем выигрышный предмет в случайную позицию
-        const winningPosition = Math.floor(Math.random() * settings.crystalsCount);
-        crystalItems.splice(winningPosition, 0, {
-            id: winningItem.id,
-            name: winningItem.name,
-            add_name: winningItem.add_name,
-            icon: winningItem.icon,
-            count: winningItem.count,
-            enchant: winningItem.enchant,
-            crystal_type: winningItem.crystal_type,
-            isWinning: true
+        // Добавляем все выигрышные предметы в crystalItems и помечаем их как winning
+        winningItems.forEach(winItem => {
+            // winItem уже имеет полные детали из предыдущего сопоставления,
+            // но getCrystalItemDetails все равно будет использовать карту для единообразия.
+            const details = getCrystalItemDetails(winItem, warehouseItemMap);
+            crystalItems.push({ ...details, isWinning: true });
+            usedItemIds.add(details.id);
         });
 
+        // Определяем, сколько слотов осталось заполнить
+        const remainingSlots = settings.crystalsCount - crystalItems.length;
+
+        // Создаем пул предметов для заполнения оставшихся слотов
+        // Сначала уникальные, невыигранные предметы
+        const fillableItems = allPossibleItems.filter(item => !usedItemIds.has(item.id));
+
+        // Если уникальных не хватает, повторяем
+        let currentFillableItems = [...fillableItems];
+        while (currentFillableItems.length < remainingSlots) {
+            currentFillableItems = currentFillableItems.concat(fillableItems);
+        }
+        currentFillableItems = currentFillableItems.slice(0, remainingSlots); // Обрезаем до нужного количества
+
+        // Добавляем их в массив кристаллов, используя getCrystalItemDetails и warehouseItemMap
+        currentFillableItems.forEach(item => {
+            crystalItems.push(getCrystalItemDetails(item, warehouseItemMap));
+        });
+
+        // Перемешиваем весь массив, чтобы выигрышные предметы были в случайных местах
+        shuffleArray(crystalItems);
 
         // Создаем HTML для кристаллов
         for (let i = 0; i < settings.crystalsCount; i++) {
             const item = crystalItems[i];
-            const enchantBadge = item.enchant > 0
+            // Безопасная проверка на существование item перед доступом к его свойствам
+            const itemIcon = item ? item.icon : '';
+            const itemName = item ? item.name : '???';
+            const itemCount = item ? item.count : '0';
+            const enchantBadge = item && item.enchant > 0
                 ? `<div class="crystal-enchant">+${item.enchant}</div>`
                 : '';
 
             const crystalHTML = `
-                <div class="magic-crystal ${item.isWinning ? 'winning-crystal' : ''}" data-index="${i}">
+                <div class="magic-crystal ${item && item.isWinning ? 'winning-crystal' : ''}" data-index="${i}" data-item-id="${item ? item.id : ''}">
                     <div class="crystal-cover">
                         <div class="crystal-glow"></div>
                         <div class="crystal-runes"></div>
                     </div>
                     <div class="crystal-content">
                         <div class="crystal-item-container">
-                            <img src="${item.icon}" alt="${item.name}" class="crystal-item-image">
+                            <img src="${itemIcon}" alt="${itemName}" class="crystal-item-image">
                             ${enchantBadge}
                         </div>
-                        <div class="crystal-item-name">${item.name}</div>
-                        <div class="crystal-item-count">x${item.count}</div>
+                        <div class="crystal-item-name">${itemName}</div>
+                        <div class="crystal-item-count">x${itemCount}</div>
                     </div>
                 </div>
             `;
@@ -403,63 +533,70 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Анимация открытия кристаллов
-    // Анимация открытия кристаллов
-    function revealCrystals(winningItem) {
+    function revealCrystals(winningItems) { // Теперь принимает массив winningItems
         const crystals = document.querySelectorAll('.magic-crystal');
-        const winningCrystal = document.querySelector('.winning-crystal');
+        const winningCrystals = document.querySelectorAll('.winning-crystal'); // Теперь получаем все выигрышные кристаллы
 
-        if (!crystals.length || !winningCrystal) {
-            console.error('Кристаллы не найдены');
-            showWinningItem(winningItem);
+        if (!crystals.length) { // Исправлена проверка на наличие кристаллов
+            console.error('Кристаллы не найдены для анимации.');
+            // Если нет кристаллов, сразу переходим к показу выигрыша, если есть
+            if (winningItems && winningItems.length > 0) {
+                showWinningItem(winningItems);
+            } else {
+                // Если нет ни кристаллов, ни выигранных предметов, просто сбрасываем состояние
+                resetModalState();
+            }
             return;
         }
 
-        // Массив индексов кристаллов для открытия
-        const crystalIndices = Array.from(crystals).map((_, index) => index);
+        // Массив индексов невыигрышных кристаллов
+        // Исправлено: Более безопасный способ получения индексов невыигрышных кристаллов
+        const nonWinningCrystalIndices = [];
+        crystals.forEach((crystal, index) => {
+            if (!crystal.classList.contains('winning-crystal')) {
+                nonWinningCrystalIndices.push(index);
+            }
+        });
 
-        // Удаляем индекс выигрышного кристалла
-        const winningIndex = parseInt(winningCrystal.dataset.index);
-        const winningPosition = crystalIndices.indexOf(winningIndex);
-        if (winningPosition !== -1) {
-            crystalIndices.splice(winningPosition, 1);
-        }
-
-        // Перемешиваем массив индексов
-        shuffleArray(crystalIndices);
+        // Перемешиваем массив индексов невыигрышных кристаллов
+        shuffleArray(nonWinningCrystalIndices);
 
         // Определяем, сколько кристаллов открывать за раз для ускорения процесса
-        const batchSize = Math.floor(crystalIndices.length / 5); // Открываем примерно 20% кристаллов за раз
+        const batchSize = Math.floor(nonWinningCrystalIndices.length / 5) || 1; // Открываем примерно 20% кристаллов за раз, минимум 1
 
         // Разбиваем индексы на группы
         const batches = [];
-        for (let i = 0; i < crystalIndices.length; i += batchSize) {
-            batches.push(crystalIndices.slice(i, i + batchSize));
+        for (let i = 0; i < nonWinningCrystalIndices.length; i += batchSize) {
+            batches.push(nonWinningCrystalIndices.slice(i, i + batchSize));
         }
 
         // Открываем группы кристаллов
         function revealBatch(batchIndex) {
             if (batchIndex >= batches.length) {
-                // Все невыигрышные кристаллы открыты, открываем выигрышный
+                // Все невыигрышные кристаллы открыты, открываем выигрышные
                 setTimeout(() => {
-                    // Звук для выигрышного кристалла
+                    // Звук для выигрышных кристаллов (может быть один для всех или по очереди)
                     playSound('special_crystal');
 
-                    // Открываем выигрышный кристалл
-                    winningCrystal.classList.add('revealed');
+                    // Открываем все выигрышные кристаллы
+                    winningCrystals.forEach(crystal => {
+                        if (crystal) { // Дополнительная проверка
+                            crystal.classList.add('revealed');
+                            // Добавляем специальные эффекты
+                            setTimeout(() => {
+                                crystal.classList.add('special-effect');
+                            }, 300);
+                        }
+                    });
 
-                    // Добавляем специальные эффекты
+                    // Звук выигрыша
+                    playSound('win');
+
+                    // Переходим к экрану выигрыша после общей длительности подсветки
                     setTimeout(() => {
-                        winningCrystal.classList.add('special-effect');
-
-                        // Звук выигрыша
-                        playSound('win');
-
-                        // Переходим к экрану выигрыша
-                        setTimeout(() => {
-                            fadeOut(document.querySelector('.crystals-container'));
-                            setTimeout(() => showWinningItem(winningItem), 500);
-                        }, settings.highlightDuration);
-                    }, 300);
+                        fadeOut(document.querySelector('.crystals-container'));
+                        setTimeout(() => showWinningItem(winningItems), 500); // Передаем все выигранные предметы
+                    }, settings.highlightDuration);
                 }, settings.revealDelay);
                 return;
             }
@@ -467,7 +604,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Открываем текущую группу кристаллов
             batches[batchIndex].forEach(index => {
                 const crystal = crystals[index];
-                crystal.classList.add('revealed');
+                if (crystal) { // Добавлена проверка на существование элемента
+                    crystal.classList.add('revealed');
+                }
             });
 
             // Звук открытия группы кристаллов
@@ -489,54 +628,66 @@ document.addEventListener('DOMContentLoaded', function() {
             const modalContent = modal.querySelector('.modal-content');
 
             // Сохраняем исходные стили для восстановления
-            if (!modalContent.dataset.originalBg) {
+            if (modalContent && !modalContent.dataset.originalBg) {
                 modalContent.dataset.originalBg = modalContent.style.backgroundColor || '';
             }
 
             // Применяем прозрачность
-            modalContent.style.backgroundColor = 'rgba(0, 0, 0, 0)';
-            modalContent.style.transition = 'background-color 0.5s ease';
+            if (modalContent) {
+                modalContent.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+                modalContent.style.transition = 'background-color 0.5s ease';
+            }
         }
     }
 
 
-    // Показ выигрышного предмета
-    function showWinningItem(item) {
+    // Показ выигрышного предмета(ов)
+    function showWinningItem(winningItems) { // Теперь принимает массив winningItems
         restoreModalOpacity();
 
-
         const winningContainer = document.querySelector('.winning-container');
-        const winningItemImage = document.getElementById('winning-item-image');
-        const winningItemName = document.getElementById('winning-item-name');
-        const winningItemCount = document.getElementById('winning-item-count');
-        const winningItemEnchant = document.getElementById('winning-item-enchant');
-
-        if (!winningContainer || !winningItemImage || !winningItemName ||
-            !winningItemCount || !winningItemEnchant) {
-            console.error('Элементы для отображения выигрыша не найдены');
+        if (!winningContainer) {
+            console.error('Контейнер для отображения выигрыша не найден');
             return;
         }
 
-        // Устанавливаем данные
-        winningItemImage.src = item.icon;
-        winningItemName.textContent = item.name + (item.add_name ? ' ' + item.add_name : '');
-        winningItemCount.textContent = 'x' + item.count;
+        // Очищаем предыдущие выигрыши, если они были
+        let winningItemsListContainer = winningContainer.querySelector('.winning-items-list');
+        if (!winningItemsListContainer) {
+            winningItemsListContainer = document.createElement('div');
+            winningItemsListContainer.classList.add('winning-items-list');
+            winningContainer.appendChild(winningItemsListContainer);
+        }
+        winningItemsListContainer.innerHTML = ''; // Очищаем контейнер
 
-        // Зачарование
-        if (item.enchant > 0) {
-            winningItemEnchant.textContent = '+' + item.enchant;
-            winningItemEnchant.classList.remove('d-none');
-        } else {
-            winningItemEnchant.classList.add('d-none');
+        // Добавляем каждый выигранный предмет
+        winningItems.forEach(item => {
+            const enchantBadge = item.enchant > 0
+                ? `<div class="item-enchant">+${item.enchant}</div>`
+                : '';
+
+            const itemHTML = `
+                <div class="winning-item-card">
+                    <div class="winning-item-image-container">
+                        <img src="${item.icon}" alt="${item.name}" class="winning-item-image">
+                        ${enchantBadge}
+                    </div>
+                    <div class="winning-item-details">
+                        <p class="winning-item-name">${item.name} ${item.add_name ? item.add_name : ''}</p>
+                        <span class="winning-item-count">x${item.count}</span>
+                    </div>
+                </div>
+            `;
+            winningItemsListContainer.innerHTML += itemHTML; // Добавляем карточку предмета
+        });
+
+
+        // Эффекты для редких предметов (если есть хотя бы один S-тип)
+        const hasSpecialItem = winningItems.some(item => item.crystal_type === 's');
+        if (hasSpecialItem) {
+            setTimeout(() => createConfettiEffect(winningContainer), 300);
         }
 
-        // Эффекты для редких предметов
-        const winningItem = document.querySelector('.winning-item');
-        if (winningItem) {
-            if (item.crystal_type === 's') {
-                setTimeout(() => createConfettiEffect(winningContainer), 300);
-            }
-        }
 
         // Показываем контейнер
         winningContainer.classList.remove('d-none');
@@ -615,12 +766,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Удаляем временные элементы
-        document.querySelectorAll('.particles-container, .confetti-container').forEach(el => {
+        document.querySelectorAll('.particles-container, .confetti-container, .winning-items-list').forEach(el => {
             if (el.parentNode) el.parentNode.removeChild(el);
         });
 
         // Возвращаем кнопку в исходное состояние
         if (openButton) openButton.disabled = false;
+
+        // Возвращаем текст кнопки "Открыть кейс" в исходное состояние
+        if (openChestMainBtn) {
+            openChestMainBtn.textContent = 'Открыть кейс';
+            delete openChestMainBtn.dataset.openChestCount; // Удаляем сохраненное количество
+            if (openButtonGroup) {
+                openButtonGroup.classList.remove('multi-open-selected');
+            }
+        }
+
 
         // Показываем основные контейнеры
         const previewContainer = document.querySelector('.chest-preview-container');
@@ -906,6 +1067,90 @@ document.addEventListener('DOMContentLoaded', function() {
             .magic-crystal {
                 height: 160px;
             }
+        }
+
+        /* Стили для списка выигранных предметов */
+        .winning-items-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            max-height: 400px; /* Ограничиваем высоту для скролла, если много предметов */
+            overflow-y: auto; /* Добавляем скролл */
+            padding: 10px;
+        }
+
+        .winning-item-card {
+            background: rgba(30, 32, 41, 0.9);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            width: 120px; /* Фиксированная ширина карточки */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between; /* Для равномерного распределения контента */
+            min-height: 150px; /* Минимальная высота карточки */
+        }
+
+        .winning-item-image-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .winning-item-image {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .winning-item-details {
+            width: 100%; /* Занимает всю ширину карточки */
+        }
+
+        .winning-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+            white-space: normal; /* Разрешаем перенос текста */
+            word-wrap: break-word; /* Перенос длинных слов */
+            height: 36px; /* Фиксированная высота для 2-х строк */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .winning-item-count {
+            font-size: 12px;
+            color: #ddd;
+        }
+
+        /* Зачарование на выигранном предмете */
+        .winning-item-card .item-enchant {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 3;
         }
         `;
         document.head.appendChild(style);

@@ -2268,7 +2268,7 @@ class tpl
 
     /**
      * @param           $var
-     * @param   string  $value
+     * @param   mixed  $value
      *
      * @return void
      * Добавление переменной к выводу шаблона

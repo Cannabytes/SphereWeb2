@@ -11,7 +11,7 @@
             <div class="mail-info-header p-1 d-xxl-flex align-items-center">
                 <div class="mail-option-read d-md-flex d-block">
                     <a aria-label="anchor" href="/support" class="vertical-phone" data-bs-toggle="tooltip"
-                       data-bs-original-title="Назад">
+                        data-bs-original-title="Назад">
                         <i class="bx bx-left-arrow-alt"></i>
                     </a>
                 </div>
@@ -19,19 +19,27 @@
 
             <div class="p-4">
 
+                {% if not getUser().isAdmin() and not isUserModerator %}
+                <div class="alert alert-success mb-3">
+                    <i class="ri-check-line me-2"></i>
+                    <strong>Добро пожаловать в техническую поддержку!</strong>
+                    Это ваше первое обращение. Опишите вашу проблему как можно подробнее.
+                </div>
+                {% endif %}
+
                 <div class="accordion accordion-customicon1 accordion-primary accordions-items-seperate mb-2"
-                     id="accordionFAQ1">
+                    id="accordionFAQ1">
 
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingcustomicon1One">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapsecustomicon1One" aria-expanded="false"
-                                    aria-controls="collapsecustomicon1One">
+                                data-bs-target="#collapsecustomicon1One" aria-expanded="false"
+                                aria-controls="collapsecustomicon1One">
                                 {{ phrase('How to describe the problem correctly?') }}
                             </button>
                         </h2>
                         <div id="collapsecustomicon1One" class="accordion-collapse collapse"
-                             aria-labelledby="headingcustomicon1One" data-bs-parent="#accordionFAQ1" style="">
+                            aria-labelledby="headingcustomicon1One" data-bs-parent="#accordionFAQ1" style="">
                             <div class="accordion-body">
                                 <div class="support-request">
                                     <h2>{{ phrase('much information as possible') }}:</h2>
@@ -57,13 +65,6 @@
                         </select>
                     </div>
 
-                    <div class="form-check form-check-md d-flex align-items-center mb-2">
-                        <input class="form-check-input" type="checkbox" value="" name="private" id="private" checked="">
-                        <label class="form-check-label" for="private">
-                            {{ phrase('Private question (visible only to you and moderators)') }}
-                        </label>
-                    </div>
-
                     <div id="message-editor"></div>
                 </div>
             </div>
@@ -74,26 +75,24 @@
                     <div id="screens" class="mt-2 mb-2 d-flex flex-wrap"></div>
 
                     <button id="createSupportRequest" aria-label="button" type="button"
-                            class="btn btn-success d-inline-flex">
+                        class="btn btn-success d-inline-flex">
                         <i class="ri-share-forward-line me-1 align-middle"></i>{{ phrase('Send message') }}
                     </button>
 
-                    <button aria-label="anchor" class="btn btn-icon mx-2 btn-primary-light"
-                            type="button" data-bs-toggle="modal"
-                            data-bs-target="#modalLoadImgPanel">
+                    <button aria-label="anchor" class="btn btn-icon mx-2 btn-primary-light" type="button"
+                        data-bs-toggle="modal" data-bs-target="#modalLoadImgPanel">
                         <i class="ri-attachment-2"></i>
                     </button>
 
 
-                    <div class="modal fade" id="modalLoadImgPanel" tabindex="-1"
-                         aria-labelledby="modalLoadImgPanel" data-bs-keyboard="false"
-                         aria-hidden="true">
+                    <div class="modal fade" id="modalLoadImgPanel" tabindex="-1" aria-labelledby="modalLoadImgPanel"
+                        data-bs-keyboard="false" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
 
                                 <div class="modal-body">
                                     <input type="file" class="multiple-filepond" name="filepond" multiple
-                                           data-allow-reorder="true" data-max-file-size="3MB" data-max-files="6">
+                                        data-allow-reorder="true" data-max-file-size="3MB" data-max-files="6">
                                 </div>
                             </div>
                         </div>
@@ -117,7 +116,7 @@
 <link rel="stylesheet" href="{{template}}/assets/libs/prismjs/themes/prism-coy.min.css">
 <link rel="stylesheet" href="{{template}}/assets/libs/filepond/filepond.min.css">
 <link rel="stylesheet"
-      href="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
+    href="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
 <link rel="stylesheet" href="{{template}}/assets/libs/filepond-plugin-image-edit/filepond-plugin-image-edit.min.css">
 <link rel="stylesheet" href="{{template}}/assets/libs/dropzone/dropzone.css">
 <link rel="stylesheet" href="{{template}}/assets/libs/glightbox/css/glightbox.min.css">
@@ -130,12 +129,16 @@
 {% block js %}
 <script src="{{template}}/assets/libs/filepond/filepond.min.js"></script>
 <script src="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
-<script src="{{template}}/assets/libs/filepond-plugin-image-exif-orientation/filepond-plugin-image-exif-orientation.min.js"></script>
-<script src="{{template}}/assets/libs/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
+<script
+    src="{{template}}/assets/libs/filepond-plugin-image-exif-orientation/filepond-plugin-image-exif-orientation.min.js"></script>
+<script
+    src="{{template}}/assets/libs/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
 <script src="{{template}}/assets/libs/filepond-plugin-file-encode/filepond-plugin-file-encode.min.js"></script>
 <script src="{{template}}/assets/libs/filepond-plugin-image-edit/filepond-plugin-image-edit.min.js"></script>
-<script src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
-<script src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script
+    src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script
+    src="{{template}}/assets/libs/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
 <script src="{{template}}/assets/libs/filepond-plugin-image-crop/filepond-plugin-image-crop.min.js"></script>
 <script src="{{template}}/assets/libs/filepond-plugin-image-resize/filepond-plugin-image-resize.min.js"></script>
 <script src="{{template}}/assets/libs/filepond-plugin-image-transform/filepond-plugin-image-transform.min.js"></script>
@@ -150,89 +153,87 @@
 <script src="{{template}}/assets/libs/quill/quill.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-    var quill; // Глобальное объявление переменной
+    $(document).ready(function () {
+        var quill; // Глобальное объявление переменной
 
-    $(function () {
-        var toolbarOptions = [
-            ['bold', 'italic', 'underline', 'strike'],
-            [{'list': 'ordered'}, {'list': 'bullet'}],
-            ['clean']
-        ];
+        $(function () {
+            var toolbarOptions = [
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                ['clean']
+            ];
 
-        quill = new Quill('#message-editor', {
-            modules: {
-                toolbar: toolbarOptions
-            },
-            theme: 'snow'
+            quill = new Quill('#message-editor', {
+                modules: {
+                    toolbar: toolbarOptions
+                },
+                theme: 'snow'
+            });
         });
-    });
 
-    const editor = document.querySelector('#message-editor');
+        const editor = document.querySelector('#message-editor');
 
-    const modalTriggerButton = document.querySelector('[data-bs-target="#modalLoadImgPanel"]');
+        const modalTriggerButton = document.querySelector('[data-bs-target="#modalLoadImgPanel"]');
 
-    // Отслеживаем событие dragover (когда изображение над областью)
-    editor.addEventListener('dragover', (event) => {
-        event.preventDefault(); // Это необходимо для разрешения перетаскивания
-        if (!document.querySelector('.modal.show')) {
-            modalTriggerButton.click(); // Открываем модальное окно
-        }
-    });
+        // Отслеживаем событие dragover (когда изображение над областью)
+        editor.addEventListener('dragover', (event) => {
+            event.preventDefault(); // Это необходимо для разрешения перетаскивания
+            if (!document.querySelector('.modal.show')) {
+                modalTriggerButton.click(); // Открываем модальное окно
+            }
+        });
 
-    // Перехватываем drop событие
-    editor.addEventListener('drop', (event) => {
-        event.preventDefault();
-        const files = event.dataTransfer.files;
+        // Перехватываем drop событие
+        editor.addEventListener('drop', (event) => {
+            event.preventDefault();
+            const files = event.dataTransfer.files;
 
-        if (files && files[0] && files[0].type.startsWith('image/')) {
-            console.log('Изображение перетащено:', files[0]);
+            if (files && files[0] && files[0].type.startsWith('image/')) {
+                console.log('Изображение перетащено:', files[0]);
 
-            // Сразу открываем модальное окно для загрузки изображения
-            const modalTriggerButton = document.querySelector('[data-bs-target="#modalLoadImgPanel"]');
-            modalTriggerButton.click();
-        }
-    });
-
-
-    // Перехватываем paste событие (вставка изображения через буфер обмена)
-    editor.addEventListener('paste', (event) => {
-        const clipboardData = event.clipboardData || window.clipboardData;
-        const items = clipboardData.items;
-
-        for (let i = 0; i < items.length; i++) {
-            if (items[i].type.startsWith('image/')) {
-                event.preventDefault();
-                console.log('Изображение вставлено через буфер обмена:', items[i].getAsFile());
+                // Сразу открываем модальное окно для загрузки изображения
+                const modalTriggerButton = document.querySelector('[data-bs-target="#modalLoadImgPanel"]');
                 modalTriggerButton.click();
             }
-        }
-    });
+        });
 
 
-    $('#createSupportRequest').on('click', function () {
-        let editorContent = quill.root.innerHTML;
-        let section = $("#section").val();
-        let screens = [];
-        let isPrivate = $('#private').prop('checked');
-        if ($.trim(editorContent) === '<p><br></p>') {
-            alert('{{ phrase(502) }}');
-            return;
-        }
-        $('#screens .glightbox').each(function () {
-            let href = $(this).attr('href');
-            if (href) {
-                let filename = href.split('/').pop();
-                screens.push(filename);
+        // Перехватываем paste событие (вставка изображения через буфер обмена)
+        editor.addEventListener('paste', (event) => {
+            const clipboardData = event.clipboardData || window.clipboardData;
+            const items = clipboardData.items;
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.startsWith('image/')) {
+                    event.preventDefault();
+                    console.log('Изображение вставлено через буфер обмена:', items[i].getAsFile());
+                    modalTriggerButton.click();
+                }
             }
         });
-        AjaxSend("/support/create/request", "POST", {
-            message: editorContent,
-            section: section,
-            private: isPrivate,
-            screens: screens
-        }, false)
-    });
+
+
+        $('#createSupportRequest').on('click', function () {
+            let editorContent = quill.root.innerHTML;
+            let section = $("#section").val();
+            let screens = [];
+            if ($.trim(editorContent) === '<p><br></p>') {
+                alert('{{ phrase(502) }}');
+                return;
+            }
+            $('#screens .glightbox').each(function () {
+                let href = $(this).attr('href');
+                if (href) {
+                    let filename = href.split('/').pop();
+                    screens.push(filename);
+                }
+            });
+            AjaxSend("/support/create/request", "POST", {
+                message: editorContent,
+                section: section,
+                screens: screens
+            }, false)
+        });
 
 
 

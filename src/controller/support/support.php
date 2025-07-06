@@ -20,6 +20,7 @@ class support
 {
 
     private static ?array $sections = null;
+    private static ?int $currentUserId = null;
 
     /**
      * @url /support/thread/1
@@ -29,10 +30,17 @@ class support
     static function showThread($id): void
     {
         self::isEnable();
+
+        // Если пользователь не администратор и у него нет обращений, редиректим на создание
+        if (!user::self()->isAdmin() && !self::isUserModerator() && !self::hasUserThreads()) {
+            redirect::location("/support/new");
+        }
+
         tpl::addVar([
             'sections' => self::sections(),
             'threads' => self::getThreads($id),
             'isUserModerator' => self::isUserModerator(),
+            'currentSection' => $id,
         ]);
         tpl::display("support/index.html");
     }
@@ -53,15 +61,20 @@ class support
 
     private static function isUserModerator(): bool
     {
-        self::sections();
         if (user::self()->isAdmin()) {
             return true;
         }
-        foreach (self::$sections as $section) {
+
+        // Получаем секции напрямую из базы данных для проверки модераторов
+        $sections = sql::getRows("SELECT moderators FROM `support_thread_name` WHERE moderators IS NOT NULL");
+        foreach ($sections as $section) {
             if ($section['moderators'] != null) {
-                foreach ($section['moderators'] as $moderator) {
-                    if ($moderator == user::self()->getEmail()) {
-                        return true;
+                $moderators = json_decode($section['moderators'], true);
+                if (is_array($moderators)) {
+                    foreach ($moderators as $moderator) {
+                        if ($moderator == user::self()->getEmail()) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -71,23 +84,46 @@ class support
 
     private static function sections(): array
     {
+        // Проверяем, является ли пользователь администратором или модератором
+        $isAdmin = user::self()->isAdmin() || self::isUserModerator();
+        $userId = user::self()->getId();
+
+        // Сбрасываем кэш, если пользователь изменился
+        if (self::$currentUserId !== null && self::$currentUserId !== $userId) {
+            self::$sections = null;
+        }
+
         if (self::$sections !== null) {
             return self::$sections;
         }
+
+        self::$currentUserId = $userId;
         self::$sections = [];
         foreach (sql::getRows("SELECT * FROM `support_thread_name`") as $row) {
             if ($row['moderators'] != null) {
                 $row['moderators'] = json_decode($row['moderators'], true);
             }
+
+            // Подсчитываем количество тикетов в категории
+            if ($isAdmin) {
+                // Для администратора - все тикеты в категории
+                $count = sql::getRow("SELECT COUNT(*) as count FROM support_thread WHERE thread_id = ?", [$row['id']]);
+            } else {
+                // Для обычного пользователя - только его тикеты в категории
+                $count = sql::getRow("SELECT COUNT(*) as count FROM support_thread WHERE thread_id = ? AND owner_id = ?", [$row['id'], $userId]);
+            }
+
+            $row['thread_count'] = $count['count'];
             self::$sections[$row['id']] = $row;
         }
+
         return self::$sections;
     }
 
     private static ?int $noReadCountThreads = null;
     public static function getThreadsNoReadCount(): int
     {
-        if (self::$noReadCountThreads!=null){
+        if (self::$noReadCountThreads != null) {
             return self::$noReadCountThreads;
         }
         // Проверяем, является ли пользователь администратором
@@ -117,25 +153,11 @@ class support
 
             return self::$noReadCountThreads = $unreadCount;
         } else {
-            // Для обычного пользователя: только его чаты с непрочитанными сообщениями
+            // Для обычного пользователя: только его чаты
             $userId = user::self()->getId();
 
-            // Получаем все темы пользователя и темы, где ему ответили
-            $threads = sql::getRows("
-            SELECT st.id 
-            FROM support_thread st
-            WHERE st.owner_id = ? 
-            OR st.id IN (
-                SELECT DISTINCT sm.thread_id 
-                FROM support_message sm 
-                WHERE sm.thread_id IN (
-                    SELECT DISTINCT st2.id 
-                    FROM support_thread st2 
-                    WHERE st2.owner_id = ?
-                )
-                AND sm.user_id != ?
-            )
-        ", [$userId, $userId, $userId]);
+            // Получаем только темы пользователя
+            $threads = sql::getRows("SELECT id FROM support_thread WHERE owner_id = ?", [$userId]);
 
             // Получаем идентификаторы прочитанных тем для пользователя
             $threadsRead = sql::getRows("SELECT topic_id FROM `support_read_topics` WHERE user_id = ?", [
@@ -156,48 +178,96 @@ class support
             }
 
             return self::$noReadCountThreads = $unreadCount;
-
         }
     }
 
     private static function getThreads($id = null): array
     {
+        // Если пользователь администратор или модератор, показываем все обращения
+        $isAdmin = user::self()->isAdmin() || self::isUserModerator();
+
         if ($id != null) {
-            $threads = sql::getRows("
-                                SELECT 
-                                    st.id, 
-                                    st.thread_id, 
-                                    st.owner_id, 
-                                    (
-                                        SELECT sm.user_id 
-                                        FROM support_message sm 
-                                        WHERE sm.id = (
-                                            SELECT MAX(sm_inner.id) 
-                                            FROM support_message sm_inner 
-                                            WHERE sm_inner.thread_id = st.id
-                                        )
-                                    ) AS last_user_id, 
-                                    st.date_update, 
-                                    (
-                                        SELECT SUBSTRING(sm.message, 1, 200) 
-                                        FROM support_message sm 
-                                        WHERE sm.id = (
-                                            SELECT MAX(sm_inner.id) 
-                                            FROM support_message sm_inner 
-                                            WHERE sm_inner.thread_id = st.id
-                                        )
-                                    ) AS message, 
-                                    st.private, 
-                                    st.is_close
-                                FROM 
-                                    support_thread st
-                                WHERE 
-                                    st.thread_id = ?
-                                ORDER BY 
-                                    st.date_update DESC;
-                            ", [$id]);
+            if ($isAdmin) {
+                // Для администратора и модератора - все обращения в категории
+                $threads = sql::getRows("
+                                    SELECT 
+                                        st.id, 
+                                        st.thread_id, 
+                                        st.owner_id, 
+                                        (
+                                            SELECT sm.user_id 
+                                            FROM support_message sm 
+                                            WHERE sm.id = (
+                                                SELECT MAX(sm_inner.id) 
+                                                FROM support_message sm_inner 
+                                                WHERE sm_inner.thread_id = st.id
+                                            )
+                                        ) AS last_user_id, 
+                                        st.date_update, 
+                                        (
+                                            SELECT SUBSTRING(sm.message, 1, 200) 
+                                            FROM support_message sm 
+                                            WHERE sm.id = (
+                                                SELECT MAX(sm_inner.id) 
+                                                FROM support_message sm_inner 
+                                                WHERE sm_inner.thread_id = st.id
+                                            )
+                                        ) AS message, 
+                                        st.private, 
+                                        st.is_close
+                                    FROM 
+                                        support_thread st
+                                    WHERE 
+                                        st.thread_id = ?
+                                    ORDER BY 
+                                        st.date_update DESC;
+                                ", [$id]);
+            } else {
+                // Для обычного пользователя - только его обращения в категории
+                $userId = user::self()->getId();
+                $threads = sql::getRows("
+                                    SELECT 
+                                        st.id, 
+                                        st.thread_id, 
+                                        st.owner_id, 
+                                        (
+                                            SELECT sm.user_id 
+                                            FROM support_message sm 
+                                            WHERE sm.id = (
+                                                SELECT MAX(sm_inner.id) 
+                                                FROM support_message sm_inner 
+                                                WHERE sm_inner.thread_id = st.id
+                                            )
+                                        ) AS last_user_id, 
+                                        st.date_update, 
+                                        (
+                                            SELECT SUBSTRING(sm.message, 1, 200) 
+                                            FROM support_message sm 
+                                            WHERE sm.id = (
+                                                SELECT MAX(sm_inner.id) 
+                                                FROM support_message sm_inner 
+                                                WHERE sm_inner.thread_id = st.id
+                                            )
+                                        ) AS message, 
+                                        st.private, 
+                                        st.is_close
+                                    FROM 
+                                        support_thread st
+                                    WHERE 
+                                        st.thread_id = ? AND st.owner_id = ?
+                                    ORDER BY 
+                                        st.date_update DESC;
+                                ", [$id, $userId]);
+            }
         } else {
-            $threads = sql::getRows("SELECT st.id, st.thread_id, st.owner_id, ( SELECT sm.user_id FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS last_user_id, st.date_update, ( SELECT SUBSTRING(sm.message, 1, 200)  FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS message, st.private, st.is_close FROM support_thread st ORDER BY st.date_update DESC; ");
+            if ($isAdmin) {
+                // Для администратора и модератора - все обращения
+                $threads = sql::getRows("SELECT st.id, st.thread_id, st.owner_id, ( SELECT sm.user_id FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS last_user_id, st.date_update, ( SELECT SUBSTRING(sm.message, 1, 200)  FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS message, st.private, st.is_close FROM support_thread st ORDER BY st.date_update DESC; ");
+            } else {
+                // Для обычного пользователя - только его обращения
+                $userId = user::self()->getId();
+                $threads = sql::getRows("SELECT st.id, st.thread_id, st.owner_id, ( SELECT sm.user_id FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS last_user_id, st.date_update, ( SELECT SUBSTRING(sm.message, 1, 200)  FROM support_message sm WHERE sm.id = ( SELECT MAX(sm_inner.id) FROM support_message sm_inner WHERE sm_inner.thread_id = st.id ) ) AS message, st.private, st.is_close FROM support_thread st WHERE st.owner_id = ? ORDER BY st.date_update DESC; ", [$userId]);
+            }
         }
 
         $threadsRead = sql::getRows("SELECT topic_id FROM `support_read_topics` WHERE user_id = ?", [
@@ -216,6 +286,15 @@ class support
     public static function getSection(int $threadId): ?array
     {
         return self::sections()[$threadId] ?? null;
+    }
+
+    /**
+     * Сбрасывает кэш секций
+     */
+    public static function clearSectionsCache(): void
+    {
+        self::$sections = null;
+        self::$currentUserId = null;
     }
 
     public static function create(): void
@@ -237,8 +316,7 @@ class support
         if ($message == "") {
             board::error("Нельзя отправить пустое сообщение");
         }
-        $section = (int)$_POST['section'] ?? 1;
-        $private = (int)filter_input(INPUT_POST, 'private', FILTER_VALIDATE_BOOL);
+        $section = (int) $_POST['section'] ?? 1;
         $screens = null;
         if (isset($_POST['screens'])) {
             foreach ($_POST['screens'] as $screen) {
@@ -255,7 +333,7 @@ class support
             $section,
             \Ofey\Logan22\model\user\user::self()->getId(),
             \Ofey\Logan22\model\user\user::self()->getId(),
-            $private,
+            1,
             time::mysql(),
             time::mysql(),
         ]);
@@ -263,7 +341,12 @@ class support
 
         try {
             sql::run("INSERT INTO `support_message` (`thread_id`, `user_id`, `message`, `screens`, `date_update`, `date_create`) VALUES (?, ?, ?, ?, ?, ?)", [
-                $support_thread_id, \Ofey\Logan22\model\user\user::self()->getId(), $message, $screens ?? PDO::PARAM_NULL, time::mysql(), time::mysql(),
+                $support_thread_id,
+                \Ofey\Logan22\model\user\user::self()->getId(),
+                $message,
+                $screens ?? PDO::PARAM_NULL,
+                time::mysql(),
+                time::mysql(),
             ]);
             $support_message_id = sql::lastInsertId();
 
@@ -322,17 +405,38 @@ class support
     }
 
     /**
+     * Проверяет, есть ли у пользователя обращения в техподдержке
+     * @return bool
+     */
+    private static function hasUserThreads(): bool
+    {
+        $userId = user::self()->getId();
+        $count = sql::getRow("SELECT COUNT(*) as count FROM support_thread WHERE owner_id = ?", [$userId]);
+        return $count['count'] > 0;
+    }
+
+    /**
      * @url /support
      * @return void
      */
     public static function show(): void
     {
         self::isEnable();
+        if (user::self()->isGuest()) {
+            redirect::location("/login");
+        }
+
+        // Если пользователь не администратор и у него нет обращений, редиректим на создание
+        if (!user::self()->isAdmin() && !self::isUserModerator() && !self::hasUserThreads()) {
+            redirect::location("/support/new");
+        }
+
         tpl::addVar([
             'main' => true,
             'sections' => self::sections(),
             'threads' => self::getThreads(),
             'isUserModerator' => self::isUserModerator(),
+            'currentSection' => null,
         ]);
         tpl::display("support/index.html");
     }
@@ -344,7 +448,7 @@ class support
             board::error("Отправка сообщений не чаще чем раз в 10 сек.");
         }
         $message = self::postMessage();
-        $support_thread_id = (int)$_POST['id'];
+        $support_thread_id = (int) $_POST['id'];
         $support_thread = sql::getRow('SELECT `owner_id`, `is_close` FROM `support_thread` WHERE id = ?', [$support_thread_id]);
         $owner_id = $support_thread['owner_id'];
 
@@ -373,13 +477,20 @@ class support
         }
 
         sql::run("INSERT INTO `support_message` (`thread_id`, `user_id`, `message`, `screens`, `date_update`, `date_create`) VALUES (?, ?, ?, ?, ?, ?)", [
-            $support_thread_id, \Ofey\Logan22\model\user\user::self()->getId(), $message,
+            $support_thread_id,
+            \Ofey\Logan22\model\user\user::self()->getId(),
+            $message,
             $screens ?? PDO::PARAM_NULL,
-            time::mysql(), time::mysql(),
+            time::mysql(),
+            time::mysql(),
         ]);
         $support_message_id = sql::lastInsertId();
         sql::run("UPDATE `support_thread` SET `last_message_id` = ?, `last_user_id` = ?, `date_update` = ? WHERE `id` = ?", [
-            $support_message_id, \Ofey\Logan22\model\user\user::self()->getId(), time::mysql(), $support_thread_id]);
+            $support_message_id,
+            \Ofey\Logan22\model\user\user::self()->getId(),
+            time::mysql(),
+            $support_thread_id
+        ]);
 
         if (!self::isUserModerator() and config::load()->notice()->isTechnicalSupport()) {
             $link = "/support/read/" . $support_thread_id;
@@ -415,6 +526,7 @@ class support
             board::error("Phrase ID is empty");
         }
         sql::run("INSERT INTO `support_thread_name` (`thread_name`) VALUES (?);", [$phraseId]);
+        self::clearSectionsCache();
         board::reload();
         board::success("Добавлено");
     }
@@ -444,6 +556,7 @@ class support
         $query = "DELETE FROM `support_thread` WHERE `thread_id` IN ($idsList)";
         sql::run($query);
 
+        self::clearSectionsCache();
         board::reload();
         board::success("Удалено");
     }
@@ -457,7 +570,7 @@ class support
 
         foreach ($rows as $row) {
             $screens = json_decode($row['screens']);
-            if($screens){
+            if ($screens) {
                 foreach ($screens as $screen) {
                     // Получаем базовое имя файла
                     $screenBaseName = basename($screen);
@@ -529,7 +642,7 @@ class support
     {
         self::isEnable();
         $data = $_POST['data'];
-        if(!$data){
+        if (!$data) {
             board::error("No data");
         }
         foreach ($data as $id => $info) {
@@ -540,6 +653,7 @@ class support
                 $sectionId,
             ]);
         }
+        self::clearSectionsCache();
         board::reload();
         board::success("Обновлено");
     }
@@ -547,7 +661,7 @@ class support
     public static function closeTopic(): void
     {
         self::isEnable();
-        $support_thread_id = (int)$_POST['id'] ?? board::error("No ID");
+        $support_thread_id = (int) $_POST['id'] ?? board::error("No ID");
         $support_thread = sql::getRow('SELECT `owner_id`, `is_close` FROM `support_thread` WHERE id = ?', [$support_thread_id]);
         $owner_id = $support_thread['owner_id'];
         $statusClose = $support_thread['is_close'];
@@ -633,7 +747,7 @@ class support
                         $thumbImage = $image;
 
                         // Создание миниатюры
-                        if ($originalHeight > 300 ) {
+                        if ($originalHeight > 300) {
                             $thumbImage = $image->scale(height: 300);
                         }
                         if ($originalWidth > 300) {
@@ -750,7 +864,8 @@ class support
         $id = $_POST['id'];
         $toMove = $_POST['toMove'] ?? 1;
         sql::run("UPDATE `support_thread` SET `thread_id` = ? WHERE `id` = ?;", [
-            $toMove, $id
+            $toMove,
+            $id
         ]);
         self::decMessage($id);
         self::incMessage($toMove);

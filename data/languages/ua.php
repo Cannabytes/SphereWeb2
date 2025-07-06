@@ -1626,6 +1626,17 @@ return [
     'technical support_desc_7' => 'Фікс бага/помилки коду',
     'technical support_desc_8' => 'Встановлення Sphere CMS на хостинг/vps',
     'technical support_desc_9' => 'Переписати шаблон з html шаблону, StressWeb тощо під Sphere CMS',
+    'unread messages' => 'непрочитаних повідомлень',
+    'Your requests' => 'Ваші звернення:',
+    'Here are your requests in category' => 'Тут відображаються ваші звернення в категорії',
+    'Here are all your requests to technical support' => 'Тут відображаються всі ваші звернення в технічну підтримку.',
+    'from' => 'від',
+    'No support requests' => 'Немає звернень в підтримку',
+    'You have not created any support requests yet' => 'Ви ще не створили жодного звернення в підтримку',
+    'Create first request' => 'Створити перше звернення',
+    'Create your first support request' => 'Створіть ваше перше звернення в підтримку',
+    'No selected items' => 'Немає вибраних елементів',
+    'Select user' => 'Виберіть користувача!',
     'technical_work_message' => 'На жаль, сайт тимчасово недоступний через проведення технічних робіт та обслуговування.<br>
                           Ми докладаємо всіх зусиль, щоб якомога швидше повернутися в робочий режим та надати вам найкращий сервіс.<br>
                           Приносимо вибачення за тимчасові незручності.
@@ -2158,6 +2169,7 @@ Email: %%email%l%
     'telegram_send_to_village' => 'Відправка перс. в місто',
     'no_products_available' => 'Ще немає товарів для продажу',
     'check_back_later' => 'Будь ласка, зайдіть пізніше',
+    'error_save_platform' => 'Неможливо зберегти для даної платформи',
 
     "minimumNumberOfCharactersRegistrationAccount" => "Мінімальна кількість символів в акаунті",
     "maximumNumberOfCharactersRegistrationAccount" => "Максимальна кількість символів в акаунті",

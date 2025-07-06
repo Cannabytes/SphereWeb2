@@ -510,13 +510,13 @@ function ResponseNotice(response) {
     }
     if (response.reload === true){
         setTimeout(function() {
-            window.location.reload();
+            window.location.replace(window.location.pathname + '?cache_bust=' + Date.now());
         }, timeout);
     }
     if (response.redirect !== undefined) {
         setTimeout(function() {
             if (response.redirect === "refresh") {
-                window.location.reload();
+                window.location.replace(window.location.pathname + '?cache_bust=' + Date.now());
             } else {
                 window.location.href = response.redirect;
             }

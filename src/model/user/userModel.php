@@ -449,7 +449,7 @@ class userModel
 
     public function isPlayer($playerName): characterModel|false
     {
-        if ($this->accounts === null) {
+        if ($this->getAccounts() === null) {
             return false;
         }
         foreach ($this->accounts as $players) {

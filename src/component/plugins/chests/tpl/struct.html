@@ -131,7 +131,21 @@
                     <div class="chest-preview-container mt-4">
                         {% if getUser().isAuth() %}
                         <div class="open-button-container">
-                            <button type="button" class="open-chest-main-btn" id="open-chest-button">{{ phrase('open_chest') }}</button>
+                            <div class="btn-group">
+                                <button type="button" class="open-chest-main-btn" id="open-chest-button">{{ phrase('open_chest') }}</button>
+                                <button type="button"
+                                        class="open-chest-main-btn dropdown-toggle dropdown-toggle-split"
+                                        id="dropdownMenuOpenChest" data-bs-toggle="dropdown"
+                                        aria-expanded="false" data-bs-reference="parent">
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuOpenChest">
+                                    <li><a data-open-chest-count="1" class="dropdown-item" href="javascript:void(0);">Открыть 1 сундук</a></li>
+                                    <li><a data-open-chest-count="5" class="dropdown-item" href="javascript:void(0);">Открыть 5 сундуков</a></li>
+                                    <li><a data-open-chest-count="10" class="dropdown-item" href="javascript:void(0);">Открыть 10 сундуков</a></li>
+                                    <li><a data-open-chest-count="50" class="dropdown-item" href="javascript:void(0);">Открыть 50 сундуков</a></li>
+                                </ul>
+                            </div>
                         </div>
                         {% else %}
                             {{ phrase('need_authorization_for_use_chest')|raw }}

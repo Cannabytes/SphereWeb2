@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light"
-      data-menu-styles="light" data-toggled="close">
+  data-menu-styles="light" data-toggled="close">
+
 <head>
   {% set referral_name = get_0 %}
 
@@ -22,1179 +23,1523 @@
 
   <!-- CSS для магического кристалла -->
   <style>
-  /* Основные стили для контейнера */
-  .magical-showcase-wrapper {
-    position: relative;
-    width: 340px;
-    height: 380px;
-    margin: 0 auto;
-    perspective: 1000px;
-  }
+    /* Основные стили для контейнера */
+    .magical-showcase-wrapper {
+      position: relative;
+      width: 340px;
+      height: 380px;
+      margin: 0 auto;
+      perspective: 1000px;
+    }
 
-  /* Стили для основания кристалла */
-  .crystal-container {
-    position: relative;
-    width: 260px; /* Увеличено с 200px */
-    height: 360px; /* Увеличено с 300px */
-    margin: 0 auto;
-    transform-style: preserve-3d;
-  }
+    /* Стили для основания кристалла */
+    .crystal-container {
+      position: relative;
+      width: 260px;
+      /* Увеличено с 200px */
+      height: 360px;
+      /* Увеличено с 300px */
+      margin: 0 auto;
+      transform-style: preserve-3d;
+    }
 
-  .crystal-base {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 160px; /* Увеличено с 120px */
-    height: 40px; /* Увеличено с 30px */
-    background: linear-gradient(45deg, #291b5a, #432e7e, #574194);
-    border-radius: 50%;
-    box-shadow: 0 0 20px rgba(74, 47, 189, 0.6);
-    z-index: 1;
-  }
+    .crystal-base {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 160px;
+      /* Увеличено с 120px */
+      height: 40px;
+      /* Увеличено с 30px */
+      background: linear-gradient(45deg, #291b5a, #432e7e, #574194);
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(74, 47, 189, 0.6);
+      z-index: 1;
+    }
 
-  .crystal-glow {
-    position: absolute;
-    top: -15px;
-    left: -15px;
-    right: -15px;
-    bottom: -10px;
-    background: radial-gradient(ellipse at center, rgba(104, 79, 243, 0.6) 0%, rgba(104, 79, 243, 0) 70%);
-    filter: blur(15px); /* Увеличено с 10px */
-    opacity: 0.8;
-    border-radius: 50%;
-    z-index: 0;
-    animation: baseGlow 3s ease-in-out infinite alternate;
-  }
+    .crystal-glow {
+      position: absolute;
+      top: -15px;
+      left: -15px;
+      right: -15px;
+      bottom: -10px;
+      background: radial-gradient(ellipse at center, rgba(104, 79, 243, 0.6) 0%, rgba(104, 79, 243, 0) 70%);
+      filter: blur(15px);
+      /* Увеличено с 10px */
+      opacity: 0.8;
+      border-radius: 50%;
+      z-index: 0;
+      animation: baseGlow 3s ease-in-out infinite alternate;
+    }
 
-  @keyframes baseGlow {
-    0% { opacity: 0.5; transform: scale(0.9); }
-    100% { opacity: 0.8; transform: scale(1.1); }
-  }
+    @keyframes baseGlow {
+      0% {
+        opacity: 0.5;
+        transform: scale(0.9);
+      }
 
-  /* Стили для кристалла */
-  .crystal {
-    position: absolute;
-    top: 40px;
-    left: 50%;
-    transform: translateX(-50%) rotateY(0deg);
-    width: 140px; /* Увеличено с 100px */
-    height: 220px; /* Увеличено с 160px */
-    transform-style: preserve-3d;
-    animation: crystalRotate 20s linear infinite;
-    z-index: 2;
-  }
+      100% {
+        opacity: 0.8;
+        transform: scale(1.1);
+      }
+    }
 
-  @keyframes crystalRotate {
-    0% { transform: translateX(-50%) rotateY(0deg) rotateX(5deg); }
-    100% { transform: translateX(-50%) rotateY(360deg) rotateX(5deg); }
-  }
+    /* Стили для кристалла */
+    .crystal {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%) rotateY(0deg);
+      width: 140px;
+      /* Увеличено с 100px */
+      height: 220px;
+      /* Увеличено с 160px */
+      transform-style: preserve-3d;
+      animation: crystalRotate 20s linear infinite;
+      z-index: 2;
+    }
 
-  .crystal-face {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(144, 120, 255, 0.2) 0%, rgba(104, 79, 243, 0.4) 50%, rgba(65, 40, 204, 0.6) 100%);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transform-origin: center;
-    box-shadow: 0 0 15px rgba(104, 79, 243, 0.3); /* Увеличено с 10px */
-  }
+    @keyframes crystalRotate {
+      0% {
+        transform: translateX(-50%) rotateY(0deg) rotateX(5deg);
+      }
 
-  .crystal-face-1 {
-    transform: rotateY(0deg) translateZ(70px); /* Увеличено с 50px */
-    clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
-  }
+      100% {
+        transform: translateX(-50%) rotateY(360deg) rotateX(5deg);
+      }
+    }
 
-  .crystal-face-2 {
-    transform: rotateY(72deg) translateZ(70px); /* Увеличено с 50px */
-    clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
-  }
+    .crystal-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(144, 120, 255, 0.2) 0%, rgba(104, 79, 243, 0.4) 50%, rgba(65, 40, 204, 0.6) 100%);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transform-origin: center;
+      box-shadow: 0 0 15px rgba(104, 79, 243, 0.3);
+      /* Увеличено с 10px */
+    }
 
-  .crystal-face-3 {
-    transform: rotateY(144deg) translateZ(70px); /* Увеличено с 50px */
-    clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
-  }
+    .crystal-face-1 {
+      transform: rotateY(0deg) translateZ(70px);
+      /* Увеличено с 50px */
+      clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
+    }
 
-  .crystal-face-4 {
-    transform: rotateY(216deg) translateZ(70px); /* Увеличено с 50px */
-    clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
-  }
+    .crystal-face-2 {
+      transform: rotateY(72deg) translateZ(70px);
+      /* Увеличено с 50px */
+      clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
+    }
 
-  .crystal-face-5 {
-    transform: rotateY(288deg) translateZ(70px); /* Увеличено с 50px */
-    clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
-  }
+    .crystal-face-3 {
+      transform: rotateY(144deg) translateZ(70px);
+      /* Увеличено с 50px */
+      clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
+    }
 
-  .crystal-inner-glow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 60%);
-    opacity: 0.3;
-    filter: blur(5px);
-    animation: innerGlow 4s ease-in-out infinite alternate;
-  }
+    .crystal-face-4 {
+      transform: rotateY(216deg) translateZ(70px);
+      /* Увеличено с 50px */
+      clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
+    }
 
-  @keyframes innerGlow {
-    0% { opacity: 0.2; transform: scale(0.8); }
-    100% { opacity: 0.4; transform: scale(1.1); }
-  }
+    .crystal-face-5 {
+      transform: rotateY(288deg) translateZ(70px);
+      /* Увеличено с 50px */
+      clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
+    }
 
-  /* Контейнер для магических частиц */
-  .magic-particles-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 3;
-  }
+    .crystal-inner-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 60%);
+      opacity: 0.3;
+      filter: blur(5px);
+      animation: innerGlow 4s ease-in-out infinite alternate;
+    }
 
-  .magic-particle {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    filter: blur(1px);
-    z-index: 3;
-  }
+    @keyframes innerGlow {
+      0% {
+        opacity: 0.2;
+        transform: scale(0.8);
+      }
 
-  /* Контейнер для левитирующих предметов */
-  .levitating-items-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* Убрали transform-style: preserve-3d для исправления проблемы с иконками */
-    z-index: 10; /* Увеличили z-index */
-  }
+      100% {
+        opacity: 0.4;
+        transform: scale(1.1);
+      }
+    }
 
-  /* Стиль для элементов призов */
-  .levitating-item {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    /* Убрано transform-style: preserve-3d */
-    transform-origin: center;
-    z-index: 15; /* Увеличен z-index для лучшей видимости */
-  }
+    /* Контейнер для магических частиц */
+    .magic-particles-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
 
-  .item-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    /* Убрано transform-style: preserve-3d */
-    animation: itemRotate 10s linear infinite;
-  }
+    .magic-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      filter: blur(1px);
+      z-index: 3;
+    }
 
-  @keyframes itemRotate {
-    0% { transform: rotateY(0deg); }
-    100% { transform: rotateY(360deg); }
-  }
+    /* Контейнер для левитирующих предметов */
+    .levitating-items-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      /* Убрали transform-style: preserve-3d для исправления проблемы с иконками */
+      z-index: 10;
+      /* Увеличили z-index */
+    }
 
-  .item-content {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    /* Убрано transform-style: preserve-3d */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 20; /* Повышен z-index */
-  }
+    /* Стиль для элементов призов */
+    .levitating-item {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      /* Убрано transform-style: preserve-3d */
+      transform-origin: center;
+      z-index: 15;
+      /* Увеличен z-index для лучшей видимости */
+    }
 
-  .item-content img {
-    width: 36px;
-    height: 36px;
-    object-fit: contain;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(104, 79, 243, 0.6);
-    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
-    background: rgba(10, 5, 30, 0.3);
-    padding: 3px;
-    /* Убрано transform-style: preserve-3d */
-    transition: transform 0.3s ease;
-    z-index: 25; /* Максимальный z-index */
-  }
+    .item-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      /* Убрано transform-style: preserve-3d */
+      animation: itemRotate 10s linear infinite;
+    }
 
-  .item-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60px;
-    height: 60px;
-    background: radial-gradient(circle, rgba(144, 120, 255, 0.6) 0%, rgba(144, 120, 255, 0) 70%);
-    border-radius: 50%;
-    filter: blur(5px);
-    opacity: 0.7;
-    z-index: 4;
-    animation: itemGlowPulse 3s ease-in-out infinite alternate;
-  }
+    @keyframes itemRotate {
+      0% {
+        transform: rotateY(0deg);
+      }
 
-  @keyframes itemGlowPulse {
-    0% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.8); }
-    100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.2); }
-  }
+      100% {
+        transform: rotateY(360deg);
+      }
+    }
 
-  .item-orbit {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 0;
-    height: 0;
-    border: 1px dashed rgba(144, 120, 255, 0.3);
-    border-radius: 50%;
-    z-index: 3;
-  }
+    .item-content {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      /* Убрано transform-style: preserve-3d */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      /* Повышен z-index */
+    }
 
-  /* Контейнер для энергетических линий (скрыт) */
-  .energy-lines-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-    /* Скрываем энергетические линии */
-    opacity: 0;
-  }
+    .item-content img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(104, 79, 243, 0.6);
+      filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
+      background: rgba(10, 5, 30, 0.3);
+      padding: 3px;
+      /* Убрано transform-style: preserve-3d */
+      transition: transform 0.3s ease;
+      z-index: 25;
+      /* Максимальный z-index */
+    }
 
-  .energy-line {
-    display: none; /* Полностью убираем линии */
-  }
+    .item-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle, rgba(144, 120, 255, 0.6) 0%, rgba(144, 120, 255, 0) 70%);
+      border-radius: 50%;
+      filter: blur(5px);
+      opacity: 0.7;
+      z-index: 4;
+      animation: itemGlowPulse 3s ease-in-out infinite alternate;
+    }
 
-  /* Центр колеса */
-  .wheel-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 70px; /* Увеличено с 50px */
-    height: 70px; /* Увеличено с 50px */
-    z-index: 10;
-  }
+    @keyframes itemGlowPulse {
+      0% {
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(0.8);
+      }
 
-  .center-inner {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #ffd700, #f0c419, #ffaa00);
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.8), /* Увеличена тень */
-    inset 0 0 8px rgba(0, 0, 0, 0.5);
-  }
+      100% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.2);
+      }
+    }
 
-  .center-logo {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 45px; /* Увеличено с 30px */
-    height: 45px; /* Увеличено с 30px */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23341f6d'%3E%3Cpath d='M12 2L4 7v10l8 5 8-5V7l-8-5zm6 14.5l-6 3.75-6-3.75V7.5l6-3.75 6 3.75v9z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-size: contain;
-  }
+    .item-orbit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 0;
+      height: 0;
+      border: 1px dashed rgba(144, 120, 255, 0.3);
+      border-radius: 50%;
+      z-index: 3;
+    }
 
-  /* Информационный текст */
-  .prize-info {
-    position: relative;
-    margin-top: 20px;
-    text-align: center;
-    z-index: 10;
-  }
+    /* Контейнер для энергетических линий (скрыт) */
+    .energy-lines-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      /* Скрываем энергетические линии */
+      opacity: 0;
+    }
 
-  .prize-glow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(ellipse at center, rgba(104, 79, 243, 0.4) 0%, rgba(104, 79, 243, 0) 70%);
-    filter: blur(10px);
-    opacity: 0.7;
-    z-index: -1;
-    animation: prizeGlow 3s ease-in-out infinite alternate;
-  }
+    .energy-line {
+      display: none;
+      /* Полностью убираем линии */
+    }
 
-  @keyframes prizeGlow {
-    0% { opacity: 0.5; transform: scale(0.9); }
-    100% { opacity: 0.8; transform: scale(1.1); }
-  }
+    /* Центр колеса */
+    .wheel-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70px;
+      /* Увеличено с 50px */
+      height: 70px;
+      /* Увеличено с 50px */
+      z-index: 10;
+    }
 
-  .prize-text {
-    display: inline-block;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #291b5a, #432e7e);
-    color: #ffffff;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 25px;
-    box-shadow: 0 0 15px rgba(104, 79, 243, 0.6),
-    inset 0 0 10px rgba(255, 255, 255, 0.1);
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    animation: prizeTextPulse 2s ease-in-out infinite alternate;
-  }
+    .center-inner {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #ffd700, #f0c419, #ffaa00);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.8),
+        /* Увеличена тень */
+        inset 0 0 8px rgba(0, 0, 0, 0.5);
+    }
 
-  @keyframes prizeTextPulse {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.05); }
-  }
+    .center-logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 45px;
+      /* Увеличено с 30px */
+      height: 45px;
+      /* Увеличено с 30px */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23341f6d'%3E%3Cpath d='M12 2L4 7v10l8 5 8-5V7l-8-5zm6 14.5l-6 3.75-6-3.75V7.5l6-3.75 6 3.75v9z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
 
-  /* Анимации левитации для предметов */
-  @keyframes levitateUpDown {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
+    /* Информационный текст */
+    .prize-info {
+      position: relative;
+      margin-top: 20px;
+      text-align: center;
+      z-index: 10;
+    }
 
-  @keyframes fadeInOut {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 1; }
-  }
+    .prize-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, rgba(104, 79, 243, 0.4) 0%, rgba(104, 79, 243, 0) 70%);
+      filter: blur(10px);
+      opacity: 0.7;
+      z-index: -1;
+      animation: prizeGlow 3s ease-in-out infinite alternate;
+    }
 
-  /* Анимации для орбитального движения */
-  @keyframes orbitRotate1 {
-    0% { transform: rotate(0deg) translateX(80px) rotate(0deg); }
-    100% { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
-  }
+    @keyframes prizeGlow {
+      0% {
+        opacity: 0.5;
+        transform: scale(0.9);
+      }
 
-  @keyframes orbitRotate2 {
-    0% { transform: rotate(60deg) translateX(80px) rotate(-60deg); }
-    100% { transform: rotate(420deg) translateX(80px) rotate(-420deg); }
-  }
+      100% {
+        opacity: 0.8;
+        transform: scale(1.1);
+      }
+    }
 
-  @keyframes orbitRotate3 {
-    0% { transform: rotate(120deg) translateX(80px) rotate(-120deg); }
-    100% { transform: rotate(480deg) translateX(80px) rotate(-480deg); }
-  }
+    .prize-text {
+      display: inline-block;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #291b5a, #432e7e);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 25px;
+      box-shadow: 0 0 15px rgba(104, 79, 243, 0.6),
+        inset 0 0 10px rgba(255, 255, 255, 0.1);
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+      animation: prizeTextPulse 2s ease-in-out infinite alternate;
+    }
 
-  @keyframes orbitRotate4 {
-    0% { transform: rotate(180deg) translateX(80px) rotate(-180deg); }
-    100% { transform: rotate(540deg) translateX(80px) rotate(-540deg); }
-  }
+    @keyframes prizeTextPulse {
+      0% {
+        transform: scale(1);
+      }
 
-  @keyframes orbitRotate5 {
-    0% { transform: rotate(240deg) translateX(80px) rotate(-240deg); }
-    100% { transform: rotate(600deg) translateX(80px) rotate(-600deg); }
-  }
+      100% {
+        transform: scale(1.05);
+      }
+    }
 
-  @keyframes orbitRotate6 {
-    0% { transform: rotate(300deg) translateX(80px) rotate(-300deg); }
-    100% { transform: rotate(660deg) translateX(80px) rotate(-660deg); }
-  }
+    /* Анимации левитации для предметов */
+    @keyframes levitateUpDown {
 
-  /* Дополнительные анимации для элементов */
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-  }
+      0%,
+      100% {
+        transform: translateY(0);
+      }
 
-  @keyframes sparkle {
-    0%, 100% { opacity: 0; transform: scale(0); }
-    50% { opacity: 1; transform: scale(1); }
-  }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
 
-  /* Стили для выделения активного приза */
-  .item-highlight {
-    animation: itemHighlight 1.5s ease-in-out;
-  }
+    @keyframes fadeInOut {
 
-  @keyframes itemHighlight {
-    0%, 100% { transform: scale(1); filter: brightness(1); }
-    50% { transform: scale(1.3); filter: brightness(1.5); }
-  }
+      0%,
+      100% {
+        opacity: 0.7;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    /* Анимации для орбитального движения */
+    @keyframes orbitRotate1 {
+      0% {
+        transform: rotate(0deg) translateX(80px) rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg) translateX(80px) rotate(-360deg);
+      }
+    }
+
+    @keyframes orbitRotate2 {
+      0% {
+        transform: rotate(60deg) translateX(80px) rotate(-60deg);
+      }
+
+      100% {
+        transform: rotate(420deg) translateX(80px) rotate(-420deg);
+      }
+    }
+
+    @keyframes orbitRotate3 {
+      0% {
+        transform: rotate(120deg) translateX(80px) rotate(-120deg);
+      }
+
+      100% {
+        transform: rotate(480deg) translateX(80px) rotate(-480deg);
+      }
+    }
+
+    @keyframes orbitRotate4 {
+      0% {
+        transform: rotate(180deg) translateX(80px) rotate(-180deg);
+      }
+
+      100% {
+        transform: rotate(540deg) translateX(80px) rotate(-540deg);
+      }
+    }
+
+    @keyframes orbitRotate5 {
+      0% {
+        transform: rotate(240deg) translateX(80px) rotate(-240deg);
+      }
+
+      100% {
+        transform: rotate(600deg) translateX(80px) rotate(-600deg);
+      }
+    }
+
+    @keyframes orbitRotate6 {
+      0% {
+        transform: rotate(300deg) translateX(80px) rotate(-300deg);
+      }
+
+      100% {
+        transform: rotate(660deg) translateX(80px) rotate(-660deg);
+      }
+    }
+
+    /* Дополнительные анимации для элементов */
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes sparkle {
+
+      0%,
+      100% {
+        opacity: 0;
+        transform: scale(0);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Стили для выделения активного приза */
+    .item-highlight {
+      animation: itemHighlight 1.5s ease-in-out;
+    }
+
+    @keyframes itemHighlight {
+
+      0%,
+      100% {
+        transform: scale(1);
+        filter: brightness(1);
+      }
+
+      50% {
+        transform: scale(1.3);
+        filter: brightness(1.5);
+      }
+    }
+
+    /* Стили для чекбоксов соглашений */
+    .agreement-checkbox {
+      width: 20px !important;
+      height: 20px !important;
+      margin-top: 0.2rem !important;
+      border: 2px solid #6c757d !important;
+      border-radius: 4px !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      position: relative !important;
+      background-color: #fff !important;
+    }
+
+    .agreement-checkbox:checked {
+      background-color: #198754 !important;
+      border-color: #198754 !important;
+      box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.25) !important;
+    }
+
+    .agreement-checkbox:checked::after {
+      content: '✓' !important;
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      color: white !important;
+      font-size: 14px !important;
+      font-weight: bold !important;
+      line-height: 1 !important;
+    }
+
+    .agreement-checkbox:hover {
+      border-color: #198754 !important;
+      box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.15) !important;
+    }
+
+    .agreement-checkbox:focus {
+      outline: none !important;
+      border-color: #198754 !important;
+      box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.25) !important;
+    }
+
+    .form-check-label {
+      font-size: 14px !important;
+      line-height: 1.4 !important;
+      margin-left: 0.5rem !important;
+      cursor: pointer !important;
+      user-select: none !important;
+    }
+
+    .form-check-label a {
+      text-decoration: none !important;
+      font-weight: 500 !important;
+      transition: color 0.3s ease !important;
+    }
+
+    .form-check-label a:hover {
+      color: #0d6efd !important;
+      text-decoration: underline !important;
+    }
+  </style>
+
+  <!-- Дополнительные стили для чекбоксов -->
+  <style>
+    /* Переопределяем стили Bootstrap для чекбоксов соглашений */
+    input[type="checkbox"].agreement-checkbox {
+      width: 22px !important;
+      height: 22px !important;
+      margin: 0 !important;
+      margin-right: 0.5rem !important;
+      border: 3px solid #6c757d !important;
+      border-radius: 6px !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      position: relative !important;
+      background-color: #ffffff !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      margin-top: 2px !important;
+    }
+
+    input[type="checkbox"].agreement-checkbox:checked {
+      background-color: #198754 !important;
+      border-color: #198754 !important;
+      box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.3) !important;
+      transform: scale(1.05) !important;
+    }
+
+    input[type="checkbox"].agreement-checkbox:checked::before {
+      content: '✓' !important;
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      color: white !important;
+      font-size: 16px !important;
+      font-weight: bold !important;
+      line-height: 1 !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    input[type="checkbox"].agreement-checkbox:hover {
+      border-color: #198754 !important;
+      box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.2) !important;
+      transform: scale(1.02) !important;
+    }
+
+    input[type="checkbox"].agreement-checkbox:focus {
+      outline: none !important;
+      border-color: #198754 !important;
+      box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.3) !important;
+    }
+
+    /* Стили для лейблов */
+    .form-check .form-check-label {
+      font-size: 14px !important;
+      line-height: 1.4 !important;
+      cursor: pointer !important;
+      user-select: none !important;
+      padding-left: 0.5rem !important;
+      font-weight: 400 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: block !important;
+    }
+
+    .form-check .form-check-label a {
+      text-decoration: none !important;
+      font-weight: 600 !important;
+      transition: color 0.3s ease !important;
+      color: #0d6efd !important;
+      display: inline !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: inherit !important;
+    }
+
+    .form-check .form-check-label a:hover {
+      color: #0a58ca !important;
+      text-decoration: underline !important;
+    }
+
+    /* Анимация при клике */
+    input[type="checkbox"].agreement-checkbox:active {
+      transform: scale(0.95) !important;
+    }
   </style>
 
 </head>
 
 <body>
 
-{% include 'notice_toast.html' %}
+  {% include 'notice_toast.html' %}
 
-<!-- Loader -->
-<div id="loader">
-  <img src="{{template}}/assets/images/media/loader.svg" alt="">
-</div>
-<!-- Loader -->
-
-<div {% if config().background().registration() %}
-     style="background-image: url('{{config().background().registration()}}'); background-size: cover; background-repeat: no-repeat; background-position: center center;"
-     {% else %}class="autentication-bg"{% endif %}>
-  <div class="container-lg">
-    <!-- Новый макет с кристаллом и формой -->
-<div class="row justify-content-center authentication authentication-basic align-items-center h-100">
-  <!-- Форма регистрации по центру -->
-  <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12 position-relative">
-    <!-- Логотип -->
-    <div class="my-4 d-flex justify-content-center">
-      <a href="/main">
-        <img src="{{config().logo().getLogo()}}" alt="logo">
-      </a>
-    </div>
-
-    <!-- Форма -->
-    <div class="card custom-card">
-      <form id="authForm" action="/registration/user" method="POST" class="card-body">
-        <p class="h5 fw-semibold mb-2 text-center">{{ phrase('registration') }}</p>
-        <p class="mb-4 text-muted op-7 fw-normal text-center">{{ phrase('reg_enable_all_features') }}</p>
-        <div class="row gy-3">
-          <div class="col-xl-12">
-            <label for="email" class="form-label text-default">Email<i class="text-danger">*</i></label>
-            <input required name="email" type="text" class="form-control form-control-lg" id="email" placeholder="example@example.com">
-          </div>
-          <div class="col-xl-12">
-  <label for="account" class="form-label text-default d-flex justify-content-between align-items-center">
-    <span>{{ phrase(480) }}</span>
-
-    <span class="label-details">
-      {% set maxChars = config().registration().getMaximumNumberOfCharactersRegistrationAccount() %}
-
-      <small class="form-text text-muted">
-        {{ phrase('minMaxCharacters',
-          config().registration().getMinimumNumberOfCharactersRegistrationAccount(),
-          config().registration().getMaximumNumberOfCharactersRegistrationAccount()
-        )}}
-      </small>
-      <small id="accountCharCounter" class="form-text text-muted">
-        {{ phrase(312) }}: {{ maxChars }}
-      </small>
-    </span>
-  </label>
-  <div class="input-group mb-3">
-    {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() == 'prefix' %}
-      <button class="btn btn-light account_prefix" type="button">{{config().registration().genPrefix()}}</button>
-    {% endif %}
-    <input name="account" type="text" class="form-control form-control-lg" id="account" placeholder=""
-           minlength="{{ config().registration().getMinimumNumberOfCharactersRegistrationAccount() }}"
-           maxlength="{{ maxChars }}"
-    >
-    {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() == 'suffix' %}
-      <button class="btn btn-light account_prefix" type="button">{{config().registration().genPrefix()}}</button>
-    {% endif %}
+  <!-- Loader -->
+  <div id="loader">
+    <img src="{{template}}/assets/images/media/loader.svg" alt="">
   </div>
-</div>
-          <div class="col-xl-12 mb-2">
-            <label for="signin-password" class="form-label text-default d-block">{{ phrase('password') }}<i class="text-danger">*</i>
-              <a href="#"
-                 tabindex="0"
-                 class="float-end text-info password-popover"
-                 role="button"
-                 data-bs-toggle="popover"
-                 data-bs-placement="right"
-                 data-bs-html="true"
-                 data-bs-content="{% for i, word in generation_words_password(10) %}
+  <!-- Loader -->
+
+  <div {% if config().background().registration() %}
+    style="background-image: url('{{config().background().registration()}}'); background-size: cover; background-repeat: no-repeat; background-position: center center;"
+    {% else %}class="autentication-bg" {% endif %}>
+    <div class="container-lg">
+      <!-- Новый макет с кристаллом и формой -->
+      <div class="row justify-content-center authentication authentication-basic align-items-center h-100">
+        <!-- Форма регистрации по центру -->
+        <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12 position-relative">
+          <!-- Логотип -->
+          <div class="my-4 d-flex justify-content-center">
+            <a href="/main">
+              <img src="{{config().logo().getLogo()}}" alt="logo">
+            </a>
+          </div>
+
+          <!-- Форма -->
+          <div class="card custom-card">
+            <form id="authForm" action="/registration/user" method="POST" class="card-body">
+              <p class="h5 fw-semibold mb-2 text-center">{{ phrase('registration') }}</p>
+              <p class="mb-4 text-muted op-7 fw-normal text-center">{{ phrase('reg_enable_all_features') }}</p>
+              <div class="row gy-3">
+                <div class="col-xl-12">
+                  <label for="email" class="form-label text-default">Email<i class="text-danger">*</i></label>
+                  <input required name="email" type="text" class="form-control form-control-lg" id="email"
+                    placeholder="example@example.com">
+                </div>
+                <div class="col-xl-12">
+                  <label for="account"
+                    class="form-label text-default d-flex justify-content-between align-items-center">
+                    <span>{{ phrase(480) }}</span>
+
+                    <span class="label-details">
+                      {% set maxChars = config().registration().getMaximumNumberOfCharactersRegistrationAccount() %}
+
+                      <small class="form-text text-muted">
+                        {{ phrase('minMaxCharacters',
+                        config().registration().getMinimumNumberOfCharactersRegistrationAccount(),
+                        config().registration().getMaximumNumberOfCharactersRegistrationAccount()
+                        )}}
+                      </small>
+                      <small id="accountCharCounter" class="form-text text-muted">
+                        {{ phrase(312) }}: {{ maxChars }}
+                      </small>
+                    </span>
+                  </label>
+                  <div class="input-group mb-3">
+                    {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() ==
+                    'prefix' %}
+                    <button class="btn btn-light account_prefix"
+                      type="button">{{config().registration().genPrefix()}}</button>
+                    {% endif %}
+                    <input name="account" type="text" class="form-control form-control-lg" id="account" placeholder=""
+                      minlength="{{ config().registration().getMinimumNumberOfCharactersRegistrationAccount() }}"
+                      maxlength="{{ maxChars }}">
+                    {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() ==
+                    'suffix' %}
+                    <button class="btn btn-light account_prefix"
+                      type="button">{{config().registration().genPrefix()}}</button>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="col-xl-12 mb-2">
+                  <label for="signin-password" class="form-label text-default d-block">{{ phrase('password') }}<i
+                      class="text-danger">*</i>
+                    <a href="#" tabindex="0" class="float-end text-info password-popover" role="button"
+                      data-bs-toggle="popover" data-bs-placement="right" data-bs-html="true" data-bs-content="{% for i, word in generation_words_password(10) %}
 {{i + 1}}. <a href='#' class='thisPassword'>{{word}}</a><br>
 {% endfor %}">{{ phrase('help_create_password') }}</a>
-            </label>
-            <div class="input-group">
-              <input name="password" type="password" class="form-control form-control-lg" id="signin-password"
-                     placeholder="password" required>
-              <button class="btn btn-light" type="button" onclick="createpassword('signin-password',this)"
+                  </label>
+                  <div class="input-group">
+                    <input name="password" type="password" class="form-control form-control-lg" id="signin-password"
+                      placeholder="password" required>
+                    <button class="btn btn-light" type="button" onclick="createpassword('signin-password',this)"
                       id="button-addon2"><i class="ri-eye-off-line align-middle"></i></button>
+                  </div>
+                </div>
+
+                {% if config().captcha().isGoogleCaptcha() %}
+                <div id="g-recaptcha"></div>
+                {% elseif config().captcha().isCloudflareCaptcha() %}
+                <div id="cf-turnstile" class="cf-turnstile"></div>
+                <input type="hidden" id="cf-turnstile-response" name="cf-turnstile-response">
+                {% elseif config().captcha().isDefaultCaptcha() %}
+                <script async defer src="https://js.hcaptcha.com/1/api.js?hl={{getUser().getLang()}}"></script>
+                <div class="h-captcha text-center" data-sitekey="0c545d06-4fe6-45d4-b704-7b809af8db9c"></div>
+                {% endif %}
+
+                <input type="hidden" name="fingerprint" id="fingerprint-input">
+
+                <!-- Блок соглашений -->
+                <div class="col-xl-12 mb-2">
+                  <div class="form-check mb-1">
+                    <input class="form-check-input agreement-checkbox" type="checkbox" id="privacy-policy"
+                      name="privacy_policy" required>
+                    <label class="form-check-label" for="privacy-policy">
+                      Я прочитал(а) и согласен(а) с <a href="https://arowaonline.ru/page/3" target="_blank"
+                        class="text-primary">Политикой конфиденциальности</a>
+                    </label>
+                  </div>
+                  <div class="form-check mb-1">
+                    <input class="form-check-input agreement-checkbox" type="checkbox" id="terms-of-service"
+                      name="terms_of_service" required>
+                    <label class="form-check-label" for="terms-of-service">
+                      Я прочитал(а) и согласен(а) с <a href="https://arowaonline.ru/page/5" target="_blank"
+                        class="text-primary">Пользовательским соглашением</a>
+                    </label>
+                  </div>
+                  <div class="form-check mb-0">
+                    <input class="form-check-input agreement-checkbox" type="checkbox" id="server-rules"
+                      name="server_rules" required>
+                    <label class="form-check-label" for="server-rules">
+                      Я прочитал(а) и согласен(а) с <a href="https://forum.arowaonline.ru/threads/pravila-servera.111/"
+                        target="_blank" class="text-primary">Правилами сервера</a>
+                    </label>
+                  </div>
+                </div>
+
+                <div id="referralinput" class="col-xl-12 mb-2 d-none">
+                  <label for="referral" class="form-label text-default">{{ phrase('username') }}</label>
+                  <input name="referral" value="{{referral_name}}" type="text" class="form-control form-control-lg"
+                    id="referral" placeholder="">
+                </div>
+
+                <div class="col-xl-12 d-grid mt-2">
+                  <button type="submit" aria-label="button" class="btn btn-lg btn-success enter" disabled>
+                    {{ phrase('register_master_account') }}
+                  </button>
+                </div>
+              </div>
+
+              {% if config().enabled().isEnableReferral() %}
+              <div class="text-center">
+                <p id="add_referral" class="text-muted mt-3 text-info" role="button">{{ phrase('user_referral') }}</p>
+              </div>
+              {% endif %}
+
+              <div class="text-center my-1 authentication-barrier">
+                <span><i class="ti ti-lock"></i></span>
+              </div>
+
+              <div class="btn-list text-center">
+                <a href="/auth" aria-label="button" class="btn btn-primary-transparent">
+                  {{ phrase('authorization') }}
+                </a>
+
+                <a href="/forget" class="btn btn-primary-transparent">
+                  {{ phrase(67) }}
+                </a>
+              </div>
+            </form>
+
+            <div class="text-center">
+              {% for lang in getAllowLang(false) %}
+              <a class="align-items-center" href="{{action('user_lang', [lang.lang])}}">
+                <span class="avatar avatar-xs lh-1 me-0">
+                  <img src="/uploads/images/flags/{{lang.lang}}.png" alt="img">
+                </span>
+              </a>
+              {% endfor %}
             </div>
           </div>
 
-          {% if config().captcha().isGoogleCaptcha() %}
-            <div id="g-recaptcha"></div>
-          {% elseif config().captcha().isCloudflareCaptcha() %}
-            <div id="cf-turnstile" class="cf-turnstile"></div>
-            <input type="hidden" id="cf-turnstile-response" name="cf-turnstile-response">
-          {% elseif config().captcha().isDefaultCaptcha() %}
-            <script async defer src="https://js.hcaptcha.com/1/api.js?hl={{getUser().getLang()}}"></script>
-            <div class="h-captcha text-center" data-sitekey="0c545d06-4fe6-45d4-b704-7b809af8db9c"></div>
+          {% if getServer().bonus().isRegistrationBonus() %}
+          <!-- Магический кристалл абсолютно позиционированный справа от формы -->
+          <div class="d-none d-lg-block magic-crystal-absolute">
+            <div class="magical-showcase-wrapper">
+              <!-- Основной кристалл -->
+              <div class="crystal-container">
+                <div class="crystal-base">
+                  <div class="crystal-glow"></div>
+                </div>
+                <div class="crystal">
+                  <div class="crystal-face crystal-face-1"></div>
+                  <div class="crystal-face crystal-face-2"></div>
+                  <div class="crystal-face crystal-face-3"></div>
+                  <div class="crystal-face crystal-face-4"></div>
+                  <div class="crystal-face crystal-face-5"></div>
+                  <div class="crystal-inner-glow"></div>
+                </div>
+
+                <!-- Магические частицы -->
+                <div class="magic-particles-container">
+                  <!-- Частицы будут добавлены через JS -->
+                </div>
+
+                <!-- Контейнер для левитирующих предметов -->
+                <div class="levitating-items-container">
+                  <!-- Предметы будут добавлены через JS -->
+                </div>
+
+                <!-- Энергетические линии -->
+                <div class="energy-lines-container">
+                  <!-- Линии будут добавлены через JS -->
+                </div>
+              </div>
+
+              <!-- Информационный текст -->
+              <div class="prize-info">
+                <div class="prize-glow"></div>
+                <div class="prize-text">
+                  {% if getServer().bonus().isIssueAllItems() %}
+                  {{ phrase('registration_reward_all') }}
+                  {% else %}
+                  {{ phrase('registration_reward_one_random') }}
+                  {% endif %}
+                </div>
+              </div>
+
+            </div>
+          </div>
           {% endif %}
 
-          <input type="hidden" name="fingerprint" id="fingerprint-input">
-
-          <div id="referralinput" class="col-xl-12 mb-2 d-none">
-            <label for="referral" class="form-label text-default">{{ phrase('username') }}</label>
-            <input name="referral" value="{{referral_name}}" type="text" class="form-control form-control-lg" id="referral" placeholder="">
-          </div>
-
-          <div class="col-xl-12 d-grid mt-2">
-            <button type="submit" aria-label="button" class="btn btn-lg btn-success enter">
-              {{ phrase('register_master_account') }}
-            </button>
-          </div>
         </div>
-
-        {% if config().enabled().isEnableReferral() %}
-        <div class="text-center">
-          <p id="add_referral" class="text-muted mt-3 text-info" role="button">{{ phrase('user_referral') }}</p>
-        </div>
-        {% endif %}
-
-        <div class="text-center my-1 authentication-barrier">
-          <span><i class="ti ti-lock"></i></span>
-        </div>
-
-        <div class="btn-list text-center">
-          <a href="/auth" aria-label="button" class="btn btn-primary-transparent">
-            {{ phrase('authorization') }}
-          </a>
-
-          <a href="/forget" class="btn btn-primary-transparent">
-            {{ phrase(67) }}
-          </a>
-        </div>
-      </form>
-
-      <div class="text-center">
-        {% for lang in getAllowLang(false) %}
-        <a class="align-items-center" href="{{action('user_lang', [lang.lang])}}">
-          <span class="avatar avatar-xs lh-1 me-0">
-            <img src="/uploads/images/flags/{{lang.lang}}.png" alt="img">
-          </span>
-        </a>
-        {% endfor %}
       </div>
     </div>
-
-    {% if getServer().bonus().isRegistrationBonus() %}
-    <!-- Магический кристалл абсолютно позиционированный справа от формы -->
-    <div class="d-none d-lg-block magic-crystal-absolute">
-      <div class="magical-showcase-wrapper">
-        <!-- Основной кристалл -->
-        <div class="crystal-container">
-          <div class="crystal-base">
-            <div class="crystal-glow"></div>
-          </div>
-          <div class="crystal">
-            <div class="crystal-face crystal-face-1"></div>
-            <div class="crystal-face crystal-face-2"></div>
-            <div class="crystal-face crystal-face-3"></div>
-            <div class="crystal-face crystal-face-4"></div>
-            <div class="crystal-face crystal-face-5"></div>
-            <div class="crystal-inner-glow"></div>
-          </div>
-
-          <!-- Магические частицы -->
-          <div class="magic-particles-container">
-            <!-- Частицы будут добавлены через JS -->
-          </div>
-
-          <!-- Контейнер для левитирующих предметов -->
-          <div class="levitating-items-container">
-            <!-- Предметы будут добавлены через JS -->
-          </div>
-
-          <!-- Энергетические линии -->
-          <div class="energy-lines-container">
-            <!-- Линии будут добавлены через JS -->
-          </div>
-        </div>
-
-        <!-- Информационный текст -->
-        <div class="prize-info">
-          <div class="prize-glow"></div>
-          <div class="prize-text">
-          {% if getServer().bonus().isIssueAllItems() %}
-              {{ phrase('registration_reward_all') }}
-          {% else %}
-              {{ phrase('registration_reward_one_random') }}
-          {% endif %}
-          </div>
-        </div>
-
-      </div>
-    </div>
-    {% endif %}
-
   </div>
-</div>
-  </div>
-</div>
 
-<style>
-/* Стили для абсолютного позиционирования кристалла */
-.magic-crystal-absolute {
-  position: absolute;
-  top: 50%;
-  left: 105%; /* Размещаем справа от формы */
-  transform: translateY(-50%);
-  width: 340px;
-  z-index: 10;
-}
-
-/* Медиа-запрос для корректировки позиции на более узких экранах */
-@media (max-width: 1400px) {
-  .magic-crystal-absolute {
-    left: 100%;
-  }
-}
-
-/* Медиа-запрос для очень узких экранов */
-@media (max-width: 1200px) {
-  .magic-crystal-absolute {
-    left: 95%;
-  }
-}
-</style>
-
-<!-- Bootstrap JS -->
-<script src="{{template}}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Show Password JS -->
-<script src="{{template}}/assets/js/show-password.js"></script>
-
-<script src="{{template}}/assets/libs/@popperjs/core/umd/popper.min.js"></script>
-<script src="{{template}}/assets/js/Toasts.js"></script>
-<script src="{{template}}/assets/js/general.js?v=1.0.5"></script>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const submitButton = document.querySelector('.btn.enter');
-    const fingerprintInput = document.getElementById('fingerprint-input');
-    const fpPromise = import('https://fpjscdn.net/v3/czqSG4OOYIGl9sjkhkLB')
-          .then(FingerprintJS => FingerprintJS.load({
-            region: "eu"
-          }));
-    fpPromise
-          .then(fp => fp.get())
-          .then(result => {
-            const visitorId = result.visitorId;
-            if (fingerprintInput) {
-              fingerprintInput.value = visitorId;
-            }
-            const googleLoginLink = document.getElementById('google-login-link');
-            if (googleLoginLink) {
-              const originalHref = googleLoginLink.getAttribute('href');
-              const url = new URL(originalHref);
-              const originalState = url.searchParams.get('state');
-              const stateObject = {
-                host: originalState,
-                fp: visitorId
-              };
-              const newState = btoa(JSON.stringify(stateObject));
-              url.searchParams.set('state', newState);
-              googleLoginLink.setAttribute('href', url.toString());
-            }
-            if (submitButton) {
-              submitButton.disabled = false;
-            }
-          })
-          .catch(error => {
-            if (submitButton) {
-              submitButton.disabled = false;
-            }
-          });
-  });
-</script>
-
-{% if config().captcha().isEnabled() %}
-
-<script>
-  var captcha = "{{config().captcha().getCaptcha()}}";
-</script>
-
-{% if config().captcha().isGoogleCaptcha() %}
-<script src="https://www.google.com/recaptcha/api.js"></script>
-<script>
-  window.onload = function () {
-    if (typeof grecaptcha !== 'undefined') {
-      grecaptcha.render('g-recaptcha', {
-        'sitekey': '{{ google_secret_key() }}'
-      });
-    } else {
-      console.error('grecaptcha is not defined');
+  <style>
+    /* Стили для абсолютного позиционирования кристалла */
+    .magic-crystal-absolute {
+      position: absolute;
+      top: 50%;
+      left: 105%;
+      /* Размещаем справа от формы */
+      transform: translateY(-50%);
+      width: 340px;
+      z-index: 10;
     }
-  };
-</script>
-{% elseif config().captcha().isDefaultCaptcha() %}
 
-{% elseif config().captcha().isCloudflareCaptcha() %}
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
-<script>
+    /* Медиа-запрос для корректировки позиции на более узких экранах */
+    @media (max-width: 1400px) {
+      .magic-crystal-absolute {
+        left: 100%;
+      }
+    }
+
+    /* Медиа-запрос для очень узких экранов */
+    @media (max-width: 1200px) {
+      .magic-crystal-absolute {
+        left: 95%;
+      }
+    }
+  </style>
+
+  <!-- Bootstrap JS -->
+  <script src="{{template}}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Show Password JS -->
+  <script src="{{template}}/assets/js/show-password.js"></script>
+
+  <script src="{{template}}/assets/libs/@popperjs/core/umd/popper.min.js"></script>
+  <script src="{{template}}/assets/js/Toasts.js"></script>
+  <script src="{{template}}/assets/js/general.js?v=1.0.5"></script>
+
+  <script>
+    // Функция валидации соглашений (должна быть доступна глобально)
+    function validateAgreements() {
+      const privacyCheckbox = document.getElementById('privacy-policy').checked;
+      const termsCheckbox = document.getElementById('terms-of-service').checked;
+      const rulesCheckbox = document.getElementById('server-rules').checked;
+      const submitButton = document.querySelector('.btn.enter');
+
+      if (submitButton) {
+        if (privacyCheckbox && termsCheckbox && rulesCheckbox) {
+          submitButton.disabled = false;
+          submitButton.classList.remove('btn-secondary');
+          submitButton.classList.add('btn-success');
+        } else {
+          submitButton.disabled = true;
+          submitButton.classList.remove('btn-success');
+          submitButton.classList.add('btn-secondary');
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const submitButton = document.querySelector('.btn.enter');
+      const fingerprintInput = document.getElementById('fingerprint-input');
+      const fpPromise = import('https://fpjscdn.net/v3/czqSG4OOYIGl9sjkhkLB')
+        .then(FingerprintJS => FingerprintJS.load({
+          region: "eu"
+        }));
+      fpPromise
+        .then(fp => fp.get())
+        .then(result => {
+          const visitorId = result.visitorId;
+          if (fingerprintInput) {
+            fingerprintInput.value = visitorId;
+          }
+          const googleLoginLink = document.getElementById('google-login-link');
+          if (googleLoginLink) {
+            const originalHref = googleLoginLink.getAttribute('href');
+            const url = new URL(originalHref);
+            const originalState = url.searchParams.get('state');
+            const stateObject = {
+              host: originalState,
+              fp: visitorId
+            };
+            const newState = btoa(JSON.stringify(stateObject));
+            url.searchParams.set('state', newState);
+            googleLoginLink.setAttribute('href', url.toString());
+          }
+          if (submitButton) {
+            // Проверяем соглашения после загрузки fingerprint
+            validateAgreements();
+          }
+        })
+        .catch(error => {
+          if (submitButton) {
+            // Проверяем соглашения даже при ошибке fingerprint
+            validateAgreements();
+          }
+        });
+    });
+  </script>
+
+  {% if config().captcha().isEnabled() %}
+
+  <script>
+    var captcha = "{{config().captcha().getCaptcha()}}";
+  </script>
+
+  {% if config().captcha().isGoogleCaptcha() %}
+  <script src="https://www.google.com/recaptcha/api.js"></script>
+  <script>
+    window.onload = function () {
+      if (typeof grecaptcha !== 'undefined') {
+        grecaptcha.render('g-recaptcha', {
+          'sitekey': '{{ google_secret_key() }}'
+        });
+      } else {
+        console.error('grecaptcha is not defined');
+      }
+    };
+  </script>
+  {% elseif config().captcha().isDefaultCaptcha() %}
+
+  {% elseif config().captcha().isCloudflareCaptcha() %}
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+  <script>
     // Инициализация Cloudflare Turnstile
-    window.onload = function() {
+    window.onload = function () {
       turnstile.render('#cf-turnstile', {
         sitekey: '{{config().captcha().getCloudflareSiteKey()}}',
-        callback: function(token) {
+        callback: function (token) {
           document.getElementById('cf-turnstile-response').value = token;
         }
       });
     };
-</script>
-{% endif %}
+  </script>
+  {% endif %}
 
-{% endif %}
+  {% endif %}
 
-<script>
+  <script>
 
-document.addEventListener('DOMContentLoaded', function() {
-  function get_captcha() {
-    // Проверяем, какая капча используется
-    if (captcha === "google") {
-      grecaptcha.reset();
-    } else if (captcha === "default") {
-      // Сброс hCaptcha
-      if (typeof hcaptcha !== 'undefined') {
-        hcaptcha.reset();
+    document.addEventListener('DOMContentLoaded', function () {
+      function get_captcha() {
+        // Проверяем, какая капча используется
+        if (captcha === "google") {
+          grecaptcha.reset();
+        } else if (captcha === "default") {
+          // Сброс hCaptcha
+          if (typeof hcaptcha !== 'undefined') {
+            hcaptcha.reset();
+          }
+        } else if (captcha === "cloudflare") {
+          // Сброс Cloudflare Turnstile
+          if (typeof turnstile !== 'undefined') {
+            turnstile.reset();
+          }
+        }
       }
-    } else if (captcha === "cloudflare") {
-      // Сброс Cloudflare Turnstile
-      if (typeof turnstile !== 'undefined') {
-        turnstile.reset();
-      }
-    }
-  }
 
-  // Делаем функцию доступной глобально
-  window.get_captcha = get_captcha;
-});
-
-
-$(document).ready(function() {
-  // Инициализация всех popover'ов на странице
-  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap.Popover(popoverTriggerEl, {
-      html: true,
-      sanitize: false
+      // Делаем функцию доступной глобально
+      window.get_captcha = get_captcha;
     });
-  });
-
-  function transliterate(text) {
-    const layoutMap = {
-      'й': 'q', 'ц': 'w', 'у': 'e', 'к': 'r', 'е': 't', 'н': 'y', 'г': 'u', 'ш': 'i', 'щ': 'o', 'з': 'p', 'х': '[', 'ъ': ']',
-      'ф': 'a', 'ы': 's', 'в': 'd', 'а': 'f', 'п': 'g', 'р': 'h', 'о': 'j', 'л': 'k', 'д': 'l', 'ж': ';', 'э': "'",
-      'я': 'z', 'ч': 'x', 'с': 'c', 'м': 'v', 'и': 'b', 'т': 'n', 'ь': 'm', 'б': ',', 'ю': '.',
-      'і': 's', 'ї': ']', 'є': "'",
-      'Й': 'Q', 'Ц': 'W', 'У': 'E', 'К': 'R', 'Е': 'T', 'Н': 'Y', 'Г': 'U', 'Ш': 'I', 'Щ': 'O', 'З': 'P', 'Х': '[', 'Ъ': ']',
-      'Ф': 'A', 'Ы': 'S', 'В': 'D', 'А': 'F', 'П': 'G', 'Р': 'H', 'О': 'J', 'Л': 'K', 'Д': 'L', 'Ж': ';', 'Э': "'",
-      'Я': 'Z', 'Ч': 'X', 'С': 'C', 'М': 'V', 'И': 'B', 'Т': 'N', 'Ь': 'M', 'Б': ',', 'Ю': '.',
-      'І': 'S', 'Ї': ']', 'Є': "'",
-
-      'α': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'ζ': 'z', 'η': 'h', 'θ': 'u', 'ι': 'i', 'κ': 'k', 'λ': 'l', 'μ': 'm',
-      'ν': 'n', 'ξ': 'j', 'ο': 'o', 'π': 'p', 'ρ': 'r', 'σ': 's', 'ς': 's', 'τ': 't', 'υ': 'y', 'φ': 'f', 'χ': 'x', 'ψ': 'c', 'ω': 'v',
-      'Α': 'A', 'Β': 'B', 'Γ': 'G', 'Δ': 'D', 'Ε': 'E', 'Ζ': 'Z', 'Η': 'H', 'Θ': 'U', 'Ι': 'I', 'Κ': 'K', 'Λ': 'L', 'Μ': 'M',
-      'Ν': 'N', 'Ξ': 'J', 'Ο': 'O', 'Π': 'P', 'Ρ': 'R', 'Σ': 'S', 'Τ': 'T', 'Υ': 'Y', 'Φ': 'F', 'Χ': 'X', 'Ψ': 'C', 'Ω': 'V',
-
-      'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ý': 'y',
-      'à': 'a', 'è': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u',
-      'â': 'a', 'ê': 'e', 'î': 'i', 'ô': 'o', 'û': 'u',
-      'ã': 'a', 'õ': 'o', 'ñ': 'n', 'ç': 'c', 'ë': 'e', 'ï': 'i', 'ü': 'u',
-      'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U', 'Ý': 'Y',
-      'À': 'A', 'È': 'E', 'Ì': 'I', 'Ò': 'O', 'Ù': 'U',
-      'Â': 'A', 'Ê': 'E', 'Î': 'I', 'Ô': 'O', 'Û': 'U',
-      'Ã': 'A', 'Õ': 'O', 'Ñ': 'N', 'Ç': 'C', 'Ë': 'E', 'Ï': 'I', 'Ü': 'U',
-      'ß': 'ss'
-    };
-
-    let result = '';
-    for (let i = 0; i < text.length; i++) {
-      const char = text[i];
-      result += layoutMap[char] || char;
-    }
-    return result;
-  }
 
 
-  function updateCounterUI() {
-    const $input = $('#account');
-    const $counter = $('#accountCharCounter');
-    const $prefixButton = $('.account_prefix');
-
-    if ($input.length === 0 || $counter.length === 0) {
-      return;
-    }
-
-    const maxChars = parseInt($input.attr('maxlength'), 10);
-    const prefixLen = $prefixButton.length > 0 ? $prefixButton.text().trim().length : 0;
-    const currentLen = $input.val().length;
-
-    const remaining = maxChars - prefixLen - currentLen;
-    $counter.text('{{ phrase(312) }}: ' + remaining);
-
-    if (remaining < 0) {
-      $counter.removeClass('text-muted').addClass('text-danger');
-    } else {
-      $counter.removeClass('text-danger').addClass('text-muted');
-    }
-  }
-
-
-  function enforceCharacterLimit() {
-    const $input = $('#account');
-    if ($input.length === 0) return;
-
-    const maxChars = parseInt($input.attr('maxlength'), 10);
-    const prefixLen = $('.account_prefix').text().trim().length;
-    const allowedInputLength = maxChars - prefixLen;
-
-    if ($input.val().length > allowedInputLength) {
-      const truncatedValue = $input.val().substring(0, allowedInputLength);
-      $input.val(truncatedValue);
-    }
-  }
-
-
-  $(document).on('input', '#account', function() {
-    const originalValue = $(this).val();
-    let newValue = transliterate(originalValue);
-    newValue = newValue.replace(/[^a-zA-Z0-9_]/g, '');
-
-    if (originalValue !== newValue) {
-      const start = this.selectionStart;
-      const end = this.selectionEnd;
-
-      $(this).val(newValue);
-
-      this.setSelectionRange(start, end);
-    }
-
-    enforceCharacterLimit();
-    updateCounterUI();
-  });
-
-  updateCounterUI();
-
-  // Обработчик для генерации паролей
-  $(document).on('click', '.thisPassword', function() {
-    $('#signin-password').val($(this).text());
-    $('#signin-password').attr('type', 'text');
-    $('.align-middle').removeClass('ri-eye-off-line');
-    $('.align-middle').addClass('ri-eye-line');
-  });
-
-  // Остальные обработчики
-  $(document).on('click', '#add_referral', function() {
-    $('#add_referral').hide();
-    $('#referralinput').removeClass('d-none');
-  });
-
-  $(document).on('click', '.account_prefix', function() {
-    AjaxSend('/registration/account/prefix', 'POST', {}, true).then(function(prefix) {
-      $('.account_prefix').text(prefix);
-      enforceCharacterLimit();
-      updateCounterUI();
-    });
-  });
-
-  {% if getServer().bonus().isRegistrationBonus() %}
-  // JavaScript для магического кристалла
-// Пути к изображениям предметов
-  const itemImages = [
-    {% for item in getServer().bonus().getRegistrationBonusItems() %}
-  {% set itemInfo = get_item_info(item.id) %}
-  '{{ itemInfo.getIcon() }}',
-  {% endfor %}
-];
-
-// Создаем левитирующие предметы
-  const itemsContainer = $('.levitating-items-container');
-
-// Функция для создания орбит предметов
-  function createItemOrbits() {
-    const orbitsContainer = $('.energy-lines-container');
-
-    // Определяем нужное количество орбит на основе количества предметов
-    // Распределим предметы на 3 орбиты
-    const orbitsCount = 3;
-
-    // Создаем орбиты
-    for (let i = 0; i < orbitsCount; i++) {
-      const orbitSize = 140 + i * 30;
-      const orbit = $('<div>')
-            .addClass('item-orbit')
-            .css({
-              'width': `${orbitSize}px`,
-              'height': `${orbitSize}px`,
-              'opacity': 0.3 - i * 0.1
-            });
-
-      orbitsContainer.append(orbit);
-    }
-  }
-
-// Создаем орбиты
-  createItemOrbits();
-
-// Функция для получения случайных скоростей вращения
-  function getRandomSpeed(min, max) {
-    return min + Math.random() * (max - min);
-  }
-
-// Создаем предметы и размещаем их по орбитам с уникальными скоростями и траекториями
-  function createItems() {
-    const itemCount = itemImages.length;
-    const animationKeyframes = [];
-
-    // Создаем массив для хранения всех keyframes анимаций
-    const keyframesArray = [];
-
-    // Распределяем элементы равномерно вокруг орбит
-    for (let i = 0; i < itemCount; i++) {
-      // Определяем, на какой орбите будет элемент (распределяем по 3 орбитам)
-      const orbitIndex = i % 3;
-
-      // Расстояние от центра зависит от орбиты
-      const radius = 100 + orbitIndex * 30; // 100, 130, 160
-
-      // Генерируем случайный начальный угол для каждого элемента
-      const randomStartAngle = Math.random() * 360;
-
-      // Выбираем случайную скорость вращения для каждого элемента
-      // Чем меньше число, тем быстрее движение
-      const orbitDuration = getRandomSpeed(20, 40);
-
-      // Создаем элемент предмета с индивидуальными CSS свойствами
-      const item = $('<div>')
-            .addClass('levitating-item')
-            .attr('data-item-index', i)
-            .css({
-              'top': '50%',
-              'left': '50%',
-              'z-index': 15,
-              'transform-origin': 'center'
-            });
-
-      // Применяем случайную начальную позицию
-      item.css({
-        'transform': `rotate(${randomStartAngle}deg) translateX(${radius}px) rotate(-${randomStartAngle}deg)`
+    $(document).ready(function () {
+      // Инициализация всех popover'ов на странице
+      var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+      var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl, {
+          html: true,
+          sanitize: false
+        });
       });
 
-      // Создаем уникальные ключевые кадры анимации для каждого элемента
-      const keyframesName = `orbit${i}`;
-      const keyframes = `
+      function transliterate(text) {
+        const layoutMap = {
+          'й': 'q', 'ц': 'w', 'у': 'e', 'к': 'r', 'е': 't', 'н': 'y', 'г': 'u', 'ш': 'i', 'щ': 'o', 'з': 'p', 'х': '[', 'ъ': ']',
+          'ф': 'a', 'ы': 's', 'в': 'd', 'а': 'f', 'п': 'g', 'р': 'h', 'о': 'j', 'л': 'k', 'д': 'l', 'ж': ';', 'э': "'",
+          'я': 'z', 'ч': 'x', 'с': 'c', 'м': 'v', 'и': 'b', 'т': 'n', 'ь': 'm', 'б': ',', 'ю': '.',
+          'і': 's', 'ї': ']', 'є': "'",
+          'Й': 'Q', 'Ц': 'W', 'У': 'E', 'К': 'R', 'Е': 'T', 'Н': 'Y', 'Г': 'U', 'Ш': 'I', 'Щ': 'O', 'З': 'P', 'Х': '[', 'Ъ': ']',
+          'Ф': 'A', 'Ы': 'S', 'В': 'D', 'А': 'F', 'П': 'G', 'Р': 'H', 'О': 'J', 'Л': 'K', 'Д': 'L', 'Ж': ';', 'Э': "'",
+          'Я': 'Z', 'Ч': 'X', 'С': 'C', 'М': 'V', 'И': 'B', 'Т': 'N', 'Ь': 'M', 'Б': ',', 'Ю': '.',
+          'І': 'S', 'Ї': ']', 'Є': "'",
+
+          'α': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'ζ': 'z', 'η': 'h', 'θ': 'u', 'ι': 'i', 'κ': 'k', 'λ': 'l', 'μ': 'm',
+          'ν': 'n', 'ξ': 'j', 'ο': 'o', 'π': 'p', 'ρ': 'r', 'σ': 's', 'ς': 's', 'τ': 't', 'υ': 'y', 'φ': 'f', 'χ': 'x', 'ψ': 'c', 'ω': 'v',
+          'Α': 'A', 'Β': 'B', 'Γ': 'G', 'Δ': 'D', 'Ε': 'E', 'Ζ': 'Z', 'Η': 'H', 'Θ': 'U', 'Ι': 'I', 'Κ': 'K', 'Λ': 'L', 'Μ': 'M',
+          'Ν': 'N', 'Ξ': 'J', 'Ο': 'O', 'Π': 'P', 'Ρ': 'R', 'Σ': 'S', 'Τ': 'T', 'Υ': 'Y', 'Φ': 'F', 'Χ': 'X', 'Ψ': 'C', 'Ω': 'V',
+
+          'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ý': 'y',
+          'à': 'a', 'è': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u',
+          'â': 'a', 'ê': 'e', 'î': 'i', 'ô': 'o', 'û': 'u',
+          'ã': 'a', 'õ': 'o', 'ñ': 'n', 'ç': 'c', 'ë': 'e', 'ï': 'i', 'ü': 'u',
+          'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U', 'Ý': 'Y',
+          'À': 'A', 'È': 'E', 'Ì': 'I', 'Ò': 'O', 'Ù': 'U',
+          'Â': 'A', 'Ê': 'E', 'Î': 'I', 'Ô': 'O', 'Û': 'U',
+          'Ã': 'A', 'Õ': 'O', 'Ñ': 'N', 'Ç': 'C', 'Ë': 'E', 'Ï': 'I', 'Ü': 'U',
+          'ß': 'ss'
+        };
+
+        let result = '';
+        for (let i = 0; i < text.length; i++) {
+          const char = text[i];
+          result += layoutMap[char] || char;
+        }
+        return result;
+      }
+
+
+      function updateCounterUI() {
+        const $input = $('#account');
+        const $counter = $('#accountCharCounter');
+        const $prefixButton = $('.account_prefix');
+
+        if ($input.length === 0 || $counter.length === 0) {
+          return;
+        }
+
+        const maxChars = parseInt($input.attr('maxlength'), 10);
+        const prefixLen = $prefixButton.length > 0 ? $prefixButton.text().trim().length : 0;
+        const currentLen = $input.val().length;
+
+        const remaining = maxChars - prefixLen - currentLen;
+        $counter.text('{{ phrase(312) }}: ' + remaining);
+
+        if (remaining < 0) {
+          $counter.removeClass('text-muted').addClass('text-danger');
+        } else {
+          $counter.removeClass('text-danger').addClass('text-muted');
+        }
+      }
+
+
+      function enforceCharacterLimit() {
+        const $input = $('#account');
+        if ($input.length === 0) return;
+
+        const maxChars = parseInt($input.attr('maxlength'), 10);
+        const prefixLen = $('.account_prefix').text().trim().length;
+        const allowedInputLength = maxChars - prefixLen;
+
+        if ($input.val().length > allowedInputLength) {
+          const truncatedValue = $input.val().substring(0, allowedInputLength);
+          $input.val(truncatedValue);
+        }
+      }
+
+
+      $(document).on('input', '#account', function () {
+        const originalValue = $(this).val();
+        let newValue = transliterate(originalValue);
+        newValue = newValue.replace(/[^a-zA-Z0-9_]/g, '');
+
+        if (originalValue !== newValue) {
+          const start = this.selectionStart;
+          const end = this.selectionEnd;
+
+          $(this).val(newValue);
+
+          this.setSelectionRange(start, end);
+        }
+
+        enforceCharacterLimit();
+        updateCounterUI();
+      });
+
+      updateCounterUI();
+
+      // Обработчик для генерации паролей
+      $(document).on('click', '.thisPassword', function () {
+        $('#signin-password').val($(this).text());
+        $('#signin-password').attr('type', 'text');
+        $('.align-middle').removeClass('ri-eye-off-line');
+        $('.align-middle').addClass('ri-eye-line');
+      });
+
+      // Остальные обработчики
+      $(document).on('click', '#add_referral', function () {
+        $('#add_referral').hide();
+        $('#referralinput').removeClass('d-none');
+      });
+
+      $(document).on('click', '.account_prefix', function () {
+        AjaxSend('/registration/account/prefix', 'POST', {}, true).then(function (prefix) {
+          $('.account_prefix').text(prefix);
+          enforceCharacterLimit();
+          updateCounterUI();
+        });
+      });
+
+      // Обработчики для чекбоксов соглашений
+      $(document).on('change', '.agreement-checkbox', function () {
+        validateAgreements();
+      });
+
+      // Инициализация состояния кнопки при загрузке страницы
+      validateAgreements();
+
+      {% if getServer().bonus().isRegistrationBonus() %}
+      // JavaScript для магического кристалла
+      // Пути к изображениям предметов
+      const itemImages = [
+        {% for item in getServer().bonus().getRegistrationBonusItems() %}
+  {% set itemInfo = get_item_info(item.id) %}
+      '{{ itemInfo.getIcon() }}',
+      {% endfor %}
+];
+
+    // Создаем левитирующие предметы
+    const itemsContainer = $('.levitating-items-container');
+
+    // Функция для создания орбит предметов
+    function createItemOrbits() {
+      const orbitsContainer = $('.energy-lines-container');
+
+      // Определяем нужное количество орбит на основе количества предметов
+      // Распределим предметы на 3 орбиты
+      const orbitsCount = 3;
+
+      // Создаем орбиты
+      for (let i = 0; i < orbitsCount; i++) {
+        const orbitSize = 140 + i * 30;
+        const orbit = $('<div>')
+          .addClass('item-orbit')
+          .css({
+            'width': `${orbitSize}px`,
+            'height': `${orbitSize}px`,
+            'opacity': 0.3 - i * 0.1
+          });
+
+        orbitsContainer.append(orbit);
+      }
+    }
+
+    // Создаем орбиты
+    createItemOrbits();
+
+    // Функция для получения случайных скоростей вращения
+    function getRandomSpeed(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    // Создаем предметы и размещаем их по орбитам с уникальными скоростями и траекториями
+    function createItems() {
+      const itemCount = itemImages.length;
+      const animationKeyframes = [];
+
+      // Создаем массив для хранения всех keyframes анимаций
+      const keyframesArray = [];
+
+      // Распределяем элементы равномерно вокруг орбит
+      for (let i = 0; i < itemCount; i++) {
+        // Определяем, на какой орбите будет элемент (распределяем по 3 орбитам)
+        const orbitIndex = i % 3;
+
+        // Расстояние от центра зависит от орбиты
+        const radius = 100 + orbitIndex * 30; // 100, 130, 160
+
+        // Генерируем случайный начальный угол для каждого элемента
+        const randomStartAngle = Math.random() * 360;
+
+        // Выбираем случайную скорость вращения для каждого элемента
+        // Чем меньше число, тем быстрее движение
+        const orbitDuration = getRandomSpeed(20, 40);
+
+        // Создаем элемент предмета с индивидуальными CSS свойствами
+        const item = $('<div>')
+          .addClass('levitating-item')
+          .attr('data-item-index', i)
+          .css({
+            'top': '50%',
+            'left': '50%',
+            'z-index': 15,
+            'transform-origin': 'center'
+          });
+
+        // Применяем случайную начальную позицию
+        item.css({
+          'transform': `rotate(${randomStartAngle}deg) translateX(${radius}px) rotate(-${randomStartAngle}deg)`
+        });
+
+        // Создаем уникальные ключевые кадры анимации для каждого элемента
+        const keyframesName = `orbit${i}`;
+        const keyframes = `
       @keyframes ${keyframesName} {
         0% { transform: rotate(${randomStartAngle}deg) translateX(${radius}px) rotate(-${randomStartAngle}deg); }
         100% { transform: rotate(${randomStartAngle + 360}deg) translateX(${radius}px) rotate(-${randomStartAngle + 360}deg); }
       }
     `;
 
-      keyframesArray.push(keyframes);
+        keyframesArray.push(keyframes);
 
-      // Создаем обертку для вращения элемента вокруг своей оси
-      const itemWrapper = $('<div>')
-            .addClass('item-wrapper')
-            .css({
-              'animation-duration': `${getRandomSpeed(8, 15)}s`,
-              'animation-direction': i % 2 === 0 ? 'normal' : 'reverse'
-            });
+        // Создаем обертку для вращения элемента вокруг своей оси
+        const itemWrapper = $('<div>')
+          .addClass('item-wrapper')
+          .css({
+            'animation-duration': `${getRandomSpeed(8, 15)}s`,
+            'animation-direction': i % 2 === 0 ? 'normal' : 'reverse'
+          });
 
-      // Создаем контент предмета
-      const itemContent = $('<div>')
-            .addClass('item-content')
-            .css('z-index', 20);
+        // Создаем контент предмета
+        const itemContent = $('<div>')
+          .addClass('item-content')
+          .css('z-index', 20);
 
-      // Добавляем изображение
-      const img = $('<img>')
-            .attr('src', itemImages[i]);
+        // Добавляем изображение
+        const img = $('<img>')
+          .attr('src', itemImages[i]);
 
-      // Добавляем свечение вокруг предмета
-      const itemGlow = $('<div>')
-            .addClass('item-glow')
-            .css({
-              'animation-delay': `${Math.random() * 2}s`
-            });
+        // Добавляем свечение вокруг предмета
+        const itemGlow = $('<div>')
+          .addClass('item-glow')
+          .css({
+            'animation-delay': `${Math.random() * 2}s`
+          });
 
-      // Собираем структуру
-      itemContent.append(img);
-      itemContent.append(itemGlow);
-      itemWrapper.append(itemContent);
-      item.append(itemWrapper);
-      itemsContainer.append(item);
+        // Собираем структуру
+        itemContent.append(img);
+        itemContent.append(itemGlow);
+        itemWrapper.append(itemContent);
+        item.append(itemWrapper);
+        itemsContainer.append(item);
 
-      // Сохраняем информацию об анимации для последующего применения
-      animationKeyframes.push({
-        element: item,
-        keyframesName: keyframesName,
-        duration: orbitDuration
-      });
-    }
-
-    // Объединяем все keyframes и добавляем в head
-    const allKeyframes = keyframesArray.join('\n');
-    $('<style>').text(allKeyframes).appendTo('head');
-
-    // Ждем немного, чтобы DOM был полностью готов,
-    // затем применяем все анимации одновременно
-    setTimeout(() => {
-      // Применяем анимации ко всем элементам сразу
-      animationKeyframes.forEach(item => {
-        item.element.css({
-          'animation': `${item.keyframesName} ${item.duration}s linear infinite`,
-          'transition': 'none'
+        // Сохраняем информацию об анимации для последующего применения
+        animationKeyframes.push({
+          element: item,
+          keyframesName: keyframesName,
+          duration: orbitDuration
         });
-      });
-    }, 500);
-  }
+      }
 
-// Создаем предметы
-  createItems();
+      // Объединяем все keyframes и добавляем в head
+      const allKeyframes = keyframesArray.join('\n');
+      $('<style>').text(allKeyframes).appendTo('head');
 
-// Функция для создания магических частиц
-  function createMagicParticles() {
-    const particlesContainer = $('.magic-particles-container');
-
-    for (let i = 0; i < 30; i++) {
-      const particle = $('<div>')
-            .addClass('magic-particle')
-            .css({
-              'left': `${Math.random() * 100}%`,
-              'top': `${Math.random() * 100}%`,
-              'width': `${2 + Math.random() * 3}px`,
-              'height': `${2 + Math.random() * 3}px`,
-              'background-color': `rgba(${144 + Math.random() * 111}, ${120 + Math.random() * 135}, 255, ${0.6 + Math.random() * 0.4})`,
-              'animation': `sparkle ${1 + Math.random() * 3}s ease-in-out infinite`,
-              'animation-delay': `${Math.random() * 3}s`
-            });
-
-      particlesContainer.append(particle);
-    }
-  }
-
-// Создаем магические частицы
-  createMagicParticles();
-
-// Функция для выделения случайного предмета и отображения его названия
-  function highlightRandomItem() {
-    // Сначала удаляем предыдущее выделение
-    $('.item-content img').removeClass('item-highlight');
-
-    // Выбираем случайный предмет
-    const items = $('.levitating-item');
-
-    if (items.length > 0) {
-      const randomIndex = Math.floor(Math.random() * items.length);
-      const selectedItem = $(items[randomIndex]);
-
-      // Выделяем предмет
-      selectedItem.find('.item-content img').addClass('item-highlight');
+      // Ждем немного, чтобы DOM был полностью готов,
+      // затем применяем все анимации одновременно
+      setTimeout(() => {
+        // Применяем анимации ко всем элементам сразу
+        animationKeyframes.forEach(item => {
+          item.element.css({
+            'animation': `${item.keyframesName} ${item.duration}s linear infinite`,
+            'transition': 'none'
+          });
+        });
+      }, 500);
     }
 
-    // Планируем следующее выделение
-    setTimeout(highlightRandomItem, 3000 + Math.random() * 2000);
-  }
+    // Создаем предметы
+    createItems();
 
-// Начинаем процесс выделения предметов
-  setTimeout(highlightRandomItem, 2000);
+    // Функция для создания магических частиц
+    function createMagicParticles() {
+      const particlesContainer = $('.magic-particles-container');
 
-// Функция для изменения интенсивности свечения кристалла
-  function pulsecrystalGlow() {
-    const innerGlow = $('.crystal-inner-glow');
-    const baseGlow = $('.crystal-glow');
+      for (let i = 0; i < 30; i++) {
+        const particle = $('<div>')
+          .addClass('magic-particle')
+          .css({
+            'left': `${Math.random() * 100}%`,
+            'top': `${Math.random() * 100}%`,
+            'width': `${2 + Math.random() * 3}px`,
+            'height': `${2 + Math.random() * 3}px`,
+            'background-color': `rgba(${144 + Math.random() * 111}, ${120 + Math.random() * 135}, 255, ${0.6 + Math.random() * 0.4})`,
+            'animation': `sparkle ${1 + Math.random() * 3}s ease-in-out infinite`,
+            'animation-delay': `${Math.random() * 3}s`
+          });
 
-    // Случайные значения для интенсивности
-    const innerIntensity = 0.3 + Math.random() * 0.3;
-    const baseIntensity = 0.6 + Math.random() * 0.4;
+        particlesContainer.append(particle);
+      }
+    }
 
-    // Применяем новые значения
-    innerGlow.css('opacity', innerIntensity);
-    baseGlow.css('opacity', baseIntensity);
+    // Создаем магические частицы
+    createMagicParticles();
 
-    // Планируем следующее изменение
-    setTimeout(pulsecrystalGlow, 2000 + Math.random() * 1000);
-  }
+    // Функция для выделения случайного предмета и отображения его названия
+    function highlightRandomItem() {
+      // Сначала удаляем предыдущее выделение
+      $('.item-content img').removeClass('item-highlight');
 
-// Запускаем пульсацию свечения
-  pulsecrystalGlow();
+      // Выбираем случайный предмет
+      const items = $('.levitating-item');
 
-// Улучшенная функция для создания эффектных вспышек энергии
-  function createEnergyBurst() {
-    // Создаем эффектную вспышку с градиентом
-    const burst = $('<div>')
+      if (items.length > 0) {
+        const randomIndex = Math.floor(Math.random() * items.length);
+        const selectedItem = $(items[randomIndex]);
+
+        // Выделяем предмет
+        selectedItem.find('.item-content img').addClass('item-highlight');
+      }
+
+      // Планируем следующее выделение
+      setTimeout(highlightRandomItem, 3000 + Math.random() * 2000);
+    }
+
+    // Начинаем процесс выделения предметов
+    setTimeout(highlightRandomItem, 2000);
+
+    // Функция для изменения интенсивности свечения кристалла
+    function pulsecrystalGlow() {
+      const innerGlow = $('.crystal-inner-glow');
+      const baseGlow = $('.crystal-glow');
+
+      // Случайные значения для интенсивности
+      const innerIntensity = 0.3 + Math.random() * 0.3;
+      const baseIntensity = 0.6 + Math.random() * 0.4;
+
+      // Применяем новые значения
+      innerGlow.css('opacity', innerIntensity);
+      baseGlow.css('opacity', baseIntensity);
+
+      // Планируем следующее изменение
+      setTimeout(pulsecrystalGlow, 2000 + Math.random() * 1000);
+    }
+
+    // Запускаем пульсацию свечения
+    pulsecrystalGlow();
+
+    // Улучшенная функция для создания эффектных вспышек энергии
+    function createEnergyBurst() {
+      // Создаем эффектную вспышку с градиентом
+      const burst = $('<div>')
+        .css({
+          'position': 'absolute',
+          'top': '50%',
+          'left': '50%',
+          'width': '0',
+          'height': '0',
+          'background': 'radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(144, 120, 255, 0.6) 40%, rgba(104, 79, 243, 0.2) 70%, transparent 100%)',
+          'border-radius': '50%',
+          'transform': 'translate(-50%, -50%)',
+          'z-index': '6',
+          'pointer-events': 'none',
+          'transition': 'all 0.7s cubic-bezier(0.2, 0.8, 0.3, 1)',
+          'filter': 'blur(3px)'
+        });
+
+      // Добавляем в контейнер
+      $('.crystal-container').append(burst);
+
+      // Анимируем вспышку
+      setTimeout(() => {
+        burst.css({
+          'width': '300px',
+          'height': '300px',
+          'opacity': '0'
+        });
+
+        // Создаем дополнительный эффект мерцающих частиц при вспышке
+        createBurstParticles();
+
+        // Удаляем элемент после завершения анимации
+        setTimeout(() => {
+          burst.remove();
+        }, 700);
+      }, 10);
+
+      // Планируем следующую вспышку
+      setTimeout(createEnergyBurst, 4000 + Math.random() * 3000);
+    }
+
+    // Функция для создания мерцающих частиц при вспышке
+    function createBurstParticles() {
+      for (let i = 0; i < 20; i++) {
+        const angle = Math.random() * 360;
+        const distance = 40 + Math.random() * 120;
+        const radian = (angle * Math.PI) / 180;
+        const x = Math.cos(radian) * distance;
+        const y = Math.sin(radian) * distance;
+
+        const particle = $('<div>')
           .css({
             'position': 'absolute',
             'top': '50%',
             'left': '50%',
-            'width': '0',
-            'height': '0',
-            'background': 'radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(144, 120, 255, 0.6) 40%, rgba(104, 79, 243, 0.2) 70%, transparent 100%)',
+            'width': `${3 + Math.random() * 5}px`,
+            'height': `${3 + Math.random() * 5}px`,
+            'background-color': `rgba(${144 + Math.random() * 111}, ${120 + Math.random() * 135}, 255, ${0.7 + Math.random() * 0.3})`,
             'border-radius': '50%',
-            'transform': 'translate(-50%, -50%)',
-            'z-index': '6',
-            'pointer-events': 'none',
-            'transition': 'all 0.7s cubic-bezier(0.2, 0.8, 0.3, 1)',
-            'filter': 'blur(3px)'
+            'transform': `translate(-50%, -50%)`,
+            'z-index': '7',
+            'opacity': '0',
+            'transition': `all ${0.5 + Math.random() * 0.5}s cubic-bezier(0.1, 0.9, 0.2, 1)`
           });
 
-    // Добавляем в контейнер
-    $('.crystal-container').append(burst);
+        $('.crystal-container').append(particle);
 
-    // Анимируем вспышку
-    setTimeout(() => {
-      burst.css({
-        'width': '300px',
-        'height': '300px',
-        'opacity': '0'
-      });
-
-      // Создаем дополнительный эффект мерцающих частиц при вспышке
-      createBurstParticles();
-
-      // Удаляем элемент после завершения анимации
-      setTimeout(() => {
-        burst.remove();
-      }, 700);
-    }, 10);
-
-    // Планируем следующую вспышку
-    setTimeout(createEnergyBurst, 4000 + Math.random() * 3000);
-  }
-
-// Функция для создания мерцающих частиц при вспышке
-  function createBurstParticles() {
-    for (let i = 0; i < 20; i++) {
-      const angle = Math.random() * 360;
-      const distance = 40 + Math.random() * 120;
-      const radian = (angle * Math.PI) / 180;
-      const x = Math.cos(radian) * distance;
-      const y = Math.sin(radian) * distance;
-
-      const particle = $('<div>')
-            .css({
-              'position': 'absolute',
-              'top': '50%',
-              'left': '50%',
-              'width': `${3 + Math.random() * 5}px`,
-              'height': `${3 + Math.random() * 5}px`,
-              'background-color': `rgba(${144 + Math.random() * 111}, ${120 + Math.random() * 135}, 255, ${0.7 + Math.random() * 0.3})`,
-              'border-radius': '50%',
-              'transform': `translate(-50%, -50%)`,
-              'z-index': '7',
-              'opacity': '0',
-              'transition': `all ${0.5 + Math.random() * 0.5}s cubic-bezier(0.1, 0.9, 0.2, 1)`
-            });
-
-      $('.crystal-container').append(particle);
-
-      // Анимируем частицу
-      setTimeout(() => {
-        particle.css({
-          'transform': `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-          'opacity': '1'
-        });
-
+        // Анимируем частицу
         setTimeout(() => {
           particle.css({
-            'opacity': '0'
+            'transform': `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+            'opacity': '1'
           });
 
           setTimeout(() => {
-            particle.remove();
-          }, 500);
-        }, 300 + Math.random() * 200);
-      }, Math.random() * 100);
-    }
-  }
+            particle.css({
+              'opacity': '0'
+            });
 
-// Запускаем создание вспышек энергии
-  setTimeout(createEnergyBurst, 2000);
-  {% endif %}
+            setTimeout(() => {
+              particle.remove();
+            }, 500);
+          }, 300 + Math.random() * 200);
+        }, Math.random() * 100);
+      }
+    }
+
+    // Запускаем создание вспышек энергии
+    setTimeout(createEnergyBurst, 2000);
+    {% endif %}
 
 
 });
-</script>
+  </script>
 </body>
+
 </html>

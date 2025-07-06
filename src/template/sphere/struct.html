@@ -20,6 +20,8 @@
 
   {{ config().logo().favicon() }}
 
+  {% block head %}{% endblock %}
+
   {% if config().other().isL2Cursor() %}
   <style>
     body {

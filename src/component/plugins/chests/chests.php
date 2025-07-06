@@ -376,6 +376,7 @@ class chests
         }
 
         $case_name = request::validateString('chest_id', 'Не указан ID кейса');
+        $case_count_open = isset($_POST['count_open']) ? (int)$_POST['count_open'] : 1;
 
         try {
             // Начало транзакции
@@ -384,8 +385,8 @@ class chests
             $caseServer = server::sendCustom("/api/plugin/chests/open", [
                 "serverId" => user::self()->getServerId(),
                 "name" => htmlspecialchars_decode($case_name, ENT_QUOTES),
+                "countOpen" => $case_count_open,
             ])->show()->getResponse();
-
             $case = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
             $case = $case[$case_name];
 
@@ -394,53 +395,103 @@ class chests
             if ($price < 0) {
                 throw new \Exception("Некорректная цена кейса");
             }
+            $items = [];
+            if($case_count_open == 1) {
+                $item = $caseServer['item'];
 
-            $item = $caseServer['item'];
+                $canAffordPurchase = user::self()->canAffordPurchase($price);
+                if (!$canAffordPurchase) {
+                    throw new \Exception(sprintf("Для покупки у Вас не хватает %s SphereCoin", $price - user::self()->getDonate()));
+                }
 
-            $canAffordPurchase = user::self()->canAffordPurchase($price);
-            if (!$canAffordPurchase) {
-                throw new \Exception(sprintf("Для покупки у Вас не хватает %s SphereCoin", $price - user::self()->getDonate()));
+                user::self()->donateDeduct($price);
+
+                $itemInfo = item::getItem($item['id'], \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getKnowledgeBase());
+                if (!$itemInfo || !$itemInfo->isExists()) {
+                    throw new \Exception("Предмет не найден");
+                }
+                $item['itemInfo'] = $itemInfo;
+
+                $enchant = isset($item['enchant']) ? (int)$item['enchant'] : 0;
+                $result = user::self()->addToWarehouse(
+                    user::self()->getServerId(),
+                    (int)$item['id'],
+                    (int)$item['count'],
+                    $enchant,
+                    'chest_win'
+                );
+
+                if (!$result['success']) {
+                    throw new \Exception("Ошибка при добавлении предмета в склад");
+                }
+
+                user::self()->addLog(\Ofey\Logan22\model\log\logTypes::LOG_CHEST_WIN, "chest_win", [
+                    'chest_id' => $case_name,
+                    'item_id' => $item['id'],
+                    'count' => $item['count'],
+                    'enchant' => $enchant,
+                    'price' => $price,
+                ]);
+            } else {
+                $items = $caseServer['items'];
+
+                $canAffordPurchase = user::self()->canAffordPurchase($price * $case_count_open);
+                if (!$canAffordPurchase) {
+                    throw new \Exception(sprintf("Для покупки у Вас не хватает %s SphereCoin", $price * $case_count_open - user::self()->getDonate()));
+                }
+
+                user::self()->donateDeduct($price * $case_count_open);
+
+                foreach ($items as $item) {
+                    $itemInfo = item::getItem($item['id'], \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getKnowledgeBase());
+                    if (!$itemInfo || !$itemInfo->isExists()) {
+                        throw new \Exception("Предмет не найден");
+                    }
+                    $item['itemInfo'] = $itemInfo;
+
+                    $enchant = isset($item['enchant']) ? (int)$item['enchant'] : 0;
+                    $result = user::self()->addToWarehouse(
+                        user::self()->getServerId(),
+                        (int)$item['id'],
+                        (int)$item['count'],
+                        $enchant,
+                        'chest_win'
+                    );
+
+                    if (!$result['success']) {
+                        throw new \Exception("Ошибка при добавлении предмета в склад");
+                    }
+
+                    user::self()->addLog(\Ofey\Logan22\model\log\logTypes::LOG_CHEST_WIN, "chest_win", [
+                        'chest_id' => $case_name,
+                        'item_id' => $item['id'],
+                        'count' => $item['count'],
+                        'enchant' => $enchant,
+                        'price' => $price,
+                    ]);
+                }
             }
 
-            user::self()->donateDeduct($price);
-
-            $itemInfo = item::getItem($item['id'], \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getKnowledgeBase());
-            if (!$itemInfo || !$itemInfo->isExists()) {
-                throw new \Exception("Предмет не найден");
-            }
-            $item['itemInfo'] = $itemInfo;
-
-            $enchant = isset($item['enchant']) ? (int)$item['enchant'] : 0;
-            $result = user::self()->addToWarehouse(
-                user::self()->getServerId(),
-                (int)$item['id'],
-                (int)$item['count'],
-                $enchant,
-                'chest_win'
-            );
-
-            if (!$result['success']) {
-                throw new \Exception("Ошибка при добавлении предмета в склад");
-            }
-
-            user::self()->addLog(\Ofey\Logan22\model\log\logTypes::LOG_CHEST_WIN, "chest_win", [
-                'chest_id' => $case_name,
-                'item_id' => $item['id'],
-                'count' => $item['count'],
-                'enchant' => $enchant,
-                'price' => $price,
-            ]);
 
             sql::commit();
 
             user::self()->getWarehouse(true);
 
-            board::alert([
-                'ok' => true,
-                'item' => $item,
-                'warehouse' => user::self()->getWarehouseToArray(),
-                'countWarehouseItems' => user::self()->countWarehouseItems(),
-            ]);
+            if($case_count_open == 1) {
+                board::alert([
+                    'ok' => true,
+                    'item' => $item,
+                    'warehouse' => user::self()->getWarehouseToArray(),
+                    'countWarehouseItems' => user::self()->countWarehouseItems(),
+                ]);
+            }else{
+                board::alert([
+                    'ok' => true,
+                    'items' => $items,
+                    'warehouse' => user::self()->getWarehouseToArray(),
+                    'countWarehouseItems' => user::self()->countWarehouseItems(),
+                ]);
+            }
 
         } catch (\Exception $e) {
             // В случае ошибки откатываем транзакцию

@@ -248,18 +248,18 @@
 }
 
 .open-chest-main-btn {
-    padding: 14px 40px;
+    padding: 14px 20px; /* Уменьшаем горизонтальный padding, чтобы кнопки были ближе */
     background: linear-gradient(135deg, #3498db, #2980b9);
     border: none;
-    border-radius: 50px;
     color: #fff;
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     position: relative;
     overflow: hidden;
+    flex-grow: 1; /* Растягиваем кнопки, чтобы они занимали все доступное пространство */
+    border-radius: 0; /* Убираем скругление у отдельных кнопок */
 }
 
 .open-chest-main-btn::before {

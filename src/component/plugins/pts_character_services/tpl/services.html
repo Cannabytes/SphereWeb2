@@ -1,0 +1,628 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{phrase('services_title')}}{% endblock %}
+
+{% set data = getServer(getUser().getServerId()).getPluginSetting("pts_character_services") %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2 class="fw-bold mb-2">{{phrase('services_header')}}</h2>
+            <p class="text-muted fs-5">{{phrase('services_subtitle')}}</p>
+        </div>
+    </div>
+    <div class="row g-4">
+
+        {% if data.services.change_name %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div
+                class="card custom-card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative service-card service-card-blue">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10"></div>
+                <div
+                    class="card-header bg-transparent border-bottom-0 pb-0 position-relative d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0 text-primary d-flex align-items-center">
+                        <i class="ri-edit-line me-2 fs-4"></i>
+                        {{phrase('service_change_name')}}
+                    </h5>
+                    <span class="badge bg-primary fs-6" title="{{phrase('title_service_cost')}}">{{
+                        data.costs.change_name }}
+                        {{phrase('currency_coins')}}</span>
+                </div>
+                <div class="card-body py-3 position-relative">
+                    <p class="card-text text-muted">{{phrase('service_change_name_desc')}}</p>
+                    <a class="btn btn-lg btn-outline-primary mt-2 d-flex align-items-center justify-content-center gap-2"
+                        data-bs-target="#changeNameModal" data-bs-toggle="modal" href="#"
+                        title="{{phrase('title_change_name')}}">
+                        <i class="ri-edit-line"></i> {{phrase('btn_change_name')}}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if data.services.move_account %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div
+                class="card custom-card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative service-card service-card-green">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10"></div>
+                <div
+                    class="card-header bg-transparent border-bottom-0 pb-0 position-relative d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0 text-success d-flex align-items-center">
+                        <i class="ri-user-shared-line me-2 fs-4"></i>
+                        {{phrase('service_move_account')}}
+                    </h5>
+                    <span class="badge bg-success fs-6" title="{{phrase('title_service_cost')}}">{{
+                        data.costs.move_account }}
+                        {{phrase('currency_coins')}}</span>
+                </div>
+                <div class="card-body py-3 position-relative">
+                    <p class="card-text text-muted">{{phrase('service_move_account_desc')}}</p>
+                    <a class="btn btn-lg btn-outline-success mt-2 d-flex align-items-center justify-content-center gap-2"
+                        data-bs-target="#moveCharacterModal" data-bs-toggle="modal" href="#"
+                        title="{{phrase('title_move_character')}}">
+                        <i class="ri-user-shared-line"></i> {{phrase('btn_move_character')}}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if data.services.delete_character %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div
+                class="card custom-card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative service-card service-card-red">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10"></div>
+                <div
+                    class="card-header bg-transparent border-bottom-0 pb-0 position-relative d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0 text-danger d-flex align-items-center">
+                        <i class="ri-delete-bin-line me-2 fs-4"></i>
+                        {{phrase('service_delete_character')}}
+                    </h5>
+                    <span class="badge bg-danger fs-6" title="{{phrase('title_service_cost')}}">{{
+                        data.costs.delete_character }}
+                        {{phrase('currency_coins')}}</span>
+                </div>
+                <div class="card-body py-3 position-relative">
+                    <p class="card-text text-muted">{{phrase('service_delete_character_desc')}}</p>
+                    <a class="btn btn-lg btn-outline-danger mt-2 d-flex align-items-center justify-content-center gap-2"
+                        data-bs-target="#deleteCharacterModal" data-bs-toggle="modal" href="#"
+                        title="{{phrase('title_delete_character')}}">
+                        <i class="ri-delete-bin-line"></i> {{phrase('btn_delete_character')}}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if data.services.change_name_color %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div
+                class="card custom-card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative service-card service-card-purple">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10"></div>
+                <div
+                    class="card-header bg-transparent border-bottom-0 pb-0 position-relative d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0 text-purple d-flex align-items-center" style="color: #8e44ad !important;">
+                        <i class="ri-palette-line me-2 fs-4"></i>
+                        {{phrase('service_change_name_color')}}
+                    </h5>
+                    <span class="badge bg-purple text-light fs-6" style="background: #8e44ad;"
+                        title="{{phrase('title_service_cost')}}">{{ data.costs.change_name_color }}
+                        {{phrase('currency_coins')}}</span>
+                </div>
+                <div class="card-body py-3 position-relative">
+                    <p class="card-text text-muted">{{phrase('service_change_name_color_desc')}}</p>
+                    <a class="btn btn-lg btn-outline-secondary mt-2 d-flex align-items-center justify-content-center gap-2"
+                        data-bs-target="#changeNameColorModal" data-bs-toggle="modal" href="#"
+                        title="{{phrase('title_change_color')}}">
+                        <i class="ri-palette-line"></i> {{phrase('btn_change_color')}}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- Модальное окно для смены имени персонажа -->
+<div aria-hidden="true" aria-labelledby="changeNameModalLabel" class="modal fade" id="changeNameModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeNameModalLabel">{{phrase('modal_change_name_title')}}</h5>
+                <button aria-label="{{phrase('modal_close')}}" class="btn-close" data-bs-dismiss="modal"
+                    type="button"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changeNameForm">
+                    <div class="mb-3">
+                        <label class="form-label" for="characterSelect">{{phrase('input_select_character')}}</label>
+                        <select class="form-select" id="characterSelect" name="character">
+                            {% for i, account in getUser().getAccounts() %}
+                            <optgroup label="{{phrase('account_group')}} {{account.getAccount}}">
+                                {% if account.getCharactersCount() == 0 %}
+                                <option disabled>&nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_characters')}}</option>
+                                {% else %}
+                                {% for i, character in account.getCharacters() %}
+                                <option value="{{character.getPlayerName()}}">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;{{character.getPlayerName()}}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="newNameInput">{{phrase('input_new_name')}}</label>
+                        <input class="form-control" id="newNameInput" name="new_name"
+                            placeholder="{{phrase('input_new_name_placeholder')}}" required type="text">
+                    </div>
+                    <button class="btn btn-primary w-100" type="submit" id="changeNameBtn">
+                        <span class="btn-text">{{phrase('btn_change')}}</span>
+                        <span class="btn-spinner d-none">
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            {{phrase('loading')}}
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для переноса персонажа на другой аккаунт -->
+<div aria-hidden="true" aria-labelledby="moveCharacterModalLabel" class="modal fade" id="moveCharacterModal"
+    tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="moveCharacterModalLabel">{{phrase('modal_move_character_title')}}</h5>
+                <button aria-label="{{phrase('modal_close')}}" class="btn-close" data-bs-dismiss="modal"
+                    type="button"></button>
+            </div>
+            <div class="modal-body">
+                <form id="moveCharacterForm">
+                    <div class="mb-3">
+                        <label class="form-label" for="moveCharacterSelect">{{phrase('input_select_character')}}</label>
+                        <select class="form-select" id="moveCharacterSelect" name="character">
+                            {% for i, account in getUser().getAccounts() %}
+                            <optgroup label="{{phrase('account_group')}} {{account.getAccount}}">
+                                {% if account.getCharactersCount() == 0 %}
+                                <option disabled>&nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_characters')}}</option>
+                                {% else %}
+                                {% for i, character in account.getCharacters() %}
+                                <option value="{{character.getPlayerName()}}">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;{{character.getPlayerName()}}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="targetAccountSelect">{{phrase('input_target_account')}}</label>
+                        <select class="form-select" id="targetAccountSelect" name="target_account">
+                            {% for i, account in getUser().getAccounts() %}
+                            <option value="{{account.getAccount}}">{{account.getAccount}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button class="btn btn-success w-100" type="submit" id="moveCharacterBtn">
+                        <span class="btn-text">{{phrase('btn_move')}}</span>
+                        <span class="btn-spinner d-none">
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            {{phrase('loading')}}
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для удаления персонажа -->
+<div aria-hidden="true" aria-labelledby="deleteCharacterModalLabel" class="modal fade" id="deleteCharacterModal"
+    tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCharacterModalLabel">{{phrase('modal_delete_character_title')}}</h5>
+                <button aria-label="{{phrase('modal_close')}}" class="btn-close" data-bs-dismiss="modal"
+                    type="button"></button>
+            </div>
+            <div class="modal-body">
+                <form id="deleteCharacterForm">
+                    <div class="mb-3">
+                        <label class="form-label"
+                            for="deleteCharacterSelect">{{phrase('input_select_character')}}</label>
+                        <select class="form-select" id="deleteCharacterSelect" name="character">
+                            {% for i, account in getUser().getAccounts() %}
+                            <optgroup label="{{phrase('account_group')}} {{account.getAccount}}">
+                                {% if account.getCharactersCount() == 0 %}
+                                <option disabled>&nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_characters')}}</option>
+                                {% else %}
+                                {% for i, character in account.getCharacters() %}
+                                <option value="{{character.getPlayerName()}}">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;{{character.getPlayerName()}}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="alert alert-danger">{{phrase('warning_irreversible')}}</div>
+                    <button class="btn btn-danger w-100" type="submit" id="deleteCharacterBtn">
+                        <span class="btn-text">{{phrase('btn_delete')}}</span>
+                        <span class="btn-spinner d-none">
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            {{phrase('loading')}}
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для изменения цвета имени -->
+<div aria-hidden="true" aria-labelledby="changeNameColorModalLabel" class="modal fade" id="changeNameColorModal"
+    tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeNameColorModalLabel">{{phrase('modal_change_color_title')}}</h5>
+                <button aria-label="{{phrase('modal_close')}}" class="btn-close" data-bs-dismiss="modal"
+                    type="button"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changeNameColorForm">
+                    <div class="mb-3">
+                        <label class="form-label"
+                            for="colorCharacterSelect">{{phrase('input_select_character')}}</label>
+                        <select class="form-select" id="colorCharacterSelect" name="character">
+                            {% for i, account in getUser().getAccounts() %}
+                            <optgroup label="{{phrase('account_group')}} {{account.getAccount}}">
+                                {% if account.getCharactersCount() == 0 %}
+                                <option disabled>&nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_characters')}}</option>
+                                {% else %}
+                                {% for i, character in account.getCharacters() %}
+                                <option value="{{character.getPlayerName()}}">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;{{character.getPlayerName()}}</option>
+                                {% endfor %}
+                                {% endif %}
+                            </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{phrase('input_select_color')}}</label>
+                        <div class="color-palette-user" id="userColorPalette">
+                            <!-- {{phrase('colors_will_be_loaded')}} -->
+                        </div>
+                        <input id="selectedColorInput" name="color" type="hidden" value="">
+                        <div class="form-text">{{phrase('color_select_help')}}</div>
+                    </div>
+                    <button class="btn btn-secondary w-100" type="submit" id="changeColorBtn">
+                        <span class="btn-text">{{phrase('btn_change_color_submit')}}</span>
+                        <span class="btn-spinner d-none">
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            {{phrase('loading')}}
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .service-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .service-card:hover {
+        transform: translateY(-6px) scale(1.03);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        z-index: 2;
+    }
+
+    .service-card-blue {
+        border-left: 6px solid #0d6efd;
+    }
+
+    .service-card-green {
+        border-left: 6px solid #198754;
+    }
+
+    .service-card-red {
+        border-left: 6px solid #dc3545;
+    }
+
+
+    .service-card-purple {
+        border-left: 6px solid #8e44ad;
+    }
+
+    .bg-purple {
+        background: #8e44ad !important;
+    }
+
+    .text-purple {
+        color: #8e44ad !important;
+    }
+
+    .btn-lg {
+        font-size: 1.1rem;
+        padding: 0.75rem 1.5rem;
+    }
+
+    /* Стили для пользовательской палитры цветов */
+    .color-palette-user {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+    }
+
+    .user-color-item {
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .user-color-preview {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        transition: all 0.2s;
+        margin: 0 auto;
+    }
+
+    .user-color-item:hover .user-color-preview {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .user-color-item.selected .user-color-preview {
+        border: 3px solid #0d6efd;
+        transform: scale(1.15);
+        box-shadow: 0 4px 16px rgba(13, 110, 253, 0.4);
+    }
+
+    .user-color-item.selected {
+        color: #0d6efd;
+        font-weight: bold;
+    }
+
+    /* Стили для состояний загрузки кнопок */
+    .btn-loading {
+        position: relative;
+        pointer-events: none;
+        opacity: 0.7;
+    }
+
+    .btn-loading .btn-text {
+        visibility: hidden;
+    }
+
+    .btn-loading .btn-spinner {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+</style>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    const pluginName = "{{pluginName}}";
+    const pluginActive = "{{pluginActive}}";
+    const serverId = "{{getServer().getId()}}";
+
+    // Передаем данные о настройках плагина в JavaScript
+    window.pluginSettings = JSON.parse(`{{data | json_encode | raw}}`);
+
+    $(document).ready(function () {
+        // Инициализация Bootstrap tooltip
+        $('[data-bs-toggle="tooltip"]').tooltip();
+
+        // Загружаем доступные цвета из настроек плагина
+        const pluginSettings = window.pluginSettings || {};
+        const availableColors = pluginSettings.available_colors || [];
+
+        // Функции для управления состоянием загрузки кнопок
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            if (!button) return;
+
+            if (isLoading) {
+                button.classList.add('btn-loading');
+                button.disabled = true;
+            } else {
+                button.classList.remove('btn-loading');
+                button.disabled = false;
+            }
+        }
+
+        function setFormLoading(formId, isLoading) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+
+            const inputs = form.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.disabled = isLoading;
+            });
+        }
+        // Функция для создания пользовательской палитры цветов
+        function createUserColorPalette() {
+            const paletteContainer = document.getElementById('userColorPalette');
+            const selectedColorInput = document.getElementById('selectedColorInput');
+
+            if (!paletteContainer) return;
+
+            paletteContainer.innerHTML = '';
+
+            if (!availableColors || availableColors.length === 0) {
+                paletteContainer.innerHTML = '<p class="text-muted">Нет доступных цветов</p>';
+                return;
+            }
+
+            availableColors.forEach(color => {
+                const colorItem = document.createElement('div');
+                colorItem.className = 'user-color-item';
+                colorItem.setAttribute('data-color', color);
+
+                colorItem.innerHTML = `
+                        <div class="user-color-preview" style="background-color: ${color};" title="${color}"></div>
+                    `;
+
+                // Обработчик клика для выбора цвета
+                colorItem.addEventListener('click', function () {
+                    // Убираем выделение со всех цветов
+                    document.querySelectorAll('.user-color-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+
+                    // Выделяем выбранный цвет
+                    this.classList.add('selected');
+
+                    // Устанавливаем значение в скрытое поле
+                    selectedColorInput.value = color;
+                });
+
+                paletteContainer.appendChild(colorItem);
+            });
+
+            // Выбираем первый цвет по умолчанию
+            if (availableColors.length > 0) {
+                const firstColorItem = paletteContainer.querySelector('.user-color-item');
+                if (firstColorItem) {
+                    firstColorItem.classList.add('selected');
+                    selectedColorInput.value = availableColors[0];
+                }
+            }
+        }
+
+        // Инициализируем палитру при загрузке страницы
+        createUserColorPalette();
+
+        // Пересоздаем палитру при открытии модального окна изменения цвета
+        $('#changeNameColorModal').on('show.bs.modal', function () {
+            setTimeout(createUserColorPalette, 100);
+        });
+
+        // --- Смена имени ---
+        $('#changeNameForm').on('submit', function (e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            // Активируем состояние загрузки
+            setButtonLoading('changeNameBtn', true);
+            setFormLoading('changeNameForm', true);
+
+            AjaxSend('/character/services/change/name', 'POST', formData, true)
+                .then(function (response) {
+                    responseAnalysis(response);
+                })
+                .catch(function (error) {
+                    console.error('Ошибка при смене имени:', error);
+                    alert('Произошла ошибка при смене имени персонажа');
+                })
+                .finally(function () {
+                    // Деактивируем состояние загрузки
+                    setButtonLoading('changeNameBtn', false);
+                    setFormLoading('changeNameForm', false);
+                });
+        });
+
+        // --- Перенос персонажа ---
+        $('#moveCharacterForm').on('submit', function (e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            // Активируем состояние загрузки
+            setButtonLoading('moveCharacterBtn', true);
+            setFormLoading('moveCharacterForm', true);
+
+            AjaxSend('/character/services/move', 'POST', formData, true)
+                .then(function (response) {
+                    responseAnalysis(response);
+                })
+                .catch(function (error) {
+                    console.error('Ошибка при переносе персонажа:', error);
+                    alert('Произошла ошибка при переносе персонажа');
+                })
+                .finally(function () {
+                    // Деактивируем состояние загрузки
+                    setButtonLoading('moveCharacterBtn', false);
+                    setFormLoading('moveCharacterForm', false);
+                });
+        });
+
+        // --- Удаление персонажа ---
+        $('#deleteCharacterForm').on('submit', function (e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            // Активируем состояние загрузки
+            setButtonLoading('deleteCharacterBtn', true);
+            setFormLoading('deleteCharacterForm', true);
+
+            AjaxSend('/character/services/delete', 'POST', formData, true)
+                .then(function (response) {
+                    responseAnalysis(response);
+                })
+                .catch(function (error) {
+                    console.error('Ошибка при удалении персонажа:', error);
+                    alert('Произошла ошибка при удалении персонажа');
+                })
+                .finally(function () {
+                    // Деактивируем состояние загрузки
+                    setButtonLoading('deleteCharacterBtn', false);
+                    setFormLoading('deleteCharacterForm', false);
+                });
+        });
+
+        // --- Смена цвета ника ---
+        $('#changeNameColorForm').on('submit', function (e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            // Активируем состояние загрузки
+            setButtonLoading('changeColorBtn', true);
+            setFormLoading('changeNameColorForm', true);
+
+            AjaxSend('/character/services/change/color', 'POST', formData, true)
+                .then(function (response) {
+                    responseAnalysis(response);
+                })
+                .catch(function (error) {
+                    console.error('Ошибка при смене цвета ника:', error);
+                    alert('Произошла ошибка при смене цвета ника');
+                })
+                .finally(function () {
+                    // Деактивируем состояние загрузки
+                    setButtonLoading('changeColorBtn', false);
+                    setFormLoading('changeNameColorForm', false);
+                });
+        });
+
+
+    });
+</script>
+<script src="{{template}}/assets/js/spherePlugin.js?v=0.0.4"></script>
+
+{% endblock %}

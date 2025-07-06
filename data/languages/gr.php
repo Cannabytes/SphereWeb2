@@ -1582,6 +1582,17 @@ return [
     'technical support_desc_7' => 'Διόρθωση bug/σφάλματος κώδικα',
     'technical support_desc_8' => 'Εγκατάσταση Sphere CMS σε hosting/VPS',
     'technical support_desc_9' => 'Μετατροπή template από HTML, StressWeb κ.λπ. σε Sphere CMS',
+    'unread messages' => 'μη διαβασμένα μηνύματα',
+    'Your requests' => 'Οι αιτήσεις σας:',
+    'Here are your requests in category' => 'Εδώ είναι οι αιτήσεις σας στην κατηγορία',
+    'Here are all your requests to technical support' => 'Εδώ είναι όλες οι αιτήσεις σας στην τεχνική υποστήριξη.',
+    'from' => 'από',
+    'No support requests' => 'Δεν υπάρχουν αιτήσεις υποστήριξης',
+    'You have not created any support requests yet' => 'Δεν έχετε δημιουργήσει ακόμα καμία αίτηση υποστήριξης',
+    'Create first request' => 'Δημιουργήστε την πρώτη αίτηση',
+    'Create your first support request' => 'Δημιουργήστε την πρώτη σας αίτηση υποστήριξης',
+    'No selected items' => 'Δεν υπάρχουν επιλεγμένα στοιχεία',
+    'Select user' => 'Επιλέξτε χρήστη!',
     'technical_work_message' => 'Δυστυχώς, ο ιστότοπος είναι προσωρινά μη διαθέσιμος λόγω τεχνικών εργασιών και συντήρησης.<br>
                           Καταβάλλουμε προσπάθειες για να επανέλθουμε το συντομότερο δυνατόν και να σας παρέχουμε την καλύτερη υπηρεσία.<br>
                           Ζητούμε συγγνώμη για την προσωρινή αναστάτωση.
@@ -2108,6 +2119,7 @@ Password: %%password%%',
     'telegram_send_to_village' => 'Αποστολή χαρακτήρα στην πόλη',
     'no_products_available' => 'Δεν υπάρχουν ακόμη διαθέσιμα προϊόντα προς πώληση',
     'check_back_later' => 'Παρακαλώ ελέγξτε ξανά αργότερα',
+    'error_save_platform' => 'Δεν είναι δυνατή η αποθήκευση για αυτήν την πλατφόρμα',
 
     "minimumNumberOfCharactersRegistrationAccount" => "Ελάχιστος αριθμός χαρακτήρων στο λογαριασμό",
     "maximumNumberOfCharactersRegistrationAccount" => "Μέγιστος αριθμός χαρακτήρων στο λογαριασμό",
