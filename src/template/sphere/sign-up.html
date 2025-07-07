@@ -799,34 +799,6 @@
 
                 <input type="hidden" name="fingerprint" id="fingerprint-input">
 
-                <!-- Блок соглашений -->
-                <div class="col-xl-12 mb-2">
-                  <div class="form-check mb-1">
-                    <input class="form-check-input agreement-checkbox" type="checkbox" id="privacy-policy"
-                      name="privacy_policy" required>
-                    <label class="form-check-label" for="privacy-policy">
-                      Я прочитал(а) и согласен(а) с <a href="https://arowaonline.ru/page/3" target="_blank"
-                        class="text-primary">Политикой конфиденциальности</a>
-                    </label>
-                  </div>
-                  <div class="form-check mb-1">
-                    <input class="form-check-input agreement-checkbox" type="checkbox" id="terms-of-service"
-                      name="terms_of_service" required>
-                    <label class="form-check-label" for="terms-of-service">
-                      Я прочитал(а) и согласен(а) с <a href="https://arowaonline.ru/page/5" target="_blank"
-                        class="text-primary">Пользовательским соглашением</a>
-                    </label>
-                  </div>
-                  <div class="form-check mb-0">
-                    <input class="form-check-input agreement-checkbox" type="checkbox" id="server-rules"
-                      name="server_rules" required>
-                    <label class="form-check-label" for="server-rules">
-                      Я прочитал(а) и согласен(а) с <a href="https://forum.arowaonline.ru/threads/pravila-servera.111/"
-                        target="_blank" class="text-primary">Правилами сервера</a>
-                    </label>
-                  </div>
-                </div>
-
                 <div id="referralinput" class="col-xl-12 mb-2 d-none">
                   <label for="referral" class="form-label text-default">{{ phrase('username') }}</label>
                   <input name="referral" value="{{referral_name}}" type="text" class="form-control form-control-lg"
@@ -834,7 +806,7 @@
                 </div>
 
                 <div class="col-xl-12 d-grid mt-2">
-                  <button type="submit" aria-label="button" class="btn btn-lg btn-success enter" disabled>
+                  <button type="submit" aria-label="button" class="btn btn-lg btn-success enter" >
                     {{ phrase('register_master_account') }}
                   </button>
                 </div>
@@ -965,24 +937,7 @@
   <script src="{{template}}/assets/js/general.js?v=1.0.5"></script>
 
   <script>
-    // Функция валидации соглашений (должна быть доступна глобально)
-    function validateAgreements() {
-      const privacyCheckbox = document.getElementById('privacy-policy').checked;
-      const termsCheckbox = document.getElementById('terms-of-service').checked;
-      const rulesCheckbox = document.getElementById('server-rules').checked;
-      const submitButton = document.querySelector('.btn.enter');
 
-      if (submitButton) {
-        if (privacyCheckbox && termsCheckbox && rulesCheckbox) {
-          submitButton.disabled = false;
-          submitButton.classList.remove('btn-secondary');
-          submitButton.classList.add('btn-success');
-        } else {
-          submitButton.disabled = true;
-          submitButton.classList.remove('btn-success');
-          submitButton.classList.add('btn-secondary');
-        }
-      }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -1013,14 +968,10 @@
             googleLoginLink.setAttribute('href', url.toString());
           }
           if (submitButton) {
-            // Проверяем соглашения после загрузки fingerprint
-            validateAgreements();
           }
         })
         .catch(error => {
           if (submitButton) {
-            // Проверяем соглашения даже при ошибке fingerprint
-            validateAgreements();
           }
         });
     });
