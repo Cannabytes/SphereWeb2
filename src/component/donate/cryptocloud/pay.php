@@ -155,13 +155,13 @@ class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
         donate::control_uuid($_REQUEST['invoice_id'], get_called_class());
 
         $orderId = explode('@', $response['result'][0]['order_id']);
-        $amount  = $response['result'][0]['amount_to_pay_usd'] ?? 0;
+        $amount  = $response['result'][0]['amount_usd'] ?? 0;
 
         $user_id = $orderId[0];
 
-        $amount = donate::currency($amount, $this->currency_default);
+        $amount = donate::currency($amount, "USD");
 
-        self::telegramNotice(user::getUserId($user_id), $response['result'][0]['amount_to_pay_usd'], $this->currency_default, $amount, get_called_class());
+        self::telegramNotice(user::getUserId($user_id), $response['result'][0]['amount_usd'], "USD", $amount, get_called_class());
 
         user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, message: null, pay_system:  get_called_class());
         donate::addUserBonus($user_id, $amount);

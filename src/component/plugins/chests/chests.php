@@ -467,7 +467,7 @@ class chests
                         'item_id' => $item['id'],
                         'count' => $item['count'],
                         'enchant' => $enchant,
-                        'price' => $price,
+                        'price' => $price * $case_count_open,
                     ]);
                 }
             }
