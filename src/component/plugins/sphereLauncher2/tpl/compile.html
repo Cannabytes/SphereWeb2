@@ -1,0 +1,507 @@
+{% extends 'struct.html' %}
+
+{% block title %}Конструктор Лаунчера и Конфигурации{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row mt-4">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        Конструктор Лаунчера (Бинарный файл)
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form id="compile-form">
+                        <div class="row g-3">
+                           <div class="col-md-12">
+
+                               <label class="form-label"  for="dataUrl">
+                                    0. Ссылка на launcher.json<i class="text-danger">*</i>
+                                </label>
+
+                               <input class="form-control" id="dataUrl"
+                                      placeholder="https://example.com/launcher.json"
+                                      type="text" value="{{HTTP_HOST()}}/launcher.json">
+                           </div>
+
+
+                           <div class="col-md-12">
+
+                               <label class="form-label" data-bs-content="<img src='{{template_plugin}}/img/title.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
+                                      data-bs-html="true"
+                                      data-bs-toggle="popover"
+                                      data-bs-trigger="hover"
+                                      for="pageTitle"
+                                      tabindex="0">
+                                    1. Название программы<i class="text-danger">*</i> <i class="ri-information-line"></i>
+                                </label>
+
+                               <input class="form-control" id="pageTitle"
+                                      placeholder="Введите название окна лаунчера"
+                                      type="text" value="Мой Лаунчер">
+
+                           </div>
+                           <div class="col-md-6"><label class="form-label" data-bs-content="<img src='{{template_plugin}}/img/min.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
+                                                        data-bs-html="true"
+                                                        data-bs-toggle="popover"
+                                                        data-bs-trigger="hover"
+                                                        for="minWidth"
+                                                        tabindex="0"
+                           >2. Мин. ширина окна <i class="ri-information-line"></i></label>
+
+                               <div class="input-group"><input class="form-control" id="minWidth" type="number"
+                                                               value="1200">
+                                   <span
+                                         class="input-group-text">px</span></div></div>
+                           <div class="col-md-6"><label class="form-label"
+                                                        data-bs-content="<img src='{{template_plugin}}/img/max.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
+                                                        data-bs-html="true"
+                                                        data-bs-toggle="popover"
+                                                        data-bs-trigger="hover"
+                                                        for="minWidth"
+                                                        tabindex="0"
+                           >Мин. высота окна <i class="ri-information-line"></i></label><div class="input-group"><input class="form-control" id="minHeight" type="number"
+                                                                                                                        value="900"><span class="input-group-text">px</span></div></div>
+                           <div class="col-md-6"><label class="form-label" for="launcherVersion">3. Версия лаунчера
+                           <small class="d-block text-muted">Актуальная версия лаунчера. Если актуальная версия лаунчера будет отличаться от указанной в launcher.json, то лаунчер будет обновлен у пользователя.</small>
+                           </label>
+
+                               <input class="form-control" id="launcherVersion"
+                                      placeholder="например, 1.0.0"
+                                      type="text" value="1.0.0"></div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="templateSelect">4. Шаблон лаунчера
+                                    <small class="d-block text-muted">
+                                        Выберите шаблон лаунчера. Вы можете создать свой шаблон.
+                                    </small>
+                                </label>
+                                <select class="form-select" id="templateSelect">
+                                    <option selected value="default">default</option>
+                                    <option value="cyberpunk">cyberpunk</option>
+                                    <option value="flat">flat</option>
+                                    <option value="futuristic">futuristic</option>
+                                    <option value="material">material</option>
+                                    <option value="skeuomorphism">skeuomorphism</option>
+                                    <option value="gsax">gsax</option>
+                                    <option value="gagarka">gagarka</option>
+                                    <option value="custom">Свой шаблон</option>
+                                </select>
+                            </div>
+                          <div class="col-12 mt-3" id="custom-template-fields" style="display: none;">
+                                <div class="p-3 border rounded">
+                                    <h6 class="text-primary">Загрузка файлов для своего шаблона</h6>
+                                     <div class="mb-3">
+                                         <label for="customHtmlFile" class="form-label">Файл шаблона (index.html) <i class="text-danger">*</i></label>
+                                         <input class="form-control" type="file" id="customHtmlFile" accept=".html">
+                                         <div class="form-text">Обязательный файл. Не должен быть больше 100 КБ.
+                                         Должен называться index.html<br>
+                                         </div>
+                                     </div>
+                                     <div class="mb-3">
+                                         <label for="customCssFile" class="form-label">Файл стилей (launcher.css) (опционально)</label>
+                                         <input class="form-control" type="file" id="customCssFile" accept=".css">
+                                          <div class="form-text">Файл не должен быть больше 100 КБ.
+                                            Должен называться launcher.css<br>
+                                          </div>
+                                     </div>
+                                     <div class="mb-3">
+                                         <label for="customLangFile" class="form-label">Файл локализации (lang.json) (опционально)</label>
+                                         <input class="form-control" type="file" id="customLangFile" accept=".json">
+                                          <div class="form-text">Файл не должен быть больше 100 КБ.
+                                            Должен называться lang.json<br>
+                                          </div>
+                                     </div>
+                                     <div class="mb-3">
+                                         <label for="customLogoFile" class="form-label">Изображение лого (опционально)</label>
+                                         <input class="form-control" type="file" id="customLogoFile" accept=".png,.jpg,.jpeg,.gif,.bmp,.svg">
+                                         <div class="form-text">Поддерживаемые форматы: PNG, JPG, JPEG, GIF, BMP, SVG. Размер не должен превышать 250 КБ.
+                                         <br>Лого должно называться logo.png/jpg/jpeg/gif/bmp/svg и соответственно в разметке index.html тоже
+                                         </div>
+                                     </div>
+                                </div>
+                           </div>
+                           <div class="col-md-6"><label class="form-label" for="accountLink">5. Ссылка на личный кабинет</label><div class="input-group"><span class="input-group-text"><i
+                                 class="ri-account-circle-line"></i></span><input class="form-control" id="accountLink" placeholder="https://example.com/account" type="url"></div></div>
+                           <div class="col-md-6"><label class="form-label" for="registerLink">6. Ссылка на регистрацию</label><div class="input-group"><span class="input-group-text"><i
+                                 class="ri-user-add-line"></i></span><input class="form-control" id="registerLink" placeholder="https://example.com/register" type="url"></div></div>
+                           <div class="col-md-6"><label class="form-label" for="forumLink">7. Ссылка на форум</label><div class="input-group"><span class="input-group-text"><i
+                                 class="ri-question-answer-line"></i></span><input class="form-control" id="forumLink" placeholder="https://example.com/forum" type="url"></div></div>
+                           <div class="col-md-6"><label class="form-label" for="iconUpload">Загрузка иконки (.png или .ico)</label><input accept=".png,.ico" class="form-control" id="iconUpload"
+                                                                                                                                          type="file"></div>
+                           <div class="col-12"><label class="form-label">8. Полноэкранный режим
+                           <small class="d-block text-muted">Если включено, то лаунчер будет запускаться в полноэкранном режиме</small>
+
+                           </label><div class="form-check form-switch"><input class="form-check-input" id="fullscreenSwitch"
+                                                                              role="switch"
+                                                                              type="checkbox"><label class="form-check-label"
+                                                                                                     for="fullscreenSwitch">Включить по умолчанию</label></div></div>
+                           <div class="col-12"><button class="btn btn-primary" id="compile-btn" type="submit">Начать компиляцию</button></div>
+                        </div>
+                    </form>
+
+                    <div class="mt-4" id="status-container" style="display: none;">
+                        <h5 class="card-title">Статус сборки</h5>
+                        <div class="progress mb-2" style="height: 25px;">
+                            <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" class="progress-bar progress-bar-striped progress-bar-animated" id="progress-bar" role="progressbar"
+                                 style="width: 0%;">0%</div>
+                        </div>
+                        <p class="text-muted" id="status-message">Ожидание запуска задачи...</p>
+                        <div class="mt-3" id="result-container" style="display: none;">
+                             <a class="btn btn-success disabled" href="#" id="download-btn"><i class="ri-download-2-line"></i> Скачать готовый лаунчер</a>
+                            <button class="btn btn-secondary ms-2" id="new-build-btn">Собрать новый</button>
+                        </div>
+                        <div class="alert alert-danger mt-3" id="error-container" style="display: none;">
+                             <strong>Ошибка!</strong> <span id="error-message"></span>
+                             <button class="btn btn-warning btn-sm float-end" id="retry-build-btn">Попробовать снова</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+ </div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const GO_SERVER_ADDRESS = '{{go_server_address|raw}}';
+
+    if (!GO_SERVER_ADDRESS) {
+        console.error("Критическая ошибка: Адрес Go-сервера не был передан из PHP. Убедитесь, что в PHP-шаблонизаторе установлена переменная 'go_server_address'.");
+        alert("Критическая ошибка конфигурации UI. Свяжитесь с администратором.");
+        return;
+    }
+
+    const compileForm = document.getElementById('compile-form');
+    const compileBtn = document.getElementById('compile-btn');
+    const statusContainer = document.getElementById('status-container');
+    const progressBar = document.getElementById('progress-bar');
+    const statusMessage = document.getElementById('status-message');
+    const resultContainer = document.getElementById('result-container');
+    const downloadBtn = document.getElementById('download-btn');
+    const newBuildBtn = document.getElementById('new-build-btn');
+    const errorContainer = document.getElementById('error-container');
+    const errorMessage = document.getElementById('error-message');
+    const retryBuildBtn = document.getElementById('retry-build-btn');
+    const templateSelect = document.getElementById('templateSelect');
+    const customTemplateFields = document.getElementById('custom-template-fields');
+
+    function toggleCustomTemplateFields() {
+        customTemplateFields.style.display = templateSelect.value === 'custom' ? 'block' : 'none';
+    }
+    templateSelect.addEventListener('change', toggleCustomTemplateFields);
+    toggleCustomTemplateFields();
+
+    let pollingInterval; // Переменная для хранения ID интервала
+
+    compileForm.addEventListener('submit', handleCompileRequest);
+    newBuildBtn.addEventListener('click', resetUI);
+    retryBuildBtn.addEventListener('click', resetUI);
+
+    function resetUI() {
+        compileForm.style.display = 'block';
+        statusContainer.style.display = 'none';
+        errorContainer.style.display = 'none';
+        resultContainer.style.display = 'none';
+        downloadBtn.classList.add('disabled');
+        downloadBtn.href = "#";
+        downloadBtn.style.display = 'inline-block';
+        downloadBtn.innerHTML = '<i class="ri-download-2-line"></i> Скачать готовый лаунчер';
+        compileBtn.disabled = false;
+        // Останавливаем поллинг, если он был запущен
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+        }
+        updateProgress(0, "Ожидание...");
+    }
+
+    function updateProgress(progress, message) {
+        const p = Math.max(0, Math.min(100, progress));
+        progressBar.style.width = p + '%';
+        progressBar.innerText = p + '%';
+        progressBar.setAttribute('aria-valuenow', p);
+        progressBar.classList.remove('bg-success', 'bg-danger');
+        if (p < 100) {
+            progressBar.classList.add('progress-bar-animated', 'progress-bar-striped');
+        }
+        statusMessage.innerText = message;
+    }
+
+    function handleCompileRequest(event) {
+        event.preventDefault();
+        compileBtn.disabled = true;
+
+        // --- 1. Сбор данных и ссылок на файлы ---
+        const buildData = {
+            dataUrl: document.getElementById('dataUrl').value,
+            title: document.getElementById('pageTitle').value,
+            minWidth: parseInt(document.getElementById('minWidth').value) || 800,
+            minHeight: parseInt(document.getElementById('minHeight').value) || 600,
+            launcherVersion: document.getElementById('launcherVersion').value || "1.0.0",
+            template: document.getElementById('templateSelect').value,
+            accountLink: document.getElementById('accountLink').value,
+            registrationLink: document.getElementById('registerLink').value,
+            forumLink: document.getElementById('forumLink').value,
+            fullscreen: document.getElementById('fullscreenSwitch').checked,
+            // Base64 поля будут заполнены позже
+            iconBase64: "",
+            customHtmlBase64: "",
+            customCssBase64: "",
+            customLangJsonBase64: "",
+            customLogoBase64: ""
+        };
+
+        const iconFile = document.getElementById('iconUpload').files[0];
+        const customHtmlFile = document.getElementById('customHtmlFile').files[0];
+        const customCssFile = document.getElementById('customCssFile').files[0];
+        const customLangFile = document.getElementById('customLangFile').files[0];
+        const customLogoFile = document.getElementById('customLogoFile').files[0];
+
+        const MAX_SIZE = 100 * 1024; // 100 КБ
+        const MAX_LOGO_SIZE = 250 * 1024; // 250 КБ для лого
+
+        // --- 2. Синхронные проверки ---
+        if (iconFile && iconFile.size > MAX_SIZE) {
+            alert('Ошибка: Размер иконки не должен превышать 100 КБ.');
+            compileBtn.disabled = false;
+            return;
+        }
+
+        if (buildData.template === 'custom') {
+            if (!customHtmlFile) {
+                alert('Для своего шаблона необходимо выбрать как минимум файл index.html.');
+                compileBtn.disabled = false;
+                return;
+            }
+            if (customHtmlFile.size > MAX_SIZE) {
+                alert('Ошибка: Размер HTML файла не должен превышать 100 КБ.');
+                compileBtn.disabled = false;
+                return;
+            }
+            if (customCssFile && customCssFile.size > MAX_SIZE) {
+                alert('Ошибка: Размер CSS файла не должен превышать 100 КБ.');
+                compileBtn.disabled = false;
+                return;
+            }
+            if (customLangFile && customLangFile.size > MAX_SIZE) {
+                alert('Ошибка: Размер lang.json файла не должен превышать 100 КБ.');
+                compileBtn.disabled = false;
+                return;
+            }
+            if (customLogoFile && customLogoFile.size > MAX_LOGO_SIZE) {
+                alert('Ошибка: Размер файла лого не должен превышать 250 КБ.');
+                compileBtn.disabled = false;
+                return;
+            }
+        }
+
+        // --- 3. Единая асинхронная цепочка ---
+        const readFileAsBase64 = (file) => new Promise((resolve, reject) => {
+            if (!file) return resolve("");
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+        });
+
+        const checkImageDimensions = (file) => new Promise((resolve, reject) => {
+            if (!file) return resolve(); // Если файла нет, проверять нечего
+            const image = new Image();
+            image.onload = () => {
+                if (image.width > 128 || image.height > 128) {
+                    reject(new Error('Разрешение иконки не должно превышать 128x128 пикселей.'));
+                } else {
+                    resolve();
+                }
+            };
+            image.onerror = () => reject(new Error('Не удалось прочитать файл иконки.'));
+            image.src = URL.createObjectURL(file);
+        });
+
+        // Шаг 3.1: Сначала проверяем размеры иконки
+        checkImageDimensions(iconFile)
+              .then(() => {
+                  // Шаг 3.2: Если размеры в порядке, читаем ВСЕ файлы в Base64
+                  return Promise.all([
+                      readFileAsBase64(iconFile),
+                      readFileAsBase64(customHtmlFile),
+                      readFileAsBase64(customCssFile),
+                      readFileAsBase64(customLangFile),
+                      readFileAsBase64(customLogoFile),
+                  ]);
+              })
+              .then(([iconBase64, customHtml, customCss, customLang, customLogo]) => {
+                  // Шаг 3.3: После успешного чтения всех файлов, заполняем объект данных
+                  buildData.iconBase64 = iconBase64;
+                  buildData.customHtmlBase64 = customHtml;
+                  buildData.customCssBase64 = customCss;
+                  buildData.customLangJsonBase64 = customLang;
+                  buildData.customLogoBase64 = customLogo;
+
+                  // Шаг 3.4: Отправляем запрос на сервер ТОЛЬКО ОДИН РАЗ
+                  sendInitialRequest(buildData);
+              })
+              .catch(err => {
+                  // Единый обработчик ошибок для всей цепочки
+                  alert('Ошибка подготовки данных: ' + err.message);
+                  compileBtn.disabled = false;
+              });
+    }
+
+    function sendInitialRequest(data) {
+        // Подготовка UI
+        compileForm.style.display = 'none';
+        statusContainer.style.display = 'block';
+        errorContainer.style.display = 'none';
+        resultContainer.style.display = 'none';
+        updateProgress(0, 'Отправка запроса на сервер...');
+
+        // Отправка запроса
+        fetch('/admin/plugin/sphereLauncher2/compile', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        })
+              .then(response => {
+                  if (!response.ok) {
+                      // Обрабатываем ошибки типа "Busy" (409) и другие
+                      return response.json().then(errorData => {
+                          throw new Error(errorData.error || `Сервер вернул ошибку ${response.status}`);
+                      });
+                  }
+                  return response.json();
+              })
+              .then(result => {
+                  if (result.error) {
+                      // Обрабатываем ошибки, которые могли прийти с кодом 200 OK
+                      throw new Error(result.error);
+                  }
+                  if (result.task_id) {
+                      updateProgress(2, 'Задача создана. Начинаем отслеживание статуса...');
+                      startPolling(result.task_id);
+                  } else {
+                      throw new Error('Сервер не вернул ID задачи.');
+                  }
+              })
+              .catch(err => {
+                  // Отображение ошибки в UI
+                  statusContainer.style.display = 'block';
+                  errorContainer.style.display = 'block';
+                  errorMessage.innerText = err.message;
+                  resultContainer.style.display = 'block';
+                  downloadBtn.style.display = 'none'; // Прячем кнопку скачивания при ошибке
+                  compileBtn.disabled = false; // Разблокируем кнопку, чтобы можно было попробовать снова
+              });
+    }
+
+    function startPolling(taskId) {
+        // Очищаем предыдущий интервал на всякий случай
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+        }
+
+        // Запускаем новый интервал с опросом каждые 2 секунды
+        pollingInterval = setInterval(() => {
+            pollTaskStatus(taskId);
+        }, 2000); // 2000 мс = 2 секунды
+    }
+
+    function pollTaskStatus(taskId) {
+        const statusUrl = `/admin/plugin/sphereLauncher2/status/${taskId}`;
+
+        fetch(statusUrl)
+              .then(response => {
+                  if (response.status === 404) {
+                      throw new Error('Задача не найдена на сервере. Возможно, сервер был перезапущен.');
+                  }
+                  if (!response.ok) {
+                      throw new Error('Ошибка сети при запросе статуса.');
+                  }
+                  return response.json();
+              })
+              .then(task => {
+                  console.log("Получен статус задачи:", task);
+
+                  if (task.error && task.status !== 'failed') {
+                      throw new Error(task.error);
+                  }
+
+
+                  updateProgress(task.progress, task.message);
+
+                  if (task.status === 'completed' || task.status === 'failed') {
+                      clearInterval(pollingInterval);
+
+                      if (task.status === 'completed') {
+                          statusMessage.innerText = "Сборка успешно завершена! Сохраняем файл на ваш сервер...";
+                          progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
+                          progressBar.classList.add('bg-success');
+                          resultContainer.style.display = 'block';
+                          downloadBtn.style.display = 'inline-block';
+                          downloadBtn.classList.add('disabled');
+                          downloadBtn.innerHTML = "Идёт сохранение...";
+
+                          // Отправляем запрос на PHP-бэкенд для скачивания файла
+                          fetch('/admin/plugin/sphereLauncher2/download', {
+                              method: 'POST',
+                              headers: {
+                                  'Content-Type': 'application/json',
+                                  'Accept': 'application/json'
+                              },
+                              body: JSON.stringify({
+                                  result_url: task.result_url
+                              })
+                          })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        return response.json().then(err => { throw new Error(err.error || 'Ошибка при сохранении файла на сервер.'); });
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    if (data.success) {
+                                        statusMessage.innerText = "Файл готов к скачиванию!";
+                                        downloadBtn.href = data.file_path;
+                                        downloadBtn.innerHTML = '<i class="ri-download-2-line"></i> Скачать Launcher.exe';
+                                        downloadBtn.classList.remove('disabled');
+                                        downloadBtn.target = '_blank';
+                                    } else {
+                                        throw new Error(data.error || 'Неизвестная ошибка при сохранении файла.');
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error('Ошибка при сохранении файла:', err);
+                                    errorContainer.style.display = 'block';
+                                    errorMessage.innerText = 'Не удалось сохранить готовый лаунчер на ваш сервер. ' + err.message;
+                                    downloadBtn.style.display = 'none';
+                                });
+
+                      } else { // status === 'failed'
+                          statusMessage.innerText = "Сборка завершилась с ошибкой.";
+                          progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
+                          progressBar.classList.add('bg-danger');
+                          errorContainer.style.display = 'block';
+                          errorMessage.innerText = task.error;
+                          resultContainer.style.display = 'block';
+                          downloadBtn.style.display = 'none';
+                      }
+                  }
+              })
+              .catch(error => {
+                  console.error('Ошибка при опросе статуса:', error);
+                  clearInterval(pollingInterval);
+                  errorContainer.style.display = 'block';
+                  errorMessage.innerText = error.message;
+                  resultContainer.style.display = 'block';
+                  downloadBtn.style.display = 'none';
+              });
+    }
+});
+</script>
+{% endblock %}

@@ -490,19 +490,51 @@
             {% endif %}
 
 
-            <div class="card">
-                    <div class="card-header bg-light p-2 d-flex justify-content-between align-items-center">
-                        <h6 class="card-title mb-0">
-                            Sphere Launcher
-                        </h6>
-                    </div>
-                <div class="card-body p-2">
-                     <p>
-                        {{ phrase('sphere_launcher_description') }}
-                    </p>
-                    <a href="/admin/launcher" class="btn btn-light">{{ phrase('connect') }}</a>
-                </div>
-            </div>
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Sphere Launcher 2
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="swiper swiper-effect-cube">
+                                    <div class="swiper-wrapper">
+                                        <div class="swiper-slide">
+                                            <img src="{{template}}/assets/images/promo_launcher_1.png" alt="img">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="{{template}}/assets/images/promo_launcher_2.png" alt="img">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="{{template}}/assets/images/promo_launcher_3.png" alt="img">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="{{template}}/assets/images/promo_launcher_4.png" alt="img">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="{{template}}/assets/images/promo_launcher_5.png" alt="img">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="{{template}}/assets/images/promo_launcher_6.png" alt="img">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="{{template}}/assets/images/promo_launcher_7.png" alt="img">
+                                        </div>
+                                    </div>
+                                    <div class="swiper-pagination"></div>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                Ищешь лучший лаунчер?<br>
+                                Ваш Sphere Launcher — это не просто средство обновления, а мощный, эффективный и надежный инструмент,
+                                    созданный с использованием современных технологий для максимально комфортной загрузки игры.
+
+                                    <a href="/admin/plugin/sphereLauncher2" class="btn btn-teal-gradient btn-wave waves-effect waves-light mt-1 ">Перейти</a>
+                                </div>
+
+                            </div>
+                        </div>
+
 
             <div class="card">
                     <div class="card-header bg-light p-2 d-flex justify-content-between align-items-center">
@@ -1358,12 +1390,22 @@
 
 {% block css %}
 <link rel="stylesheet" href="{{template}}/assets/libs/sweetalert2/sweetalert2.min.css">
+<link rel="stylesheet" href="{{template}}/assets/libs/swiper/swiper-bundle.min.css">
+
 {% endblock %}
 
 
 {% block js %}
 <script src="{{template}}/assets/libs/sweetalert2/sweetalert2.min.js?v=0.0.2"></script>
 <script src="{{template}}/assets/js/sweetalertdb.js?v=0.0.3"></script>
+
+
+    <!-- Swiper JS -->
+    <script src="{{template}}/assets/libs/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Internal Swiper JS -->
+    <script src="{{template}}/assets/js/swiper.js"></script>
+
 
 {% if config().enabled().isEnableEmulation() == false and getServerCount() >= 1 %}
 <script src="{{template}}/assets/libs/echarts/echarts.min.js"></script>

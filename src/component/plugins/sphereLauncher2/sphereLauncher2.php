@@ -2,6 +2,7 @@
 
 namespace Ofey\Logan22\component\plugins\sphereLauncher2;
 
+use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\controller\config\config;
@@ -14,11 +15,27 @@ class sphereLauncher2
     public function show(): void
     {
         validation::user_protection("admin");
+        tpl::displayPlugin("/sphereLauncher2/tpl/index.html");
+    }
+
+    public function compilePage()
+    {
+        validation::user_protection("admin");
         $go_server_ip = config::load()->sphereApi()->getIp();
         $go_server_port = config::load()->sphereApi()->getPort();
         $go_server_address = "{$go_server_ip}:{$go_server_port}";
         tpl::addVar("go_server_address", $go_server_address);
-        tpl::displayPlugin("/sphereLauncher2/tpl/index.html");
+        tpl::displayPlugin("/sphereLauncher2/tpl/compile.html");
+    }
+
+    public function config()
+    {
+        validation::user_protection("admin");
+        $go_server_ip = config::load()->sphereApi()->getIp();
+        $go_server_port = config::load()->sphereApi()->getPort();
+        $go_server_address = "{$go_server_ip}:{$go_server_port}";
+        tpl::addVar("go_server_address", $go_server_address);
+        tpl::displayPlugin("/sphereLauncher2/tpl/config.html");
     }
 
     public function compile(): void
@@ -35,6 +52,13 @@ class sphereLauncher2
 
         if (!isset($data_array['customLogoBase64'])) {
             $data_array['customLogoBase64'] = '';
+        }
+
+        if (!isset($data_array['dataUrl']) || empty($data_array['dataUrl'])) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(['error' => 'Not set link to launcher.json']);
+            return;
         }
 
         if (!empty($data_array['customLogoBase64'])) {

@@ -1,0 +1,734 @@
+{% extends 'struct.html' %}
+
+{% block title %}Конструктор Лаунчера и Конфигурации{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row ">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        1. Генератор JSON Конфигурации (launcher.json)
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <div class="shadow p-3 mb-5 bg-body rounded">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="fw-bold text-primary mb-2">О конфигурации лаунчера</h6>
+                                <p class="mb-2">Эта форма для создания конфигурации лаунчера. Лаунчер будет использовать данные из этих настроек, которые вы укажите тут.</p>
+                                <p class="mb-2">Параметры этого файла можно в любой момент менять.</p>
+                                <p class="mb-0">В этой конфигурации определите из какого места будут загружаться список архивов и сами архивы, кнопки запуска игры, создавать свою ленту новостей для лаунчера.</p>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div id="json-drop-zone" class="json-drop-zone-compact border border-2 border-dashed border-info rounded p-3 text-center">
+                                    <div class="drop-zone-content">
+                                        <i class="ri-file-upload-line fs-1 text-info mb-2"></i>
+                                        <h6 class="text-info mb-1">Загрузить JSON</h6>
+                                        <p class="small text-muted mb-2">Перетащите launcher.json</p>
+                                        <input type="file" id="json-file-input" accept=".json" style="display: none;">
+                                        <button type="button" class="btn btn-outline-info btn-sm" onclick="document.getElementById('json-file-input').click()">
+                                            <i class="ri-folder-open-line me-1"></i>Выбрать
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="drop-zone-status" class="mt-2" style="display: none;">
+                                    <div class="alert alert-success py-2 mb-0 small">
+                                        <i class="ri-check-line me-1"></i>
+                                        <span id="loaded-file-name"></span> загружен!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="json-generator-form">
+                        <div class="row g-3">
+                            <div class="col-md-6 border-end">
+                                <h5>Настройки загрузчика</h5>
+                                <div class="mb-3">
+                                    <label class="form-label">Ссылки на CSV</label>
+                                    <div class="input-group">
+                                        <input class="form-control" id="csv-input" placeholder="https://example.com/updates.csv" type="url">
+                                        <button class="btn btn-outline-secondary" id="add-csv-btn" type="button">Добавить ещё</button>
+                                    </div>
+                                    <ul class="list-group mt-2" id="csv-list"></ul>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Ссылки на архивы</label>
+                                    <div class="input-group">
+                                        <input class="form-control" id="archive-input" placeholder="https://example.com/archives/" type="url">
+                                        <button class="btn btn-outline-secondary" id="add-archive-btn" type="button">Добавить ещё</button>
+                                    </div>
+                                    <ul class="list-group mt-2" id="archive-list"></ul>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h5>Приложения для запуска</h5>
+                                <div class="p-3 bg-light rounded">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Названия кнопки для каждого языка:</label>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <label class="form-label small">🇷🇺 Русский (ru)</label>
+                                                <input class="form-control form-control-sm" id="app-name-ru" placeholder="Играть" type="text" value="Играть">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label small">🇺🇸 English (en)</label>
+                                                <input class="form-control form-control-sm" id="app-name-en" placeholder="Play" type="text" value="Play">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label small">🇪🇸 Español (es)</label>
+                                                <input class="form-control form-control-sm" id="app-name-es" placeholder="Jugar" type="text" value="Jugar">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label small">🇵🇹 Português (pt)</label>
+                                                <input class="form-control form-control-sm" id="app-name-pt" placeholder="Jogar" type="text" value="Jogar">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label small">🇺🇦 Українська (uk)</label>
+                                                <input class="form-control form-control-sm" id="app-name-uk" placeholder="Грати" type="text" value="Грати">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label small">🇬🇷 Ελληνικά (el)</label>
+                                                <input class="form-control form-control-sm" id="app-name-el" placeholder="Παίξτε" type="text" value="Παίξτε">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-2">
+                                        <div class="col-12">
+                                            <label class="form-label">Путь к исполняемому файлу</label>
+                                            <input value="system-ru/l2.exe" class="form-control" id="app-exe-input" placeholder="Путь к exe (напр. system-ru/l2.exe)" type="text">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Аргументы запуска (опционально)</label>
+                                            <input class="form-control" id="app-args-input" placeholder="Аргументы запуска (опционально)" type="text">
+                                        </div>
+                                        <div class="col-12 text-end">
+                                            <button class="btn btn-outline-primary btn-sm" id="add-app-btn" type="button">Добавить приложение</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul class="list-group mt-2" id="app-list"></ul>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="json-launcher-version">Версия лаунчера</label>
+                                <input class="form-control" id="json-launcher-version" type="text" value="1.0.0">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="json-launcher-link">Ссылка на скачивание лаунчера</label>
+                                <input class="form-control" id="json-launcher-link" placeholder="https://example.com/launcher.exe" type="url">
+                            </div>
+
+                             <hr class="my-4">
+
+                            <div class="col-12">
+                                <h5>Лента новостей</h5>
+                                <div class="p-3 bg-light rounded">
+                                    <div class="row g-3">
+                                        <div class="col-md-2">
+                                            <label class="form-label">Язык</label>
+                                            <select class="form-select" id="news-lang-select">
+                                                <option selected value="ru">Русский (ru)</option>
+                                                <option value="en">English (en)</option>
+                                                <option value="es">Español (es)</option>
+                                                <option value="pt">Português (pt)</option>
+                                                <option value="uk">Українська (uk)</option>
+                                                <option value="el">Ελληνικά (el)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-5"><label class="form-label">Заголовок</label><input class="form-control" id="news-name-input" placeholder="Заголовок новости"
+                                                                                                                type="text"></div>
+                                        <div class="col-md-5"><label class="form-label">Дата</label><input class="form-control" id="news-date-input" placeholder="дд.мм.гггг" type="text"></div>
+                                        <div class="col-12"><label class="form-label">Описание</label><textarea class="form-control" id="news-desc-input"
+                                                                                                                placeholder="Краткое описание (до ~140 символов)"
+                                                                                                                rows="2"></textarea></div>
+                                        <div class="col-md-6"><label class="form-label">URL изображения</label><input class="form-control" id="news-image-input"
+                                                                                                                      placeholder="https://example.com/image.png"
+                                                                                                                      type="url"></div>
+                                        <div class="col-md-6"><label class="form-label">URL ссылки</label><input class="form-control" id="news-link-input" placeholder="https://example.com/full-news"
+                                                                                                                 type="url"></div>
+                                        <div class="col-12 text-end"><button class="btn btn-outline-primary btn-sm" id="add-news-btn" type="button">Добавить новость</button></div>
+                                    </div>
+                                </div>
+                                <div class="mt-3" id="news-container"></div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="col-12 text-center">
+                                <button class="btn btn-success btn-lg" id="generate-json-btn" type="button">
+                                    <i class="ri-file-download-line"></i> Сгенерировать и скачать launcher.json
+                                </button>
+                                <br>
+
+                                <small class="d-block text-muted">
+                                Загрузите launcher.json себе на сайт.<br>
+                                И в конструкторе лаунчера укажите ссылку на файл launcher.json
+                               </small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+ </div>
+
+{% endblock %}
+
+{% block js %}
+<style>
+.json-drop-zone-compact {
+    min-height: 140px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.json-drop-zone-compact:hover {
+    border-color: #0dcaf0 !important;
+    background-color: rgba(13, 202, 240, 0.05);
+}
+
+.json-drop-zone-compact.drag-over {
+    border-color: #198754 !important;
+    background-color: rgba(25, 135, 84, 0.1);
+    transform: scale(1.05);
+}
+
+.json-drop-zone-compact.drag-over .drop-zone-content {
+    color: #198754;
+}
+
+.json-drop-zone-compact.error {
+    border-color: #dc3545 !important;
+    background-color: rgba(220, 53, 69, 0.1);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // === ФУНКЦИОНАЛЬНОСТЬ ЗАГРУЗКИ JSON ФАЙЛА ===
+    const dropZone = document.getElementById('json-drop-zone');
+    const fileInput = document.getElementById('json-file-input');
+    const dropZoneStatus = document.getElementById('drop-zone-status');
+    const loadedFileName = document.getElementById('loaded-file-name');
+
+    // Обработка drag and drop
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    });
+
+    dropZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleJsonFile(files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleJsonFile(e.target.files[0]);
+        }
+    });
+
+    function handleJsonFile(file) {
+        if (!file.name.toLowerCase().endsWith('.json')) {
+            showError('Пожалуйста, выберите JSON файл.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const jsonData = JSON.parse(e.target.result);
+                loadJsonData(jsonData);
+                showSuccess(file.name);
+            } catch (error) {
+                showError('Ошибка чтения JSON файла: ' + error.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function showSuccess(fileName) {
+        dropZone.classList.remove('error');
+        loadedFileName.textContent = fileName;
+        dropZoneStatus.style.display = 'block';
+        dropZoneStatus.innerHTML = `
+            <div class="alert alert-success py-2 mb-0 small">
+                <i class="ri-check-line me-1"></i>
+                <span>${fileName}</span> загружен!
+            </div>
+        `;
+    }
+
+    function showError(message) {
+        dropZone.classList.add('error');
+        dropZoneStatus.style.display = 'block';
+        dropZoneStatus.innerHTML = `
+            <div class="alert alert-danger py-2 mb-0 small">
+                <i class="ri-error-warning-line me-1"></i>
+                ${message}
+            </div>
+        `;
+    }
+
+    function loadJsonData(data) {
+        // Очищаем все существующие данные
+        clearAllData();
+
+        // Загружаем CSV URLs
+        if (data.download && data.download.csv) {
+            data.download.csv.forEach(url => {
+                addToList('csv-list', url);
+            });
+        }
+
+        // Загружаем Archive URLs
+        if (data.download && data.download.archives) {
+            data.download.archives.forEach(url => {
+                addToList('archive-list', url);
+            });
+        }
+
+        // Загружаем информацию о лаунчере
+        if (data.lastLauncherVersion) {
+            document.getElementById('json-launcher-version').value = data.lastLauncherVersion;
+        }
+        if (data.launcherLink) {
+            document.getElementById('json-launcher-link').value = data.launcherLink;
+        }
+
+        // Загружаем приложения
+        if (data.application && Array.isArray(data.application)) {
+            data.application.forEach(app => {
+                loadApplicationData(app);
+            });
+        }
+
+        // Загружаем новости
+        if (data.news) {
+            Object.keys(data.news).forEach(lang => {
+                if (Array.isArray(data.news[lang])) {
+                    data.news[lang].forEach(newsItem => {
+                        loadNewsData(lang, newsItem);
+                    });
+                }
+            });
+        }
+    }
+
+    function clearAllData() {
+        document.getElementById('csv-list').innerHTML = '';
+        document.getElementById('archive-list').innerHTML = '';
+        document.getElementById('app-list').innerHTML = '';
+        document.getElementById('news-container').innerHTML = '';
+
+        document.getElementById('json-launcher-version').value = '1.0.0';
+        document.getElementById('json-launcher-link').value = '';
+    }
+
+    function addToList(listId, value) {
+        const list = document.getElementById(listId);
+        const listItem = document.createElement('li');
+        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+        listItem.innerHTML = `
+            <span class="text-break">${value}</span>
+            <button type="button" class="btn btn-danger btn-sm remove-btn">
+                <i class="ri-delete-bin-line"></i>
+            </button>
+        `;
+        list.appendChild(listItem);
+    }
+
+    function loadApplicationData(app) {
+        const appList = document.getElementById('app-list');
+        const supportedLanguages = ['ru', 'en', 'es', 'pt', 'uk', 'el'];
+
+        let nameTranslations = {};
+
+        if (typeof app.name === 'string') {
+            nameTranslations.ru = app.name;
+        } else if (Array.isArray(app.name) && app.name.length > 0) {
+            nameTranslations = app.name[0] || {};
+        }
+
+        const listItem = document.createElement('li');
+        listItem.className = 'list-group-item';
+
+        listItem.dataset.exe = app.exe || '';
+        listItem.dataset.args = app.args || '';
+        listItem.dataset.translations = JSON.stringify(nameTranslations);
+
+        const namesDisplay = supportedLanguages
+              .filter(lang => nameTranslations[lang])
+              .map(lang => `${lang.toUpperCase()}: "${nameTranslations[lang]}"`)
+              .join(', ');
+
+        listItem.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>Приложение: ${app.exe || ''}</strong>
+                    <small class="d-block text-muted">Аргументы: ${app.args || 'нет'}</small>
+                    <small class="d-block text-info">Названия: ${namesDisplay}</small>
+                </div>
+                <button type="button" class="btn btn-danger btn-sm remove-btn">
+                    <i class="ri-delete-bin-line"></i>
+                </button>
+            </div>
+        `;
+
+        appList.appendChild(listItem);
+    }
+
+    function loadNewsData(lang, newsItem) {
+        const newsContainer = document.getElementById('news-container');
+
+        let langGroup = newsContainer.querySelector(`.news-language-group[data-lang="${lang}"]`);
+        if (!langGroup) {
+            langGroup = document.createElement('div');
+            langGroup.className = 'news-language-group mb-3';
+            langGroup.dataset.lang = lang;
+            langGroup.innerHTML = `
+                <h5>Новости (${lang})</h5>
+                <ul class="list-group"></ul>
+            `;
+            newsContainer.appendChild(langGroup);
+        }
+
+        const newsList = langGroup.querySelector('.list-group');
+        const listItem = document.createElement('li');
+        listItem.className = 'list-group-item';
+
+        listItem.dataset.name = newsItem.name || '';
+        listItem.dataset.description = newsItem.description || '';
+        listItem.dataset.image = newsItem.image || '';
+        listItem.dataset.link = newsItem.link || '';
+        listItem.dataset.date = newsItem.date || '';
+
+        listItem.innerHTML = `
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <strong>${newsItem.name || ''}</strong> <small class="text-muted">(${newsItem.date || ''})</small>
+                    <p class="mb-1 text-break">${newsItem.description || ''}</p>
+                    <small class="text-muted text-break">Картинка: ${newsItem.image || 'нет'}<br>Ссылка: ${newsItem.link || 'нет'}</small>
+                </div>
+                <button type="button" class="btn btn-danger btn-sm remove-btn ms-2">
+                    <i class="ri-delete-bin-line"></i>
+                </button>
+            </div>
+        `;
+        newsList.appendChild(listItem);
+    }
+
+
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // --- Управление простыми списками (CSV, Архивы) ---
+    function setupSimpleList(inputId, btnId, listId) {
+        const input = document.getElementById(inputId);
+        const addBtn = document.getElementById(btnId);
+        const list = document.getElementById(listId);
+
+        addBtn.addEventListener('click', () => {
+            const value = input.value.trim();
+            if (value) {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.innerHTML = `
+                        <span class="text-break">${value}</span>
+                        <button type="button" class="btn btn-danger btn-sm remove-btn">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    `;
+                list.appendChild(listItem);
+                input.value = '';
+            }
+        });
+    }
+
+    setupSimpleList('csv-input', 'add-csv-btn', 'csv-list');
+    setupSimpleList('archive-input', 'add-archive-btn', 'archive-list');
+
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.remove-btn')) {
+            const listItem = e.target.closest('li');
+            const listGroup = listItem.parentElement;
+            listItem.remove();
+
+            // Если это группа новостей и она стала пустой, удаляем всю группу
+            if (listGroup.children.length === 0 && listGroup.parentElement.classList.contains('news-language-group')) {
+                listGroup.parentElement.remove();
+            }
+        }
+    });
+
+    const appExeInput = document.getElementById('app-exe-input');
+    const appArgsInput = document.getElementById('app-args-input');
+    const addAppBtn = document.getElementById('add-app-btn');
+    const appList = document.getElementById('app-list');
+    const supportedLanguages = ['ru', 'en', 'es', 'pt', 'uk', 'el'];
+
+    addAppBtn.addEventListener('click', () => {
+        const exe = appExeInput.value.trim();
+        const args = appArgsInput.value.trim();
+        const nameTranslations = {};
+        let hasAnyName = false;
+        supportedLanguages.forEach(lang => {
+            const input = document.getElementById(`app-name-${lang}`);
+            if (input && input.value.trim()) {
+                nameTranslations[lang] = input.value.trim();
+                hasAnyName = true;
+            }
+        });
+        if (!hasAnyName || !exe) {
+            alert('Пожалуйста, укажите хотя бы одно название кнопки и путь к исполняемому файлу.');
+            return;
+        }
+        const listItem = document.createElement('li');
+        listItem.className = 'list-group-item';
+        listItem.dataset.exe = exe;
+        listItem.dataset.args = args;
+        listItem.dataset.translations = JSON.stringify(nameTranslations);
+        const namesDisplay = supportedLanguages
+              .filter(lang => nameTranslations[lang])
+              .map(lang => `${lang.toUpperCase()}: "${nameTranslations[lang]}"`)
+              .join(', ');
+        listItem.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Приложение: ${exe}</strong>
+                        <small class="d-block text-muted">Аргументы: ${args || 'нет'}</small>
+                        <small class="d-block text-info">Названия: ${namesDisplay}</small>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm remove-btn">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div>
+            `;
+        appList.appendChild(listItem);
+        appExeInput.value = '';
+        appArgsInput.value = '';
+    });
+
+
+    const newsLangSelect = document.getElementById('news-lang-select');
+    const newsNameInput = document.getElementById('news-name-input');
+    const newsDateInput = document.getElementById('news-date-input');
+    const newsDescInput = document.getElementById('news-desc-input');
+    const newsImageInput = document.getElementById('news-image-input');
+    const newsLinkInput = document.getElementById('news-link-input');
+    const addNewsBtn = document.getElementById('add-news-btn');
+    const newsContainer = document.getElementById('news-container');
+
+    addNewsBtn.addEventListener('click', () => {
+        const lang = newsLangSelect.value;
+        const name = newsNameInput.value.trim();
+        const date = newsDateInput.value.trim();
+        const description = newsDescInput.value.trim();
+        const image = newsImageInput.value.trim();
+        const link = newsLinkInput.value.trim();
+        if (!lang || !name || !date || !description) {
+            alert('Заполните обязательные поля новости: Язык, Заголовок, Дата, Описание.');
+            return;
+        }
+        let langGroup = newsContainer.querySelector(`.news-language-group[data-lang="${lang}"]`);
+        if (!langGroup) {
+            langGroup = document.createElement('div');
+            langGroup.className = 'news-language-group mb-3';
+            langGroup.dataset.lang = lang;
+            langGroup.innerHTML = `<h5>Новости (${lang})</h5><ul class="list-group"></ul>`;
+            newsContainer.appendChild(langGroup);
+        }
+        const newsList = langGroup.querySelector('.list-group');
+        const listItem = document.createElement('li');
+        listItem.className = 'list-group-item';
+        listItem.dataset.name = name;
+        listItem.dataset.description = description;
+        listItem.dataset.image = image;
+        listItem.dataset.link = link;
+        listItem.dataset.date = date;
+        listItem.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>${name}</strong> <small class="text-muted">(${date})</small>
+                        <p class="mb-1 text-break">${description}</p>
+                        <small class="text-muted text-break">Картинка: ${image || 'нет'}<br>Ссылка: ${link || 'нет'}</small>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm remove-btn ms-2">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div>
+            `;
+        newsList.appendChild(listItem);
+        newsNameInput.value = '';
+        newsDateInput.value = '';
+        newsDescInput.value = '';
+        newsImageInput.value = '';
+        newsLinkInput.value = '';
+    });
+
+    const generateJsonBtn = document.getElementById('generate-json-btn');
+    generateJsonBtn.addEventListener('click', () => {
+        // Получаем список языков, он нам понадобится для приложений
+        const supportedLanguages = ['ru', 'en', 'es', 'pt', 'uk', 'el'];
+
+        const config = {
+            download: {
+                csv: [],
+                archives: []
+            },
+            application: [],
+            lastLauncherVersion: document.getElementById('json-launcher-version').value || '1.0.0',
+            launcherLink: document.getElementById('json-launcher-link').value || '',
+            news: {}
+        };
+
+        // --- 1. Сбор ссылок на CSV ---
+        // Сначала берем уже добавленные из списка
+        document.querySelectorAll('#csv-list li').forEach(item => {
+            const span = item.querySelector('span');
+            if (span && span.textContent.trim()) {
+                config.download.csv.push(span.textContent.trim());
+            }
+        });
+        // НОВОЕ: Проверяем поле для ввода на случай, если там есть недобавленная ссылка
+        const csvInput = document.getElementById('csv-input');
+        if (csvInput.value.trim()) {
+            config.download.csv.push(csvInput.value.trim());
+        }
+
+        // --- 2. Сбор ссылок на архивы ---
+        // Аналогично CSV, сначала из списка
+        document.querySelectorAll('#archive-list li').forEach(item => {
+            const span = item.querySelector('span');
+            if (span && span.textContent.trim()) {
+                config.download.archives.push(span.textContent.trim());
+            }
+        });
+        // НОВОЕ: И потом из поля для ввода
+        const archiveInput = document.getElementById('archive-input');
+        if (archiveInput.value.trim()) {
+            config.download.archives.push(archiveInput.value.trim());
+        }
+
+        // --- 3. Сбор приложений ---
+        // Из списка
+        document.querySelectorAll('#app-list li').forEach(item => {
+            if (item.dataset.exe && item.dataset.translations) {
+                const translations = JSON.parse(item.dataset.translations || '{}');
+                config.application.push({
+                    name: [translations],
+                    exe: item.dataset.exe,
+                    args: item.dataset.args || ''
+                });
+            }
+        });
+        // НОВОЕ: Проверяем поля для ввода нового приложения
+        const appExeInput = document.getElementById('app-exe-input');
+        if (appExeInput.value.trim()) {
+            const nameTranslations = {};
+            let hasAnyName = false;
+            supportedLanguages.forEach(lang => {
+                const input = document.getElementById(`app-name-${lang}`);
+                if (input && input.value.trim()) {
+                    nameTranslations[lang] = input.value.trim();
+                    hasAnyName = true;
+                }
+            });
+            // Добавляем, только если указан exe и хотя бы одно название
+            if (hasAnyName) {
+                config.application.push({
+                    name: [nameTranslations],
+                    exe: appExeInput.value.trim(),
+                    args: document.getElementById('app-args-input').value.trim() || ''
+                });
+            }
+        }
+
+        // --- 4. Сбор новостей ---
+        // Из уже созданных групп
+        document.querySelectorAll('.news-language-group').forEach(group => {
+            const lang = group.dataset.lang;
+            if (lang) {
+                if (!config.news[lang]) {
+                    config.news[lang] = [];
+                }
+                group.querySelectorAll('ul li').forEach(item => {
+                    if (item.dataset.name && item.dataset.description && item.dataset.date) {
+                        config.news[lang].push({
+                            name: item.dataset.name,
+                            description: item.dataset.description,
+                            image: item.dataset.image || '',
+                            link: item.dataset.link || '',
+                            date: item.dataset.date
+                        });
+                    }
+                });
+            }
+        });
+        // НОВОЕ: Проверяем поля для ввода новой новости
+        const newsNameInput = document.getElementById('news-name-input');
+        const newsDescInput = document.getElementById('news-desc-input');
+        const newsDateInput = document.getElementById('news-date-input');
+        // Добавляем, только если заполнены обязательные поля
+        if (newsNameInput.value.trim() && newsDescInput.value.trim() && newsDateInput.value.trim()) {
+            const lang = document.getElementById('news-lang-select').value;
+            const newsItem = {
+                name: newsNameInput.value.trim(),
+                description: newsDescInput.value.trim(),
+                image: document.getElementById('news-image-input').value.trim() || '',
+                link: document.getElementById('news-link-input').value.trim() || '',
+                date: newsDateInput.value.trim()
+            };
+            if (!config.news[lang]) {
+                config.news[lang] = [];
+            }
+            config.news[lang].push(newsItem);
+        }
+
+
+        // --- 5. Генерация и скачивание файла ---
+        const jsonString = JSON.stringify(config, null, 2);
+        const blob = new Blob([jsonString], {
+            type: 'application/json'
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'launcher.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+});
+</script>
+{% endblock %}

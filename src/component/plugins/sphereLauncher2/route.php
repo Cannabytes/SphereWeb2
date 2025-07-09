@@ -14,6 +14,23 @@ $routes = [
     ],
 
     [
+        "method" => "GET",
+        "pattern" => "/admin/plugins/sphereLauncher2/config",
+        "file" => "sphereLauncher2.php",
+        "call" => function () {
+            (new sphereLauncher2\sphereLauncher2())->config();
+        },
+    ],
+    [
+        "method" => "GET",
+        "pattern" => "/admin/plugin/sphereLauncher2/compile",
+        "file" => "sphereLauncher2.php",
+        "call" => function () {
+            (new sphereLauncher2\sphereLauncher2())->compilePage();
+        },
+    ],
+
+    [
         "method" => "POST",
         "pattern" => "/admin/plugin/sphereLauncher2/compile",
         "file" => "sphereLauncher2.php",

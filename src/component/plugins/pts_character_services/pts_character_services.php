@@ -18,7 +18,10 @@ class pts_character_services
 
     public function __construct()
     {
-        $this->setting = server::getServer(user::self()->getServerId())->getPluginSetting("pts_character_services");
+        if (server::get_count_servers() == 0) {
+            redirect::location("/main");
+        }
+        $this->setting = server::getServer(user::self()->getServerId())->getPluginSetting("pts_character_services") ?? [];
         tpl::addVar('setting', plugin::getSetting("pts_character_services"));
         tpl::addVar("pluginName", "pts_character_services");
         tpl::addVar("pluginActive", (bool) plugin::getPluginActive("pts_character_services") ?? false);
