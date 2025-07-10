@@ -89,14 +89,14 @@ class chests
                     try {
                         $itemInfo = item::getItem($item['id']);
                         $formattedItem = [
-                            'itemId' => $itemInfo->getItemId(),
+                            'itemId' => $itemInfo->getItemId() ?? $item['id'],
                             'minCount' => $item['count'],
                             'maxCount' => $item['count'],
                             'enchant' => $item['enchant'] ?? 0,
                             'chance' => $item['chance'] ?? 0,
-                            'name' => $itemInfo->getItemName() ?? "Предмет {$item['id']}",
+                            'name' => $itemInfo->getItemName() ?? "Item: {$item['id']}",
                             'add_name' => $itemInfo->getAddName() ?? '',
-                            'icon' => $itemInfo->getIcon(),
+                            'icon' => $itemInfo->getIcon() ?? '/uploads/images/icon/NOIMAGE.webp',
                         ];
                         $formattedCase['items'][] = $formattedItem;
                     } catch (\Exception $e) {
