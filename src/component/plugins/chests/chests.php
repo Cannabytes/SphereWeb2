@@ -88,16 +88,28 @@ class chests
                 foreach ($case['items'] as $item) {
                     try {
                         $itemInfo = item::getItem($item['id']);
-                        $formattedItem = [
-                            'itemId' => $itemInfo->getItemId() ?? $item['id'],
-                            'minCount' => $item['count'],
-                            'maxCount' => $item['count'],
-                            'enchant' => $item['enchant'] ?? 0,
-                            'chance' => $item['chance'] ?? 0,
-                            'name' => $itemInfo->getItemName() ?? "Item: {$item['id']}",
-                            'add_name' => $itemInfo->getAddName() ?? '',
-                            'icon' => $itemInfo->getIcon() ?? '/uploads/images/icon/NOIMAGE.webp',
-                        ];
+                        if ($itemInfo) {
+                            $formattedItem = [
+                                'itemId' => $itemInfo->getItemId(),
+                                'minCount' => $item['count'],
+                                'maxCount' => $item['count'],
+                                'enchant' => $item['enchant'] ?? 0,
+                                'chance' => $item['chance'] ?? 0,
+                                'name' => $itemInfo->getItemName() ?? "Item: {$item['id']}",
+                                'add_name' => $itemInfo->getAddName() ?? '',
+                                'icon' => $itemInfo->getIcon() ?? '/uploads/images/icon/NOIMAGE.webp',
+                            ];
+                        } else {
+                            $formattedItem = [
+                                'itemId' => $item['id'],
+                                'minCount' => $item['count'],
+                                'maxCount' => $item['count'],
+                                'enchant' => $item['enchant'] ?? 0,
+                                'chance' => $item['chance'] ?? 0,
+                                'name' => "Предмет {$item['id']}",
+                                'icon' => '/uploads/images/icon/NOIMAGE.webp',
+                            ];
+                        }
                         $formattedCase['items'][] = $formattedItem;
                     } catch (\Exception $e) {
                         error_log("Ошибка при обработке предмета {$item['id']}: " . $e->getMessage());
