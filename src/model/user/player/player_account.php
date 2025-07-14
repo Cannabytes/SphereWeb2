@@ -26,6 +26,7 @@ use Ofey\Logan22\model\server\serverModel;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\auth\registration;
 use Ofey\Logan22\model\user\user;
+use PDOStatement;
 
 class player_account
 {
@@ -149,12 +150,11 @@ class player_account
           'is_password_hide' => $password_hide,
         ])->show(false)->getResponse();
         if (isset($sphere['error'])) {
-            if (isset($sphere['errorCode']) and $sphere['errorCode'] === 0) {
-                board::error("Аккаунт занят");
+            if (isset($sphere['errorCode']) and $sphere['errorCode'] == 1) {
+                board::error(lang::get_phrase(214));
             }
             board::error($sphere['error']);
         }
-
         if (isset($sphere['success']) and $sphere['success'] === true) {
             self::add_inside_account(
               $login,
@@ -207,15 +207,28 @@ class player_account
         }
     }
 
-    static function count_account()
+    static function count_account(int $server_id = 0): int
     {
-        if (!user::self()->isAuth()){
+        if (!user::self()->isAuth()) {
             return 0;
         }
-        return sql::run("SELECT COUNT(*) as `count` FROM player_accounts WHERE email = ?", [
-          user::self()->getEmail(),
-        ])->fetch()["count"];
+        $params = [user::self()->getEmail()];
+        $sql = "SELECT COUNT(*) as `count` FROM player_accounts WHERE email = ?";
+        if ($server_id !== 0) {
+            $sql .= " AND server_id = ?";
+            $params[] = $server_id;
+        }
+        $stmt = sql::run($sql, $params);
+        if (!$stmt instanceof PDOStatement) {
+            return 0;
+        }
+        $result = $stmt->fetch();
+        if (!is_array($result) || !array_key_exists('count', $result)) {
+            return 0;
+        }
+        return (int) $result['count'];
     }
+
 
     /**
      * @throws ExceptionAlias
@@ -244,15 +257,20 @@ class player_account
     {
         self::valid_login($login);
         self::valid_password($password);
-        if (self::count_account() >= config::load()->other()->getMaxAccount()) {
+        if (self::count_account(user::self()->getServerId()) >= config::load()->other()->getMaxAccount()) {
             board::response("notice", ["message" => lang::get_phrase(206), "ok" => false, "reloadCaptcha" => true]);
         }
-
         $sphere = \Ofey\Logan22\component\sphere\server::send(type::REGISTRATION, [
           'login'            => $login,
           'password'         => $password,
           'is_password_hide' => $password_hide,
-        ])->show()->getResponse();
+        ])->show(false)->getResponse();
+        if (isset($sphere['error'])) {
+            if (isset($sphere['errorCode']) and $sphere['errorCode'] == 1) {
+                board::error(lang::get_phrase(214));
+            }
+            board::error($sphere['error']);
+        }
         $content = trim(config::load()->lang()->getPhrase(config::load()->registration()->getPhraseRegistrationDownloadFile())) ?? "";
         $server  = server::getServer(user::self()->getServerId());
         $content = str_replace(["%site_server%", "%server_name%", "%rate_exp%", "%chronicle%", "%email%", "%login%", "%password%"],

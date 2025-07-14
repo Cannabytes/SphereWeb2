@@ -106,7 +106,7 @@ class chests
                                 'maxCount' => $item['count'],
                                 'enchant' => $item['enchant'] ?? 0,
                                 'chance' => $item['chance'] ?? 0,
-                                'name' => "Предмет {$item['id']}",
+                                'name' => "NoItemName: {$item['id']}",
                                 'icon' => '/uploads/images/icon/NOIMAGE.webp',
                             ];
                         }

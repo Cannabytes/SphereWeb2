@@ -204,24 +204,18 @@
     </div>
 
 
-    <div class="row mb-0">
-        <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
-        <div class="col-sm-4">
+<div class="row mb-3">
+    <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
+    <div class="col-sm-4">
+        <div class="input-group">
             <input type="password" minlength="4" maxlength="32" class="form-control" name="password" id="passwordRegistration"
                    autocomplete="new-password">
+            <button class="btn btn-link btn-sm toggle-password" type="button" id="togglePassword">
+                <i class="bi bi-eye-fill"></i> {# Иконка глаза для показа пароля #}
+            </button>
         </div>
     </div>
-    <fieldset class="row mb-3">
-        <legend class="col-form-label col-sm-2 pt-0"></legend>
-        <div class="col-sm-10">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="password_hide" name="password_hide">
-                <label class="form-check-label" for="password_hide">
-                    {{phrase('lv_pwd_vis')}}
-                </label>
-            </div>
-        </div>
-    </fieldset>
+</div>
 
     {% if getUser().isAuth() == false %}
         {% if config().isGoogleCaptcha() %}
@@ -822,6 +816,21 @@
         updateCounterUI();
     });
 
+    $(document).on('input', '#passwordRegistration', function() {
+        const originalValue = $(this).val();
+        let newValue = transliterate(originalValue);
+        newValue = newValue.replace(/[^a-zA-Z0-9_]/g, '');
+
+        if (originalValue !== newValue) {
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+
+            $(this).val(newValue);
+
+            this.setSelectionRange(start, end);
+        }
+    });
+
     updateCounterUI();
 
     $(document).on('click', '.account_prefix', function () {
@@ -833,6 +842,20 @@
             $('.account_prefix').text(prefix);
             updateCounterUI();
         });
+    });
+
+    $(document).on('click', '#togglePassword', function() {
+        const passwordField = $('#passwordRegistration');
+        const passwordFieldType = passwordField.attr('type');
+        const toggleIcon = $(this).find('i');
+
+        if (passwordFieldType === 'password') {
+            passwordField.attr('type', 'text');
+            toggleIcon.removeClass('bi-eye-fill').addClass('bi-eye-slash-fill');
+        } else {
+            passwordField.attr('type', 'password');
+            toggleIcon.removeClass('bi-eye-slash-fill').addClass('bi-eye-fill');
+        }
     });
 </script>
 
