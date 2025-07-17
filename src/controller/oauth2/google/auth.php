@@ -63,7 +63,7 @@ class auth
 
             $emailData = user::getUserByEmail($email);
             if ($emailData != null) {
-                \Ofey\Logan22\model\user\auth\auth::addAuthLog($emailData->getId(), $fingerprint ?? null);
+                \Ofey\Logan22\model\user\auth\auth::addAuthLog($emailData->getId(), "GOOGLE");
                 session::add('id', $emailData->getId());
                 session::add('email', $emailData->getEmail());
                 session::add('password', "GOOGLE");

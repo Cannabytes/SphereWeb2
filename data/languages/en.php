@@ -1013,7 +1013,6 @@ Then you need to <a class=\'text-success\' href=\'/admin/launcher/add\'>add info
 	'download_link_launcher_panel' => 'Download the launcher and run it.<br>
 The launcher will be installed automatically.<br>
 After running the launcher, you can update.<br><br>',
-	'drag and drop the authorization file' => 'Drag and drop the authorization file',
 	'during_all' => 'During all this time you have purchased',
 	'edit' => 'Edit',
 	'edit_server_info' => 'Edit server information',

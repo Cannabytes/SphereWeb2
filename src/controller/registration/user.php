@@ -4,6 +4,7 @@ namespace Ofey\Logan22\controller\registration;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
+use Ofey\Logan22\component\finger\finger;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\mail\mail;
 use Ofey\Logan22\component\request\request;
@@ -70,19 +71,6 @@ class user
             board::response("notice", ["message" => lang::get_phrase(201, $email), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false,]);
         }
 
-
-        $fingerprint = null;
-
-        if (isset($_POST['fingerprint']) && $_POST['fingerprint'] !== '') {
-            $fingerprint = $_POST['fingerprint'];
-        }
-
-        if ($fingerprint !== null) {
-            if (!preg_match('/^[a-zA-Z0-9]{20,64}$/', $fingerprint)) {
-                board::error("Invalid fingerprint");
-            }
-        }
-
         $account_name = registration::add($email, $password, $account_name);
         if (session::get("HTTP_REFERER")) {
             sql::run('INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)', [0, $_SESSION['id'], "HTTP_REFERER", session::get("HTTP_REFERER"),]);
@@ -91,7 +79,10 @@ class user
         \Ofey\Logan22\model\user\user::self()->setId($_SESSION['id']);
         \Ofey\Logan22\model\user\user::self()->addLog(logTypes::LOG_REGISTRATION_USER, "LOG_REGISTRATION_USER", [$email]);
 
-        auth::addAuthLog($_SESSION['id'], $fingerprint);
+        $requestFinger = $_POST['finger'] ?? "";
+        $finger = finger::createFingerHash($requestFinger);
+
+        auth::addAuthLog($_SESSION['id'], $finger);
 
         $mailTemplate = mail::getTemplates();
 

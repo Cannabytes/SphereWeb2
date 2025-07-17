@@ -797,7 +797,7 @@
                 <div class="h-captcha text-center" data-sitekey="0c545d06-4fe6-45d4-b704-7b809af8db9c"></div>
                 {% endif %}
 
-                <input type="hidden" name="fingerprint" id="fingerprint-input">
+                <input type="hidden" name="finger" id="finger">
 
                 <div id="referralinput" class="col-xl-12 mb-2 d-none">
                   <label for="referral" class="form-label text-default">{{ phrase('username') }}</label>
@@ -925,47 +925,6 @@
   <script src="{{template}}/assets/libs/@popperjs/core/umd/popper.min.js"></script>
   <script src="{{template}}/assets/js/Toasts.js"></script>
   <script src="{{template}}/assets/js/general.js?v=1.0.5"></script>
-
-  <script>
-
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-      const submitButton = document.querySelector('.btn.enter');
-      const fingerprintInput = document.getElementById('fingerprint-input');
-      const fpPromise = import('https://fpjscdn.net/v3/czqSG4OOYIGl9sjkhkLB')
-        .then(FingerprintJS => FingerprintJS.load({
-          region: "eu"
-        }));
-      fpPromise
-        .then(fp => fp.get())
-        .then(result => {
-          const visitorId = result.visitorId;
-          if (fingerprintInput) {
-            fingerprintInput.value = visitorId;
-          }
-          const googleLoginLink = document.getElementById('google-login-link');
-          if (googleLoginLink) {
-            const originalHref = googleLoginLink.getAttribute('href');
-            const url = new URL(originalHref);
-            const originalState = url.searchParams.get('state');
-            const stateObject = {
-              host: originalState,
-              fp: visitorId
-            };
-            const newState = btoa(JSON.stringify(stateObject));
-            url.searchParams.set('state', newState);
-            googleLoginLink.setAttribute('href', url.toString());
-          }
-          if (submitButton) {
-          }
-        })
-        .catch(error => {
-          if (submitButton) {
-          }
-        });
-    });
-  </script>
 
   {% if config().captcha().isEnabled() %}
 
@@ -1157,13 +1116,6 @@
         });
       });
 
-      // Обработчики для чекбоксов соглашений
-      $(document).on('change', '.agreement-checkbox', function () {
-        validateAgreements();
-      });
-
-      // Инициализация состояния кнопки при загрузке страницы
-      validateAgreements();
 
       {% if getServer().bonus().isRegistrationBonus() %}
       // JavaScript для магического кристалла
@@ -1481,6 +1433,47 @@
 
 });
   </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@thumbmarkjs/thumbmarkjs@0.20.6/dist/thumbmark.umd.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const thumbmarkInput = document.getElementById('finger');
+
+  // 1. Определяем ключи, которые нужно извлечь
+  const keysToInclude = [
+    'webgl.commonImageHash',
+    'audio.sampleHash',
+    'system.platform',
+    'locales.timezone',
+    'hardware.videocard.renderer',
+  ];
+
+  ThumbmarkJS.getFingerprintData()
+        .then(data => {
+          const filteredData = {};
+          keysToInclude.forEach(keyPath => {
+            const pathParts = keyPath.split('.');
+            let value = pathParts.reduce((obj, key) => obj && obj[key], data);
+            if (value !== undefined) {
+              let currentLevel = filteredData;
+              pathParts.forEach((part, index) => {
+                if (index === pathParts.length - 1) {
+                  currentLevel[part] = value;
+                } else {
+                  currentLevel[part] = currentLevel[part] || {};
+                  currentLevel = currentLevel[part];
+                }
+              });
+            }
+          });
+          thumbmarkInput.value = JSON.stringify(filteredData);
+        })
+        .catch(err => {
+          console.error("Ошибка при получении данных ThumbmarkJS:", err);
+        });
+});
+</script>
+
 </body>
 
 </html>

@@ -7,6 +7,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\finger\finger;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\session\session;
@@ -141,6 +142,7 @@ class userModel
 
             $this->initLastActivity($user['last_activity']);
 
+
             if (isset($_SESSION['id'])) {
                 // Обновляем время, когда селф-пользователь был в онлайне (т.е. сейчас)
                 if ($_SESSION['id'] == $this->getId()) {
@@ -159,6 +161,27 @@ class userModel
 
         }
 
+    }
+
+    public function getBrowser(): string
+    {
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+        $browsers = [
+            'Edge' => 'Edge',
+            'OPR' => 'Opera',
+            'Opera' => 'Opera',
+            'Chrome' => 'Chrome',
+            'Safari' => 'Safari',
+            'Firefox' => 'Firefox',
+            'MSIE' => 'Internet Explorer',
+            'Trident' => 'Internet Explorer',
+        ];
+        foreach ($browsers as $key => $browser) {
+            if (stripos($userAgent, $key) !== false) {
+                return $browser;
+            }
+        }
+        return 'unknown';
     }
 
     // Найден ли такой пользователь

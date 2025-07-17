@@ -88,11 +88,6 @@ enum type
     case UPDATE_LOGINSERVER;
     case UPDATE_GAMESERVER;
 
-    // Супер пользователь
-    case CREATE_SUPER_USER_EMAIL_CHECK;
-    case AUTH_SUPER_USER;
-    case CHECK_SUPER_USER_EMAIL_CONFIRM;
-
     case ERROR_REPORT;
     case CLEAR_ERRORS;
 
@@ -174,9 +169,6 @@ enum type
             self::LAUNCHER_CREATE_TOKEN => '/api/launcher/create/token',
             self::SPHERE_DONATE => "/api/donate",
             self::DONATE_STATISTIC => "/api/statistic/server/donate",
-            self::CREATE_SUPER_USER_EMAIL_CHECK => "/api/user/global/add/email/check",
-            self::AUTH_SUPER_USER => "/api/user/global/auth",
-            self::CHECK_SUPER_USER_EMAIL_CONFIRM => '/api/user/global/add/get/check',
             self::ERROR_REPORT => '/api/error/report',
             self::RENEW_LICENSE => '/api/license/renew',
             self::EXCHANGER => '/api/exchanger',

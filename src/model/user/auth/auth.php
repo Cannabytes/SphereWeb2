@@ -9,6 +9,7 @@ namespace Ofey\Logan22\model\user\auth;
 
 use Exception;
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\finger\finger;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\request\request;
@@ -108,6 +109,9 @@ class auth
             if (!isset($existingColumns['fingerprint'])) {
                 sql::run("ALTER TABLE `user_auth_log` ADD COLUMN `fingerprint` VARCHAR(255) NULL");
             }
+            if (!isset($existingColumns['signature'])) {
+                sql::run("ALTER TABLE `user_auth_log` ADD COLUMN `signature` VARCHAR(1500) NULL");
+            }
 
             // Проверяем наличие автоинкремента у поля id
             if (isset($existingColumns['id'])) {
@@ -138,6 +142,7 @@ class auth
                       `device` varchar(100) NULL,
                       `user_agent` varchar(600) NULL,
                       `fingerprint` varchar(255) NULL,
+                      `signature` varchar(1500) NULL,
                       `date` datetime NULL DEFAULT NULL,
                       PRIMARY KEY (`id`)
                     ) ENGINE = InnoDB AUTO_INCREMENT=1;
@@ -157,6 +162,7 @@ class auth
         if (!isset($_POST['email']) or !isset($_POST['password'])) {
             board::notice(false, lang::get_phrase(161));
         }
+
         $email = request::setting('email', new request_config(isEmail: true));
         $email = trim($email);
         $password = request::setting('password', new request_config(max: 32));
@@ -170,7 +176,9 @@ class auth
             board::error("Войдите через Google");
         }
         if (password_verify($password, $user_info['password'])) {
-            self::addAuthLog($user_info['id'], $_POST['fingerprint'] ?? null);
+            $requestFinger = $_POST['finger'];
+            $finger = finger::createFingerHash($requestFinger);
+            self::addAuthLog($user_info['id'], $finger);
             session::add('id', (int) $user_info['id']);
             session::add('email', $email);
             session::add('password', $password);
@@ -211,7 +219,12 @@ class auth
             }
         }
 
-        sql::run("INSERT INTO user_auth_log (user_id, ip, country, city, browser, os, device, user_agent, fingerprint, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+        $signature = $_SESSION['finger'] ?? null;
+        if ($signature == null) {
+            $signature = "GOOGLE";
+        }
+
+        sql::run("INSERT INTO user_auth_log (user_id, ip, country, city, browser, os, device, user_agent, fingerprint, date, signature) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
             $userId,
             $ip,
             $country,
@@ -221,7 +234,8 @@ class auth
             $device,
             $userAgent,
             $fingerprint,
-            time::mysql()
+            time::mysql(),
+            $signature,
         ]);
 
     }

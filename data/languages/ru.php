@@ -1020,7 +1020,6 @@ return array(
 	'download_link_launcher_panel' => 'Загрузите лаунчер и запустите его.<br>
           Лаунчер установится автоматически.<br>
           После запуска лаунчера можете обновляться.<br><br>',
-	'drag and drop the authorization file' => 'Перетащите файл авторизации',
 	'during_all' => 'За все это время вы приобрели',
 	'edit' => 'Редактировать',
 	'edit_server_info' => 'Изменить информацию сервера',
@@ -2228,5 +2227,11 @@ Password: %%password%%',
 	'close' => 'Закрыть',
 	'Back to inbox' => 'Вернуться к входящим',
 	'Refresh' => 'Обновить',
+    'Analyzing data and searching for multiaccounts' => 'Анализ данных и поиск мультиаккаунтов...',
+    'fingerprint' => 'Отпечаток',
+    'Date of entry' => 'Дата входа',
+    'Multiaccount' => 'Мультиаккаунт',
+
+
 
 );

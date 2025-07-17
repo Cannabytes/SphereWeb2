@@ -1003,7 +1003,6 @@ Has acumulado %s Donate Coin (%s%% de bonificaciones adicionales)',
     'download_link_launcher_panel' => 'Descarga el lanzador y ejecútalo.<br>
           El lanzador se instalará automáticamente.<br>
           Después de ejecutar el lanzador, puedes actualizarte.<br><br>',
-    'drag and drop the authorization file' => 'Arrastra y suelta el archivo de autorización',
     'during_all' => 'Durante todo este tiempo has adquirido',
     'edit' => 'Editar',
     'edit_server_info' => 'Editar información del servidor',

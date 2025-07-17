@@ -998,7 +998,6 @@ login automático no jogo, sem autenticação no jogo. Por exemplo, o SphereLaun
     'download_link_launcher_panel' => 'Baixe o lançador e execute-o.<br>
           O lançador será instalado automaticamente.<br>
           Após iniciar o lançador, você pode fazer atualizações.<br><br>',
-    'drag and drop the authorization file' => 'Arraste e solte o arquivo de autorização',
     'during_all' => 'Durante todo este tempo, você adquiriu',
     'edit' => 'Editar',
     'edit_server_info' => 'Editar informações do servidor',

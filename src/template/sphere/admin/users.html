@@ -4,13 +4,12 @@
 
 {% block content %}
 
-
 <div class="container-fluid">
   <div class="row">
     <div class="col-xl-12">
       <div class="card custom-card">
-        <div class="card-header">
-          <div class="card-title">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="card-title mb-0">
             <a href="/admin" class="avatar border text-muted me-2">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
                 <path
@@ -20,18 +19,32 @@
             </a>
             {{ phrase('users') }} ( {{getUsers()|length}} )
           </div>
+          <div>
+              <button id="clear-group-filter-btn" class="btn btn-sm btn-light" style="display:none;">
+                  Очистить фильтр
+              </button>
+          </div>
         </div>
         <div class="card-body">
-          <span class="table-responsive">
+          <div id="table-loader" class="text-center p-5">
+              <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2 text-muted">{{ phrase('Analyzing data and searching for multiaccounts') }}</p>
+          </div>
+
+          {# Таблица изначально скрыта, пока идет обработка #}
+          <span class="table-responsive" style="visibility: hidden;">
             <table id="datatable-users" class="table table-bordered text-nowrap w-100">
               <thead>
                 <tr>
                   <th>ID</th>
                   <th>{{ phrase('user') }}</th>
-                  <th>Отпечаток</th>
+                  <th>{{ phrase('fingerprint') }}</th>
                   <th>{{ phrase(114) }}</th>
-                  <th>Дата входа</th>
+                  <th>{{ phrase('Date of entry') }}</th>
                   <th>{{ phrase('donate_coin') }}</th>
+                  <th class="d-none">Group</th>
                 </tr>
               </thead>
               <tbody>
@@ -51,18 +64,17 @@
                   </td>
 
                   {% set fingerprints = user.getFingerprints() %}
-                  {% if fingerprints %}
-                      <td style="width: 1px;">
+                  <td style="width: 1px;">
+                      {% if fingerprints %}
                           {% for finger in fingerprints %}
                               {{ finger }}{% if not loop.last %}, {% endif %}
                           {% endfor %}
-                      </td>
-                  {% else %}
-                      <td style="width: 1px;"></td>
-                  {% endif %}
+                      {% endif %}
+                  </td>
 
-                  <td style="width: 1px;">{{user.getDateCreate()}}</td>
-                  <td style="width: 1px;">{{user.getLastActive()}}</td>
+                  <td style="width: 1px;" data-order="{{ user.getDateCreate()|date('YmdHis') }}">{{user.getDateCreate()}}</td>
+                  <td style="width: 1px;" data-order="{{ user.getLastActive()|date('YmdHis') }}">{{user.getLastActive()}}</td>
+                  
                   <td style="width: 1px;" class="text-center">
                     <span data-user-id="{{user.getId()}}" data-user-balance="{{user.getDonate()}}"
                       class="reply-btn btn btn-sm btn-success sendToBalance">
@@ -71,6 +83,7 @@
                     <span id="user_id_count_{{user.getId()}}"
                       data-user-balance="{{user.getDonate()}}">{{user.getDonate()}}</span>
                   </td>
+                  <td class="d-none"></td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -92,7 +105,6 @@
         </h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-
       <div class="modal-body">
         {{phrase('user_balance')}} : <span class="fs-15 fw-semibold" id="user-balance-show"></span>
         {{phrase('donate_coin')}}
@@ -104,7 +116,6 @@
           <input id="isAddBonus" name="addBonus" type="checkbox" class="form-check-input">
           <label class="form-check-label" for="isAddBonus">{{phrase('add_topup_bonuses')}}</label>
         </div>
-
       </div>
       <div class="modal-footer">
         <button id="balanceSend" type="submit" class="btn btn-sm btn-success">{{ phrase(364) }}</button>
@@ -117,16 +128,19 @@
 
 
 {% block css %}
-
 <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
-
+<style>
+    #datatable-users thead th.sorting_asc,
+    #datatable-users thead th.sorting_desc {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+    }
+</style>
 {% endblock %}
 
 
 {% block js %}
-
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
@@ -138,80 +152,167 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <script>
-
   $(document).ready(function () {
-    var userid = 0;
+    multiaccountphrase = "{{phrase('Multiaccount')}}";
+    const fingerprintToRows = new Map();
+    const rowToGroup = new Map();
 
-    var table = $('#datatable-users').DataTable({
-      language: {
-        searchPlaceholder: 'Search...',
-        sSearch: '',
-      },
-      lengthMenu: [
-        [10, 100, 1000, -1],
-        [10, 100, 1000, "All"]
-      ],
-      buttons: [
-        'copy', 'csv', 'excel', 'pdf', 'print'
-      ],
-      sort: true,
-      autoWidth: true,
-      pageLength: 10,
-      // scrollX: true
+    $('#datatable-users tbody tr').each(function() {
+      const row = $(this);
+      const fingerprintsText = row.find('td:eq(2)').text();
+      if (fingerprintsText) {
+        const fingerprints = fingerprintsText.split(',').map(fp => fp.trim()).filter(fp => fp);
+        if (fingerprints.length > 0) {
+            fingerprints.forEach(fp => {
+                if (!fingerprintToRows.has(fp)) fingerprintToRows.set(fp, []);
+                fingerprintToRows.get(fp).push(row);
+            });
+        }
+      }
     });
 
-    // Используем событие draw для привязки обработчиков событий
-    table.on('draw', function () {
-      // Сначала удаляем все старые обработчики
-      $(document).off('click', '.sendToBalance');
+    let groupIdCounter = 1;
+    const rgbaColors = [
+      'rgba(13, 110, 253, 0.2)',  // Primary
+      'rgba(25, 135, 84, 0.2)',   // Success
+      'rgba(255, 193, 7, 0.2)',   // Warning
+      'rgba(220, 53, 69, 0.2)',   // Danger
+      'rgba(13, 202, 240, 0.2)',  // Info
+      'rgba(108, 117, 125, 0.2)', // Secondary
+      'rgba(33, 37, 41, 0.2)',    // Dark
+      'rgba(248, 249, 250, 0.2)', // Light
+      'rgba(111, 66, 193, 0.2)', // Purple
+      'rgba(214, 51, 132, 0.2)', // Pink
+      'rgba(253, 126, 20, 0.2)',  // Orange
+      'rgba(32, 201, 151, 0.2)',  // Teal
+    ];
 
-      // Затем привязываем новые обработчики
-      $(document).on('click', '.sendToBalance', function () {
+    fingerprintToRows.forEach((rows) => {
+      if (rows.length > 1) {
+        let assignedGroupId = null;
+        for (const row of rows) {
+          if (row.data('group-id')) {
+            assignedGroupId = row.data('group-id');
+            break;
+          }
+        }
+        if (!assignedGroupId) assignedGroupId = groupIdCounter++;
+        
+        const color = rgbaColors[(assignedGroupId - 1) % rgbaColors.length];
+        rows.forEach(row => {
+          row.data('group-id', assignedGroupId);
+          rowToGroup.set(row[0], { id: assignedGroupId, color: color });
+        });
+      }
+    });
+
+    $('#datatable-users tbody tr').each(function() {
+      const row = $(this);
+      const groupInfo = rowToGroup.get(row[0]);
+      const fingerprintCell = row.find('td:eq(2)');
+
+      if (groupInfo) {
+        row.find('td:last').text(groupInfo.id);
+        const styleValue = 'background-color: ' + groupInfo.color + ' !important';
+        row.find('td').attr('style', styleValue);
+        fingerprintCell.html(`<a href="#" class="text-dark fw-bold show-group-btn" data-group-id="${groupInfo.id}">${multiaccountphrase}</a>`);
+      } else {
+        row.find('td:last').text('99999');
+        fingerprintCell.text('');
+      }
+    });
+    
+    var table = $('#datatable-users').DataTable({
+      language: { searchPlaceholder: 'Search...', sSearch: '' },
+      lengthMenu: [[10, 100, 1000, -1], [10, 100, 1000, "All"]],
+      buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+      autoWidth: true,
+      pageLength: 10,
+      order: [[6, 'asc']], 
+      columnDefs: [
+        { targets: 6, visible: false, type: 'num' },
+        { targets: 2, orderable: false }
+      ],
+      initComplete: function(settings, json) {
+          $('#table-loader').hide();
+          $('.table-responsive').css('visibility', 'visible');
+      }
+    });
+
+    const applyGroupBorders = () => {
+      $('#datatable-users tbody tr td').css({'border-top': '', 'border-bottom': '', 'border-left': '', 'border-right': ''});
+      const visibleRows = table.rows({ page: 'current' }).nodes();
+      
+      $(visibleRows).each(function(index) {
+        const currentRow = $(this);
+        const currentGroupId = currentRow.data('group-id');
+        if (!currentGroupId) return;
+
+        const prevGroupId = index > 0 ? $(visibleRows[index - 1]).data('group-id') : null;
+        const nextGroupId = index < visibleRows.length - 1 ? $(visibleRows[index + 1]).data('group-id') : null;
+        const groupInfo = rowToGroup.get(currentRow[0]);
+        if (!groupInfo) return;
+
+        const borderColor = groupInfo.color.replace(/rgba/g, 'rgb').replace(/,[^,)]+\)/, ')');
+        const borderStyle = `2px solid ${borderColor}`;
+        
+        currentRow.find('td:first-child').css('border-left', borderStyle);
+        currentRow.find('td:last-child').css('border-right', borderStyle);
+        if (currentGroupId !== prevGroupId) currentRow.find('td').css('border-top', borderStyle);
+        if (currentGroupId !== nextGroupId) currentRow.find('td').css('border-bottom', borderStyle);
+      });
+    };
+
+    const clearFilterBtn = $('#clear-group-filter-btn');
+
+    $('#datatable-users tbody').on('click', 'a.show-group-btn', function(e) {
+        e.preventDefault();
+        const groupId = $(this).data('group-id');
+        table.column(6).search('^' + groupId + '$', true, false).draw();
+        clearFilterBtn.show();
+    });
+
+    clearFilterBtn.on('click', function() {
+        table.column(6).search('').draw();
+        $(this).hide();
+    });
+    
+    $('#datatable-users thead').on('click', 'th:eq(2)', function() {
+        table.order([6, 'asc']).draw();
+    });
+
+    table.on('draw', applyGroupBorders);
+    applyGroupBorders();
+
+    var userid = 0;
+    $(document).on('click', '.sendToBalance', function () {
         $('#balance').modal('show');
         userid = $(this).data('user-id');
         var userbalance = $(this).data('user-balance');
         $('input[name="userid"]').val(userid);
         $('#user-balance-show').text(userbalance);
-      });
     });
 
     $('#balanceSend').on('click', function () {
       var count = $('#countBalanceSend').val();
       var addBonus = $('#isAddBonus').is(':checked');
-
       AjaxSend('/admin/users/sendToBalance', 'POST', {
-        'userid': userid,
-        'count': count,
-        'addBonus': addBonus,
+        'userid': userid, 'count': count, 'addBonus': addBonus,
       }, true).then(function (data) {
         if (data.ok) {
           let userBalance = $("#user_id_count_" + userid).attr("data-user-balance");
-          let countInt = parseInt(count);
-          userBalance = parseInt(userBalance);
-          if (isNaN(userBalance) || isNaN(countInt)) {
-            console.error("Одна из переменных не является числом");
-          } else {
-            let newBalance = userBalance + countInt;
-            $("#user_id_count_" + userid).attr("data-user-balance", newBalance);
-            $('#user_id_count_' + userid).text(newBalance);
+          let newBalance = parseInt(userBalance) + parseInt(count);
+          if (!isNaN(newBalance)) {
+            $("#user_id_count_" + userid).attr("data-user-balance", newBalance).text(newBalance);
             $('.sendToBalance[data-user-id="' + userid + '"]').attr("data-user-balance", newBalance);
             $('#user-balance-show').text(newBalance);
           }
           noticeSuccess("{{phrase('balance_topup_successful')}}");
-        } else {
-          noticeError(data.message);
-        }
+        } else { noticeError(data.message); }
         $("#countBalanceSend").val("");
         $('#balance').modal('hide');
       });
     });
-
-
-    // Вручную вызываем событие draw для первоначальной привязки обработчиков
-    table.draw();
   });
-
 </script>
-
-
 {% endblock %}
