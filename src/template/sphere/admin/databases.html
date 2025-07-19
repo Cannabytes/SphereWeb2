@@ -30,11 +30,13 @@
                         </div>
                         <div class="col-xl-9">
                             <div class="tab-content">
+                                {% set gsLogin = 0 %}
                                 {% for i, loginServer in loginServers %}
                                   {% set found = 0 %}
                                   {% for server in getServerAll() %}
                                       {% if server.getLoginId() == loginServer.id %}
                                         {% set found = 1 %}
+                                        {% set gsLogin = server %}
                                       {% endif %}
                                   {% endfor %}
 
@@ -136,8 +138,8 @@
 
                                                         {% if found %}
                                                             <div class="fw-semibold fs-14 text-success">
-                                                            Внимание: Логин-сервер подключен к серверу - {{server.getName()}}
-                                                            {{server.getRateExp()}} {{server.getChronicle()}}
+                                                            Внимание: Логин-сервер подключен к серверу - {{gsLogin.getName()}}
+                                                            {{gsLogin.getRateExp()}} {{gsLogin.getChronicle()}}
                                                             </div>
                                                         {% else %}
                                                         <div class="fw-semibold fs-14 text-danger">

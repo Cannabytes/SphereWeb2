@@ -19,71 +19,74 @@
                                             <div class="col-xl-3">
                                                 <label for="name" class="form-label">Название сервера</label>
                                                 <input name="name" type="text" class="form-control" id="name"
-                                                     value="{{server.getName()}}"  placeholder="Name">
+                                                    value="{{server.getName()}}" placeholder="Name">
                                             </div>
                                             <div class="col-xl-2">
                                                 <label for="rateExp" class="form-label">RateExp</label>
                                                 <input name="rateExp" type="number" class="form-control" id="rateExp"
-                                                       value="{{server.getRateExp()}}" placeholder="1200">
+                                                    value="{{server.getRateExp()}}" placeholder="1200">
                                             </div>
                                             <div class="col-xl-2">
                                                 <label for="rateSp" class="form-label">RateSp</label>
                                                 <input name="rateSp" type="number" class="form-control" id="rateSp"
-                                                       value="{{server.getRateSp()}}" placeholder="10">
+                                                    value="{{server.getRateSp()}}" placeholder="10">
                                             </div>
                                             <div class="col-xl-2">
                                                 <label for="rateAdena" class="form-label">RateAdena</label>
                                                 <input name="rateAdena" type="number" class="form-control"
-                                                       id="rateAdena"
-                                                       value="{{server.getRateAdena()}}" placeholder="10">
+                                                    id="rateAdena" value="{{server.getRateAdena()}}" placeholder="10">
                                             </div>
                                             <div class="col-xl-2">
                                                 <label for="rateDrop" class="form-label">RateDrop</label>
                                                 <input name="rateDrop" type="number" class="form-control" id="rateDrop"
-                                                       value="{{server.getRateDrop()}}" placeholder="1">
+                                                    value="{{server.getRateDrop()}}" placeholder="1">
                                             </div>
 
                                             <div class="col-xl-2">
                                                 <label for="platform" class="form-label">Platform</label>
-                                                <select class="form-control" data-trigger
-                                                        name="platform" id="platform">
-                                                    <option {% if server.getPlatform() == 'java' %}selected{% endif %} value="java">Java</option>
-                                                    <option {% if server.getPlatform() == 'pts' %}selected{% endif %} value="pts">PTS</option>
+                                                <select class="form-control" data-trigger name="platform" id="platform">
+                                                    <option {% if server.getPlatform()=='java' %}selected{% endif %}
+                                                        value="java">Java</option>
+                                                    <option {% if server.getPlatform()=='pts' %}selected{% endif %}
+                                                        value="pts">PTS</option>
                                                 </select>
                                             </div>
 
                                             <div class="col-xl-4">
                                                 <label for="version_client" class="form-label">Chronicle</label>
                                                 <select class="form-control" data-trigger name="version_client"
-                                                        id="version_client">
+                                                    id="version_client">
                                                     {% for client in client_list_default %}
-                                                    <option data-protocol="{{client.protocol|json_encode}}" {% if client['name'] == server.getChronicle() %}selected{% endif %}>{{
-                                                    client['name'] }}</option>
+                                                    <option data-protocol="{{client.protocol|json_encode}}" {% if
+                                                        client['name']==server.getChronicle() %}selected{% endif %}>{{
+                                                        client['name'] }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
 
                                             <div class="col-xl-5">
-                                                <label for="collection" class="form-label">{{phrase('server_build')}}</label>
+                                                <label for="collection"
+                                                    class="form-label">{{phrase('server_build')}}</label>
                                                 <select class="form-control" data-trigger id="collection"
-                                                        name="collection">
+                                                    name="collection">
                                                 </select>
                                             </div>
 
-                                           <div class="col-xl-4 pts_cached_data d-none">
+                                            <div class="col-xl-4 pts_cached_data d-none">
                                                 <label for="cached_ip" class="form-label">CacheD IP</label>
                                                 <input name="cached_ip" type="text" class="form-control" id="cached_ip"
-                                                    value="{{cached.IP}}"   placeholder="158.211.11.124">
+                                                    value="{{cached.IP}}" placeholder="158.211.11.124">
                                             </div>
                                             <div class="col-xl-4 pts_cached_data d-none">
-                                              <label for="cached_port" class="form-label">CacheD Port</label>
-                                                <input name="cached_port" type="text" class="form-control" id="cached_port"
-                                                       value="{{cached.Port}}" placeholder="2012">
+                                                <label for="cached_port" class="form-label">CacheD Port</label>
+                                                <input name="cached_port" type="text" class="form-control"
+                                                    id="cached_port" value="{{cached.Port}}" placeholder="2012">
                                             </div>
                                             <div class="col-xl-4 pts_cached_data d-none">
-                                                 <label for="cached_WebAdmin" class="form-label">WebAdmin</label>
-                                                <input name="cached_WebAdmin" type="text" class="form-control" id="cached_WebAdmin"
-                                                       value="{{cached.WebAdmin}}" placeholder="WebAdmin">
+                                                <label for="cached_WebAdmin" class="form-label">WebAdmin</label>
+                                                <input name="cached_WebAdmin" type="text" class="form-control"
+                                                    id="cached_WebAdmin" value="{{cached.WebAdmin}}"
+                                                    placeholder="WebAdmin">
                                             </div>
 
 
@@ -97,9 +100,10 @@
 
                                                     <div class="form-check form-switch">
                                                         <input class="form-check-input" type="checkbox" role="switch"
-                                                               name="enableStatusServer" id="enableStatusServer"
-                                                               {% if server.statusServerMem.enable %}checked=""{% endif %}>
-                                                        <label class="form-check-label" for="enableStatusServer">{{phrase('enable_server_status_display')}}</label>
+                                                            name="enableStatusServer" id="enableStatusServer" {% if
+                                                            server.statusServerMem.enable %}checked="" {% endif %}>
+                                                        <label class="form-check-label"
+                                                            for="enableStatusServer">{{phrase('enable_server_status_display')}}</label>
                                                     </div>
                                                     {{phrase('if_enable_and_not_set_ip_and_port_status_server')}}
 
@@ -108,9 +112,9 @@
                                                         <div class="col-xl-6">
                                                             <div class="form-floating mb-3">
                                                                 <input type="text" class="form-control"
-                                                                       value="{{server.statusServerMem.statusLoginServerIP}}"
-                                                                       name="statusLoginServerIP"
-                                                                       id="statusLoginServerIP" placeholder="127.0.0.1">
+                                                                    value="{{server.statusServerMem.statusLoginServerIP}}"
+                                                                    name="statusLoginServerIP" id="statusLoginServerIP"
+                                                                    placeholder="127.0.0.1">
                                                                 <label for="statusLoginServerIP">IP Login Server</label>
                                                             </div>
                                                         </div>
@@ -118,9 +122,9 @@
                                                         <div class="col-xl-3">
                                                             <div class="form-floating">
                                                                 <input type="number" class="form-control"
-                                                                       value="{{server.statusServerMem.statusLoginServerPort}}"
-                                                                       name="statusLoginServerPort"
-                                                                       id="statusLoginServerPort" placeholder="7777">
+                                                                    value="{{server.statusServerMem.statusLoginServerPort}}"
+                                                                    name="statusLoginServerPort"
+                                                                    id="statusLoginServerPort" placeholder="7777">
                                                                 <label for="statusLoginServerPort">Port Login
                                                                     Server</label>
                                                             </div>
@@ -132,9 +136,9 @@
                                                         <div class="col-xl-6">
                                                             <div class="form-floating mb-3">
                                                                 <input type="text" class="form-control"
-                                                                       value="{{server.statusServerMem.statusGameServerIP}}"
-                                                                       name="statusGameServerIP" id="statusGameServerIP"
-                                                                       placeholder="127.0.0.1">
+                                                                    value="{{server.statusServerMem.statusGameServerIP}}"
+                                                                    name="statusGameServerIP" id="statusGameServerIP"
+                                                                    placeholder="127.0.0.1">
                                                                 <label for="statusGameServerIP">IP Game Server</label>
                                                             </div>
                                                         </div>
@@ -142,9 +146,9 @@
                                                         <div class="col-xl-3">
                                                             <div class="form-floating">
                                                                 <input type="number" class="form-control"
-                                                                       value="{{server.statusServerMem.statusGameServerPort}}"
-                                                                       name="statusGameServerPort"
-                                                                       id="statusGameServerPort" placeholder="7777">
+                                                                    value="{{server.statusServerMem.statusGameServerPort}}"
+                                                                    name="statusGameServerPort"
+                                                                    id="statusGameServerPort" placeholder="7777">
                                                                 <label for="statusGameServerPort">Port Game
                                                                     Server</label>
                                                             </div>
@@ -156,9 +160,10 @@
 
                                                     <div class="form-check form-switch">
                                                         <input class="form-check-input" type="checkbox" role="switch"
-                                                               name="showStatusBar" id="showStatusBar"
-                                                               {% if server.showStatusBar() %}checked=""{% endif %}>
-                                                        <label class="form-check-label" for="showStatusBar">{{ phrase('Show Status Bar') }}</label>
+                                                            name="showStatusBar" id="showStatusBar" {% if
+                                                            server.showStatusBar() %}checked="" {% endif %}>
+                                                        <label class="form-check-label" for="showStatusBar">{{
+                                                            phrase('Show Status Bar') }}</label>
                                                     </div>
 
                                                 </div>
@@ -179,21 +184,24 @@
                                                     <div class="d-sm-flex">
                                                         <div class="">
                                                             <img src="{{template}}/assets/images/gopher_1.webp" alt=""
-                                                                 class="avatar avatar-xxl">
+                                                                class="avatar avatar-xxl">
                                                         </div>
                                                         <div class="mt-0 ms-3 text-start">
-                                                            <p class="fs-13 text-muted mb-0">{{ phrase('warning_need_allow_sphere_api') }}</p>
+                                                            <p class="fs-13 text-muted mb-0">{{
+                                                                phrase('warning_need_allow_sphere_api') }}</p>
 
 
                                                             <div class="row g-3 align-items-center">
                                                                 <div class="input-group">
-                                                                    <input id="sphereapi" value="{{ config().sphereApi().getIp() }}"
-                                                                           type="text"
-                                                                           class="form-control bg-light border-0"
-                                                                           placeholder="Search Contact"
-                                                                           aria-describedby="search-contact-member">
-                                                                    <button class="btn btn-light copy" data-object-id="sphereapi" type="button"
-                                                                            id="search-contact-member"><i
+                                                                    <input id="sphereapi"
+                                                                        value="{{ config().sphereApi().getIp() }}"
+                                                                        type="text"
+                                                                        class="form-control bg-light border-0"
+                                                                        placeholder="Search Contact"
+                                                                        aria-describedby="search-contact-member">
+                                                                    <button class="btn btn-light copy"
+                                                                        data-object-id="sphereapi" type="button"
+                                                                        id="search-contact-member"><i
                                                                             class="ri-file-copy-2-line text-muted"></i>
                                                                     </button>
                                                                 </div>
@@ -219,16 +227,34 @@
                                                         <div id="logindblist">
 
                                                             {% for loginserver in loginservers %}
-                                                             <div class="form-check form-switch mb-2">
-                                                                <input class="form-check-input" type="radio"
-                                                                       {% if loginserver.default %}checked{% endif %}
-                                                                       name="loginserver" value="{{loginserver.id}}"
-                                                                       id="logindb_{{loginserver.id}}">
-                                                                <label class="form-check-label"
-                                                                       for="logindb_{{loginserver.id}}">
-                                                                    {{loginserver.host}}@{{loginserver.name}}
-                                                                </label>
-                                                                 <a class="text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ phrase('count_accounts_in_login_server', loginserver.accountsCount ?? 0) }}" href="#">[{{loginserver.accountsCount ?? 0}}]</a>
+                                                            <div
+                                                                class="form-check form-switch mb-2 d-flex align-items-center justify-content-between">
+                                                                <div class="d-flex align-items-center">
+                                                                    <input class="form-check-input" type="radio" {% if
+                                                                        loginserver.default %}checked{% endif %}
+                                                                        name="loginserver" value="{{loginserver.id}}"
+                                                                        id="logindb_{{loginserver.id}}">
+                                                                    <label class="form-check-label ms-2"
+                                                                        for="logindb_{{loginserver.id}}">
+                                                                        {{loginserver.host}}@{{loginserver.name}}
+                                                                    </label>
+                                                                    <a class="text-success ms-2"
+                                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                                        data-bs-original-title="{{ phrase('count_accounts_in_login_server', loginserver.accountsCount ?? 0) }}"
+                                                                        href="#">[{{loginserver.accountsCount ??
+                                                                        0}}]</a>
+                                                                </div>
+                                                                <button type="button"
+                                                                    class="btn btn-sm btn-outline-primary edit-login-db"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#editLoginDbModal"
+                                                                    data-db-id="{{loginserver.id}}"
+                                                                    data-db-host="{{loginserver.host}}"
+                                                                    data-db-port="{{loginserver.port}}"
+                                                                    data-db-user="{{loginserver.user}}"
+                                                                    data-db-name="{{loginserver.name}}">
+                                                                    <i class="ri-edit-line"></i>
+                                                                </button>
                                                             </div>
                                                             {% endfor %}
 
@@ -239,55 +265,55 @@
 
                                                                 <div class="col-xl-12">
                                                                     <label for="login_host"
-                                                                           class="form-label">IP</label>
+                                                                        class="form-label">IP</label>
                                                                     <input type="text"
-                                                                           class="form-control form-control-sm rounded-0"
-                                                                           id="login_host" placeholder="172.217.17.110">
+                                                                        class="form-control form-control-sm rounded-0"
+                                                                        id="login_host" placeholder="172.217.17.110">
                                                                 </div>
 
                                                                 <div class="col-xl-12">
                                                                     <label for="login_port"
-                                                                           class="form-label">Port</label>
+                                                                        class="form-label">Port</label>
                                                                     <input type="text"
-                                                                           class="form-control form-control-sm rounded-0"
-                                                                           id="login_port" value="3306"
-                                                                           placeholder="3306">
+                                                                        class="form-control form-control-sm rounded-0"
+                                                                        id="login_port" value="3306" placeholder="3306">
                                                                 </div>
 
                                                                 <div class="col-xl-12">
                                                                     <label for="login_user"
-                                                                           class="form-label">User</label>
+                                                                        class="form-label">User</label>
                                                                     <input type="text"
-                                                                           class="form-control form-control-sm rounded-0"
-                                                                           id="login_user" placeholder="root">
+                                                                        class="form-control form-control-sm rounded-0"
+                                                                        id="login_user" placeholder="root">
                                                                 </div>
 
                                                                 <div class="col-xl-12">
-                                                                    <label for="login_password" class="form-label">Password</label>
+                                                                    <label for="login_password"
+                                                                        class="form-label">Password</label>
                                                                     <input type="text"
-                                                                           class="form-control form-control-sm rounded-0"
-                                                                           id="login_password" placeholder="password">
+                                                                        class="form-control form-control-sm rounded-0"
+                                                                        id="login_password" placeholder="password">
                                                                 </div>
 
                                                                 <button id="getDBNameLogin" type="button"
-                                                                        class="btn btn-primary btn-sm mb-0">Выбрать БД
+                                                                    class="btn btn-primary btn-sm mb-0">Выбрать БД
                                                                 </button>
                                                                 <div class="col-xl-12">
                                                                     <select id="login_name"
-                                                                            class="form-select form-control-sm"
-                                                                            aria-label="Select DB"></select>
+                                                                        class="form-select form-control-sm"
+                                                                        aria-label="Select DB"></select>
                                                                 </div>
 
 
                                                                 <button id="add_new_login_server" type="button"
-                                                                        class="btn btn-primary btn-sm mb-3">Добавить
+                                                                    class="btn btn-primary btn-sm mb-3">Добавить
                                                                 </button>
 
                                                             </div>
                                                         </div>
                                                         <a class="ecommerce-more-link" data-bs-toggle="collapse"
-                                                           href="#add_new_login_server_panel" aria-expanded="false"
-                                                           aria-controls="add_new_login_server_panel">{{ phrase('Add new login server') }}</a>
+                                                            href="#add_new_login_server_panel" aria-expanded="false"
+                                                            aria-controls="add_new_login_server_panel">{{ phrase('Add new login server') }}</a>
                                                     </div>
                                                 </div>
 
@@ -302,15 +328,29 @@
                                                         <div id="gamedblist">
 
                                                             {% for gameserver in gameservers %}
-                                                            <div class="form-check form-switch mb-2">
-                                                                <input class="form-check-input" type="radio"
-                                                                       {% if gameserver.default %}checked{% endif %}
-                                                                       name="gameserver" value="{{gameserver.id}}"
-                                                                       id="gamedb_{{gameserver.id}}">
-                                                                <label class="form-check-label"
-                                                                       for="gamedb_{{gameserver.id}}">
-                                                                    {{gameserver.host}}@{{gameserver.name}}
-                                                                </label>
+                                                            <div
+                                                                class="form-check form-switch mb-2 d-flex align-items-center justify-content-between">
+                                                                <div class="d-flex align-items-center">
+                                                                    <input class="form-check-input" type="radio" {% if
+                                                                        gameserver.default %}checked{% endif %}
+                                                                        name="gameserver" value="{{gameserver.id}}"
+                                                                        id="gamedb_{{gameserver.id}}">
+                                                                    <label class="form-check-label ms-2"
+                                                                        for="gamedb_{{gameserver.id}}">
+                                                                        {{gameserver.host}}@{{gameserver.name}}
+                                                                    </label>
+                                                                </div>
+                                                                <button type="button"
+                                                                    class="btn btn-sm btn-outline-primary edit-game-db"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#editGameDbModal"
+                                                                    data-db-id="{{gameserver.id}}"
+                                                                    data-db-host="{{gameserver.host}}"
+                                                                    data-db-port="{{gameserver.port}}"
+                                                                    data-db-user="{{gameserver.user}}"
+                                                                    data-db-name="{{gameserver.name}}">
+                                                                    <i class="ri-edit-line"></i>
+                                                                </button>
                                                             </div>
                                                             {% endfor %}
 
@@ -322,57 +362,56 @@
                                                             <div class="row gy-3">
 
                                                                 <div class="col-xl-12">
-                                                                    <label for="game_host"
-                                                                           class="form-label">IP</label>
+                                                                    <label for="game_host" class="form-label">IP</label>
                                                                     <input type="text"
-                                                                           class="form-control form-control-sm rounded-0"
-                                                                           id="game_host" placeholder="172.217.17.110">
+                                                                        class="form-control form-control-sm rounded-0"
+                                                                        id="game_host" placeholder="172.217.17.110">
                                                                 </div>
 
                                                                 <div class="col-xl-12">
                                                                     <label for="game_port"
-                                                                           class="form-label">Port</label>
+                                                                        class="form-label">Port</label>
                                                                     <input type="text"
-                                                                           class="form-control form-control-sm rounded-0"
-                                                                           id="game_port" value="3306"
-                                                                           placeholder="3306">
+                                                                        class="form-control form-control-sm rounded-0"
+                                                                        id="game_port" value="3306" placeholder="3306">
                                                                 </div>
 
                                                                 <div class="col-xl-12">
                                                                     <label for="game_user"
-                                                                           class="form-label">User</label>
+                                                                        class="form-label">User</label>
                                                                     <input type="text"
-                                                                           class="form-control form-control-sm rounded-0"
-                                                                           id="game_user" placeholder="root">
+                                                                        class="form-control form-control-sm rounded-0"
+                                                                        id="game_user" placeholder="root">
                                                                 </div>
 
                                                                 <div class="col-xl-12">
-                                                                    <label for="game_password" class="form-label">Password</label>
+                                                                    <label for="game_password"
+                                                                        class="form-label">Password</label>
                                                                     <input type="text"
-                                                                           class="form-control form-control-sm rounded-0"
-                                                                           id="game_password" placeholder="password">
+                                                                        class="form-control form-control-sm rounded-0"
+                                                                        id="game_password" placeholder="password">
                                                                 </div>
 
                                                                 <button id="getDBNameGame" type="button"
-                                                                        class="btn btn-primary btn-sm mb-0">Выбрать БД
+                                                                    class="btn btn-primary btn-sm mb-0">Выбрать БД
                                                                 </button>
                                                                 <div class="col-xl-12">
                                                                     <select id="game_name"
-                                                                            class="form-select form-control-sm"
-                                                                            aria-label="Select DB"></select>
+                                                                        class="form-select form-control-sm"
+                                                                        aria-label="Select DB"></select>
                                                                 </div>
 
 
                                                                 <button id="add_new_game_server" type="button"
-                                                                        class="btn btn-primary btn-sm mb-3">Добавить
+                                                                    class="btn btn-primary btn-sm mb-3">Добавить
                                                                 </button>
 
                                                             </div>
 
                                                         </div>
                                                         <a class="ecommerce-more-link" data-bs-toggle="collapse"
-                                                           href="#add_new_game_server_panel" aria-expanded="false"
-                                                           aria-controls="add_new_game_server_panel">{{ phrase('Add Game Server DB') }}</a>
+                                                            href="#add_new_game_server_panel" aria-expanded="false"
+                                                            aria-controls="add_new_game_server_panel">{{ phrase('Add Game Server DB') }}</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -394,13 +433,13 @@
 
                                         <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
                                             <p class="mb-0 lh-1">{{phrase('server_launch_date')}}</p>
-                                            <span class="fs-11 text-muted op-7">{{phrase('official_server_launch_datetime')}}</span>
+                                            <span
+                                                class="fs-11 text-muted op-7">{{phrase('official_server_launch_datetime')}}</span>
                                         </div>
                                         <div class="col-2">
                                             <input type="text" class="form-control" id="dateStartServer"
-                                                   name="dateStartServer"
-                                                   value="{{ server.getDateStartServer() }}"
-                                                   placeholder="{{ phrase('server_launch_date') }}">
+                                                name="dateStartServer" value="{{ server.getDateStartServer() }}"
+                                                placeholder="{{ phrase('server_launch_date') }}">
                                         </div>
 
                                     </div>
@@ -410,15 +449,17 @@
                                     <div class="d-sm-flex align-items-top">
                                         <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
                                             <p class="mb-0 lh-1">{{ phrase('game_version') }}</p>
-                                            <span class="fs-11 text-muted op-7">{{phrase('knowledge_base_version')}}</span>
+                                            <span
+                                                class="fs-11 text-muted op-7">{{phrase('knowledge_base_version')}}</span>
                                         </div>
 
 
                                         <div class="col-2">
                                             <select class="form-control" data-trigger name="knowledge_base"
-                                                    id="knowledge_base">
+                                                id="knowledge_base">
                                                 {% for clientVer in chronicleBaseList %}
-                                                <option {% if server.getKnowledgeBase() == clientVer %}selected{% endif %} value="{{clientVer}}">{{clientVer}}</option>
+                                                <option {% if server.getKnowledgeBase()==clientVer %}selected{% endif %}
+                                                    value="{{clientVer}}">{{clientVer}}</option>
                                                 {% endfor %}
                                             </select>
 
@@ -431,14 +472,13 @@
                                     <div class="d-sm-flex align-items-top">
                                         <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
                                             <p class="mb-0 lh-1">{{ phrase(572) }}</p>
-                                            <span class="fs-11 text-muted op-7">{{phrase('max_players_for_progress_bar')}}</span>
+                                            <span
+                                                class="fs-11 text-muted op-7">{{phrase('max_players_for_progress_bar')}}</span>
                                         </div>
 
                                         <div class="col-2">
-                                            <input value="{{server.getMaxOnline()}}" type="number"
-                                                   class="form-control"
-                                                   name="max_online"
-                                                   id="max_online" placeholder="Max online">
+                                            <input value="{{server.getMaxOnline()}}" type="number" class="form-control"
+                                                name="max_online" id="max_online" placeholder="Max online">
                                         </div>
 
                                     </div>
@@ -451,14 +491,14 @@
                                             <p class="mb-0 lh-1">{{ phrase('server_time_zone') }}</p>
                                             <span class="fs-11 text-muted op-7">
                                                 {{ phrase('necessary_to_specify_server_time_zone') }}
-                                              </span>
+                                            </span>
                                         </div>
 
                                         <div class="col-2">
                                             <select name="timezone_server" class="form-control" id="timezone_server">
                                                 {% for timezone in timezone_list() %}
-                                                <option {% if server.getTimeZone() == timezone %}selected{% endif %}
-                                                value="{{timezone}}">{{timezone}}</option>
+                                                <option {% if server.getTimeZone()==timezone %}selected{% endif %}
+                                                    value="{{timezone}}">{{timezone}}</option>
                                                 {% endfor %}
                                             </select>
 
@@ -471,11 +511,12 @@
                                     <div class="d-sm-flex align-items-top">
                                         <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
                                             <p class="mb-0 lh-1">{{phrase('reset_hwid')}}</p>
-                                            <span class="fs-11 text-muted op-7">{{phrase('enable_hwid_reset_function')}}</span>
+                                            <span
+                                                class="fs-11 text-muted op-7">{{phrase('enable_hwid_reset_function')}}</span>
                                         </div>
                                         <div class="col-2 form-check form-check-lg form-switch">
                                             <input {% if server.isResetHWID() %}checked{% endif %} name="resetHWID"
-                                            class="form-check-input" type="checkbox" id="resetHWID">
+                                                class="form-check-input" type="checkbox" id="resetHWID">
                                         </div>
                                     </div>
                                 </li>
@@ -484,12 +525,16 @@
                                     <div class="d-sm-flex align-items-top">
                                         <div class="ms-sm-2 ms-0 mt-sm-0 mt-1 fw-semibold flex-fill">
                                             <p class="mb-0 lh-1">Отправка предметов в warehouse</p>
-                                            <span class="fs-11 text-muted op-7">Разрешить игрокам отправлять свои предметы в warehouse при сбросе персонажа. Полезно при критической ошибке при заходе на персонажа.
-                                                <br>Внимание: Если есть предметы в инвентаре игрока, которые нельзя отправить в склад, они будут отправлены.</span>
+                                            <span class="fs-11 text-muted op-7">Разрешить игрокам отправлять свои
+                                                предметы в warehouse при сбросе персонажа. Полезно при критической
+                                                ошибке при заходе на персонажа.
+                                                <br>Внимание: Если есть предметы в инвентаре игрока, которые нельзя
+                                                отправить в склад, они будут отправлены.</span>
                                         </div>
                                         <div class="col-2 form-check form-check-lg form-switch">
-                                            <input {% if server.isResetItemsToWarehouse() %}checked{% endif %} name="resetItemsToWarehouse"
-                                            class="form-check-input" type="checkbox" id="resetItemsToWarehouse">
+                                            <input {% if server.isResetItemsToWarehouse() %}checked{% endif %}
+                                                name="resetItemsToWarehouse" class="form-check-input" type="checkbox"
+                                                id="resetItemsToWarehouse">
                                         </div>
                                     </div>
                                 </li>
@@ -502,8 +547,10 @@
 
 
                     <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-between">
-                        <button type="button" class="btn btn-danger-light m-1 removeServer" data-server-id="{{server.getId()}}">{{ phrase('delete') }}</button>
-                        <button type="submit" class="btn btn-success-light m-1">{{ phrase(271) }}<i class="bi bi-plus-lg ms-2"></i></button>
+                        <button type="button" class="btn btn-danger-light m-1 removeServer"
+                            data-server-id="{{server.getId()}}">{{ phrase('delete') }}</button>
+                        <button type="submit" class="btn btn-success-light m-1">{{ phrase(271) }}<i
+                                class="bi bi-plus-lg ms-2"></i></button>
                     </div>
 
                 </form>
@@ -514,6 +561,103 @@
 
 
 </div>
+
+<!-- Модальное окно для редактирования Login DB -->
+<div class="modal fade" id="editLoginDbModal" tabindex="-1" aria-labelledby="editLoginDbModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editLoginDbModalLabel">Редактировать Login Server DB</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editLoginDbForm">
+                    <input type="hidden" id="edit_login_db_id" name="db_id">
+                    <div class="row gy-3">
+                        <div class="col-xl-12">
+                            <label for="edit_login_host" class="form-label">IP</label>
+                            <input type="text" class="form-control" id="edit_login_host" name="host"
+                                placeholder="172.217.17.110">
+                        </div>
+                        <div class="col-xl-12">
+                            <label for="edit_login_port" class="form-label">Port</label>
+                            <input type="text" class="form-control" id="edit_login_port" name="port" value="3306"
+                                placeholder="3306">
+                        </div>
+                        <div class="col-xl-12">
+                            <label for="edit_login_user" class="form-label">User</label>
+                            <input type="text" class="form-control" id="edit_login_user" name="user" placeholder="root">
+                        </div>
+                        <div class="col-xl-12">
+                            <label for="edit_login_password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="edit_login_password" name="password"
+                                placeholder="password">
+                        </div>
+                        <div class="col-xl-12">
+                            <button type="button" id="edit_getDBNameLogin" class="btn btn-primary btn-sm mb-0">Выбрать
+                                БД</button>
+                            <select id="edit_login_name" class="form-select mt-2" name="name"
+                                aria-label="Select DB"></select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="saveEditLoginDb">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования Game DB -->
+<div class="modal fade" id="editGameDbModal" tabindex="-1" aria-labelledby="editGameDbModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editGameDbModalLabel">Редактировать Game Server DB</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editGameDbForm">
+                    <input type="hidden" id="edit_game_db_id" name="db_id">
+                    <div class="row gy-3">
+                        <div class="col-xl-12">
+                            <label for="edit_game_host" class="form-label">IP</label>
+                            <input type="text" class="form-control" id="edit_game_host" name="host"
+                                placeholder="172.217.17.110">
+                        </div>
+                        <div class="col-xl-12">
+                            <label for="edit_game_port" class="form-label">Port</label>
+                            <input type="text" class="form-control" id="edit_game_port" name="port" value="3306"
+                                placeholder="3306">
+                        </div>
+                        <div class="col-xl-12">
+                            <label for="edit_game_user" class="form-label">User</label>
+                            <input type="text" class="form-control" id="edit_game_user" name="user" placeholder="root">
+                        </div>
+                        <div class="col-xl-12">
+                            <label for="edit_game_password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="edit_game_password" name="password"
+                                placeholder="password">
+                        </div>
+                        <div class="col-xl-12">
+                            <button type="button" id="edit_getDBNameGame" class="btn btn-primary btn-sm mb-0">Выбрать
+                                БД</button>
+                            <select id="edit_game_name" class="form-select mt-2" name="name"
+                                aria-label="Select DB"></select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="saveEditGameDb">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 
@@ -524,15 +668,13 @@
 
 <link rel="stylesheet" href="{{template}}/assets/libs/filepond/filepond.min.css">
 <link rel="stylesheet"
-      href="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
+    href="{{template}}/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
 <link rel="stylesheet" href="{{template}}/assets/libs/filepond-plugin-image-edit/filepond-plugin-image-edit.min.css">
 
 <link rel="stylesheet" href="{{template}}/assets/libs/flatpickr/flatpickr.min.css">
 {% endblock %}
 
 {% block js %}
-
-
 
 <script src="{{template}}/assets/libs/simplebar/simplebar.min.js"></script>
 <script src="{{template}}/assets/js/simplebar.js"></script>
@@ -702,7 +844,7 @@
     });
 
 
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         $('#platform').on('change', handlePlatformChange);
         handlePlatformChange.call($('#platform'));
@@ -724,34 +866,34 @@
 
             // Фильтруем доступные сборки
             const availableCollections = currentCollectionInfo.filter(collection =>
-                  hasCommonElement(protocols, collection.protocols)
+                hasCommonElement(protocols, collection.protocols)
             );
 
             // Добавляем опции в select
             if (availableCollections.length > 0) {
                 availableCollections.forEach(collection => {
                     $('#collection').append(
-                          $('<option>', {
-                              value: collection.name,
-                              text: collection.name
-                          })
+                        $('<option>', {
+                            value: collection.name,
+                            text: collection.name
+                        })
                     );
                 });
             } else {
                 // Если нет доступных сборок, добавляем placeholder
                 $('#collection').append(
-                      $('<option>', {
-                          value: '',
-                          text: 'Нет доступных сборок',
-                          disabled: true,
-                          selected: true
-                      })
+                    $('<option>', {
+                        value: '',
+                        text: 'Нет доступных сборок',
+                        disabled: true,
+                        selected: true
+                    })
                 );
             }
         }
 
         // Обработчик изменения выбранной хроники
-        $('#version_client').on('change', function() {
+        $('#version_client').on('change', function () {
             const selectedOption = $(this).find('option:selected');
             const protocolsStr = selectedOption.data('protocol');
 
@@ -767,14 +909,14 @@
             const selectedOption = $('#version_client').find('option:selected');
             const protocolsStr = selectedOption.data('protocol');
             const protocols = typeof protocolsStr === 'string'
-                  ? JSON.parse(protocolsStr.replace(/[\[\]]/g, '').split(','))
-                  : protocolsStr;
+                ? JSON.parse(protocolsStr.replace(/[\[\]]/g, '').split(','))
+                : protocolsStr;
 
-            if($(this).val() === 'pts') {
+            if ($(this).val() === 'pts') {
                 $("#login_port").val(1433);
                 $("#game_port").val(1433);
                 $(".pts_cached_data").removeClass("d-none")
-            }else{
+            } else {
                 $("#login_port").val(3306);
                 $("#game_port").val(3306);
                 $(".pts_cached_data").addClass("d-none")
@@ -789,8 +931,8 @@
 
         if (initialProtocols) {
             const protocols = typeof initialProtocols === 'string'
-                  ? JSON.parse(initialProtocols.replace(/[\[\]]/g, '').split(','))
-                  : initialProtocols;
+                ? JSON.parse(initialProtocols.replace(/[\[\]]/g, '').split(','))
+                : initialProtocols;
 
             updateCollections(protocols);
 
@@ -810,6 +952,263 @@
         }, false).then(function (data) {
             console.log(data)
         })
+    });
+
+    // Обработчик открытия модального окна для редактирования Login DB
+    $(document).on("click", ".edit-login-db", function () {
+        const dbId = $(this).data('db-id');
+        const dbHost = $(this).data('db-host');
+        const dbPort = $(this).data('db-port');
+        const dbUser = $(this).data('db-user');
+        // const dbName = $(this).data('db-name'); // Не заполняем!
+
+        // Заполняем форму данными
+        $('#edit_login_db_id').val(dbId);
+        $('#edit_login_host').val(dbHost);
+        $('#edit_login_port').val(dbPort);
+        $('#edit_login_user').val(dbUser);
+        $('#edit_login_password').val(''); // Пароль не заполняем из соображений безопасности
+        $('#edit_login_name').empty().prop('disabled', true); // Очищаем select и делаем неактивным
+        $('#saveEditLoginDb').prop('disabled', true); // Кнопка Сохранить неактивна
+    });
+
+    // Обработчик открытия модального окна для редактирования Game DB
+    $(document).on("click", ".edit-game-db", function () {
+        const dbId = $(this).data('db-id');
+        const dbHost = $(this).data('db-host');
+        const dbPort = $(this).data('db-port');
+        const dbUser = $(this).data('db-user');
+        // const dbName = $(this).data('db-name'); // Не заполняем!
+
+        // Заполняем форму данными
+        $('#edit_game_db_id').val(dbId);
+        $('#edit_game_host').val(dbHost);
+        $('#edit_game_port').val(dbPort);
+        $('#edit_game_user').val(dbUser);
+        $('#edit_game_password').val(''); // Пароль не заполняем из соображений безопасности
+        $('#edit_game_name').empty().prop('disabled', true); // Очищаем select и делаем неактивным
+        $('#saveEditGameDb').prop('disabled', true); // Кнопка Сохранить неактивна
+    });
+
+    // Обработчик кнопки "Выбрать БД" для редактирования Login DB
+    $(document).on('click', '#edit_getDBNameLogin', function () {
+        $.ajax({
+            url: "/admin/option/server/db/connect/select/name",
+            type: "POST",
+            data: {
+                "host": $("#edit_login_host").val(),
+                "port": $("#edit_login_port").val(),
+                "user": $("#edit_login_user").val(),
+                "password": $("#edit_login_password").val(),
+            },
+            dataType: 'json',
+            success: function (response) {
+                $("#edit_login_name").empty();
+                if (response.type === "notice") {
+                    if (!ResponseNotice(response)) {
+                        $('#edit_login_name').prop('disabled', true);
+                        $('#saveEditLoginDb').prop('disabled', true);
+                        return;
+                    }
+                }
+                if (response['databases'] && response['databases'].length > 0) {
+                    $.each(response['databases'], function (index, value) {
+                        $("#edit_login_name").append('<option value="' + value + '">' + value + '</option>');
+                    });
+                    $('#edit_login_name').prop('disabled', false);
+                    // Включаем кнопку Сохранить только если выбрана БД
+                    if ($('#edit_login_name').val()) {
+                        $('#saveEditLoginDb').prop('disabled', false);
+                    }
+                } else {
+                    $('#edit_login_name').prop('disabled', true);
+                    $('#saveEditLoginDb').prop('disabled', true);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Ошибка при выполнении AJAX-запроса:', error);
+                $('#edit_login_name').prop('disabled', true);
+                $('#saveEditLoginDb').prop('disabled', true);
+            }
+        });
+    });
+
+    // Следим за изменением select, чтобы включать/выключать кнопку Сохранить
+    $(document).on('change', '#edit_login_name', function () {
+        if ($(this).val()) {
+            $('#saveEditLoginDb').prop('disabled', false);
+        } else {
+            $('#saveEditLoginDb').prop('disabled', true);
+        }
+    });
+
+    // Обработчик кнопки "Выбрать БД" для редактирования Game DB
+    $(document).on('click', '#edit_getDBNameGame', function () {
+        $.ajax({
+            url: "/admin/option/server/db/connect/select/name",
+            type: "POST",
+            data: {
+                "host": $("#edit_game_host").val(),
+                "port": $("#edit_game_port").val(),
+                "user": $("#edit_game_user").val(),
+                "password": $("#edit_game_password").val(),
+            },
+            dataType: 'json',
+            success: function (response) {
+                $("#edit_game_name").empty();
+                if (response.type === "notice") {
+                    if (!ResponseNotice(response)) {
+                        $('#edit_game_name').prop('disabled', true);
+                        $('#saveEditGameDb').prop('disabled', true);
+                        return;
+                    }
+                }
+                if (response['databases'] && response['databases'].length > 0) {
+                    $.each(response['databases'], function (index, value) {
+                        $("#edit_game_name").append('<option value="' + value + '">' + value + '</option>');
+                    });
+                    $('#edit_game_name').prop('disabled', false);
+                    if ($('#edit_game_name').val()) {
+                        $('#saveEditGameDb').prop('disabled', false);
+                    }
+                } else {
+                    $('#edit_game_name').prop('disabled', true);
+                    $('#saveEditGameDb').prop('disabled', true);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Ошибка при выполнении AJAX-запроса:', error);
+                $('#edit_game_name').prop('disabled', true);
+                $('#saveEditGameDb').prop('disabled', true);
+            }
+        });
+    });
+
+    $(document).on('change', '#edit_game_name', function () {
+        if ($(this).val()) {
+            $('#saveEditGameDb').prop('disabled', false);
+        } else {
+            $('#saveEditGameDb').prop('disabled', true);
+        }
+    });
+
+    // Обработчик сохранения изменений Login Server DB
+    $(document).on('click', '#saveEditLoginDb', function () {
+        const formData = {
+            loginId: $('#edit_login_db_id').val(),
+            host: $('#edit_login_host').val(),
+            port: $('#edit_login_port').val(),
+            user: $('#edit_login_user').val(),
+            password: $('#edit_login_password').val(),
+            name: $('#edit_login_name').val()
+        };
+
+        // Проверяем, что все обязательные поля заполнены
+        if (!formData.loginId || !formData.host || !formData.port || !formData.user || !formData.name) {
+            ResponseNotice({
+                type: "error",
+                message: "Пожалуйста, заполните все обязательные поля"
+            });
+            return;
+        }
+
+        AjaxSend("/admin/server/update/loginserver", "POST", formData, true)
+            .then(function (response) {
+                responseAnalysis(response);
+
+                if (response && response.ok === true) {
+                    // Закрываем модальное окно через Bootstrap 5 API (надёжно)
+                    const modalEl = document.getElementById('editLoginDbModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.hide();
+
+                    // Обновляем отображение в списке
+                    const dbId = formData.loginId;
+                    const newDisplayText = `${formData.host}@${formData.name}`;
+                    // Находим label по for
+                    const $label = $(`label[for='logindb_${dbId}']`);
+                    if ($label.length) {
+                        // Если label содержит только текст
+                        if ($label.children().length === 0) {
+                            $label.text(newDisplayText);
+                        } else {
+                            // Если есть вложенные элементы, удаляем только текстовые узлы
+                            $label.contents().filter(function () { return this.nodeType === 3; }).remove();
+                            $label.prepend(newDisplayText);
+                        }
+                    }
+
+                    // Обновляем data-атрибуты кнопки
+                    $(`.edit-login-db[data-db-id="${dbId}"]`)
+                        .attr('data-db-host', formData.host)
+                        .attr('data-db-port', formData.port)
+                        .attr('data-db-user', formData.user)
+                        .attr('data-db-name', formData.name);
+
+                    // Очищаем форму
+                    $('#editLoginDbForm')[0].reset();
+                }
+            })
+            .catch(function (error) {
+                console.error("Error during Ajax call:", error);
+            });
+    });
+
+    // Обработчик сохранения изменений Game Server DB
+    $(document).on('click', '#saveEditGameDb', function () {
+        const formData = {
+            gameId: $('#edit_game_db_id').val(), // Используем gameId для game server
+            host: $('#edit_game_host').val(),
+            port: $('#edit_game_port').val(),
+            user: $('#edit_game_user').val(),
+            password: $('#edit_game_password').val(),
+            name: $('#edit_game_name').val()
+        };
+
+        // Проверяем, что все обязательные поля заполнены
+        if (!formData.gameId || !formData.host || !formData.port || !formData.user || !formData.name) {
+            ResponseNotice({
+                type: "error",
+                message: "Пожалуйста, заполните все обязательные поля"
+            });
+            return;
+        }
+
+        AjaxSend("/admin/server/update/gameserver", "POST", formData, true)
+            .then(function (response) {
+                responseAnalysis(response);
+
+                if (response && response.ok === true) {
+                    // Закрываем модальное окно через Bootstrap 5 API (надёжно)
+                    const modalEl = document.getElementById('editGameDbModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.hide();
+
+                    // Обновляем отображение в списке
+                    const dbId = formData.gameId;
+                    const newDisplayText = `${formData.host}@${formData.name}`;
+                    const $label = $(`label[for='gamedb_${dbId}']`);
+                    if ($label.length) {
+                        if ($label.children().length === 0) {
+                            $label.text(newDisplayText);
+                        } else {
+                            $label.contents().filter(function () { return this.nodeType === 3; }).remove();
+                            $label.prepend(newDisplayText);
+                        }
+                    }
+
+                    $(`.edit-game-db[data-db-id="${dbId}"]`)
+                        .attr('data-db-host', formData.host)
+                        .attr('data-db-port', formData.port)
+                        .attr('data-db-user', formData.user)
+                        .attr('data-db-name', formData.name);
+
+                    $('#editGameDbForm')[0].reset();
+                }
+            })
+            .catch(function (error) {
+                console.error("Error during Ajax call:", error);
+            });
     });
 </script>
 {% endblock %}

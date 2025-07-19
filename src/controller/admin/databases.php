@@ -63,7 +63,6 @@ class databases
             'loginServers' => $loginServers,
             'client_list_default' => client::all(),
             "collections" => json_encode($collections['collections']),
-
         ]);
         tpl::display("/admin/databases.html");
     }
