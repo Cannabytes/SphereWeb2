@@ -104,10 +104,10 @@ function AjaxEvent(url, method, data, response) {
                 let prefix = $('.account_prefix').text().trim();
                 let login = prefix + data.login;
                 let password = data.password;
-                if ($('#password_hide').is(':checked') === false) {
-                    password = "* * * * * *";
+                if ($('#password_hide').is(':checked')) {
+                    password = " * * * * * *";
                 }
-                $("#player_account_list").append("<tr><td>" + login + "</td><td><i role='button' class='fe fe-settings btn-change-password' data-account='" + login + "' data-bs-toggle='modal' data-bs-effect='effect-slide-in-right' data-bs-target='#changepassword'></i>" + password + "</td><td><i class='bi bi-people ms-2 text-muted' ></i></td></tr>");
+                $("#player_account_list").append("<tr><td>" + login + "</td><td><i role='button' class='fe fe-settings btn-change-password' data-account='" + login + "' data-bs-toggle='modal' data-bs-effect='effect-slide-in-right' data-bs-target='#changepassword'></i> " + password + "</td><td><i class='bi bi-people ms-2 text-muted' ></i></td></tr>");
               }
         }
         if(url === "/player/account/change/password") {

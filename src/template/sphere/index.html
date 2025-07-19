@@ -16,11 +16,19 @@
   <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
     <div class="card bg-white border-0">
       <div class="alert custom-alert1 alert-secondary">
-        <button type="button" class="btn-close ms-auto close_download_auth_panel" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
+        <button type="button" class="btn-close ms-auto close_download_auth_panel" data-bs-dismiss="alert"
+          aria-label="Close"><i class="bi bi-x"></i></button>
         <div class="text-center px-0 pb-0">
-          <svg class="custom-alert-icon svg-secondary" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <svg class="custom-alert-icon svg-secondary" xmlns="http://www.w3.org/2000/svg" height="1.5rem"
+            viewBox="0 0 24 24" width="1.5rem" fill="#000000">
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+          </svg>
           <h5>Файл для авторизации</h5>
-          <p class="">Вы успешно всё сделали, теперь можете загрузить файл, сохраните его, и на сайтах движка SphereWeb можете использовать для быстрой регистрации и авторизации, просто перенесите на странице авторизации данный файл.</p>
+          <p class="">Вы успешно всё сделали, теперь можете загрузить файл, сохраните его, и на сайтах движка SphereWeb
+            можете использовать для быстрой регистрации и авторизации, просто перенесите на странице авторизации данный
+            файл.</p>
           <div class="">
             <button class="btn btn-sm btn-success m-0 download_file_auth">Нажмите чтоб загрузить файл</button>
           </div>
@@ -39,7 +47,7 @@
       document.body.removeChild(link);
     });
 
-    {{ delete_session('super-user') }}
+    { { delete_session('super-user') } }
 
   </script>
 
@@ -56,9 +64,10 @@
             <div class="d-sm-flex">
               <div class="">
                 <svg class="me-4 bg-danger-transparent  alt-notify" xmlns="http://www.w3.org/2000/svg"
-                     viewBox="0 0 24 24">
+                  viewBox="0 0 24 24">
                   <path fill="#ff9ea7"
-                        d="M20.057 22H3.943a3.023 3.023 0 0 1-2.618-4.534L9.382 3.511a3.023 3.023 0 0 1 5.236 0l8.057 13.955A3.023 3.023 0 0 1 20.057 22Z"></path>
+                    d="M20.057 22H3.943a3.023 3.023 0 0 1-2.618-4.534L9.382 3.511a3.023 3.023 0 0 1 5.236 0l8.057 13.955A3.023 3.023 0 0 1 20.057 22Z">
+                  </path>
                   <circle cx="12" cy="17" r="1" fill="#dc3545"></circle>
                   <path fill="#dc3545" d="M12 14a1 1 0 0 1-1-1V9a1 1 0 0 1 2 0v4a1 1 0 0 1-1 1Z"></path>
                 </svg>
@@ -119,171 +128,172 @@
 
   {% if getUser().isAuth() %}
 
-<div class="row">
-  <div class="col-xl-12">
-    <div class="card custom-card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">{{phrase(43)}}</h5>
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-xl-6">
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">{{phrase(43)}}</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-xl-6">
               {% if getUser().isAuth() == false %}
               {{phrase('you_need')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-auth-user"
-                                        class="alert-link text-danger">{{phrase('log_in')}}</a>,
+                class="alert-link text-danger">{{phrase('log_in')}}</a>,
               {{phrase('or')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-new-user"
-                                  class="alert-link text-danger">{{phrase('reg_acc')}}</a>,
+                class="alert-link text-danger">{{phrase('reg_acc')}}</a>,
               {{phrase('ctrl_chars')}}.
               {% else %}
 
-             <form action="/registration/account" method="POST">
-            <div class="row mb-0">
-        <div class="input-group mb-0">
-            <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between">
-                {{ phrase(40) }} - {{ getServer().getName() }} x{{ getServer().getRateExp() }} ({{ getServer().getChronicle() }})
-                <span data-bs-toggle="modal" data-bs-target="#syncAccount" >
-                    <label role="button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
-                    {{ phrase('Do you already have an account?') }}
-                    </label>
-                </span>
-            </div>
-        </div>
-
-<div class="row">
-    <div class="offset-sm-2 col-sm-4 d-flex justify-content-between">
-
-        <small id="" class="form-text text-muted">
-            {{ phrase('minMaxCharacters',
-                config().registration().getMinimumNumberOfCharactersRegistrationAccount(),
-                config().registration().getMaximumNumberOfCharactersRegistrationAccount()
-            )}}
-        </small>
-
-        <small id="accountCharCounter" class="form-text text-muted">
-            {{ phrase(312) }}: {{ maxChars }}
-        </small>
-
-    </div>
-</div>
-
-    <div class="row mb-3">
-        <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>
-        <div class="col-sm-4">
-            <div class="input-group">
-                {% set maxChars = config().registration().getMaximumNumberOfCharactersRegistrationAccount() %}
-                {% set prefixEnabled = config().registration().getEnablePrefix() %}
-                {% set prefixType = config().registration().getPrefixType() %}
-                {% set prefix = config().registration().genPrefix() %}
-
-                {% if prefixEnabled and prefixType == 'prefix' %}
-                <button class="btn btn-light account_prefix" type="button">
-                    <span class="prefix-text">{{ prefix }}</span>
-                </button>
-                {% endif %}
-
-                <input
-                      type="text"
-                      class="form-control"
-                      name="login"
-                      id="accountRegistration"
-                      minlength="{{ config().registration().getMinimumNumberOfCharactersRegistrationAccount() }}"
-                      maxlength="{{ maxChars }}"
-                      placeholder="{{ phrase(480) }}"
-                      aria-label="Login input"
-                      aria-describedby="accountCharCounter"
-                      autocomplete="off"
-                >
-
-                {% if prefixEnabled and prefixType == 'suffix' %}
-                <button class="btn btn-light account_prefix" type="button">
-                    <span class="prefix-text">{{ prefix }}</span>
-                </button>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-
-<div class="row mb-3">
-    <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
-    <div class="col-sm-4">
-        <div class="input-group">
-            <input type="password" minlength="4" maxlength="32" class="form-control" name="password" id="passwordRegistration"
-                   autocomplete="new-password">
-            <button class="btn btn-link btn-sm toggle-password" type="button" id="togglePassword">
-                <i class="bi bi-eye-fill"></i> {# Иконка глаза для показа пароля #}
-            </button>
-        </div>
-    </div>
-</div>
-
-    {% if getUser().isAuth() == false %}
-        {% if config().isGoogleCaptcha() %}
-            <input class="captchaToken" type="hidden" name="captcha">
-        {% else %}
-            <div class="row mb-4">
-                <div class="col-6">
-                    <div class="form-floating" style="">
-                        <img src="" class="lightbox-thumb img-thumb captcha_img"/>
+              <form action="/registration/account" method="POST">
+                <div class="row mb-0">
+                  <div class="input-group mb-0">
+                    <div
+                      class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between">
+                      {{ phrase(40) }} - {{ getServer().getName() }} x{{ getServer().getRateExp() }} ({{
+                      getServer().getChronicle() }})
+                      <span data-bs-toggle="modal" data-bs-target="#syncAccount">
+                        <label role="button" data-bs-toggle="tooltip" data-bs-placement="top"
+                          data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
+                          {{ phrase('Do you already have an account?') }}
+                        </label>
+                      </span>
                     </div>
-                </div>
-                <div class="col-6">
-                    <div class="form-floating">
-                        <input type="text" class="form-control" id="auth_captcha" name="captcha"
-                               placeholder="Captcha">
+                  </div>
+
+                  <div class="row">
+                    <div class="offset-sm-2 col-sm-4 d-flex justify-content-between">
+
+                      <small id="" class="form-text text-muted">
+                        {{ phrase('minMaxCharacters',
+                        config().registration().getMinimumNumberOfCharactersRegistrationAccount(),
+                        config().registration().getMaximumNumberOfCharactersRegistrationAccount()
+                        )}}
+                      </small>
+
+                      <small id="accountCharCounter" class="form-text text-muted">
+                        {{ phrase(312) }}: {{ maxChars }}
+                      </small>
+
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>
+                    <div class="col-sm-4">
+                      <div class="input-group">
+                        {% set maxChars = config().registration().getMaximumNumberOfCharactersRegistrationAccount() %}
+                        {% set prefixEnabled = config().registration().getEnablePrefix() %}
+                        {% set prefixType = config().registration().getPrefixType() %}
+                        {% set prefix = config().registration().genPrefix() %}
+
+                        {% if prefixEnabled and prefixType == 'prefix' %}
+                        <button class="btn btn-light account_prefix" type="button">
+                          <span class="prefix-text">{{ prefix }}</span>
+                        </button>
+                        {% endif %}
+
+                        <input type="text" class="form-control" name="login" id="accountRegistration"
+                          minlength="{{ config().registration().getMinimumNumberOfCharactersRegistrationAccount() }}"
+                          maxlength="{{ maxChars }}" placeholder="{{ phrase(480) }}" aria-label="Login input"
+                          aria-describedby="accountCharCounter" autocomplete="off">
+
+                        {% if prefixEnabled and prefixType == 'suffix' %}
+                        <button class="btn btn-light account_prefix" type="button">
+                          <span class="prefix-text">{{ prefix }}</span>
+                        </button>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div class="row mb-3">
+                    <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
+                    <div class="col-sm-4">
+                      <div class="input-group">
+                        <input type="password" minlength="4" maxlength="32" class="form-control" name="password"
+                          id="passwordRegistration" autocomplete="new-password">
+                        <button class="btn btn-link btn-sm toggle-password" type="button" id="togglePassword">
+                          <i class="bi bi-eye-fill"></i> {# Иконка глаза для показа пароля #}
+                        </button>
+
+                      </div>
+                      <div class="form-check mt-1">
+                        <input checked class="form-check-input" type="checkbox" value="" name="password_hide" id="password_hide">
+                        <label class="form-check-label" for="password_hide"
+                               data-bs-toggle="tooltip" data-bs-placement="top"
+                               data-bs-original-title="{{phrase(483)}}">
+                          {{phrase(482)}}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  {% if getUser().isAuth() == false %}
+                  {% if config().isGoogleCaptcha() %}
+                  <input class="captchaToken" type="hidden" name="captcha">
+                  {% else %}
+                  <div class="row mb-4">
+                    <div class="col-6">
+                      <div class="form-floating" style="">
+                        <img src="" class="lightbox-thumb img-thumb captcha_img" />
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="form-floating">
+                        <input type="text" class="form-control" id="auth_captcha" name="captcha" placeholder="Captcha">
                         <label class="form-label" for="auth_captcha">Captcha</label>
+                      </div>
                     </div>
-                </div>
-            </div>
-        {% endif %}
-    {% endif %}
+                  </div>
+                  {% endif %}
+                  {% endif %}
 
-    <div class="container px-0 mb-0">
-        <div class="row d-flex justify-content-between align-items-center">
-            <div class="col-12 col-sm-6 text-center text-sm-start mb-2 mb-sm-0">
-                <button type="submit" data-func="messageRegistrationAccount"
-                        class="btn btn-success shadow-success btn-wave waves-effect waves-light w-100 w-sm-auto">
-                    {{phrase('reg_new_acc')}}
-                </button>
-            </div>
-            <div class="col-12 col-sm-6 text-center text-sm-end">
-                <div data-bs-toggle="tooltip" data-bs-placement="top"
-                     data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
-                    <span data-bs-toggle="modal" data-bs-target="#syncAccount"
-                          data-bs-placement="top"
-                          class="btn btn-success shadow-info btn-wave waves-effect waves-light w-100 w-sm-auto">
-                        {{phrase('bind_game_account')}}
+                  <div class="container px-0 mb-0">
+                    <div class="row d-flex justify-content-between align-items-center">
+                      <div class="col-12 col-sm-6 text-center text-sm-start mb-2 mb-sm-0">
+                        <button type="submit" data-func="messageRegistrationAccount"
+                          class="btn btn-success shadow-success btn-wave waves-effect waves-light w-100 w-sm-auto">
+                          {{phrase('reg_new_acc')}}
+                        </button>
+                      </div>
+                      <div class="col-12 col-sm-6 text-center text-sm-end">
+                        <div data-bs-toggle="tooltip" data-bs-placement="top"
+                          data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
+                          <span data-bs-toggle="modal" data-bs-target="#syncAccount" data-bs-placement="top"
+                            class="btn btn-success shadow-info btn-wave waves-effect waves-light w-100 w-sm-auto">
+                            {{phrase('bind_game_account')}}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="registrationDataMessage" class="ps-0 mt-3 mb-0 d-none">
+                    <span id="registrationMessage" class="badge border bg-danger-transparent rounded-1">
+                      {{ phrase(214) }}
                     </span>
+                  </div>
+
+
+                  {% endif %}
                 </div>
+              </form>
+
+
             </div>
-        </div>
-    </div>
-
-    <div id="registrationDataMessage" class="ps-0 mt-3 mb-0 d-none">
-        <span id="registrationMessage" class="badge border bg-danger-transparent rounded-1">
-            {{ phrase(214) }}
-        </span>
-    </div>
-
-
-              {% endif %}
-            </div>
-             </form>
-
-
-        </div>
 
 
 
-          <div class="col-xl-6">
+            <div class="col-xl-6">
               {% if getUser().isAuth() %}
-              <div class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between align-items-center">
+              <div
+                class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between align-items-center">
                 <div>{{ phrase(43) }}</div>
-                <span data-bs-toggle="modal" data-bs-target="#syncAccount">
-                  <i role="button" class="bi bi-person-plus text-success" data-bs-toggle="tooltip"
-                     data-bs-placement="top"
-                     data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}"></i>
-                </span>
+
+                <span>{{ getUser().getAccounts()|length }} / {{ config().other().getMaxAccount() }}</span>
               </div>
               {% if statusSphereServer() is same as(false) %}
               <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -294,290 +304,301 @@
               <div class="table-responsive">
                 <table class="table text-nowrap table-bordered table-sm" style="table-layout: fixed;">
                   <thead>
-                  <tr>
-                    <th>{{phrase('account')}}</th>
-                    <th>{{phrase('password')}}</th>
-                    <th>{{phrase(203)}}</th>
-                  </tr>
+                    <tr>
+                      <th>{{phrase('account')}}</th>
+                      <th>{{phrase('password')}}</th>
+                      <th>{{phrase(203)}}</th>
+                    </tr>
                   </thead>
                   <tbody id="player_account_list">
-                  {% for account in getUser().getAccounts() %}
-                  <tr class="account-row">
-                    <td>{{ account.getAccount()|raw }}
+                    {% for account in getUser().getAccounts() %}
+                    <tr class="account-row">
+                      <td>{{ account.getAccount()|raw }}
 
                         {% if config().other().getIsAllowDeleteAccount() %}
-                        <i data-account="{{account.getAccount()|raw}}" role="button" class="bi bi-person-dash deleteAccount"
-                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{phrase('account_deletion')}}"
-                        ></i>
+                        <i data-account="{{account.getAccount()|raw}}" role="button"
+                          class="bi bi-person-dash deleteAccount" data-bs-toggle="tooltip" data-bs-placement="top"
+                          data-bs-title="{{phrase('account_deletion')}}"></i>
                         {% endif %}
 
-                     </td>
-                    <td>
-                    <i role="button" class="fe fe-settings btn-change-password" data-account="{{account.getAccount()|raw}}"
-                       data-bs-toggle="modal" data-bs-effect="effect-slide-in-right"
-                       data-bs-target="#changepassword">
-                      {% if account.isPasswordHide() %}
-                      * * * * * *
-                      {% else %}
-                      {{ account.getPassword() }}
-                      {% endif %}
-                      </i>
-                    </td>
-                    <td class="text-nowrap" role="button">
+                      </td>
+                      <td>
+                        <i role="button" class="fe fe-settings btn-change-password"
+                          data-account="{{account.getAccount()|raw}}" data-bs-toggle="modal"
+                          data-bs-effect="effect-slide-in-right" data-bs-target="#changepassword">
+                          {% if account.isPasswordHide() %}
+                          * * * * * *
+                          {% else %}
+                          {{ account.getPassword() }}
+                          {% endif %}
+                        </i>
+                      </td>
+                      <td class="text-nowrap" role="button">
 
-                      {% if account.getCharactersCount() > 0 %}
+                        {% if account.getCharactersCount() > 0 %}
 
-                    <div class="toggle-characters" data-account="{{account.getAccount()|raw}}">
-                    <div class="avatar-list-stacked">
+                        <div class="toggle-characters" data-account="{{account.getAccount()|raw}}">
+                          <div class="avatar-list-stacked">
 
-                      {% for i, character in account.getCharacters() %}
-                                              <span class="avatar avatar-sm me-2">
-                                                  <img src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg" alt="img">
-                                              </span>
+                            {% for i, character in account.getCharacters() %}
+                            <span class="avatar avatar-sm me-2">
+                              <img
+                                src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
+                                alt="img">
+                            </span>
 
-                      </a>
-                      {% endfor %}
-                                          </div>
-                                          </div>
+                            </a>
+                            {% endfor %}
+                          </div>
+                        </div>
 
 
-                      {% else %}
-                      <i class="bi bi-people ms-2 text-muted" data-bs-toggle="tooltip"
-                         data-bs-placement="top" data-bs-title="{{phrase('no_chars_acc')}}"></i>
-                      {% endif %}
-                    </td>
-                  </tr>
-                  {% if account.getCharactersCount() > 0 %}
+                        {% else %}
+                        <i class="bi bi-people ms-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="top"
+                          data-bs-title="{{phrase('no_chars_acc')}}"></i>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% if account.getCharactersCount() > 0 %}
 
-              <tr class="character-container character-row-{{account.getAccount()|raw}}" style="display: none;">
-                <td colspan="3" class="p-0">
-                  <div class="p-2 bg-light">
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-2">
-                    {% for i, character in account.getCharacters() %}
-                      <div class="col">
-                        <div class="card border h-100 overflow-hidden">
-                          <div class="card-body p-1 border-top-card border-top-danger rounded-0">
-                            <div class="d-flex align-items-start">
-                              <!-- Аватар персонажа -->
-                              <div class="flex-shrink-0 me-2">
-                                <img src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
-                                     alt="" class="avatar avatar-xl img-thumbnail {% if character.getOnline() %}online{% else %}offline{% endif %}">
-                              </div>
+                    <tr class="character-container character-row-{{account.getAccount()|raw}}" style="display: none;">
+                      <td colspan="3" class="p-0">
+                        <div class="p-2 bg-light">
+                          <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-2">
+                            {% for i, character in account.getCharacters() %}
+                            <div class="col">
+                              <div class="card border h-100 overflow-hidden">
+                                <div class="card-body p-1 border-top-card border-top-danger rounded-0">
+                                  <div class="d-flex align-items-start">
+                                    <!-- Аватар персонажа -->
+                                    <div class="flex-shrink-0 me-2">
+                                      <img
+                                        src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
+                                        alt=""
+                                        class="avatar avatar-xl img-thumbnail {% if character.getOnline() %}online{% else %}offline{% endif %}">
+                                    </div>
 
-                              <!-- Информация о персонаже -->
-                              <div class="flex-grow-1 min-w-0">
-                                <h6 class="card-title mb-1 text-truncate">
-                                  <span class="badge bg-dark text-white">{{character.getPlayerName()}}</span>
-                                </h6>
-                                <div class="d-flex flex-column" style="line-height: 1.1;">
-                                  <small class="text-muted text-truncate mb-0">
-                                    <i class="ri-building-line me-1"></i>Lv: {{character.getLevel()}}
-                                  </small>
-                                  <small class="text-muted text-truncate mb-0">
-                                    <i class="ri-building-line me-1"></i>Class: {{get_class(character.getClassId())}}
-                                  </small>
-                                  <small class="text-muted text-truncate mb-0">
-                                    <i class="ri-building-line me-1"></i>PvP / PK: {{character.getPvp()}} / {{character.getPk()}}
-                                  </small>
-                                  <small class="text-muted text-truncate mb-0">
-                                    <i class="ri-building-line me-1"></i>Online Time: {{timeHasPassed(character.getTimeInGame(),true)}}
-                                  </small>
-                                  {% if character.getClanName() %}
-                                  <small class="text-muted">
-                                    <i class="ri-map-pin-line me-1"></i>Clan:
-                                    <span class="d-inline-flex align-items-center">
-                                      {{clan_icon(character.getClanCrest())|raw}}
-                                      <span class="text-truncate d-inline-block" style="max-width: 120px; vertical-align: middle;">{{character.getClanName()}}</span>
-                                    </span>
-                                  </small>
-                                  {% endif %}
-                                </div>
-                              </div>
-                            </div>
+                                    <!-- Информация о персонаже -->
+                                    <div class="flex-grow-1 min-w-0">
+                                      <h6 class="card-title mb-1 text-truncate">
+                                        <span class="badge bg-dark text-white">{{character.getPlayerName()}}</span>
+                                      </h6>
+                                      <div class="d-flex flex-column" style="line-height: 1.1;">
+                                        <small class="text-muted text-truncate mb-0">
+                                          <i class="ri-building-line me-1"></i>Lv: {{character.getLevel()}}
+                                        </small>
+                                        <small class="text-muted text-truncate mb-0">
+                                          <i class="ri-building-line me-1"></i>Class:
+                                          {{get_class(character.getClassId())}}
+                                        </small>
+                                        <small class="text-muted text-truncate mb-0">
+                                          <i class="ri-building-line me-1"></i>PvP / PK: {{character.getPvp()}} /
+                                          {{character.getPk()}}
+                                        </small>
+                                        <small class="text-muted text-truncate mb-0">
+                                          <i class="ri-building-line me-1"></i>Online Time:
+                                          {{timeHasPassed(character.getTimeInGame(),true)}}
+                                        </small>
+                                        {% if character.getClanName() %}
+                                        <small class="text-muted">
+                                          <i class="ri-map-pin-line me-1"></i>Clan:
+                                          <span class="d-inline-flex align-items-center">
+                                            {{clan_icon(character.getClanCrest())|raw}}
+                                            <span class="text-truncate d-inline-block"
+                                              style="max-width: 120px; vertical-align: middle;">{{character.getClanName()}}</span>
+                                          </span>
+                                        </small>
+                                        {% endif %}
+                                      </div>
+                                    </div>
+                                  </div>
 
-                            <!-- Аккордеон с функциями -->
-                            <div class="accordion accordion-customicon1 accordions-items-seperate mt-2"
-                                 id="accordion_open_list_{{character.getPlayerId()}}">
-                              <div class="accordion-item">
-                                <h2 class="accordion-header" id="open_list_{{character.getPlayerId()}}">
-                                  <button class="accordion-button collapsed py-2 text-wrap" type="button" data-bs-toggle="collapse"
+                                  <!-- Аккордеон с функциями -->
+                                  <div class="accordion accordion-customicon1 accordions-items-seperate mt-2"
+                                    id="accordion_open_list_{{character.getPlayerId()}}">
+                                    <div class="accordion-item">
+                                      <h2 class="accordion-header" id="open_list_{{character.getPlayerId()}}">
+                                        <button class="accordion-button collapsed py-2 text-wrap" type="button"
+                                          data-bs-toggle="collapse"
                                           data-bs-target="#collapse_open_list_{{character.getPlayerId()}}"
                                           aria-expanded="false"
                                           aria-controls="collapse_open_list_{{character.getPlayerId()}}">
-                                    <span class="text-truncate">{{phrase('stuck_crit_err')}}</span>
-                                  </button>
-                                </h2>
-                                <div id="collapse_open_list_{{character.getPlayerId()}}"
-                                     class="accordion-collapse collapse"
-                                     aria-labelledby="open_list_{{character.getPlayerId()}}"
-                                     data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
-                                  <div class="accordion-body py-2 text-wrap">
-                                    <p class="small mb-2 text-break">{{phrase('emerg_send_char_town')}}</p>
-                                    <hr class="my-2">
-                                    <form method="post" action="/player/relocation">
-                                      <div class="mb-2 form-check">
-                                        <input name="account" type="hidden" value="{{account.getAccount()|raw}}">
-                                        <input name="player" type="hidden" value="{{character.getPlayerName()}}">
+                                          <span class="text-truncate">{{phrase('stuck_crit_err')}}</span>
+                                        </button>
+                                      </h2>
+                                      <div id="collapse_open_list_{{character.getPlayerId()}}"
+                                        class="accordion-collapse collapse"
+                                        aria-labelledby="open_list_{{character.getPlayerId()}}"
+                                        data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
+                                        <div class="accordion-body py-2 text-wrap">
+                                          <p class="small mb-2 text-break">{{phrase('emerg_send_char_town')}}</p>
+                                          <hr class="my-2">
+                                          <form method="post" action="/player/relocation">
+                                            <div class="mb-2 form-check">
+                                              <input name="account" type="hidden" value="{{account.getAccount()|raw}}">
+                                              <input name="player" type="hidden" value="{{character.getPlayerName()}}">
 
-                                       {% if getServer().isResetItemsToWarehouse() == true %}
-                                        <input checked name="itemsToWarehouse" type="checkbox"
-                                               class="form-check-input"
-                                               id="check_{{character.getPlayerId()}}">
-                                        <label class="form-check-label small text-wrap" for="check_{{character.getPlayerId()}}">{{phrase('send_items_wh')}}</label>
-                                       {% endif %}
+                                              {% if getServer().isResetItemsToWarehouse() == true %}
+                                              <input checked name="itemsToWarehouse" type="checkbox"
+                                                class="form-check-input" id="check_{{character.getPlayerId()}}">
+                                              <label class="form-check-label small text-wrap"
+                                                for="check_{{character.getPlayerId()}}">{{phrase('send_items_wh')}}</label>
+                                              {% endif %}
 
+                                            </div>
+                                            <button type="submit" class="btn btn-success btn-sm w-100 text-nowrap">
+                                              <span class="d-inline-block text-truncate"
+                                                style="max-width: 85%;">{{phrase(364)}}</span>
+                                              <i class="ri-send-plane-fill ms-1"></i>
+                                            </button>
+                                          </form>
+                                        </div>
                                       </div>
-                                      <button type="submit" class="btn btn-success btn-sm w-100 text-nowrap">
-                                        <span class="d-inline-block text-truncate" style="max-width: 85%;">{{phrase(364)}}</span>
-                                        <i class="ri-send-plane-fill ms-1"></i>
-                                      </button>
-                                    </form>
-                                  </div>
-                                </div>
-                              </div>
+                                    </div>
 
-                              {% if getServer().isResetHWID() == true %}
-                              <div class="accordion-item">
-                                <h2 class="accordion-header" id="hwid_remove_{{character.getPlayerId()}}">
-                                  <button class="accordion-button collapsed py-2 text-wrap" type="button" data-bs-toggle="collapse"
+                                    {% if getServer().isResetHWID() == true %}
+                                    <div class="accordion-item">
+                                      <h2 class="accordion-header" id="hwid_remove_{{character.getPlayerId()}}">
+                                        <button class="accordion-button collapsed py-2 text-wrap" type="button"
+                                          data-bs-toggle="collapse"
                                           data-bs-target="#collapse_hwid_remove_{{character.getPlayerId()}}"
                                           aria-expanded="false"
                                           aria-controls="collapse_hwid_remove_{{character.getPlayerId()}}">
-                                    <span class="text-truncate">{{phrase('reset_hwid')}}</span>
-                                  </button>
-                                </h2>
-                                <div id="collapse_hwid_remove_{{character.getPlayerId()}}"
-                                     class="accordion-collapse collapse"
-                                     aria-labelledby="open_list_{{character.getPlayerId()}}"
-                                     data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
-                                  <div class="accordion-body py-2 text-wrap">
-                                    <p class="small mb-2 text-break">{{phrase('reset_hwid_emerg_fn')}}.</p>
-                                    <button type="submit"
+                                          <span class="text-truncate">{{phrase('reset_hwid')}}</span>
+                                        </button>
+                                      </h2>
+                                      <div id="collapse_hwid_remove_{{character.getPlayerId()}}"
+                                        class="accordion-collapse collapse"
+                                        aria-labelledby="open_list_{{character.getPlayerId()}}"
+                                        data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
+                                        <div class="accordion-body py-2 text-wrap">
+                                          <p class="small mb-2 text-break">{{phrase('reset_hwid_emerg_fn')}}.</p>
+                                          <button type="submit"
                                             class="btn btn-success btn-sm w-100 removeHWID text-nowrap"
                                             data-obj="{{character.getPlayerId()}}"
-                                            data-account="{{account.getAccount()}}"
-                                    >
-                                      <span class="d-inline-block text-truncate" style="max-width: 85%;">{{phrase('reset_hwid')}}</span>
-                                      <i class="ri-lock-unlock-line ms-1"></i>
-                                    </button>
+                                            data-account="{{account.getAccount()}}">
+                                            <span class="d-inline-block text-truncate"
+                                              style="max-width: 85%;">{{phrase('reset_hwid')}}</span>
+                                            <i class="ri-lock-unlock-line ms-1"></i>
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {% endif %}
+
                                   </div>
                                 </div>
                               </div>
-                              {% endif %}
-
                             </div>
+                            {% endfor %}
                           </div>
                         </div>
-                      </div>
+                      </td>
+                    </tr>
+                    {% endif %}
                     {% endfor %}
-                    </div>
-                  </div>
-                </td>
-              </tr>
-                  {% endif %}
-                  {% endfor %}
                   </tbody>
                 </table>
               </div>
               {% endif %}
               {% endif %}
-          </div>
-      </div>
-    </div>
-  </div>
-
-</div>
-</div>
-
-
-{% if config().other().getIsAllowDeleteAccount() %}
-<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteAccountModalLabel">{{phrase('confirm_delete')}}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        {{phrase('delete_account_confirm')}} <span class="fw-bold" id="accountToDelete"></span>?
-        <p class="font-13 text-muted">{{phrase('delete_account_desc')}}</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{phrase('no')}}</button>
-        <button type="button" class="btn btn-danger" id="confirmDeleteAccount">{{phrase('yes')}}</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  $(document).ready(function() {
-    // Обработчик клика по иконке удаления аккаунта
-    $(document).on('click', '.deleteAccount', function() {
-      var accountName = $(this).data('account');
-      $('#accountToDelete').text(accountName);
-      $('#confirmDeleteAccount').data('account', accountName);
-      $('#deleteAccountModal').modal('show');
-    });
-
-    // Обработчик подтверждения удаления
-    $(document).on('click', '#confirmDeleteAccount', function() {
-      var accountName = $(this).data('account');
-
-      // Отправка AJAX запроса на удаление аккаунта
-      AjaxSend('/player/account/delete', 'POST', {
-        account: accountName
-      }, true).then(function(response) {
-        $('#deleteAccountModal').modal('hide');
-        responseAnalysis(response);
-        if (response.ok) {
-          $('tr.account-row').has('i[data-account="' + accountName + '"]').remove();
-          $('tr.character-row-' + accountName).remove();
-        }
-      }).catch(function(error) {
-        $('#deleteAccountModal').modal('hide');
-      });
-    });
-  });
-</script>
-{% endif %}
-
-
-
-<form action="/player/account/change/password" method="POST">
-  <div class="modal fade" id="changepassword">
-    <div class="modal-dialog modal-dialog-centered text-center" role="document">
-      <div class="modal-content modal-content-demo">
-        <div class="modal-header">
-          <h6 class="modal-title">{{phrase(1)}}</h6>
-          <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
-        </div>
-        <input name="login" type="hidden" class="account_new_change_password_input" value="">
-        <div class="modal-body text-start">
-          <h6 class="text-center">{{phrase('new_password')}} <span
-                class="text-danger account_new_change_password">{{getUser().getName()}}</span></h6>
-          <div class="form-floating">
-            <input name="password" type="password" class="form-control" id="floatingPassword"
-                   placeholder="Password">
-            <label for="floatingPassword">{{phrase('password')}}</label>
-          </div>
-          <div class="col-sm-10">
-            <div class="form-check">
-              <input name="password_hide" class="form-check-input" type="checkbox" id="hidePassword">
-              <label class="form-check-label" for="hidePassword">
-                {{phrase('lv_pwd_vis')}}
-              </label>
             </div>
           </div>
         </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  {% if config().other().getIsAllowDeleteAccount() %}
+  <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteAccountModalLabel">{{phrase('confirm_delete')}}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {{phrase('delete_account_confirm')}} <span class="fw-bold" id="accountToDelete"></span>?
+          <p class="font-13 text-muted">{{phrase('delete_account_desc')}}</p>
+        </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase(80)}}</button>
-          <button type="submit" class="btn btn-primary">{{phrase(89)}}</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{phrase('no')}}</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteAccount">{{phrase('yes')}}</button>
         </div>
       </div>
     </div>
   </div>
-</form>
+
+  <script>
+    $(document).ready(function () {
+      // Обработчик клика по иконке удаления аккаунта
+      $(document).on('click', '.deleteAccount', function () {
+        var accountName = $(this).data('account');
+        $('#accountToDelete').text(accountName);
+        $('#confirmDeleteAccount').data('account', accountName);
+        $('#deleteAccountModal').modal('show');
+      });
+
+      // Обработчик подтверждения удаления
+      $(document).on('click', '#confirmDeleteAccount', function () {
+        var accountName = $(this).data('account');
+
+        // Отправка AJAX запроса на удаление аккаунта
+        AjaxSend('/player/account/delete', 'POST', {
+          account: accountName
+        }, true).then(function (response) {
+          $('#deleteAccountModal').modal('hide');
+          responseAnalysis(response);
+          if (response.ok) {
+            $('tr.account-row').has('i[data-account="' + accountName + '"]').remove();
+            $('tr.character-row-' + accountName).remove();
+          }
+        }).catch(function (error) {
+          $('#deleteAccountModal').modal('hide');
+        });
+      });
+    });
+  </script>
+  {% endif %}
+
+
+
+  <form action="/player/account/change/password" method="POST">
+    <div class="modal fade" id="changepassword">
+      <div class="modal-dialog modal-dialog-centered text-center" role="document">
+        <div class="modal-content modal-content-demo">
+          <div class="modal-header">
+            <h6 class="modal-title">{{phrase(1)}}</h6>
+            <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+          </div>
+          <input name="login" type="hidden" class="account_new_change_password_input" value="">
+          <div class="modal-body text-start">
+            <h6 class="text-center">{{phrase('new_password')}} <span
+                class="text-danger account_new_change_password">{{getUser().getName()}}</span></h6>
+            <div class="form-floating">
+              <input name="password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
+              <label for="floatingPassword">{{phrase('password')}}</label>
+            </div>
+            <div class="col-sm-10">
+              <div class="form-check">
+                <input name="password_hide" class="form-check-input" type="checkbox" id="hidePassword">
+                <label class="form-check-label" for="hidePassword">
+                  {{phrase('lv_pwd_vis')}}
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase(80)}}</button>
+            <button type="submit" class="btn btn-primary">{{phrase(89)}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
 
   {% endif %}
 
@@ -601,14 +622,15 @@
               <div>
                 <i class="task-icon bg-primary"></i>
                 <h6 class="fw-semibold">{{forum.title}}<span
-                      class="text-muted fs-11 mx-2 fw-normal">{{forum.last_post_date|date('h:m:s d.m.Y')}}</span>
+                    class="text-muted fs-11 mx-2 fw-normal">{{forum.last_post_date|date('h:m:s d.m.Y')}}</span>
                 </h6>
                 <p class="text-muted fs-12 mb-0">
                   <a href="javascript:void(0)" class="fw-semibold text-primary">
-                                    <span class="avatar avatar-sm online me-2 avatar-rounded">
-                                    <img src="{{forum.avatar}}" alt="img">
-                                </span> {{forum.username}}</a>:
-                  {{truncateWord(forum.message, 160)}}</p>
+                    <span class="avatar avatar-sm online me-2 avatar-rounded">
+                      <img src="{{forum.avatar}}" alt="img">
+                    </span> {{forum.username}}</a>:
+                  {{truncateWord(forum.message, 160)}}
+                </p>
               </div>
 
             </li>
@@ -724,139 +746,151 @@
 
 <script>
 
-    function transliterate(text) {
-        const layoutMap = {
-            'й': 'q', 'ц': 'w', 'у': 'e', 'к': 'r', 'е': 't', 'н': 'y', 'г': 'u', 'ш': 'i', 'щ': 'o', 'з': 'p', 'х': '[', 'ъ': ']',
-            'ф': 'a', 'ы': 's', 'в': 'd', 'а': 'f', 'п': 'g', 'р': 'h', 'о': 'j', 'л': 'k', 'д': 'l', 'ж': ';', 'э': "'",
-            'я': 'z', 'ч': 'x', 'с': 'c', 'м': 'v', 'и': 'b', 'т': 'n', 'ь': 'm', 'б': ',', 'ю': '.',
-            'і': 's', 'ї': ']', 'є': "'",
-            'Й': 'Q', 'Ц': 'W', 'У': 'E', 'К': 'R', 'Е': 'T', 'Н': 'Y', 'Г': 'U', 'Ш': 'I', 'Щ': 'O', 'З': 'P', 'Х': '[', 'Ъ': ']',
-            'Ф': 'A', 'Ы': 'S', 'В': 'D', 'А': 'F', 'П': 'G', 'Р': 'H', 'О': 'J', 'Л': 'K', 'Д': 'L', 'Ж': ';', 'Э': "'",
-            'Я': 'Z', 'Ч': 'X', 'С': 'C', 'М': 'V', 'И': 'B', 'Т': 'N', 'Ь': 'M', 'Б': ',', 'Ю': '.',
-            'І': 'S', 'Ї': ']', 'Є': "'",
+  function transliterate(text) {
+    const layoutMap = {
+      'й': 'q', 'ц': 'w', 'у': 'e', 'к': 'r', 'е': 't', 'н': 'y', 'г': 'u', 'ш': 'i', 'щ': 'o', 'з': 'p', 'х': '[', 'ъ': ']',
+      'ф': 'a', 'ы': 's', 'в': 'd', 'а': 'f', 'п': 'g', 'р': 'h', 'о': 'j', 'л': 'k', 'д': 'l', 'ж': ';', 'э': "'",
+      'я': 'z', 'ч': 'x', 'с': 'c', 'м': 'v', 'и': 'b', 'т': 'n', 'ь': 'm', 'б': ',', 'ю': '.',
+      'і': 's', 'ї': ']', 'є': "'",
+      'Й': 'Q', 'Ц': 'W', 'У': 'E', 'К': 'R', 'Е': 'T', 'Н': 'Y', 'Г': 'U', 'Ш': 'I', 'Щ': 'O', 'З': 'P', 'Х': '[', 'Ъ': ']',
+      'Ф': 'A', 'Ы': 'S', 'В': 'D', 'А': 'F', 'П': 'G', 'Р': 'H', 'О': 'J', 'Л': 'K', 'Д': 'L', 'Ж': ';', 'Э': "'",
+      'Я': 'Z', 'Ч': 'X', 'С': 'C', 'М': 'V', 'И': 'B', 'Т': 'N', 'Ь': 'M', 'Б': ',', 'Ю': '.',
+      'І': 'S', 'Ї': ']', 'Є': "'",
 
-            'α': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'ζ': 'z', 'η': 'h', 'θ': 'u', 'ι': 'i', 'κ': 'k', 'λ': 'l', 'μ': 'm',
-            'ν': 'n', 'ξ': 'j', 'ο': 'o', 'π': 'p', 'ρ': 'r', 'σ': 's', 'ς': 's', 'τ': 't', 'υ': 'y', 'φ': 'f', 'χ': 'x', 'ψ': 'c', 'ω': 'v',
-            'Α': 'A', 'Β': 'B', 'Γ': 'G', 'Δ': 'D', 'Ε': 'E', 'Ζ': 'Z', 'Η': 'H', 'Θ': 'U', 'Ι': 'I', 'Κ': 'K', 'Λ': 'L', 'Μ': 'M',
-            'Ν': 'N', 'Ξ': 'J', 'Ο': 'O', 'Π': 'P', 'Ρ': 'R', 'Σ': 'S', 'Τ': 'T', 'Υ': 'Y', 'Φ': 'F', 'Χ': 'X', 'Ψ': 'C', 'Ω': 'V',
+      'α': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'ζ': 'z', 'η': 'h', 'θ': 'u', 'ι': 'i', 'κ': 'k', 'λ': 'l', 'μ': 'm',
+      'ν': 'n', 'ξ': 'j', 'ο': 'o', 'π': 'p', 'ρ': 'r', 'σ': 's', 'ς': 's', 'τ': 't', 'υ': 'y', 'φ': 'f', 'χ': 'x', 'ψ': 'c', 'ω': 'v',
+      'Α': 'A', 'Β': 'B', 'Γ': 'G', 'Δ': 'D', 'Ε': 'E', 'Ζ': 'Z', 'Η': 'H', 'Θ': 'U', 'Ι': 'I', 'Κ': 'K', 'Λ': 'L', 'Μ': 'M',
+      'Ν': 'N', 'Ξ': 'J', 'Ο': 'O', 'Π': 'P', 'Ρ': 'R', 'Σ': 'S', 'Τ': 'T', 'Υ': 'Y', 'Φ': 'F', 'Χ': 'X', 'Ψ': 'C', 'Ω': 'V',
 
-            'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ý': 'y',
-            'à': 'a', 'è': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u',
-            'â': 'a', 'ê': 'e', 'î': 'i', 'ô': 'o', 'û': 'u',
-            'ã': 'a', 'õ': 'o', 'ñ': 'n', 'ç': 'c', 'ë': 'e', 'ï': 'i', 'ü': 'u',
-            'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U', 'Ý': 'Y',
-            'À': 'A', 'È': 'E', 'Ì': 'I', 'Ò': 'O', 'Ù': 'U',
-            'Â': 'A', 'Ê': 'E', 'Î': 'I', 'Ô': 'O', 'Û': 'U',
-            'Ã': 'A', 'Õ': 'O', 'Ñ': 'N', 'Ç': 'C', 'Ë': 'E', 'Ï': 'I', 'Ü': 'U',
-            'ß': 'ss'
-        };
+      'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ý': 'y',
+      'à': 'a', 'è': 'e', 'ì': 'i', 'ò': 'o', 'ù': 'u',
+      'â': 'a', 'ê': 'e', 'î': 'i', 'ô': 'o', 'û': 'u',
+      'ã': 'a', 'õ': 'o', 'ñ': 'n', 'ç': 'c', 'ë': 'e', 'ï': 'i', 'ü': 'u',
+      'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U', 'Ý': 'Y',
+      'À': 'A', 'È': 'E', 'Ì': 'I', 'Ò': 'O', 'Ù': 'U',
+      'Â': 'A', 'Ê': 'E', 'Î': 'I', 'Ô': 'O', 'Û': 'U',
+      'Ã': 'A', 'Õ': 'O', 'Ñ': 'N', 'Ç': 'C', 'Ë': 'E', 'Ï': 'I', 'Ü': 'U',
+      'ß': 'ss'
+    };
 
-        let result = '';
-        for (let i = 0; i < text.length; i++) {
-            const char = text[i];
-            result += layoutMap[char] || char;
-        }
-        return result;
+    let result = '';
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      result += layoutMap[char] || char;
+    }
+    return result;
+  }
+
+
+  function updateCounterUI() {
+    const $input = $('#accountRegistration');
+    const $counter = $('#accountCharCounter');
+    const $prefixButton = $('.account_prefix');
+
+    if ($input.length === 0 || $counter.length === 0) {
+      return;
     }
 
+    const maxChars = parseInt($input.attr('maxlength'), 10);
+    const prefixLen = $prefixButton.length > 0 ? $prefixButton.text().trim().length : 0;
+    const currentLen = $input.val().length;
 
-    function updateCounterUI() {
-        const $input = $('#accountRegistration');
-        const $counter = $('#accountCharCounter');
-        const $prefixButton = $('.account_prefix');
+    const remaining = maxChars - prefixLen - currentLen;
+    $counter.text('{{ phrase(312) }}: ' + remaining);
 
-        if ($input.length === 0 || $counter.length === 0) {
-            return;
-        }
+    if (remaining < 0) {
+      $counter.removeClass('text-muted').addClass('text-danger');
+    } else {
+      $counter.removeClass('text-danger').addClass('text-muted');
+    }
+  }
 
-        const maxChars = parseInt($input.attr('maxlength'), 10);
-        const prefixLen = $prefixButton.length > 0 ? $prefixButton.text().trim().length : 0;
-        const currentLen = $input.val().length;
 
-        const remaining = maxChars - prefixLen - currentLen;
-        $counter.text('{{ phrase(312) }}: ' + remaining);
+  function enforceCharacterLimit() {
+    const $input = $('#accountRegistration');
+    if ($input.length === 0) return;
 
-        if (remaining < 0) {
-            $counter.removeClass('text-muted').addClass('text-danger');
-        } else {
-            $counter.removeClass('text-danger').addClass('text-muted');
-        }
+    const maxChars = parseInt($input.attr('maxlength'), 10);
+    const prefixLen = $('.account_prefix').text().trim().length;
+    const allowedInputLength = maxChars - prefixLen;
+
+    if ($input.val().length > allowedInputLength) {
+      const truncatedValue = $input.val().substring(0, allowedInputLength);
+      $input.val(truncatedValue);
+    }
+  }
+
+  $(document).on('input', '#accountRegistration', function () {
+    const originalValue = $(this).val();
+    let newValue = transliterate(originalValue);
+    newValue = newValue.replace(/[^a-zA-Z0-9_]/g, '');
+
+    if (originalValue !== newValue) {
+      const start = this.selectionStart;
+      const end = this.selectionEnd;
+
+      $(this).val(newValue);
+
+      this.setSelectionRange(start, end);
     }
 
-
-    function enforceCharacterLimit() {
-        const $input = $('#accountRegistration');
-        if ($input.length === 0) return;
-
-        const maxChars = parseInt($input.attr('maxlength'), 10);
-        const prefixLen = $('.account_prefix').text().trim().length;
-        const allowedInputLength = maxChars - prefixLen;
-
-        if ($input.val().length > allowedInputLength) {
-            const truncatedValue = $input.val().substring(0, allowedInputLength);
-            $input.val(truncatedValue);
-        }
-    }
-
-    $(document).on('input', '#accountRegistration', function() {
-        const originalValue = $(this).val();
-        let newValue = transliterate(originalValue);
-        newValue = newValue.replace(/[^a-zA-Z0-9_]/g, '');
-
-        if (originalValue !== newValue) {
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
-
-            $(this).val(newValue);
-
-            this.setSelectionRange(start, end);
-        }
-
-        enforceCharacterLimit();
-        updateCounterUI();
-    });
-
-    $(document).on('input', '#passwordRegistration', function() {
-        const originalValue = $(this).val();
-        let newValue = transliterate(originalValue);
-        newValue = newValue.replace(/[^a-zA-Z0-9_]/g, '');
-
-        if (originalValue !== newValue) {
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
-
-            $(this).val(newValue);
-
-            this.setSelectionRange(start, end);
-        }
-    });
-
+    enforceCharacterLimit();
     updateCounterUI();
+  });
 
-    $(document).on('click', '.account_prefix', function () {
-        AjaxSend('/registration/account/prefix', 'POST', {}, true).then(function (prefix) {
-            if(prefix.type === "notice") {
-                responseAnalysis(prefix);
-                return;
-            }
-            $('.account_prefix').text(prefix);
-            updateCounterUI();
-        });
+  $(document).on('input', '#passwordRegistration', function () {
+    const originalValue = $(this).val();
+    let newValue = transliterate(originalValue);
+    newValue = newValue.replace(/[^a-zA-Z0-9_]/g, '');
+
+    if (originalValue !== newValue) {
+      const start = this.selectionStart;
+      const end = this.selectionEnd;
+
+      $(this).val(newValue);
+
+      this.setSelectionRange(start, end);
+    }
+  });
+
+  updateCounterUI();
+
+  $(document).on('click', '.account_prefix', function () {
+    AjaxSend('/registration/account/prefix', 'POST', {}, true).then(function (prefix) {
+      if (prefix.type === "notice") {
+        responseAnalysis(prefix);
+        return;
+      }
+      $('.account_prefix').text(prefix);
+      updateCounterUI();
     });
+  });
 
-    $(document).on('click', '#togglePassword', function() {
-        const passwordField = $('#passwordRegistration');
-        const passwordFieldType = passwordField.attr('type');
-        const toggleIcon = $(this).find('i');
+  $(document).on('click', '#togglePassword', function () {
+    const passwordField = $('#passwordRegistration');
+    const passwordFieldType = passwordField.attr('type');
+    const toggleIcon = $(this).find('i');
 
-        if (passwordFieldType === 'password') {
-            passwordField.attr('type', 'text');
-            toggleIcon.removeClass('bi-eye-fill').addClass('bi-eye-slash-fill');
-        } else {
-            passwordField.attr('type', 'password');
-            toggleIcon.removeClass('bi-eye-slash-fill').addClass('bi-eye-fill');
-        }
-    });
+    if (passwordFieldType === 'password') {
+      passwordField.attr('type', 'text');
+      toggleIcon.removeClass('bi-eye-fill').addClass('bi-eye-slash-fill');
+    } else {
+      passwordField.attr('type', 'password');
+      toggleIcon.removeClass('bi-eye-slash-fill').addClass('bi-eye-fill');
+    }
+  });
+
+  $(document).on('change', '#hidePasswordRegistration', function () {
+    const passwordField = $('#passwordRegistration');
+    const toggleIcon = $('#togglePassword').find('i');
+    if ($(this).is(':checked')) {
+      passwordField.attr('type', 'password');
+      toggleIcon.removeClass('bi-eye-slash-fill').addClass('bi-eye-fill');
+    } else {
+      passwordField.attr('type', 'text');
+      toggleIcon.removeClass('bi-eye-fill').addClass('bi-eye-slash-fill');
+    }
+  });
 </script>
 
 <script>
@@ -877,13 +911,13 @@
 
   }
 
-  $(document).ready(function() {
+  $(document).ready(function () {
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    $(document).on('click', '.toggle-characters', function() {
+    $(document).on('click', '.toggle-characters', function () {
       var accountName = $(this).data('account');
       var characterRow = $('.character-row-' + CSS.escape(accountName));
       $('.character-container').not(characterRow).hide();
