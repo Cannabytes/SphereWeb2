@@ -532,14 +532,7 @@
 
 {% block js %}
 
-<!-- Custom-Switcher JS -->
-<script src="{{template}}/assets/js/custom-switcher.min.js"></script>
 
-<!-- Internal Add Products JS -->
-<script src="{{template}}/assets/js/add-products.js"></script>
-
-<!-- Custom JS -->
-<script src="{{template}}/assets/js/custom.js"></script>
 
 <script src="{{template}}/assets/libs/simplebar/simplebar.min.js"></script>
 <script src="{{template}}/assets/js/simplebar.js"></script>
@@ -550,8 +543,8 @@
     flatpickr("#dateStartServer", {
         enableTime: true,
         altInput: true,
-        altFormat: "Y-m-d H:i",  // Формат отображения в альтернативном поле
-        dateFormat: "Y-m-d H:i", // Формат для значения input
+        altFormat: "Y-m-d H:i",
+        dateFormat: "Y-m-d H:i",
         defaultTime: "13:45",
         time_24hr: true,
     });

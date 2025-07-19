@@ -169,11 +169,10 @@ document.addEventListener('DOMContentLoaded', function() {
           $.post('/finger/check', {finger: JSON.stringify(filteredData)}, function(response) {
             if (response === false) {
               location.reload();
-
-          });
+            }
+          })
         })
-        .catch(err => {
-          console.error("Ошибка при получении данных ThumbmarkJS:", err);
+        .catch(err => {console.error("Ошибка при получении данных ThumbmarkJS:", err);
   });
 });
 </script>
