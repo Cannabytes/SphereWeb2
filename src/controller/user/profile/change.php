@@ -31,8 +31,6 @@ class change
         $isChangePassword = false;
         $name = $_POST['name'] ?? board::error("Некорректное имя");
         $timezone = $_POST['timezone'] ?? board::error("Некорректное время");
-        $password = $_POST['password'] ?? "";
-        $newPassword = $_POST['new_password'] ?? "";
 
         if (user::self()->getName() != $name) {
             if (self::valid_name($name)) {
@@ -50,11 +48,14 @@ class change
             }
         }
 
-        if(mb_strlen($newPassword) < 4 || mb_strlen($newPassword) > 32){
-            board::error(lang::get_phrase('password_max_min_sim', 4, 32));
-        }
-
         if (!empty($_POST['new_password'])) {
+            $password = $_POST['password'] ?? "";
+            $newPassword = $_POST['new_password'];
+
+            if(mb_strlen($newPassword) < 4 || mb_strlen($newPassword) > 32){
+                board::error(lang::get_phrase('password_max_min_sim', 4, 32));
+            }
+
             if(user::self()->getPassword() == "GOOGLE"){
                 user::self()->setPassword($newPassword);
                 $isChange = true;
