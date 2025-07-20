@@ -338,7 +338,7 @@ class donate
                 }
                 $objectID = (int)$items['id'];
                 $serverId = $items['serverId'];
-                $category = $items['category'];
+                $category = $items['category'] ?? "none";
                 foreach ($items['items'] as $item) {
                     $shopObj = new shop();
                     $shopObj->setId($item['objectId']);

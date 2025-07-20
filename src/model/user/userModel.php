@@ -1573,7 +1573,7 @@ class userModel
             [$this->getId()]
         );
 
-        return array_column($rows, 'fingerprint'); // вернёт массив строк
+        return array_column($rows, 'fingerprint');
     }
 
 

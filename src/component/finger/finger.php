@@ -63,7 +63,7 @@ class finger
 
     static function check(string $finger = "")
     {
-        if(empty($finger)) {
+        if (empty($finger)) {
             return false;
         }
         $finger = json_decode($finger, true);
@@ -85,8 +85,7 @@ class finger
             ksort($storedComponents);
             $similarity = self::calcSimilarityPercent($storedComponents, $currentComponents);
         }
-
-        if ($similarity < 85) {
+        if ($similarity < 80) {
             return false;
         }
         return true;
@@ -94,21 +93,25 @@ class finger
 
     static private function calcSimilarityPercent(array $a, array $b): float
     {
-        $total = count($a);
-        if ($total === 0) return 100.0;
-
         $matches = 0;
+        $total = 0;
         foreach ($a as $key => $val) {
-            if (array_key_exists($key, $b) && $val !== null && $val === $b[$key]) {
+            if (!array_key_exists($key, $b)) {
+                continue;
+            }
+            $total++;
+            if ($val === $b[$key]) {
                 $matches++;
             }
         }
+        if ($total === 0)
+            return 100.0;
         return ($matches / $total) * 100;
     }
 
     static public function fingerController()
     {
-        if (!user::self()->isAuth()){
+        if (!user::self()->isAuth()) {
             die("Fail");
         }
         if (!isset($_POST['finger'])) {
