@@ -2198,4 +2198,7 @@ Password: %%password%%',
     'Date of entry' => 'Entry date',
     'Multiaccount' => 'Multiaccount',
 
+    'i_agree_private_police' => 'I agree to the <a href="%s" target="_blank" class="text-primary">Privacy Policy</a>',
+    'i_agree_terms_of_service' => 'I have read and agree to the <a href="%s" target="_blank" class="text-primary">User Agreement</a>',
+    'i_agree_server_rules' => 'I have read and agree to the <a href="%s" target="_blank" class="text-primary">Server Rules</a>',
 ];

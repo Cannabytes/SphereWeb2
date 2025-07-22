@@ -765,7 +765,7 @@
                   <div class="d-flex align-items-start mb-1">
                     <input class="agreement-checkbox me-2 flex-shrink-0" type="checkbox" id="privacy-policy" name="privacy_policy" required>
                     <label for="privacy-policy">
-                      Я прочитал(а) и согласен(а) с <a href="{{config().other().getLinkPrivacyPolicy()}}" target="_blank" class="text-primary">Политикой конфиденциальности</a>
+                      {{ phrase('i_agree_private_police', config().other().getLinkPrivacyPolicy())|raw }}
                     </label>
                   </div>
                   {% endif %}
@@ -774,7 +774,7 @@
                   <div class="d-flex align-items-start mb-1">
                     <input class="agreement-checkbox me-2 flex-shrink-0" type="checkbox" id="terms-of-service" name="terms_of_service" required>
                     <label for="terms-of-service">
-                      Я прочитал(а) и согласен(а) с <a href="{{config().other().getLinkUserAgreement()}}" target="_blank" class="text-primary">Пользовательским соглашением</a>
+                      {{ phrase('i_agree_terms_of_service', config().other().getLinkUserAgreement() )|raw }}
                     </label>
                   </div>
                   {% endif %}
@@ -783,7 +783,7 @@
                   <div class="d-flex align-items-start">
                     <input class="agreement-checkbox me-2 flex-shrink-0" type="checkbox" id="server-rules" name="server_rules" required>
                     <label for="server-rules">
-                      Я прочитал(а) и согласен(а) с <a href="{{config().other().getLinkServerRules()}}" target="_blank" class="text-primary">Правилами сервера</a>
+                      {{ phrase('i_agree_server_rules', config().other().getLinkServerRules())|raw }}
                     </label>
                   </div>
                   {% endif %}
