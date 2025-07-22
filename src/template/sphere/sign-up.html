@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light"
-  data-menu-styles="light" data-toggled="close">
+      data-menu-styles="light" data-toggled="close">
 
 <head>
   {% set referral_name = get_0 %}
@@ -343,7 +343,7 @@
       background: linear-gradient(45deg, #ffd700, #f0c419, #ffaa00);
       box-shadow: 0 0 15px rgba(255, 215, 0, 0.8),
         /* Увеличена тень */
-        inset 0 0 8px rgba(0, 0, 0, 0.5);
+      inset 0 0 8px rgba(0, 0, 0, 0.5);
     }
 
     .center-logo {
@@ -402,7 +402,7 @@
       font-weight: bold;
       border-radius: 25px;
       box-shadow: 0 0 15px rgba(104, 79, 243, 0.6),
-        inset 0 0 10px rgba(255, 255, 255, 0.1);
+      inset 0 0 10px rgba(255, 255, 255, 0.1);
       text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
       animation: prizeTextPulse 2s ease-in-out infinite alternate;
     }
@@ -549,47 +549,6 @@
       }
     }
 
-    /* Стили для чекбоксов соглашений */
-    .agreement-checkbox {
-      width: 20px !important;
-      height: 20px !important;
-      margin-top: 0.2rem !important;
-      border: 2px solid #6c757d !important;
-      border-radius: 4px !important;
-      cursor: pointer !important;
-      transition: all 0.3s ease !important;
-      position: relative !important;
-      background-color: #fff !important;
-    }
-
-    .agreement-checkbox:checked {
-      background-color: #198754 !important;
-      border-color: #198754 !important;
-      box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.25) !important;
-    }
-
-    .agreement-checkbox:checked::after {
-      content: '✓' !important;
-      position: absolute !important;
-      top: 50% !important;
-      left: 50% !important;
-      transform: translate(-50%, -50%) !important;
-      color: white !important;
-      font-size: 14px !important;
-      font-weight: bold !important;
-      line-height: 1 !important;
-    }
-
-    .agreement-checkbox:hover {
-      border-color: #198754 !important;
-      box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.15) !important;
-    }
-
-    .agreement-checkbox:focus {
-      outline: none !important;
-      border-color: #198754 !important;
-      box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.25) !important;
-    }
 
     .form-check-label {
       font-size: 14px !important;
@@ -609,11 +568,7 @@
       color: #0d6efd !important;
       text-decoration: underline !important;
     }
-  </style>
 
-  <!-- Дополнительные стили для чекбоксов -->
-  <style>
-    /* Переопределяем стили Bootstrap для чекбоксов соглашений */
     input[type="checkbox"].agreement-checkbox {
       width: 22px !important;
       height: 22px !important;
@@ -711,8 +666,8 @@
   <!-- Loader -->
 
   <div {% if config().background().registration() %}
-    style="background-image: url('{{config().background().registration()}}'); background-size: cover; background-repeat: no-repeat; background-position: center center;"
-    {% else %}class="autentication-bg" {% endif %}>
+       style="background-image: url('{{config().background().registration()}}'); background-size: cover; background-repeat: no-repeat; background-position: center center;"
+       {% else %}class="autentication-bg" {% endif %}>
     <div class="container-lg">
       <!-- Новый макет с кристаллом и формой -->
       <div class="row justify-content-center authentication authentication-basic align-items-center h-100">
@@ -734,11 +689,11 @@
                 <div class="col-xl-12">
                   <label for="email" class="form-label text-default">Email<i class="text-danger">*</i></label>
                   <input required name="email" type="text" class="form-control form-control-lg" id="email"
-                    placeholder="example@example.com">
+                         placeholder="example@example.com">
                 </div>
                 <div class="col-xl-12">
                   <label for="account"
-                    class="form-label text-default d-flex justify-content-between align-items-center">
+                         class="form-label text-default d-flex justify-content-between align-items-center">
                     <span>{{ phrase(480) }}</span>
 
                     <span class="label-details">
@@ -759,31 +714,31 @@
                     {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() ==
                     'prefix' %}
                     <button class="btn btn-light account_prefix"
-                      type="button">{{config().registration().genPrefix()}}</button>
+                            type="button">{{config().registration().genPrefix()}}</button>
                     {% endif %}
                     <input name="account" type="text" class="form-control form-control-lg" id="account" placeholder=""
-                      minlength="{{ config().registration().getMinimumNumberOfCharactersRegistrationAccount() }}"
-                      maxlength="{{ maxChars }}">
+                           minlength="{{ config().registration().getMinimumNumberOfCharactersRegistrationAccount() }}"
+                           maxlength="{{ maxChars }}">
                     {% if config().registration().getEnablePrefix() and config().registration().getPrefixType() ==
                     'suffix' %}
                     <button class="btn btn-light account_prefix"
-                      type="button">{{config().registration().genPrefix()}}</button>
+                            type="button">{{config().registration().genPrefix()}}</button>
                     {% endif %}
                   </div>
                 </div>
                 <div class="col-xl-12 mb-2">
                   <label for="signin-password" class="form-label text-default d-block">{{ phrase('password') }}<i
-                      class="text-danger">*</i>
+                        class="text-danger">*</i>
                     <a href="#" tabindex="0" class="float-end text-info password-popover" role="button"
-                      data-bs-toggle="popover" data-bs-placement="right" data-bs-html="true" data-bs-content="{% for i, word in generation_words_password(10) %}
+                       data-bs-toggle="popover" data-bs-placement="right" data-bs-html="true" data-bs-content="{% for i, word in generation_words_password(10) %}
 {{i + 1}}. <a href='#' class='thisPassword'>{{word}}</a><br>
 {% endfor %}">{{ phrase('help_create_password') }}</a>
                   </label>
                   <div class="input-group">
                     <input name="password" type="password" class="form-control form-control-lg" id="signin-password"
-                      placeholder="password" required>
+                           placeholder="password" required>
                     <button class="btn btn-light" type="button" onclick="createpassword('signin-password',this)"
-                      id="button-addon2"><i class="ri-eye-off-line align-middle"></i></button>
+                            id="button-addon2"><i class="ri-eye-off-line align-middle"></i></button>
                   </div>
                 </div>
 
@@ -798,11 +753,41 @@
                 {% endif %}
 
                 <input type="hidden" name="finger" id="finger">
-
-                <div id="referralinput" class="col-xl-12 mb-2 d-none">
+                <div id="referralinput" class="col-xl-12 mb-2 {% if referral_name is empty %}d-none{% endif %}">
                   <label for="referral" class="form-label text-default">{{ phrase('username') }}</label>
                   <input name="referral" value="{{referral_name}}" type="text" class="form-control form-control-lg"
-                    id="referral" placeholder="">
+                         id="referral" placeholder="">
+                </div>
+
+                <div class="col-xl-12 mb-2">
+
+                  {% if config().other().getLinkPrivacyPolicy() and config().other().getLinkPrivacyPolicy() != 'https://' and config().other().getLinkPrivacyPolicy() is not empty %}
+                  <div class="d-flex align-items-start mb-1">
+                    <input class="agreement-checkbox me-2 flex-shrink-0" type="checkbox" id="privacy-policy" name="privacy_policy" required>
+                    <label for="privacy-policy">
+                      Я прочитал(а) и согласен(а) с <a href="{{config().other().getLinkPrivacyPolicy()}}" target="_blank" class="text-primary">Политикой конфиденциальности</a>
+                    </label>
+                  </div>
+                  {% endif %}
+
+                  {% if config().other().getLinkUserAgreement() and config().other().getLinkUserAgreement() != 'https://' and config().other().getLinkUserAgreement() is not empty %}
+                  <div class="d-flex align-items-start mb-1">
+                    <input class="agreement-checkbox me-2 flex-shrink-0" type="checkbox" id="terms-of-service" name="terms_of_service" required>
+                    <label for="terms-of-service">
+                      Я прочитал(а) и согласен(а) с <a href="{{config().other().getLinkUserAgreement()}}" target="_blank" class="text-primary">Пользовательским соглашением</a>
+                    </label>
+                  </div>
+                  {% endif %}
+
+                  {% if config().other().getLinkServerRules() and config().other().getLinkServerRules() != 'https://' and config().other().getLinkServerRules() is not empty %}
+                  <div class="d-flex align-items-start">
+                    <input class="agreement-checkbox me-2 flex-shrink-0" type="checkbox" id="server-rules" name="server_rules" required>
+                    <label for="server-rules">
+                      Я прочитал(а) и согласен(а) с <a href="{{config().other().getLinkServerRules()}}" target="_blank" class="text-primary">Правилами сервера</a>
+                    </label>
+                  </div>
+                  {% endif %}
+
                 </div>
 
                 <div class="col-xl-12 d-grid mt-2">
@@ -965,7 +950,6 @@
   {% endif %}
 
   <script>
-
     document.addEventListener('DOMContentLoaded', function () {
       function get_captcha() {
         // Проверяем, какая капча используется
@@ -990,6 +974,32 @@
 
 
     $(document).ready(function () {
+      // --- Логика для чекбоксов соглашений ---
+      const $submitButton = $('button.enter');
+      const $agreementCheckboxes = $('.agreement-checkbox');
+      const totalCheckboxes = $agreementCheckboxes.length;
+
+      function updateButtonState() {
+        // Если чекбоксы есть на странице
+        if (totalCheckboxes > 0) {
+          // Считаем количество отмеченных
+          const checkedCount = $('.agreement-checkbox:checked').length;
+          // Если количество отмеченных равно общему количеству, включаем кнопку
+          const allChecked = checkedCount === totalCheckboxes;
+          $submitButton.prop('disabled', !allChecked);
+        }
+        // Если чекбоксов нет, кнопка будет активна по умолчанию (атрибут disabled не будет установлен)
+      }
+
+      // Добавляем обработчик на изменение состояния любого чекбокса
+      $agreementCheckboxes.on('change', function() {
+        updateButtonState();
+      });
+
+      // Устанавливаем начальное состояние кнопки при загрузке страницы
+      updateButtonState();
+      // --- Конец логики для чекбоксов ---
+
       // Инициализация всех popover'ов на странице
       var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
       var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
@@ -1102,12 +1112,6 @@
         $('.align-middle').addClass('ri-eye-line');
       });
 
-      // Остальные обработчики
-      $(document).on('click', '#add_referral', function () {
-        $('#add_referral').hide();
-        $('#referralinput').removeClass('d-none');
-      });
-
       $(document).on('click', '.account_prefix', function () {
         AjaxSend('/registration/account/prefix', 'POST', {}, true).then(function (prefix) {
           $('.account_prefix').text(prefix);
@@ -1122,316 +1126,316 @@
       // Пути к изображениям предметов
       const itemImages = [
         {% for item in getServer().bonus().getRegistrationBonusItems() %}
-  {% set itemInfo = get_item_info(item.id) %}
+      {% set itemInfo = get_item_info(item.id) %}
       '{{ itemInfo.getIcon() }}',
       {% endfor %}
-];
+    ];
 
-    // Создаем левитирующие предметы
-    const itemsContainer = $('.levitating-items-container');
+      // Создаем левитирующие предметы
+      const itemsContainer = $('.levitating-items-container');
 
-    // Функция для создания орбит предметов
-    function createItemOrbits() {
-      const orbitsContainer = $('.energy-lines-container');
+      // Функция для создания орбит предметов
+      function createItemOrbits() {
+        const orbitsContainer = $('.energy-lines-container');
 
-      // Определяем нужное количество орбит на основе количества предметов
-      // Распределим предметы на 3 орбиты
-      const orbitsCount = 3;
+        // Определяем нужное количество орбит на основе количества предметов
+        // Распределим предметы на 3 орбиты
+        const orbitsCount = 3;
+
+        // Создаем орбиты
+        for (let i = 0; i < orbitsCount; i++) {
+          const orbitSize = 140 + i * 30;
+          const orbit = $('<div>')
+                .addClass('item-orbit')
+                .css({
+                  'width': `${orbitSize}px`,
+                  'height': `${orbitSize}px`,
+                  'opacity': 0.3 - i * 0.1
+                });
+
+          orbitsContainer.append(orbit);
+        }
+      }
 
       // Создаем орбиты
-      for (let i = 0; i < orbitsCount; i++) {
-        const orbitSize = 140 + i * 30;
-        const orbit = $('<div>')
-          .addClass('item-orbit')
-          .css({
-            'width': `${orbitSize}px`,
-            'height': `${orbitSize}px`,
-            'opacity': 0.3 - i * 0.1
-          });
+      createItemOrbits();
 
-        orbitsContainer.append(orbit);
+      // Функция для получения случайных скоростей вращения
+      function getRandomSpeed(min, max) {
+        return min + Math.random() * (max - min);
       }
-    }
 
-    // Создаем орбиты
-    createItemOrbits();
+      // Создаем предметы и размещаем их по орбитам с уникальными скоростями и траекториями
+      function createItems() {
+        const itemCount = itemImages.length;
+        const animationKeyframes = [];
 
-    // Функция для получения случайных скоростей вращения
-    function getRandomSpeed(min, max) {
-      return min + Math.random() * (max - min);
-    }
+        // Создаем массив для хранения всех keyframes анимаций
+        const keyframesArray = [];
 
-    // Создаем предметы и размещаем их по орбитам с уникальными скоростями и траекториями
-    function createItems() {
-      const itemCount = itemImages.length;
-      const animationKeyframes = [];
+        // Распределяем элементы равномерно вокруг орбит
+        for (let i = 0; i < itemCount; i++) {
+          // Определяем, на какой орбите будет элемент (распределяем по 3 орбитам)
+          const orbitIndex = i % 3;
 
-      // Создаем массив для хранения всех keyframes анимаций
-      const keyframesArray = [];
+          // Расстояние от центра зависит от орбиты
+          const radius = 100 + orbitIndex * 30; // 100, 130, 160
 
-      // Распределяем элементы равномерно вокруг орбит
-      for (let i = 0; i < itemCount; i++) {
-        // Определяем, на какой орбите будет элемент (распределяем по 3 орбитам)
-        const orbitIndex = i % 3;
+          // Генерируем случайный начальный угол для каждого элемента
+          const randomStartAngle = Math.random() * 360;
 
-        // Расстояние от центра зависит от орбиты
-        const radius = 100 + orbitIndex * 30; // 100, 130, 160
+          // Выбираем случайную скорость вращения для каждого элемента
+          // Чем меньше число, тем быстрее движение
+          const orbitDuration = getRandomSpeed(20, 40);
 
-        // Генерируем случайный начальный угол для каждого элемента
-        const randomStartAngle = Math.random() * 360;
+          // Создаем элемент предмета с индивидуальными CSS свойствами
+          const item = $('<div>')
+                .addClass('levitating-item')
+                .attr('data-item-index', i)
+                .css({
+                  'top': '50%',
+                  'left': '50%',
+                  'z-index': 15,
+                  'transform-origin': 'center'
+                });
 
-        // Выбираем случайную скорость вращения для каждого элемента
-        // Чем меньше число, тем быстрее движение
-        const orbitDuration = getRandomSpeed(20, 40);
-
-        // Создаем элемент предмета с индивидуальными CSS свойствами
-        const item = $('<div>')
-          .addClass('levitating-item')
-          .attr('data-item-index', i)
-          .css({
-            'top': '50%',
-            'left': '50%',
-            'z-index': 15,
-            'transform-origin': 'center'
+          // Применяем случайную начальную позицию
+          item.css({
+            'transform': `rotate(${randomStartAngle}deg) translateX(${radius}px) rotate(-${randomStartAngle}deg)`
           });
 
-        // Применяем случайную начальную позицию
-        item.css({
-          'transform': `rotate(${randomStartAngle}deg) translateX(${radius}px) rotate(-${randomStartAngle}deg)`
-        });
-
-        // Создаем уникальные ключевые кадры анимации для каждого элемента
-        const keyframesName = `orbit${i}`;
-        const keyframes = `
+          // Создаем уникальные ключевые кадры анимации для каждого элемента
+          const keyframesName = `orbit${i}`;
+          const keyframes = `
       @keyframes ${keyframesName} {
         0% { transform: rotate(${randomStartAngle}deg) translateX(${radius}px) rotate(-${randomStartAngle}deg); }
         100% { transform: rotate(${randomStartAngle + 360}deg) translateX(${radius}px) rotate(-${randomStartAngle + 360}deg); }
       }
     `;
 
-        keyframesArray.push(keyframes);
+          keyframesArray.push(keyframes);
 
-        // Создаем обертку для вращения элемента вокруг своей оси
-        const itemWrapper = $('<div>')
-          .addClass('item-wrapper')
-          .css({
-            'animation-duration': `${getRandomSpeed(8, 15)}s`,
-            'animation-direction': i % 2 === 0 ? 'normal' : 'reverse'
+          // Создаем обертку для вращения элемента вокруг своей оси
+          const itemWrapper = $('<div>')
+                .addClass('item-wrapper')
+                .css({
+                  'animation-duration': `${getRandomSpeed(8, 15)}s`,
+                  'animation-direction': i % 2 === 0 ? 'normal' : 'reverse'
+                });
+
+          // Создаем контент предмета
+          const itemContent = $('<div>')
+                .addClass('item-content')
+                .css('z-index', 20);
+
+          // Добавляем изображение
+          const img = $('<img>')
+                .attr('src', itemImages[i]);
+
+          // Добавляем свечение вокруг предмета
+          const itemGlow = $('<div>')
+                .addClass('item-glow')
+                .css({
+                  'animation-delay': `${Math.random() * 2}s`
+                });
+
+          // Собираем структуру
+          itemContent.append(img);
+          itemContent.append(itemGlow);
+          itemWrapper.append(itemContent);
+          item.append(itemWrapper);
+          itemsContainer.append(item);
+
+          // Сохраняем информацию об анимации для последующего применения
+          animationKeyframes.push({
+            element: item,
+            keyframesName: keyframesName,
+            duration: orbitDuration
           });
+        }
 
-        // Создаем контент предмета
-        const itemContent = $('<div>')
-          .addClass('item-content')
-          .css('z-index', 20);
+        // Объединяем все keyframes и добавляем в head
+        const allKeyframes = keyframesArray.join('\n');
+        $('<style>').text(allKeyframes).appendTo('head');
 
-        // Добавляем изображение
-        const img = $('<img>')
-          .attr('src', itemImages[i]);
-
-        // Добавляем свечение вокруг предмета
-        const itemGlow = $('<div>')
-          .addClass('item-glow')
-          .css({
-            'animation-delay': `${Math.random() * 2}s`
-          });
-
-        // Собираем структуру
-        itemContent.append(img);
-        itemContent.append(itemGlow);
-        itemWrapper.append(itemContent);
-        item.append(itemWrapper);
-        itemsContainer.append(item);
-
-        // Сохраняем информацию об анимации для последующего применения
-        animationKeyframes.push({
-          element: item,
-          keyframesName: keyframesName,
-          duration: orbitDuration
-        });
-      }
-
-      // Объединяем все keyframes и добавляем в head
-      const allKeyframes = keyframesArray.join('\n');
-      $('<style>').text(allKeyframes).appendTo('head');
-
-      // Ждем немного, чтобы DOM был полностью готов,
-      // затем применяем все анимации одновременно
-      setTimeout(() => {
-        // Применяем анимации ко всем элементам сразу
-        animationKeyframes.forEach(item => {
-          item.element.css({
-            'animation': `${item.keyframesName} ${item.duration}s linear infinite`,
-            'transition': 'none'
-          });
-        });
-      }, 500);
-    }
-
-    // Создаем предметы
-    createItems();
-
-    // Функция для создания магических частиц
-    function createMagicParticles() {
-      const particlesContainer = $('.magic-particles-container');
-
-      for (let i = 0; i < 30; i++) {
-        const particle = $('<div>')
-          .addClass('magic-particle')
-          .css({
-            'left': `${Math.random() * 100}%`,
-            'top': `${Math.random() * 100}%`,
-            'width': `${2 + Math.random() * 3}px`,
-            'height': `${2 + Math.random() * 3}px`,
-            'background-color': `rgba(${144 + Math.random() * 111}, ${120 + Math.random() * 135}, 255, ${0.6 + Math.random() * 0.4})`,
-            'animation': `sparkle ${1 + Math.random() * 3}s ease-in-out infinite`,
-            'animation-delay': `${Math.random() * 3}s`
-          });
-
-        particlesContainer.append(particle);
-      }
-    }
-
-    // Создаем магические частицы
-    createMagicParticles();
-
-    // Функция для выделения случайного предмета и отображения его названия
-    function highlightRandomItem() {
-      // Сначала удаляем предыдущее выделение
-      $('.item-content img').removeClass('item-highlight');
-
-      // Выбираем случайный предмет
-      const items = $('.levitating-item');
-
-      if (items.length > 0) {
-        const randomIndex = Math.floor(Math.random() * items.length);
-        const selectedItem = $(items[randomIndex]);
-
-        // Выделяем предмет
-        selectedItem.find('.item-content img').addClass('item-highlight');
-      }
-
-      // Планируем следующее выделение
-      setTimeout(highlightRandomItem, 3000 + Math.random() * 2000);
-    }
-
-    // Начинаем процесс выделения предметов
-    setTimeout(highlightRandomItem, 2000);
-
-    // Функция для изменения интенсивности свечения кристалла
-    function pulsecrystalGlow() {
-      const innerGlow = $('.crystal-inner-glow');
-      const baseGlow = $('.crystal-glow');
-
-      // Случайные значения для интенсивности
-      const innerIntensity = 0.3 + Math.random() * 0.3;
-      const baseIntensity = 0.6 + Math.random() * 0.4;
-
-      // Применяем новые значения
-      innerGlow.css('opacity', innerIntensity);
-      baseGlow.css('opacity', baseIntensity);
-
-      // Планируем следующее изменение
-      setTimeout(pulsecrystalGlow, 2000 + Math.random() * 1000);
-    }
-
-    // Запускаем пульсацию свечения
-    pulsecrystalGlow();
-
-    // Улучшенная функция для создания эффектных вспышек энергии
-    function createEnergyBurst() {
-      // Создаем эффектную вспышку с градиентом
-      const burst = $('<div>')
-        .css({
-          'position': 'absolute',
-          'top': '50%',
-          'left': '50%',
-          'width': '0',
-          'height': '0',
-          'background': 'radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(144, 120, 255, 0.6) 40%, rgba(104, 79, 243, 0.2) 70%, transparent 100%)',
-          'border-radius': '50%',
-          'transform': 'translate(-50%, -50%)',
-          'z-index': '6',
-          'pointer-events': 'none',
-          'transition': 'all 0.7s cubic-bezier(0.2, 0.8, 0.3, 1)',
-          'filter': 'blur(3px)'
-        });
-
-      // Добавляем в контейнер
-      $('.crystal-container').append(burst);
-
-      // Анимируем вспышку
-      setTimeout(() => {
-        burst.css({
-          'width': '300px',
-          'height': '300px',
-          'opacity': '0'
-        });
-
-        // Создаем дополнительный эффект мерцающих частиц при вспышке
-        createBurstParticles();
-
-        // Удаляем элемент после завершения анимации
+        // Ждем немного, чтобы DOM был полностью готов,
+        // затем применяем все анимации одновременно
         setTimeout(() => {
-          burst.remove();
-        }, 700);
-      }, 10);
-
-      // Планируем следующую вспышку
-      setTimeout(createEnergyBurst, 4000 + Math.random() * 3000);
-    }
-
-    // Функция для создания мерцающих частиц при вспышке
-    function createBurstParticles() {
-      for (let i = 0; i < 20; i++) {
-        const angle = Math.random() * 360;
-        const distance = 40 + Math.random() * 120;
-        const radian = (angle * Math.PI) / 180;
-        const x = Math.cos(radian) * distance;
-        const y = Math.sin(radian) * distance;
-
-        const particle = $('<div>')
-          .css({
-            'position': 'absolute',
-            'top': '50%',
-            'left': '50%',
-            'width': `${3 + Math.random() * 5}px`,
-            'height': `${3 + Math.random() * 5}px`,
-            'background-color': `rgba(${144 + Math.random() * 111}, ${120 + Math.random() * 135}, 255, ${0.7 + Math.random() * 0.3})`,
-            'border-radius': '50%',
-            'transform': `translate(-50%, -50%)`,
-            'z-index': '7',
-            'opacity': '0',
-            'transition': `all ${0.5 + Math.random() * 0.5}s cubic-bezier(0.1, 0.9, 0.2, 1)`
+          // Применяем анимации ко всем элементам сразу
+          animationKeyframes.forEach(item => {
+            item.element.css({
+              'animation': `${item.keyframesName} ${item.duration}s linear infinite`,
+              'transition': 'none'
+            });
           });
+        }, 500);
+      }
 
-        $('.crystal-container').append(particle);
+      // Создаем предметы
+      createItems();
 
-        // Анимируем частицу
+      // Функция для создания магических частиц
+      function createMagicParticles() {
+        const particlesContainer = $('.magic-particles-container');
+
+        for (let i = 0; i < 30; i++) {
+          const particle = $('<div>')
+                .addClass('magic-particle')
+                .css({
+                  'left': `${Math.random() * 100}%`,
+                  'top': `${Math.random() * 100}%`,
+                  'width': `${2 + Math.random() * 3}px`,
+                  'height': `${2 + Math.random() * 3}px`,
+                  'background-color': `rgba(${144 + Math.random() * 111}, ${120 + Math.random() * 135}, 255, ${0.6 + Math.random() * 0.4})`,
+                  'animation': `sparkle ${1 + Math.random() * 3}s ease-in-out infinite`,
+                  'animation-delay': `${Math.random() * 3}s`
+                });
+
+          particlesContainer.append(particle);
+        }
+      }
+
+      // Создаем магические частицы
+      createMagicParticles();
+
+      // Функция для выделения случайного предмета и отображения его названия
+      function highlightRandomItem() {
+        // Сначала удаляем предыдущее выделение
+        $('.item-content img').removeClass('item-highlight');
+
+        // Выбираем случайный предмет
+        const items = $('.levitating-item');
+
+        if (items.length > 0) {
+          const randomIndex = Math.floor(Math.random() * items.length);
+          const selectedItem = $(items[randomIndex]);
+
+          // Выделяем предмет
+          selectedItem.find('.item-content img').addClass('item-highlight');
+        }
+
+        // Планируем следующее выделение
+        setTimeout(highlightRandomItem, 3000 + Math.random() * 2000);
+      }
+
+      // Начинаем процесс выделения предметов
+      setTimeout(highlightRandomItem, 2000);
+
+      // Функция для изменения интенсивности свечения кристалла
+      function pulsecrystalGlow() {
+        const innerGlow = $('.crystal-inner-glow');
+        const baseGlow = $('.crystal-glow');
+
+        // Случайные значения для интенсивности
+        const innerIntensity = 0.3 + Math.random() * 0.3;
+        const baseIntensity = 0.6 + Math.random() * 0.4;
+
+        // Применяем новые значения
+        innerGlow.css('opacity', innerIntensity);
+        baseGlow.css('opacity', baseIntensity);
+
+        // Планируем следующее изменение
+        setTimeout(pulsecrystalGlow, 2000 + Math.random() * 1000);
+      }
+
+      // Запускаем пульсацию свечения
+      pulsecrystalGlow();
+
+      // Улучшенная функция для создания эффектных вспышек энергии
+      function createEnergyBurst() {
+        // Создаем эффектную вспышку с градиентом
+        const burst = $('<div>')
+              .css({
+                'position': 'absolute',
+                'top': '50%',
+                'left': '50%',
+                'width': '0',
+                'height': '0',
+                'background': 'radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(144, 120, 255, 0.6) 40%, rgba(104, 79, 243, 0.2) 70%, transparent 100%)',
+                'border-radius': '50%',
+                'transform': 'translate(-50%, -50%)',
+                'z-index': '6',
+                'pointer-events': 'none',
+                'transition': 'all 0.7s cubic-bezier(0.2, 0.8, 0.3, 1)',
+                'filter': 'blur(3px)'
+              });
+
+        // Добавляем в контейнер
+        $('.crystal-container').append(burst);
+
+        // Анимируем вспышку
         setTimeout(() => {
-          particle.css({
-            'transform': `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-            'opacity': '1'
+          burst.css({
+            'width': '300px',
+            'height': '300px',
+            'opacity': '0'
           });
 
+          // Создаем дополнительный эффект мерцающих частиц при вспышке
+          createBurstParticles();
+
+          // Удаляем элемент после завершения анимации
+          setTimeout(() => {
+            burst.remove();
+          }, 700);
+        }, 10);
+
+        // Планируем следующую вспышку
+        setTimeout(createEnergyBurst, 4000 + Math.random() * 3000);
+      }
+
+      // Функция для создания мерцающих частиц при вспышке
+      function createBurstParticles() {
+        for (let i = 0; i < 20; i++) {
+          const angle = Math.random() * 360;
+          const distance = 40 + Math.random() * 120;
+          const radian = (angle * Math.PI) / 180;
+          const x = Math.cos(radian) * distance;
+          const y = Math.sin(radian) * distance;
+
+          const particle = $('<div>')
+                .css({
+                  'position': 'absolute',
+                  'top': '50%',
+                  'left': '50%',
+                  'width': `${3 + Math.random() * 5}px`,
+                  'height': `${3 + Math.random() * 5}px`,
+                  'background-color': `rgba(${144 + Math.random() * 111}, ${120 + Math.random() * 135}, 255, ${0.7 + Math.random() * 0.3})`,
+                  'border-radius': '50%',
+                  'transform': `translate(-50%, -50%)`,
+                  'z-index': '7',
+                  'opacity': '0',
+                  'transition': `all ${0.5 + Math.random() * 0.5}s cubic-bezier(0.1, 0.9, 0.2, 1)`
+                });
+
+          $('.crystal-container').append(particle);
+
+          // Анимируем частицу
           setTimeout(() => {
             particle.css({
-              'opacity': '0'
+              'transform': `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+              'opacity': '1'
             });
 
             setTimeout(() => {
-              particle.remove();
-            }, 500);
-          }, 300 + Math.random() * 200);
-        }, Math.random() * 100);
+              particle.css({
+                'opacity': '0'
+              });
+
+              setTimeout(() => {
+                particle.remove();
+              }, 500);
+            }, 300 + Math.random() * 200);
+          }, Math.random() * 100);
+        }
       }
-    }
 
-    // Запускаем создание вспышек энергии
-    setTimeout(createEnergyBurst, 2000);
-    {% endif %}
+      // Запускаем создание вспышек энергии
+      setTimeout(createEnergyBurst, 2000);
+      {% endif %}
 
 
-});
+    });
   </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@thumbmarkjs/thumbmarkjs@0.20.6/dist/thumbmark.umd.js"></script>

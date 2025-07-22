@@ -2178,6 +2178,10 @@ Email: %%email%l%
     "allow_user_delete_account" => "Дозволити користувачам видаляти свої акаунти",
     "allow_user_delete_account_description" => "Якщо ввімкнено, користувачі зможуть видалити свій акаунт з особистого кабінету (акаунт не буде видалено з бази даних гри)",
     "default amount" => "Сума за замовчуванням",
+    'Analyzing data and searching for multiaccounts' => 'Аналіз даних та пошук мультиаккаунтів...',
+    'fingerprint' => 'Відбиток',
+    'Date of entry' => 'Дата входу',
+    'Multiaccount' => 'Мультіаккаунт',
 
 ];
 

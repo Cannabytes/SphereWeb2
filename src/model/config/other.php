@@ -37,6 +37,12 @@ class other
 
     private string $keywords = "";
 
+    private string $linkPrivacyPolicy = "";
+
+    private string $linkUserAgreement = "";
+
+    private string $linkServerRules = "";
+
     private string $linkLogo = "/main";
 
     private bool $isEnableMenuPageLink = true;
@@ -69,6 +75,9 @@ class other
         $this->messageTechnicalWork = $setting['messageTechnicalWork'] ?? $this->messageTechnicalWork;
         $this->keywords = $setting['keywords'] ?? $this->keywords;
         $this->linkLogo = $setting['linkLogo'] ?? $this->linkLogo;
+        $this->linkPrivacyPolicy = $setting['linkPrivacyPolicy'] ?? $this->linkPrivacyPolicy;
+        $this->linkServerRules = $setting['linkServerRules'] ?? $this->linkServerRules;
+        $this->linkUserAgreement = $setting['linkUserAgreement'] ?? $this->linkUserAgreement;
         $this->isEnableMenuPageLink = filter_var($setting['isEnableMenuPageLink'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->linkMainPage = $setting['linkMainPage'] ?? $this->linkMainPage;
         $this->maxAccount = (int)(is_array($setting) ? ($setting['max_account'] ?? $this->maxAccount) : $this->maxAccount);
@@ -77,6 +86,21 @@ class other
         $this->autoUpdate = filter_var($setting['autoUpdate'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->isShow404error = filter_var($setting['isShow404error'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->isAllowDeleteAccount = filter_var($setting['isAllowDeleteAccount'] ?? true, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    public function getLinkPrivacyPolicy(): string
+    {
+        return $this->linkPrivacyPolicy;
+    }
+
+    public function getLinkUserAgreement(): string
+    {
+        return $this->linkUserAgreement;
+    }
+
+    public function getLinkServerRules(): string
+    {
+        return $this->linkServerRules;
     }
 
     public function getIsAllowDeleteAccount(): mixed

@@ -2150,5 +2150,9 @@ Contraseña: %%password%%',
     "allow_user_delete_account" => "Permitir a los usuarios eliminar sus cuentas",
     "allow_user_delete_account_description" => "Si está habilitado, los usuarios podrán eliminar su cuenta desde su área personal (la cuenta no se eliminará de la base de datos del juego)",
     "default amount" => "Cantidad predeterminada",
+    'Analizando datos y buscando multicuentas' => 'Analizando datos y buscando multicuentas...',
+    'huella digital' => 'Vidbitok',
+    'Fecha de entrada' => 'Fecha de entrada',
+    'Multicuenta' => 'Multicuenta',
 
 ];
