@@ -39,7 +39,7 @@ class pay
         tpl::addVar("title", lang::get_phrase(233));
         tpl::addVar("pay_system_default", $donate->getPaySystemDefault());
 
-        $donateSum = sql::run("SELECT SUM(point) AS `count` FROM `donate_history_pay` WHERE user_id = ?", [user::self()->getId()])->fetch()['count'] ?? 0;
+        $donateSum = sql::run("SELECT SUM(point) AS `count` FROM `donate_history_pay` WHERE user_id = ? AND sphere=0", [user::self()->getId()])->fetch()['count'] ?? 0;
         $bonusTable   = $donate->getTableCumulativeDiscountSystem();
         $percent      = 0;
         foreach ($bonusTable as $row) {
@@ -50,7 +50,6 @@ class pay
             }
         }
         $donate_history_pay = sql::getRows("SELECT * FROM `donate_history_pay` WHERE user_id = ? ORDER BY id DESC", [user::self()->getId()]);
-
         tpl::addVar("donate_history_pay", $donate_history_pay);
         tpl::addVar("count_all_donate_bonus", $donateSum);
         tpl::addVar("count_all_donate_bonus_percent", $percent);
