@@ -127,7 +127,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 		$userId = $_REQUEST['params']['account'] ?? -1;
 		$amount = $_REQUEST['params']['orderSum'] ?? '';
 		$crc = $_REQUEST['params']['signature'] ?? '';
-		
+
 		unset( $_REQUEST['params']['signature'] );
 		ksort( $_REQUEST['params'] );
 		$params = implode( '{up}', $_REQUEST['params'] );
@@ -153,7 +153,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 			]));
 		}
 
-        donate::control_uuid($_REQUEST['params']['unitpayId'], get_called_class());
+        donate::control_uuid(substr($crc, 0, 8), get_called_class());
 
         $amount = donate::currency($amount, self::getCurrency());
         self::telegramNotice(user::getUserId($userId), $_REQUEST['params']['orderSum'], self::getCurrency(), $amount, get_called_class());
