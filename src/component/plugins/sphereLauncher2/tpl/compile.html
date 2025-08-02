@@ -72,25 +72,247 @@
                                <input class="form-control" id="launcherVersion"
                                       placeholder="например, 1.0.0"
                                       type="text" value="1.0.0"></div>
-                            <div class="col-md-6">
-                                <label class="form-label" for="templateSelect">4. Шаблон лаунчера
-                                    <small class="d-block text-muted">
-                                        Выберите шаблон лаунчера. Вы можете создать свой шаблон.
-                                    </small>
-                                </label>
-                                <select class="form-select" id="templateSelect">
-                                    <option selected value="default">default</option>
-                                    <option value="cyberpunk">cyberpunk</option>
-                                    <option value="flat">flat</option>
-                                    <option value="futuristic">futuristic</option>
-                                    <option value="material">material</option>
-                                    <option value="skeuomorphism">skeuomorphism</option>
-                                    <option value="gsax">gsax</option>
-                                    <option value="gagarka">gagarka</option>
-                                    <option value="custom">Свой шаблон</option>
-                                </select>
-                            </div>
-                          <div class="col-12 mt-3" id="custom-template-fields" style="display: none;">
+                            <!-- Замените блок с templateSelect на этот код -->
+
+<div class="col-12">
+    <label class="form-label">4. Шаблон лаунчера
+        <small class="d-block text-muted">
+            Выберите шаблон лаунчера. Вы можете создать свой шаблон.
+        </small>
+    </label>
+
+    <div class="template-selector" id="templateSelector">
+        <!-- Готовые шаблоны с изображениями -->
+        <div class="template-card" data-template="default">
+            <div class="template-radio">
+                <input type="radio" name="template" value="default" id="template-default" checked>
+            </div>
+            <div class="template-badge">По умолчанию</div>
+            <img src="/src/component/plugins/sphereLauncher2/tpl/screen/default.jpg"
+                 alt="Default template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback default">
+                <i class="ri-layout-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Default</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="cyberpunk">
+            <div class="template-radio">
+                <input type="radio" name="template" value="cyberpunk" id="template-cyberpunk">
+            </div>
+            <img src="{{template_plugin}}/tpl/screen/cyberpunk.jpg"
+                 alt="Cyberpunk template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback cyberpunk">
+                <i class="ri-cpu-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Cyberpunk</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="flat">
+            <div class="template-radio">
+                <input type="radio" name="template" value="flat" id="template-flat">
+            </div>
+            <img src="{{template_plugin}}/tpl/screen/flat.jpg"
+                 alt="Flat template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback flat">
+                <i class="ri-artboard-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Flat</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="duxy">
+            <div class="template-radio">
+                <input type="radio" name="template" value="flat" id="template-duxy">
+            </div>
+            <img src="{{template_plugin}}/tpl/screen/duxy.jpg"
+                 alt="duxy template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback duxy">
+                <i class="ri-artboard-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Duxy</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="fonar">
+            <div class="template-radio">
+                <input type="radio" name="template" value="flat" id="template-fonar">
+            </div>
+            <img src="{{template_plugin}}/tpl/screen/fonar.jpg"
+                 alt="fonar template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback fonar">
+                <i class="ri-artboard-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Fonar</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="futuristic">
+            <div class="template-radio">
+                <input type="radio" name="template" value="futuristic" id="template-futuristic">
+            </div>
+            <img src="{{template_plugin}}/tpl/screen/futuristic.jpg"
+                 alt="Futuristic template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback futuristic">
+                <i class="ri-rocket-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Futuristic</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="material">
+            <div class="template-radio">
+                <input type="radio" name="template" value="material" id="template-material">
+            </div>
+            <img src="{{template_plugin}}/tpl/screen/material.jpg"
+                 alt="Material template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback material">
+                <i class="ri-palette-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Material</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="skeuomorphism">
+            <div class="template-radio">
+                <input type="radio" name="template" value="skeuomorphism" id="template-skeuomorphism">
+            </div>
+            <img src="{{template_plugin}}/tpl/screen/skeuomorphism.jpg"
+                 alt="Skeuomorphism template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback skeuomorphism">
+                <i class="ri-brush-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Skeuomorphism</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="gsax">
+            <div class="template-radio">
+                <input type="radio" name="template" value="gsax" id="template-gsax">
+            </div>
+            <img src="{{template_plugin}}/tpl/screen/gsax.jpg"
+                 alt="GSAX template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback gsax">
+                <i class="ri-gamepad-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">GSAX</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="gagarka">
+            <div class="template-radio">
+                <input type="radio" name="template" value="gagarka" id="template-gagarka">
+            </div>
+            <img src="{{template_plugin}}/tpl/screen/gagarka.jpg"
+                 alt="Gagarka template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback gagarka">
+                <i class="ri-magic-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Gagarka</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="lafa">
+            <div class="template-radio">
+                <input type="radio" name="template" value="lafa" id="template-lafa">
+            </div>
+            <img src="{{template_plugin}}/tpl/screen/lafa.jpg"
+                 alt="lafa template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback lafa">
+                <i class="ri-magic-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Lafa</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="pinocolate">
+            <div class="template-radio">
+                <input type="radio" name="template" value="pinocolate" id="template-pinocolate">
+            </div>
+            <img src="{{template_plugin}}/tpl/screen/pinocolate.jpg"
+                 alt="pinocolate template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback pinocolate">
+                <i class="ri-magic-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Pinocolate</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="sfox">
+            <div class="template-radio">
+                <input type="radio" name="template" value="sfox" id="template-sfox">
+            </div>
+            <img src="{{template_plugin}}/tpl/screen/sfox.jpg"
+                 alt="sfox template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='sfox';">
+            <div class="template-image-fallback sfox">
+                <i class="ri-magic-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Sfox</div>
+            </div>
+        </div>
+
+        <div class="template-card" data-template="custom">
+            <div class="template-radio">
+                <input type="radio" name="template" value="custom" id="template-custom">
+            </div>
+            <div class="template-badge">Свой</div>
+            <img src="{{template_plugin}}/tpl/screen/custom.jpg"
+                 alt="Custom template"
+                 class="template-image"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="template-image-fallback custom">
+                <i class="ri-upload-cloud-line"></i>
+            </div>
+            <div class="template-content">
+                <div class="template-title">Свой шаблон</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+                         <div class="col-12 mt-3" id="custom-template-fields" style="display: none;">
                                 <div class="p-3 border rounded">
                                     <h6 class="text-primary">Загрузка файлов для своего шаблона</h6>
                                      <div class="mb-3">
@@ -169,339 +391,566 @@
 
 {% block js %}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const GO_SERVER_ADDRESS = '{{go_server_address|raw}}';
+    document.addEventListener('DOMContentLoaded', function () {
+        const GO_SERVER_ADDRESS = '{{go_server_address|raw}}';
 
-    if (!GO_SERVER_ADDRESS) {
-        console.error("Критическая ошибка: Адрес Go-сервера не был передан из PHP. Убедитесь, что в PHP-шаблонизаторе установлена переменная 'go_server_address'.");
-        alert("Критическая ошибка конфигурации UI. Свяжитесь с администратором.");
-        return;
-    }
-
-    const compileForm = document.getElementById('compile-form');
-    const compileBtn = document.getElementById('compile-btn');
-    const statusContainer = document.getElementById('status-container');
-    const progressBar = document.getElementById('progress-bar');
-    const statusMessage = document.getElementById('status-message');
-    const resultContainer = document.getElementById('result-container');
-    const downloadBtn = document.getElementById('download-btn');
-    const newBuildBtn = document.getElementById('new-build-btn');
-    const errorContainer = document.getElementById('error-container');
-    const errorMessage = document.getElementById('error-message');
-    const retryBuildBtn = document.getElementById('retry-build-btn');
-    const templateSelect = document.getElementById('templateSelect');
-    const customTemplateFields = document.getElementById('custom-template-fields');
-
-    function toggleCustomTemplateFields() {
-        customTemplateFields.style.display = templateSelect.value === 'custom' ? 'block' : 'none';
-    }
-    templateSelect.addEventListener('change', toggleCustomTemplateFields);
-    toggleCustomTemplateFields();
-
-    let pollingInterval; // Переменная для хранения ID интервала
-
-    compileForm.addEventListener('submit', handleCompileRequest);
-    newBuildBtn.addEventListener('click', resetUI);
-    retryBuildBtn.addEventListener('click', resetUI);
-
-    function resetUI() {
-        compileForm.style.display = 'block';
-        statusContainer.style.display = 'none';
-        errorContainer.style.display = 'none';
-        resultContainer.style.display = 'none';
-        downloadBtn.classList.add('disabled');
-        downloadBtn.href = "#";
-        downloadBtn.style.display = 'inline-block';
-        downloadBtn.innerHTML = '<i class="ri-download-2-line"></i> Скачать готовый лаунчер';
-        compileBtn.disabled = false;
-        // Останавливаем поллинг, если он был запущен
-        if (pollingInterval) {
-            clearInterval(pollingInterval);
-        }
-        updateProgress(0, "Ожидание...");
-    }
-
-    function updateProgress(progress, message) {
-        const p = Math.max(0, Math.min(100, progress));
-        progressBar.style.width = p + '%';
-        progressBar.innerText = p + '%';
-        progressBar.setAttribute('aria-valuenow', p);
-        progressBar.classList.remove('bg-success', 'bg-danger');
-        if (p < 100) {
-            progressBar.classList.add('progress-bar-animated', 'progress-bar-striped');
-        }
-        statusMessage.innerText = message;
-    }
-
-    function handleCompileRequest(event) {
-        event.preventDefault();
-        compileBtn.disabled = true;
-
-        // --- 1. Сбор данных и ссылок на файлы ---
-        const buildData = {
-            dataUrl: document.getElementById('dataUrl').value,
-            title: document.getElementById('pageTitle').value,
-            minWidth: parseInt(document.getElementById('minWidth').value) || 800,
-            minHeight: parseInt(document.getElementById('minHeight').value) || 600,
-            launcherVersion: document.getElementById('launcherVersion').value || "1.0.0",
-            template: document.getElementById('templateSelect').value,
-            accountLink: document.getElementById('accountLink').value,
-            registrationLink: document.getElementById('registerLink').value,
-            forumLink: document.getElementById('forumLink').value,
-            fullscreen: document.getElementById('fullscreenSwitch').checked,
-            // Base64 поля будут заполнены позже
-            iconBase64: "",
-            customHtmlBase64: "",
-            customCssBase64: "",
-            customLangJsonBase64: "",
-            customLogoBase64: ""
-        };
-
-        const iconFile = document.getElementById('iconUpload').files[0];
-        const customHtmlFile = document.getElementById('customHtmlFile').files[0];
-        const customCssFile = document.getElementById('customCssFile').files[0];
-        const customLangFile = document.getElementById('customLangFile').files[0];
-        const customLogoFile = document.getElementById('customLogoFile').files[0];
-
-        const MAX_SIZE = 100 * 1024; // 100 КБ
-        const MAX_LOGO_SIZE = 250 * 1024; // 250 КБ для лого
-
-        // --- 2. Синхронные проверки ---
-        if (iconFile && iconFile.size > MAX_SIZE) {
-            alert('Ошибка: Размер иконки не должен превышать 100 КБ.');
-            compileBtn.disabled = false;
+        if (!GO_SERVER_ADDRESS) {
+            console.error("Критическая ошибка: Адрес Go-сервера не был передан из PHP. Убедитесь, что в PHP-шаблонизаторе установлена переменная 'go_server_address'.");
+            alert("Критическая ошибка конфигурации UI. Свяжитесь с администратором.");
             return;
         }
 
-        if (buildData.template === 'custom') {
-            if (!customHtmlFile) {
-                alert('Для своего шаблона необходимо выбрать как минимум файл index.html.');
-                compileBtn.disabled = false;
-                return;
-            }
-            if (customHtmlFile.size > MAX_SIZE) {
-                alert('Ошибка: Размер HTML файла не должен превышать 100 КБ.');
-                compileBtn.disabled = false;
-                return;
-            }
-            if (customCssFile && customCssFile.size > MAX_SIZE) {
-                alert('Ошибка: Размер CSS файла не должен превышать 100 КБ.');
-                compileBtn.disabled = false;
-                return;
-            }
-            if (customLangFile && customLangFile.size > MAX_SIZE) {
-                alert('Ошибка: Размер lang.json файла не должен превышать 100 КБ.');
-                compileBtn.disabled = false;
-                return;
-            }
-            if (customLogoFile && customLogoFile.size > MAX_LOGO_SIZE) {
-                alert('Ошибка: Размер файла лого не должен превышать 250 КБ.');
-                compileBtn.disabled = false;
-                return;
-            }
-        }
+        const compileForm = document.getElementById('compile-form');
+        const compileBtn = document.getElementById('compile-btn');
+        const statusContainer = document.getElementById('status-container');
+        const progressBar = document.getElementById('progress-bar');
+        const statusMessage = document.getElementById('status-message');
+        const resultContainer = document.getElementById('result-container');
+        const downloadBtn = document.getElementById('download-btn');
+        const newBuildBtn = document.getElementById('new-build-btn');
+        const errorContainer = document.getElementById('error-container');
+        const errorMessage = document.getElementById('error-message');
+        const retryBuildBtn = document.getElementById('retry-build-btn');
 
-        // --- 3. Единая асинхронная цепочка ---
-        const readFileAsBase64 = (file) => new Promise((resolve, reject) => {
-            if (!file) return resolve("");
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = (error) => reject(error);
-            reader.readAsDataURL(file);
-        });
+        // Элементы для нового визуального селектора шаблонов
+        const templateCards = document.querySelectorAll('.template-card');
+        const customTemplateFields = document.getElementById('custom-template-fields');
 
-        const checkImageDimensions = (file) => new Promise((resolve, reject) => {
-            if (!file) return resolve(); // Если файла нет, проверять нечего
-            const image = new Image();
-            image.onload = () => {
-                if (image.width > 128 || image.height > 128) {
-                    reject(new Error('Разрешение иконки не должно превышать 128x128 пикселей.'));
+        let pollingInterval; // Переменная для хранения ID интервала
+
+        // === ФУНКЦИИ ДЛЯ РАБОТЫ С ШАБЛОНАМИ ===
+
+        /**
+         * Функция для обновления выбранного шаблона
+         * @param {string} selectedValue - значение выбранного шаблона
+         */
+        function updateSelectedTemplate(selectedValue) {
+            templateCards.forEach(card => {
+                const radio = card.querySelector('input[type="radio"]');
+                if (radio.value === selectedValue) {
+                    card.classList.add('selected');
+                    radio.checked = true;
                 } else {
-                    resolve();
+                    card.classList.remove('selected');
+                    radio.checked = false;
                 }
-            };
-            image.onerror = () => reject(new Error('Не удалось прочитать файл иконки.'));
-            image.src = URL.createObjectURL(file);
-        });
+            });
 
-        // Шаг 3.1: Сначала проверяем размеры иконки
-        checkImageDimensions(iconFile)
-              .then(() => {
-                  // Шаг 3.2: Если размеры в порядке, читаем ВСЕ файлы в Base64
-                  return Promise.all([
-                      readFileAsBase64(iconFile),
-                      readFileAsBase64(customHtmlFile),
-                      readFileAsBase64(customCssFile),
-                      readFileAsBase64(customLangFile),
-                      readFileAsBase64(customLogoFile),
-                  ]);
-              })
-              .then(([iconBase64, customHtml, customCss, customLang, customLogo]) => {
-                  // Шаг 3.3: После успешного чтения всех файлов, заполняем объект данных
-                  buildData.iconBase64 = iconBase64;
-                  buildData.customHtmlBase64 = customHtml;
-                  buildData.customCssBase64 = customCss;
-                  buildData.customLangJsonBase64 = customLang;
-                  buildData.customLogoBase64 = customLogo;
-
-                  // Шаг 3.4: Отправляем запрос на сервер ТОЛЬКО ОДИН РАЗ
-                  sendInitialRequest(buildData);
-              })
-              .catch(err => {
-                  // Единый обработчик ошибок для всей цепочки
-                  alert('Ошибка подготовки данных: ' + err.message);
-                  compileBtn.disabled = false;
-              });
-    }
-
-    function sendInitialRequest(data) {
-        // Подготовка UI
-        compileForm.style.display = 'none';
-        statusContainer.style.display = 'block';
-        errorContainer.style.display = 'none';
-        resultContainer.style.display = 'none';
-        updateProgress(0, 'Отправка запроса на сервер...');
-
-        // Отправка запроса
-        fetch('/admin/plugin/sphereLauncher2/compile', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-        })
-              .then(response => {
-                  if (!response.ok) {
-                      // Обрабатываем ошибки типа "Busy" (409) и другие
-                      return response.json().then(errorData => {
-                          throw new Error(errorData.error || `Сервер вернул ошибку ${response.status}`);
-                      });
-                  }
-                  return response.json();
-              })
-              .then(result => {
-                  if (result.error) {
-                      // Обрабатываем ошибки, которые могли прийти с кодом 200 OK
-                      throw new Error(result.error);
-                  }
-                  if (result.task_id) {
-                      updateProgress(2, 'Задача создана. Начинаем отслеживание статуса...');
-                      startPolling(result.task_id);
-                  } else {
-                      throw new Error('Сервер не вернул ID задачи.');
-                  }
-              })
-              .catch(err => {
-                  // Отображение ошибки в UI
-                  statusContainer.style.display = 'block';
-                  errorContainer.style.display = 'block';
-                  errorMessage.innerText = err.message;
-                  resultContainer.style.display = 'block';
-                  downloadBtn.style.display = 'none'; // Прячем кнопку скачивания при ошибке
-                  compileBtn.disabled = false; // Разблокируем кнопку, чтобы можно было попробовать снова
-              });
-    }
-
-    function startPolling(taskId) {
-        // Очищаем предыдущий интервал на всякий случай
-        if (pollingInterval) {
-            clearInterval(pollingInterval);
+            // Показать/скрыть поля для кастомного шаблона
+            toggleCustomTemplateFields(selectedValue === 'custom');
         }
 
-        // Запускаем новый интервал с опросом каждые 2 секунды
-        pollingInterval = setInterval(() => {
-            pollTaskStatus(taskId);
-        }, 2000); // 2000 мс = 2 секунды
-    }
+        /**
+         * Переключение видимости полей для кастомного шаблона
+         * @param {boolean} show - показать или скрыть поля
+         */
+        function toggleCustomTemplateFields(show = false) {
+            if (customTemplateFields) {
+                customTemplateFields.style.display = show ? 'block' : 'none';
 
-    function pollTaskStatus(taskId) {
-        const statusUrl = `/admin/plugin/sphereLauncher2/status/${taskId}`;
+                const customCard = document.querySelector('[data-template="custom"]');
+                if (customCard) {
+                    if (show) {
+                        customCard.classList.add('custom-template-highlight');
+                    } else {
+                        customCard.classList.remove('custom-template-highlight');
+                    }
+                }
+            }
+        }
 
-        fetch(statusUrl)
-              .then(response => {
-                  if (response.status === 404) {
-                      throw new Error('Задача не найдена на сервере. Возможно, сервер был перезапущен.');
-                  }
-                  if (!response.ok) {
-                      throw new Error('Ошибка сети при запросе статуса.');
-                  }
-                  return response.json();
-              })
-              .then(task => {
-                  console.log("Получен статус задачи:", task);
+        /**
+         * Получение выбранного шаблона
+         * @returns {string} - значение выбранного шаблона
+         */
+        function getSelectedTemplate() {
+            const selectedRadio = document.querySelector('input[name="template"]:checked');
+            return selectedRadio ? selectedRadio.value : 'default';
+        }
 
-                  if (task.error && task.status !== 'failed') {
-                      throw new Error(task.error);
-                  }
+        // === ИНИЦИАЛИЗАЦИЯ СЕЛЕКТОРА ШАБЛОНОВ ===
 
+        // Обработчик кликов по карточкам шаблонов
+        templateCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const templateValue = this.dataset.template;
+                updateSelectedTemplate(templateValue);
+            });
+        });
 
-                  updateProgress(task.progress, task.message);
+        // Обработчик изменения радиокнопок
+        document.querySelectorAll('input[name="template"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    updateSelectedTemplate(this.value);
+                }
+            });
+        });
 
-                  if (task.status === 'completed' || task.status === 'failed') {
-                      clearInterval(pollingInterval);
+        // Инициализация - выбираем default по умолчанию
+        updateSelectedTemplate('default');
 
-                      if (task.status === 'completed') {
-                          statusMessage.innerText = "Сборка успешно завершена! Сохраняем файл на ваш сервер...";
-                          progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
-                          progressBar.classList.add('bg-success');
-                          resultContainer.style.display = 'block';
-                          downloadBtn.style.display = 'inline-block';
-                          downloadBtn.classList.add('disabled');
-                          downloadBtn.innerHTML = "Идёт сохранение...";
+        // === ОСНОВНЫЕ ОБРАБОТЧИКИ СОБЫТИЙ ===
 
-                          // Отправляем запрос на PHP-бэкенд для скачивания файла
-                          fetch('/admin/plugin/sphereLauncher2/download', {
-                              method: 'POST',
-                              headers: {
-                                  'Content-Type': 'application/json',
-                                  'Accept': 'application/json'
-                              },
-                              body: JSON.stringify({
-                                  result_url: task.result_url
-                              })
-                          })
-                                .then(response => {
-                                    if (!response.ok) {
-                                        return response.json().then(err => { throw new Error(err.error || 'Ошибка при сохранении файла на сервер.'); });
-                                    }
-                                    return response.json();
-                                })
-                                .then(data => {
-                                    if (data.success) {
-                                        statusMessage.innerText = "Файл готов к скачиванию!";
-                                        downloadBtn.href = data.file_path;
-                                        downloadBtn.innerHTML = '<i class="ri-download-2-line"></i> Скачать Launcher.exe';
-                                        downloadBtn.classList.remove('disabled');
-                                        downloadBtn.target = '_blank';
-                                    } else {
-                                        throw new Error(data.error || 'Неизвестная ошибка при сохранении файла.');
-                                    }
-                                })
-                                .catch(err => {
-                                    console.error('Ошибка при сохранении файла:', err);
-                                    errorContainer.style.display = 'block';
-                                    errorMessage.innerText = 'Не удалось сохранить готовый лаунчер на ваш сервер. ' + err.message;
-                                    downloadBtn.style.display = 'none';
-                                });
+        compileForm.addEventListener('submit', handleCompileRequest);
+        newBuildBtn.addEventListener('click', resetUI);
+        retryBuildBtn.addEventListener('click', resetUI);
 
-                      } else { // status === 'failed'
-                          statusMessage.innerText = "Сборка завершилась с ошибкой.";
-                          progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
-                          progressBar.classList.add('bg-danger');
-                          errorContainer.style.display = 'block';
-                          errorMessage.innerText = task.error;
-                          resultContainer.style.display = 'block';
-                          downloadBtn.style.display = 'none';
+        function resetUI() {
+            compileForm.style.display = 'block';
+            statusContainer.style.display = 'none';
+            errorContainer.style.display = 'none';
+            resultContainer.style.display = 'none';
+            downloadBtn.classList.add('disabled');
+            downloadBtn.href = "#";
+            downloadBtn.style.display = 'inline-block';
+            downloadBtn.innerHTML = '<i class="ri-download-2-line"></i> Скачать готовый лаунчер';
+            compileBtn.disabled = false;
+            // Останавливаем поллинг, если он был запущен
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+            updateProgress(0, "Ожидание...");
+        }
+
+        function updateProgress(progress, message) {
+            const p = Math.max(0, Math.min(100, progress));
+            progressBar.style.width = p + '%';
+            progressBar.innerText = p + '%';
+            progressBar.setAttribute('aria-valuenow', p);
+            progressBar.classList.remove('bg-success', 'bg-danger');
+            if (p < 100) {
+                progressBar.classList.add('progress-bar-animated', 'progress-bar-striped');
+            }
+            statusMessage.innerText = message;
+        }
+
+        function handleCompileRequest(event) {
+            event.preventDefault();
+            compileBtn.disabled = true;
+
+            // --- 1. Сбор данных и ссылок на файлы ---
+            const buildData = {
+                dataUrl: document.getElementById('dataUrl').value,
+                title: document.getElementById('pageTitle').value,
+                minWidth: parseInt(document.getElementById('minWidth').value) || 800,
+                minHeight: parseInt(document.getElementById('minHeight').value) || 600,
+                launcherVersion: document.getElementById('launcherVersion').value || "1.0.0",
+                template: getSelectedTemplate(), // Используем новую функцию
+                accountLink: document.getElementById('accountLink').value,
+                registrationLink: document.getElementById('registerLink').value,
+                forumLink: document.getElementById('forumLink').value,
+                fullscreen: document.getElementById('fullscreenSwitch').checked,
+                // Base64 поля будут заполнены позже
+                iconBase64: "",
+                customHtmlBase64: "",
+                customCssBase64: "",
+                customLangJsonBase64: "",
+                customLogoBase64: ""
+            };
+
+            const iconFile = document.getElementById('iconUpload').files[0];
+            const customHtmlFile = document.getElementById('customHtmlFile').files[0];
+            const customCssFile = document.getElementById('customCssFile').files[0];
+            const customLangFile = document.getElementById('customLangFile').files[0];
+            const customLogoFile = document.getElementById('customLogoFile').files[0];
+
+            const MAX_SIZE = 100 * 1024; // 100 КБ
+            const MAX_LOGO_SIZE = 250 * 1024; // 250 КБ для лого
+
+            // --- 2. Синхронные проверки ---
+            if (iconFile && iconFile.size > MAX_SIZE) {
+                alert('Ошибка: Размер иконки не должен превышать 100 КБ.');
+                compileBtn.disabled = false;
+                return;
+            }
+
+            if (buildData.template === 'custom') {
+                if (!customHtmlFile) {
+                    alert('Для своего шаблона необходимо выбрать как минимум файл index.html.');
+                    compileBtn.disabled = false;
+                    return;
+                }
+                if (customHtmlFile.size > MAX_SIZE) {
+                    alert('Ошибка: Размер HTML файла не должен превышать 100 КБ.');
+                    compileBtn.disabled = false;
+                    return;
+                }
+                if (customCssFile && customCssFile.size > MAX_SIZE) {
+                    alert('Ошибка: Размер CSS файла не должен превышать 100 КБ.');
+                    compileBtn.disabled = false;
+                    return;
+                }
+                if (customLangFile && customLangFile.size > MAX_SIZE) {
+                    alert('Ошибка: Размер lang.json файла не должен превышать 100 КБ.');
+                    compileBtn.disabled = false;
+                    return;
+                }
+                if (customLogoFile && customLogoFile.size > MAX_LOGO_SIZE) {
+                    alert('Ошибка: Размер файла лого не должен превышать 250 КБ.');
+                    compileBtn.disabled = false;
+                    return;
+                }
+            }
+
+            // --- 3. Единая асинхронная цепочка ---
+            const readFileAsBase64 = (file) => new Promise((resolve, reject) => {
+                if (!file) return resolve("");
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = (error) => reject(error);
+                reader.readAsDataURL(file);
+            });
+
+            const checkImageDimensions = (file) => new Promise((resolve, reject) => {
+                if (!file) return resolve(); // Если файла нет, проверять нечего
+                const image = new Image();
+                image.onload = () => {
+                    if (image.width > 128 || image.height > 128) {
+                        reject(new Error('Разрешение иконки не должно превышать 128x128 пикселей.'));
+                    } else {
+                        resolve();
+                    }
+                };
+                image.onerror = () => reject(new Error('Не удалось прочитать файл иконки.'));
+                image.src = URL.createObjectURL(file);
+            });
+
+            // Шаг 3.1: Сначала проверяем размеры иконки
+            checkImageDimensions(iconFile)
+                  .then(() => {
+                      // Шаг 3.2: Если размеры в порядке, читаем ВСЕ файлы в Base64
+                      return Promise.all([
+                          readFileAsBase64(iconFile),
+                          readFileAsBase64(customHtmlFile),
+                          readFileAsBase64(customCssFile),
+                          readFileAsBase64(customLangFile),
+                          readFileAsBase64(customLogoFile),
+                      ]);
+                  })
+                  .then(([iconBase64, customHtml, customCss, customLang, customLogo]) => {
+                      // Шаг 3.3: После успешного чтения всех файлов, заполняем объект данных
+                      buildData.iconBase64 = iconBase64;
+                      buildData.customHtmlBase64 = customHtml;
+                      buildData.customCssBase64 = customCss;
+                      buildData.customLangJsonBase64 = customLang;
+                      buildData.customLogoBase64 = customLogo;
+
+                      // Шаг 3.4: Отправляем запрос на сервер ТОЛЬКО ОДИН РАЗ
+                      sendInitialRequest(buildData);
+                  })
+                  .catch(err => {
+                      // Единый обработчик ошибок для всей цепочки
+                      alert('Ошибка подготовки данных: ' + err.message);
+                      compileBtn.disabled = false;
+                  });
+        }
+
+        // Остальные функции остаются без изменений (sendInitialRequest, startPolling, pollTaskStatus)
+        function sendInitialRequest(data) {
+            // Подготовка UI
+            compileForm.style.display = 'none';
+            statusContainer.style.display = 'block';
+            errorContainer.style.display = 'none';
+            resultContainer.style.display = 'none';
+            updateProgress(0, 'Отправка запроса на сервер...');
+
+            // Отправка запроса
+            fetch('/admin/plugin/sphereLauncher2/compile', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+                  .then(response => {
+                      if (!response.ok) {
+                          // Обрабатываем ошибки типа "Busy" (409) и другие
+                          return response.json().then(errorData => {
+                              throw new Error(errorData.error || `Сервер вернул ошибку ${response.status}`);
+                          });
                       }
-                  }
-              })
-              .catch(error => {
-                  console.error('Ошибка при опросе статуса:', error);
-                  clearInterval(pollingInterval);
-                  errorContainer.style.display = 'block';
-                  errorMessage.innerText = error.message;
-                  resultContainer.style.display = 'block';
-                  downloadBtn.style.display = 'none';
-              });
-    }
-});
+                      return response.json();
+                  })
+                  .then(result => {
+                      if (result.error) {
+                          // Обрабатываем ошибки, которые могли прийти с кодом 200 OK
+                          throw new Error(result.error);
+                      }
+                      if (result.task_id) {
+                          updateProgress(2, 'Задача создана. Начинаем отслеживание статуса...');
+                          startPolling(result.task_id);
+                      } else {
+                          throw new Error('Сервер не вернул ID задачи.');
+                      }
+                  })
+                  .catch(err => {
+                      // Отображение ошибки в UI
+                      statusContainer.style.display = 'block';
+                      errorContainer.style.display = 'block';
+                      errorMessage.innerText = err.message;
+                      resultContainer.style.display = 'block';
+                      downloadBtn.style.display = 'none'; // Прячем кнопку скачивания при ошибке
+                      compileBtn.disabled = false; // Разблокируем кнопку, чтобы можно было попробовать снова
+                  });
+        }
+
+        function startPolling(taskId) {
+            // Очищаем предыдущий интервал на всякий случай
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+
+            // Запускаем новый интервал с опросом каждые 2 секунды
+            pollingInterval = setInterval(() => {
+                pollTaskStatus(taskId);
+            }, 2000); // 2000 мс = 2 секунды
+        }
+
+        function pollTaskStatus(taskId) {
+            const statusUrl = `/admin/plugin/sphereLauncher2/status/${taskId}`;
+
+            fetch(statusUrl)
+                  .then(response => {
+                      if (response.status === 404) {
+                          throw new Error('Задача не найдена на сервере. Возможно, сервер был перезапущен.');
+                      }
+                      if (!response.ok) {
+                          throw new Error('Ошибка сети при запросе статуса.');
+                      }
+                      return response.json();
+                  })
+                  .then(task => {
+                      console.log("Получен статус задачи:", task);
+
+                      if (task.error && task.status !== 'failed') {
+                          throw new Error(task.error);
+                      }
+
+                      updateProgress(task.progress, task.message);
+
+                      if (task.status === 'completed' || task.status === 'failed') {
+                          clearInterval(pollingInterval);
+
+                          if (task.status === 'completed') {
+                              statusMessage.innerText = "Сборка успешно завершена! Сохраняем файл на ваш сервер...";
+                              progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
+                              progressBar.classList.add('bg-success');
+                              resultContainer.style.display = 'block';
+                              downloadBtn.style.display = 'inline-block';
+                              downloadBtn.classList.add('disabled');
+                              downloadBtn.innerHTML = "Идёт сохранение...";
+
+                              // Отправляем запрос на PHP-бэкенд для скачивания файла
+                              fetch('/admin/plugin/sphereLauncher2/download', {
+                                  method: 'POST',
+                                  headers: {
+                                      'Content-Type': 'application/json',
+                                      'Accept': 'application/json'
+                                  },
+                                  body: JSON.stringify({
+                                      result_url: task.result_url
+                                  })
+                              })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            return response.json().then(err => { throw new Error(err.error || 'Ошибка при сохранении файла на сервер.'); });
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        if (data.success) {
+                                            statusMessage.innerText = "Файл готов к скачиванию!";
+                                            downloadBtn.href = data.file_path;
+                                            downloadBtn.innerHTML = '<i class="ri-download-2-line"></i> Скачать Launcher.exe';
+                                            downloadBtn.classList.remove('disabled');
+                                            downloadBtn.target = '_blank';
+                                        } else {
+                                            throw new Error(data.error || 'Неизвестная ошибка при сохранении файла.');
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.error('Ошибка при сохранении файла:', err);
+                                        errorContainer.style.display = 'block';
+                                        errorMessage.innerText = 'Не удалось сохранить готовый лаунчер на ваш сервер. ' + err.message;
+                                        downloadBtn.style.display = 'none';
+                                    });
+
+                          } else { // status === 'failed'
+                              statusMessage.innerText = "Сборка завершилась с ошибкой.";
+                              progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
+                              progressBar.classList.add('bg-danger');
+                              errorContainer.style.display = 'block';
+                              errorMessage.innerText = task.error;
+                              resultContainer.style.display = 'block';
+                              downloadBtn.style.display = 'none';
+                          }
+                      }
+                  })
+                  .catch(error => {
+                      console.error('Ошибка при опросе статуса:', error);
+                      clearInterval(pollingInterval);
+                      errorContainer.style.display = 'block';
+                      errorMessage.innerText = error.message;
+                      resultContainer.style.display = 'block';
+                      downloadBtn.style.display = 'none';
+                  });
+        }
+    });
 </script>
+{% endblock %}
+
+{% block css %}
+<style>
+.template-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.template-card {
+    position: relative;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.template-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: #0d6efd;
+}
+
+.template-card.selected {
+    border-color: #0d6efd;
+    background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
+    box-shadow: 0 8px 25px rgba(13,110,253,0.2);
+}
+
+.template-card.selected::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #0d6efd, #6610f2);
+    z-index: 2;
+}
+
+.template-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.template-image-fallback {
+    width: 100%;
+    height: 180px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 48px;
+    position: relative;
+}
+
+.template-image-fallback.default { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.template-image-fallback.cyberpunk { background: linear-gradient(135deg, #ff0080 0%, #7928ca 100%); }
+.template-image-fallback.flat { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.template-image-fallback.futuristic { background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); }
+.template-image-fallback.material { background: linear-gradient(135deg, #4285f4 0%, #34a853 100%); }
+.template-image-fallback.skeuomorphism { background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%); }
+.template-image-fallback.gsax { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+.template-image-fallback.gagarka { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+.template-image-fallback.custom { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+
+.template-content {
+    padding: 16px;
+}
+
+.template-title {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #212529;
+}
+
+.template-description {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.template-radio {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 3;
+}
+
+.template-radio input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #0d6efd;
+}
+
+.template-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 3;
+}
+
+.custom-template-highlight {
+    border: 2px dashed #ffc107;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+}
+
+/* Анимация появления */
+.template-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Стили для мобильных устройств */
+@media (max-width: 768px) {
+    .template-selector {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+    }
+
+    .template-image,
+    .template-image-fallback {
+        height: 150px;
+        font-size: 36px;
+    }
+
+    .template-content {
+        padding: 12px;
+    }
+}
+</style>
 {% endblock %}
