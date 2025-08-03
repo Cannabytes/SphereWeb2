@@ -14,9 +14,11 @@ class scannerSystem {
     private array $result = [];
     private ?array $allowedExtensions = null;
     private array $excludedPaths = [];
+    private array $includedPaths = [];
     private int $bufferSize = 32 * 1024;
+    private bool $useIncludedPaths = false;
 
-    public function __construct(array|string|null $extensions = null, array|string|null $excludePaths = null) {
+    public function __construct(array|string|null $extensions = null, array|string|null $excludePaths = null, array|string|null $includePaths = null) {
         if (is_array($extensions) && count($extensions) > 0) {
             $this->allowedExtensions = array_map(function($ext) {
                 return ltrim(strtolower($ext), '.');
@@ -26,6 +28,7 @@ class scannerSystem {
         }
 
         $this->setExcludedPaths($excludePaths);
+        $this->setIncludedPaths($includePaths);
     }
 
     public function setExcludedPaths(array|string|null $paths): self {
@@ -39,26 +42,57 @@ class scannerSystem {
         return $this;
     }
 
-    private function normalizePath(string $path): string {
-        $normalized = rtrim(str_replace('\\', '/', $path), '/');
-        return $normalized ?: '/';
+    public function setIncludedPaths(array|string|null $paths): self {
+        if ($paths === null) {
+            $this->includedPaths = [];
+            $this->useIncludedPaths = false;
+        } elseif (is_string($paths)) {
+            $this->includedPaths = [$this->normalizePath($paths)];
+            $this->useIncludedPaths = true;
+        } elseif (is_array($paths) && count($paths) > 0) {
+            $this->includedPaths = array_map([$this, 'normalizePath'], $paths);
+            $this->useIncludedPaths = true;
+        } else {
+            $this->includedPaths = [];
+            $this->useIncludedPaths = false;
+        }
+        return $this;
     }
 
+    private function normalizePath(string $path): string {
+        // Нормализуем разделители
+        $normalized = str_replace('\\', '/', $path);
 
-    function getFileCRC32(string $filePath): string|false {
-        // Открываем файл
+        // Убираем завершающий слеш для папок (кроме корня)
+        $normalized = rtrim($normalized, '/');
+
+        // Если путь пустой или только "./", возвращаем "."
+        if ($normalized === '' || $normalized === '.') {
+            return '.';
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Безопасное удаление префикса "./" из пути
+     */
+    private function removePathPrefix(string $path): string {
+        if (str_starts_with($path, './')) {
+            return substr($path, 2);
+        }
+        return $path;
+    }
+
+    private function getFileCRC32(string $filePath): string|false {
         $content = @file_get_contents($filePath);
         if ($content === false) {
             return false;
         }
 
-        // Сохраняем оригинальные данные
         $originalContent = $content;
-
-        // ✅ Оригинальный CRC32
         $originalHash = hash('crc32b', $content);
 
-        // Проверяем расширение файла
         $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
 
         $binaryExts = [
@@ -126,24 +160,18 @@ class scannerSystem {
         ];
 
         if (!isset($binaryExts[$ext])) {
-            // Проверяем наличие BOM
             $hasBOM = strncmp($content, "\xEF\xBB\xBF", 3) === 0;
-
-            // Нормализуем переносы строк
             $content = str_replace(["\r\n", "\r"], "\n", $content);
 
-            // Восстанавливаем BOM если он был
             if ($hasBOM && strncmp($content, "\xEF\xBB\xBF", 3) !== 0) {
                 $content = "\xEF\xBB\xBF" . $content;
             }
         }
 
-        // Если контент был изменен, возвращаем новый хеш
         if ($content !== $originalContent) {
             return hash('crc32b', $content);
         }
 
-        // Иначе возвращаем оригинальный хеш
         return $originalHash;
     }
 
@@ -155,9 +183,54 @@ class scannerSystem {
         }
 
         $this->result = [];
-        $this->scanDirectory($directory);
+
+        if ($this->useIncludedPaths) {
+            $this->scanIncludedPaths($directory);
+        } else {
+            $this->scanDirectory($directory);
+        }
 
         return $this->result;
+    }
+
+    private function scanIncludedPaths(string $baseDirectory): void {
+        foreach ($this->includedPaths as $includedPath) {
+            // Более аккуратная обработка путей
+            if ($baseDirectory === '.') {
+                $fullPath = $this->removePathPrefix($includedPath);
+            } else {
+                $fullPath = rtrim($baseDirectory, '/') . '/' . $this->removePathPrefix($includedPath);
+            }
+
+            // Если это корневой путь (.), проверяем как есть
+            if ($includedPath === '.') {
+                $fullPath = $baseDirectory;
+            }
+
+            if (is_file($fullPath)) {
+                $this->scanFile($fullPath);
+            } elseif (is_dir($fullPath)) {
+                $this->scanDirectory($fullPath);
+            }
+        }
+    }
+
+    private function scanFile(string $filePath): void {
+        $file = new SplFileInfo($filePath);
+
+        if (!$file->isFile()) {
+            return;
+        }
+
+        $path = $this->normalizePath($file->getPathname());
+
+        if ($this->isExcludedPath($path)) {
+            return;
+        }
+
+        if ($this->isAllowedFile($file)) {
+            $this->result[$path] = $this->getFileCRC32($file->getPathname());
+        }
     }
 
     private function scanDirectory(string $directory): void {
@@ -176,6 +249,11 @@ class scannerSystem {
 
                 $path = $this->normalizePath($file->getPathname());
 
+                // Если используются включаемые пути, проверяем соответствие
+                if ($this->useIncludedPaths && !$this->isIncludedPath($path)) {
+                    continue;
+                }
+
                 if ($this->isExcludedPath($path)) {
                     continue;
                 }
@@ -189,9 +267,51 @@ class scannerSystem {
         }
     }
 
+    private function isIncludedPath(string $path): bool {
+        // Нормализуем путь для сравнения
+        $normalizedPath = $this->normalizePath($path);
+
+        // Убираем префикс "./" если есть для корректного сравнения
+        $normalizedPath = $this->removePathPrefix($normalizedPath);
+
+        foreach ($this->includedPaths as $includedPath) {
+            $normalizedIncludedPath = $this->normalizePath($includedPath);
+
+            // Убираем префикс "./" если есть
+            $normalizedIncludedPath = $this->removePathPrefix($normalizedIncludedPath);
+
+            // Точное совпадение для файлов
+            if ($normalizedPath === $normalizedIncludedPath) {
+                return true;
+            }
+
+            // Проверяем, находится ли файл внутри включаемой папки
+            if ($normalizedIncludedPath !== '' && str_starts_with($normalizedPath, $normalizedIncludedPath . '/')) {
+                return true;
+            }
+
+            // Для корневых файлов
+            if ($normalizedIncludedPath === '' && !str_contains($normalizedPath, '/')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private function isExcludedPath(string $path): bool {
+        $normalizedPath = $this->normalizePath($path);
+
+        // Убираем префикс "./" если есть для корректного сравнения
+        $normalizedPath = $this->removePathPrefix($normalizedPath);
+
         foreach ($this->excludedPaths as $excludedPath) {
-            if (str_starts_with($path, $excludedPath)) {
+            $normalizedExcludedPath = $this->normalizePath($excludedPath);
+
+            // Убираем префикс "./" если есть
+            $normalizedExcludedPath = $this->removePathPrefix($normalizedExcludedPath);
+
+            if ($normalizedPath === $normalizedExcludedPath || str_starts_with($normalizedPath, $normalizedExcludedPath . '/')) {
                 return true;
             }
         }
@@ -242,5 +362,13 @@ class scannerSystem {
 
     public function getResult(): array {
         return $this->result;
+    }
+
+    public function getIncludedPaths(): array {
+        return $this->includedPaths;
+    }
+
+    public function isUsingIncludedPaths(): bool {
+        return $this->useIncludedPaths;
     }
 }

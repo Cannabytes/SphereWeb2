@@ -11,23 +11,36 @@ class instance {
 
     private const ALLOWED_EXTENSIONS = [
         'php', 'dist', 'scss', 'sfk', 'webm', 'fig', 'xml', 'jsx', 'zip',
-        'ts', 'svelte', 'mp4', 'otf', 'mjs', 'rst', 'crt', 'npm',
-        'gitignore', 'gitattributes', 'editorconfig', 'yml', 'map',
+        'ts', 'svelte', 'mp4', 'otf', 'mjs', 'rst', 'crt', 'npm', 'editorconfig', 'yml', 'map',
         'flow', 'js', 'html', 'htm', 'css', 'json', 'cur', 'tpl',
         'png', 'jpg', 'jpeg', 'gif', 'ico', 'webp', 'svg', 'md',
         'mp3', 'hbs', 'ttf', 'eot', 'woff', 'woff2', 'sql',
         'htaccess', 'txt',
         'dockerfile', 'makefile', 'license', 'readme', 'changelog',
         'gitignore', 'npmignore', 'npmrc', 'babelrc', 'env',
-        'editorconfig', 'eslintrc', 'prettierrc', 'npm',
+        'editorconfig', 'eslintrc', 'prettierrc', 'npm', 'gitattributes',
     ];
 
+    private const INCLUDED_PATHS = [
+        './index.php',
+        './update.php',
+        './.htaccess',
+        './.gitignore',
+        './.gitattributes',
+        './custom',
+        './data',
+        './src',
+        './uploads',
+        './vendor',
+        './template'  // Изменено с './template/KnightDesert' на './template' для включения всей папки
+    ];
+
+    // Дополнительные пути исключения внутри включаемых папок (при необходимости)
     private const EXCLUDED_PATHS = [
-        '/custom',
-        '/uploads/cache',
-        '/uploads/images',
-        '/uploads/logs',
-        '/data/languages/custom'
+        'uploads/cache',
+        'uploads/images',
+        'uploads/logs',
+        'data/languages/custom'
     ];
 
     public function index(): void {
@@ -38,8 +51,13 @@ class instance {
         header('Content-Type: application/json');
         ini_set('max_execution_time', 300);
         ini_set('memory_limit', '1G');
+
         try {
-            $scanner = new scannerSystem(self::ALLOWED_EXTENSIONS, self::EXCLUDED_PATHS);
+            $scanner = new scannerSystem(
+                self::ALLOWED_EXTENSIONS,
+                self::EXCLUDED_PATHS,
+                self::INCLUDED_PATHS
+            );
             $scanner->setBufferSize(64 * 1024);
 
             $files = $scanner->scan("./");
@@ -48,7 +66,8 @@ class instance {
             $dataFiles = [
                 'success' => true,
                 'total' => $totalFiles,
-                'files' => []
+                'files' => [],
+                'scanned_paths' => self::INCLUDED_PATHS
             ];
 
             foreach ($files as $path => $hash) {
@@ -61,10 +80,12 @@ class instance {
             server::setTimeout(30);
             $response = server::send(type::FILE_SCANNER, $dataFiles)->show()->getResponse();
             echo json_encode($response);
+
         } catch (\Exception $e) {
             echo json_encode([
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'scanned_paths' => self::INCLUDED_PATHS
             ]);
         }
     }
@@ -79,8 +100,15 @@ class instance {
                 throw new \Exception('Список файлов пуст');
             }
 
+            // Проверяем, что все файлы находятся в разрешенных путях
+            $validFiles = $this->validateFilePaths($files);
+            if (count($validFiles) !== count($files)) {
+                $invalidFiles = array_diff($files, $validFiles);
+                throw new \Exception('Обнаружены файлы вне разрешенных путей: ' . implode(', ', $invalidFiles));
+            }
+
             $results = [];
-            foreach ($files as $file) {
+            foreach ($validFiles as $file) {
                 $result = $this->downloadAndUpdateFile($file);
                 $results[] = [
                     'file' => $file,
@@ -100,6 +128,70 @@ class instance {
                 'error' => $e->getMessage()
             ]);
         }
+    }
+
+    private function validateFilePaths(array $files): array {
+        $validFiles = [];
+
+        foreach ($files as $file) {
+            $normalizedFile = $this->normalizePath($file);
+
+            if ($this->isFileInIncludedPaths($normalizedFile)) {
+                $validFiles[] = $file;
+            }
+        }
+
+        return $validFiles;
+    }
+
+    private function isFileInIncludedPaths(string $filePath): bool {
+        $normalizedPath = $this->normalizePath($filePath);
+
+        // Убираем префикс "./" если есть для корректного сравнения
+        if (str_starts_with($normalizedPath, './')) {
+            $normalizedPath = substr($normalizedPath, 2);
+        }
+
+        foreach (self::INCLUDED_PATHS as $includedPath) {
+            $normalizedIncludedPath = $this->normalizePath($includedPath);
+
+            // Убираем префикс "./" если есть
+            if (str_starts_with($normalizedIncludedPath, './')) {
+                $normalizedIncludedPath = substr($normalizedIncludedPath, 2);
+            }
+
+            // Точное совпадение для файлов
+            if ($normalizedPath === $normalizedIncludedPath) {
+                return true;
+            }
+
+            // Проверяем, находится ли файл внутри включаемой папки
+            if ($normalizedIncludedPath !== '' && str_starts_with($normalizedPath, $normalizedIncludedPath . '/')) {
+                return true;
+            }
+
+            // Специальная обработка для корневых файлов
+            if ($normalizedIncludedPath === '' && !str_contains($normalizedPath, '/')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function normalizePath(string $path): string {
+        // Нормализуем разделители
+        $normalized = str_replace('\\', '/', $path);
+
+        // Убираем завершающий слеш (кроме корня)
+        $normalized = rtrim($normalized, '/');
+
+        // Если путь пустой или только "./", возвращаем "."
+        if ($normalized === '' || $normalized === '.') {
+            return '.';
+        }
+
+        return $normalized;
     }
 
     private function downloadAndUpdateFile(string $file): array {
@@ -177,7 +269,7 @@ class instance {
             // Записываем содержимое файла
             $writeResult = @file_put_contents($localPath, $content, LOCK_EX);
             if ($writeResult === false) {
-                throw new \Exception("Не удалось записать данные в файл: " . error_get_last()['message'] ?? 'неизвестная ошибка');
+                throw new \Exception("Не удалось записать данные в файл: " . (error_get_last()['message'] ?? 'неизвестная ошибка'));
             }
 
             // Проверяем, что файл действительно был записан
@@ -208,5 +300,4 @@ class instance {
             ];
         }
     }
-
 }
