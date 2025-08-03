@@ -70,8 +70,7 @@ class change
         }
     }
 
-
-    static public function show($login, $server_id)
+    static public function show($login, $server_id): void
     {
         validation::user_protection();
         $exist_account_inside = player_account::exist_account_inside($login, $server_id);

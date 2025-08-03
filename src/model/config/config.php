@@ -116,16 +116,6 @@ class config
         return null;
     }
 
-    static function findConfigByKey(string $searchKey ): ?array {
-        foreach (self::$settings as $config) {
-            if (isset($config['key']) && $config['key'] === $searchKey) {
-                return $config;
-            }
-        }
-        return null;
-    }
-
-    private array $donateArr = [];
     /**
      * Загрузка конфигов
      */
