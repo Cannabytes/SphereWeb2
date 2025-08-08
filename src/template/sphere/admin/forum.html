@@ -79,8 +79,8 @@
                             <div class="col-sm-3">
                                 {{phrase('output_sorting')}}
                                 <select name="sort" class="form-select">
-                                    <option selected value="messages">{{phrase('by_messages')}}</option>
-                                    <option value="threads">{{phrase('by_topics')}}</option>
+                                    <option {% if forum().getSort() == 'messages' %}selected{% endif %} value="messages">{{phrase('by_messages')}}</option>
+                                    <option {% if forum().getSort() == 'threads' %}selected{% endif %} value="threads">{{phrase('by_topics')}}</option>
                                 </select>
                             </div>
                             <div class="col-sm-2">

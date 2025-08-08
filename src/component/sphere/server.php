@@ -114,12 +114,6 @@ class server
             $link = config::load()->sphereApi()->getIp() . ':' . config::load()->sphereApi()->getPort();
         }
 
-        array_walk_recursive($arr, function (&$item, $key) {
-            if (is_string($item)) {
-                $item = mb_convert_encoding($item, 'UTF-8', mb_detect_encoding($item, 'UTF-8, ISO-8859-1, windows-1251', true));
-            }
-        });
-
         $json = json_encode($arr, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES, 2048);
 
         if ($json === false) {

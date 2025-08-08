@@ -1101,22 +1101,56 @@
                                     </div>
                                 </li>
 
-<li class="list-group-item">
-    <div class="row gx-5 gy-3">
-        <div class="col-xl-12">
-            <div class="d-flex align-items-center mb-2">
-                <p class="fs-14 mb-0 fw-semibold me-3">{{phrase('homepage_link')}}</p>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="isEnableMenuPageLink" {{ config().other().isEnableMenuPageLink() ? 'checked' : '' }}>
-                    <label class="form-check-label" for="isEnableMenuPageLink">{{phrase('show')}} / {{phrase('hide')}}</label>
-                </div>
-            </div>
-            <input value="{{ config().other().getLinkMainPage() }}" type="text"
-                   class="form-control" {{ config().other().getLinkMainPage() ? '' : 'disabled' }}
-                   id="linkMainPage" placeholder="/">
-        </div>
-    </div>
-</li>
+                                <li class="list-group-item">
+                                    <div class="row gx-5 gy-3">
+                                        <div class="col-xl-12">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <p class="fs-14 mb-0 fw-semibold me-3">{{phrase('homepage_link')}}</p>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="isEnableMenuPageLink" {{ config().other().isEnableMenuPageLink() ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="isEnableMenuPageLink">{{phrase('show')}} / {{phrase('hide')}}</label>
+                                                </div>
+                                            </div>
+                                            <input value="{{ config().other().getLinkMainPage() }}" type="text"
+                                                   class="form-control" {{ config().other().getLinkMainPage() ? '' : 'disabled' }}
+                                                   id="linkMainPage" placeholder="/">
+                                        </div>
+                                    </div>
+                                </li>
+
+
+
+                                <li class="list-group-item">
+                                    Соглашения, которые не нужны, оставьте ссылку пустой.
+
+                                    <div class="row gx-5 gy-3 mt-1">
+                                        <div class="col-xl-12">
+                                            <p class="fs-14 mb-1 fw-semibold">Ссылка на "Я прочитал(а) и согласен(а) с Политикой конфиденциальности" при регистрации пользователя</p>
+                                            <input value="{{ config().other().getLinkPrivacyPolicy() }}" type="text"
+                                                   class="form-control"
+                                                   id="linkPrivacyPolicy" placeholder="https://">
+                                        </div>
+                                    </div>
+
+                                    <div class="row gx-5 gy-3">
+                                        <div class="col-xl-12">
+                                            <p class="fs-14 mb-1 fw-semibold">Ссылка на "Я прочитал(а) и согласен(а) с Пользовательским соглашением" при регистрации пользователя</p>
+                                            <input value="{{ config().other().getLinkUserAgreement() }}" type="text"
+                                                   class="form-control"
+                                                   id="linkUserAgreement" placeholder="https://">
+                                        </div>
+                                    </div>
+
+                                    <div class="row gx-5 gy-3">
+                                        <div class="col-xl-12">
+                                            <p class="fs-14 mb-1 fw-semibold">Ссылка на "Я прочитал(а) и согласен(а) с Правилами сервера" при регистрации пользователя</p>
+                                            <input value="{{ config().other().getLinkServerRules() }}" type="text"
+                                                   class="form-control"
+                                                   id="linkServerRules" placeholder="https://">
+                                        </div>
+                                    </div>
+                                </li>
+
 
                                 <script>
                                     $(document).ready(function() {

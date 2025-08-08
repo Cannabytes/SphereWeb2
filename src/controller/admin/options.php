@@ -895,7 +895,6 @@ class options
             ]);
             return;
         }
-
         $data = \Ofey\Logan22\component\sphere\server::send(
             $platform === 'java' ? type::CONNECT_DB : type::CONNECT_DB_MSSQL,
             [
@@ -905,7 +904,6 @@ class options
                 "password" => $password,
             ]
         )->getResponse();
-
         if (isset($data["databases"])) {
             board::alert([
                 'type' => 'notice',

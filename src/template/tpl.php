@@ -26,17 +26,14 @@ use Ofey\Logan22\component\time\microtime;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\component\webserver\info\advancedWebServerInfo;
-use Ofey\Logan22\controller\admin\setDonateServer;
 use Ofey\Logan22\controller\admin\startpack;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\stream\stream;
 use Ofey\Logan22\controller\support\support;
-use Ofey\Logan22\controller\ticket\ticket;
 use Ofey\Logan22\model\admin\launcher;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\forum\forum;
-use Ofey\Logan22\model\forum\internal;
 use Ofey\Logan22\model\log\log;
 use Ofey\Logan22\model\log\logTypes;
 use Ofey\Logan22\model\notification\notification;
@@ -47,7 +44,6 @@ use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\statistic\statistic as statistic_model;
 use Ofey\Logan22\model\template\async;
 use Ofey\Logan22\model\user\auth\auth;
-use Ofey\Logan22\model\user\player\player_account;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\model\user\userModel;
 use Ofey\Logan22\route\Route;
@@ -71,6 +67,7 @@ class tpl
 
     private static array $allTplVars = [];
     private static string $templatePath = "/src/template/sphere/";
+    private static string $fallbackTemplatePath = "/src/template/sphere/";
 
     private static ?bool $isAjax = null;
 
@@ -93,7 +90,7 @@ class tpl
     public static function template_design_route(): ?array
     {
         $fileRoute = $_SERVER['DOCUMENT_ROOT'] . "/template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName(
-        ) . "/route.php";
+            ) . "/route.php";
         if (file_exists($fileRoute)) {
             require_once $fileRoute;
             if (isset($pages)) {
@@ -126,6 +123,8 @@ class tpl
     {
         self::$ajaxLoad = false;
         if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            header('Content-Type: application/json');
+            header("Vary: X-Requested-With");
             self::$ajaxLoad = true;
         }
         $relativePath = str_replace($_SERVER['DOCUMENT_ROOT'], '', dirname($_SERVER["SCRIPT_FILENAME"]));
@@ -161,7 +160,6 @@ class tpl
         $twig = self::generalfunc($twig);
         $twig = self::user_var_func($twig);
 
-        // === КАСТОМНЫЕ ФУНКЦИИ TWIG ИЗ custom/tempfunc/ ===
         $customFuncDir = fileSys::get_dir("/custom/tempfunc/");
         if (is_dir($customFuncDir)) {
             foreach (glob($customFuncDir . '*.php') as $funcFile) {
@@ -181,7 +179,6 @@ class tpl
                 }
             }
         }
-        // === КОНЕЦ КАСТОМНЫХ ФУНКЦИЙ ===
 
         //Ищем в плагинах все дополнительные функции, которые дополняют шаблоны
         $all_plugins_dir = fileSys::get_dir_files("/src/component/plugins", [
@@ -237,7 +234,6 @@ class tpl
         }
 
         self::$allTplVars['dir'] = fileSys::localdir();
-        //        $self                          = url::host() . $relativePath . self::$templatePath;
         $self = self::$templatePath;
 
         self::$allTplVars['protocol'] = url::scheme();
@@ -285,6 +281,43 @@ class tpl
                 "//",
                 "\\",
             ], "/", (self::$templatePath . $var));
+        }));
+
+        $twig->addFunction(new TwigFunction('safe_output_css', function($content) {
+            if (empty($content)) {
+                return '';
+            }
+
+            // Проверяем, есть ли JavaScript код в CSS контенте
+            if (strpos($content, '<script') !== false ||
+                strpos($content, 'var ') !== false ||
+                strpos($content, 'function') !== false ||
+                strpos($content, 'window.') !== false) {
+
+                // Логируем проблему
+                error_log("WARNING: JavaScript code found in CSS content: " . substr($content, 0, 100));
+
+                // Возвращаем только CSS части
+                $content = preg_replace('/<script[^>]*>.*?<\/script>/is', '', $content);
+                $content = preg_replace('/\bvar\s+\w+.*?;/s', '', $content);
+                $content = preg_replace('/\bfunction\s+\w+.*?}/s', '', $content);
+            }
+
+            return new Markup($content, 'UTF-8');
+        }));
+
+        $twig->addFunction(new TwigFunction('safe_output_js', function($content) {
+            if (empty($content)) {
+                return '';
+            }
+
+            // Проверяем, есть ли теги <link> в JS контенте
+            if (strpos($content, '<link') !== false) {
+                error_log("WARNING: CSS link found in JS content");
+                $content = preg_replace('/<link[^>]*>/i', '', $content);
+            }
+
+            return new Markup($content, 'UTF-8');
         }));
 
         $twig->addFunction(new TwigFunction('getUser', function ($id = null): ?userModel {
@@ -385,8 +418,8 @@ class tpl
         $twig->addFunction(new TwigFunction('isAjaxRequest', function () {
             if (self::$isAjax === null) {
                 self::$isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(
-                    $_SERVER['HTTP_X_REQUESTED_WITH']
-                ) == 'xmlhttprequest');
+                        $_SERVER['HTTP_X_REQUESTED_WITH']
+                    ) == 'xmlhttprequest');
             }
 
             return self::$isAjax;
@@ -659,7 +692,7 @@ class tpl
                     $output .= "<tr>";
                     $output .= "<td>" . $method->name . "</td>";
                     $output .= "<td>" . ($method->isPublic() ? "<span class='text-success'>public</span>" : ($method->isProtected(
-                    ) ? "protected" : "<span class='text-danger'>private</span>")) . "</td>";
+                        ) ? "protected" : "<span class='text-danger'>private</span>")) . "</td>";
                     $output .= "<td>" . ($method->isStatic() ? "да" : "нет") . "</td>";
                     $output .= "<td>" . $returnTypeText . "</td>";
                     $output .= "<td>" . ($docComment ?: "Нет комментария") . "</td>";
@@ -2199,41 +2232,185 @@ class tpl
         echo $html;
     }
 
+
     /**
-     * Отображает шаблон с обработкой ошибок
+     * Улучшенная функция извлечения внешних ресурсов с правильной обработкой тегов
      *
-     * @param string $tplName Имя шаблона для отображения
-     * @return void
+     * @param string $css CSS блок шаблона
+     * @param string $js JS блок шаблона
+     * @param string $templatePath Путь к шаблону
+     * @return array Массив с external_css и external_js
      */
-    public static function display($tplName)
+    private static function extractExternalResources($css, $js, $templatePath): array
     {
-        // Проверка, есть ли кастомный файл вместо стандартного
+        $resources = [
+            'external_css' => [],
+            'external_js' => []
+        ];
+
+        // Извлекаем CSS файлы из блока css
+        if ($css) {
+            // Поиск link тегов с различным порядком атрибутов
+            preg_match_all('/<link[^>]*(?:rel\s*=\s*["\']stylesheet["\'][^>]*href\s*=\s*["\']([^"\']+)["\']|href\s*=\s*["\']([^"\']+)["\'][^>]*rel\s*=\s*["\']stylesheet["\'])[^>]*\/?>/i', $css, $cssMatches);
+
+            // Объединяем результаты из обеих групп захвата
+            $cssUrls = array_merge(
+                array_filter($cssMatches[1]), // rel первый
+                array_filter($cssMatches[2])  // href первый
+            );
+
+            foreach ($cssUrls as $cssUrl) {
+                // Обрабатываем относительные пути
+                if (!preg_match('/^https?:\/\//', $cssUrl) && !preg_match('/^\//', $cssUrl)) {
+                    $cssUrl = rtrim($templatePath, '/') . '/' . ltrim($cssUrl, '/');
+                }
+                $resources['external_css'][] = $cssUrl;
+            }
+        }
+
+        // Извлекаем JS файлы из блока js
+        if ($js) {
+            // Ищем только теги script с атрибутом src (внешние скрипты)
+            preg_match_all('/<script[^>]*src\s*=\s*["\']([^"\']+)["\'][^>]*><\/script>/i', $js, $jsMatches);
+
+            foreach ($jsMatches[1] as $jsUrl) {
+                // Обрабатываем относительные пути
+                if (!preg_match('/^https?:\/\//', $jsUrl) && !preg_match('/^\//', $jsUrl)) {
+                    $jsUrl = rtrim($templatePath, '/') . '/' . ltrim($jsUrl, '/');
+                }
+                $resources['external_js'][] = $jsUrl;
+            }
+        }
+
+        return $resources;
+    }
+
+    /**
+     * Исправленная функция удаления внешних ресурсов с извлечением содержимого инлайновых скриптов
+     *
+     * @param string $css CSS блок
+     * @param string $js JS блок
+     * @return array Очищенные css и js (только содержимое, без тегов)
+     */
+    private static function cleanExternalResources($css, $js): array
+    {
+        $cleanCss = '';
+        $cleanJs = '';
+
+        // Обработка CSS блока
+        if ($css) {
+            // Удаляем все теги <link> с rel="stylesheet"
+            $cleanCss = preg_replace('/<link[^>]*(?:rel\s*=\s*["\']stylesheet["\'][^>]*href\s*=\s*["\'][^"\']+["\']|href\s*=\s*["\'][^"\']+["\'][^>]*rel\s*=\s*["\']stylesheet["\'])[^>]*\/?>/i', '', $css);
+
+            // Извлекаем содержимое тегов <style>, если они есть
+            preg_match_all('/<style[^>]*>(.*?)<\/style>/is', $cleanCss, $styleMatches);
+            $cleanCss = '';
+            foreach ($styleMatches[1] as $styleContent) {
+                $cleanCss .= trim($styleContent) . "\n";
+            }
+
+            $cleanCss = trim($cleanCss);
+        }
+
+        // Обработка JS блока
+        if ($js) {
+            // Сначала удаляем все внешние скрипты (с src)
+            $tempJs = preg_replace('/<script[^>]*src\s*=\s*["\'][^"\']+["\'][^>]*><\/script>/i', '', $js);
+
+            // Извлекаем содержимое инлайновых скриптов (без src)
+            preg_match_all('/<script(?![^>]*src\s*=)[^>]*>(.*?)<\/script>/is', $tempJs, $scriptMatches);
+            $cleanJs = '';
+            foreach ($scriptMatches[1] as $scriptContent) {
+                $cleanJs .= trim($scriptContent) . "\n";
+            }
+
+            $cleanJs = trim($cleanJs);
+        }
+
+        return ['css' => $cleanCss, 'js' => $cleanJs];
+    }
+
+    /**
+     * Быстрая диагностика проблемы
+     * Замените временно функцию display() на эту версию, чтобы увидеть что происходит
+     */
+    public static function display($tplName) {
+        if (self::$templatePath !== self::$fallbackTemplatePath) {
+            $primaryFilePath = \Ofey\Logan22\component\fileSys\fileSys::get_dir(self::$templatePath . $tplName);
+            if (!file_exists($primaryFilePath)) {
+                $fallbackFilePath = \Ofey\Logan22\component\fileSys\fileSys::get_dir(self::$fallbackTemplatePath . $tplName);
+                if (file_exists($fallbackFilePath)) {
+                    self::$templatePath = self::$fallbackTemplatePath;
+                }
+            }
+        }
+
         if (file_exists(self::customizeFilePath($tplName, true))) {
             $tplName = self::customizeFilePath($tplName, false);
         }
 
         $twig = self::preload();
-
         try {
-            // Если загрузка идет через аякс, то возвращаем только контент, используется при переходе по ссылкам
+            $template = $twig->load($tplName);
+
             if (self::$ajaxLoad) {
-                $template = $twig->load($tplName);
                 if ($template->hasBlock("content")) {
                     $html = $template->renderBlock("content", self::$allTplVars);
-                    $title = $template->hasBlock("title") ? $template->renderBlock("title") : null;
-                    board::html($html, $title);
-                } else {
-                    // Обработка отсутствия блока "content"
-                    // Можно добавить действия по умолчанию или обработку ошибки здесь
-                    // Например: board::html("Default content", "Default title");
+                    $title = $template->hasBlock("title") ? $template->renderBlock("title", self::$allTplVars) : null;
+                    $css = $template->hasBlock("css") ? $template->renderBlock("css", self::$allTplVars) : null;
+                    $js = $template->hasBlock("js") ? $template->renderBlock("js", self::$allTplVars) : null;
+
+                    $templatePath = self::$allTplVars['template'] ?? '';
+                    $externalResources = self::extractExternalResources($css, $js, $templatePath);
+                    $cleaned = self::cleanExternalResources($css, $js);
+
+                    board::html($html, $title, $cleaned['css'], $cleaned['js'], $externalResources);
                 }
             } else {
-                $template = $twig->load($tplName);
+                if ($template->hasBlock("css") || $template->hasBlock("js")) {
+                    $css = $template->hasBlock("css") ? $template->renderBlock("css", self::$allTplVars) : '';
+                    $js = $template->hasBlock("js") ? $template->renderBlock("js", self::$allTplVars) : '';
+
+                    $templatePath = self::$allTplVars['template'] ?? '';
+                    $externalResources = self::extractExternalResources($css, $js, $templatePath);
+                    $cleaned = self::cleanExternalResources($css, $js);
+
+                    self::$allTplVars['page_external_css'] = $externalResources['external_css'];
+                    self::$allTplVars['page_external_js'] = $externalResources['external_js'];
+                    self::$allTplVars['page_inline_css'] = $cleaned['css'];
+                    self::$allTplVars['page_inline_js'] = $cleaned['js'];
+
+                    // ОТЛАДКА: показываем что попало в переменные (только для read.html)
+                    if ($tplName === 'read.html') {
+                        echo "<!-- DEBUG INFO -->";
+                        echo "<!-- CSS Block Length: " . strlen($css) . " -->";
+                        echo "<!-- JS Block Length: " . strlen($js) . " -->";
+                        echo "<!-- Cleaned CSS Length: " . strlen($cleaned['css']) . " -->";
+                        echo "<!-- Cleaned JS Length: " . strlen($cleaned['js']) . " -->";
+                        echo "<!-- CSS Contains 'var': " . (str_contains($cleaned['css'], 'var ') ? 'YES' : 'NO') . " -->";
+                        echo "<!-- JS Contains 'var': " . (str_contains($cleaned['js'], 'var ') ? 'YES' : 'NO') . " -->";
+
+                        if (str_contains($cleaned['css'], 'var ')) {
+                            echo "<!-- PROBLEM: CSS contains JS code -->";
+                            echo "<!-- CSS Content: " . htmlspecialchars(substr($cleaned['css'], 0, 200)) . "... -->";
+                        }
+                    }
+                }
+
                 echo $template->render(self::$allTplVars);
                 exit();
             }
         } catch (Exception $e) {
-            // Используем улучшенную обработку ошибок через Twig
+            if(self::$ajaxLoad) {
+                $template = $twig->load("errors.html");
+                if ($template->hasBlock("content")) {
+                    $html = $template->renderBlock("content", self::$allTplVars);
+                    $title = $template->hasBlock("title") ? $template->renderBlock("title", self::$allTplVars) : null;
+                    $css = $template->hasBlock("css") ? $template->renderBlock("css", self::$allTplVars) : null;
+                    $js = $template->hasBlock("js") ? $template->renderBlock("js", self::$allTplVars) : null;
+                    board::html($html, $title, $css, $js);
+                }
+            }
             self::handleTwigError($e, $tplName);
         }
     }
@@ -2254,12 +2431,14 @@ class tpl
         } elseif ("custom") {
             self::addVar("template_plugin", ("/custom/plugins/{$pluginDirName}"));
         }
-        $twig = self::preload($tplName);
+        $twig = self::preload();
         if (self::$ajaxLoad) {
             $template = $twig->load($tplName);
             $html = $template->renderBlock("content", self::$allTplVars);
             $title = $template->renderBlock("title");
-            board::html($html, $title);
+            $css = $template->hasBlock("css") ? $template->renderBlock("css") : null;
+            $js = $template->hasBlock("js") ? $template->renderBlock("js") : null;
+            board::html($html, $title, $css, $js);
         } else {
             $template = $twig->load($tplName);
             echo $template->render(self::$allTplVars);

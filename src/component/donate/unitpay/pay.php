@@ -143,7 +143,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 		
 		if ( $method <> 'pay' ) {
 			die(json_encode([
-				'result' => [ 'message' => "Запрос [{$method}] успешно обработан!" ]
+				'result' => [ 'message' => "Запрос успешно обработан" ]
 			]));
 		}
 
@@ -160,7 +160,10 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
         user::getUserId($userId)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
         donate::addUserBonus($userId, $amount);
 
-        echo 'YES';
+        die(json_encode([
+            'result' => [ 'message' => "Запрос успешно обработан" ]
+        ]));
+
     }
 }
  

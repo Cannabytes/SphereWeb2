@@ -211,12 +211,14 @@ class inventory
 
         $account = $_POST['account'];
         $player = $_POST['player'];
-        $coins = (int)$_POST['coin'];
+        $coins = $_POST['coin'] ?? null;
 
         if (!filter_var($coins, FILTER_VALIDATE_INT)) {
             board::error(lang::get_phrase('Enter an integer'));
             return;
         }
+
+        $coins = (int)$coins;
 
         //Проверяем наличие аккаунта
         if (user::self()->getAccounts($account) === null) {
@@ -243,10 +245,6 @@ class inventory
             board::error(lang::get_phrase('Enter a multiple value. For example', (int)$countItemsToGameTransfer * \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getDonateItemToGameTransfer()));
         }
 
-        if (!user::self()->donateDeduct($coins)) {
-            board::error(lang::get_phrase('An error occurred while writing off'));
-        }
-
         $items[] = [
             'objectId' => 0,
             'itemId' => \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getItemIdToGameTransfer(),
@@ -261,7 +259,16 @@ class inventory
             'account' => $account,
             'email' => user::self()->getEmail(),
         ])->show()->getResponse();
+
+        if (isset($json['error']) && $json['error'] !== "") {
+            board::error(lang::get_phrase(145));
+        }
+
         if (isset($json['data']) && $json['data'] === true) {
+
+            if (!user::self()->donateDeduct($coins)) {
+                board::error(lang::get_phrase('An error occurred while writing off'));
+            }
 
             if (config::load()->notice()->isTranslationGame()) {
                 $template = lang::get_other_phrase(config::load()->notice()->getNoticeLang(), 'notice_send_money_to_player');
@@ -273,7 +280,6 @@ class inventory
                 ]);
                 telegram::sendTelegramMessage($msg, config::load()->notice()->getTranslationGameThreadId());
             }
-
             user::self()->addLog(logTypes::LOG_DONATE_COIN_TO_GAME, "LOG_DONATE_COIN_TO_GAME", [$player, \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->getItemIdToGameTransfer(), $countItemsToGameTransfer]);
             board::alert([
                 "type" => "notice",
@@ -281,11 +287,6 @@ class inventory
                 "message" => lang::get_phrase("Transferred to player", $player),
                 'sphereCoin' => user::self()->getDonate(),
             ]);
-
-        }
-
-        if (isset($json['error']) && $json['error'] !== "") {
-            board::error(lang::get_phrase(145));
         }
 
     }

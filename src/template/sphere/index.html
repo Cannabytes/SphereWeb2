@@ -17,13 +17,13 @@
     <div class="card bg-white border-0">
       <div class="alert custom-alert1 alert-secondary">
         <button type="button" class="btn-close ms-auto close_download_auth_panel" data-bs-dismiss="alert"
-          aria-label="Close"><i class="bi bi-x"></i></button>
+                aria-label="Close"><i class="bi bi-x"></i></button>
         <div class="text-center px-0 pb-0">
           <svg class="custom-alert-icon svg-secondary" xmlns="http://www.w3.org/2000/svg" height="1.5rem"
-            viewBox="0 0 24 24" width="1.5rem" fill="#000000">
+               viewBox="0 0 24 24" width="1.5rem" fill="#000000">
             <path d="M0 0h24v24H0z" fill="none" />
             <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
           </svg>
           <h5>Файл для авторизации</h5>
           <p class="">Вы успешно всё сделали, теперь можете загрузить файл, сохраните его, и на сайтах движка SphereWeb
@@ -64,9 +64,9 @@
             <div class="d-sm-flex">
               <div class="">
                 <svg class="me-4 bg-danger-transparent  alt-notify" xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24">
+                     viewBox="0 0 24 24">
                   <path fill="#ff9ea7"
-                    d="M20.057 22H3.943a3.023 3.023 0 0 1-2.618-4.534L9.382 3.511a3.023 3.023 0 0 1 5.236 0l8.057 13.955A3.023 3.023 0 0 1 20.057 22Z">
+                        d="M20.057 22H3.943a3.023 3.023 0 0 1-2.618-4.534L9.382 3.511a3.023 3.023 0 0 1 5.236 0l8.057 13.955A3.023 3.023 0 0 1 20.057 22Z">
                   </path>
                   <circle cx="12" cy="17" r="1" fill="#dc3545"></circle>
                   <path fill="#dc3545" d="M12 14a1 1 0 0 1-1-1V9a1 1 0 0 1 2 0v4a1 1 0 0 1-1 1Z"></path>
@@ -135,166 +135,129 @@
           <h5 class="card-title mb-0">{{phrase(43)}}</h5>
         </div>
         <div class="card-body">
-          <div class="row">
-            <div class="col-xl-6">
-              {% if getUser().isAuth() == false %}
-              {{phrase('you_need')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-auth-user"
-                class="alert-link text-danger">{{phrase('log_in')}}</a>,
-              {{phrase('or')}} <a href="#" data-bs-toggle="modal" data-bs-target="#modal-new-user"
-                class="alert-link text-danger">{{phrase('reg_acc')}}</a>,
-              {{phrase('ctrl_chars')}}.
-              {% else %}
 
+          <!-- Форма регистрации аккаунта -->
+          <div class="row mb-4">
+            <div class="col-12">
               <form action="/registration/account" method="POST">
-                <div class="row mb-0">
-                  <div class="input-group mb-0">
-                    <div
-                      class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between">
-                      {{ phrase(40) }} - {{ getServer().getName() }} x{{ getServer().getRateExp() }} ({{
-                      getServer().getChronicle() }})
+
+                <!-- Информационный блок -->
+                <div class="row mb-3">
+                  <div class="col-12">
+                    <div class="alert alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between">
+                      {{ phrase(40) }} - {{ getServer().getName() }} x{{ getServer().getRateExp() }} ({{ getServer().getChronicle() }})
                       <span data-bs-toggle="modal" data-bs-target="#syncAccount">
                         <label role="button" data-bs-toggle="tooltip" data-bs-placement="top"
-                          data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
+                               data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
                           {{ phrase('Do you already have an account?') }}
                         </label>
                       </span>
                     </div>
                   </div>
+                </div>
 
-                  <div class="row">
-                    <div class="offset-sm-2 col-sm-4 d-flex justify-content-between">
+                <!-- Поля ввода в ряд -->
+                <div class="row align-items-end mb-3">
+                  <!-- Поле логина -->
+                  <div class="col-md-4">
+                    <label for="accountRegistration" class="form-label">{{phrase(480)}}</label>
+                    <div class="input-group">
+                      {% set maxChars = config().registration().getMaximumNumberOfCharactersRegistrationAccount() %}
+                      {% set prefixEnabled = config().registration().getEnablePrefix() %}
+                      {% set prefixType = config().registration().getPrefixType() %}
+                      {% set prefix = config().registration().genPrefix() %}
 
-                      <small id="" class="form-text text-muted">
+                      {% if prefixEnabled and prefixType == 'prefix' %}
+                      <button class="btn btn-light account_prefix" type="button">
+                        <span class="prefix-text">{{ prefix }}</span>
+                      </button>
+                      {% endif %}
+
+                      <input type="text" class="form-control" name="login" id="accountRegistration"
+                             minlength="{{ config().registration().getMinimumNumberOfCharactersRegistrationAccount() }}"
+                             maxlength="{{ maxChars }}" placeholder="{{ phrase(480) }}" aria-label="Login input"
+                             aria-describedby="accountCharCounter" autocomplete="off">
+
+                      {% if prefixEnabled and prefixType == 'suffix' %}
+                      <button class="btn btn-light account_prefix" type="button">
+                        <span class="prefix-text">{{ prefix }}</span>
+                      </button>
+                      {% endif %}
+                    </div>
+                    <div class="d-flex justify-content-between mt-1">
+                      <small class="form-text text-muted">
                         {{ phrase('minMaxCharacters',
                         config().registration().getMinimumNumberOfCharactersRegistrationAccount(),
                         config().registration().getMaximumNumberOfCharactersRegistrationAccount()
                         )}}
                       </small>
-
                       <small id="accountCharCounter" class="form-text text-muted">
                         {{ phrase(312) }}: {{ maxChars }}
                       </small>
-
                     </div>
                   </div>
 
-                  <div class="row mb-3">
-                    <label for="accountRegistration" class="col-sm-2 col-form-label">{{phrase(480)}}</label>
-                    <div class="col-sm-4">
-                      <div class="input-group">
-                        {% set maxChars = config().registration().getMaximumNumberOfCharactersRegistrationAccount() %}
-                        {% set prefixEnabled = config().registration().getEnablePrefix() %}
-                        {% set prefixType = config().registration().getPrefixType() %}
-                        {% set prefix = config().registration().genPrefix() %}
-
-                        {% if prefixEnabled and prefixType == 'prefix' %}
-                        <button class="btn btn-light account_prefix" type="button">
-                          <span class="prefix-text">{{ prefix }}</span>
-                        </button>
-                        {% endif %}
-
-                        <input type="text" class="form-control" name="login" id="accountRegistration"
-                          minlength="{{ config().registration().getMinimumNumberOfCharactersRegistrationAccount() }}"
-                          maxlength="{{ maxChars }}" placeholder="{{ phrase(480) }}" aria-label="Login input"
-                          aria-describedby="accountCharCounter" autocomplete="off">
-
-                        {% if prefixEnabled and prefixType == 'suffix' %}
-                        <button class="btn btn-light account_prefix" type="button">
-                          <span class="prefix-text">{{ prefix }}</span>
-                        </button>
-                        {% endif %}
-                      </div>
+                  <!-- Поле пароля -->
+                  <div class="col-md-4">
+                    <label for="passwordRegistration" class="form-label">{{phrase('password')}}</label>
+                    <div class="input-group">
+                      <input type="password" minlength="4" maxlength="32" class="form-control" name="password"
+                             id="passwordRegistration" autocomplete="new-password" placeholder="{{phrase('password')}}">
+                      <button class="btn btn-link btn-sm toggle-password" type="button" id="togglePassword">
+                        <i class="bi bi-eye-fill"></i>
+                      </button>
+                    </div>
+                    <div class="form-check mt-1">
+                      <input checked class="form-check-input" type="checkbox" value="" name="password_hide" id="password_hide">
+                      <label class="form-check-label" for="password_hide"
+                             data-bs-toggle="tooltip" data-bs-placement="top"
+                             data-bs-original-title="{{phrase(483)}}">
+                        {{phrase(482)}}
+                      </label>
                     </div>
                   </div>
 
-
-                  <div class="row mb-3">
-                    <label for="passwordRegistration" class="col-sm-2 col-form-label">{{phrase('password')}}</label>
-                    <div class="col-sm-4">
-                      <div class="input-group">
-                        <input type="password" minlength="4" maxlength="32" class="form-control" name="password"
-                          id="passwordRegistration" autocomplete="new-password">
-                        <button class="btn btn-link btn-sm toggle-password" type="button" id="togglePassword">
-                          <i class="bi bi-eye-fill"></i> {# Иконка глаза для показа пароля #}
-                        </button>
-
-                      </div>
-                      <div class="form-check mt-1">
-                        <input checked class="form-check-input" type="checkbox" value="" name="password_hide" id="password_hide">
-                        <label class="form-check-label" for="password_hide"
-                               data-bs-toggle="tooltip" data-bs-placement="top"
-                               data-bs-original-title="{{phrase(483)}}">
-                          {{phrase(482)}}
-                        </label>
+                  <!-- Кнопки действий -->
+                  <div class="col-md-4">
+                    <div class="d-flex flex-column gap-2">
+                      <button type="submit" data-func="messageRegistrationAccount"
+                              class="btn btn-success shadow-success btn-wave waves-effect waves-light">
+                        {{phrase('reg_new_acc')}}
+                      </button>
+                      <div data-bs-toggle="tooltip" data-bs-placement="top"
+                           data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
+                        <span data-bs-toggle="modal" data-bs-target="#syncAccount"
+                              class="btn btn-info shadow-info btn-wave waves-effect waves-light w-100">
+                          {{phrase('bind_game_account')}}
+                        </span>
                       </div>
                     </div>
                   </div>
-
-
-                  {% if getUser().isAuth() == false %}
-                  {% if config().isGoogleCaptcha() %}
-                  <input class="captchaToken" type="hidden" name="captcha">
-                  {% else %}
-                  <div class="row mb-4">
-                    <div class="col-6">
-                      <div class="form-floating" style="">
-                        <img src="" class="lightbox-thumb img-thumb captcha_img" />
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" id="auth_captcha" name="captcha" placeholder="Captcha">
-                        <label class="form-label" for="auth_captcha">Captcha</label>
-                      </div>
-                    </div>
-                  </div>
-                  {% endif %}
-                  {% endif %}
-
-                  <div class="container px-0 mb-0">
-                    <div class="row d-flex justify-content-between align-items-center">
-                      <div class="col-12 col-sm-6 text-center text-sm-start mb-2 mb-sm-0">
-                        <button type="submit" data-func="messageRegistrationAccount"
-                          class="btn btn-success shadow-success btn-wave waves-effect waves-light w-100 w-sm-auto">
-                          {{phrase('reg_new_acc')}}
-                        </button>
-                      </div>
-                      <div class="col-12 col-sm-6 text-center text-sm-end">
-                        <div data-bs-toggle="tooltip" data-bs-placement="top"
-                          data-bs-original-title="{{phrase('sync_accounts_question_missing_account')}}">
-                          <span data-bs-toggle="modal" data-bs-target="#syncAccount" data-bs-placement="top"
-                            class="btn btn-success shadow-info btn-wave waves-effect waves-light w-100 w-sm-auto">
-                            {{phrase('bind_game_account')}}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div id="registrationDataMessage" class="ps-0 mt-3 mb-0 d-none">
-                    <span id="registrationMessage" class="badge border bg-danger-transparent rounded-1">
-                      {{ phrase(214) }}
-                    </span>
-                  </div>
-
-
-                  {% endif %}
                 </div>
+
+                <!-- Сообщение об ошибке -->
+                <div class="row">
+                  <div class="col-12">
+                    <div id="registrationDataMessage" class="d-none">
+                      <span id="registrationMessage" class="badge border bg-danger-transparent rounded-1">
+                        {{ phrase(214) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
               </form>
-
-
             </div>
+          </div>
 
-
-
-            <div class="col-xl-6">
-              {% if getUser().isAuth() %}
-              <div
-                class="alert col-sm-12 alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between align-items-center">
+          <!-- Список аккаунтов -->
+          <div class="row">
+            <div class="col-12">
+              <div class="alert alert-primary alert-dismissible fade show custom-alert-icon shadow-sm d-flex justify-content-between align-items-center mb-3">
                 <div>{{ phrase(43) }}</div>
-
                 <span>{{ getUser().getAccounts()|length }} / {{ config().other().getMaxAccount() }}</span>
               </div>
+
               {% if statusSphereServer() is same as(false) %}
               <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <strong>{{phrase('fail_conn_sphereapi_srv')}}</strong>
@@ -317,15 +280,15 @@
 
                         {% if config().other().getIsAllowDeleteAccount() %}
                         <i data-account="{{account.getAccount()|raw}}" role="button"
-                          class="bi bi-person-dash deleteAccount" data-bs-toggle="tooltip" data-bs-placement="top"
-                          data-bs-title="{{phrase('account_deletion')}}"></i>
+                           class="bi bi-person-dash deleteAccount" data-bs-toggle="tooltip" data-bs-placement="top"
+                           data-bs-title="{{phrase('account_deletion')}}"></i>
                         {% endif %}
 
                       </td>
                       <td>
                         <i role="button" class="fe fe-settings btn-change-password"
-                          data-account="{{account.getAccount()|raw}}" data-bs-toggle="modal"
-                          data-bs-effect="effect-slide-in-right" data-bs-target="#changepassword">
+                           data-account="{{account.getAccount()|raw}}" data-bs-toggle="modal"
+                           data-bs-effect="effect-slide-in-right" data-bs-target="#changepassword">
                           {% if account.isPasswordHide() %}
                           * * * * * *
                           {% else %}
@@ -343,8 +306,8 @@
                             {% for i, character in account.getCharacters() %}
                             <span class="avatar avatar-sm me-2">
                               <img
-                                src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
-                                alt="img">
+                                    src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
+                                    alt="img">
                             </span>
 
                             </a>
@@ -355,7 +318,7 @@
 
                         {% else %}
                         <i class="bi bi-people ms-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="top"
-                          data-bs-title="{{phrase('no_chars_acc')}}"></i>
+                           data-bs-title="{{phrase('no_chars_acc')}}"></i>
                         {% endif %}
                       </td>
                     </tr>
@@ -364,7 +327,7 @@
                     <tr class="character-container character-row-{{account.getAccount()|raw}}" style="display: none;">
                       <td colspan="3" class="p-0">
                         <div class="p-2 bg-light">
-                          <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 g-2">
+                          <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-2">
                             {% for i, character in account.getCharacters() %}
                             <div class="col">
                               <div class="card border h-100 overflow-hidden">
@@ -373,9 +336,9 @@
                                     <!-- Аватар персонажа -->
                                     <div class="flex-shrink-0 me-2">
                                       <img
-                                        src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
-                                        alt=""
-                                        class="avatar avatar-xl img-thumbnail {% if character.getOnline() %}online{% else %}offline{% endif %}">
+                                            src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
+                                            alt=""
+                                            class="avatar avatar-xl img-thumbnail {% if character.getOnline() %}online{% else %}offline{% endif %}">
                                     </div>
 
                                     <!-- Информация о персонаже -->
@@ -405,7 +368,7 @@
                                           <span class="d-inline-flex align-items-center">
                                             {{clan_icon(character.getClanCrest())|raw}}
                                             <span class="text-truncate d-inline-block"
-                                              style="max-width: 120px; vertical-align: middle;">{{character.getClanName()}}</span>
+                                                  style="max-width: 120px; vertical-align: middle;">{{character.getClanName()}}</span>
                                           </span>
                                         </small>
                                         {% endif %}
@@ -415,21 +378,21 @@
 
                                   <!-- Аккордеон с функциями -->
                                   <div class="accordion accordion-customicon1 accordions-items-seperate mt-2"
-                                    id="accordion_open_list_{{character.getPlayerId()}}">
+                                       id="accordion_open_list_{{character.getPlayerId()}}">
                                     <div class="accordion-item">
                                       <h2 class="accordion-header" id="open_list_{{character.getPlayerId()}}">
                                         <button class="accordion-button collapsed py-2 text-wrap" type="button"
-                                          data-bs-toggle="collapse"
-                                          data-bs-target="#collapse_open_list_{{character.getPlayerId()}}"
-                                          aria-expanded="false"
-                                          aria-controls="collapse_open_list_{{character.getPlayerId()}}">
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapse_open_list_{{character.getPlayerId()}}"
+                                                aria-expanded="false"
+                                                aria-controls="collapse_open_list_{{character.getPlayerId()}}">
                                           <span class="text-truncate">{{phrase('stuck_crit_err')}}</span>
                                         </button>
                                       </h2>
                                       <div id="collapse_open_list_{{character.getPlayerId()}}"
-                                        class="accordion-collapse collapse"
-                                        aria-labelledby="open_list_{{character.getPlayerId()}}"
-                                        data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
+                                           class="accordion-collapse collapse"
+                                           aria-labelledby="open_list_{{character.getPlayerId()}}"
+                                           data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
                                         <div class="accordion-body py-2 text-wrap">
                                           <p class="small mb-2 text-break">{{phrase('emerg_send_char_town')}}</p>
                                           <hr class="my-2">
@@ -440,15 +403,15 @@
 
                                               {% if getServer().isResetItemsToWarehouse() == true %}
                                               <input checked name="itemsToWarehouse" type="checkbox"
-                                                class="form-check-input" id="check_{{character.getPlayerId()}}">
+                                                     class="form-check-input" id="check_{{character.getPlayerId()}}">
                                               <label class="form-check-label small text-wrap"
-                                                for="check_{{character.getPlayerId()}}">{{phrase('send_items_wh')}}</label>
+                                                     for="check_{{character.getPlayerId()}}">{{phrase('send_items_wh')}}</label>
                                               {% endif %}
 
                                             </div>
                                             <button type="submit" class="btn btn-success btn-sm w-100 text-nowrap">
                                               <span class="d-inline-block text-truncate"
-                                                style="max-width: 85%;">{{phrase(364)}}</span>
+                                                    style="max-width: 85%;">{{phrase(364)}}</span>
                                               <i class="ri-send-plane-fill ms-1"></i>
                                             </button>
                                           </form>
@@ -460,25 +423,25 @@
                                     <div class="accordion-item">
                                       <h2 class="accordion-header" id="hwid_remove_{{character.getPlayerId()}}">
                                         <button class="accordion-button collapsed py-2 text-wrap" type="button"
-                                          data-bs-toggle="collapse"
-                                          data-bs-target="#collapse_hwid_remove_{{character.getPlayerId()}}"
-                                          aria-expanded="false"
-                                          aria-controls="collapse_hwid_remove_{{character.getPlayerId()}}">
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapse_hwid_remove_{{character.getPlayerId()}}"
+                                                aria-expanded="false"
+                                                aria-controls="collapse_hwid_remove_{{character.getPlayerId()}}">
                                           <span class="text-truncate">{{phrase('reset_hwid')}}</span>
                                         </button>
                                       </h2>
                                       <div id="collapse_hwid_remove_{{character.getPlayerId()}}"
-                                        class="accordion-collapse collapse"
-                                        aria-labelledby="open_list_{{character.getPlayerId()}}"
-                                        data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
+                                           class="accordion-collapse collapse"
+                                           aria-labelledby="open_list_{{character.getPlayerId()}}"
+                                           data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
                                         <div class="accordion-body py-2 text-wrap">
                                           <p class="small mb-2 text-break">{{phrase('reset_hwid_emerg_fn')}}.</p>
                                           <button type="submit"
-                                            class="btn btn-success btn-sm w-100 removeHWID text-nowrap"
-                                            data-obj="{{character.getPlayerId()}}"
-                                            data-account="{{account.getAccount()}}">
+                                                  class="btn btn-success btn-sm w-100 removeHWID text-nowrap"
+                                                  data-obj="{{character.getPlayerId()}}"
+                                                  data-account="{{account.getAccount()}}">
                                             <span class="d-inline-block text-truncate"
-                                              style="max-width: 85%;">{{phrase('reset_hwid')}}</span>
+                                                  style="max-width: 85%;">{{phrase('reset_hwid')}}</span>
                                             <i class="ri-lock-unlock-line ms-1"></i>
                                           </button>
                                         </div>
@@ -501,9 +464,9 @@
                 </table>
               </div>
               {% endif %}
-              {% endif %}
             </div>
           </div>
+
         </div>
       </div>
 
@@ -513,7 +476,7 @@
 
   {% if config().other().getIsAllowDeleteAccount() %}
   <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel"
-    aria-hidden="true">
+       aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -577,7 +540,7 @@
           <input name="login" type="hidden" class="account_new_change_password_input" value="">
           <div class="modal-body text-start">
             <h6 class="text-center">{{phrase('new_password')}} <span
-                class="text-danger account_new_change_password">{{getUser().getName()}}</span></h6>
+                  class="text-danger account_new_change_password">{{getUser().getName()}}</span></h6>
             <div class="form-floating">
               <input name="password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
               <label for="floatingPassword">{{phrase('password')}}</label>
@@ -622,7 +585,7 @@
               <div>
                 <i class="task-icon bg-primary"></i>
                 <h6 class="fw-semibold">{{forum.title}}<span
-                    class="text-muted fs-11 mx-2 fw-normal">{{forum.last_post_date|date('h:m:s d.m.Y')}}</span>
+                      class="text-muted fs-11 mx-2 fw-normal">{{forum.last_post_date|date('h:m:s d.m.Y')}}</span>
                 </h6>
                 <p class="text-muted fs-12 mb-0">
                   <a href="javascript:void(0)" class="fw-semibold text-primary">

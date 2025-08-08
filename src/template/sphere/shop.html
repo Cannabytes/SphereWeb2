@@ -18,12 +18,12 @@
         {% set totalItems = 0 %}
         {% set hasNoneCategory = false %}
         {% set noneCategoryCount = 0 %}
-        
+
         {# Первый проход - собираем категории #}
         {% for objectId, products in getShopItems() %}
             {% set totalItems = totalItems + 1 %}
             {% set itemCategory = products[0].getCategory() %}
-            
+
             {% if itemCategory is empty or itemCategory == 'none' %}
                 {% set hasNoneCategory = true %}
                 {% set noneCategoryCount = noneCategoryCount + 1 %}
@@ -33,7 +33,7 @@
                 {% endif %}
             {% endif %}
         {% endfor %}
-        
+
         {# Если есть предметы без категории, добавляем 'none' в список категорий #}
         {% if hasNoneCategory %}
             {% set allCategories = ['none']|merge(allCategories) %}
@@ -48,12 +48,12 @@
                     {# Подсчитываем количество товаров для текущей категории #}
                     {% set categoryItemCount = 0 %}
                     {% for objectId, products in getShopItems() %}
-                        {% if (category == 'none' and (products[0].getCategory() is empty or products[0].getCategory() == 'none')) 
+                        {% if (category == 'none' and (products[0].getCategory() is empty or products[0].getCategory() == 'none'))
                             or (category != 'none' and products[0].getCategory() == category) %}
                             {% set categoryItemCount = categoryItemCount + 1 %}
                         {% endif %}
                     {% endfor %}
-                    
+
                     {% if category != 'none' or noneCategoryCount > 0 %}
                         <li class="category-tab-item" role="presentation">
                           <button class="category-tab-link {% if loop.first %}active{% endif %}"

@@ -94,17 +94,34 @@ class board
         return new self();
     }
 
-    public static function html(string $html, string $title = "")
+    public static function html($html, $title = null, $css = null, $js = null, $externalResources = [])
     {
         header('Content-Type: application/json; charset=utf-8');
+        if (!empty($js)) {
+            $js = preg_replace('#<script\b[^>]*>(.*?)</script>#is', '$1', $js);
+            $js = trim($js);
+        }
+
         $arr = [
-          'content' => $html,
-          'title'   => $title,
+            'content' => $html,
+            'title'   => $title,
+            'css'     => $css ?? "",
+            'js'      => $js,
         ];
+
+        // Добавляем внешние ресурсы, если они есть
+        if (!empty($externalResources['external_css'])) {
+            $arr['external_css'] = $externalResources['external_css'];
+        }
+
+        if (!empty($externalResources['external_js'])) {
+            $arr['external_js'] = $externalResources['external_js'];
+        }
         $arr = array_merge(self::$var, $arr);
         echo json_encode($arr, JSON_UNESCAPED_UNICODE);
         exit();
     }
+
 
     public static function response($type, $arr = [], bool $next = false): void
     {

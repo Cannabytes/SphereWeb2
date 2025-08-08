@@ -498,7 +498,6 @@ class support
             telegram::sendTelegramMessage($msg, config::load()->notice()->getTechnicalSupportThreadId());
         }
 
-
         board::reload();
         board::success("Добавлен");
     }
@@ -846,13 +845,76 @@ class support
             'posts' => self::getMessages($id),
             'id' => $id,
             'isUserModerator' => self::isUserModerator(),
+            'currentUserId' => \Ofey\Logan22\model\user\user::self()->getId(),
         ]);
         tpl::display("support/read.html");
     }
 
-    private static function getMessages($id): array
+    private static function getMessages(int $threadId, int $startFromId = 0): array
     {
-        return sql::getRows("SELECT id, thread_id, user_id, message, screens, date_update, date_create FROM support_message WHERE thread_id = ?", [$id]);
+        // Базовый SQL-запрос
+        $sql = "SELECT id, thread_id, user_id, message, screens, date_update, date_create 
+            FROM support_message 
+            WHERE thread_id = ?";
+
+        // Параметры для запроса
+        $params = [$threadId];
+
+        // Если указан ID, с которого нужно начать, добавляем условие в запрос
+        if ($startFromId > 0) {
+            $sql .= " AND id > ?";
+            $params[] = $startFromId;
+        }
+
+        // Для получения сообщений в правильном порядке, всегда нужна сортировка
+        $sql .= " ORDER BY id ASC";
+
+        return sql::getRows($sql, $params);
+    }
+
+    public static function getRefreshMessage()
+    {
+        // Устанавливаем заголовок, чтобы клиент точно знал, что это JSON
+        header('Content-Type: application/json');
+
+        $threadId = (int)($_POST['threadId'] ?? 0);
+        $startFromId = (int)($_POST['startFromId'] ?? 0);
+
+        // Получаем ID владельца тикета для проверки прав
+        $thread = sql::getRow("SELECT id, owner_id FROM support_thread WHERE id = ?", [$threadId]);
+
+        if (!$thread) {
+            // Если тикет не найден, возвращаем JSON с ошибкой
+            echo json_encode(['error' => 'Thread not found']);
+            exit;
+        }
+
+        // Корректная проверка прав: разрешаем владельцу или модератору/админу
+        $isOwner = $thread['owner_id'] === user::self()->getId();
+        // isUserModerator() уже включает проверку на админа
+        $isAllowed = $isOwner || self::isUserModerator();
+
+        if ($isAllowed) {
+            $messages = self::getMessages($thread['id'], $startFromId);
+
+            // Добавляем информацию о пользователе в каждое сообщение
+            foreach ($messages as &$message) {
+                // Вам нужно будет убедиться, что метод для получения информации
+                // о пользователе по ID существует и правильно называется.
+                // Исходя из вашего кода, предполагаю, что это может выглядеть так:
+                $userInfo = \Ofey\Logan22\model\user\user::getUserId($message['user_id']);
+                $message['user_name'] = $userInfo->getName();
+            }
+
+            // Возвращаем массив сообщений (даже если он пустой)
+            echo json_encode($messages);
+        } else {
+            // Если доступ запрещен, возвращаем JSON с ошибкой
+            echo json_encode(['error' => 'Not allowed to view messages']);
+        }
+
+        // Завершаем выполнение скрипта после отправки ответа
+        exit;
     }
 
     public static function toMove(): void

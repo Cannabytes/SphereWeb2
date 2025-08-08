@@ -415,243 +415,7 @@
 </div>
 {% endblock %}
 
-{% block js %}
-<script>
-
-  function loadConfettiScript() {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js';
-      script.onload = resolve;
-      script.onerror = reject;
-      document.head.appendChild(script);
-    });
-  }
-
-
-  $(document).ready(function() {
-    loadConfettiScript().catch(err => console.error('Ошибка загрузки ConfettiGenerator:', err));
-    // Инициализация всех тултипов
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl, {
-        html: false,
-        sanitize: true
-      });
-    });
-
-    // Инициализация тоста
-    var toastLiveExample = document.getElementById('liveToast');
-    var toast = new bootstrap.Toast(toastLiveExample, {
-      delay: 3000
-    });
-
-    // Исправление протокола http на https в реферальной ссылке
-    var referralLink = $('#referralLink');
-    var currentLink = referralLink.val();
-    if (currentLink.startsWith('http:')) {
-      referralLink.val(currentLink.replace('http:', 'https:'));
-    }
-
-    // Копирование реферальной ссылки
-    $('#copyLink').on('click', function() {
-      var referralLink = $('#referralLink').val();
-      navigator.clipboard.writeText(referralLink).then(function() {
-        // Показываем тост-уведомление
-        toast.show();
-
-        // Меняем текст кнопки на короткое время
-        var originalText = $('#copyLink').html();
-        $('#copyLink').html('<i class="ri-check-line me-1"></i> Скопировано');
-
-        setTimeout(function() {
-          $('#copyLink').html(originalText);
-        }, 2000);
-      }, function(err) {
-        console.error('Ошибка копирования: ', err);
-      });
-    });
-
-    // Анимация счетчиков
-    $('.counter').each(function() {
-      const $this = $(this);
-      const countTo = parseInt($this.text());
-
-      $({ countNum: 0 }).animate({
-        countNum: countTo
-      }, {
-        duration: 1000,
-        easing: 'swing',
-        step: function() {
-          $this.text(Math.floor(this.countNum));
-        },
-        complete: function() {
-          $this.text(this.countNum);
-        }
-      });
-    });
-
-    // Обработка эффектов модального окна
-    document.getElementById("modal_bonus_list").addEventListener('hidden.bs.modal', function (e) {
-      let removeClass = this.classList.value.match(/(^|\s)effect-\S+/g);
-      if (removeClass && removeClass[0]) {
-        removeClass = removeClass[0].trim();
-        this.classList.remove(removeClass);
-      }
-
-      // Сбрасываем содержимое сообщения и скрываем блок наград
-      $(".referral_message").empty();
-      $(".reward-items").addClass('d-none');
-      $(".reward-items .row").empty();
-
-      // Показываем кнопку подтверждения
-      $("#confirm_bonus").show();
-    });
-
-    // Кнопка для открытия модального окна
-    $(".modal-effect").on('click', function (e) {
-      e.preventDefault();
-      let effect = $(this).data('bs-effect');
-      $("#modal_bonus_list").addClass(effect);
-    });
-
-    $("#confirm_bonus").on("click", function () {
-      // Показываем загрузку
-      $(".referral_message").html('<div class="text-center"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">{{phrase("collecting_bonus")}}</p></div>');
-
-      // Скрываем кнопку подтверждения на время запроса
-      $(this).hide();
-
-      // Отправляем запрос
-      AjaxSend("/referral/bonus", "POST", {}, true).then(function (data) {
-        if (data.success) {
-          // Показываем сообщение об успехе
-          $(".referral_message").html('<div class="alert alert-success align-items-center"><i class="ri-check-double-line me-2 fs-5"></i>' + data.message + '</div>');
-
-          // Отображаем список наград
-          if (data.items && data.items.length > 0) {
-            $(".reward-items").removeClass('d-none');
-            let itemsHtml = '';
-
-            data.items.forEach(function(item) {
-              // Форматируем название предмета
-              let itemName = item.getItemName ? item.getItemName() : item.itemName || item.name || '';
-              let addName = '';
-              let enchant = 0;
-
-              if (item.getAddName && item.getAddName()) {
-                addName = item.getAddName();
-                itemName = addName + ' ' + itemName;
-              } else if (item.addName) {
-                addName = item.addName;
-                itemName = addName + ' ' + itemName;
-              }
-
-              if (item.getEnchant && item.getEnchant() > 0) {
-                enchant = item.getEnchant();
-                itemName = '+' + enchant + ' ' + itemName;
-              } else if (item.enchant && item.enchant > 0) {
-                enchant = item.enchant;
-                itemName = '+' + enchant + ' ' + itemName;
-              }
-
-              // Получаем иконку предмета
-              let itemIcon = item.getIcon ? item.getIcon() : item.icon || '';
-              let itemCount = item.getCount ? item.getCount() : item.count || 1;
-
-              itemsHtml += `
-              <div class="col-md-4 col-6 mb-3">
-                <div class="received-item text-center p-3 bg-light rounded-4 shadow-sm hover-scale">
-                  <img src="${itemIcon}" class="mb-2 item-image" width="48" height="48" alt="${itemName}">
-                  <div class="small fw-medium text-truncate" title="${itemName}">${itemName}</div>
-                  <div class="badge bg-primary rounded-pill">x${itemCount}</div>
-                </div>
-              </div>
-            `;
-            });
-
-            $(".reward-items .row").html(itemsHtml);
-
-            // Добавляем заголовок с информацией о награде
-            $(".reward-items h6").text('{{phrase("received_items")}}:');
-          }
-
-          // Добавляем эффект конфетти
-          try {
-            const canvas = document.createElement('canvas');
-            canvas.id = 'confetti-canvas';
-            canvas.style.position = 'absolute';
-            canvas.style.top = '0';
-            canvas.style.left = '0';
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
-            canvas.style.pointerEvents = 'none';
-            canvas.style.zIndex = '1';
-
-            // Добавляем canvas в контейнер модального окна
-            const modalContent = document.querySelector('#modal_bonus_list .modal-content');
-            modalContent.style.position = 'relative';
-            modalContent.style.overflow = 'hidden';
-            modalContent.appendChild(canvas);
-
-            const confettiSettings = {
-              target: 'confetti-canvas',
-              max: 150,
-              size: 1.5,
-              animate: true,
-              props: ['circle', 'square', 'triangle', 'line'],
-              colors: [[165,104,246],[230,61,135],[0,199,228],[253,214,126]],
-              clock: 25
-            };
-
-            if (window.ConfettiGenerator) {
-              const confetti = new ConfettiGenerator(confettiSettings);
-              confetti.render();
-            } else {
-              console.error('ConfettiGenerator не загружен');
-            }
-          } catch (e) {
-            console.error('Ошибка при создании эффекта конфетти:', e);
-          }
-
-        } else {
-          // Показываем сообщение об ошибке и возвращаем кнопку
-          $(".referral_message").html('<div class="alert alert-danger  align-items-center"><i class="ri-error-warning-line me-2 fs-5"></i>' + (data.message || 'Произошла ошибка при получении бонуса') + '</div>');
-          $("#confirm_bonus").show();
-        }
-      }).catch(function(error) {
-        $(".referral_message").html('<div class="alert alert-danger align-items-center"><i class="ri-error-warning-line me-2 fs-5"></i>Произошла ошибка при отправке запроса</div>');
-        console.error('Ошибка запроса:', error);
-        $("#confirm_bonus").show();
-      });
-    });
-
-    // Обработка кнопок поделиться
-    $('.share-buttons .btn').on('click', function() {
-      let url = $('#referralLink').val();
-      let platform = $(this).find('i').attr('class');
-      let shareUrl = '';
-
-      if (platform.includes('vk')) {
-        shareUrl = 'https://vk.com/share.php?url=' + encodeURIComponent(url);
-      } else if (platform.includes('telegram')) {
-        shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url);
-      } else if (platform.includes('discord')) {
-        navigator.clipboard.writeText(url);
-        alert('Ссылка скопирована. Теперь вы можете вставить её в Discord.');
-        return;
-      } else if (platform.includes('whatsapp')) {
-        shareUrl = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(url);
-      }
-
-      if (shareUrl) {
-        window.open(shareUrl, '_blank', 'width=800,height=600');
-      }
-    });
-  });
-</script>
-
-<!-- Добавляем стили для анимаций и эффектов -->
+{% block css %}
 <style>
 
 .share-buttons .btn {
@@ -922,4 +686,242 @@
   font-weight: bold;
 }
 </style>
+{% endblock %}
+
+{% block js %}
+<script>
+
+  function loadConfettiScript() {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+
+  $(document).ready(function() {
+    loadConfettiScript().catch(err => console.error('Ошибка загрузки ConfettiGenerator:', err));
+    // Инициализация всех тултипов
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {
+        html: false,
+        sanitize: true
+      });
+    });
+
+    // Инициализация тоста
+    var toastLiveExample = document.getElementById('liveToast');
+    var toast = new bootstrap.Toast(toastLiveExample, {
+      delay: 3000
+    });
+
+    // Исправление протокола http на https в реферальной ссылке
+    var referralLink = $('#referralLink');
+    var currentLink = referralLink.val();
+    if (currentLink.startsWith('http:')) {
+      referralLink.val(currentLink.replace('http:', 'https:'));
+    }
+
+    // Копирование реферальной ссылки
+    $('#copyLink').on('click', function() {
+      var referralLink = $('#referralLink').val();
+      navigator.clipboard.writeText(referralLink).then(function() {
+        // Показываем тост-уведомление
+        toast.show();
+
+        // Меняем текст кнопки на короткое время
+        var originalText = $('#copyLink').html();
+        $('#copyLink').html('<i class="ri-check-line me-1"></i> Скопировано');
+
+        setTimeout(function() {
+          $('#copyLink').html(originalText);
+        }, 2000);
+      }, function(err) {
+        console.error('Ошибка копирования: ', err);
+      });
+    });
+
+    // Анимация счетчиков
+    $('.counter').each(function() {
+      const $this = $(this);
+      const countTo = parseInt($this.text());
+
+      $({ countNum: 0 }).animate({
+        countNum: countTo
+      }, {
+        duration: 1000,
+        easing: 'swing',
+        step: function() {
+          $this.text(Math.floor(this.countNum));
+        },
+        complete: function() {
+          $this.text(this.countNum);
+        }
+      });
+    });
+
+    // Обработка эффектов модального окна
+    document.getElementById("modal_bonus_list").addEventListener('hidden.bs.modal', function (e) {
+      let removeClass = this.classList.value.match(/(^|\s)effect-\S+/g);
+      if (removeClass && removeClass[0]) {
+        removeClass = removeClass[0].trim();
+        this.classList.remove(removeClass);
+      }
+
+      // Сбрасываем содержимое сообщения и скрываем блок наград
+      $(".referral_message").empty();
+      $(".reward-items").addClass('d-none');
+      $(".reward-items .row").empty();
+
+      // Показываем кнопку подтверждения
+      $("#confirm_bonus").show();
+    });
+
+    // Кнопка для открытия модального окна
+    $(".modal-effect").on('click', function (e) {
+      e.preventDefault();
+      let effect = $(this).data('bs-effect');
+      $("#modal_bonus_list").addClass(effect);
+    });
+
+    $("#confirm_bonus").on("click", function () {
+      // Показываем загрузку
+      $(".referral_message").html('<div class="text-center"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">{{phrase("collecting_bonus")}}</p></div>');
+
+      // Скрываем кнопку подтверждения на время запроса
+      $(this).hide();
+
+      // Отправляем запрос
+      AjaxSend("/referral/bonus", "POST", {}, true).then(function (data) {
+        if (data.success) {
+          // Показываем сообщение об успехе
+          $(".referral_message").html('<div class="alert alert-success align-items-center"><i class="ri-check-double-line me-2 fs-5"></i>' + data.message + '</div>');
+
+          // Отображаем список наград
+          if (data.items && data.items.length > 0) {
+            $(".reward-items").removeClass('d-none');
+            let itemsHtml = '';
+
+            data.items.forEach(function(item) {
+              // Форматируем название предмета
+              let itemName = item.getItemName ? item.getItemName() : item.itemName || item.name || '';
+              let addName = '';
+              let enchant = 0;
+
+              if (item.getAddName && item.getAddName()) {
+                addName = item.getAddName();
+                itemName = addName + ' ' + itemName;
+              } else if (item.addName) {
+                addName = item.addName;
+                itemName = addName + ' ' + itemName;
+              }
+
+              if (item.getEnchant && item.getEnchant() > 0) {
+                enchant = item.getEnchant();
+                itemName = '+' + enchant + ' ' + itemName;
+              } else if (item.enchant && item.enchant > 0) {
+                enchant = item.enchant;
+                itemName = '+' + enchant + ' ' + itemName;
+              }
+
+              // Получаем иконку предмета
+              let itemIcon = item.getIcon ? item.getIcon() : item.icon || '';
+              let itemCount = item.getCount ? item.getCount() : item.count || 1;
+
+              itemsHtml += `
+              <div class="col-md-4 col-6 mb-3">
+                <div class="received-item text-center p-3 bg-light rounded-4 shadow-sm hover-scale">
+                  <img src="${itemIcon}" class="mb-2 item-image" width="48" height="48" alt="${itemName}">
+                  <div class="small fw-medium text-truncate" title="${itemName}">${itemName}</div>
+                  <div class="badge bg-primary rounded-pill">x${itemCount}</div>
+                </div>
+              </div>
+            `;
+            });
+
+            $(".reward-items .row").html(itemsHtml);
+
+            // Добавляем заголовок с информацией о награде
+            $(".reward-items h6").text('{{phrase("received_items")}}:');
+          }
+
+          // Добавляем эффект конфетти
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.id = 'confetti-canvas';
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '1';
+
+            // Добавляем canvas в контейнер модального окна
+            const modalContent = document.querySelector('#modal_bonus_list .modal-content');
+            modalContent.style.position = 'relative';
+            modalContent.style.overflow = 'hidden';
+            modalContent.appendChild(canvas);
+
+            const confettiSettings = {
+              target: 'confetti-canvas',
+              max: 150,
+              size: 1.5,
+              animate: true,
+              props: ['circle', 'square', 'triangle', 'line'],
+              colors: [[165,104,246],[230,61,135],[0,199,228],[253,214,126]],
+              clock: 25
+            };
+
+            if (window.ConfettiGenerator) {
+              const confetti = new ConfettiGenerator(confettiSettings);
+              confetti.render();
+            } else {
+              console.error('ConfettiGenerator не загружен');
+            }
+          } catch (e) {
+            console.error('Ошибка при создании эффекта конфетти:', e);
+          }
+
+        } else {
+          // Показываем сообщение об ошибке и возвращаем кнопку
+          $(".referral_message").html('<div class="alert alert-danger  align-items-center"><i class="ri-error-warning-line me-2 fs-5"></i>' + (data.message || 'Произошла ошибка при получении бонуса') + '</div>');
+          $("#confirm_bonus").show();
+        }
+      }).catch(function(error) {
+        $(".referral_message").html('<div class="alert alert-danger align-items-center"><i class="ri-error-warning-line me-2 fs-5"></i>Произошла ошибка при отправке запроса</div>');
+        console.error('Ошибка запроса:', error);
+        $("#confirm_bonus").show();
+      });
+    });
+
+    // Обработка кнопок поделиться
+    $('.share-buttons .btn').on('click', function() {
+      let url = $('#referralLink').val();
+      let platform = $(this).find('i').attr('class');
+      let shareUrl = '';
+
+      if (platform.includes('vk')) {
+        shareUrl = 'https://vk.com/share.php?url=' + encodeURIComponent(url);
+      } else if (platform.includes('telegram')) {
+        shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url);
+      } else if (platform.includes('discord')) {
+        navigator.clipboard.writeText(url);
+        alert('Ссылка скопирована. Теперь вы можете вставить её в Discord.');
+        return;
+      } else if (platform.includes('whatsapp')) {
+        shareUrl = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(url);
+      }
+
+      if (shareUrl) {
+        window.open(shareUrl, '_blank', 'width=800,height=600');
+      }
+    });
+  });
+</script>
+
 {% endblock %}

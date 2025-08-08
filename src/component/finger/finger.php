@@ -112,16 +112,16 @@ class finger
     static public function fingerController()
     {
         if (!user::self()->isAuth()) {
-            die("Fail");
+            die("Fail 1");
         }
         if (!isset($_POST['finger'])) {
-            die("Fail");
+            die("Fail 2");
         }
         if (!finger::check($_POST['finger'])) {
             session::clear();
-            die("OK");
+            die("clear");
         }
-        die("Fail");
+        die("ok");
     }
 
 }

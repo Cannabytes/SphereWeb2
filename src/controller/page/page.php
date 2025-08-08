@@ -4,14 +4,8 @@ namespace Ofey\Logan22\controller\page;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\config\config;
-use Ofey\Logan22\component\lang\lang;
-use Ofey\Logan22\component\redirect;
-use Ofey\Logan22\model\admin\userlog;
-use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\page\page as page_model;
-use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\template\async;
-use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\template\tpl;
 
 class page
@@ -36,4 +30,5 @@ class page
         ]);
         tpl::display("page/page.html");
     }
+
 }

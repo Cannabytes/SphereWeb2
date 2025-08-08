@@ -53,7 +53,7 @@
                            >2. Мин. ширина окна <i class="ri-information-line"></i></label>
 
                                <div class="input-group"><input class="form-control" id="minWidth" type="number"
-                                                               value="1200">
+                                                               value="900">
                                    <span
                                          class="input-group-text">px</span></div></div>
                            <div class="col-md-6"><label class="form-label"
@@ -64,7 +64,7 @@
                                                         for="minWidth"
                                                         tabindex="0"
                            >Мин. высота окна <i class="ri-information-line"></i></label><div class="input-group"><input class="form-control" id="minHeight" type="number"
-                                                                                                                        value="900"><span class="input-group-text">px</span></div></div>
+                                                                                                                        value="700"><span class="input-group-text">px</span></div></div>
                            <div class="col-md-6"><label class="form-label" for="launcherVersion">3. Версия лаунчера
                            <small class="d-block text-muted">Актуальная версия лаунчера. Если актуальная версия лаунчера будет отличаться от указанной в launcher.json, то лаунчер будет обновлен у пользователя.</small>
                            </label>
@@ -134,7 +134,7 @@
 
         <div class="template-card" data-template="duxy">
             <div class="template-radio">
-                <input type="radio" name="template" value="flat" id="template-duxy">
+                <input type="radio" name="template" value="duxy" id="template-duxy">
             </div>
             <img src="{{template_plugin}}/tpl/screen/duxy.jpg"
                  alt="duxy template"
@@ -150,7 +150,7 @@
 
         <div class="template-card" data-template="fonar">
             <div class="template-radio">
-                <input type="radio" name="template" value="flat" id="template-fonar">
+                <input type="radio" name="template" value="fonar" id="template-fonar">
             </div>
             <img src="{{template_plugin}}/tpl/screen/fonar.jpg"
                  alt="fonar template"
@@ -353,13 +353,53 @@
                                  class="ri-question-answer-line"></i></span><input class="form-control" id="forumLink" placeholder="https://example.com/forum" type="url"></div></div>
                            <div class="col-md-6"><label class="form-label" for="iconUpload">Загрузка иконки (.png или .ico)</label><input accept=".png,.ico" class="form-control" id="iconUpload"
                                                                                                                                           type="file"></div>
-                           <div class="col-12"><label class="form-label">8. Полноэкранный режим
-                           <small class="d-block text-muted">Если включено, то лаунчер будет запускаться в полноэкранном режиме</small>
+                           <div class="col-4">
+                               <label class="form-label">8. Полноэкранный режим
+                                 <small class="d-block text-muted">Если включено, то лаунчер будет запускаться в полноэкранном режиме</small>
+                               </label>
+                               <div class="form-check form-switch">
+                                   <input class="form-check-input" id="fullscreenSwitch" role="switch" type="checkbox">
+                                   <label class="form-check-label" for="fullscreenSwitch">Включить по умолчанию</label></div>
+                           </div>
 
-                           </label><div class="form-check form-switch"><input class="form-check-input" id="fullscreenSwitch"
-                                                                              role="switch"
-                                                                              type="checkbox"><label class="form-check-label"
-                                                                                                     for="fullscreenSwitch">Включить по умолчанию</label></div></div>
+                           <div class="col-4">
+                               <label class="form-label">9. Рамка Windows
+                                 <small class="d-block text-muted">Включить ли рамку оконную рамку Windows, это та рамка, где размещены кнопки свернуть, расширить, закрыть (программу).</small>
+                               </label>
+                               <div class="form-check form-switch">
+                                   <input class="form-check-input" id="frameless" role="switch" type="checkbox">
+                                   <label class="form-check-label" for="frameless">Включить</label></div>
+                           </div>
+
+                           <div class="col-4">
+                               <label class="form-label">10. Изменения размера окна
+                                 <small class="d-block text-muted">Отключить пользователю возможность растягивать окно лаунчера?</small>
+                               </label>
+                               <div class="form-check form-switch">
+                                   <input class="form-check-input" id="disableResize" role="switch" type="checkbox">
+                                   <label class="form-check-label" for="disableResize">Включить</label></div>
+                           </div>
+
+                           <div class="col-4">
+                               <label class="form-label">11. Сделать программу перетаскиваемой
+                                 <small class="d-block text-muted">Если включено, лаунчер можно перетаскивать зажатием ПКМ. Важно: элементы за которые можно перетаскивать должны иметь класс "drag", исключение класс "no-drag"</small>
+                               </label>
+                               <div class="form-check form-switch">
+                                   <input class="form-check-input" id="CSSDragProperty" role="switch" type="checkbox">
+                                   <label class="form-check-label" for="CSSDragProperty">Включить</label></div>
+                           </div>
+
+                           <div class="col-4">
+                               <label class="form-label">12. Включить режим создания архивов
+                                 <small class="d-block text-muted">Если включено, при нажатии на F1 в лаунчере, откроется страница создания архивов для лаунчера.</small>
+                               </label>
+                               <div class="form-check form-switch">
+                                   <input class="form-check-input" id="enableF1BuilderPage" role="switch" type="checkbox">
+                                   <label class="form-check-label" for="enableF1BuilderPage">Включить</label></div>
+                           </div>
+
+
+
                            <div class="col-12"><button class="btn btn-primary" id="compile-btn" type="submit">Начать компиляцию</button></div>
                         </div>
                     </form>
@@ -541,6 +581,10 @@
                 registrationLink: document.getElementById('registerLink').value,
                 forumLink: document.getElementById('forumLink').value,
                 fullscreen: document.getElementById('fullscreenSwitch').checked,
+                frameless: document.getElementById('frameless').checked,
+                disableResize: document.getElementById('disableResize').checked,
+                CSSDragProperty: document.getElementById('CSSDragProperty').checked,
+                EnableF1BuilderPage: document.getElementById('enableF1BuilderPage').checked,
                 // Base64 поля будут заполнены позже
                 iconBase64: "",
                 customHtmlBase64: "",

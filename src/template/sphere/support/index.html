@@ -347,7 +347,6 @@
                 </div>
                 {% else %}
                 <ul class="list-unstyled mb-0">
-
                     {% for thread in threads %}
                     <li class="{% if thread.is_read == false %}active{% endif %}">
                         {% set sectionInfo = get_support_thread_name(thread.thread_id) %}

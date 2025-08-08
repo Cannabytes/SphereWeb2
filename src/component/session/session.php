@@ -38,9 +38,9 @@ class session
 
     // Настройки для POST запросов
     // Максимальное количество POST запросов за период
-    private static int $maxPostActionsPerPeriod = 40;
+    private static int $maxPostActionsPerPeriod = 300;
     // Время бана в секундах при превышении лимита POST запросов
-    private static int $postFloodBanSeconds = 120;
+    private static int $postFloodBanSeconds = 160;
 
 
     /**
@@ -61,7 +61,7 @@ class session
 
         if(!user::self()->isAdmin()){
             // Проверяем защиту от флуда
-            self::checkFloodProtection();
+//            self::checkFloodProtection();
         }
 
         // Обработка HTTP_REFERER для статистики

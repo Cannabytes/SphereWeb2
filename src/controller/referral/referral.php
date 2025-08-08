@@ -120,12 +120,9 @@ class referral
 
         $myRefs = sql::getRows("SELECT `done` FROM `referrals` WHERE `leader_id` = ? ", [user::self()->getId()]);
         $doneOK = 0;
-        $doneWait = 0;
         foreach ($myRefs as $ref) {
             if ($ref['done'] == 1) {
                 $doneOK++;
-            } else {
-                $doneWait++;
             }
         }
 

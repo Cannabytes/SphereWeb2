@@ -41,7 +41,6 @@
 <script src="{{template}}/assets/libs/apexcharts/apexcharts.min.js"></script>
 
 <script>
-  // Получаем данные из шаблона Twig
   var serverData = {{ getStatisticOnline(serverId)|json_encode|raw }};
 
   // Функция для преобразования данных в формат ApexCharts
