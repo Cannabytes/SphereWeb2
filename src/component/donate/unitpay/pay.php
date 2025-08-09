@@ -69,7 +69,7 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 
         $account = user::self()->getId();
 		
-		$signature = hash( 'sha256', $account . '{up}' . $currency . '{up}' . $this->desc . '{up}' . $order_amount . '{up}' . self::getConfigValue('secretKey') );
+		$signature = hash( 'sha256', $account . '{up}' . $currency . '{up}' . $this->desc . '{up}' . $amount . '{up}' . self::getConfigValue('secretKey') );
 
 		$params = [
 			'account' => $account,
