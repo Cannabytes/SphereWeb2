@@ -15,417 +15,711 @@
                 </div>
                 <div class="card-body">
                     <form id="compile-form">
-                        <div class="row g-3">
-                           <div class="col-md-12">
 
-                               <label class="form-label"  for="dataUrl">
-                                    0. Ссылка на launcher.json<i class="text-danger">*</i>
-                                </label>
+                        <!-- Основные настройки -->
+                        <div class="settings-section">
+                            <h5 class="section-title">
+                                <i class="ri-settings-3-line"></i>
+                                Основные настройки
+                            </h5>
 
-                               <input class="form-control" id="dataUrl"
-                                      placeholder="https://example.com/launcher.json"
-                                      type="text" value="{{HTTP_HOST()}}/launcher.json">
-                           </div>
-
-
-                           <div class="col-md-12">
-
-                               <label class="form-label" data-bs-content="<img src='{{template_plugin}}/img/title.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
-                                      data-bs-html="true"
-                                      data-bs-toggle="popover"
-                                      data-bs-trigger="hover"
-                                      for="pageTitle"
-                                      tabindex="0">
-                                    1. Название программы<i class="text-danger">*</i> <i class="ri-information-line"></i>
-                                </label>
-
-                               <input class="form-control" id="pageTitle"
-                                      placeholder="Введите название окна лаунчера"
-                                      type="text" value="Мой Лаунчер">
-
-                           </div>
-                           <div class="col-md-6"><label class="form-label" data-bs-content="<img src='{{template_plugin}}/img/min.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
-                                                        data-bs-html="true"
-                                                        data-bs-toggle="popover"
-                                                        data-bs-trigger="hover"
-                                                        for="minWidth"
-                                                        tabindex="0"
-                           >2. Мин. ширина окна <i class="ri-information-line"></i></label>
-
-                               <div class="input-group"><input class="form-control" id="minWidth" type="number"
-                                                               value="900">
-                                   <span
-                                         class="input-group-text">px</span></div></div>
-                           <div class="col-md-6"><label class="form-label"
-                                                        data-bs-content="<img src='{{template_plugin}}/img/max.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
-                                                        data-bs-html="true"
-                                                        data-bs-toggle="popover"
-                                                        data-bs-trigger="hover"
-                                                        for="minWidth"
-                                                        tabindex="0"
-                           >Мин. высота окна <i class="ri-information-line"></i></label><div class="input-group"><input class="form-control" id="minHeight" type="number"
-                                                                                                                        value="700"><span class="input-group-text">px</span></div></div>
-                           <div class="col-md-6"><label class="form-label" for="launcherVersion">3. Версия лаунчера
-                           <small class="d-block text-muted">Актуальная версия лаунчера. Если актуальная версия лаунчера будет отличаться от указанной в launcher.json, то лаунчер будет обновлен у пользователя.</small>
-                           </label>
-
-                               <input class="form-control" id="launcherVersion"
-                                      placeholder="например, 1.0.0"
-                                      type="text" value="1.0.0"></div>
-                            <!-- Замените блок с templateSelect на этот код -->
-
-<div class="col-12">
-    <label class="form-label">4. Шаблон лаунчера
-        <small class="d-block text-muted">
-            Выберите шаблон лаунчера. Вы можете создать свой шаблон.
-        </small>
-    </label>
-
-    <div class="template-selector" id="templateSelector">
-        <!-- Готовые шаблоны с изображениями -->
-        <div class="template-card" data-template="default">
-            <div class="template-radio">
-                <input type="radio" name="template" value="default" id="template-default" checked>
-            </div>
-            <div class="template-badge">По умолчанию</div>
-            <img src="/src/component/plugins/sphereLauncher2/tpl/screen/default.jpg"
-                 alt="Default template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback default">
-                <i class="ri-layout-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Default</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="cyberpunk">
-            <div class="template-radio">
-                <input type="radio" name="template" value="cyberpunk" id="template-cyberpunk">
-            </div>
-            <img src="{{template_plugin}}/tpl/screen/cyberpunk.jpg"
-                 alt="Cyberpunk template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback cyberpunk">
-                <i class="ri-cpu-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Cyberpunk</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="flat">
-            <div class="template-radio">
-                <input type="radio" name="template" value="flat" id="template-flat">
-            </div>
-            <img src="{{template_plugin}}/tpl/screen/flat.jpg"
-                 alt="Flat template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback flat">
-                <i class="ri-artboard-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Flat</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="duxy">
-            <div class="template-radio">
-                <input type="radio" name="template" value="duxy" id="template-duxy">
-            </div>
-            <img src="{{template_plugin}}/tpl/screen/duxy.jpg"
-                 alt="duxy template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback duxy">
-                <i class="ri-artboard-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Duxy</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="fonar">
-            <div class="template-radio">
-                <input type="radio" name="template" value="fonar" id="template-fonar">
-            </div>
-            <img src="{{template_plugin}}/tpl/screen/fonar.jpg"
-                 alt="fonar template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback fonar">
-                <i class="ri-artboard-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Fonar</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="futuristic">
-            <div class="template-radio">
-                <input type="radio" name="template" value="futuristic" id="template-futuristic">
-            </div>
-            <img src="{{template_plugin}}/tpl/screen/futuristic.jpg"
-                 alt="Futuristic template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback futuristic">
-                <i class="ri-rocket-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Futuristic</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="material">
-            <div class="template-radio">
-                <input type="radio" name="template" value="material" id="template-material">
-            </div>
-            <img src="{{template_plugin}}/tpl/screen/material.jpg"
-                 alt="Material template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback material">
-                <i class="ri-palette-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Material</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="skeuomorphism">
-            <div class="template-radio">
-                <input type="radio" name="template" value="skeuomorphism" id="template-skeuomorphism">
-            </div>
-            <img src="{{template_plugin}}/tpl/screen/skeuomorphism.jpg"
-                 alt="Skeuomorphism template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback skeuomorphism">
-                <i class="ri-brush-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Skeuomorphism</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="gsax">
-            <div class="template-radio">
-                <input type="radio" name="template" value="gsax" id="template-gsax">
-            </div>
-            <img src="{{template_plugin}}/tpl/screen/gsax.jpg"
-                 alt="GSAX template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback gsax">
-                <i class="ri-gamepad-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">GSAX</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="gagarka">
-            <div class="template-radio">
-                <input type="radio" name="template" value="gagarka" id="template-gagarka">
-            </div>
-            <img src="{{template_plugin}}/tpl/screen/gagarka.jpg"
-                 alt="Gagarka template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback gagarka">
-                <i class="ri-magic-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Gagarka</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="lafa">
-            <div class="template-radio">
-                <input type="radio" name="template" value="lafa" id="template-lafa">
-            </div>
-            <img src="{{template_plugin}}/tpl/screen/lafa.jpg"
-                 alt="lafa template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback lafa">
-                <i class="ri-magic-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Lafa</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="pinocolate">
-            <div class="template-radio">
-                <input type="radio" name="template" value="pinocolate" id="template-pinocolate">
-            </div>
-            <img src="{{template_plugin}}/tpl/screen/pinocolate.jpg"
-                 alt="pinocolate template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback pinocolate">
-                <i class="ri-magic-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Pinocolate</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="sfox">
-            <div class="template-radio">
-                <input type="radio" name="template" value="sfox" id="template-sfox">
-            </div>
-            <img src="{{template_plugin}}/tpl/screen/sfox.jpg"
-                 alt="sfox template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='sfox';">
-            <div class="template-image-fallback sfox">
-                <i class="ri-magic-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Sfox</div>
-            </div>
-        </div>
-
-        <div class="template-card" data-template="custom">
-            <div class="template-radio">
-                <input type="radio" name="template" value="custom" id="template-custom">
-            </div>
-            <div class="template-badge">Свой</div>
-            <img src="{{template_plugin}}/tpl/screen/custom.jpg"
-                 alt="Custom template"
-                 class="template-image"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="template-image-fallback custom">
-                <i class="ri-upload-cloud-line"></i>
-            </div>
-            <div class="template-content">
-                <div class="template-title">Свой шаблон</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-                         <div class="col-12 mt-3" id="custom-template-fields" style="display: none;">
-                                <div class="p-3 border rounded">
-                                    <h6 class="text-primary">Загрузка файлов для своего шаблона</h6>
-                                     <div class="mb-3">
-                                         <label for="customHtmlFile" class="form-label">Файл шаблона (index.html) <i class="text-danger">*</i></label>
-                                         <input class="form-control" type="file" id="customHtmlFile" accept=".html">
-                                         <div class="form-text">Обязательный файл. Не должен быть больше 100 КБ.
-                                         Должен называться index.html<br>
-                                         </div>
-                                     </div>
-                                     <div class="mb-3">
-                                         <label for="customCssFile" class="form-label">Файл стилей (launcher.css) (опционально)</label>
-                                         <input class="form-control" type="file" id="customCssFile" accept=".css">
-                                          <div class="form-text">Файл не должен быть больше 100 КБ.
-                                            Должен называться launcher.css<br>
-                                          </div>
-                                     </div>
-                                     <div class="mb-3">
-                                         <label for="customLangFile" class="form-label">Файл локализации (lang.json) (опционально)</label>
-                                         <input class="form-control" type="file" id="customLangFile" accept=".json">
-                                          <div class="form-text">Файл не должен быть больше 100 КБ.
-                                            Должен называться lang.json<br>
-                                          </div>
-                                     </div>
-                                     <div class="mb-3">
-                                         <label for="customLogoFile" class="form-label">Изображение лого (опционально)</label>
-                                         <input class="form-control" type="file" id="customLogoFile" accept=".png,.jpg,.jpeg,.gif,.bmp,.svg">
-                                         <div class="form-text">Поддерживаемые форматы: PNG, JPG, JPEG, GIF, BMP, SVG. Размер не должен превышать 250 КБ.
-                                         <br>Лого должно называться logo.png/jpg/jpeg/gif/bmp/svg и соответственно в разметке index.html тоже
-                                         </div>
-                                     </div>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="form-label" for="dataUrl">
+                                        Ссылка на launcher.json <i class="text-danger">*</i>
+                                    </label>
+                                    <input class="form-control" id="dataUrl"
+                                           placeholder="https://example.com/launcher.json"
+                                           type="text" value="{{HTTP_HOST()}}/launcher.json">
                                 </div>
-                           </div>
-                           <div class="col-md-6"><label class="form-label" for="accountLink">5. Ссылка на личный кабинет</label><div class="input-group"><span class="input-group-text"><i
-                                 class="ri-account-circle-line"></i></span><input class="form-control" id="accountLink" placeholder="https://example.com/account" type="url"></div></div>
-                           <div class="col-md-6"><label class="form-label" for="registerLink">6. Ссылка на регистрацию</label><div class="input-group"><span class="input-group-text"><i
-                                 class="ri-user-add-line"></i></span><input class="form-control" id="registerLink" placeholder="https://example.com/register" type="url"></div></div>
-                           <div class="col-md-6"><label class="form-label" for="forumLink">7. Ссылка на форум</label><div class="input-group"><span class="input-group-text"><i
-                                 class="ri-question-answer-line"></i></span><input class="form-control" id="forumLink" placeholder="https://example.com/forum" type="url"></div></div>
-                           <div class="col-md-6"><label class="form-label" for="iconUpload">Загрузка иконки (.png или .ico)</label><input accept=".png,.ico" class="form-control" id="iconUpload"
-                                                                                                                                          type="file"></div>
-                           <div class="col-4">
-                               <label class="form-label">8. Полноэкранный режим
-                                 <small class="d-block text-muted">Если включено, то лаунчер будет запускаться в полноэкранном режиме</small>
-                               </label>
-                               <div class="form-check form-switch">
-                                   <input class="form-check-input" id="fullscreenSwitch" role="switch" type="checkbox">
-                                   <label class="form-check-label" for="fullscreenSwitch">Включить по умолчанию</label></div>
-                           </div>
 
-                           <div class="col-4">
-                               <label class="form-label">9. Рамка Windows
-                                 <small class="d-block text-muted">Рамку окна Windows, это та рамка, где размещены кнопки свернуть, расширить, закрыть (программу).</small>
-                               </label>
-                               <div class="form-check form-switch">
-                                   <input class="form-check-input" id="frameless" role="switch" type="checkbox">
-                                   <label class="form-check-label" for="frameless">Отключить</label></div>
-                           </div>
+                                <div class="col-md-8">
+                                    <label class="form-label"
+                                           data-bs-content="<img src='{{template_plugin}}/img/title.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
+                                           data-bs-html="true"
+                                           data-bs-toggle="popover"
+                                           data-bs-trigger="hover"
+                                           for="pageTitle"
+                                           tabindex="0">
+                                        Название программы <i class="text-danger">*</i> <i class="ri-information-line"></i>
+                                    </label>
+                                    <input class="form-control" id="pageTitle"
+                                           placeholder="Введите название окна лаунчера"
+                                           type="text" value="Мой Лаунчер">
+                                </div>
 
-                           <div class="col-4">
-                               <label class="form-label">10. Изменения размера окна
-                                 <small class="d-block text-muted">Возможность растягивать окно лаунчера</small>
-                               </label>
-                               <div class="form-check form-switch">
-                                   <input class="form-check-input" id="disableResize" role="switch" type="checkbox">
-                                   <label class="form-check-label" for="disableResize">Отключить</label></div>
-                           </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="launcherVersion">
+                                        Версия лаунчера
+                                    </label>
+                                    <input class="form-control" id="launcherVersion"
+                                           placeholder="например, 1.0.0"
+                                           type="text" value="1.0.0">
+                                </div>
 
-                           <div class="col-4">
-                               <label class="form-label">11. Сделать программу перетаскиваемой
-                                 <small class="d-block text-muted">Если включено, лаунчер можно перетаскивать зажатием ПКМ. Важно: элементы за которые можно перетаскивать должны иметь класс "drag", исключение класс "no-drag"</small>
-                               </label>
-                               <div class="form-check form-switch">
-                                   <input class="form-check-input" id="CSSDragProperty" role="switch" type="checkbox">
-                                   <label class="form-check-label" for="CSSDragProperty">Включить</label></div>
-                           </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Иконка лаунчера</label>
+                                    <input accept=".png,.ico" class="form-control" id="iconUpload" type="file">
+                                    <div class="form-text">Форматы: PNG, ICO. Максимальный размер: 100 КБ. Разрешение: до 128x128 пикселей.</div>
+                                </div>
+                            </div>
+                        </div>
 
-                           <div class="col-4">
-                               <label class="form-label">12. Включить режим создания архивов
-                                 <small class="d-block text-muted">Если включено, при нажатии на F1 в лаунчере, откроется страница создания архивов для лаунчера.</small>
-                               </label>
-                               <div class="form-check form-switch">
-                                   <input class="form-check-input" id="enableF1BuilderPage" role="switch" type="checkbox">
-                                   <label class="form-check-label" for="enableF1BuilderPage">Включить</label></div>
-                           </div>
+                        <!-- Выбор шаблона -->
+                        <div class="settings-section">
+                            <h5 class="section-title">
+                                <i class="ri-palette-line"></i>
+                                Выбор шаблона лаунчера
+                            </h5>
+                            <p class="text-muted mb-3">Выберите визуальный стиль лаунчера. Каждый шаблон автоматически настроит оптимальные параметры окна.</p>
+
+                            <div class="template-selector" id="templateSelector">
+                                <!-- Default Template -->
+                                <div class="template-card" data-template="default"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="true" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="default" id="template-default" checked>
+                                    </div>
+                                    <div class="template-badge">По умолчанию</div>
+                                    <img src="/src/component/plugins/sphereLauncher2/tpl/screen/default.jpg"
+                                         alt="Default template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback default">
+                                        <i class="ri-layout-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Default</div>
+                                        <div class="template-description">Классический дизайн с универсальными настройками</div>
+                                    </div>
+                                </div>
+
+                                <!-- Cyberpunk Template -->
+                                <div class="template-card" data-template="cyberpunk"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="true" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="cyberpunk" id="template-cyberpunk">
+                                    </div>
+                                    <img src="{{template_plugin}}/tpl/screen/cyberpunk.jpg"
+                                         alt="Cyberpunk template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback cyberpunk">
+                                        <i class="ri-cpu-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Cyberpunk</div>
+                                        <div class="template-description">Футуристический дизайн без рамок</div>
+                                    </div>
+                                </div>
+
+                                <!-- Flat Template -->
+                                <div class="template-card" data-template="flat"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="true" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="flat" id="template-flat">
+                                    </div>
+                                    <img src="{{template_plugin}}/tpl/screen/flat.jpg"
+                                         alt="Flat template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback flat">
+                                        <i class="ri-artboard-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Flat</div>
+                                        <div class="template-description">Минималистичный плоский дизайн</div>
+                                    </div>
+                                </div>
+
+                                <!-- Duxy Template -->
+                                <div class="template-card" data-template="duxy"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="true" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="duxy" id="template-duxy">
+                                    </div>
+                                    <img src="{{template_plugin}}/tpl/screen/duxy.jpg"
+                                         alt="Duxy template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback duxy">
+                                        <i class="ri-artboard-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Duxy</div>
+                                        <div class="template-description">Стильный дизайн с расширенными возможностями</div>
+                                    </div>
+                                </div>
+
+                                <!-- Fonar Template -->
+                                <div class="template-card" data-template="fonar"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="true" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="fonar" id="template-fonar">
+                                    </div>
+                                    <img src="{{template_plugin}}/tpl/screen/fonar.jpg"
+                                         alt="Fonar template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback fonar">
+                                        <i class="ri-flashlight-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Fonar</div>
+                                        <div class="template-description">Темный дизайн без системных рамок</div>
+                                    </div>
+                                </div>
+
+                                <!-- Futuristic Template -->
+                                <div class="template-card" data-template="futuristic"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="true" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="futuristic" id="template-futuristic">
+                                    </div>
+                                    <img src="{{template_plugin}}/tpl/screen/futuristic.jpg"
+                                         alt="Futuristic template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback futuristic">
+                                        <i class="ri-rocket-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Futuristic</div>
+                                        <div class="template-description">Продвинутый футуристический интерфейс</div>
+                                    </div>
+                                </div>
+
+                                <!-- Material Template -->
+                                <div class="template-card" data-template="material"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="true" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="material" id="template-material">
+                                    </div>
+                                    <img src="{{template_plugin}}/tpl/screen/material.jpg"
+                                         alt="Material template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback material">
+                                        <i class="ri-palette-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Material</div>
+                                        <div class="template-description">Материальный дизайн с четкими формами</div>
+                                    </div>
+                                </div>
+
+                                <!-- Skeuomorphism Template -->
+                                <div class="template-card" data-template="skeuomorphism"
+                                     data-default-width="1100" data-default-height="900"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="900"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="false" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="skeuomorphism" id="template-skeuomorphism">
+                                    </div>
+                                    <img src="{{template_plugin}}/tpl/screen/skeuomorphism.jpg"
+                                         alt="Skeuomorphism template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback skeuomorphism">
+                                        <i class="ri-brush-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Skeuomorphism</div>
+                                        <div class="template-description">Реалистичные элементы с фиксированным размером</div>
+                                    </div>
+                                </div>
+
+                                <!-- GSAX Template -->
+                                <div class="template-card" data-template="gsax"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="true" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="gsax" id="template-gsax">
+                                    </div>
+                                    <div class="template-badge">Игровой</div>
+                                    <img src="{{template_plugin}}/tpl/screen/gsax.jpg"
+                                         alt="GSAX template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback gsax">
+                                        <i class="ri-gamepad-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">GSAX</div>
+                                        <div class="template-description">Игровой дизайн с полноэкранным режимом</div>
+                                    </div>
+                                </div>
+
+                                <!-- Gagarka Template -->
+                                <div class="template-card" data-template="gagarka"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="true" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="gagarka" id="template-gagarka">
+                                    </div>
+                                    <img src="{{template_plugin}}/tpl/screen/gagarka.jpg"
+                                         alt="Gagarka template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback gagarka">
+                                        <i class="ri-magic-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Gagarka</div>
+                                        <div class="template-description">Магический дизайн с плавными переходами</div>
+                                    </div>
+                                </div>
+
+                                <!-- Lafa Template -->
+                                <div class="template-card" data-template="lafa"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="true" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="lafa" id="template-lafa">
+                                    </div>
+                                    <img src="{{template_plugin}}/tpl/screen/lafa.jpg"
+                                         alt="Lafa template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback lafa">
+                                        <i class="ri-magic-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Lafa</div>
+                                        <div class="template-description">Элегантный дизайн с дополнительными функциями</div>
+                                    </div>
+                                </div>
+
+                                <!-- Pinocolate Template -->
+                                <div class="template-card" data-template="pinocolate"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="true" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="pinocolate" id="template-pinocolate">
+                                    </div>
+                                    <img src="{{template_plugin}}/tpl/screen/pinocolate.jpg"
+                                         alt="Pinocolate template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback pinocolate">
+                                        <i class="ri-palette-fill"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Pinocolate</div>
+                                        <div class="template-description">Стильный дизайн без системных рамок</div>
+                                    </div>
+                                </div>
+
+                                <!-- Sfox Template -->
+                                <div class="template-card" data-template="sfox"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="true" data-css-drag="false"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="sfox" id="template-sfox">
+                                    </div>
+                                    <img src="{{template_plugin}}/tpl/screen/sfox.jpg"
+                                         alt="Sfox template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback sfox">
+                                        <i class="ri-firefox-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Sfox</div>
+                                        <div class="template-description">Продвинутый дизайн с множеством функций</div>
+                                    </div>
+                                </div>
+
+                                <!-- vistor -->
+                                <div class="template-card" data-template="vistor"
+                                     data-default-width="1100" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1100" data-max-height="700"
+                                     data-fullscreen="false" data-frameless="off"
+                                     data-disable-resize="off" data-css-drag="true"
+                                     data-enable-f1="true">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="vistor" id="template-vistor">
+                                    </div>
+                                    <img src="{{template_plugin}}/tpl/screen/vistor.jpg"
+                                         alt="vistor template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback vistor">
+                                        <i class="ri-firefox-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">vistor</div>
+                                        <div class="template-description">Анимированный дизайн высокого качества</div>
+                                    </div>
+                                </div>
+
+                                <!-- Custom Template -->
+                                <div class="template-card" data-template="custom"
+                                     data-default-width="900" data-default-height="700"
+                                     data-min-width="800" data-min-height="600"
+                                     data-max-width="1200" data-max-height="900"
+                                     data-fullscreen="false" data-frameless="false"
+                                     data-disable-resize="false" data-css-drag="false"
+                                     data-enable-f1="false">
+                                    <div class="template-radio">
+                                        <input type="radio" name="template" value="custom" id="template-custom">
+                                    </div>
+                                    <div class="template-badge">Свой</div>
+                                    <img src="{{template_plugin}}/tpl/screen/custom.jpg"
+                                         alt="Custom template" class="template-image"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="template-image-fallback custom">
+                                        <i class="ri-upload-cloud-line"></i>
+                                    </div>
+                                    <div class="template-content">
+                                        <div class="template-title">Свой шаблон</div>
+                                        <div class="template-description">Загрузите собственные файлы шаблона</div>
+                                    </div>
+                                </div>
 
 
 
-                           <div class="col-12"><button class="btn btn-primary" id="compile-btn" type="submit">Начать компиляцию</button></div>
+                            </div>
+                        </div>
+
+                        <!-- Кастомные файлы шаблона -->
+                        <div class="settings-section" id="custom-template-section" style="display: none;">
+                            <h5 class="section-title">
+                                <i class="ri-upload-cloud-2-line"></i>
+                                Файлы пользовательского шаблона
+                            </h5>
+                            <div class="custom-template-upload">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="customHtmlFile" class="form-label">
+                                            Файл шаблона (index.html) <i class="text-danger">*</i>
+                                        </label>
+                                        <input class="form-control" type="file" id="customHtmlFile" accept=".html">
+                                        <div class="form-text">
+                                            Обязательный файл. Должен называться index.html и быть не больше 100 КБ.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="customCssFile" class="form-label">
+                                            Файл стилей (launcher.css)
+                                        </label>
+                                        <input class="form-control" type="file" id="customCssFile" accept=".css">
+                                        <div class="form-text">
+                                            Опционально. Должен называться launcher.css и быть не больше 100 КБ.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="customLangFile" class="form-label">
+                                            Файл локализации (lang.json)
+                                        </label>
+                                        <input class="form-control" type="file" id="customLangFile" accept=".json">
+                                        <div class="form-text">
+                                            Опционально. Должен называться lang.json и быть не больше 100 КБ.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="customLogoFile" class="form-label">
+                                            Изображение лого
+                                        </label>
+                                        <input class="form-control" type="file" id="customLogoFile"
+                                               accept=".png,.jpg,.jpeg,.gif,.bmp,.svg">
+                                        <div class="form-text">
+                                            Опционально. Форматы: PNG, JPG, JPEG, GIF, BMP, SVG. До 250 КБ.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Настройки окна -->
+                        <div class="settings-section">
+                            <h5 class="section-title">
+                                <button class="btn btn-link p-0 text-decoration-none section-collapse-btn"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#windowSettingsCollapse"
+                                        aria-expanded="false"
+                                        aria-controls="windowSettingsCollapse">
+                                    <i class="ri-window-line"></i>
+                                    Настройки окна лаунчера
+                                    <i class="ri-arrow-down-s-line collapse-icon ms-2"></i>
+                                </button>
+                            </h5>
+
+                            <div class="collapse" id="windowSettingsCollapse">
+                                <p class="text-muted mb-3">Настройки автоматически применяются при выборе шаблона, но вы можете их изменить.</p>
+
+                                <div class="row g-3">
+                                    <!-- Размеры по умолчанию -->
+                                    <div class="col-md-6">
+                                        <label class="form-label"
+                                               data-bs-content="<img src='{{template_plugin}}/img/min.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
+                                               data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
+                                               for="defaultWidth" tabindex="0">
+                                            Ширина окна <i class="ri-information-line"></i>
+                                        </label>
+                                        <div class="input-group">
+                                            <input class="form-control" id="defaultWidth" type="number" value="900">
+                                            <span class="input-group-text">px</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label"
+                                               data-bs-content="<img src='{{template_plugin}}/img/max.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
+                                               data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
+                                               for="defaultHeight" tabindex="0">
+                                            Высота окна <i class="ri-information-line"></i>
+                                        </label>
+                                        <div class="input-group">
+                                            <input class="form-control" id="defaultHeight" type="number" value="700">
+                                            <span class="input-group-text">px</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Минимальные размеры -->
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="minWidth">Мин. ширина окна</label>
+                                        <div class="input-group">
+                                            <input class="form-control" id="minWidth" type="number" value="900">
+                                            <span class="input-group-text">px</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="minHeight">Мин. высота окна</label>
+                                        <div class="input-group">
+                                            <input class="form-control" id="minHeight" type="number" value="700">
+                                            <span class="input-group-text">px</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Максимальные размеры -->
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="maxWidth">Макс. ширина окна</label>
+                                        <div class="input-group">
+                                            <input class="form-control" id="maxWidth" type="number" value="900">
+                                            <span class="input-group-text">px</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="maxHeight">Макс. высота окна</label>
+                                        <div class="input-group">
+                                            <input class="form-control" id="maxHeight" type="number" value="700">
+                                            <span class="input-group-text">px</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Настройки поведения -->
+                        <div class="settings-section">
+                            <h5 class="section-title">
+                                <button class="btn btn-link p-0 text-decoration-none section-collapse-btn"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#behaviorSettingsCollapse"
+                                        aria-expanded="false"
+                                        aria-controls="behaviorSettingsCollapse">
+                                    <i class="ri-settings-5-line"></i>
+                                    Настройки поведения
+                                    <i class="ri-arrow-down-s-line collapse-icon ms-2"></i>
+                                </button>
+                            </h5>
+
+                            <div class="collapse" id="behaviorSettingsCollapse">
+                                <div class="row g-3">
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="setting-card">
+                                            <label class="form-label">Полноэкранный режим</label>
+                                            <small class="d-block text-muted mb-2">Запускать лаунчер в полноэкранном режиме</small>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" id="fullscreenSwitch" role="switch" type="checkbox">
+                                                <label class="form-check-label" for="fullscreenSwitch">Включить по умолчанию</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="setting-card">
+                                            <label class="form-label">Рамка Windows</label>
+                                            <small class="d-block text-muted mb-2">Системная рамка с кнопками управления окном</small>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" id="frameless" role="switch" type="checkbox">
+                                                <label class="form-check-label" for="frameless">Включить рамку</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="setting-card">
+                                            <label class="form-label">Изменение размера</label>
+                                            <small class="d-block text-muted mb-2">Возможность растягивать окно лаунчера</small>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" id="disableResize" role="switch" type="checkbox">
+                                                <label class="form-check-label" for="disableResize">Запретить изменение</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="setting-card">
+                                            <label class="form-label">Перетаскивание</label>
+                                            <small class="d-block text-muted mb-2">Перетаскивание окна за элементы с классом "drag"</small>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" id="CSSDragProperty" role="switch" type="checkbox">
+                                                <label class="form-check-label" for="CSSDragProperty">Включить</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="setting-card">
+                                            <label class="form-label">Режим создания архивов</label>
+                                            <small class="d-block text-muted mb-2">Доступ к странице создания архивов по F1</small>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" id="enableF1BuilderPage" role="switch" type="checkbox">
+                                                <label class="form-check-label" for="enableF1BuilderPage">Включить</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Дополнительные ссылки -->
+                        <div class="settings-section">
+                            <h5 class="section-title">
+                                <i class="ri-links-line"></i>
+                                Дополнительные ссылки
+                            </h5>
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="accountLink">Ссылка на личный кабинет</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="ri-account-circle-line"></i></span>
+                                        <input class="form-control" id="accountLink"
+                                               placeholder="https://example.com/account" type="url">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label" for="registerLink">Ссылка на регистрацию</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="ri-user-add-line"></i></span>
+                                        <input class="form-control" id="registerLink"
+                                               placeholder="https://example.com/register" type="url">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label" for="forumLink">Ссылка на форум</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="ri-question-answer-line"></i></span>
+                                        <input class="form-control" id="forumLink"
+                                               placeholder="https://example.com/forum" type="url">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Кнопка сборки -->
+                        <div class="settings-section">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button class="btn btn-primary btn-lg" id="compile-btn" type="submit">
+                                    <i class="ri-rocket-line"></i>
+                                    Начать компиляцию лаунчера
+                                </button>
+                            </div>
                         </div>
                     </form>
 
+                    <!-- Статус сборки -->
                     <div class="mt-4" id="status-container" style="display: none;">
-                        <h5 class="card-title">Статус сборки</h5>
-                        <div class="progress mb-2" style="height: 25px;">
-                            <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" class="progress-bar progress-bar-striped progress-bar-animated" id="progress-bar" role="progressbar"
-                                 style="width: 0%;">0%</div>
-                        </div>
-                        <p class="text-muted" id="status-message">Ожидание запуска задачи...</p>
-                        <div class="mt-3" id="result-container" style="display: none;">
-                             <a class="btn btn-success disabled" href="#" id="download-btn"><i class="ri-download-2-line"></i> Скачать готовый лаунчер</a>
-                            <button class="btn btn-secondary ms-2" id="new-build-btn">Собрать новый</button>
-                        </div>
-                        <div class="alert alert-danger mt-3" id="error-container" style="display: none;">
-                             <strong>Ошибка!</strong> <span id="error-message"></span>
-                             <button class="btn btn-warning btn-sm float-end" id="retry-build-btn">Попробовать снова</button>
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="ri-settings-2-line"></i>
+                                    Статус сборки
+                                </h5>
+                                <div class="progress mb-3" style="height: 25px;">
+                                    <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="0"
+                                         class="progress-bar progress-bar-striped progress-bar-animated"
+                                         id="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+                                </div>
+                                <p class="text-muted" id="status-message">Ожидание запуска задачи...</p>
+
+                                <div class="mt-3" id="result-container" style="display: none;">
+                                    <a class="btn btn-success disabled" href="#" id="download-btn">
+                                        <i class="ri-download-2-line"></i> Скачать готовый лаунчер
+                                    </a>
+                                    <button class="btn btn-secondary ms-2" id="new-build-btn">
+                                        <i class="ri-refresh-line"></i> Собрать новый
+                                    </button>
+                                </div>
+
+                                <div class="alert alert-danger mt-3" id="error-container" style="display: none;">
+                                    <strong>Ошибка!</strong> <span id="error-message"></span>
+                                    <button class="btn btn-warning btn-sm float-end" id="retry-build-btn">
+                                        <i class="ri-refresh-line"></i> Попробовать снова
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
- </div>
+</div>
 
 {% endblock %}
 
@@ -440,6 +734,7 @@
             return;
         }
 
+        // Элементы формы
         const compileForm = document.getElementById('compile-form');
         const compileBtn = document.getElementById('compile-btn');
         const statusContainer = document.getElementById('status-container');
@@ -452,41 +747,182 @@
         const errorMessage = document.getElementById('error-message');
         const retryBuildBtn = document.getElementById('retry-build-btn');
 
-        // Элементы для нового визуального селектора шаблонов
+        // Элементы для работы с шаблонами
         const templateCards = document.querySelectorAll('.template-card');
-        const customTemplateFields = document.getElementById('custom-template-fields');
+        const customTemplateSection = document.getElementById('custom-template-section');
 
-        let pollingInterval; // Переменная для хранения ID интервала
+        let pollingInterval;
+
+        // === ОБРАБОТЧИКИ ДЛЯ СПОЙЛЕРОВ ===
+
+        function initCollapseSpoiler(collapseId, buttonSelector) {
+            const collapseElement = document.getElementById(collapseId);
+            const collapseButton = document.querySelector(buttonSelector);
+
+            if (collapseElement && collapseButton) {
+                // Обработчик события показа спойлера
+                collapseElement.addEventListener('show.bs.collapse', function () {
+                    collapseButton.setAttribute('aria-expanded', 'true');
+                    console.log(`Спойлер ${collapseId} открывается`);
+                });
+
+                // Обработчик события скрытия спойлера
+                collapseElement.addEventListener('hide.bs.collapse', function () {
+                    collapseButton.setAttribute('aria-expanded', 'false');
+                    console.log(`Спойлер ${collapseId} закрывается`);
+                });
+
+                // Обработчик события полного показа спойлера
+                collapseElement.addEventListener('shown.bs.collapse', function () {
+                    console.log(`Спойлер ${collapseId} полностью открыт`);
+                });
+
+                // Обработчик события полного скрытия спойлера
+                collapseElement.addEventListener('hidden.bs.collapse', function () {
+                    console.log(`Спойлер ${collapseId} полностью закрыт`);
+                });
+
+                // Улучшенный клик по всему заголовку (не только по кнопке)
+                const sectionTitle = collapseButton.closest('.section-title');
+                if (sectionTitle) {
+                    sectionTitle.addEventListener('click', function(event) {
+                        // Предотвращаем двойное срабатывание, если клик был по самой кнопке
+                        if (event.target === collapseButton || collapseButton.contains(event.target)) {
+                            return;
+                        }
+
+                        // Программно кликаем по кнопке collapse
+                        collapseButton.click();
+                    });
+                }
+            }
+        }
+
+        // Инициализируем оба спойлера
+        initCollapseSpoiler('windowSettingsCollapse', '[data-bs-target="#windowSettingsCollapse"]');
+        initCollapseSpoiler('behaviorSettingsCollapse', '[data-bs-target="#behaviorSettingsCollapse"]');
 
         // === ФУНКЦИИ ДЛЯ РАБОТЫ С ШАБЛОНАМИ ===
 
         /**
-         * Функция для обновления выбранного шаблона
+         * Применение настроек шаблона к форме
+         * @param {HTMLElement} templateCard - карточка выбранного шаблона
+         */
+        function applyTemplateSettings(templateCard) {
+            const data = templateCard.dataset;
+
+            // Применяем размеры окна
+            document.getElementById('defaultWidth').value = data.defaultWidth || '900';
+            document.getElementById('defaultHeight').value = data.defaultHeight || '700';
+            document.getElementById('minWidth').value = data.minWidth || '800';
+            document.getElementById('minHeight').value = data.minHeight || '600';
+            document.getElementById('maxWidth').value = data.maxWidth || '1200';
+            document.getElementById('maxHeight').value = data.maxHeight || '900';
+
+            // Применяем настройки поведения и устанавливаем disabled состояние
+            const behaviorSettings = [
+                {
+                    dataKey: 'fullscreen',
+                    elementId: 'fullscreenSwitch',
+                    defaultValue: false
+                },
+                {
+                    dataKey: 'frameless',
+                    elementId: 'frameless',
+                    defaultValue: false,
+                    inverted: true // Инвертируем логику для frameless
+                },
+                {
+                    dataKey: 'disableResize',
+                    elementId: 'disableResize',
+                    defaultValue: false
+                },
+                {
+                    dataKey: 'cssDrag',
+                    elementId: 'CSSDragProperty',
+                    defaultValue: false
+                },
+                {
+                    dataKey: 'enableF1',
+                    elementId: 'enableF1BuilderPage',
+                    defaultValue: false
+                }
+            ];
+
+            behaviorSettings.forEach(setting => {
+                const element = document.getElementById(setting.elementId);
+                const dataValue = data[setting.dataKey];
+
+                if (element) {
+                    // Проверяем, если значение "off" - делаем элемент disabled
+                    if (dataValue === 'off') {
+                        element.disabled = true;
+                        element.checked = false; // Сбрасываем значение для disabled элементов
+
+                        // Добавляем визуальную индикацию для disabled элементов
+                        const parentCard = element.closest('.setting-card');
+                        if (parentCard) {
+                            parentCard.classList.add('disabled-setting');
+                        }
+                    } else {
+                        // Убираем disabled состояние, если значение не "off"
+                        element.disabled = false;
+
+                        // Применяем значение с учетом инверсии для frameless
+                        if (setting.inverted) {
+                            // Для frameless: если в данных true (рамка отключена), то чекбокс должен быть false (рамка не включена)
+                            element.checked = dataValue !== 'true';
+                        } else {
+                            element.checked = dataValue === 'true' || setting.defaultValue;
+                        }
+
+                        // Убираем визуальную индикацию disabled состояния
+                        const parentCard = element.closest('.setting-card');
+                        if (parentCard) {
+                            parentCard.classList.remove('disabled-setting');
+                        }
+                    }
+                }
+            });
+
+            console.log(`Применены настройки для шаблона: ${data.template}`);
+        }
+
+        /**
+         * Обновление выбранного шаблона
          * @param {string} selectedValue - значение выбранного шаблона
          */
         function updateSelectedTemplate(selectedValue) {
+            let selectedCard = null;
+
             templateCards.forEach(card => {
                 const radio = card.querySelector('input[type="radio"]');
                 if (radio.value === selectedValue) {
                     card.classList.add('selected');
                     radio.checked = true;
+                    selectedCard = card;
                 } else {
                     card.classList.remove('selected');
                     radio.checked = false;
                 }
             });
 
-            // Показать/скрыть поля для кастомного шаблона
-            toggleCustomTemplateFields(selectedValue === 'custom');
+            // Показать/скрыть секцию кастомного шаблона
+            toggleCustomTemplateSection(selectedValue === 'custom');
+
+            // Применить настройки выбранного шаблона
+            if (selectedCard) {
+                applyTemplateSettings(selectedCard);
+            }
         }
 
         /**
-         * Переключение видимости полей для кастомного шаблона
-         * @param {boolean} show - показать или скрыть поля
+         * Переключение видимости секции кастомного шаблона
+         * @param {boolean} show - показать или скрыть секцию
          */
-        function toggleCustomTemplateFields(show = false) {
-            if (customTemplateFields) {
-                customTemplateFields.style.display = show ? 'block' : 'none';
+        function toggleCustomTemplateSection(show = false) {
+            if (customTemplateSection) {
+                customTemplateSection.style.display = show ? 'block' : 'none';
 
                 const customCard = document.querySelector('[data-template="custom"]');
                 if (customCard) {
@@ -527,7 +963,7 @@
             });
         });
 
-        // Инициализация - выбираем default по умолчанию
+        // Инициализация - выбираем default по умолчанию и применяем его настройки
         updateSelectedTemplate('default');
 
         // === ОСНОВНЫЕ ОБРАБОТЧИКИ СОБЫТИЙ ===
@@ -546,7 +982,7 @@
             downloadBtn.style.display = 'inline-block';
             downloadBtn.innerHTML = '<i class="ri-download-2-line"></i> Скачать готовый лаунчер';
             compileBtn.disabled = false;
-            // Останавливаем поллинг, если он был запущен
+
             if (pollingInterval) {
                 clearInterval(pollingInterval);
             }
@@ -569,23 +1005,26 @@
             event.preventDefault();
             compileBtn.disabled = true;
 
-            // --- 1. Сбор данных и ссылок на файлы ---
+            // Сбор данных формы
             const buildData = {
                 dataUrl: document.getElementById('dataUrl').value,
                 title: document.getElementById('pageTitle').value,
+                defaultWidth: parseInt(document.getElementById('defaultWidth').value) || 900,
+                defaultHeight: parseInt(document.getElementById('defaultHeight').value) || 700,
                 minWidth: parseInt(document.getElementById('minWidth').value) || 800,
                 minHeight: parseInt(document.getElementById('minHeight').value) || 600,
+                maxWidth: parseInt(document.getElementById('maxWidth').value) || 1200,
+                maxHeight: parseInt(document.getElementById('maxHeight').value) || 900,
                 launcherVersion: document.getElementById('launcherVersion').value || "1.0.0",
-                template: getSelectedTemplate(), // Используем новую функцию
+                template: getSelectedTemplate(),
                 accountLink: document.getElementById('accountLink').value,
                 registrationLink: document.getElementById('registerLink').value,
                 forumLink: document.getElementById('forumLink').value,
                 fullscreen: document.getElementById('fullscreenSwitch').checked,
-                frameless: document.getElementById('frameless').checked,
+                frameless: !document.getElementById('frameless').checked, // Инвертируем логику!
                 disableResize: document.getElementById('disableResize').checked,
                 CSSDragProperty: document.getElementById('CSSDragProperty').checked,
                 EnableF1BuilderPage: document.getElementById('enableF1BuilderPage').checked,
-                // Base64 поля будут заполнены позже
                 iconBase64: "",
                 customHtmlBase64: "",
                 customCssBase64: "",
@@ -602,7 +1041,7 @@
             const MAX_SIZE = 100 * 1024; // 100 КБ
             const MAX_LOGO_SIZE = 250 * 1024; // 250 КБ для лого
 
-            // --- 2. Синхронные проверки ---
+            // Проверки размеров файлов
             if (iconFile && iconFile.size > MAX_SIZE) {
                 alert('Ошибка: Размер иконки не должен превышать 100 КБ.');
                 compileBtn.disabled = false;
@@ -611,7 +1050,7 @@
 
             if (buildData.template === 'custom') {
                 if (!customHtmlFile) {
-                    alert('Для своего шаблона необходимо выбрать как минимум файл index.html.');
+                    alert('Для пользовательского шаблона необходимо выбрать как минимум файл index.html.');
                     compileBtn.disabled = false;
                     return;
                 }
@@ -637,7 +1076,7 @@
                 }
             }
 
-            // --- 3. Единая асинхронная цепочка ---
+            // Функции для чтения файлов
             const readFileAsBase64 = (file) => new Promise((resolve, reject) => {
                 if (!file) return resolve("");
                 const reader = new FileReader();
@@ -647,7 +1086,7 @@
             });
 
             const checkImageDimensions = (file) => new Promise((resolve, reject) => {
-                if (!file) return resolve(); // Если файла нет, проверять нечего
+                if (!file) return resolve();
                 const image = new Image();
                 image.onload = () => {
                     if (image.width > 128 || image.height > 128) {
@@ -660,10 +1099,9 @@
                 image.src = URL.createObjectURL(file);
             });
 
-            // Шаг 3.1: Сначала проверяем размеры иконки
+            // Чтение файлов и отправка запроса
             checkImageDimensions(iconFile)
                   .then(() => {
-                      // Шаг 3.2: Если размеры в порядке, читаем ВСЕ файлы в Base64
                       return Promise.all([
                           readFileAsBase64(iconFile),
                           readFileAsBase64(customHtmlFile),
@@ -673,33 +1111,28 @@
                       ]);
                   })
                   .then(([iconBase64, customHtml, customCss, customLang, customLogo]) => {
-                      // Шаг 3.3: После успешного чтения всех файлов, заполняем объект данных
                       buildData.iconBase64 = iconBase64;
                       buildData.customHtmlBase64 = customHtml;
                       buildData.customCssBase64 = customCss;
                       buildData.customLangJsonBase64 = customLang;
                       buildData.customLogoBase64 = customLogo;
 
-                      // Шаг 3.4: Отправляем запрос на сервер ТОЛЬКО ОДИН РАЗ
                       sendInitialRequest(buildData);
                   })
                   .catch(err => {
-                      // Единый обработчик ошибок для всей цепочки
                       alert('Ошибка подготовки данных: ' + err.message);
                       compileBtn.disabled = false;
                   });
         }
 
-        // Остальные функции остаются без изменений (sendInitialRequest, startPolling, pollTaskStatus)
+        // Функция отправки запроса (остается без изменений)
         function sendInitialRequest(data) {
-            // Подготовка UI
             compileForm.style.display = 'none';
             statusContainer.style.display = 'block';
             errorContainer.style.display = 'none';
             resultContainer.style.display = 'none';
             updateProgress(0, 'Отправка запроса на сервер...');
 
-            // Отправка запроса
             fetch('/admin/plugin/sphereLauncher2/compile', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -707,7 +1140,6 @@
             })
                   .then(response => {
                       if (!response.ok) {
-                          // Обрабатываем ошибки типа "Busy" (409) и другие
                           return response.json().then(errorData => {
                               throw new Error(errorData.error || `Сервер вернул ошибку ${response.status}`);
                           });
@@ -716,7 +1148,6 @@
                   })
                   .then(result => {
                       if (result.error) {
-                          // Обрабатываем ошибки, которые могли прийти с кодом 200 OK
                           throw new Error(result.error);
                       }
                       if (result.task_id) {
@@ -727,26 +1158,22 @@
                       }
                   })
                   .catch(err => {
-                      // Отображение ошибки в UI
                       statusContainer.style.display = 'block';
                       errorContainer.style.display = 'block';
                       errorMessage.innerText = err.message;
                       resultContainer.style.display = 'block';
-                      downloadBtn.style.display = 'none'; // Прячем кнопку скачивания при ошибке
-                      compileBtn.disabled = false; // Разблокируем кнопку, чтобы можно было попробовать снова
+                      downloadBtn.style.display = 'none';
+                      compileBtn.disabled = false;
                   });
         }
 
         function startPolling(taskId) {
-            // Очищаем предыдущий интервал на всякий случай
             if (pollingInterval) {
                 clearInterval(pollingInterval);
             }
-
-            // Запускаем новый интервал с опросом каждые 2 секунды
             pollingInterval = setInterval(() => {
                 pollTaskStatus(taskId);
-            }, 2000); // 2000 мс = 2 секунды
+            }, 2000);
         }
 
         function pollTaskStatus(taskId) {
@@ -783,7 +1210,6 @@
                               downloadBtn.classList.add('disabled');
                               downloadBtn.innerHTML = "Идёт сохранение...";
 
-                              // Отправляем запрос на PHP-бэкенд для скачивания файла
                               fetch('/admin/plugin/sphereLauncher2/download', {
                                   method: 'POST',
                                   headers: {
@@ -796,7 +1222,9 @@
                               })
                                     .then(response => {
                                         if (!response.ok) {
-                                            return response.json().then(err => { throw new Error(err.error || 'Ошибка при сохранении файла на сервер.'); });
+                                            return response.json().then(err => {
+                                                throw new Error(err.error || 'Ошибка при сохранении файла на сервер.');
+                                            });
                                         }
                                         return response.json();
                                     })
@@ -818,7 +1246,7 @@
                                         downloadBtn.style.display = 'none';
                                     });
 
-                          } else { // status === 'failed'
+                          } else {
                               statusMessage.innerText = "Сборка завершилась с ошибкой.";
                               progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
                               progressBar.classList.add('bg-danger');
@@ -844,6 +1272,41 @@
 
 {% block css %}
 <style>
+/* Основные стили для улучшенной структуры */
+.settings-section {
+    margin-bottom: 1rem;
+    border-radius: 10px;
+}
+
+.section-title {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+}
+
+.section-title i {
+    margin-right: 0.5rem;
+}
+
+/* Стили для карточек настроек */
+.setting-card {
+    padding: 1rem;
+    border-radius: 8px;
+    height: 100%;
+}
+
+.setting-card:hover {
+    border-color: #0d6efd;
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.1);
+}
+
+/* Стили для загрузки кастомного шаблона */
+.custom-template-upload {
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+/* Селектор шаблонов */
 .template-selector {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -853,25 +1316,23 @@
 
 .template-card {
     position: relative;
-    border: 2px solid #e9ecef;
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: #fff;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .template-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     border-color: #0d6efd;
 }
 
 .template-card.selected {
     border-color: #0d6efd;
-    background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
     box-shadow: 0 8px 25px rgba(13,110,253,0.2);
+    transform: translateY(-2px);
 }
 
 .template-card.selected::before {
@@ -904,15 +1365,21 @@
     position: relative;
 }
 
+/* Цвета для fallback изображений */
 .template-image-fallback.default { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
 .template-image-fallback.cyberpunk { background: linear-gradient(135deg, #ff0080 0%, #7928ca 100%); }
 .template-image-fallback.flat { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.template-image-fallback.duxy { background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%); }
+.template-image-fallback.fonar { background: linear-gradient(135deg, #434343 0%, #000000 100%); }
 .template-image-fallback.futuristic { background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); }
 .template-image-fallback.material { background: linear-gradient(135deg, #4285f4 0%, #34a853 100%); }
 .template-image-fallback.skeuomorphism { background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%); }
-.template-image-fallback.gsax { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
-.template-image-fallback.gagarka { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
-.template-image-fallback.custom { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+.template-image-fallback.gsax { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; }
+.template-image-fallback.gagarka { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
+.template-image-fallback.lafa { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #333; }
+.template-image-fallback.pinocolate { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.template-image-fallback.sfox { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #333; }
+.template-image-fallback.custom { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #333; }
 
 .template-content {
     padding: 16px;
@@ -922,13 +1389,12 @@
     font-weight: 600;
     font-size: 18px;
     margin-bottom: 8px;
-    color: #212529;
 }
 
 .template-description {
     font-size: 14px;
     color: #6c757d;
-    margin-bottom: 12px;
+    margin-bottom: 0;
     line-height: 1.4;
 }
 
@@ -949,21 +1415,21 @@
     position: absolute;
     top: 12px;
     left: 12px;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.8);
     color: white;
-    padding: 4px 8px;
-    border-radius: 6px;
+    padding: 4px 10px;
+    border-radius: 15px;
     font-size: 12px;
     font-weight: 500;
     z-index: 3;
 }
 
 .custom-template-highlight {
-    border: 2px dashed #ffc107;
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 2px dashed #ffc107 !important;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
 }
 
-/* Анимация появления */
+/* Анимации */
 .template-card {
     animation: fadeInUp 0.6s ease-out;
 }
@@ -979,7 +1445,7 @@
     }
 }
 
-/* Стили для мобильных устройств */
+/* Адаптивность */
 @media (max-width: 768px) {
     .template-selector {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -995,6 +1461,140 @@
     .template-content {
         padding: 12px;
     }
+
+    .settings-section {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Улучшенные switch элементы */
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.form-check-input:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Стили для progress bar */
+.progress {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+/* Кнопки */
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+}
+
+/* Стили для disabled настроек */
+.setting-card.disabled-setting {
+    opacity: 0.6;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    pointer-events: none;
+    position: relative;
+}
+
+.setting-card.disabled-setting::before {
+    content: "Недоступно для выбранного шаблона";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #6c757d;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    z-index: 2;
+}
+
+.setting-card.disabled-setting .form-check-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.setting-card.disabled-setting .form-label,
+.setting-card.disabled-setting small {
+    color: #6c757d !important;
+}
+
+/* Анимация для плавного перехода */
+.setting-card {
+    transition: all 0.3s ease;
+}
+
+/* Стили для спойлеров настроек */
+.section-collapse-btn {
+    color: inherit !important;
+    font-weight: 600;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    font-size: inherit;
+}
+
+.section-collapse-btn:hover {
+    color: #0d6efd !important;
+}
+
+.section-collapse-btn:focus {
+    color: #0d6efd !important;
+}
+
+.collapse-icon {
+    transition: transform 0.3s ease;
+    margin-left: auto;
+}
+
+.section-collapse-btn[aria-expanded="true"] .collapse-icon {
+    transform: rotate(180deg);
+}
+
+.section-collapse-btn[aria-expanded="false"] .collapse-icon {
+    transform: rotate(0deg);
+}
+
+/* Анимация для содержимого спойлера */
+.collapse {
+    transition: all 0.35s ease;
+}
+
+.collapsing {
+    transition: height 0.35s ease;
+}
+
+/* Улучшенный hover эффект для заголовка спойлера */
+.section-title:has(.section-collapse-btn) {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.section-title:has(.section-collapse-btn):hover {
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Дополнительный отступ для содержимого спойлера */
+.collapse .row {
+    padding-top: 1rem;
 }
 </style>
 {% endblock %}

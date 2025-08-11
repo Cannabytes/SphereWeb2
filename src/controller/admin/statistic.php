@@ -22,7 +22,7 @@ class statistic
     static public function getDonate(): void
     {
 
-        $rows = sql::getRows("SELECT `id`, `user_id`, `point`, `message`, `pay_system`, `id_admin_pay`, `sphere`, `date` FROM `donate_history_pay` ORDER BY `id` DESC");
+        $rows = sql::getRows("SELECT `id`, `user_id`, `point`, `message`, `pay_system`, `id_admin_pay`, `sphere`, `date` FROM `donate_history_pay` ORDER BY `id` DESC ");
 
         $statsPay = [];
         $monthlyStatsPay = [];
