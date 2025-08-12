@@ -742,21 +742,34 @@ class donate
 
     private static function AddOneTimeBonus($user_id, $sphereCoin)
     {
-        //Список предметов для выдачи бонуса
-        $bonusData = false;
         $donateBonusList = config::load()->donate()->getTableEnableOneTimeBonus();
+
+        $maxBonus = null;
+        $maxCoin = 0;
+
         foreach ($donateBonusList as $bonus) {
-            if ($bonus['coin'] <= $sphereCoin) {
-                $bonusData = $bonus;
+            if ($bonus['coin'] <= $sphereCoin && $bonus['coin'] > $maxCoin) {
+                $maxBonus = $bonus;
+                $maxCoin = $bonus['coin'];
             }
         }
-        //Если бонус есть, тогда добавим процент sphereCoin пользователю
+
+        $bonusData = $maxBonus;
+
+        // Если бонус есть, тогда добавим процент sphereCoin пользователю
         if ($bonusData) {
-            //Сумма бонуса в процентах от суммы доната
+            // Сумма бонуса в процентах от суммы доната
             $percent = $bonusData['percent'];
             $addSphereCoin = ($sphereCoin * $percent / 100);
-            //TODO: Добавить логирование о действий пользователя
-            user::getUserId($user_id)->donateAdd($addSphereCoin)->AddHistoryDonate(amount: $addSphereCoin, message: lang::get_phrase('bonus for one-time donation', $percent, $addSphereCoin), pay_system:  "oneTimeBonus");
+
+            // TODO: Добавить логирование о действий пользователя
+            user::getUserId($user_id)
+                ->donateAdd($addSphereCoin)
+                ->AddHistoryDonate(
+                    amount: $addSphereCoin,
+                    message: lang::get_phrase('bonus for one-time donation', $percent, $addSphereCoin),
+                    pay_system: "oneTimeBonus"
+                );
         }
 
         return $bonusData;
