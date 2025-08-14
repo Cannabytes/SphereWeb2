@@ -2135,4 +2135,6 @@ Password: %%password%%',
     'i_agree_private_police' => 'Συμφωνώ με την <a href="%s" target="_blank" class="text-primary">Πολιτική Απορρήτου</a>',
     'i_agree_terms_of_service' => 'Έχω διαβάσει και συμφωνώ με τους <a href="%s" target="_blank" class="text-primary">Όρους Χρήσης</a>*',
     'i_agree_server_rules' => 'Έχω διαβάσει και συμφωνώ με τους <a href="%s" target="_blank" class="text-primary">Κανόνες του Διακομιστή</a>',
+    'personal account' => 'Προσωπικός λογαριασμός',
+
 ];

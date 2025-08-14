@@ -2226,5 +2226,6 @@ Password: %%password%%',
     'i_agree_terms_of_service' => 'Я прочитал(а) и согласен(а) с <a href="%s" target="_blank" class="text-primary">Пользовательским соглашением</a>',
     'i_agree_server_rules' => 'Я прочитал(а) и согласен(а) с <a href="%s" target="_blank" class="text-primary">Правилами сервера</a>',
 
+    'personal account' => 'Личный кабинет',
 
 );

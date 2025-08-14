@@ -2152,5 +2152,7 @@ Password: %%password%%',
     'i_agree_private_police' => 'Concordo com a <a href="%s" target="_blank" class="text-primary">Política de Privacidade</a>',
     'i_agree_terms_of_service' => 'Li e concordo com o <a href="%s" target="_blank" class="text-primary">Acordo de Usuário</a>',
     'i_agree_server_rules' => 'Li e concordo com as <a href="%s" target="_blank" class="text-primary">Regras do Servidor</a>',
+    'personal account' => 'Conta pessoal',
+
 
 ];

@@ -2185,6 +2185,7 @@ Email: %%email%l%
     'i_agree_private_police' => 'Погоджуюсь з <a href="%s" target="_blank" class="text-primary">Політикою конфіденційності</a>',
     'i_agree_terms_of_service' => 'Я прочитав(ла) і погоджуюсь з <a href="%s" target="_blank" class="text-primary">Угодою користувача</a>',
     'i_agree_server_rules' => 'Я прочитав(ла) і погоджуюсь з <a href="%s" target="_blank" class="text-primary">Правилами сервера</a>',
+    'personal account' => 'Особистий кабінет',
 
 ];
 
