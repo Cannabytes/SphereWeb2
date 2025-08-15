@@ -678,28 +678,54 @@ class donate
     // Реализация выдачи бонусов
     public static function addUserBonus($user_id, $sphereCoin)
     {
+        // Приведение к числовому типу и валидация
+        $sphereCoin = is_numeric($sphereCoin) ? (float)$sphereCoin : 0.0;
         $sphereCoin = ceil(round($sphereCoin, 1));
+
+        if ($sphereCoin <= 0) {
+            error_log("Invalid sphereCoin value: " . var_export($sphereCoin, true));
+            return false;
+        }
+
         // Проверка на выдачу предметов за донат
         if (config::load()->donate()->isRewardForDonatingItems()) {
             self::addDonateItemBonus($user_id, $sphereCoin);
         }
-        //Проверка на выдачу единоразных платежей за донат
+
+        // Проверка на выдачу единоразных платежей за донат
         if (config::load()->donate()->isEnableOneTimeBonus()) {
             self::AddOneTimeBonus($user_id, $sphereCoin);
         }
-        //Выдача бонуса по накопительной системе
+
+        // Выдача бонуса по накопительной системе
         if (config::load()->donate()->isEnableCumulativeDiscountSystem()) {
             self::addCumulativeBonus($user_id, $sphereCoin);
         }
 
-        //Выдача бонусов за рефералку
+        // Выдача бонусов за рефералку
         if (config::load()->referral()->isEnable()) {
             $masterUser = referral::get_user_leader($user_id);
             if ($masterUser) {
-                $bonus = ($sphereCoin * config::load()->referral()->getProcentDonateBonus()) / 100;
-                $masterUser->donateAdd($bonus)->AddHistoryDonate(amount: $bonus, message: lang::get_phrase('message_ref_bonus', (string)$bonus), pay_system:  "referralBonus" );
+                // Безопасное получение процента и приведение к числу
+                $procentDonateBonus = config::load()->referral()->getProcentDonateBonus();
+                $procentDonateBonus = is_numeric($procentDonateBonus) ? (float)$procentDonateBonus : 0.0;
+
+                if ($procentDonateBonus > 0) {
+                    $bonus = ($sphereCoin * $procentDonateBonus) / 100;
+                    $bonus = round($bonus, 2); // Округление до 2 знаков после запятой
+
+                    if ($bonus > 0) {
+                        $masterUser->donateAdd($bonus)->AddHistoryDonate(
+                            amount: $bonus,
+                            message: lang::get_phrase('message_ref_bonus', (string)$bonus),
+                            pay_system: "referralBonus"
+                        );
+                    }
+                }
             }
         }
+
+        return true;
     }
 
     /**

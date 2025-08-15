@@ -5,10 +5,7 @@ namespace Ofey\Logan22\controller\admin;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\redirect;
-use Ofey\Logan22\controller\config\config;
-use Ofey\Logan22\controller\registration\user;
 use Ofey\Logan22\model\db\sql;
-use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\template\tpl;
 
 class setDonateServer
@@ -68,7 +65,7 @@ class setDonateServer
                 continue;
             }
             if (method_exists($system, 'forAdmin')) {
-                if ($system::forAdmin() and auth::get_access_level() != 'admin') {
+                if ($system::forAdmin() and !\Ofey\Logan22\model\user\user::self()->isAdmin()) {
                     continue;
                 }
             }
