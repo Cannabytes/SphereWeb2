@@ -590,17 +590,31 @@ $('.select_default_server').on('change', function() {
 
 // Отправка коинов в игру, на персонажа
 $(document).on('click', '#sendToPlayerBtn', function () {
+    const $btn = $(this);
+    const originalText = $btn.html();
+
+    // Блокируем кнопку и добавляем анимацию загрузки
+    $btn.prop('disabled', true)
+        .html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Отправка...');
+
     let playerName = $('#send_player_name').val();
     let coin = $('#muchSphereCoin').val();
     let account = $('#send_player_name option:selected').data('account');
+
     AjaxSend('/send/to/player', 'POST', {
         player: playerName,
         coin: coin,
-        account: account // Добавляем поле account
+        account: account
     }, true).then(function (response) {
         responseAnalysis(response);
         if (response.ok) {
             $('#sendToPlayerModal').modal('hide');
         }
+    }).catch(function (error) {
+        // Обработка ошибок
+        console.error('Ошибка при отправке:', error);
+    }).finally(function () {
+        // Восстанавливаем кнопку в любом случае
+        $btn.prop('disabled', false).html(originalText);
     });
 });

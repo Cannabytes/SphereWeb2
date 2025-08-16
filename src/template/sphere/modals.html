@@ -1088,7 +1088,7 @@ $(document).ready(function() {
       items: selectedItems,
       player: character,
       account: account
-    }).then(function(response) {
+    }, true, 20).then(function(response) {
 
       // Обработка ответа
       if (response.ok === true) {
