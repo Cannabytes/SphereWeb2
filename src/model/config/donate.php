@@ -9,6 +9,7 @@ use Ofey\Logan22\controller\config\dsys;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\item\item;
 use Ofey\Logan22\model\user\auth\auth;
+use Ofey\Logan22\model\user\user;
 
 class donate
 {
@@ -142,7 +143,7 @@ class donate
                 }
 
                 if (method_exists($system, 'forAdmin')) {
-                    if ($system::forAdmin() && auth::get_access_level() != 'admin') {
+                    if ($system::forAdmin() && !user::self()->isAdmin()) {
                         continue;
                     }
                 }
