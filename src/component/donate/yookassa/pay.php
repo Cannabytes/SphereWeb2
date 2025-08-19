@@ -63,7 +63,7 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
         user::self()->isAuth() ?: board::notice(false, lang::get_phrase(234));
         filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT) ?: board::notice(false, "Введите сумму цифрой");
         donate::isOnlyAdmin(self::class);
-        if(empty($this->shopId) OR empty($this->secretKey)){
+        if(empty(self::getConfigValue('shopId')) OR empty(self::getConfigValue('secretKey'))){
             board::error('No set token api');
         }
         $donate = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
@@ -77,7 +77,7 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
         $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
         $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
 
-        $userId = auth::get_id();
+        $userId = user::self()->getId();
 		$params = [
 			'metadata' => [
 				'userId' => $userId
@@ -89,7 +89,7 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
 			'capture' => true,
 			'confirmation' => [
 				'type' => 'redirect',
-				'return_url' => \Ofey\Logan22\component\request\url::host("/donate/pay"),
+				'return_url' => \Ofey\Logan22\component\request\url::host("/balance"),
 			],
 		];
 		$ch = curl_init();
@@ -99,7 +99,7 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
 			CURLOPT_POST => 1,
 			CURLOPT_POSTFIELDS => json_encode( $params ),
 			CURLOPT_HTTPHEADER => [
-				'Authorization: Basic ' . base64_encode( $this->shopId . ':' . $this->secretKey ),
+				'Authorization: Basic ' . base64_encode( self::getConfigValue('shopId') . ':' . self::getConfigValue('secretKey') ),
 				'Idempotence-Key: ' . uniqid(),
 				'Content-Type: application/json'
 			]
@@ -118,7 +118,7 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
             exit;
         }
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
-        if(empty($this->shopId) OR empty($this->secretKey)){
+        if(empty(self::getConfigValue('shopId')) OR empty(self::getConfigValue('secretKey'))){
             board::error('No set token api');
         }
 		$request = json_decode( file_get_contents( 'php://input' ), true );
@@ -135,9 +135,11 @@ class yookassa extends \Ofey\Logan22\model\donate\pay_abstract {
 			die( 'Bad request' );
 		}
         donate::control_uuid($id, get_called_class());
-
         $amount = donate::currency($amount, $currency);
-        auth::change_donate_point((int) $userId, $amount, get_called_class());
+        self::telegramNotice(user::getUserId($userId), $request['object']['amount']['value'], self::getCurrency(), $amount, get_called_class());
+        user::getUserId($userId)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
+        donate::addUserBonus($userId, $amount);
+        echo 'ok';
     }
 }
  
