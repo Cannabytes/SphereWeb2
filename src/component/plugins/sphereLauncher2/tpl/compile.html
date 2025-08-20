@@ -29,20 +29,20 @@
                                         Ссылка на launcher.json <i class="text-danger">*</i>
                                     </label>
                                     <input class="form-control" id="dataUrl"
-                                           placeholder="https://example.com/launcher.json" type="text"
-                                           value="{{HTTP_HOST()}}/launcher.json">
+                                        placeholder="https://example.com/launcher.json" type="text"
+                                        value="{{HTTP_HOST()}}/launcher.json">
                                 </div>
 
                                 <div class="col-md-8">
                                     <label class="form-label"
-                                           data-bs-content="<img src='{{template_plugin}}/img/title.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
-                                           data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
-                                           for="pageTitle" tabindex="0">
+                                        data-bs-content="<img src='{{template_plugin}}/img/title.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
+                                        data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
+                                        for="pageTitle" tabindex="0">
                                         Название программы <i class="text-danger">*</i> <i
-                                          class="ri-information-line"></i>
+                                            class="ri-information-line"></i>
                                     </label>
                                     <input class="form-control" id="pageTitle"
-                                           placeholder="Введите название окна лаунчера" type="text" value="Мой Лаунчер">
+                                        placeholder="Введите название окна лаунчера" type="text" value="Мой Лаунчер">
                                 </div>
 
                                 <div class="col-md-4">
@@ -50,7 +50,7 @@
                                         Версия лаунчера
                                     </label>
                                     <input class="form-control" id="launcherVersion" placeholder="например, 1.0.0"
-                                           type="text" value="1.0.0">
+                                        type="text" value="1.0.0">
                                 </div>
 
                                 <div class="col-md-12">
@@ -75,16 +75,16 @@
 
                                 <!-- vistor -->
                                 <div class="template-card" data-template="vistor" data-default-width="1100"
-                                     data-default-height="700" data-min-width="700" data-min-height="600"
-                                     data-max-width="1100" data-max-height="800" data-fullscreen="true"
-                                     data-frameless="true" data-disable-resize="true" data-css-drag="true"
-                                     data-enable-f1="true">
+                                    data-default-height="700" data-min-width="700" data-min-height="600"
+                                    data-max-width="1100" data-max-height="800" data-fullscreen="true"
+                                    data-frameless="true" data-disable-resize="true" data-css-drag="true"
+                                    data-enable-f1="true">
                                     <div class="template-radio">
                                         <input type="radio" name="template" value="vistor" id="template-vistor">
                                     </div>
                                     <img src="{{template_plugin}}/tpl/screen/vistor.jpg" alt="vistor template"
-                                         class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        class="template-image"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                     <div class="template-image-fallback vistor">
                                         <i class="ri-firefox-line"></i>
                                     </div>
@@ -96,16 +96,16 @@
 
                                 <!-- Custom Template -->
                                 <div class="template-card" data-template="custom" data-default-width="900"
-                                     data-default-height="700" data-min-width="800" data-min-height="600"
-                                     data-max-width="1200" data-max-height="900" data-fullscreen="true"
-                                     data-frameless="false" data-disable-resize="true" data-css-drag="false">
+                                    data-default-height="700" data-min-width="800" data-min-height="600"
+                                    data-max-width="1200" data-max-height="900" data-fullscreen="true"
+                                    data-frameless="false" data-disable-resize="true" data-css-drag="false">
                                     <div class="template-radio">
                                         <input type="radio" name="template" value="custom" id="template-custom">
                                     </div>
                                     <div class="template-badge">Свой</div>
                                     <img src="{{template_plugin}}/tpl/screen/custom.jpg" alt="Custom template"
-                                         class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        class="template-image"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                     <div class="template-image-fallback custom">
                                         <i class="ri-upload-cloud-line"></i>
                                     </div>
@@ -160,7 +160,7 @@
                                             Изображение лого
                                         </label>
                                         <input class="form-control" type="file" id="customLogoFile"
-                                               accept=".png,.jpg,.jpeg,.gif,.bmp,.svg">
+                                            accept=".png,.jpg,.jpeg,.gif,.bmp,.svg">
                                         <div class="form-text">
                                             Опционально. Форматы: PNG, JPG, JPEG, GIF, BMP, SVG. До 250 КБ.
                                         </div>
@@ -173,8 +173,8 @@
                         <div class="settings-section">
                             <h5 class="section-title">
                                 <button class="btn btn-link p-0 text-decoration-none section-collapse-btn" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#windowSettingsCollapse"
-                                        aria-expanded="false" aria-controls="windowSettingsCollapse">
+                                    data-bs-toggle="collapse" data-bs-target="#windowSettingsCollapse"
+                                    aria-expanded="false" aria-controls="windowSettingsCollapse">
                                     <i class="ri-window-line"></i>
                                     Настройки окна лаунчера
                                     <i class="ri-arrow-down-s-line collapse-icon ms-2"></i>
@@ -189,9 +189,9 @@
                                     <!-- Размеры по умолчанию -->
                                     <div class="col-md-6">
                                         <label class="form-label"
-                                               data-bs-content="<img src='{{template_plugin}}/img/min.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
-                                               data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
-                                               for="windowWidth" tabindex="0">
+                                            data-bs-content="<img src='{{template_plugin}}/img/min.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
+                                            data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
+                                            for="windowWidth" tabindex="0">
                                             Ширина окна <i class="ri-information-line"></i>
                                         </label>
                                         <div class="input-group">
@@ -202,9 +202,9 @@
 
                                     <div class="col-md-6">
                                         <label class="form-label"
-                                               data-bs-content="<img src='{{template_plugin}}/img/max.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
-                                               data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
-                                               for="windowHeight" tabindex="0">
+                                            data-bs-content="<img src='{{template_plugin}}/img/max.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
+                                            data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
+                                            for="windowHeight" tabindex="0">
                                             Высота окна <i class="ri-information-line"></i>
                                         </label>
                                         <div class="input-group">
@@ -254,8 +254,8 @@
                         <div class="settings-section">
                             <h5 class="section-title">
                                 <button class="btn btn-link p-0 text-decoration-none section-collapse-btn" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#behaviorSettingsCollapse"
-                                        aria-expanded="false" aria-controls="behaviorSettingsCollapse">
+                                    data-bs-toggle="collapse" data-bs-target="#behaviorSettingsCollapse"
+                                    aria-expanded="false" aria-controls="behaviorSettingsCollapse">
                                     <i class="ri-settings-5-line"></i>
                                     Настройки поведения
                                     <i class="ri-arrow-down-s-line collapse-icon ms-2"></i>
@@ -271,7 +271,7 @@
                                                 режиме</small>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" id="fullscreenSwitch" role="switch"
-                                                       type="checkbox">
+                                                    type="checkbox">
                                                 <label class="form-check-label" for="fullscreenSwitch">Включить по
                                                     умолчанию</label>
                                             </div>
@@ -285,7 +285,7 @@
                                                 окном</small>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" id="frameless" role="switch"
-                                                       type="checkbox">
+                                                    type="checkbox">
                                                 <label class="form-check-label" for="frameless">Включить рамку</label>
                                             </div>
                                         </div>
@@ -298,7 +298,7 @@
                                                 лаунчера</small>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" id="disableResize" role="switch"
-                                                       type="checkbox">
+                                                    type="checkbox">
                                                 <label class="form-check-label" for="disableResize">Запретить
                                                     изменение</label>
                                             </div>
@@ -312,7 +312,7 @@
                                                 классом "drag"</small>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" id="CSSDragProperty" role="switch"
-                                                       type="checkbox">
+                                                    type="checkbox">
                                                 <label class="form-check-label" for="CSSDragProperty">Включить</label>
                                             </div>
                                         </div>
@@ -325,7 +325,7 @@
                                                 F1, изменения в реал-тайме шаблона</small>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" id="enableAdminMode" role="switch"
-                                                       type="checkbox">
+                                                    type="checkbox">
                                                 <label class="form-check-label" for="enableAdminMode">Включить</label>
                                             </div>
                                         </div>
@@ -348,7 +348,7 @@
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="ri-account-circle-line"></i></span>
                                         <input class="form-control" id="accountLink"
-                                               placeholder="https://example.com/account" type="url">
+                                            placeholder="https://example.com/account" type="url">
                                     </div>
                                 </div>
 
@@ -357,7 +357,7 @@
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="ri-user-add-line"></i></span>
                                         <input class="form-control" id="registerLink"
-                                               placeholder="https://example.com/register" type="url">
+                                            placeholder="https://example.com/register" type="url">
                                     </div>
                                 </div>
 
@@ -366,7 +366,7 @@
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="ri-question-answer-line"></i></span>
                                         <input class="form-control" id="forumLink"
-                                               placeholder="https://example.com/forum" type="url">
+                                            placeholder="https://example.com/forum" type="url">
                                     </div>
                                 </div>
                             </div>
@@ -393,8 +393,8 @@
                                 </h5>
                                 <div class="progress mb-3" style="height: 25px;">
                                     <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="0"
-                                         class="progress-bar progress-bar-striped progress-bar-animated"
-                                         id="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+                                        class="progress-bar progress-bar-striped progress-bar-animated"
+                                        id="progress-bar" role="progressbar" style="width: 0%;">0%</div>
                                 </div>
                                 <p class="text-muted" id="status-message">Ожидание запуска задачи...</p>
 
@@ -511,82 +511,58 @@
          */
         function applyTemplateSettings(templateCard) {
             const data = templateCard.dataset;
-
             // Применяем размеры окна
-            document.getElementById('windowWidth').value = data.windowWidth || '900';
-            document.getElementById('windowHeight').value = data.windowHeight || '700';
+            // Атрибуты в разметке: data-default-width, data-default-height, data-min-width, data-min-height, data-max-width, data-max-height
+            document.getElementById('windowWidth').value = data.defaultWidth || '900';
+            document.getElementById('windowHeight').value = data.defaultHeight || '700';
             document.getElementById('minWidth').value = data.minWidth || '800';
             document.getElementById('minHeight').value = data.minHeight || '600';
             document.getElementById('maxWidth').value = data.maxWidth || '1200';
             document.getElementById('maxHeight').value = data.maxHeight || '900';
 
             // Применяем настройки поведения и устанавливаем disabled состояние
+            // Соответствие data-атрибутов -> dataset: data-fullscreen -> dataset.fullscreen, data-frameless -> dataset.frameless, data-disable-resize -> dataset.disableResize, data-css-drag -> dataset.cssDrag, data-enable-f1 -> dataset.enableF1
             const behaviorSettings = [
-                {
-                    dataKey: 'fullscreen',
-                    elementId: 'fullscreenSwitch',
-                    defaultValue: false
-                },
-                {
-                    dataKey: 'frameless',
-                    elementId: 'frameless',
-                    defaultValue: false,
-                    inverted: true // Инвертируем логику для frameless
-                },
-                {
-                    dataKey: 'disableResize',
-                    elementId: 'disableResize',
-                    defaultValue: false
-                },
-                {
-                    dataKey: 'cssDrag',
-                    elementId: 'CSSDragProperty',
-                    defaultValue: false
-                },
-                {
-                    dataKey: 'enableAdmin',
-                    elementId: 'enableAdminMode',
-                    defaultValue: false
-                }
+                { dataKey: 'fullscreen', elementId: 'fullscreenSwitch', defaultValue: false },
+                { dataKey: 'frameless', elementId: 'frameless', defaultValue: false, inverted: true },
+                { dataKey: 'disableResize', elementId: 'disableResize', defaultValue: false },
+                { dataKey: 'cssDrag', elementId: 'CSSDragProperty', defaultValue: false },
+                { dataKey: 'enableF1', elementId: 'enableAdminMode', defaultValue: false }
             ];
 
             behaviorSettings.forEach(setting => {
                 const element = document.getElementById(setting.elementId);
-                const dataValue = data[setting.dataKey];
+                const rawValue = data[setting.dataKey]; // may be 'true', 'false', 'off' or undefined
 
-                if (element) {
-                    // Проверяем, если значение "off" - делаем элемент disabled
-                    if (dataValue === 'off') {
-                        element.disabled = true;
-                        element.checked = false; // Сбрасываем значение для disabled элементов
+                if (!element) return;
 
-                        // Добавляем визуальную индикацию для disabled элементов
-                        const parentCard = element.closest('.setting-card');
-                        if (parentCard) {
-                            parentCard.classList.add('disabled-setting');
-                        }
-                    } else {
-                        // Убираем disabled состояние, если значение не "off"
-                        element.disabled = false;
-
-                        // Применяем значение с учетом инверсии для frameless
-                        if (setting.inverted) {
-                            // Для frameless: если в данных true (рамка отключена), то чекбокс должен быть false (рамка не включена)
-                            element.checked = dataValue !== 'true';
-                        } else {
-                            element.checked = dataValue === 'true' || setting.defaultValue;
-                        }
-
-                        // Убираем визуальную индикацию disabled состояния
-                        const parentCard = element.closest('.setting-card');
-                        if (parentCard) {
-                            parentCard.classList.remove('disabled-setting');
-                        }
-                    }
+                // Если явно указан 'off' — делаем control disabled и сбрасываем значение
+                if (rawValue === 'off') {
+                    element.disabled = true;
+                    element.checked = false;
+                    const parentCard = element.closest('.setting-card');
+                    if (parentCard) parentCard.classList.add('disabled-setting');
+                    return;
                 }
+
+                // Обычное состояние — включаем control
+                element.disabled = false;
+                const parentCard = element.closest('.setting-card');
+                if (parentCard) parentCard.classList.remove('disabled-setting');
+
+                // Вычисляем checked: если rawValue задан как 'true'/'false' — используем его, иначе берем defaultValue
+                let checked;
+                if (rawValue === undefined) {
+                    checked = !!setting.defaultValue;
+                } else {
+                    checked = rawValue === 'true';
+                }
+
+                if (setting.inverted) checked = !checked;
+                element.checked = checked;
             });
 
-            console.log(`Применены настройки для шаблона: ${data.template}`);
+            console.log(`Применены настройки для шаблона: ${data.template || templateCard.getAttribute('data-template')}`);
         }
 
         /**
@@ -664,8 +640,15 @@
             });
         });
 
-        // Инициализация - выбираем default по умолчанию и применяем его настройки
-        updateSelectedTemplate('default');
+        // Инициализация - выбираем первый доступный шаблон на странице и применяем его настройки
+        (function initDefaultTemplate() {
+            const firstCard = document.querySelector('.template-card');
+            if (firstCard && firstCard.dataset && firstCard.dataset.template) {
+                updateSelectedTemplate(firstCard.dataset.template);
+            } else {
+                updateSelectedTemplate('default');
+            }
+        })();
 
         // === ОСНОВНЫЕ ОБРАБОТЧИКИ СОБЫТИЙ ===
 
@@ -810,28 +793,28 @@
 
             // Чтение файлов и отправка запроса
             checkImageDimensions(iconFile)
-                  .then(() => {
-                      return Promise.all([
-                          readFileAsBase64(iconFile),
-                          readFileAsBase64(customHtmlFile),
-                          readFileAsBase64(customCssFile),
-                          readFileAsBase64(customLangFile),
-                          readFileAsBase64(customLogoFile),
-                      ]);
-                  })
-                  .then(([iconBase64, customHtml, customCss, customLang, customLogo]) => {
-                      buildData.iconBase64 = iconBase64;
-                      buildData.customHtmlBase64 = customHtml;
-                      buildData.customCssBase64 = customCss;
-                      buildData.customLangJsonBase64 = customLang;
-                      buildData.customLogoBase64 = customLogo;
+                .then(() => {
+                    return Promise.all([
+                        readFileAsBase64(iconFile),
+                        readFileAsBase64(customHtmlFile),
+                        readFileAsBase64(customCssFile),
+                        readFileAsBase64(customLangFile),
+                        readFileAsBase64(customLogoFile),
+                    ]);
+                })
+                .then(([iconBase64, customHtml, customCss, customLang, customLogo]) => {
+                    buildData.iconBase64 = iconBase64;
+                    buildData.customHtmlBase64 = customHtml;
+                    buildData.customCssBase64 = customCss;
+                    buildData.customLangJsonBase64 = customLang;
+                    buildData.customLogoBase64 = customLogo;
 
-                      sendInitialRequest(buildData);
-                  })
-                  .catch(err => {
-                      alert('Ошибка подготовки данных: ' + err.message);
-                      compileBtn.disabled = false;
-                  });
+                    sendInitialRequest(buildData);
+                })
+                .catch(err => {
+                    alert('Ошибка подготовки данных: ' + err.message);
+                    compileBtn.disabled = false;
+                });
         }
 
         // Функция отправки запроса (остается без изменений)
@@ -847,33 +830,33 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
-                  .then(response => {
-                      if (!response.ok) {
-                          return response.json().then(errorData => {
-                              throw new Error(errorData.error || `Сервер вернул ошибку ${response.status}`);
-                          });
-                      }
-                      return response.json();
-                  })
-                  .then(result => {
-                      if (result.error) {
-                          throw new Error(result.error);
-                      }
-                      if (result.task_id) {
-                          updateProgress(2, 'Задача создана. Начинаем отслеживание статуса...');
-                          startPolling(result.task_id);
-                      } else {
-                          throw new Error('Сервер не вернул ID задачи.');
-                      }
-                  })
-                  .catch(err => {
-                      statusContainer.style.display = 'block';
-                      errorContainer.style.display = 'block';
-                      errorMessage.innerText = err.message;
-                      resultContainer.style.display = 'block';
-                      downloadBtn.style.display = 'none';
-                      compileBtn.disabled = false;
-                  });
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.error || `Сервер вернул ошибку ${response.status}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    if (result.task_id) {
+                        updateProgress(2, 'Задача создана. Начинаем отслеживание статуса...');
+                        startPolling(result.task_id);
+                    } else {
+                        throw new Error('Сервер не вернул ID задачи.');
+                    }
+                })
+                .catch(err => {
+                    statusContainer.style.display = 'block';
+                    errorContainer.style.display = 'block';
+                    errorMessage.innerText = err.message;
+                    resultContainer.style.display = 'block';
+                    downloadBtn.style.display = 'none';
+                    compileBtn.disabled = false;
+                });
         }
 
         function startPolling(taskId) {
@@ -889,91 +872,91 @@
             const statusUrl = `/admin/plugin/sphereLauncher2/status/${taskId}`;
 
             fetch(statusUrl)
-                  .then(response => {
-                      if (response.status === 404) {
-                          throw new Error('Задача не найдена на сервере. Возможно, сервер был перезапущен.');
-                      }
-                      if (!response.ok) {
-                          throw new Error('Ошибка сети при запросе статуса.');
-                      }
-                      return response.json();
-                  })
-                  .then(task => {
-                      console.log("Получен статус задачи:", task);
+                .then(response => {
+                    if (response.status === 404) {
+                        throw new Error('Задача не найдена на сервере. Возможно, сервер был перезапущен.');
+                    }
+                    if (!response.ok) {
+                        throw new Error('Ошибка сети при запросе статуса.');
+                    }
+                    return response.json();
+                })
+                .then(task => {
+                    console.log("Получен статус задачи:", task);
 
-                      if (task.error && task.status !== 'failed') {
-                          throw new Error(task.error);
-                      }
+                    if (task.error && task.status !== 'failed') {
+                        throw new Error(task.error);
+                    }
 
-                      updateProgress(task.progress, task.message);
+                    updateProgress(task.progress, task.message);
 
-                      if (task.status === 'completed' || task.status === 'failed') {
-                          clearInterval(pollingInterval);
+                    if (task.status === 'completed' || task.status === 'failed') {
+                        clearInterval(pollingInterval);
 
-                          if (task.status === 'completed') {
-                              statusMessage.innerText = "Сборка успешно завершена! Сохраняем файл на ваш сервер...";
-                              progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
-                              progressBar.classList.add('bg-success');
-                              resultContainer.style.display = 'block';
-                              downloadBtn.style.display = 'inline-block';
-                              downloadBtn.classList.add('disabled');
-                              downloadBtn.innerHTML = "Идёт сохранение...";
+                        if (task.status === 'completed') {
+                            statusMessage.innerText = "Сборка успешно завершена! Сохраняем файл на ваш сервер...";
+                            progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
+                            progressBar.classList.add('bg-success');
+                            resultContainer.style.display = 'block';
+                            downloadBtn.style.display = 'inline-block';
+                            downloadBtn.classList.add('disabled');
+                            downloadBtn.innerHTML = "Идёт сохранение...";
 
-                              fetch('/admin/plugin/sphereLauncher2/download', {
-                                  method: 'POST',
-                                  headers: {
-                                      'Content-Type': 'application/json',
-                                      'Accept': 'application/json'
-                                  },
-                                  body: JSON.stringify({
-                                      result_url: task.result_url
-                                  })
-                              })
-                                    .then(response => {
-                                        if (!response.ok) {
-                                            return response.json().then(err => {
-                                                throw new Error(err.error || 'Ошибка при сохранении файла на сервер.');
-                                            });
-                                        }
-                                        return response.json();
-                                    })
-                                    .then(data => {
-                                        if (data.success) {
-                                            statusMessage.innerText = "Файл готов к скачиванию!";
-                                            downloadBtn.href = data.file_path;
-                                            downloadBtn.innerHTML = '<i class="ri-download-2-line"></i> Скачать Launcher.exe';
-                                            downloadBtn.classList.remove('disabled');
-                                            downloadBtn.target = '_blank';
-                                        } else {
-                                            throw new Error(data.error || 'Неизвестная ошибка при сохранении файла.');
-                                        }
-                                    })
-                                    .catch(err => {
-                                        console.error('Ошибка при сохранении файла:', err);
-                                        errorContainer.style.display = 'block';
-                                        errorMessage.innerText = 'Не удалось сохранить готовый лаунчер на ваш сервер. ' + err.message;
-                                        downloadBtn.style.display = 'none';
-                                    });
+                            fetch('/admin/plugin/sphereLauncher2/download', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    result_url: task.result_url
+                                })
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        return response.json().then(err => {
+                                            throw new Error(err.error || 'Ошибка при сохранении файла на сервер.');
+                                        });
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    if (data.success) {
+                                        statusMessage.innerText = "Файл готов к скачиванию!";
+                                        downloadBtn.href = data.file_path;
+                                        downloadBtn.innerHTML = '<i class="ri-download-2-line"></i> Скачать Launcher.exe';
+                                        downloadBtn.classList.remove('disabled');
+                                        downloadBtn.target = '_blank';
+                                    } else {
+                                        throw new Error(data.error || 'Неизвестная ошибка при сохранении файла.');
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error('Ошибка при сохранении файла:', err);
+                                    errorContainer.style.display = 'block';
+                                    errorMessage.innerText = 'Не удалось сохранить готовый лаунчер на ваш сервер. ' + err.message;
+                                    downloadBtn.style.display = 'none';
+                                });
 
-                          } else {
-                              statusMessage.innerText = "Сборка завершилась с ошибкой.";
-                              progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
-                              progressBar.classList.add('bg-danger');
-                              errorContainer.style.display = 'block';
-                              errorMessage.innerText = task.error;
-                              resultContainer.style.display = 'block';
-                              downloadBtn.style.display = 'none';
-                          }
-                      }
-                  })
-                  .catch(error => {
-                      console.error('Ошибка при опросе статуса:', error);
-                      clearInterval(pollingInterval);
-                      errorContainer.style.display = 'block';
-                      errorMessage.innerText = error.message;
-                      resultContainer.style.display = 'block';
-                      downloadBtn.style.display = 'none';
-                  });
+                        } else {
+                            statusMessage.innerText = "Сборка завершилась с ошибкой.";
+                            progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
+                            progressBar.classList.add('bg-danger');
+                            errorContainer.style.display = 'block';
+                            errorMessage.innerText = task.error;
+                            resultContainer.style.display = 'block';
+                            downloadBtn.style.display = 'none';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при опросе статуса:', error);
+                    clearInterval(pollingInterval);
+                    errorContainer.style.display = 'block';
+                    errorMessage.innerText = error.message;
+                    resultContainer.style.display = 'block';
+                    downloadBtn.style.display = 'none';
+                });
         }
     });
 </script>
