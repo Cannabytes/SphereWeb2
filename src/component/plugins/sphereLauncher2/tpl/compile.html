@@ -29,38 +29,35 @@
                                         Ссылка на launcher.json <i class="text-danger">*</i>
                                     </label>
                                     <input class="form-control" id="dataUrl"
-                                           placeholder="https://example.com/launcher.json"
-                                           type="text" value="{{HTTP_HOST()}}/launcher.json">
+                                           placeholder="https://example.com/launcher.json" type="text"
+                                           value="{{HTTP_HOST()}}/launcher.json">
                                 </div>
 
                                 <div class="col-md-8">
                                     <label class="form-label"
                                            data-bs-content="<img src='{{template_plugin}}/img/title.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
-                                           data-bs-html="true"
-                                           data-bs-toggle="popover"
-                                           data-bs-trigger="hover"
-                                           for="pageTitle"
-                                           tabindex="0">
-                                        Название программы <i class="text-danger">*</i> <i class="ri-information-line"></i>
+                                           data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
+                                           for="pageTitle" tabindex="0">
+                                        Название программы <i class="text-danger">*</i> <i
+                                          class="ri-information-line"></i>
                                     </label>
                                     <input class="form-control" id="pageTitle"
-                                           placeholder="Введите название окна лаунчера"
-                                           type="text" value="Мой Лаунчер">
+                                           placeholder="Введите название окна лаунчера" type="text" value="Мой Лаунчер">
                                 </div>
 
                                 <div class="col-md-4">
                                     <label class="form-label" for="launcherVersion">
                                         Версия лаунчера
                                     </label>
-                                    <input class="form-control" id="launcherVersion"
-                                           placeholder="например, 1.0.0"
+                                    <input class="form-control" id="launcherVersion" placeholder="например, 1.0.0"
                                            type="text" value="1.0.0">
                                 </div>
 
                                 <div class="col-md-12">
                                     <label class="form-label">Иконка лаунчера</label>
                                     <input accept=".png,.ico" class="form-control" id="iconUpload" type="file">
-                                    <div class="form-text">Форматы: PNG, ICO. Максимальный размер: 100 КБ. Разрешение: до 128x128 пикселей.</div>
+                                    <div class="form-text">Форматы: PNG, ICO. Максимальный размер: 100 КБ. Разрешение:
+                                        до 128x128 пикселей.</div>
                                 </div>
                             </div>
                         </div>
@@ -71,323 +68,22 @@
                                 <i class="ri-palette-line"></i>
                                 Выбор шаблона лаунчера
                             </h5>
-                            <p class="text-muted mb-3">Выберите визуальный стиль лаунчера. Каждый шаблон автоматически настроит оптимальные параметры окна.</p>
+                            <p class="text-muted mb-3">Выберите визуальный стиль лаунчера. Каждый шаблон автоматически
+                                настроит оптимальные параметры окна.</p>
 
                             <div class="template-selector" id="templateSelector">
-                                <!-- Default Template -->
-                                <div class="template-card" data-template="default"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="true" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="default" id="template-default" checked>
-                                    </div>
-                                    <div class="template-badge">По умолчанию</div>
-                                    <img src="/src/component/plugins/sphereLauncher2/tpl/screen/default.jpg"
-                                         alt="Default template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback default">
-                                        <i class="ri-layout-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">Default</div>
-                                        <div class="template-description">Классический дизайн с универсальными настройками</div>
-                                    </div>
-                                </div>
-
-                                <!-- Cyberpunk Template -->
-                                <div class="template-card" data-template="cyberpunk"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="true" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="cyberpunk" id="template-cyberpunk">
-                                    </div>
-                                    <img src="{{template_plugin}}/tpl/screen/cyberpunk.jpg"
-                                         alt="Cyberpunk template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback cyberpunk">
-                                        <i class="ri-cpu-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">Cyberpunk</div>
-                                        <div class="template-description">Футуристический дизайн без рамок</div>
-                                    </div>
-                                </div>
-
-                                <!-- Flat Template -->
-                                <div class="template-card" data-template="flat"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="true" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="flat" id="template-flat">
-                                    </div>
-                                    <img src="{{template_plugin}}/tpl/screen/flat.jpg"
-                                         alt="Flat template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback flat">
-                                        <i class="ri-artboard-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">Flat</div>
-                                        <div class="template-description">Минималистичный плоский дизайн</div>
-                                    </div>
-                                </div>
-
-                                <!-- Duxy Template -->
-                                <div class="template-card" data-template="duxy"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="true" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="duxy" id="template-duxy">
-                                    </div>
-                                    <img src="{{template_plugin}}/tpl/screen/duxy.jpg"
-                                         alt="Duxy template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback duxy">
-                                        <i class="ri-artboard-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">Duxy</div>
-                                        <div class="template-description">Стильный дизайн с расширенными возможностями</div>
-                                    </div>
-                                </div>
-
-                                <!-- Fonar Template -->
-                                <div class="template-card" data-template="fonar"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="true" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="fonar" id="template-fonar">
-                                    </div>
-                                    <img src="{{template_plugin}}/tpl/screen/fonar.jpg"
-                                         alt="Fonar template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback fonar">
-                                        <i class="ri-flashlight-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">Fonar</div>
-                                        <div class="template-description">Темный дизайн без системных рамок</div>
-                                    </div>
-                                </div>
-
-                                <!-- Futuristic Template -->
-                                <div class="template-card" data-template="futuristic"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="true" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="futuristic" id="template-futuristic">
-                                    </div>
-                                    <img src="{{template_plugin}}/tpl/screen/futuristic.jpg"
-                                         alt="Futuristic template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback futuristic">
-                                        <i class="ri-rocket-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">Futuristic</div>
-                                        <div class="template-description">Продвинутый футуристический интерфейс</div>
-                                    </div>
-                                </div>
-
-                                <!-- Material Template -->
-                                <div class="template-card" data-template="material"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="true" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="material" id="template-material">
-                                    </div>
-                                    <img src="{{template_plugin}}/tpl/screen/material.jpg"
-                                         alt="Material template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback material">
-                                        <i class="ri-palette-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">Material</div>
-                                        <div class="template-description">Материальный дизайн с четкими формами</div>
-                                    </div>
-                                </div>
-
-                                <!-- Skeuomorphism Template -->
-                                <div class="template-card" data-template="skeuomorphism"
-                                     data-default-width="1100" data-default-height="900"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="900"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="false" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="skeuomorphism" id="template-skeuomorphism">
-                                    </div>
-                                    <img src="{{template_plugin}}/tpl/screen/skeuomorphism.jpg"
-                                         alt="Skeuomorphism template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback skeuomorphism">
-                                        <i class="ri-brush-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">Skeuomorphism</div>
-                                        <div class="template-description">Реалистичные элементы с фиксированным размером</div>
-                                    </div>
-                                </div>
-
-                                <!-- GSAX Template -->
-                                <div class="template-card" data-template="gsax"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="true" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="gsax" id="template-gsax">
-                                    </div>
-                                    <div class="template-badge">Игровой</div>
-                                    <img src="{{template_plugin}}/tpl/screen/gsax.jpg"
-                                         alt="GSAX template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback gsax">
-                                        <i class="ri-gamepad-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">GSAX</div>
-                                        <div class="template-description">Игровой дизайн с полноэкранным режимом</div>
-                                    </div>
-                                </div>
-
-                                <!-- Gagarka Template -->
-                                <div class="template-card" data-template="gagarka"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="true" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="gagarka" id="template-gagarka">
-                                    </div>
-                                    <img src="{{template_plugin}}/tpl/screen/gagarka.jpg"
-                                         alt="Gagarka template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback gagarka">
-                                        <i class="ri-magic-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">Gagarka</div>
-                                        <div class="template-description">Магический дизайн с плавными переходами</div>
-                                    </div>
-                                </div>
-
-                                <!-- Lafa Template -->
-                                <div class="template-card" data-template="lafa"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="true" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="lafa" id="template-lafa">
-                                    </div>
-                                    <img src="{{template_plugin}}/tpl/screen/lafa.jpg"
-                                         alt="Lafa template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback lafa">
-                                        <i class="ri-magic-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">Lafa</div>
-                                        <div class="template-description">Элегантный дизайн с дополнительными функциями</div>
-                                    </div>
-                                </div>
-
-                                <!-- Pinocolate Template -->
-                                <div class="template-card" data-template="pinocolate"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="true" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="pinocolate" id="template-pinocolate">
-                                    </div>
-                                    <img src="{{template_plugin}}/tpl/screen/pinocolate.jpg"
-                                         alt="Pinocolate template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback pinocolate">
-                                        <i class="ri-palette-fill"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">Pinocolate</div>
-                                        <div class="template-description">Стильный дизайн без системных рамок</div>
-                                    </div>
-                                </div>
-
-                                <!-- Sfox Template -->
-                                <div class="template-card" data-template="sfox"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="true" data-css-drag="false"
-                                     data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="sfox" id="template-sfox">
-                                    </div>
-                                    <img src="{{template_plugin}}/tpl/screen/sfox.jpg"
-                                         alt="Sfox template" class="template-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback sfox">
-                                        <i class="ri-firefox-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">Sfox</div>
-                                        <div class="template-description">Продвинутый дизайн с множеством функций</div>
-                                    </div>
-                                </div>
 
                                 <!-- vistor -->
-                                <div class="template-card" data-template="vistor"
-                                     data-default-width="1100" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1100" data-max-height="700"
-                                     data-fullscreen="false" data-frameless="off"
-                                     data-disable-resize="off" data-css-drag="true"
+                                <div class="template-card" data-template="vistor" data-default-width="1100"
+                                     data-default-height="700" data-min-width="700" data-min-height="600"
+                                     data-max-width="1100" data-max-height="800" data-fullscreen="true"
+                                     data-frameless="true" data-disable-resize="true" data-css-drag="true"
                                      data-enable-f1="true">
                                     <div class="template-radio">
                                         <input type="radio" name="template" value="vistor" id="template-vistor">
                                     </div>
-                                    <img src="{{template_plugin}}/tpl/screen/vistor.jpg"
-                                         alt="vistor template" class="template-image"
+                                    <img src="{{template_plugin}}/tpl/screen/vistor.jpg" alt="vistor template"
+                                         class="template-image"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                     <div class="template-image-fallback vistor">
                                         <i class="ri-firefox-line"></i>
@@ -399,19 +95,16 @@
                                 </div>
 
                                 <!-- Custom Template -->
-                                <div class="template-card" data-template="custom"
-                                     data-default-width="900" data-default-height="700"
-                                     data-min-width="800" data-min-height="600"
-                                     data-max-width="1200" data-max-height="900"
-                                     data-fullscreen="false" data-frameless="false"
-                                     data-disable-resize="false" data-css-drag="false"
-                                     data-enable-f1="false">
+                                <div class="template-card" data-template="custom" data-default-width="900"
+                                     data-default-height="700" data-min-width="800" data-min-height="600"
+                                     data-max-width="1200" data-max-height="900" data-fullscreen="true"
+                                     data-frameless="false" data-disable-resize="true" data-css-drag="false">
                                     <div class="template-radio">
                                         <input type="radio" name="template" value="custom" id="template-custom">
                                     </div>
                                     <div class="template-badge">Свой</div>
-                                    <img src="{{template_plugin}}/tpl/screen/custom.jpg"
-                                         alt="Custom template" class="template-image"
+                                    <img src="{{template_plugin}}/tpl/screen/custom.jpg" alt="Custom template"
+                                         class="template-image"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                     <div class="template-image-fallback custom">
                                         <i class="ri-upload-cloud-line"></i>
@@ -479,12 +172,9 @@
                         <!-- Настройки окна -->
                         <div class="settings-section">
                             <h5 class="section-title">
-                                <button class="btn btn-link p-0 text-decoration-none section-collapse-btn"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#windowSettingsCollapse"
-                                        aria-expanded="false"
-                                        aria-controls="windowSettingsCollapse">
+                                <button class="btn btn-link p-0 text-decoration-none section-collapse-btn" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#windowSettingsCollapse"
+                                        aria-expanded="false" aria-controls="windowSettingsCollapse">
                                     <i class="ri-window-line"></i>
                                     Настройки окна лаунчера
                                     <i class="ri-arrow-down-s-line collapse-icon ms-2"></i>
@@ -492,7 +182,8 @@
                             </h5>
 
                             <div class="collapse" id="windowSettingsCollapse">
-                                <p class="text-muted mb-3">Настройки автоматически применяются при выборе шаблона, но вы можете их изменить.</p>
+                                <p class="text-muted mb-3">Настройки автоматически применяются при выборе шаблона, но вы
+                                    можете их изменить.</p>
 
                                 <div class="row g-3">
                                     <!-- Размеры по умолчанию -->
@@ -500,11 +191,11 @@
                                         <label class="form-label"
                                                data-bs-content="<img src='{{template_plugin}}/img/min.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
                                                data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
-                                               for="defaultWidth" tabindex="0">
+                                               for="windowWidth" tabindex="0">
                                             Ширина окна <i class="ri-information-line"></i>
                                         </label>
                                         <div class="input-group">
-                                            <input class="form-control" id="defaultWidth" type="number" value="900">
+                                            <input class="form-control" id="windowWidth" type="number" value="900">
                                             <span class="input-group-text">px</span>
                                         </div>
                                     </div>
@@ -513,11 +204,11 @@
                                         <label class="form-label"
                                                data-bs-content="<img src='{{template_plugin}}/img/max.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
                                                data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
-                                               for="defaultHeight" tabindex="0">
+                                               for="windowHeight" tabindex="0">
                                             Высота окна <i class="ri-information-line"></i>
                                         </label>
                                         <div class="input-group">
-                                            <input class="form-control" id="defaultHeight" type="number" value="700">
+                                            <input class="form-control" id="windowHeight" type="number" value="700">
                                             <span class="input-group-text">px</span>
                                         </div>
                                     </div>
@@ -562,12 +253,9 @@
                         <!-- Настройки поведения -->
                         <div class="settings-section">
                             <h5 class="section-title">
-                                <button class="btn btn-link p-0 text-decoration-none section-collapse-btn"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#behaviorSettingsCollapse"
-                                        aria-expanded="false"
-                                        aria-controls="behaviorSettingsCollapse">
+                                <button class="btn btn-link p-0 text-decoration-none section-collapse-btn" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#behaviorSettingsCollapse"
+                                        aria-expanded="false" aria-controls="behaviorSettingsCollapse">
                                     <i class="ri-settings-5-line"></i>
                                     Настройки поведения
                                     <i class="ri-arrow-down-s-line collapse-icon ms-2"></i>
@@ -579,10 +267,13 @@
                                     <div class="col-lg-4 col-md-6">
                                         <div class="setting-card">
                                             <label class="form-label">Полноэкранный режим</label>
-                                            <small class="d-block text-muted mb-2">Запускать лаунчер в полноэкранном режиме</small>
+                                            <small class="d-block text-muted mb-2">Запускать лаунчер в полноэкранном
+                                                режиме</small>
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input" id="fullscreenSwitch" role="switch" type="checkbox">
-                                                <label class="form-check-label" for="fullscreenSwitch">Включить по умолчанию</label>
+                                                <input class="form-check-input" id="fullscreenSwitch" role="switch"
+                                                       type="checkbox">
+                                                <label class="form-check-label" for="fullscreenSwitch">Включить по
+                                                    умолчанию</label>
                                             </div>
                                         </div>
                                     </div>
@@ -590,9 +281,11 @@
                                     <div class="col-lg-4 col-md-6">
                                         <div class="setting-card">
                                             <label class="form-label">Рамка Windows</label>
-                                            <small class="d-block text-muted mb-2">Системная рамка с кнопками управления окном</small>
+                                            <small class="d-block text-muted mb-2">Системная рамка с кнопками управления
+                                                окном</small>
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input" id="frameless" role="switch" type="checkbox">
+                                                <input class="form-check-input" id="frameless" role="switch"
+                                                       type="checkbox">
                                                 <label class="form-check-label" for="frameless">Включить рамку</label>
                                             </div>
                                         </div>
@@ -601,10 +294,13 @@
                                     <div class="col-lg-4 col-md-6">
                                         <div class="setting-card">
                                             <label class="form-label">Изменение размера</label>
-                                            <small class="d-block text-muted mb-2">Возможность растягивать окно лаунчера</small>
+                                            <small class="d-block text-muted mb-2">Возможность растягивать окно
+                                                лаунчера</small>
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input" id="disableResize" role="switch" type="checkbox">
-                                                <label class="form-check-label" for="disableResize">Запретить изменение</label>
+                                                <input class="form-check-input" id="disableResize" role="switch"
+                                                       type="checkbox">
+                                                <label class="form-check-label" for="disableResize">Запретить
+                                                    изменение</label>
                                             </div>
                                         </div>
                                     </div>
@@ -612,9 +308,11 @@
                                     <div class="col-lg-4 col-md-6">
                                         <div class="setting-card">
                                             <label class="form-label">Перетаскивание</label>
-                                            <small class="d-block text-muted mb-2">Перетаскивание окна за элементы с классом "drag"</small>
+                                            <small class="d-block text-muted mb-2">Перетаскивание окна за элементы с
+                                                классом "drag"</small>
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input" id="CSSDragProperty" role="switch" type="checkbox">
+                                                <input class="form-check-input" id="CSSDragProperty" role="switch"
+                                                       type="checkbox">
                                                 <label class="form-check-label" for="CSSDragProperty">Включить</label>
                                             </div>
                                         </div>
@@ -622,14 +320,17 @@
 
                                     <div class="col-lg-4 col-md-6">
                                         <div class="setting-card">
-                                            <label class="form-label">Режим создания архивов</label>
-                                            <small class="d-block text-muted mb-2">Доступ к странице создания архивов по F1</small>
+                                            <label class="form-label">Режим администратора</label>
+                                            <small class="d-block text-muted mb-2">Доступ к странице создания архивов по
+                                                F1, изменения в реал-тайме шаблона</small>
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input" id="enableF1BuilderPage" role="switch" type="checkbox">
-                                                <label class="form-check-label" for="enableF1BuilderPage">Включить</label>
+                                                <input class="form-check-input" id="enableAdminMode" role="switch"
+                                                       type="checkbox">
+                                                <label class="form-check-label" for="enableAdminMode">Включить</label>
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -785,7 +486,7 @@
                 // Улучшенный клик по всему заголовку (не только по кнопке)
                 const sectionTitle = collapseButton.closest('.section-title');
                 if (sectionTitle) {
-                    sectionTitle.addEventListener('click', function(event) {
+                    sectionTitle.addEventListener('click', function (event) {
                         // Предотвращаем двойное срабатывание, если клик был по самой кнопке
                         if (event.target === collapseButton || collapseButton.contains(event.target)) {
                             return;
@@ -812,8 +513,8 @@
             const data = templateCard.dataset;
 
             // Применяем размеры окна
-            document.getElementById('defaultWidth').value = data.defaultWidth || '900';
-            document.getElementById('defaultHeight').value = data.defaultHeight || '700';
+            document.getElementById('windowWidth').value = data.windowWidth || '900';
+            document.getElementById('windowHeight').value = data.windowHeight || '700';
             document.getElementById('minWidth').value = data.minWidth || '800';
             document.getElementById('minHeight').value = data.minHeight || '600';
             document.getElementById('maxWidth').value = data.maxWidth || '1200';
@@ -843,8 +544,8 @@
                     defaultValue: false
                 },
                 {
-                    dataKey: 'enableF1',
-                    elementId: 'enableF1BuilderPage',
+                    dataKey: 'enableAdmin',
+                    elementId: 'enableAdminMode',
                     defaultValue: false
                 }
             ];
@@ -948,7 +649,7 @@
 
         // Обработчик кликов по карточкам шаблонов
         templateCards.forEach(card => {
-            card.addEventListener('click', function() {
+            card.addEventListener('click', function () {
                 const templateValue = this.dataset.template;
                 updateSelectedTemplate(templateValue);
             });
@@ -956,7 +657,7 @@
 
         // Обработчик изменения радиокнопок
         document.querySelectorAll('input[name="template"]').forEach(radio => {
-            radio.addEventListener('change', function() {
+            radio.addEventListener('change', function () {
                 if (this.checked) {
                     updateSelectedTemplate(this.value);
                 }
@@ -1005,12 +706,20 @@
             event.preventDefault();
             compileBtn.disabled = true;
 
+            // Проверка выбора шаблона
+            const selectedTemplateRadio = document.querySelector('input[name="template"]:checked');
+            if (!selectedTemplateRadio) {
+                noticeError('Пожалуйста, выберите шаблон лаунчера перед компиляцией.');
+                compileBtn.disabled = false;
+                return;
+            }
+
             // Сбор данных формы
             const buildData = {
                 dataUrl: document.getElementById('dataUrl').value,
                 title: document.getElementById('pageTitle').value,
-                defaultWidth: parseInt(document.getElementById('defaultWidth').value) || 900,
-                defaultHeight: parseInt(document.getElementById('defaultHeight').value) || 700,
+                windowWidth: parseInt(document.getElementById('windowWidth').value) || 900,
+                windowHeight: parseInt(document.getElementById('windowHeight').value) || 700,
                 minWidth: parseInt(document.getElementById('minWidth').value) || 800,
                 minHeight: parseInt(document.getElementById('minHeight').value) || 600,
                 maxWidth: parseInt(document.getElementById('maxWidth').value) || 1200,
@@ -1024,7 +733,7 @@
                 frameless: !document.getElementById('frameless').checked, // Инвертируем логику!
                 disableResize: document.getElementById('disableResize').checked,
                 CSSDragProperty: document.getElementById('CSSDragProperty').checked,
-                EnableF1BuilderPage: document.getElementById('enableF1BuilderPage').checked,
+                enableAdminMode: document.getElementById('enableAdminMode').checked,
                 iconBase64: "",
                 customHtmlBase64: "",
                 customCssBase64: "",
@@ -1135,7 +844,7 @@
 
             fetch('/admin/plugin/sphereLauncher2/compile', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
                   .then(response => {
@@ -1272,329 +981,376 @@
 
 {% block css %}
 <style>
-/* Основные стили для улучшенной структуры */
-.settings-section {
-    margin-bottom: 1rem;
-    border-radius: 10px;
-}
-
-.section-title {
-    font-weight: 600;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-}
-
-.section-title i {
-    margin-right: 0.5rem;
-}
-
-/* Стили для карточек настроек */
-.setting-card {
-    padding: 1rem;
-    border-radius: 8px;
-    height: 100%;
-}
-
-.setting-card:hover {
-    border-color: #0d6efd;
-    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.1);
-}
-
-/* Стили для загрузки кастомного шаблона */
-.custom-template-upload {
-    padding: 1.5rem;
-    border-radius: 8px;
-}
-
-/* Селектор шаблонов */
-.template-selector {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    margin: 20px 0;
-}
-
-.template-card {
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.template-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    border-color: #0d6efd;
-}
-
-.template-card.selected {
-    border-color: #0d6efd;
-    box-shadow: 0 8px 25px rgba(13,110,253,0.2);
-    transform: translateY(-2px);
-}
-
-.template-card.selected::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #0d6efd, #6610f2);
-    z-index: 2;
-}
-
-.template-image {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-}
-
-.template-image-fallback {
-    width: 100%;
-    height: 180px;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 48px;
-    position: relative;
-}
-
-/* Цвета для fallback изображений */
-.template-image-fallback.default { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.template-image-fallback.cyberpunk { background: linear-gradient(135deg, #ff0080 0%, #7928ca 100%); }
-.template-image-fallback.flat { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.template-image-fallback.duxy { background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%); }
-.template-image-fallback.fonar { background: linear-gradient(135deg, #434343 0%, #000000 100%); }
-.template-image-fallback.futuristic { background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); }
-.template-image-fallback.material { background: linear-gradient(135deg, #4285f4 0%, #34a853 100%); }
-.template-image-fallback.skeuomorphism { background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%); }
-.template-image-fallback.gsax { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; }
-.template-image-fallback.gagarka { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
-.template-image-fallback.lafa { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #333; }
-.template-image-fallback.pinocolate { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-.template-image-fallback.sfox { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #333; }
-.template-image-fallback.custom { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #333; }
-
-.template-content {
-    padding: 16px;
-}
-
-.template-title {
-    font-weight: 600;
-    font-size: 18px;
-    margin-bottom: 8px;
-}
-
-.template-description {
-    font-size: 14px;
-    color: #6c757d;
-    margin-bottom: 0;
-    line-height: 1.4;
-}
-
-.template-radio {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 3;
-}
-
-.template-radio input[type="radio"] {
-    width: 20px;
-    height: 20px;
-    accent-color: #0d6efd;
-}
-
-.template-badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: rgba(0,0,0,0.8);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 15px;
-    font-size: 12px;
-    font-weight: 500;
-    z-index: 3;
-}
-
-.custom-template-highlight {
-    border: 2px dashed #ffc107 !important;
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
-}
-
-/* Анимации */
-.template-card {
-    animation: fadeInUp 0.6s ease-out;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+    /* Основные стили для улучшенной структуры */
+    .settings-section {
+        margin-bottom: 1rem;
+        border-radius: 10px;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-/* Адаптивность */
-@media (max-width: 768px) {
+    .section-title {
+        font-weight: 600;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .section-title i {
+        margin-right: 0.5rem;
+    }
+
+    /* Стили для карточек настроек */
+    .setting-card {
+        padding: 1rem;
+        border-radius: 8px;
+        height: 100%;
+    }
+
+    .setting-card:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 2px 8px rgba(13, 110, 253, 0.1);
+    }
+
+    /* Стили для загрузки кастомного шаблона */
+    .custom-template-upload {
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+
+    /* Селектор шаблонов */
     .template-selector {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 15px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
     }
 
-    .template-image,
+    .template-card {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .template-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        border-color: #0d6efd;
+    }
+
+    .template-card.selected {
+        border-color: #0d6efd;
+        box-shadow: 0 8px 25px rgba(13, 110, 253, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .template-card.selected::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        z-index: 2;
+    }
+
+    .template-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+    }
+
     .template-image-fallback {
-        height: 150px;
-        font-size: 36px;
+        width: 100%;
+        height: 180px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 48px;
+        position: relative;
+    }
+
+    /* Цвета для fallback изображений */
+    .template-image-fallback.default {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .template-image-fallback.cyberpunk {
+        background: linear-gradient(135deg, #ff0080 0%, #7928ca 100%);
+    }
+
+    .template-image-fallback.flat {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .template-image-fallback.duxy {
+        background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%);
+    }
+
+    .template-image-fallback.fonar {
+        background: linear-gradient(135deg, #434343 0%, #000000 100%);
+    }
+
+    .template-image-fallback.futuristic {
+        background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    }
+
+    .template-image-fallback.material {
+        background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+    }
+
+    .template-image-fallback.skeuomorphism {
+        background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%);
+    }
+
+    .template-image-fallback.gsax {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        color: #333;
+    }
+
+    .template-image-fallback.gagarka {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        color: #333;
+    }
+
+    .template-image-fallback.lafa {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        color: #333;
+    }
+
+    .template-image-fallback.pinocolate {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .template-image-fallback.sfox {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: #333;
+    }
+
+    .template-image-fallback.custom {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        color: #333;
     }
 
     .template-content {
-        padding: 12px;
+        padding: 16px;
     }
 
-    .settings-section {
-        padding: 1rem;
-        margin-bottom: 1.5rem;
+    .template-title {
+        font-weight: 600;
+        font-size: 18px;
+        margin-bottom: 8px;
     }
-}
 
-/* Улучшенные switch элементы */
-.form-check-input:checked {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
+    .template-description {
+        font-size: 14px;
+        color: #6c757d;
+        margin-bottom: 0;
+        line-height: 1.4;
+    }
 
-.form-check-input:focus {
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
+    .template-radio {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 3;
+    }
 
-/* Стили для progress bar */
-.progress {
-    border-radius: 10px;
-    overflow: hidden;
-}
+    .template-radio input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #0d6efd;
+    }
 
-.progress-bar {
-    border-radius: 10px;
-}
+    .template-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 500;
+        z-index: 3;
+    }
 
-/* Кнопки */
-.btn-lg {
-    padding: 0.75rem 2rem;
-    font-size: 1.1rem;
-}
+    .custom-template-highlight {
+        border: 2px dashed #ffc107 !important;
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
+    }
 
-/* Стили для disabled настроек */
-.setting-card.disabled-setting {
-    opacity: 0.6;
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    pointer-events: none;
-    position: relative;
-}
+    /* Анимации */
+    .template-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
 
-.setting-card.disabled-setting::before {
-    content: "Недоступно для выбранного шаблона";
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: #6c757d;
-    color: white;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 500;
-    z-index: 2;
-}
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
 
-.setting-card.disabled-setting .form-check-input:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-.setting-card.disabled-setting .form-label,
-.setting-card.disabled-setting small {
-    color: #6c757d !important;
-}
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .template-selector {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
 
-/* Анимация для плавного перехода */
-.setting-card {
-    transition: all 0.3s ease;
-}
+        .template-image,
+        .template-image-fallback {
+            height: 150px;
+            font-size: 36px;
+        }
 
-/* Стили для спойлеров настроек */
-.section-collapse-btn {
-    color: inherit !important;
-    font-weight: 600;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-    width: 100%;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-    font-size: inherit;
-}
+        .template-content {
+            padding: 12px;
+        }
 
-.section-collapse-btn:hover {
-    color: #0d6efd !important;
-}
+        .settings-section {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+    }
 
-.section-collapse-btn:focus {
-    color: #0d6efd !important;
-}
+    /* Улучшенные switch элементы */
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
 
-.collapse-icon {
-    transition: transform 0.3s ease;
-    margin-left: auto;
-}
+    .form-check-input:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
 
-.section-collapse-btn[aria-expanded="true"] .collapse-icon {
-    transform: rotate(180deg);
-}
+    /* Стили для progress bar */
+    .progress {
+        border-radius: 10px;
+        overflow: hidden;
+    }
 
-.section-collapse-btn[aria-expanded="false"] .collapse-icon {
-    transform: rotate(0deg);
-}
+    .progress-bar {
+        border-radius: 10px;
+    }
 
-/* Анимация для содержимого спойлера */
-.collapse {
-    transition: all 0.35s ease;
-}
+    /* Кнопки */
+    .btn-lg {
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+    }
 
-.collapsing {
-    transition: height 0.35s ease;
-}
+    /* Стили для disabled настроек */
+    .setting-card.disabled-setting {
+        opacity: 0.6;
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        pointer-events: none;
+        position: relative;
+    }
 
-/* Улучшенный hover эффект для заголовка спойлера */
-.section-title:has(.section-collapse-btn) {
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    margin-bottom: 0;
-    transition: background-color 0.2s ease;
-    cursor: pointer;
-}
+    .setting-card.disabled-setting::before {
+        content: "Недоступно для выбранного шаблона";
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #6c757d;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        z-index: 2;
+    }
 
-.section-title:has(.section-collapse-btn):hover {
-    background-color: rgba(13, 110, 253, 0.05);
-}
+    .setting-card.disabled-setting .form-check-input:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 
-/* Дополнительный отступ для содержимого спойлера */
-.collapse .row {
-    padding-top: 1rem;
-}
+    .setting-card.disabled-setting .form-label,
+    .setting-card.disabled-setting small {
+        color: #6c757d !important;
+    }
+
+    /* Анимация для плавного перехода */
+    .setting-card {
+        transition: all 0.3s ease;
+    }
+
+    /* Стили для спойлеров настроек */
+    .section-collapse-btn {
+        color: inherit !important;
+        font-weight: 600;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        width: 100%;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        font-size: inherit;
+    }
+
+    .section-collapse-btn:hover {
+        color: #0d6efd !important;
+    }
+
+    .section-collapse-btn:focus {
+        color: #0d6efd !important;
+    }
+
+    .collapse-icon {
+        transition: transform 0.3s ease;
+        margin-left: auto;
+    }
+
+    .section-collapse-btn[aria-expanded="true"] .collapse-icon {
+        transform: rotate(180deg);
+    }
+
+    .section-collapse-btn[aria-expanded="false"] .collapse-icon {
+        transform: rotate(0deg);
+    }
+
+    /* Анимация для содержимого спойлера */
+    .collapse {
+        transition: all 0.35s ease;
+    }
+
+    .collapsing {
+        transition: height 0.35s ease;
+    }
+
+    /* Улучшенный hover эффект для заголовка спойлера */
+    .section-title:has(.section-collapse-btn) {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0;
+        transition: background-color 0.2s ease;
+        cursor: pointer;
+    }
+
+    .section-title:has(.section-collapse-btn):hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    /* Дополнительный отступ для содержимого спойлера */
+    .collapse .row {
+        padding-top: 1rem;
+    }
 </style>
 {% endblock %}
