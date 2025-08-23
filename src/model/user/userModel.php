@@ -214,16 +214,18 @@ class userModel
      * Инициализация времени последней активности из БД
      */
     private function initLastActivity(?string $lastActivityStr): void {
-        if ($lastActivityStr === null) {
+        if ($lastActivityStr === null || $lastActivityStr === '0000-00-00 00:00:00') {
             $this->lastActivity = null;
             return;
         }
-
-        // Создаем DateTime объект в UTC из значения в БД
-        $utcTime = new DateTime($lastActivityStr, new DateTimeZone('UTC'));
-        // Конвертируем в часовой пояс пользователя
-        $this->lastActivity = $this->convertUtcToUserTime($utcTime);
+        try {
+            $utcTime = new DateTime($lastActivityStr, new DateTimeZone('UTC'));
+            $this->lastActivity = $this->convertUtcToUserTime($utcTime);
+        } catch (\Exception $e) {
+            $this->lastActivity = null;
+        }
     }
+
 
     private static $validTimezones = null;
 
