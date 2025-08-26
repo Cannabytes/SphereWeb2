@@ -106,6 +106,97 @@
                                         <!-- Описание автологина удалено по запросу пользователя -->
                                     </div>
                                 </div>
+
+                                <!-- Блок: Перенос файлов при смене языка (translationPaths) - таблица -->
+                                <div class="mb-3 mt-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="form-label mb-0">Перенос файлов при смене языка</label>
+                                        <div class="form-check form-switch m-0">
+                                            <input class="form-check-input" type="checkbox" id="tp-enable-checkbox">
+                                            <label class="form-check-label small"
+                                                for="tp-enable-checkbox">Включить</label>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 bg-white border rounded">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm align-middle mb-0" id="tp-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:70px;">Язык</th>
+                                                        <th>Src Path</th>
+                                                        <th>Dst Path</th>
+                                                        <th style="width:120px;">По умолчанию</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr data-lang="ru">
+                                                        <td><span class="badge bg-secondary">ru</span></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                id="tp-src-ru" placeholder="/system/files/ru" disabled>
+                                                        </td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                id="tp-dst-ru" placeholder="/system" disabled></td>
+                                                        <td class="text-center"><input type="radio" name="tp-default"
+                                                                value="ru" disabled></td>
+                                                    </tr>
+                                                    <tr data-lang="en">
+                                                        <td><span class="badge bg-secondary">en</span></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                id="tp-src-en" placeholder="/system/files/en" disabled>
+                                                        </td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                id="tp-dst-en" placeholder="/system" disabled></td>
+                                                        <td class="text-center"><input type="radio" name="tp-default"
+                                                                value="en" disabled></td>
+                                                    </tr>
+                                                    <tr data-lang="es">
+                                                        <td><span class="badge bg-secondary">es</span></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                id="tp-src-es" placeholder="/system/files/es" disabled>
+                                                        </td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                id="tp-dst-es" placeholder="/system" disabled></td>
+                                                        <td class="text-center"><input type="radio" name="tp-default"
+                                                                value="es" disabled></td>
+                                                    </tr>
+                                                    <tr data-lang="pt">
+                                                        <td><span class="badge bg-secondary">pt</span></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                id="tp-src-pt" placeholder="/system/files/pt" disabled>
+                                                        </td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                id="tp-dst-pt" placeholder="/system" disabled></td>
+                                                        <td class="text-center"><input type="radio" name="tp-default"
+                                                                value="pt" disabled></td>
+                                                    </tr>
+                                                    <tr data-lang="uk">
+                                                        <td><span class="badge bg-secondary">uk</span></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                id="tp-src-uk" placeholder="/system/files/uk" disabled>
+                                                        </td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                id="tp-dst-uk" placeholder="/system" disabled></td>
+                                                        <td class="text-center"><input type="radio" name="tp-default"
+                                                                value="uk" disabled></td>
+                                                    </tr>
+                                                    <tr data-lang="el">
+                                                        <td><span class="badge bg-secondary">el</span></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                id="tp-src-el" placeholder="/system/files/el" disabled>
+                                                        </td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                id="tp-dst-el" placeholder="/system" disabled></td>
+                                                        <td class="text-center"><input type="radio" name="tp-default"
+                                                                value="el" disabled></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <small class="text-muted">Заполните srcPath и dstPath для нужных языков.
+                                            Отметьте один язык как язык по умолчанию.</small>
+                                    </div>
+                                </div>
+
                             </div>
 
                             <div class="col-md-6">
@@ -416,6 +507,36 @@
                 // enable if autologin block exists
                 document.getElementById('autologin-enable').checked = true;
             }
+
+            // Загружаем translationPaths в таблицу (если включено в JSON)
+            const tpEnableCheckboxLoad = document.getElementById('tp-enable-checkbox');
+            if (data.translationPaths) {
+                // If helper exists, apply immediately, otherwise store pending for later
+                if (typeof setTranslationTableFromObject === 'function') {
+                    if (tpEnableCheckboxLoad) {
+                        tpEnableCheckboxLoad.checked = true;
+                    }
+                    try {
+                        setTranslationTableFromObject(data.translationPaths);
+                    } catch (e) {
+                        // ignore
+                    }
+                    // enable inputs if table present
+                    const tpTableLocal = document.getElementById('tp-table');
+                    if (tpTableLocal && tpEnableCheckboxLoad && tpEnableCheckboxLoad.checked) {
+                        tpTableLocal.querySelectorAll('input').forEach(i => i.disabled = false);
+                    }
+                } else {
+                    // store pending data to be applied when other script initializes
+                    window._pendingTranslationPaths = data.translationPaths;
+                    // mark that we want feature enabled
+                    if (tpEnableCheckboxLoad) tpEnableCheckboxLoad.checked = true;
+                }
+            } else if (tpEnableCheckboxLoad) {
+                tpEnableCheckboxLoad.checked = false;
+                const tpTableLocal = document.getElementById('tp-table');
+                if (tpTableLocal) tpTableLocal.querySelectorAll('input').forEach(i => i.disabled = true);
+            }
         }
 
         function clearAllData() {
@@ -430,6 +551,27 @@
             // clear autologin
             document.getElementById('autologin-enable').checked = false;
             document.getElementById('autologin-pattern').value = '';
+
+            // clear translationPaths table inputs (safe lookup)
+            const tpTableLocal = document.getElementById('tp-table');
+            if (tpTableLocal) {
+                tpTableLocal.querySelectorAll('tbody tr').forEach(tr => {
+                    const lang = tr.dataset.lang;
+                    const src = tr.querySelector(`#tp-src-${lang}`);
+                    const dst = tr.querySelector(`#tp-dst-${lang}`);
+                    const radio = tr.querySelector('input[type="radio"][name="tp-default"]');
+                    if (src) src.value = '';
+                    if (dst) dst.value = '';
+                    if (radio) radio.checked = false;
+                });
+                // disable all inputs
+                tpTableLocal.querySelectorAll('input').forEach(i => i.disabled = true);
+            }
+            // reset enable checkbox
+            const tpEnableCheckbox = document.getElementById('tp-enable-checkbox');
+            if (tpEnableCheckbox) {
+                tpEnableCheckbox.checked = false;
+            }
         }
 
         function addToList(listId, value) {
@@ -572,6 +714,58 @@
         setupSimpleList('archive-input', 'add-archive-btn', 'archive-list');
 
         // ...existing code...
+
+        // --- Translation Paths (translationPaths) - table-driven ---
+        const tpTable = document.getElementById('tp-table');
+        function setTranslationTableFromObject(obj) {
+            if (!obj) return;
+            Object.keys(obj).forEach(lang => {
+                const row = tpTable.querySelector(`tr[data-lang="${lang}"]`);
+                if (!row) return;
+                const tp = obj[lang] || {};
+                const srcInput = row.querySelector(`#tp-src-${lang}`) || row.querySelector('input[id^="tp-src-"]');
+                const dstInput = row.querySelector(`#tp-dst-${lang}`) || row.querySelector('input[id^="tp-dst-"]');
+                if (srcInput) srcInput.value = tp.srcPath || '';
+                if (dstInput) dstInput.value = tp.dstPath || '';
+                if (tp.default) {
+                    const radio = row.querySelector('input[type="radio"][name="tp-default"]');
+                    if (radio) radio.checked = true;
+                }
+            });
+        }
+        // expose for first script loadJsonData
+        window.setTranslationTableFromObject = setTranslationTableFromObject;
+
+        // Enable/disable translation table inputs based on checkbox
+        const tpEnableCheckbox = document.getElementById('tp-enable-checkbox');
+        function setTpEnabled(enabled) {
+            if (!tpTable) return;
+            tpTable.querySelectorAll('input').forEach(inp => inp.disabled = !enabled);
+        }
+        if (tpEnableCheckbox) {
+            // default: disabled
+            tpEnableCheckbox.checked = false;
+            setTpEnabled(false);
+            tpEnableCheckbox.addEventListener('change', (e) => {
+                setTpEnabled(e.target.checked);
+            });
+        }
+
+        // If loadJsonData stored pending translationPaths earlier, apply them now
+        if (window._pendingTranslationPaths && typeof setTranslationTableFromObject === 'function') {
+            // enable table inputs first
+            if (tpEnableCheckbox) {
+                tpEnableCheckbox.checked = true;
+                setTpEnabled(true);
+            }
+            try {
+                setTranslationTableFromObject(window._pendingTranslationPaths);
+            } catch (e) {
+                console.warn('Failed to apply pending translationPaths', e);
+            }
+            // clear pending
+            delete window._pendingTranslationPaths;
+        }
 
         document.addEventListener('click', (e) => {
             if (e.target.closest('.remove-btn')) {
@@ -991,6 +1185,39 @@
                     config.news[lang] = [];
                 }
                 config.news[lang].push(newsItem);
+            }
+
+            // --- 6. Сбор translationPaths из таблицы (только если включено) ---
+            const tpEnable = document.getElementById('tp-enable-checkbox') && document.getElementById('tp-enable-checkbox').checked;
+            if (tpEnable) {
+                const tpRows = document.querySelectorAll('#tp-table tbody tr');
+                config.translationPaths = {};
+                let defaultCount = 0;
+                tpRows.forEach(tr => {
+                    const lang = tr.dataset.lang;
+                    if (!lang) return;
+                    const src = (tr.querySelector(`#tp-src-${lang}`) || tr.querySelector('input[id^="tp-src-"]')).value.trim();
+                    const dst = (tr.querySelector(`#tp-dst-${lang}`) || tr.querySelector('input[id^="tp-dst-"]')).value.trim();
+                    const radio = tr.querySelector('input[type="radio"][name="tp-default"]');
+                    const isDefault = radio && radio.checked;
+                    if (src || dst) {
+                        config.translationPaths[lang] = {
+                            srcPath: src,
+                            dstPath: dst
+                        };
+                        if (isDefault) {
+                            config.translationPaths[lang].default = true;
+                            defaultCount++;
+                        }
+                    } else if (isDefault) {
+                        // default selected but no paths provided — count as invalid
+                        defaultCount++;
+                    }
+                });
+                if (defaultCount !== 1) {
+                    alert('Пожалуйста, выберите ровно один язык по умолчанию для translationPaths и укажите пути для выбранного языка.');
+                    return;
+                }
             }
 
 
