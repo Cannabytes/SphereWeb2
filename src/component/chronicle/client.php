@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by Logan22
  * Github -> https://github.com/Cannabytes/SphereWeb
@@ -145,7 +146,6 @@ class client
             [
                 'protocol' => [
                     267,
-                    268,
                     271,
                     273,
                     253,
@@ -336,5 +336,4 @@ class client
 
         ];
     }
-
 }

@@ -1,0 +1,506 @@
+<?php
+
+namespace Ofey\Logan22\component\plugins\library;
+
+use RuntimeException;
+use SQLite3;
+
+/**
+ * Repository for reading NPC data from plugin SQLite DB (highfive.db).
+ * Read-only operations; lightweight similar to other repositories.
+ */
+class NpcRepository
+{
+    private string $dbPath;
+    private ?SQLite3 $db = null;
+    /**
+     * In-memory cache for skill metadata to avoid repeated DB queries during request.
+     * Keys are skill IDs, values are arrays with keys: name, icon, isdebuff
+     * @var array<int,array<string,mixed>>
+     */
+    private array $skillCache = [];
+
+    public function __construct(?string $dbPath = null)
+    {
+        $this->dbPath = $dbPath ?? __DIR__ . '/db/highfive.db';
+        if (!is_file($this->dbPath)) {
+            throw new RuntimeException('SQLite database not found: ' . $this->dbPath);
+        }
+        $this->open();
+    }
+
+    private function open(): void
+    {
+        $this->db = new SQLite3($this->dbPath, SQLITE3_OPEN_READONLY);
+        $this->db->exec('PRAGMA encoding = "UTF-8"');
+    }
+
+    public function __destruct()
+    {
+        if ($this->db instanceof SQLite3) {
+            $this->db->close();
+        }
+    }
+
+    /**
+     * Fetch all NPCs (legacy full-load; use cautiously for large DB).
+     */
+    public function getAll(): array
+    {
+        $res = $this->db->query('SELECT * FROM npcs ORDER BY CAST(level AS INTEGER) ASC, name');
+        $out = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $row['skills'] = $this->parseSkillList($row['skillList'] ?? '', 12);
+            unset($row['skillList']);
+            $out[] = $row;
+        }
+        return $out;
+    }
+
+    public function countAll(): int
+    {
+        return (int)$this->db->querySingle('SELECT COUNT(*) FROM npcs');
+    }
+
+    public function countFiltered(?string $search): int
+    {
+        if (!$search) return $this->countAll();
+        $stmt = $this->db->prepare('SELECT COUNT(*) AS c FROM npcs WHERE name LIKE :s OR title LIKE :s');
+        $stmt->bindValue(':s', '%' . $search . '%', SQLITE3_TEXT);
+        $res = $stmt->execute();
+        $row = $res->fetchArray(SQLITE3_ASSOC);
+        return (int)($row['c'] ?? 0);
+    }
+
+    /**
+     * Count with optional search and type filtering.
+     * $types may be an array of allowed types (IN) or a string starting with '!' to indicate exclusion.
+     */
+    public function countFilteredWithType(?string $search, ?array $types = null, bool $exclude = false): int
+    {
+        $where = [];
+        $params = [];
+        if ($search) {
+            $where[] = '(name LIKE :s OR title LIKE :s)';
+            $params[':s'] = '%' . $search . '%';
+        }
+        if ($types !== null && count($types) > 0) {
+            $placeholders = [];
+            foreach ($types as $i => $t) {
+                $ph = ':t' . $i;
+                $placeholders[] = $ph;
+                $params[$ph] = $t;
+            }
+            $op = $exclude ? 'NOT IN' : 'IN';
+            $where[] = 'type ' . $op . ' (' . implode(',', $placeholders) . ')';
+        }
+        $sql = 'SELECT COUNT(*) AS c FROM npcs' . (count($where) ? ' WHERE ' . implode(' AND ', $where) : '');
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v, SQLITE3_TEXT);
+        }
+        $res = $stmt->execute();
+        $row = $res->fetchArray(SQLITE3_ASSOC);
+        return (int)($row['c'] ?? 0);
+    }
+
+    /**
+     * Paginated fetch for DataTables.
+     */
+    public function getPage(int $start, int $length, ?string $search, string $orderCol, string $orderDir): array
+    {
+        $allowedCols = ['id', 'name', 'level', 'type', 'race', 'hp', 'mp', 'attack_physical', 'attack_magical', 'defence_physical', 'defence_magical', 'attack_attack_speed', 'attack_critical', 'attack_accuracy', 'defence_evasion'];
+        if (!in_array($orderCol, $allowedCols, true)) $orderCol = 'level';
+        $orderDir = strtoupper($orderDir) === 'DESC' ? 'DESC' : 'ASC';
+        $start = max(0, $start);
+        $length = $length <= 0 ? 25 : min(500, $length);
+        $where = '';
+        if ($search) {
+            $where = 'WHERE name LIKE :s OR title LIKE :s';
+        }
+        if ($orderCol === 'level') {
+            $order = "ORDER BY CAST(level AS INTEGER) $orderDir, name";
+        } else {
+            $order = "ORDER BY $orderCol $orderDir";
+        }
+        $sql = "SELECT * FROM npcs $where $order LIMIT :len OFFSET :start";
+        $stmt = $this->db->prepare($sql);
+        if ($search) {
+            $stmt->bindValue(':s', '%' . $search . '%', SQLITE3_TEXT);
+        }
+        $stmt->bindValue(':len', $length, SQLITE3_INTEGER);
+        $stmt->bindValue(':start', $start, SQLITE3_INTEGER);
+        $res = $stmt->execute();
+        $rows = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $row['skills'] = $this->parseSkillList($row['skillList'] ?? '', 12);
+            unset($row['skillList']);
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+
+    /**
+     * Paginated fetch with optional type filtering (include or exclude types).
+     * @param int $start
+     * @param int $length
+     * @param string|null $search
+     * @param string $orderCol
+     * @param string $orderDir
+     * @param array|null $types
+     * @param bool $exclude
+     * @return array
+     */
+    public function getPageWithType(int $start, int $length, ?string $search, string $orderCol, string $orderDir, ?array $types = null, bool $exclude = false): array
+    {
+        $allowedCols = ['id', 'name', 'level', 'type', 'race', 'hp', 'mp', 'attack_physical', 'attack_magical', 'defence_physical', 'defence_magical', 'attack_attack_speed', 'attack_critical', 'attack_accuracy', 'defence_evasion'];
+        if (!in_array($orderCol, $allowedCols, true)) $orderCol = 'level';
+        $orderDir = strtoupper($orderDir) === 'DESC' ? 'DESC' : 'ASC';
+        $start = max(0, $start);
+        $length = $length <= 0 ? 25 : min(500, $length);
+        $whereParts = [];
+        if ($search) {
+            $whereParts[] = '(name LIKE :s OR title LIKE :s)';
+        }
+        if ($types !== null && count($types) > 0) {
+            $phs = [];
+            foreach ($types as $i => $t) {
+                $ph = ':t' . $i;
+                $phs[] = $ph;
+            }
+            $op = $exclude ? 'NOT IN' : 'IN';
+            $whereParts[] = 'type ' . $op . ' (' . implode(',', $phs) . ')';
+        }
+        if ($orderCol === 'level') {
+            $order = "ORDER BY CAST(level AS INTEGER) $orderDir, name";
+        } else {
+            $order = "ORDER BY $orderCol $orderDir";
+        }
+        $sql = "SELECT * FROM npcs" . (count($whereParts) ? ' WHERE ' . implode(' AND ', $whereParts) : '') . " $order LIMIT :len OFFSET :start";
+        $stmt = $this->db->prepare($sql);
+        if ($search) {
+            $stmt->bindValue(':s', '%' . $search . '%', SQLITE3_TEXT);
+        }
+        if ($types !== null && count($types) > 0) {
+            foreach ($types as $i => $t) {
+                $stmt->bindValue(':t' . $i, $t, SQLITE3_TEXT);
+            }
+        }
+        $stmt->bindValue(':len', $length, SQLITE3_INTEGER);
+        $stmt->bindValue(':start', $start, SQLITE3_INTEGER);
+        $res = $stmt->execute();
+        $rows = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $row['skills'] = $this->parseSkillList($row['skillList'] ?? '', 12);
+            unset($row['skillList']);
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+
+    /**
+     * Fetch all rows optionally filtered by types (supports exact and LIKE patterns) and optional search.
+     * Useful for server-side rendered pages.
+     * @param array|null $types array of values or patterns (use % for LIKE)
+     * @param bool $exclude if true, exclude the matching types
+     * @param string|null $search search term applied to name/title
+     * @param string $orderCol
+     * @param string $orderDir
+     * @return array
+     */
+    public function getAllWithType(?array $types = null, bool $exclude = false, ?string $search = null, string $orderCol = 'level', string $orderDir = 'ASC', ?int $minLevel = null, ?int $maxLevel = null): array
+    {
+        $allowedCols = ['id', 'name', 'level', 'type', 'race', 'hp', 'mp', 'attack_physical', 'attack_magical', 'defence_physical', 'defence_magical', 'attack_attack_speed', 'attack_critical', 'attack_accuracy', 'defence_evasion'];
+        if (!in_array($orderCol, $allowedCols, true)) $orderCol = 'level';
+        $orderDir = strtoupper($orderDir) === 'DESC' ? 'DESC' : 'ASC';
+
+        $whereParts = [];
+        $params = [];
+        if ($search) {
+            $whereParts[] = '(name LIKE :s OR title LIKE :s)';
+            $params[':s'] = '%' . $search . '%';
+        }
+        if ($types !== null && count($types) > 0) {
+            $parts = [];
+            foreach ($types as $i => $t) {
+                $ph = ':t' . $i;
+                $params[$ph] = mb_strtoupper($t, 'UTF-8');
+                if (strpos($t, '%') !== false || strpos($t, '_') !== false) {
+                    $parts[] = "UPPER(type) LIKE $ph";
+                } else {
+                    $parts[] = "UPPER(type) = $ph";
+                }
+            }
+            $expr = '(' . implode(' OR ', $parts) . ')';
+            if ($exclude) {
+                $whereParts[] = 'NOT ' . $expr;
+            } else {
+                $whereParts[] = $expr;
+            }
+        }
+
+        // Level filtering (levels are stored as text; cast to integer)
+        if ($minLevel !== null && $maxLevel !== null) {
+            $whereParts[] = 'CAST(level AS INTEGER) BETWEEN :minLevel AND :maxLevel';
+            $params[':minLevel'] = $minLevel;
+            $params[':maxLevel'] = $maxLevel;
+        } elseif ($minLevel !== null) {
+            $whereParts[] = 'CAST(level AS INTEGER) >= :minLevel';
+            $params[':minLevel'] = $minLevel;
+        } elseif ($maxLevel !== null) {
+            $whereParts[] = 'CAST(level AS INTEGER) <= :maxLevel';
+            $params[':maxLevel'] = $maxLevel;
+        }
+
+        if ($orderCol === 'level') {
+            $order = "ORDER BY CAST(level AS INTEGER) $orderDir, name";
+        } else {
+            $order = "ORDER BY $orderCol $orderDir";
+        }
+
+        $sql = "SELECT * FROM npcs" . (count($whereParts) ? ' WHERE ' . implode(' AND ', $whereParts) : '') . " $order";
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v, SQLITE3_TEXT);
+        }
+        $res = $stmt->execute();
+        $rows = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $row['skills'] = $this->parseSkillList($row['skillList'] ?? '', 12);
+            unset($row['skillList']);
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+
+    /**
+     * Parse skillList JSON and fetch meta for each skill.
+     * @param string $json
+     * @return array<int,array<string,mixed>>
+     */
+    private function parseSkillList(string $json, int $limit = 0): array
+    {
+        if (!$json) return [];
+        $decoded = json_decode($json, true);
+        if (!is_array($decoded)) return [];
+        $skills = [];
+        foreach ($decoded as $s) {
+            if (!isset($s['id'])) continue;
+            $id = (int)$s['id'];
+            $level = $s['level'] ?? null;
+            // Use cached meta to reduce DB hits
+            $meta = $this->getSkillMetaById($id);
+            $skill = [
+                'id' => $id,
+                'level' => $level,
+            ];
+            // Из $meta['description'] получить элемент массива который находится на позиции $level-1
+            $desc = null;
+            if ($meta && isset($meta['description']) && is_string($meta['description'])) {
+                $description = json_decode($meta['description'], true);
+                if (is_array($description)) {
+                    // If only one description entry provided, use it for any level (requirement)
+                    if (count($description) === 1) {
+                        $only = reset($description);
+                        if (is_string($only) && $only !== '') {
+                            $desc = trim($only);
+                        }
+                    } elseif ($level !== null && isset($description[$level - 1])) {
+                        $desc = trim($description[$level - 1]);
+                    }
+                }
+            }
+
+            if ($meta) {
+                // Only attach fields we need from skills table (cached)
+                $skill['name'] = $meta['name'] ?? null;
+                $skill['icon'] = $meta['icon'] ?? null;
+                $skill['isdebuff'] = $meta['isdebuff'] ?? null;
+                $skill['description'] = $desc;
+                $skill['for'] = $meta['for'] ?? null;
+                // Parse effects from "for" JSON (same logic style as Armor/Weapon repositories)
+                if (!empty($meta['for']) && strtolower(trim($meta['for'])) !== 'null') {
+                    [$metaEffects, $metaEffectText] = $this->parseSkillEffects($meta['for']);
+                    if ($metaEffects) {
+                        // Build level-specific formatted effects (handles raw_values arrays)
+                        [$lvlEffects, $lvlText] = $this->buildEffectsForLevel($metaEffects, (int)($level ?? 1));
+                        if ($lvlEffects) {
+                            $skill['effects'] = $lvlEffects;
+                            if ($lvlText) $skill['effect_text'] = $lvlText;
+                        } elseif ($metaEffectText) { // fallback generic text
+                            $skill['effect_text'] = $metaEffectText;
+                        }
+                    } elseif ($metaEffectText) {
+                        $skill['effect_text'] = $metaEffectText;
+                    }
+                }
+            }
+            $skills[] = $skill;
+            if ($limit > 0 && count($skills) >= $limit) break;
+        }
+        return $skills;
+    }
+
+    /**
+     * Fetch minimal skill metadata (name, icon, isdebuff) with in-memory caching.
+     * @param int $skillId
+     * @return array<string,mixed>|null
+     */
+    public function getSkillMetaById(int $skillId): ?array
+    {
+        if (isset($this->skillCache[$skillId])) {
+            return $this->skillCache[$skillId];
+        }
+        $stmt = $this->db->prepare('SELECT name, icon, isdebuff, for, description FROM skills WHERE id = :id LIMIT 1');
+        $stmt->bindValue(':id', $skillId, SQLITE3_INTEGER);
+        $res = $stmt->execute();
+        $row = $res->fetchArray(SQLITE3_ASSOC);
+        if ($row === false) {
+            $this->skillCache[$skillId] = null;
+            return null;
+        }
+        // Normalize boolean-ish isdebuff (some DBs may store 0/1 or 'true')
+        if (isset($row['isdebuff'])) {
+            $val = $row['isdebuff'];
+            if ($val === '0' || $val === 0 || $val === 'false' || $val === '') $row['isdebuff'] = false;
+            else $row['isdebuff'] = (bool)$val;
+        }
+        $this->skillCache[$skillId] = $row;
+        return $row;
+    }
+
+    /**
+     * Fetch skill information from skills table.
+     */
+    public function getSkillById(int $skillId): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM skills WHERE id = :id LIMIT 1');
+        $stmt->bindValue(':id', $skillId, SQLITE3_INTEGER);
+        $res = $stmt->execute();
+        $row = $res->fetchArray(SQLITE3_ASSOC);
+        return $row === false ? null : $row;
+    }
+
+    /** Parse skills."for" JSON extracting stat entries (stat, tag, val/value) with StatLabels labels. */
+    private function parseSkillEffects(string $raw): array
+    {
+        $raw = trim($raw);
+        if ($raw === '' || strtolower($raw) === 'null') return [[], null];
+        $decoded = json_decode($raw, true);
+        if (!is_array($decoded)) return [[], null];
+        $statObjects = [];
+        $walk = function ($node) use (&$walk, &$statObjects) {
+            if (is_array($node)) {
+                $isStat = isset($node['stat']) && (isset($node['val']) || isset($node['value'])) && isset($node['tag']);
+                if ($isStat) {
+                    $statObjects[] = $node;
+                } else {
+                    foreach ($node as $v) $walk($v);
+                }
+            }
+        };
+        $walk($decoded);
+        if (!$statObjects) return [[], null];
+        $labels = StatLabels::all();
+        $effects = [];
+        foreach ($statObjects as $obj) {
+            $stat = $obj['stat'] ?? null;
+            $tag = strtolower(trim((string)($obj['tag'] ?? '')));
+            $valRaw = $obj['val'] ?? ($obj['value'] ?? null);
+            if ($stat === null || $valRaw === null) continue;
+            $label = $labels[$stat] ?? $stat;
+            if (is_array($valRaw)) {
+                $effects[] = [
+                    'stat' => $stat,
+                    'label' => $label,
+                    'tag' => $tag,
+                    'raw_values' => $valRaw,
+                ];
+            } else {
+                $formatted = $this->formatEffectValue($tag, $stat, $valRaw);
+                $effects[] = [
+                    'stat' => $stat,
+                    'label' => $label,
+                    'tag' => $tag,
+                    'raw' => $valRaw,
+                    'formatted' => $formatted,
+                    'text' => $formatted . ' ' . $label,
+                ];
+            }
+        }
+        $effectText = implode(', ', array_map(fn($e) => $e['text'] ?? ($e['formatted'] ?? ''), array_filter($effects, fn($e) => isset($e['text']))));
+        $effectText = $effectText !== '' ? $effectText : null;
+        return [$effects, $effectText];
+    }
+
+    /** Build level-specific effects replacing raw_values arrays with single formatted entry for chosen level. */
+    private function buildEffectsForLevel(array $metaEffects, int $level): array
+    {
+        $effects = [];
+        foreach ($metaEffects as $e) {
+            if (isset($e['raw_values'])) {
+                $values = $e['raw_values'];
+                if (!is_array($values) || !$values) continue;
+                $idx = max(0, $level - 1);
+                $chosen = $values[$idx] ?? end($values);
+                // Heuristic: many skills include a baseline multiplier 1 at index 0 (no change) 
+                // and real level 1 effect starts at index 1 (e.g. [1,1.1,1.21,...]).
+                // If first value == 1 and second > 1 and tag is multiplicative and requested level >= 1
+                // then shift index by +1 (if exists) so level 1 shows +10% not +0%.
+                if (strtolower(trim($e['tag'] ?? '')) === 'mul' && isset($values[0], $values[1]) && (float)$values[0] === 1.0 && (float)$values[1] > 1.0) {
+                    // Only shift if we originally selected the baseline producing +0%
+                    if ($idx === 0 && isset($values[1])) {
+                        $chosen = $values[1];
+                    } elseif ($idx > 0 && isset($values[$idx + 1])) {
+                        // For higher levels also shift forward by one to stay aligned
+                        $chosen = $values[$idx + 1];
+                    }
+                }
+                $formatted = $this->formatEffectValue(strtolower(trim($e['tag'] ?? 'add')), $e['stat'] ?? '', $chosen);
+                $effects[] = [
+                    'stat' => $e['stat'] ?? null,
+                    'label' => $e['label'] ?? ($e['stat'] ?? ''),
+                    'tag' => $e['tag'] ?? 'add',
+                    'raw' => $chosen,
+                    'formatted' => $formatted,
+                    'text' => $formatted . ' ' . ($e['label'] ?? ($e['stat'] ?? '')),
+                ];
+            } else {
+                // ensure tag normalization on pre-formatted entries
+                if (isset($e['tag'])) $e['tag'] = strtolower(trim($e['tag']));
+                $effects[] = $e; // already formatted
+            }
+        }
+        $text = implode(', ', array_map(fn($x) => $x['text'] ?? ($x['formatted'] ?? ''), $effects));
+        return [$effects, $text ?: null];
+    }
+
+    private function formatEffectValue(string $tag, string $stat, $val): string
+    {
+        if (!is_numeric($val)) return (string)$val;
+        $num = (float)$val;
+        if (in_array($tag, ['mul', 'multiply', 'mult'], true)) {
+            // Absolute multiplier representation: 0.91 => +91%, 1.00 => +100%, 1.10 => +110%, 2.35 => +235%
+            $abs = $num * 100.0;
+            return '+' . $this->trimNumber($abs) . '%';
+        }
+        if (in_array($tag, ['pct', 'percent', 'percent_add', 'percent_sub', '%'], true) || preg_match('/(rate|chance|percent)/i', $stat)) {
+            if (abs($num) < 1 && $num != 0) $num *= 100;
+            $sign = $num >= 0 ? '+' : '';
+            return $sign . $this->trimNumber($num) . '%';
+        }
+        if ($tag === 'add' || $tag === 'enchant') {
+            $sign = $num >= 0 ? '+' : '';
+            return $sign . $this->trimNumber($num);
+        }
+        $sign = $num >= 0 ? '+' : '';
+        return $sign . $this->trimNumber($num);
+    }
+
+    private function trimNumber(float $num): string
+    {
+        $formatted = number_format($num, 2, '.', '');
+        $formatted = rtrim(rtrim($formatted, '0'), '.');
+        return $formatted === '' ? '0' : $formatted;
+    }
+}

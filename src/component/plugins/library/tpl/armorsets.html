@@ -1,0 +1,267 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="library-subnav mb-3">
+                <div class="subnav-header d-flex align-items-center gap-3 flex-wrap mb-2">
+                    <a href="/library" class="back-link d-inline-flex align-items-center gap-2">
+                        <span class="chevron" aria-hidden="true">←</span>
+                        <span class="label">Библиотека</span>
+                    </a>
+                    <h1 class="h4 m-0 fw-semibold page-title">Комплекты брони</h1>
+                </div>
+                <p class="small text-muted mb-0">Соберите указанные предметы (основа — нагрудник), чтобы активировать
+                    бонусы комплекта. Если в слоте несколько вариантов — достаточно любого одного.</p>
+            </div>
+        </div>
+    </div>
+
+    {% if armorSetsByGrade is empty %}
+    <div class="alert alert-warning">Данные по комплектам отсутствуют.</div>
+    {% else %}
+    {% for grade, sets in armorSetsByGrade %}
+    <div class="card mb-4">
+        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <div>
+                <h5 class="mb-1">{{ armorSetGradeInfo[grade].title|default('Грейд ' ~ grade) }} ({{ grade }})</h5>
+                {% if armorSetGradeInfo[grade] is defined %}
+                <div class="small text-muted">Уровень: {{ armorSetGradeInfo[grade].level }} — {{
+                    armorSetGradeInfo[grade].desc }}</div>
+                {% endif %}
+            </div>
+            <span class="badge bg-primary align-self-start align-self-md-center mt-2 mt-md-0">{{ sets|length }}</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm mb-0 align-middle armorset-table">
+                <thead class="table-light">
+                    <tr>
+                        <th style="min-width:240px">Комплект (Нагрудник)</th>
+                        <th class="text-center">Ноги</th>
+                        <th class="text-center">Голова</th>
+                        <th class="text-center">Руки</th>
+                        <th class="text-center">Ступни</th>
+                        <th class="text-center">Щит</th>
+                        <th style="min-width:240px">Бонусы</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for set in sets %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                {% if set.chest and set.chest.icon %}
+                                <img src="{{ get_icon(set.chest.icon) }}" alt="" width="38" height="38" class="rounded"
+                                    loading="lazy" onerror="this.style.display='none'">
+                                {% endif %}
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">{{ set.chest.name|default('Chest ' ~ set.id) }}</span>
+                                    <span class="text-muted extra-line small">ID: {{ set.chest.id|default('?') }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        {% set slots = ['legs','head','gloves','feet','shield'] %}
+                        {% for slot in slots %}
+                        <td class="text-center">
+                            {% if set.parts[slot] is defined %}
+                            <div class="d-flex flex-column gap-1">
+                                {% for item in set.parts[slot] %}
+                                <span class="d-inline-flex align-items-center gap-1 small armorset-item-variant"
+                                    title="{{ item.name }} (ID {{ item.id }})">
+                                    {% if item.icon %}<img src="{{ get_icon(item.icon) }}" width="24" height="24" alt=""
+                                        class="rounded" loading="lazy" onerror="this.style.display='none'">{% endif %}
+                                    <span class="text-truncate" style="max-width:120px">{{ item.name }}</span>
+                                </span>
+                                {% endfor %}
+                            </div>
+                            {% else %}<span class="text-muted">—</span>{% endif %}
+                        </td>
+                        {% endfor %}
+                        <td>
+                            <div class="d-flex flex-column gap-1 small">
+                                {% if set.attributes is not empty %}
+                                <div>
+                                    {% for a in set.attributes %}
+                                    <span class="text-dark fw-normal me-1 mb-1">{{ a.label }} {{
+                                        a.formatted }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if set.skills is not empty %}
+                                <div class="d-flex flex-column gap-1">
+                                    {% for sk in set.skills %}
+                                    <div class="d-flex align-items-start gap-1">
+                                        {% if sk.icon %}<img src="{{ get_skill(sk.icon) }}" width="20" height="20"
+                                            class="skill-icon" alt="" loading="lazy">{% endif %}
+                                        <span style="line-height:1.1">
+                                            {% if sk.effect_text %}
+                                            {{ sk.effect_text }}
+                                            {% elseif sk.effects is defined and sk.effects is not empty %}
+                                            {{ sk.effects|map(e => e.formatted ~ ' ' ~ e.label)|join(', ') }}
+                                            {% else %}
+                                            {{ sk.name|default('Skill ' ~ sk.id) }} (Lv.{{ sk.level }})
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {# Also show skills granted directly by chest item (item_skills) if present #}
+                                {% if set.chest.item_skills is defined and set.chest.item_skills is not empty %}
+                                <div class="mt-1">
+                                    <div class="small text-muted">Скиллы предмета:</div>
+                                    <div class="d-flex flex-column gap-1">
+                                        {% for itk in set.chest.item_skills %}
+                                        <div class="d-flex align-items-start gap-1">
+                                            {% if itk.icon %}<img src="{{ get_skill(itk.icon) }}" width="18" height="18"
+                                                class="skill-icon" alt="" loading="lazy">{% endif %}
+                                            <span class="small" style="line-height:1.1">
+                                                {% if itk.effect_text %}
+                                                {{ itk.effect_text }}
+                                                {% elseif itk.effects is defined and itk.effects is not empty %}
+                                                {{ itk.effects|map(e => e.formatted ~ ' ' ~ e.label)|join(', ') }}
+                                                {% else %}
+                                                {{ itk.name|default('Skill ' ~ itk.id) }} (Lv.{{ itk.level }})
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if set.shield_skills is not empty %}
+                                <div class="mt-1">
+                                    <span class="text-muted">+ Щит:</span>
+                                    <div class="d-flex flex-column gap-1">
+                                        {% for sk in set.shield_skills %}
+                                        <div class="d-flex align-items-start gap-1">
+                                            {% if sk.icon %}<img src="{{ get_skill(sk.icon) }}" width="20" height="20"
+                                                class="skill-icon" alt="" loading="lazy">{% endif %}
+                                            <span style="line-height:1.1">
+                                                {% if sk.effect_text %}
+                                                {{ sk.effect_text }}
+                                                {% elseif sk.effects is defined and sk.effects is not empty %}
+                                                {{ sk.effects|map(e => e.formatted ~ ' ' ~ e.label)|join(', ') }}
+                                                {% else %}
+                                                {{ sk.name|default('Skill ' ~ sk.id) }} (Lv.{{ sk.level }})
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if set.enchant6_skill %}
+                                <div class="mt-1">
+                                    <span class="text-warning">+6 (все части):</span>
+                                    <div class="d-flex align-items-start gap-1 mt-1">
+                                        {% if set.enchant6_skill.icon %}<img
+                                            src="{{ get_skill(set.enchant6_skill.icon) }}" width="20" height="20"
+                                            class="skill-icon" alt="" loading="lazy">{% endif %}
+                                        <span style="line-height:1.1">
+                                            {% if set.enchant6_skill.effect_text %}
+                                            {{ set.enchant6_skill.effect_text }}
+                                            {% elseif set.enchant6_skill.effects is defined and
+                                            set.enchant6_skill.effects is not empty %}
+                                            {{ set.enchant6_skill.effects|map(e => e.formatted ~ ' ' ~ e.label)|join(',
+                                            ') }}
+                                            {% else %}
+                                            {{ set.enchant6_skill.name|default('Skill ' ~ set.enchant6_skill.id) }}
+                                            (Lv.{{ set.enchant6_skill.level }})
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="mt-3">
+        {% if db_timing is defined %}
+        <div class="small text-muted">DB open: {{ db_timing.db_open_s }} s; Read: {{ db_timing.read_s }} s; Total: {{
+            db_timing.total_s }} s</div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .armorset-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme-mode=light] .armorset-table tbody tr:hover {
+        background: rgba(0, 0, 0, 0.035);
+    }
+
+    .armorset-item-variant {
+        padding: 2px 4px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme-mode=light] .armorset-item-variant {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .skill-wrap {
+        position: relative;
+        display: inline-flex;
+    }
+
+    .skill-icon {
+        border-radius: 3px;
+    }
+
+    .skill-pop {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(100% + 6px);
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        padding: 5px 7px;
+        border-radius: 6px;
+        white-space: nowrap;
+        font-size: 11px;
+        line-height: 1;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity .12s ease, transform .12s ease;
+        z-index: 9999;
+    }
+
+    .skill-wrap:hover .skill-pop {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-4px);
+    }
+
+    .skill-pop::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        transform: translateX(-50%) rotate(45deg);
+        width: 8px;
+        height: 8px;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 2px;
+    }
+
+    .extra-line {
+        line-height: 1.0;
+    }
+</style>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/src/component/plugins/library/tpl/css/_library_subnav.css">
+{% endblock %}

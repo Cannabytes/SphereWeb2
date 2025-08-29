@@ -1,0 +1,685 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <h2 class="mb-2">Рецепты крафта</h2>
+            <div class="mb-2">
+                <a href="/library" class="btn btn-sm btn-outline-secondary">← Назад в библиотеку</a>
+            </div>
+        </div>
+    </div>
+
+    {% set dwarven_count = recipes.dwarven|length %}
+    {% set common_count = recipes.common|length %}
+    {% if dwarven_count == 0 and common_count == 0 %}
+    <div class="alert alert-info">Рецептов не найдено.</div>
+    {% endif %}
+
+    {% if dwarven_count > 0 or common_count > 0 %}
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-body">
+                    <ul class="nav nav-pills justify-content-center nav-style-2 mb-3" role="tablist">
+                        {% set first_active = true %}
+                        {% if dwarven_count > 0 %}
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link {% if first_active %}active{% endif %}" data-bs-toggle="tab" role="tab"
+                                aria-current="page" href="#dwarven-pane"
+                                aria-selected="{% if first_active %}true{% else %}false{% endif %}">Кузнечный ({{
+                                dwarven_count }})</a>
+                        </li>
+                        {% set first_active = false %}
+                        {% endif %}
+                        {% if common_count > 0 %}
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link {% if first_active %}active{% endif %}" data-bs-toggle="tab" role="tab"
+                                aria-current="page" href="#common-pane"
+                                aria-selected="{% if first_active %}true{% else %}false{% endif %}{% if not first_active %}"
+                                tabindex="-1" {% endif %}>Обычный ({{ common_count }})</a>
+                        </li>
+                        {% set first_active = false %}
+                        {% endif %}
+                    </ul>
+                    <div class="tab-content">
+                        {% set first_active = true %}
+                        {% if dwarven_count > 0 %}
+                        <div class="tab-pane fade {% if first_active %}show active{% endif %} text-muted"
+                            id="dwarven-pane" role="tabpanel">
+                            <div class="table-responsive position-relative">
+                                <!-- Красивый индикатор загрузки поверх таблицы -->
+                                <div id="dwarven-loading" class="preloader-overlay">
+                                    <div class="preloader-content">
+                                        <div class="preloader-spinner">
+                                            <div class="spinner-ring"></div>
+                                            <div class="spinner-ring"></div>
+                                            <div class="spinner-ring"></div>
+                                            <div class="spinner-ring"></div>
+                                        </div>
+                                        <div class="preloader-text">
+                                            <h5>Загрузка рецептов</h5>
+                                            <p class="text-muted">Обработка данных кузнечных рецептов...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Скрываем таблицу до инициализации DataTables -->
+                                <table id="recipes-dwarven-table"
+                                    class="table table-bordered table-striped table-sm align-middle w-100"
+                                    style="visibility: hidden;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:25px" class="text-center">Lv</th>
+                                            <th>Рецепт</th>
+                                            <th>Результат</th>
+                                            <th>Ингредиенты</th>
+                                            <th class="text-center">Шанс</th>
+                                            <th class="text-center">MP</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for r in recipes.dwarven %}
+                                        {% include 'library/tpl/_recipe_row.html' with {'r': r} %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% set first_active = false %}
+                        {% endif %}
+                        {% if common_count > 0 %}
+                        <div class="tab-pane fade {% if first_active %}show active{% endif %} text-muted"
+                            id="common-pane" role="tabpanel">
+                            <div class="table-responsive position-relative">
+                                <div id="common-loading" class="preloader-overlay">
+                                    <div class="preloader-content">
+                                        <div class="preloader-spinner">
+                                            <div class="spinner-ring"></div>
+                                            <div class="spinner-ring"></div>
+                                            <div class="spinner-ring"></div>
+                                            <div class="spinner-ring"></div>
+                                        </div>
+                                        <div class="preloader-text">
+                                            <h5>Загрузка рецептов</h5>
+                                            <p class="text-muted">Обработка данных обычных рецептов...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <table id="recipes-common-table"
+                                    class="table table-bordered table-striped table-sm align-middle w-100"
+                                    style="visibility: hidden;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:25px" class="text-center">Lv</th>
+                                            <th>Рецепт</th>
+                                            <th>Результат</th>
+                                            <th>Ингредиенты</th>
+                                            <th class="text-center">Шанс</th>
+                                            <th class="text-center">MP</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for r in recipes.common %}
+                                        {% include 'library/tpl/_recipe_row.html' with {'r': r} %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% set first_active = false %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if db_timing is defined %}
+<div class="small text-muted">
+    DB open: {{ db_timing.db_open_s }} s; Read: {{ db_timing.read_s }} s;
+    Total: {{ db_timing.total_s }} s</div>
+{% endif %}
+
+<!-- Предзагрузка CSS для предотвращения FOUC -->
+<link rel="preload" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" as="style"
+    onload="this.onload=null;this.rel='stylesheet'">
+<noscript>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+</noscript>
+
+<!-- CSS для скрытия строк таблицы до инициализации -->
+<style>
+    /* Скрываем строки тела таблицы до инициализации DataTables */
+    .table:not(.dataTable) tbody tr {
+        display: none;
+    }
+
+    /* Показываем только первые 25 строк для предотвращения скачка */
+    .table:not(.dataTable) tbody tr:nth-child(-n+25) {
+        display: table-row;
+    }
+
+    /* Плавное появление таблицы */
+    .dt-initialized {
+        visibility: visible !important;
+        opacity: 0;
+        animation: fadeIn 0.5s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* === СТИЛЬНЫЙ PRELOADER === */
+    .preloader-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        justify-content: center;
+        align-items: center;
+        min-height: 100px;
+        backdrop-filter: blur(2px);
+        border-radius: 8px;
+        z-index: 1000;
+        transition: all 0.3s ease-out;
+    }
+
+    .preloader-content {
+        text-align: center;
+    }
+
+    .preloader-spinner {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+    }
+
+    .spinner-ring {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 3px solid transparent;
+        border-radius: 50%;
+        animation: spin 2s linear infinite;
+    }
+
+    .spinner-ring:nth-child(1) {
+        border-top-color: #007bff;
+        animation-delay: 0s;
+        animation-duration: 2s;
+    }
+
+    .spinner-ring:nth-child(2) {
+        border-right-color: #28a745;
+        animation-delay: -0.5s;
+        animation-duration: 2s;
+        transform: scale(0.8);
+    }
+
+    .spinner-ring:nth-child(3) {
+        border-bottom-color: #ffc107;
+        animation-delay: -1s;
+        animation-duration: 2s;
+        transform: scale(0.6);
+    }
+
+    .spinner-ring:nth-child(4) {
+        border-left-color: #dc3545;
+        animation-delay: -1.5s;
+        animation-duration: 2s;
+        transform: scale(0.4);
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .preloader-text h5 {
+        color: #495057;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .preloader-text p {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 0;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 0.7;
+        }
+
+        50% {
+            opacity: 1;
+        }
+    }
+
+    /* Анимация скрытия preloader'а */
+    .preloader-hide {
+        opacity: 0;
+        transform: scale(0.9);
+        pointer-events: none;
+    }
+
+    /* Скрытие preloader'а полностью */
+    .preloader-overlay.d-none {
+        display: none !important;
+    }
+
+    /* Улучшенная анимация появления таблицы */
+    .table-show {
+        animation: tableSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes tableSlideIn {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Стиль для индикатора обработки DataTables */
+    .dataTables_processing {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 8px !important;
+        padding: 1rem 1.5rem !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+        font-weight: 500 !important;
+        color: #495057 !important;
+        z-index: 9999 !important;
+    }
+
+    /* Responsive улучшения */
+    @media (max-width: 768px) {
+        .preloader-overlay {
+            min-height: 300px;
+        }
+
+        .preloader-spinner {
+            width: 60px;
+            height: 60px;
+        }
+
+        .preloader-text h5 {
+            font-size: 1rem;
+        }
+
+        .preloader-text p {
+            font-size: 0.85rem;
+        }
+    }
+
+    /* Дополнительный фикс для видимости таблиц */
+    .table-container {
+        position: relative;
+        min-height: 200px;
+    }
+
+    /* Use CSS-only layout: fixed table layout so column widths are honored */
+    #recipes-dwarven-table,
+    #recipes-common-table {
+        table-layout: auto;
+        /* allow natural distribution so Ingredients can take remaining space */
+        width: 100%;
+    }
+
+    .dataTable {
+        table-layout: auto !important;
+    }
+
+    /* Utility: allow wrapping for long words and breaking anywhere if needed */
+    .wrap-anywhere {
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .col-recipe,
+    .col-result {
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        max-width: 50ch;
+        /* wrap after ~50 characters */
+    }
+
+    .col-ingr {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    /* Column widths (small for Lv/Recipe/Result/Chance/MP; Ingredients flexible) */
+    /* 1: Lv */
+    #recipes-dwarven-table th:nth-child(1),
+    #recipes-dwarven-table td:nth-child(1),
+    #recipes-common-table th:nth-child(1),
+    #recipes-common-table td:nth-child(1) {
+        width: 50px;
+    }
+
+    /* Make very small numeric columns shrink to content */
+    #recipes-dwarven-table th:nth-child(1),
+    #recipes-dwarven-table td:nth-child(1),
+    #recipes-dwarven-table th:nth-child(5),
+    #recipes-dwarven-table td:nth-child(5),
+    #recipes-dwarven-table th:nth-child(6),
+    #recipes-dwarven-table td:nth-child(6),
+    #recipes-common-table th:nth-child(1),
+    #recipes-common-table td:nth-child(1),
+    #recipes-common-table th:nth-child(5),
+    #recipes-common-table td:nth-child(5),
+    #recipes-common-table th:nth-child(6),
+    #recipes-common-table td:nth-child(6) {
+        white-space: nowrap;
+        width: 1px;
+        /* force fit-content behaviour */
+    }
+
+    /* 2: Рецепт (narrow) */
+    #recipes-dwarven-table th:nth-child(2),
+    #recipes-dwarven-table td:nth-child(2),
+    #recipes-common-table th:nth-child(2),
+    #recipes-common-table td:nth-child(2) {
+        width: 12%;
+    }
+
+    /* 3: Результат (narrow) */
+    #recipes-dwarven-table th:nth-child(3),
+    #recipes-dwarven-table td:nth-child(3),
+    #recipes-common-table th:nth-child(3),
+    #recipes-common-table td:nth-child(3) {
+        width: 12%;
+    }
+
+    /* 4: Ингредиенты - main flexible column */
+    #recipes-dwarven-table th:nth-child(4),
+    #recipes-dwarven-table td:nth-child(4),
+    #recipes-common-table th:nth-child(4),
+    #recipes-common-table td:nth-child(4) {
+        width: auto;
+        max-width: none;
+    }
+
+    /* 5: Шанс, 6: MP (narrow) */
+    #recipes-dwarven-table th:nth-child(5),
+    #recipes-dwarven-table td:nth-child(5),
+    #recipes-dwarven-table th:nth-child(6),
+    #recipes-dwarven-table td:nth-child(6),
+    #recipes-common-table th:nth-child(5),
+    #recipes-common-table td:nth-child(5),
+    #recipes-common-table th:nth-child(6),
+    #recipes-common-table td:nth-child(6) {
+        width: 70px;
+    }
+</style>
+
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!window.jQuery) {
+            console.warn('jQuery не найден для DataTables');
+            return;
+        }
+
+        const dtInstances = {};
+        const loadingSpinners = {
+            '#recipes-dwarven-table': '#dwarven-loading',
+            '#recipes-common-table': '#common-loading'
+        };
+
+        // ...existing code... (soft-break JS removed — CSS-only approach)
+
+        /**
+         * Инициализация DataTable с оптимизацией производительности
+         * @param {string} tableId - ID селектор таблицы
+         * @param {string} searchId - ID селектор поля поиска
+         */
+        function initTable(tableId, searchId) {
+            if (dtInstances[tableId]) {
+                dtInstances[tableId].columns.adjust();
+                return;
+            }
+
+            const $table = $(tableId);
+            const $loadingSpinner = $(loadingSpinners[tableId]);
+
+            if (!$table.length) return;
+
+            // Показываем индикатор загрузки
+            $loadingSpinner.show();
+
+            // Используем setTimeout для асинхронной инициализации
+            setTimeout(() => {
+                try {
+                    const tbl = $table.DataTable({
+                        // Основные настройки
+                        paging: true,
+                        pageLength: 25,
+                        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Все"]],
+                        ordering: true,
+                        order: [[0, 'asc']],
+                        info: true,
+                        searching: true,
+
+                        // Оптимизация производительности
+                        deferRender: true,
+                        processing: true,
+                        serverSide: false,
+                        stateSave: true,
+                        stateDuration: 300, // 5 минут
+
+                        // Настройки отображения
+                        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip',
+
+                        // Локализация
+                        language: {
+                            processing: "Обработка данных...",
+                            search: '',
+                            searchPlaceholder: 'Поиск...',
+                            lengthMenu: 'Показать _MENU_ записей',
+                            info: 'Показаны _START_—_END_ из _TOTAL_ записей',
+                            infoEmpty: 'Нет записей для отображения',
+                            infoFiltered: '(отфильтровано из _MAX_ записей)',
+                            zeroRecords: 'Ничего не найдено',
+                            emptyTable: 'Нет данных в таблице',
+                            paginate: {
+                                previous: '‹ Пред',
+                                next: 'След ›',
+                                first: '« Первая',
+                                last: 'Последняя »'
+                            },
+                            aria: {
+                                sortAscending: ': активировать для сортировки столбца по возрастанию',
+                                sortDescending: ': активировать для сортировки столбца по убыванию'
+                            }
+                        },
+
+                        // Настройки колонок
+                        autoWidth: false,
+                        columnDefs: [
+                            { targets: 0, className: 'text-center align-middle', width: '1px' },
+                            { targets: 1, className: 'align-middle col-recipe', width: '12%' },
+                            { targets: 2, className: 'align-middle col-result', width: '12%' },
+                            { targets: 3, className: 'align-middle col-ingr wrap-anywhere' },
+                            { targets: 4, className: 'text-center align-middle', width: '1px' },
+                            { targets: 5, className: 'text-center align-middle', width: '1px' }
+                        ],
+
+                        // Коллбеки для оптимизации
+                        drawCallback: function () {
+                            // Ленивая загрузка изображений после отрисовки
+                            this.api().rows({ page: 'current' }).nodes().to$().find('img[data-src]').each(function () {
+                                const $img = $(this);
+                                $img.attr('src', $img.data('src')).removeAttr('data-src');
+                            });
+
+                            // lazy-load images after draw (no DOM text modifications)
+                        },
+
+                        initComplete: function () {
+                            // Вставляем soft-breaks сразу после инициализации
+                            try {
+                                wrapLongCellsInTable(tableId);
+                            } catch (e) {
+                                console.warn('wrapLongCellsInTable failed on initComplete:', e);
+                            }
+
+                            // Плавное скрытие preloader'а
+                            $loadingSpinner.addClass('preloader-hide');
+
+                            // Показываем таблицу с задержкой для плавности
+                            setTimeout(() => {
+                                $loadingSpinner.addClass('d-none');
+                                $table.addClass('dt-initialized table-show');
+                            }, 300);
+
+                            console.log(`DataTable ${tableId} инициализирована успешно`);
+                        }
+                    });
+
+                    dtInstances[tableId] = tbl;
+
+                    // Подключение кастомного поиска
+                    const input = document.querySelector(searchId);
+                    if (input) {
+                        input.addEventListener('keyup', function () {
+                            tbl.search(this.value).draw();
+                        });
+                    }
+
+                    // Настройка поиска с задержкой для производительности
+                    let searchTimeout;
+                    $table.closest('.dataTables_wrapper').find('.dataTables_filter input').off('keyup search').on('keyup search', function (e) {
+                        clearTimeout(searchTimeout);
+                        const searchTerm = this.value;
+                        searchTimeout = setTimeout(() => {
+                            tbl.search(searchTerm).draw();
+                        }, 300); // задержка 300мс
+                    });
+
+                } catch (error) {
+                    console.error(`Ошибка инициализации DataTable ${tableId}:`, error);
+                    $loadingSpinner.addClass('preloader-hide');
+                    setTimeout(() => {
+                        $loadingSpinner.html(`
+                            <div class="preloader-content">
+                                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                                    </svg>
+                                    <div>
+                                        <strong>Ошибка загрузки данных</strong><br>
+                                        <small>Попробуйте обновить страницу или обратитесь к администратору</small>
+                                    </div>
+                                </div>
+                            </div>
+                        `).removeClass('preloader-hide d-none');
+                    }, 300);
+                }
+            }, 50); // минимальная задержка для предотвращения блокировки UI
+        }
+
+        // Инициализация видимых таблиц
+        const initVisibleTables = () => {
+            if (document.querySelector('#dwarven-pane.show.active #recipes-dwarven-table')) {
+                initTable('#recipes-dwarven-table', '#recipes-search-dwarven');
+            }
+            if (document.querySelector('#common-pane.show.active #recipes-common-table')) {
+                initTable('#recipes-common-table', '#recipes-search-common');
+            }
+        };
+
+        // Запуск инициализации
+        initVisibleTables();
+
+        // Обработчик событий табов Bootstrap с оптимизацией
+        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(el => {
+            el.addEventListener('shown.bs.tab', function (e) {
+                const selector = e.target.getAttribute('href');
+                if (!selector) return;
+
+                const target = document.querySelector(selector);
+                if (!target) return;
+
+                const table = target.querySelector('table');
+                if (!table || !table.id) return;
+
+                const tableSelector = '#' + table.id;
+
+                // Используем requestAnimationFrame для плавности
+                requestAnimationFrame(() => {
+                    if (!dtInstances[tableSelector]) {
+                        const searchSelector = tableSelector === '#recipes-dwarven-table'
+                            ? '#recipes-search-dwarven'
+                            : '#recipes-search-common';
+                        initTable(tableSelector, searchSelector);
+                    } else {
+                        // Пересчитываем размеры колонок для уже инициализированной таблицы
+                        dtInstances[tableSelector].columns.adjust().draw(false);
+                    }
+                });
+            });
+        });
+
+        // Обработка изменения размера окна с дебаунсом
+        let resizeTimeout;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                Object.keys(dtInstances).forEach(tableId => {
+                    if (dtInstances[tableId]) {
+                        dtInstances[tableId].columns.adjust();
+                    }
+                });
+            }, 250);
+        });
+    });
+</script>
+
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/src/component/plugins/library/tpl/css/_library_subnav.css">
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

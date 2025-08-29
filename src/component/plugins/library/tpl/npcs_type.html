@@ -1,0 +1,19 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <h2 class="mb-2">NPC — Тип: {{ npc_type }}</h2>
+            <div class="mb-2">
+                <a href="/library" class="btn btn-sm btn-outline-secondary">← Назад в библиотеку</a>
+            </div>
+        </div>
+    </div>
+
+    {% if npc_list is defined and npc_list|length > 0 %}
+    {% include 'library/tpl/npcs_table_server.html' %}
+    {% else %}
+    <div class="alert alert-warning">Нет NPC указанного типа или тип не найден.</div>
+    {% endif %}
+</div>
+{% endblock %}

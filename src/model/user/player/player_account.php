@@ -213,11 +213,10 @@ class player_account
             return 0;
         }
         $params = [user::self()->getEmail()];
-        $sql = "SELECT COUNT(*) as `count` FROM player_accounts WHERE email = ?";
         if ($server_id !== 0) {
-            $sql .= " AND server_id = ?";
             $params[] = $server_id;
         }
+        $sql = "SELECT COUNT(*) as `count` FROM player_accounts WHERE email = ? AND server_id = ?";
         $stmt = sql::run($sql, $params);
         if (!$stmt instanceof PDOStatement) {
             return 0;

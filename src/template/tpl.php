@@ -89,8 +89,7 @@ class tpl
 
     public static function template_design_route(): ?array
     {
-        $fileRoute = $_SERVER['DOCUMENT_ROOT'] . "/template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName(
-            ) . "/route.php";
+        $fileRoute = $_SERVER['DOCUMENT_ROOT'] . "/template/" . \Ofey\Logan22\controller\config\config::load()->template()->getName() . "/route.php";
         if (file_exists($fileRoute)) {
             require_once $fileRoute;
             if (isset($pages)) {
@@ -283,16 +282,18 @@ class tpl
             ], "/", (self::$templatePath . $var));
         }));
 
-        $twig->addFunction(new TwigFunction('safe_output_css', function($content) {
+        $twig->addFunction(new TwigFunction('safe_output_css', function ($content) {
             if (empty($content)) {
                 return '';
             }
 
             // Проверяем, есть ли JavaScript код в CSS контенте
-            if (strpos($content, '<script') !== false ||
+            if (
+                strpos($content, '<script') !== false ||
                 strpos($content, 'var ') !== false ||
                 strpos($content, 'function') !== false ||
-                strpos($content, 'window.') !== false) {
+                strpos($content, 'window.') !== false
+            ) {
 
                 // Логируем проблему
                 error_log("WARNING: JavaScript code found in CSS content: " . substr($content, 0, 100));
@@ -306,7 +307,7 @@ class tpl
             return new Markup($content, 'UTF-8');
         }));
 
-        $twig->addFunction(new TwigFunction('safe_output_js', function($content) {
+        $twig->addFunction(new TwigFunction('safe_output_js', function ($content) {
             if (empty($content)) {
                 return '';
             }
@@ -418,8 +419,8 @@ class tpl
         $twig->addFunction(new TwigFunction('isAjaxRequest', function () {
             if (self::$isAjax === null) {
                 self::$isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(
-                        $_SERVER['HTTP_X_REQUESTED_WITH']
-                    ) == 'xmlhttprequest');
+                    $_SERVER['HTTP_X_REQUESTED_WITH']
+                ) == 'xmlhttprequest');
             }
 
             return self::$isAjax;
@@ -656,7 +657,6 @@ class tpl
 
             // Простой вариант — отсекаем лишние нули до 3-4 знаков после запятой (регулируется по необходимости):
             return rtrim(rtrim(sprintf('%.4f', $floatValue), '0'), '.');
-
         }));
 
         /**
@@ -691,8 +691,7 @@ class tpl
                     $docComment = htmlspecialchars($docComment); // Экранирование специальных символов
                     $output .= "<tr>";
                     $output .= "<td>" . $method->name . "</td>";
-                    $output .= "<td>" . ($method->isPublic() ? "<span class='text-success'>public</span>" : ($method->isProtected(
-                        ) ? "protected" : "<span class='text-danger'>private</span>")) . "</td>";
+                    $output .= "<td>" . ($method->isPublic() ? "<span class='text-success'>public</span>" : ($method->isProtected() ? "protected" : "<span class='text-danger'>private</span>")) . "</td>";
                     $output .= "<td>" . ($method->isStatic() ? "да" : "нет") . "</td>";
                     $output .= "<td>" . $returnTypeText . "</td>";
                     $output .= "<td>" . ($docComment ?: "Нет комментария") . "</td>";
@@ -800,8 +799,7 @@ class tpl
             }
 
             return preg_match(
-                "/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i"
-                ,
+                "/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i",
                 $_SERVER["HTTP_USER_AGENT"]
             );
         }));
@@ -908,28 +906,64 @@ class tpl
 
         $twig->addFunction(new TwigFunction('balance_to_dollars', function ($dc = 0) {
             return $dc * (config::load()->donate()->getRatioUSD() / config::load()->donate()->getSphereCoinCost());
-
         }));
 
-        $twig->addFunction(new TwigFunction('get_skill', function ($img = "none.jpeg") {
-            return (sprintf("/uploads/images/skills/%s", $img));
+        $twig->addFunction(new TwigFunction('get_skill', function ($img = "skill0000") {
+            static $cache = [];
+
+            if (isset($cache[$img])) {
+                return $cache[$img];
+            }
+
+            $webPath  = "/uploads/images/skills/{$img}.webp";
+            $filePath = "uploads/images/skills/{$img}.webp";
+
+            if (file_exists($filePath)) {
+                $cache[$img] = $webPath;
+            } else {
+                if (mb_substr($img, 0, 4) === "etc_") {
+                    $cache[$img] = "/uploads/images/icon/skill0000.webp";
+                } else {
+                    $cache[$img] = "/uploads/images/skills/skill0000.webp";
+                }
+                // Если не найдено проверим в папке icon
+                $webPathIcon  = "/uploads/images/icon/{$img}.webp";
+                $filePathIcon = "uploads/images/icon/{$img}.webp";
+                if (file_exists($filePathIcon)) {
+                    $cache[$img] = $webPathIcon;
+                }
+            }
+
+            return $cache[$img];
         }));
 
-        $twig->addFunction(new TwigFunction('get_icon', function ($img = "none.jpeg") {
-            return (sprintf("/uploads/images/icon/%s", $img));
+        $twig->addFunction(new TwigFunction('get_icon', function ($img = "NOIMAGE.webp") {
+            static $cache = [];
+
+            if (isset($cache[$img])) {
+                return $cache[$img];
+            }
+
+            if ($img == "") {
+                $cache[$img] = "/uploads/images/icon/NOIMAGE.webp";
+                return $cache[$img];
+            }
+
+            $webPath = "/uploads/images/icon/{$img}.webp";
+            $filePath = "uploads/images/icon/{$img}.webp";
+
+            if (file_exists($filePath)) {
+                $cache[$img] = $webPath;
+            } else {
+                $cache[$img] = "/uploads/images/icon/NOIMAGE.webp";
+            }
+
+            return $cache[$img];
         }));
 
         $twig->addFunction(new TwigFunction('get_item_info', function ($item_id, $chronicle = null) {
             return client_icon::get_item_info($item_id, false, false, $chronicle);
         }));
-
-        //        $twig->addFunction(new TwigFunction('donateConfig', function (): donateConfig {
-        //            return donateConfig::get();
-        //        }));
-
-        //        $twig->addFunction(new TwigFunction('referralConfig', function (): referralConfig {
-        //            return referralConfig::get();
-        //        }));
 
         $twig->addFunction(new TwigFunction('get_forum_img', function ($img = "none.jpeg", $thumb = false) {
             if ($thumb) {
@@ -957,43 +991,23 @@ class tpl
             return forum::user_avatar($user_id);
         }));
 
-        $twig->addFunction(new TwigFunction("forum_internal", function () {
-            return internal::forum();
-        }));
-
         $twig->addFunction(new TwigFunction('grade_img', function ($crystal_type): string {
             $grade_img = '';
-            $dirGrade = ("/uploads/images/grade");
-            switch ($crystal_type) {
-                case 'd':
-                    $grade_img = "<img src='{$dirGrade}/d.png' style='width:20px'>";
-                    break;
-                case 'c':
-                    $grade_img = "<img src='{$dirGrade}/c.png' style='width:20px'>";
-                    break;
-                case 'b':
-                    $grade_img = "<img src='{$dirGrade}/b.png' style='width:20px'>";
-                    break;
-                case 'a':
-                    $grade_img = "<img src='{$dirGrade}/a.png' style='width:20px'>";
-                    break;
-                case 's':
-                    $grade_img = "<img src='{$dirGrade}/s.png' style='width:20px'>";
-                    break;
-                case 'r':
-                    $grade_img = "<img src='{$dirGrade}/r.png' style='width:20px'>";
-                    break;
-                case 'r95':
-                    $grade_img = "<img src='{$dirGrade}/r95.png' style='width:35px'>";
-                    break;
-                case 'r99':
-                    $grade_img = "<img src='{$dirGrade}/r99.png' style='width:35px'>";
-                    break;
-                case 'r110':
-                    $grade_img = "<img src='{$dirGrade}/r110.png' style='width:40px'>";
-                    break;
-            }
-
+            $dirGrade = "/uploads/images/grade";
+            $grade_img = match (strtolower($crystal_type)) {
+                'd', '1' => "<img src='{$dirGrade}/d.png' style='width:20px'>",
+                'c', '2' => "<img src='{$dirGrade}/c.png' style='width:20px'>",
+                'b', '3' => "<img src='{$dirGrade}/b.png' style='width:20px'>",
+                'a', '4' => "<img src='{$dirGrade}/a.png' style='width:20px'>",
+                's', '5' => "<img src='{$dirGrade}/s.png' style='width:20px'>",
+                's80', '6' => "<img src='{$dirGrade}/s80.png' style='width:40px'>",
+                's84', '7' => "<img src='{$dirGrade}/s84.png' style='width:40px'>",
+                'r', '8' => "<img src='{$dirGrade}/r.png' style='width:20px'>",
+                'r95', '9' => "<img src='{$dirGrade}/r95.png' style='width:40px'>",
+                'r99', '10' => "<img src='{$dirGrade}/r99.png' style='width:40px'>",
+                'r110', '11' => "<img src='{$dirGrade}/r110.png' style='width:40px'>",
+                default => ''
+            };
             return $grade_img;
         }));
 
@@ -2334,7 +2348,8 @@ class tpl
      * Быстрая диагностика проблемы
      * Замените временно функцию display() на эту версию, чтобы увидеть что происходит
      */
-    public static function display($tplName) {
+    public static function display($tplName)
+    {
         if (self::$templatePath !== self::$fallbackTemplatePath) {
             $primaryFilePath = \Ofey\Logan22\component\fileSys\fileSys::get_dir(self::$templatePath . $tplName);
             if (!file_exists($primaryFilePath)) {
@@ -2397,11 +2412,12 @@ class tpl
                     }
                 }
 
-                echo $template->render(self::$allTplVars);
+                // Используем display() вместо render() для потокового вывода, чтобы не собирать огромную строку в памяти
+                $template->display(self::$allTplVars);
                 exit();
             }
         } catch (Exception $e) {
-            if(self::$ajaxLoad) {
+            if (self::$ajaxLoad) {
                 $template = $twig->load("errors.html");
                 if ($template->hasBlock("content")) {
                     $html = $template->renderBlock("content", self::$allTplVars);
@@ -2441,7 +2457,7 @@ class tpl
             board::html($html, $title, $css, $js);
         } else {
             $template = $twig->load($tplName);
-            echo $template->render(self::$allTplVars);
+            $template->display(self::$allTplVars);
         }
     }
 
@@ -2487,5 +2503,4 @@ class tpl
 
         return false;
     }
-
 }

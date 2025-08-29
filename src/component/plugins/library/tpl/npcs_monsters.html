@@ -1,0 +1,45 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h2 class="mb-2">NPC — Монстры</h2>
+            <a href="/library" class="btn btn-sm btn-outline-secondary">← Назад в библиотеку</a>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="btn-group" role="group" aria-label="Выбор уровней">
+                        {% for start in range(1, 81, 10) %}
+                        {% set end = start + 9 %}
+                        {% if start < 81 %} {% set range=start ~ '-' ~ end %} <a
+                            href="/library/npcs/monsters/{{ range }}"
+                            class="btn btn-outline-primary {% if selected_range == range %}active{% endif %}">{{ start
+                            }}-{{ end }}</a>
+                            {% else %}
+                            {# last button: 81+ #}
+                            {% set range = '81+' %}
+                            <a href="/library/npcs/monsters/{{ range }}"
+                                class="btn btn-outline-primary {% if selected_range == range %}active{% endif %}">81+</a>
+                            {% endif %}
+                            {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if npc_list is defined and npc_list|length > 0 %}
+            {% include 'library/tpl/npcs_table_server.html' %}
+            {% else %}
+            <div class="alert alert-info">Нет монстров для выбранного диапазона уровней.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

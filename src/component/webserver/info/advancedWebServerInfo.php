@@ -63,10 +63,6 @@ class advancedWebServerInfo
                 'title' => lang::get_phrase('file_upload_settings'),
                 'items' => $this->getUploadParameters()
             ],
-            'sessions' => [
-                'title' => lang::get_phrase('session_settings'),
-                'items' => $this->getSessionParameters()
-            ],
             'system' => [
                 'title' => lang::get_phrase('system_information'),
                 'items' => $this->getSystemParameters()
@@ -210,28 +206,6 @@ class advancedWebServerInfo
     }
 
     /**
-     * Получение параметров сессий
-     * @return array
-     */
-    private function getSessionParameters(): array
-    {
-        return [
-            'session.gc_maxlifetime' => [
-                'value' => ini_get('session.gc_maxlifetime') . ' секунд',
-                'status' => (intval(ini_get('session.gc_maxlifetime')) >= 1440) ? 'success' : 'warning',
-                'description' => lang::get_phrase('session_lifetime'),
-                'recommendation' => lang::get_phrase('1440_seconds_or_more_is_recommended')
-            ],
-            'session.cookie_secure' => [
-                'value' => ini_get('session.cookie_secure') ? 'Yes' : 'No',
-                'status' => ini_get('session.cookie_secure') ? 'success' : 'warning',
-                'description' => lang::get_phrase('secure_cookies'),
-                'recommendation' => !ini_get('session.cookie_secure') ? lang::get_phrase('enable_for_https') : 'OK'
-            ]
-        ];
-    }
-
-    /**
      * Получение системных параметров
      * @return array
      */
@@ -268,7 +242,7 @@ class advancedWebServerInfo
         $resources = [
             'memory_usage' => [
                 'value' => $this->formatBytes(memory_get_usage(true)),
-                'status' => (memory_get_usage(true) < memory_get_peak_usage(true) * 0.75) ? 'success' : 'warning',
+                'status' => (memory_get_usage(true) < memory_get_peak_usage(true) * 0.75) ? 'success' : 'info',
                 'description' => lang::get_phrase('php_memory_usage'),
                 'recommendation' => lang::get_phrase('current_memory_usage_by_script')
             ],
