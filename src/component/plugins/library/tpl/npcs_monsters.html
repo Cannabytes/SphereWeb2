@@ -36,6 +36,54 @@
         <div class="col-12">
             {% if npc_list is defined and npc_list|length > 0 %}
             {% include 'library/tpl/npcs_table_server.html' %}
+            {% if pages is defined and pages > 1 %}
+            <nav aria-label="Навигация по страницам" class="mt-3">
+                <ul class="pagination pagination-sm flex-wrap">
+                    {% set baseUrl = '/library/npcs/monsters/' ~ selected_range %}
+                    {% set q = '' %}
+                    {% if page > 1 %}
+                    <li class="page-item"><a class="page-link" href="{{ baseUrl }}?page=1">«</a></li>
+                    <li class="page-item"><a class="page-link" href="{{ baseUrl }}?page={{ page - 1 }}">‹</a></li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">«</span></li>
+                    <li class="page-item disabled"><span class="page-link">‹</span></li>
+                    {% endif %}
+
+                    {% set window = 3 %}
+                    {% set start = page - window %}
+                    {% if start < 1 %}{% set start=1 %}{% endif %} {% set end=page + window %} {% if end> pages %}{% set
+                        end = pages %}{% endif %}
+                        {% if start > 1 %}
+                        <li class="page-item"><a class="page-link" href="{{ baseUrl }}?page=1">1</a></li>
+                        {% if start > 2 %}<li class="page-item disabled"><span class="page-link">…</span></li>{% endif
+                        %}
+                        {% endif %}
+                        {% for p in range(start, end) %}
+                        {% if p == page %}
+                        <li class="page-item active"><span class="page-link">{{ p }}</span></li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ baseUrl }}?page={{ p }}">{{ p }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if end < pages %} {% if end < pages - 1 %}<li class="page-item disabled"><span
+                                class="page-link">…</span></li>{% endif %}
+                            <li class="page-item"><a class="page-link" href="{{ baseUrl }}?page={{ pages }}">{{ pages
+                                    }}</a></li>
+                            {% endif %}
+
+                            {% if page < pages %} <li class="page-item"><a class="page-link"
+                                    href="{{ baseUrl }}?page={{ page + 1 }}">›</a></li>
+                                <li class="page-item"><a class="page-link" href="{{ baseUrl }}?page={{ pages }}">»</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled"><span class="page-link">›</span></li>
+                                <li class="page-item disabled"><span class="page-link">»</span></li>
+                                {% endif %}
+                </ul>
+                <div class="small text-muted">Стр. {{ page }} из {{ pages }} • Всего: {{ total }} • На страницу: {{
+                    per_page }}</div>
+            </nav>
+            {% endif %}
             {% else %}
             <div class="alert alert-info">Нет монстров для выбранного диапазона уровней.</div>
             {% endif %}

@@ -428,16 +428,73 @@ class library
         $time_db_open_start = microtime(true);
         $repo = new EtcItemRepository();
         $time_db_open_end = microtime(true);
+
+        // Types with counts (quest separated in repository). Move 'quest' to end for UX.
+        $typesWithCounts = $repo->getTypesWithCounts();
+        $availableTypes = array_keys($typesWithCounts);
+        // Keep natural sort except ensure 'quest' last
+        sort($availableTypes, SORT_NATURAL | SORT_FLAG_CASE);
+        if (in_array('quest', $availableTypes, true)) {
+            $availableTypes = array_values(array_filter($availableTypes, fn($t) => $t !== 'quest'));
+            $availableTypes[] = 'quest';
+        }
+
+        // Selected type: if not provided -> default to 'other' (if exists) else first.
+        $requestedType = $_GET['type'] ?? null;
+        $defaultType = in_array('other', $availableTypes, true) ? 'other' : ($availableTypes[0] ?? '');
+        if ($requestedType === null || $requestedType === '') {
+            $currentType = $defaultType; // direct access behaves like type=other
+        } elseif (in_array($requestedType, $availableTypes, true)) {
+            $currentType = $requestedType;
+        } else {
+            $currentType = $defaultType;
+        }
+        tpl::addVar('etc_default_type', $defaultType);
+
+        // Pagination
+        $perPage = 100; // fixed as requested
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        if ($page < 1) $page = 1;
+
         $time_read_start = microtime(true);
-        $etcitems = $repo->getAllEtcItemsGrouped();
+        $pageData = $repo->getItemsByType($currentType, $page, $perPage);
         $time_read_end = microtime(true);
-        tpl::addVar('etcitems', $etcitems);
+        $total = $pageData['total'] ?? 0;
+        $pages = $perPage > 0 ? (int)ceil($total / $perPage) : 1;
+        if ($pages < 1) $pages = 1;
+        if ($page > $pages) {
+            // refetch last page if page out of range
+            $page = $pages;
+            $pageData = $repo->getItemsByType($currentType, $page, $perPage);
+        }
+
+        // Vars to template
+        // Rebuild types array in the chosen order
+        $sortedTypes = [];
+        foreach ($availableTypes as $t) {
+            if (isset($typesWithCounts[$t])) $sortedTypes[$t] = $typesWithCounts[$t];
+        }
+        tpl::addVar('etc_types', $sortedTypes);
+        tpl::addVar('etc_has_quest', array_key_exists('quest', $sortedTypes));
+        tpl::addVar('etc_current_type', $currentType);
+        tpl::addVar('etc_items', $pageData['items'] ?? []);
+        tpl::addVar('etc_quest_included', $pageData['quest_included'] ?? false);
+        tpl::addVar('etc_page', $page);
+        tpl::addVar('etc_pages', $pages);
+        tpl::addVar('etc_total', $total);
+        tpl::addVar('etc_per_page', $perPage);
+
         $time_total_end = microtime(true);
-        $timing = ['db_open_s' => number_format(($time_db_open_end - $time_db_open_start), 6, '.', ''), 'read_s' => number_format(($time_read_end - $time_read_start), 6, '.', ''), 'total_s' => number_format(($time_total_end - $time_total_start), 6, '.', '')];
+        $timing = [
+            'db_open_s' => number_format(($time_db_open_end - $time_db_open_start), 6, '.', ''),
+            'read_s' => number_format(($time_read_end - $time_read_start), 6, '.', ''),
+            'total_s' => number_format(($time_total_end - $time_total_start), 6, '.', ''),
+        ];
         $timing['db_open_ms'] = number_format(($time_db_open_end - $time_db_open_start) * 1000, 3, '.', '');
         $timing['read_ms'] = number_format(($time_read_end - $time_read_start) * 1000, 3, '.', '');
         $timing['total_ms'] = number_format(($time_total_end - $time_total_start) * 1000, 3, '.', '');
         tpl::addVar('db_timing', $timing);
+
         tpl::displayPlugin('/library/tpl/etcitems.html');
     }
 
@@ -468,9 +525,22 @@ class library
                 $max = null;
             }
         }
-        $list = $repo->getAllWithType($types, false, null, 'level', 'ASC', $min, $max);
+        $perPage = 50; // changed from 30 to 50
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $offset = ($page - 1) * $perPage;
+        $total = $repo->countFilteredWithTypeAndLevel($types, false, null, $min, $max);
+        $pages = (int)ceil($total / $perPage);
+        if ($page > $pages && $pages > 0) {
+            $page = $pages;
+            $offset = ($page - 1) * $perPage;
+        }
+        $list = $repo->getPageWithTypeAndLevel($offset, $perPage, null, 'level', 'ASC', $types, false, $min, $max);
         tpl::addVar('npc_list', $list);
         tpl::addVar('selected_range', $range);
+        tpl::addVar('page', $page);
+        tpl::addVar('pages', $pages);
+        tpl::addVar('per_page', $perPage);
+        tpl::addVar('total', $total);
         tpl::displayPlugin('/library/tpl/npcs_monsters.html');
     }
     public function npcsRaidboses(): void

@@ -9,6 +9,14 @@ class EtcItemRepository
 {
     private string $dbPath;
     private ?SQLite3 $db = null;
+    /**
+     * SQL condition detecting quest items (truthy values in is_questitem)
+     */
+    private const QUEST_WHERE = "(is_questitem IN (1,'1') OR LOWER(is_questitem) IN ('true','yes'))";
+    /**
+     * SQL condition detecting NON quest items (null/empty/false/0/no)
+     */
+    private const NON_QUEST_WHERE = "(is_questitem IS NULL OR TRIM(is_questitem) = '' OR is_questitem IN (0,'0') OR LOWER(is_questitem) IN ('false','no'))";
 
     public function __construct(?string $dbPath = null)
     {
@@ -84,14 +92,20 @@ class EtcItemRepository
      */
     public function getTypesWithCounts(): array
     {
-        $sql = "SELECT etcitem_type AS type, COUNT(*) AS c FROM etcitems GROUP BY etcitem_type ORDER BY etcitem_type";
-        $res = $this->db->query($sql);
-        $out = [];
-        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+        // Counts per type only for NON quest items
+        $countsRes = $this->db->query("SELECT COALESCE(NULLIF(TRIM(etcitem_type), ''), 'other') AS type, COUNT(*) AS c FROM etcitems WHERE " . self::NON_QUEST_WHERE . " GROUP BY COALESCE(NULLIF(TRIM(etcitem_type), ''), 'other') ORDER BY type");
+        $types = [];
+        while ($row = $countsRes->fetchArray(SQLITE3_ASSOC)) {
             $t = $row['type'] ?? 'other';
-            $out[$t] = (int)($row['c'] ?? 0);
+            $types[$t] = (int)($row['c'] ?? 0);
         }
-        return $out;
+        // Quest bucket separate (only quest items)
+        $questCount = (int)$this->db->querySingle("SELECT COUNT(*) FROM etcitems WHERE " . self::QUEST_WHERE);
+        if ($questCount > 0) {
+            // move quest to end
+            $types['quest'] = $questCount;
+        }
+        return $types;
     }
 
     /**
@@ -103,12 +117,19 @@ class EtcItemRepository
         $page = max(1, $page);
         $perPage = max(1, $perPage);
         $offset = ($page - 1) * $perPage;
+        $questIncluded = false; // for BC, indicates if quest items were mixed into non-quest list (now always false)
 
-        // total count
-        $stmtCount = $this->db->querySingle("SELECT COUNT(*) FROM etcitems WHERE etcitem_type = '" . SQLite3::escapeString($type) . "'");
-        $total = (int)$stmtCount;
-
-        $sql = "SELECT * FROM etcitems WHERE etcitem_type = '" . SQLite3::escapeString($type) . "' ORDER BY name LIMIT $perPage OFFSET $offset";
+        if ($type === 'quest') {
+            $total = (int)$this->db->querySingle("SELECT COUNT(*) FROM etcitems WHERE " . self::QUEST_WHERE);
+            $sql = "SELECT * FROM etcitems WHERE " . self::QUEST_WHERE . " ORDER BY id ASC LIMIT $perPage OFFSET $offset";
+        } elseif ($type === 'other') {
+            $total = (int)$this->db->querySingle("SELECT COUNT(*) FROM etcitems WHERE (etcitem_type IS NULL OR TRIM(etcitem_type) = '') AND " . self::NON_QUEST_WHERE);
+            $sql = "SELECT * FROM etcitems WHERE (etcitem_type IS NULL OR TRIM(etcitem_type) = '') AND " . self::NON_QUEST_WHERE . " ORDER BY id ASC LIMIT $perPage OFFSET $offset";
+        } else {
+            $esc = SQLite3::escapeString($type);
+            $total = (int)$this->db->querySingle("SELECT COUNT(*) FROM etcitems WHERE etcitem_type = '$esc' AND " . self::NON_QUEST_WHERE);
+            $sql = "SELECT * FROM etcitems WHERE etcitem_type = '$esc' AND " . self::NON_QUEST_WHERE . " ORDER BY id ASC LIMIT $perPage OFFSET $offset";
+        }
         $res = $this->db->query($sql);
         $items = [];
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
@@ -137,6 +158,6 @@ class EtcItemRepository
             $items[] = $row;
         }
 
-        return ['items' => $items, 'total' => $total];
+        return ['items' => $items, 'total' => $total, 'quest_included' => $questIncluded];
     }
 }

@@ -911,6 +911,11 @@ class tpl
         $twig->addFunction(new TwigFunction('get_skill', function ($img = "skill0000") {
             static $cache = [];
 
+            if ($img == "") {
+                $cache[$img] = "/uploads/images/icon/NOIMAGE.webp";
+                return $cache[$img];
+            }
+
             if (isset($cache[$img])) {
                 return $cache[$img];
             }

@@ -2,246 +2,111 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12 mb-3">
-            <h2 class="mb-2">Другие предметы (EtcItems)</h2>
-            <div class="mb-2">
+        <div class="col-12 mb-3 d-flex flex-wrap align-items-center gap-3">
+            <div>
+                <h2 class="h4 mb-1">Другие предметы (EtcItems)</h2>
+                <div class="small text-muted">Тип: {{ etc_current_type }} • Всего: {{ etc_total }} • Страница {{
+                    etc_page }} / {{ etc_pages }}</div>
+            </div>
+            <div class="ms-auto">
                 <a href="/library" class="btn btn-sm btn-outline-secondary">← Назад в библиотеку</a>
             </div>
         </div>
     </div>
 
-    {% set etcitems = etcitems|default({}) %}
-    {% if etcitems is empty %}
-    <div class="alert alert-info">EtcItems не найдены.</div>
+    {% if etc_types is empty %}
+    <div class="alert alert-info">Нет предметов.</div>
     {% else %}
-    <div class="row">
-        <div class="col-xl-12">
-            <div class="card custom-card">
-                <div class="card-body">
-                    <div class="mb-3">
-                        <a href="/library" class="btn btn-sm btn-outline-secondary">← Назад</a>
-                    </div>
-                    <div class="table-responsive position-relative">
-                        <div id="etc-loading" class="preloader-overlay" style="display:none;">
-                            <div class="preloader-content text-center">
-                                <div class="preloader-spinner mx-auto mb-2">
-                                    <div class="spinner-ring"></div>
-                                    <div class="spinner-ring"></div>
-                                    <div class="spinner-ring"></div>
-                                    <div class="spinner-ring"></div>
-                                </div>
-                                <div class="preloader-text">
-                                    <h5>Загрузка списка</h5>
-                                    <p class="text-muted">Подготовка данных...</p>
-                                </div>
-                            </div>
-                        </div>
+    <form id="etc-filter-form" class="row g-2 mb-3">
+        <div class="col-auto">
+            <label for="etcType" class="form-label mb-1 small text-muted">Тип</label>
+            <select name="type" id="etcType" class="form-select form-select-sm"
+                onchange="this.form.page.value=1; this.form.submit();">
+                {% for t,c in etc_types %}
+                <option value="{{ t }}" {% if t==etc_current_type %}selected{% endif %}>{{ t }} ({{ c }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="hidden" name="page" value="{{ etc_page }}">
+    </form>
 
-                        <ul class="nav nav-pills justify-content-center nav-style-2 mb-3" role="tablist">
-                            {% set first = true %}
-                            {% for t, list in etcitems %}
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link {% if first %}active{% endif %}" data-bs-toggle="tab"
-                                    href="#etc-{{ loop.index }}">{{ t }} ({{ list|length }})</a>
-                            </li>
-                            {% set first = false %}
-                            {% endfor %}
-                        </ul>
-
-                        <div class="tab-content">
-                            {% set first = true %}
-                            {% for t, list in etcitems %}
-                            <div class="tab-pane fade {% if first %}show active{% endif %} text-muted"
-                                id="etc-{{ loop.index }}">
-                                <table id="etc-table-{{ loop.index }}"
-                                    class="etcitems-table table table-bordered table-striped table-sm align-middle w-100"
-                                    style="visibility:hidden;">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th>Название</th>
-                                            <th class="text-center">Стек</th>
-                                            <th class="text-end">Цена</th>
-                                            <th class="text-end">Вес</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for i in list %}
-                                        {% include 'library/tpl/_etcitem_row.html' with {'i': i} %}
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {% set first = false %}
-                            {% endfor %}
-                        </div>
-
-                    </div>
-                </div>
+    <div class="card custom-card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-striped table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:42px"></th>
+                            <th>Название</th>
+                            <th class="text-center">Stack</th>
+                            <th class="text-end">Цена</th>
+                            <th class="text-end">Вес</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if etc_items is empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">Нет предметов для отображения.</td>
+                        </tr>
+                        {% else %}
+                        {% for i in etc_items %}
+                        {% include 'library/tpl/_etcitem_row.html' with {'i': i} %}
+                        {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
+    {% if etc_quest_included and etc_items is not empty and etc_current_type != 'quest' %}
+    <div class="alert alert-warning mt-2 py-2 mb-2 small">
+        Показаны предметы вместе с квестовыми, так как неквестовых в этом типе нет.
+    </div>
+    {% endif %}
+
+    <nav aria-label="Пагинация" class="mt-3">
+        <ul class="pagination pagination-sm flex-wrap mb-0">
+            {% set base = '/library/items/etcitems?type=' ~ etc_current_type %}
+            <li class="page-item {% if etc_page<=1 %}disabled{% endif %}"><a class="page-link"
+                    href="{{ base ~ '&page=' ~ (etc_page-1) }}" tabindex="-1">‹</a></li>
+            {% set start = etc_page - 3 %}
+            {% set end = etc_page + 3 %}
+            {% if start < 1 %}{% set end=end + (1-start) %}{% set start=1 %}{% endif %} {% if end> etc_pages %}{% set
+                start = start - (end-etc_pages) %}{% set end = etc_pages %}{% endif %}
+                {% if start < 1 %}{% set start=1 %}{% endif %} {% if start> 1 %}
+                    <li class="page-item"><a class="page-link" href="{{ base ~ '&page=1' }}">1</a></li>
+                    {% if start > 2 %}<li class="page-item disabled"><span class="page-link">…</span></li>{% endif %}
+                    {% endif %}
+                    {% for p in start..end %}
+                    <li class="page-item {% if p==etc_page %}active{% endif %}"><a class="page-link"
+                            href="{{ base ~ '&page=' ~ p }}">{{ p }}</a></li>
+                    {% endfor %}
+                    {% if end < etc_pages %} {% if end < etc_pages - 1 %}<li class="page-item disabled"><span
+                            class="page-link">…</span></li>{% endif %}
+                        <li class="page-item"><a class="page-link" href="{{ base ~ '&page=' ~ etc_pages }}">{{ etc_pages
+                                }}</a></li>
+                        {% endif %}
+                        <li class="page-item {% if etc_page>=etc_pages %}disabled{% endif %}"><a class="page-link"
+                                href="{{ base ~ '&page=' ~ (etc_page+1) }}">›</a></li>
+        </ul>
+    </nav>
     {% endif %}
 
     {% if db_timing is defined %}
-    <div class="small text-muted">DB open: {{ db_timing.db_open_s }} s; Read: {{ db_timing.read_s }} s; Total: {{
-        db_timing.total_s }} s</div>
+    <div class="small text-muted mt-2">DB: {{ db_timing.db_open_ms }} ms • Read: {{ db_timing.read_ms }} ms • Total: {{
+        db_timing.total_ms }} ms</div>
     {% endif %}
+</div>
 
-    <!-- DataTables CSS Preload -->
-    <link rel="preload" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" as="style"
-        onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-    </noscript>
+<style>
+    .pagination .page-link {
+        cursor: pointer;
+    }
 
-    <style>
-        .table:not(.dataTable) tbody tr {
-            display: none;
-        }
-
-        .table:not(.dataTable) tbody tr:nth-child(-n+25) {
-            display: table-row;
-        }
-
-        .dt-initialized {
-            visibility: visible !important;
-            opacity: 0;
-            animation: fadeIn .5s ease-in-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .preloader-overlay {
-            position: fixed !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-40%, 10%) !important;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(2px);
-            border-radius: 8px;
-            z-index: 2000;
-            width: min(100%, 50%);
-        }
-
-        .preloader-spinner {
-            position: relative;
-            width: 70px;
-            height: 70px;
-        }
-
-        .spinner-ring {
-            position: absolute;
-            inset: 0;
-            border: 3px solid transparent;
-            border-radius: 50%;
-            animation: spin 2s linear infinite;
-        }
-
-        .spinner-ring:nth-child(1) {
-            border-top-color: #007bff;
-        }
-
-        .spinner-ring:nth-child(2) {
-            border-right-color: #28a745;
-            animation-delay: -.5s;
-            transform: scale(.8);
-        }
-
-        .spinner-ring:nth-child(3) {
-            border-bottom-color: #ffc107;
-            animation-delay: -1s;
-            transform: scale(.6);
-        }
-
-        .spinner-ring:nth-child(4) {
-            border-left-color: #dc3545;
-            animation-delay: -1.5s;
-            transform: scale(.4);
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .preloader-hide {
-            opacity: 0;
-            transform: scale(.9);
-            pointer-events: none;
-            transition: .3s;
-        }
-
-        .dataTables_processing {
-            position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            background: rgba(255, 255, 255, .95) !important;
-            padding: 1rem 1.5rem !important;
-            border: 1px solid #dee2e6 !important;
-            border-radius: 8px !important;
-        }
-
-        .etcitems-table th,
-        .etcitems-table td {
-            vertical-align: middle;
-        }
-
-        .etcitems-table th:nth-child(1) {
-            width: 40px;
-        }
-
-        .etcitems-table th:nth-child(3),
-        .etcitems-table th:nth-child(4),
-        .etcitems-table th:nth-child(5) {
-            white-space: nowrap;
-            width: 1px;
-        }
-
-        .etcitems-table td:nth-child(2) {
-            min-width: 220px;
-        }
-
-        .badge.small {
-            font-size: .7rem;
-        }
-    </style>
-
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (!window.jQuery) { console.warn('jQuery не найден для DataTables'); return; }
-            const dtInstances = {};
-            function initEtcTable(tableId, loaderId) {
-                if (dtInstances[tableId]) { dtInstances[tableId].columns.adjust(); return; }
-                const $table = $(tableId); if (!$table.length) return; const $loader = $(loaderId); $loader.show();
-                setTimeout(() => {
-                    try {
-                        const dt = $table.DataTable({ paging: true, pageLength: 25, lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'Все']], ordering: true, order: [[1, 'asc']], info: true, searching: true, deferRender: true, processing: true, serverSide: false, stateSave: true, stateDuration: 300, dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip', language: { processing: 'Обработка...', search: '', searchPlaceholder: 'Поиск...', lengthMenu: 'Показать _MENU_', info: '_START_—_END_ из _TOTAL_', infoEmpty: 'Нет записей', infoFiltered: '(из _MAX_)', zeroRecords: 'Ничего не найдено', emptyTable: 'Нет данных', paginate: { previous: '‹ Пред', next: 'След ›' } }, autoWidth: false, columnDefs: [{ targets: 0, className: 'text-center align-middle', width: '1px' }, { targets: 1, className: 'align-middle' }, { targets: 2, className: 'text-center align-middle' }, { targets: 3, className: 'text-end align-middle' }, { targets: 4, className: 'text-end align-middle' }], drawCallback: function () { }, initComplete: function () { $loader.addClass('preloader-hide'); setTimeout(() => { $loader.addClass('d-none'); $table.addClass('dt-initialized'); }, 300); } });
-                        dtInstances[tableId] = dt;
-                        let to; const $input = $table.closest('.dataTables_wrapper').find('.dataTables_filter input'); $input.off('keyup search').on('keyup search', function () { clearTimeout(to); const v = this.value; to = setTimeout(() => { dt.search(v).draw(); }, 300); });
-                    } catch (e) { console.error('Init error for', tableId, e); $loader.addClass('preloader-hide'); }
-                }, 30);
-            }
-            const firstTable = document.querySelector('.tab-pane.show.active table.etcitems-table'); if (firstTable) { initEtcTable('#' + firstTable.id, '#' + firstTable.id.replace('table', 'loading')); }
-            document.querySelectorAll('[data-bs-toggle="tab"]').forEach(el => { el.addEventListener('shown.bs.tab', e => { const pane = document.querySelector(e.target.getAttribute('href')); if (!pane) return; const tbl = pane.querySelector('table.etcitems-table'); if (!tbl) return; const tid = '#' + tbl.id; initEtcTable(tid, '#' + tbl.id.replace('table', 'loading')); }); });
-            let rto; window.addEventListener('resize', () => { clearTimeout(rto); rto = setTimeout(() => { Object.values(dtInstances).forEach(dt => dt.columns.adjust()); }, 250); });
-        });
-    </script>
-
-    {% endblock %}
+    .table td,
+    .table th {
+        vertical-align: middle;
+    }
+</style>
+{% endblock %}

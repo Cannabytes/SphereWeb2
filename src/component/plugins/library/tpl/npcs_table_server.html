@@ -8,7 +8,6 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Имя</th>
-                                <th>Уровень</th>
                                 <th>Раса</th>
                                 <th>HP</th>
                                 <th>MP</th>
@@ -23,7 +22,8 @@
                             <tr>
                                 <td class="text-center">{{ npc.id }}</td>
                                 <td>
-                                    <div class="fw-semibold">{{ npc.name|default('NoNPCname') }}</div>
+                                    <div class="fw-semibold">{{ npc.name|default('NoNPCname') }} (Lv. {{ npc.level }})
+                                    </div>
                                     {% if npc.title %}<div class="small text-muted">{{ npc.title }}</div>{% endif %}
                                     {% if npc.skills %}
                                     <div class="d-flex flex-wrap gap-1 skill-effects-line">
@@ -56,7 +56,6 @@
                                     {% endif %}
 
                                 </td>
-                                <td class="text-center">{{ npc.level }}</td>
                                 <td class="text-center">{{ npc.race }}</td>
                                 <td class="text-end">{{ npc.hp }}</td>
                                 <td class="text-end">{{ npc.mp }}</td>

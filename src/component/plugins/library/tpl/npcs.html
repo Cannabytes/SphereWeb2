@@ -72,7 +72,7 @@
         display: none;
     }
 
-    .table:not(.dataTable) tbody tr:nth-child(-n+25) {
+    .table:not(.dataTable) tbody tr:nth-child(-n+30) {
         display: table-row;
     }
 
@@ -191,8 +191,8 @@
             try {
                 const dt = $table.DataTable({
                     paging: true,
-                    pageLength: 25,
-                    lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'Все']],
+                    pageLength: 50,
+                    lengthMenu: [[10, 30, 50, 100, -1], [10, 30, 50, 100, 'Все']],
                     ordering: true,
                     order: [[2, 'asc']],
                     info: true,

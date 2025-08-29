@@ -25,10 +25,32 @@ class NpcRepository
      * Key: skill id, Value: meta row or null (if not found).
      */
     private static array $globalSkillCache = [];
+    /**
+     * Simple caches and helpers
+     */
+
+    /**
+     * Cache for extractSkillIds(): raw skillList JSON -> array of ids
+     * @var array<string,array<int>>
+     */
+    private array $extractCache = [];
+
+    /**
+     * Cache parsed skill effect metadata per skill id: skillId -> [metaEffects, metaEffectText]
+     * @var array<int,array>
+     */
+    private array $skillEffectsCache = [];
+
+    /**
+     * Cache level-specific built effects per skill id and level: "{skillId}:{level}" -> [effects, text]
+     * @var array<string,array>
+     */
+    private array $skillEffectsByLevelCache = [];
 
     public function __construct(?string $dbPath = null)
     {
         $this->dbPath = $dbPath ?? __DIR__ . '/db/highfive.db';
+        // no debug logging here
         if (!is_file($this->dbPath)) {
             throw new RuntimeException('SQLite database not found: ' . $this->dbPath);
         }
@@ -56,19 +78,24 @@ class NpcRepository
         $res = $this->db->query('SELECT * FROM npcs ORDER BY CAST(level AS INTEGER) ASC, name');
         $rows = [];
         $skillIds = [];
+        $count = 0;
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $count++;
             // Collect skill ids first (cheap JSON decode) for bulk preload
             $skillIds = array_merge($skillIds, $this->extractSkillIds($row['skillList'] ?? ''));
             $rows[] = $row;
         }
-        if ($skillIds) $this->preloadSkillMeta($skillIds);
-        $out = [];
-        foreach ($rows as $row) {
-            $row['skills'] = $this->parseSkillList($row['skillList'] ?? '', 12);
-            unset($row['skillList']);
-            $out[] = $row;
+        if ($skillIds) {
+            $metaMap = $this->loadSkillMetaBulk($skillIds);
+            $this->attachSkillsToRows($rows, $metaMap, 12);
+        } else {
+            // ensure skillList removed even if empty
+            foreach ($rows as &$r) {
+                unset($r['skillList']);
+                $r['skills'] = [];
+            }
         }
-        return $out;
+        return $rows;
     }
 
     public function countAll(): int
@@ -147,18 +174,22 @@ class NpcRepository
         $res = $stmt->execute();
         $rawRows = [];
         $skillIds = [];
+        $count = 0;
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $count++;
             $skillIds = array_merge($skillIds, $this->extractSkillIds($row['skillList'] ?? ''));
             $rawRows[] = $row;
         }
-        if ($skillIds) $this->preloadSkillMeta($skillIds);
-        $final = [];
-        foreach ($rawRows as $r) {
-            $r['skills'] = $this->parseSkillList($r['skillList'] ?? '', 12);
-            unset($r['skillList']);
-            $final[] = $r;
+        if ($skillIds) {
+            $metaMap = $this->loadSkillMetaBulk($skillIds);
+            $this->attachSkillsToRows($rawRows, $metaMap, 12);
+        } else {
+            foreach ($rawRows as &$r) {
+                unset($r['skillList']);
+                $r['skills'] = [];
+            }
         }
-        return $final;
+        return $rawRows;
     }
 
     /**
@@ -212,18 +243,134 @@ class NpcRepository
         $res = $stmt->execute();
         $rawRows = [];
         $skillIds = [];
+        $count = 0;
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $count++;
+            $skillIds = array_merge($skillIds, $this->extractSkillIds($row['skillList'] ?? ''));
+            $rawRows[] = $row;
+        }
+        if ($skillIds) {
+            $metaMap = $this->loadSkillMetaBulk($skillIds);
+            $this->attachSkillsToRows($rawRows, $metaMap, 12);
+        } else {
+            foreach ($rawRows as &$r) {
+                unset($r['skillList']);
+                $r['skills'] = [];
+            }
+        }
+        return $rawRows;
+    }
+
+    /**
+     * Count with optional type include/exclude AND optional level range.
+     */
+    public function countFilteredWithTypeAndLevel(?array $types = null, bool $exclude = false, ?string $search = null, ?int $minLevel = null, ?int $maxLevel = null): int
+    {
+        $where = [];
+        $params = [];
+        if ($search) {
+            $where[] = '(name LIKE :s OR title LIKE :s)';
+            $params[':s'] = '%' . $search . '%';
+        }
+        if ($types !== null && count($types) > 0) {
+            $parts = [];
+            foreach ($types as $i => $t) {
+                $ph = ':t' . $i;
+                $params[$ph] = $t;
+                $parts[] = 'type = ' . $ph;
+            }
+            $expr = '(' . implode(' OR ', $parts) . ')';
+            if ($exclude) $expr = 'NOT ' . $expr;
+            $where[] = $expr;
+        }
+        if ($minLevel !== null && $maxLevel !== null) {
+            $where[] = 'CAST(level AS INTEGER) BETWEEN :minLevel AND :maxLevel';
+            $params[':minLevel'] = $minLevel;
+            $params[':maxLevel'] = $maxLevel;
+        } elseif ($minLevel !== null) {
+            $where[] = 'CAST(level AS INTEGER) >= :minLevel';
+            $params[':minLevel'] = $minLevel;
+        } elseif ($maxLevel !== null) {
+            $where[] = 'CAST(level AS INTEGER) <= :maxLevel';
+            $params[':maxLevel'] = $maxLevel;
+        }
+        $sql = 'SELECT COUNT(*) AS c FROM npcs' . (count($where) ? ' WHERE ' . implode(' AND ', $where) : '');
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v, is_int($v) ? SQLITE3_INTEGER : SQLITE3_TEXT);
+        }
+        $res = $stmt->execute();
+        $row = $res->fetchArray(SQLITE3_ASSOC);
+        return (int)($row['c'] ?? 0);
+    }
+
+    /**
+     * Paginated fetch with type filters and optional level min/max.
+     */
+    public function getPageWithTypeAndLevel(int $start, int $length, ?string $search, string $orderCol, string $orderDir, ?array $types = null, bool $exclude = false, ?int $minLevel = null, ?int $maxLevel = null): array
+    {
+        $allowedCols = ['id', 'name', 'level', 'type', 'race', 'hp', 'mp', 'attack_physical', 'attack_magical', 'defence_physical', 'defence_magical', 'attack_attack_speed', 'attack_critical', 'attack_accuracy', 'defence_evasion'];
+        if (!in_array($orderCol, $allowedCols, true)) $orderCol = 'level';
+        $orderDir = strtoupper($orderDir) === 'DESC' ? 'DESC' : 'ASC';
+        $start = max(0, $start);
+        $length = $length <= 0 ? 30 : min(500, $length);
+        $where = [];
+        $params = [];
+        if ($search) {
+            $where[] = '(name LIKE :s OR title LIKE :s)';
+            $params[':s'] = '%' . $search . '%';
+        }
+        if ($types !== null && count($types) > 0) {
+            $parts = [];
+            foreach ($types as $i => $t) {
+                $ph = ':t' . $i;
+                $params[$ph] = $t;
+                $parts[] = 'type = ' . $ph;
+            }
+            $expr = '(' . implode(' OR ', $parts) . ')';
+            if ($exclude) $expr = 'NOT ' . $expr;
+            $where[] = $expr;
+        }
+        if ($minLevel !== null && $maxLevel !== null) {
+            $where[] = 'CAST(level AS INTEGER) BETWEEN :minLevel AND :maxLevel';
+            $params[':minLevel'] = $minLevel;
+            $params[':maxLevel'] = $maxLevel;
+        } elseif ($minLevel !== null) {
+            $where[] = 'CAST(level AS INTEGER) >= :minLevel';
+            $params[':minLevel'] = $minLevel;
+        } elseif ($maxLevel !== null) {
+            $where[] = 'CAST(level AS INTEGER) <= :maxLevel';
+            $params[':maxLevel'] = $maxLevel;
+        }
+        if ($orderCol === 'level') {
+            $order = "ORDER BY CAST(level AS INTEGER) $orderDir, name";
+        } else {
+            $order = "ORDER BY $orderCol $orderDir";
+        }
+        $sql = 'SELECT * FROM npcs' . (count($where) ? ' WHERE ' . implode(' AND ', $where) : '') . " $order LIMIT :len OFFSET :start";
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v, is_int($v) ? SQLITE3_INTEGER : SQLITE3_TEXT);
+        }
+        $stmt->bindValue(':len', $length, SQLITE3_INTEGER);
+        $stmt->bindValue(':start', $start, SQLITE3_INTEGER);
+        $res = $stmt->execute();
+        $rawRows = [];
+        $skillIds = [];
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
             $skillIds = array_merge($skillIds, $this->extractSkillIds($row['skillList'] ?? ''));
             $rawRows[] = $row;
         }
-        if ($skillIds) $this->preloadSkillMeta($skillIds);
-        $final = [];
-        foreach ($rawRows as $r) {
-            $r['skills'] = $this->parseSkillList($r['skillList'] ?? '', 12);
-            unset($r['skillList']);
-            $final[] = $r;
+        if ($skillIds) {
+            $metaMap = $this->loadSkillMetaBulk($skillIds);
+            $this->attachSkillsToRows($rawRows, $metaMap, 12);
+        } else {
+            foreach ($rawRows as &$r) {
+                unset($r['skillList']);
+                $r['skills'] = [];
+            }
         }
-        return $final;
+        return $rawRows;
     }
 
     /**
@@ -294,18 +441,22 @@ class NpcRepository
         $res = $stmt->execute();
         $rawRows = [];
         $skillIds = [];
+        $count = 0;
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $count++;
             $skillIds = array_merge($skillIds, $this->extractSkillIds($row['skillList'] ?? ''));
             $rawRows[] = $row;
         }
-        if ($skillIds) $this->preloadSkillMeta($skillIds);
-        $final = [];
-        foreach ($rawRows as $r) {
-            $r['skills'] = $this->parseSkillList($r['skillList'] ?? '', 12);
-            unset($r['skillList']);
-            $final[] = $r;
+        if ($skillIds) {
+            $metaMap = $this->loadSkillMetaBulk($skillIds);
+            $this->attachSkillsToRows($rawRows, $metaMap, 12);
+        } else {
+            foreach ($rawRows as &$r) {
+                unset($r['skillList']);
+                $r['skills'] = [];
+            }
         }
-        return $final;
+        return $rawRows;
     }
 
     /**
@@ -355,10 +506,24 @@ class NpcRepository
                 $skill['for'] = $meta['for'] ?? null;
                 // Parse effects from "for" JSON (same logic style as Armor/Weapon repositories)
                 if (!empty($meta['for']) && strtolower(trim($meta['for'])) !== 'null') {
-                    [$metaEffects, $metaEffectText] = $this->parseSkillEffects($meta['for']);
+                    // use cached parsed metadata for this skill 'for' payload
+                    $forRaw = $meta['for'];
+                    if (isset($this->skillEffectsCache[$id])) {
+                        [$metaEffects, $metaEffectText] = $this->skillEffectsCache[$id];
+                    } else {
+                        [$metaEffects, $metaEffectText] = $this->parseSkillEffects($forRaw, $id);
+                        $this->skillEffectsCache[$id] = [$metaEffects, $metaEffectText];
+                    }
                     if ($metaEffects) {
                         // Build level-specific formatted effects (handles raw_values arrays)
-                        [$lvlEffects, $lvlText] = $this->buildEffectsForLevel($metaEffects, (int)($level ?? 1));
+                        $levelInt = (int)($level ?? 1);
+                        $lvlKey = $id . ':' . $levelInt;
+                        if (isset($this->skillEffectsByLevelCache[$lvlKey])) {
+                            [$lvlEffects, $lvlText] = $this->skillEffectsByLevelCache[$lvlKey];
+                        } else {
+                            [$lvlEffects, $lvlText] = $this->buildEffectsForLevel($metaEffects, $levelInt, $id);
+                            $this->skillEffectsByLevelCache[$lvlKey] = [$lvlEffects, $lvlText];
+                        }
                         if ($lvlEffects) {
                             $skill['effects'] = $lvlEffects;
                             if ($lvlText) $skill['effect_text'] = $lvlText;
@@ -374,6 +539,145 @@ class NpcRepository
             if ($limit > 0 && count($skills) >= $limit) break;
         }
         return $skills;
+    }
+
+    /**
+     * Bulk load skill meta for unique skill IDs with chunking (returns id=>meta map).
+     * Reuses existing caches and populates them if new rows loaded.
+     * @param int[] $ids
+     * @return array<int,array|null>
+     */
+    private function loadSkillMetaBulk(array $ids): array
+    {
+        $result = [];
+        if (!$ids) return $result;
+        $unique = [];
+        foreach ($ids as $id) {
+            $i = (int)$id;
+            if ($i <= 0) continue;
+            $unique[$i] = true;
+        }
+        if (!$unique) return $result;
+        $idList = array_keys($unique);
+        $toQuery = [];
+        foreach ($idList as $i) {
+            if (array_key_exists($i, $this->skillCache)) {
+                $result[$i] = $this->skillCache[$i];
+            } elseif (array_key_exists($i, self::$globalSkillCache)) {
+                $result[$i] = self::$globalSkillCache[$i];
+            } else {
+                $toQuery[] = $i;
+            }
+        }
+        if ($toQuery) {
+            $chunkSize = 800;
+            for ($off = 0; $off < count($toQuery); $off += $chunkSize) {
+                $chunk = array_slice($toQuery, $off, $chunkSize);
+                if (!$chunk) continue;
+                $placeholders = implode(',', array_fill(0, count($chunk), '?'));
+                $sql = 'SELECT id, name, icon, isdebuff, for, description FROM skills WHERE id IN (' . $placeholders . ')';
+                $stmt = $this->db->prepare($sql);
+                foreach ($chunk as $idx => $sid) {
+                    $stmt->bindValue($idx + 1, $sid, SQLITE3_INTEGER);
+                }
+                $res = $stmt->execute();
+                $foundIds = [];
+                while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+                    $sid = (int)$row['id'];
+                    if (isset($row['isdebuff'])) {
+                        $val = $row['isdebuff'];
+                        if ($val === '0' || $val === 0 || $val === 'false' || $val === '') $row['isdebuff'] = false;
+                        else $row['isdebuff'] = (bool)$val;
+                    }
+                    $this->skillCache[$sid] = $row;
+                    self::$globalSkillCache[$sid] = $row;
+                    $result[$sid] = $row;
+                    $foundIds[$sid] = true;
+                }
+                // mark missing as null
+                foreach ($chunk as $sid) {
+                    if (!isset($foundIds[$sid])) {
+                        $this->skillCache[$sid] = null;
+                        self::$globalSkillCache[$sid] = null;
+                        $result[$sid] = null;
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Attach parsed skills to NPC rows using preloaded meta map (id=>meta). Modifies rows by reference.
+     * @param array<int,array<string,mixed>> $rows
+     * @param array<int,array|null> $skillMetaMap
+     * @param int $limitPerNpc
+     */
+    private function attachSkillsToRows(array &$rows, array $skillMetaMap, int $limitPerNpc = 12): void
+    {
+        foreach ($rows as &$row) {
+            $json = $row['skillList'] ?? '';
+            $decoded = $json ? json_decode($json, true) : null;
+            $skills = [];
+            if (is_array($decoded)) {
+                foreach ($decoded as $s) {
+                    if (!isset($s['id'])) continue;
+                    $id = (int)$s['id'];
+                    $level = $s['level'] ?? null;
+                    $meta = $skillMetaMap[$id] ?? null;
+                    $skill = ['id' => $id, 'level' => $level];
+                    $desc = null;
+                    if ($meta && isset($meta['description']) && is_string($meta['description'])) {
+                        $description = json_decode($meta['description'], true);
+                        if (is_array($description)) {
+                            if (count($description) === 1) {
+                                $only = reset($description);
+                                if (is_string($only) && $only !== '') $desc = trim($only);
+                            } elseif ($level !== null && isset($description[$level - 1])) {
+                                $desc = trim($description[$level - 1]);
+                            }
+                        }
+                    }
+                    if ($meta) {
+                        $skill['name'] = $meta['name'] ?? null;
+                        $skill['icon'] = $meta['icon'] ?? null;
+                        $skill['isdebuff'] = $meta['isdebuff'] ?? null;
+                        $skill['description'] = $desc;
+                        $skill['for'] = $meta['for'] ?? null;
+                        if (!empty($meta['for']) && strtolower(trim($meta['for'])) !== 'null') {
+                            if (isset($this->skillEffectsCache[$id])) {
+                                [$metaEffects, $metaEffectText] = $this->skillEffectsCache[$id];
+                            } else {
+                                [$metaEffects, $metaEffectText] = $this->parseSkillEffects($meta['for'], $id);
+                                $this->skillEffectsCache[$id] = [$metaEffects, $metaEffectText];
+                            }
+                            if ($metaEffects) {
+                                $levelInt = (int)($level ?? 1);
+                                $lvlKey = $id . ':' . $levelInt;
+                                if (isset($this->skillEffectsByLevelCache[$lvlKey])) {
+                                    [$lvlEffects, $lvlText] = $this->skillEffectsByLevelCache[$lvlKey];
+                                } else {
+                                    [$lvlEffects, $lvlText] = $this->buildEffectsForLevel($metaEffects, $levelInt, $id);
+                                    $this->skillEffectsByLevelCache[$lvlKey] = [$lvlEffects, $lvlText];
+                                }
+                                if ($lvlEffects) {
+                                    $skill['effects'] = $lvlEffects;
+                                    if ($lvlText) $skill['effect_text'] = $lvlText;
+                                } elseif ($metaEffectText) {
+                                    $skill['effect_text'] = $metaEffectText;
+                                }
+                            } elseif ($metaEffectText ?? null) {
+                                $skill['effect_text'] = $metaEffectText;
+                            }
+                        }
+                    }
+                    $skills[] = $skill;
+                    if ($limitPerNpc > 0 && count($skills) >= $limitPerNpc) break;
+                }
+            }
+            $row['skills'] = $skills;
+            unset($row['skillList']);
+        }
     }
 
     /**
@@ -427,6 +731,7 @@ class NpcRepository
         for ($offset = 0; $offset < count($idList); $offset += $chunkSize) {
             $chunk = array_slice($idList, $offset, $chunkSize);
             if (!$chunk) continue;
+
             $placeholders = implode(',', array_fill(0, count($chunk), '?'));
             $sql = 'SELECT id, name, icon, isdebuff, for, description FROM skills WHERE id IN (' . $placeholders . ')';
             $stmt = $this->db->prepare($sql);
@@ -434,7 +739,9 @@ class NpcRepository
                 $stmt->bindValue($idx + 1, $skillId, SQLITE3_INTEGER); // positional binding
             }
             $res = $stmt->execute();
+            $found = 0;
             while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+                $found++;
                 $sid = (int)$row['id'];
                 if (isset($row['isdebuff'])) {
                     $val = $row['isdebuff'];
@@ -458,12 +765,19 @@ class NpcRepository
     private function extractSkillIds(string $json): array
     {
         if ($json === '' || $json === '[]') return [];
+        // cache by raw string to avoid repeated json_decode
+        if (isset($this->extractCache[$json])) return $this->extractCache[$json];
         $decoded = json_decode($json, true);
-        if (!is_array($decoded)) return [];
+        if (!is_array($decoded)) {
+            $this->extractCache[$json] = [];
+            return [];
+        }
         $ids = [];
         foreach ($decoded as $s) {
             if (isset($s['id'])) $ids[] = (int)$s['id'];
         }
+        $this->extractCache[$json] = $ids;
+
         return $ids;
     }
 
@@ -480,12 +794,33 @@ class NpcRepository
     }
 
     /** Parse skills."for" JSON extracting stat entries (stat, tag, val/value) with StatLabels labels. */
-    private function parseSkillEffects(string $raw): array
+    /**
+     * Parse skills."for" JSON extracting stat entries (stat, tag, val/value) with StatLabels labels.
+     * Accepts optional skillId to allow caching per-skill.
+     * @param string $raw
+     * @param int|null $skillId
+     * @return array
+     */
+    private function parseSkillEffects(string $raw, ?int $skillId = null): array
     {
         $raw = trim($raw);
-        if ($raw === '' || strtolower($raw) === 'null') return [[], null];
+        // try cache by skillId first, else by raw payload hash
+        if ($skillId !== null && isset($this->skillEffectsCache[$skillId])) {
+            return $this->skillEffectsCache[$skillId];
+        }
+        $rawHashKey = 'raw:' . md5($raw);
+        if (isset($this->skillEffectsCache[$rawHashKey])) {
+            return $this->skillEffectsCache[$rawHashKey];
+        }
+        if ($raw === '' || strtolower($raw) === 'null') {
+            $this->skillEffectsCache[$rawHashKey] = [[], null];
+            return [[], null];
+        }
         $decoded = json_decode($raw, true);
-        if (!is_array($decoded)) return [[], null];
+        if (!is_array($decoded)) {
+            $this->skillEffectsCache[$rawHashKey] = [[], null];
+            return [[], null];
+        }
         $statObjects = [];
         $walk = function ($node) use (&$walk, &$statObjects) {
             if (is_array($node)) {
@@ -528,12 +863,28 @@ class NpcRepository
         }
         $effectText = implode(', ', array_map(fn($e) => $e['text'] ?? ($e['formatted'] ?? ''), array_filter($effects, fn($e) => isset($e['text']))));
         $effectText = $effectText !== '' ? $effectText : null;
-        return [$effects, $effectText];
+
+        $res = [$effects, $effectText];
+        if ($skillId !== null) {
+            $this->skillEffectsCache[$skillId] = $res;
+        }
+        $this->skillEffectsCache[$rawHashKey] = $res;
+        return $res;
     }
 
     /** Build level-specific effects replacing raw_values arrays with single formatted entry for chosen level. */
-    private function buildEffectsForLevel(array $metaEffects, int $level): array
+    /**
+     * Build level-specific effects replacing raw_values arrays with single formatted entry for chosen level.
+     * Accepts optional skillId for cache keying when called externally.
+     * @param array $metaEffects
+     * @param int $level
+     * @param int|null $skillId
+     * @return array
+     */
+    private function buildEffectsForLevel(array $metaEffects, int $level, ?int $skillId = null): array
     {
+        // caching by skillId:level is handled by caller (parseSkillList) to keep signature simple
+
         $effects = [];
         foreach ($metaEffects as $e) {
             if (isset($e['raw_values'])) {
@@ -594,6 +945,11 @@ class NpcRepository
         $sign = $num >= 0 ? '+' : '';
         return $sign . $this->trimNumber($num);
     }
+
+    /**
+     * Start a named timer.
+     */
+    // removed debug timers and file logging
 
     private function trimNumber(float $num): string
     {
