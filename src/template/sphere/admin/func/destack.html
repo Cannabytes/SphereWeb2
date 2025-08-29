@@ -385,6 +385,7 @@
 
             // AJAX-запрос на сохранение настроек
             AjaxSend('/admin/func/destack', 'POST', {
+                serverId: '{{serverId}}',
                 allowAllItemsStacking: allowAllItemsStacking,
                 allowAllItemsSplitting: allowAllItemsSplitting,
                 stackableItems: stackableItems,

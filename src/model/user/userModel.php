@@ -542,8 +542,8 @@ class userModel
     public function stackInventoryItems(): void
     {
         // Получаем настройки стакования с сервера
-        $isAllowAllItemsStacking = \Ofey\Logan22\model\server\server::getServer()->stackableItem()->isAllowAllItemsStacking();
-        $getStackItemsList = \Ofey\Logan22\model\server\server::getServer()->stackableItem()->getStackableItems();
+        $isAllowAllItemsStacking = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->stackableItem()->isAllowAllItemsStacking();
+        $getStackItemsList = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->stackableItem()->getStackableItems();
 
         // Получаем предметы из склада
         $warehouse = $this->getWarehouse();
@@ -633,8 +633,8 @@ class userModel
                 'message' => "Успешно объединено {$stackedItemsCount} предметов",
                 'stacked_items' => $stackedItemsCount,
                 'warehouse' => $this->getWarehouseToArray(),
-                "isAllowAllItemsSplitting" => \Ofey\Logan22\model\server\server::getServer()->stackableItem()->isAllowAllItemsSplitting(),
-                "splittableItems" => \Ofey\Logan22\model\server\server::getServer()->stackableItem()->getSplittableItems(),
+                "isAllowAllItemsSplitting" => \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->stackableItem()->isAllowAllItemsSplitting(),
+                "splittableItems" => \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->stackableItem()->getSplittableItems(),
             ]);
 
         } catch (\Exception $e) {

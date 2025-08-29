@@ -19,6 +19,12 @@ class NpcRepository
      * @var array<int,array<string,mixed>>
      */
     private array $skillCache = [];
+    /**
+     * Static shared cache across repository instances (within same PHP process) to avoid
+     * re-querying skills table on multiple page components during one request lifecycle.
+     * Key: skill id, Value: meta row or null (if not found).
+     */
+    private static array $globalSkillCache = [];
 
     public function __construct(?string $dbPath = null)
     {
@@ -48,8 +54,16 @@ class NpcRepository
     public function getAll(): array
     {
         $res = $this->db->query('SELECT * FROM npcs ORDER BY CAST(level AS INTEGER) ASC, name');
-        $out = [];
+        $rows = [];
+        $skillIds = [];
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            // Collect skill ids first (cheap JSON decode) for bulk preload
+            $skillIds = array_merge($skillIds, $this->extractSkillIds($row['skillList'] ?? ''));
+            $rows[] = $row;
+        }
+        if ($skillIds) $this->preloadSkillMeta($skillIds);
+        $out = [];
+        foreach ($rows as $row) {
             $row['skills'] = $this->parseSkillList($row['skillList'] ?? '', 12);
             unset($row['skillList']);
             $out[] = $row;
@@ -131,13 +145,20 @@ class NpcRepository
         $stmt->bindValue(':len', $length, SQLITE3_INTEGER);
         $stmt->bindValue(':start', $start, SQLITE3_INTEGER);
         $res = $stmt->execute();
-        $rows = [];
+        $rawRows = [];
+        $skillIds = [];
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
-            $row['skills'] = $this->parseSkillList($row['skillList'] ?? '', 12);
-            unset($row['skillList']);
-            $rows[] = $row;
+            $skillIds = array_merge($skillIds, $this->extractSkillIds($row['skillList'] ?? ''));
+            $rawRows[] = $row;
         }
-        return $rows;
+        if ($skillIds) $this->preloadSkillMeta($skillIds);
+        $final = [];
+        foreach ($rawRows as $r) {
+            $r['skills'] = $this->parseSkillList($r['skillList'] ?? '', 12);
+            unset($r['skillList']);
+            $final[] = $r;
+        }
+        return $final;
     }
 
     /**
@@ -189,13 +210,20 @@ class NpcRepository
         $stmt->bindValue(':len', $length, SQLITE3_INTEGER);
         $stmt->bindValue(':start', $start, SQLITE3_INTEGER);
         $res = $stmt->execute();
-        $rows = [];
+        $rawRows = [];
+        $skillIds = [];
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
-            $row['skills'] = $this->parseSkillList($row['skillList'] ?? '', 12);
-            unset($row['skillList']);
-            $rows[] = $row;
+            $skillIds = array_merge($skillIds, $this->extractSkillIds($row['skillList'] ?? ''));
+            $rawRows[] = $row;
         }
-        return $rows;
+        if ($skillIds) $this->preloadSkillMeta($skillIds);
+        $final = [];
+        foreach ($rawRows as $r) {
+            $r['skills'] = $this->parseSkillList($r['skillList'] ?? '', 12);
+            unset($r['skillList']);
+            $final[] = $r;
+        }
+        return $final;
     }
 
     /**
@@ -264,13 +292,20 @@ class NpcRepository
             $stmt->bindValue($k, $v, SQLITE3_TEXT);
         }
         $res = $stmt->execute();
-        $rows = [];
+        $rawRows = [];
+        $skillIds = [];
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
-            $row['skills'] = $this->parseSkillList($row['skillList'] ?? '', 12);
-            unset($row['skillList']);
-            $rows[] = $row;
+            $skillIds = array_merge($skillIds, $this->extractSkillIds($row['skillList'] ?? ''));
+            $rawRows[] = $row;
         }
-        return $rows;
+        if ($skillIds) $this->preloadSkillMeta($skillIds);
+        $final = [];
+        foreach ($rawRows as $r) {
+            $r['skills'] = $this->parseSkillList($r['skillList'] ?? '', 12);
+            unset($r['skillList']);
+            $final[] = $r;
+        }
+        return $final;
     }
 
     /**
@@ -348,15 +383,15 @@ class NpcRepository
      */
     public function getSkillMetaById(int $skillId): ?array
     {
-        if (isset($this->skillCache[$skillId])) {
-            return $this->skillCache[$skillId];
-        }
+        if (array_key_exists($skillId, $this->skillCache)) return $this->skillCache[$skillId];
+        if (array_key_exists($skillId, self::$globalSkillCache)) return self::$globalSkillCache[$skillId];
         $stmt = $this->db->prepare('SELECT name, icon, isdebuff, for, description FROM skills WHERE id = :id LIMIT 1');
         $stmt->bindValue(':id', $skillId, SQLITE3_INTEGER);
         $res = $stmt->execute();
         $row = $res->fetchArray(SQLITE3_ASSOC);
         if ($row === false) {
             $this->skillCache[$skillId] = null;
+            self::$globalSkillCache[$skillId] = null;
             return null;
         }
         // Normalize boolean-ish isdebuff (some DBs may store 0/1 or 'true')
@@ -366,7 +401,70 @@ class NpcRepository
             else $row['isdebuff'] = (bool)$val;
         }
         $this->skillCache[$skillId] = $row;
+        self::$globalSkillCache[$skillId] = $row;
         return $row;
+    }
+
+    /**
+     * Bulk preload skill meta for a set of skill IDs to drastically reduce per-row queries.
+     * - De-duplicates IDs.
+     * - Skips IDs already cached (local or global).
+     * - Batches to respect SQLite max host parameters (default 999).
+     */
+    private function preloadSkillMeta(array $ids): void
+    {
+        if (!$ids) return;
+        $unique = [];
+        foreach ($ids as $id) {
+            $i = (int)$id;
+            if ($i <= 0) continue;
+            if (array_key_exists($i, $this->skillCache) || array_key_exists($i, self::$globalSkillCache)) continue;
+            $unique[$i] = true;
+        }
+        if (!$unique) return;
+        $idList = array_keys($unique);
+        $chunkSize = 800; // leave headroom under 999 limit
+        for ($offset = 0; $offset < count($idList); $offset += $chunkSize) {
+            $chunk = array_slice($idList, $offset, $chunkSize);
+            if (!$chunk) continue;
+            $placeholders = implode(',', array_fill(0, count($chunk), '?'));
+            $sql = 'SELECT id, name, icon, isdebuff, for, description FROM skills WHERE id IN (' . $placeholders . ')';
+            $stmt = $this->db->prepare($sql);
+            foreach ($chunk as $idx => $skillId) {
+                $stmt->bindValue($idx + 1, $skillId, SQLITE3_INTEGER); // positional binding
+            }
+            $res = $stmt->execute();
+            while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+                $sid = (int)$row['id'];
+                if (isset($row['isdebuff'])) {
+                    $val = $row['isdebuff'];
+                    if ($val === '0' || $val === 0 || $val === 'false' || $val === '') $row['isdebuff'] = false;
+                    else $row['isdebuff'] = (bool)$val;
+                }
+                $this->skillCache[$sid] = $row;
+                self::$globalSkillCache[$sid] = $row;
+            }
+            // Mark any not found as null to avoid repeat queries
+            foreach ($chunk as $sid) {
+                if (!array_key_exists($sid, $this->skillCache)) {
+                    $this->skillCache[$sid] = null;
+                    self::$globalSkillCache[$sid] = null;
+                }
+            }
+        }
+    }
+
+    /** Quickly extract skill IDs from the raw JSON skillList without loading meta. */
+    private function extractSkillIds(string $json): array
+    {
+        if ($json === '' || $json === '[]') return [];
+        $decoded = json_decode($json, true);
+        if (!is_array($decoded)) return [];
+        $ids = [];
+        foreach ($decoded as $s) {
+            if (isset($s['id'])) $ids[] = (int)$s['id'];
+        }
+        return $ids;
     }
 
     /**

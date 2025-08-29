@@ -100,12 +100,12 @@ class inventory
 
             $isOk = false;
             // Проверяем что можно это делать
-            if (\Ofey\Logan22\model\server\server::getServer()->stackableItem()->isAllowAllItemsSplitting()) {
+            if (\Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->stackableItem()->isAllowAllItemsSplitting()) {
                 $isOk = true;
             }
 
             if (!$isOk) {
-                foreach (\Ofey\Logan22\model\server\server::getServer()->stackableItem()->getSplittableItems() as $splitableItem) {
+                foreach (\Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->stackableItem()->getSplittableItems() as $splitableItem) {
                     if ($item->getItemId() == $splitableItem) {
                         $isOk = true;
                         break;
@@ -151,8 +151,8 @@ class inventory
                 "ok" => true,
                 "message" => lang::get_phrase('item_split_success'),
                 "warehouse" => user::self()->getWarehouseToArray(),
-                "isAllowAllItemsSplitting" => \Ofey\Logan22\model\server\server::getServer()->stackableItem()->isAllowAllItemsSplitting(),
-                "splittableItems" => \Ofey\Logan22\model\server\server::getServer()->stackableItem()->getSplittableItems(),
+                "isAllowAllItemsSplitting" => \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->stackableItem()->isAllowAllItemsSplitting(),
+                "splittableItems" => \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->stackableItem()->getSplittableItems(),
             ]);
 
         } catch (Exception $e) {
@@ -481,7 +481,6 @@ class inventory
                 return;
             }
 
-            // Если нет ошибки, но и нет успешного результата - возвращаем деньги
             sql::run(
                 'UPDATE users SET donate_point = donate_point + ? WHERE id = ?',
                 [$coins, $userId]
@@ -492,7 +491,6 @@ class inventory
             $db->rollback();
             board::error("Ошибка при переводе: " . $e->getMessage());
         } finally {
-            // Освобождаем блокировку в любом случае
             sql::run("SELECT RELEASE_LOCK(?)", [$lockKey]);
         }
     }

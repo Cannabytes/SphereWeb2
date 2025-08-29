@@ -1119,12 +1119,13 @@ class options
     // Настройки стакуемых предметов сервера
     public static function saveStackItems(): void
     {
+        $serverId = (int)$_POST['serverId'];
         $allowAllItemsStacking = filter_var($_POST['allowAllItemsStacking'], FILTER_VALIDATE_BOOLEAN);
         $allowAllItemsSplitting = filter_var($_POST['allowAllItemsSplitting'], FILTER_VALIDATE_BOOLEAN);
         $stackableItems = $_POST['stackableItems'] ?? [];
         $splittableItems = $_POST['splittableItems'] ?? [];
-        \Ofey\Logan22\model\server\server::getServer()->stackableItem()->set($allowAllItemsStacking, $allowAllItemsSplitting, $stackableItems, $splittableItems);
-        \Ofey\Logan22\model\server\server::getServer()->save();
+        \Ofey\Logan22\model\server\server::getServer($serverId)->stackableItem()->set($allowAllItemsStacking, $allowAllItemsSplitting, $stackableItems, $splittableItems);
+        \Ofey\Logan22\model\server\server::getServer($serverId)->save();
         board::notice(true, "Настройки сохранены");
     }
 
