@@ -27,6 +27,10 @@
                         {% endfor %}
                     </ul>
                 </nav>
+                <div class="small text-muted mt-2" id="weapons-debug-counts">
+                    Загружено: <span id="weapons-count-initial">{{ weapon_initial_count|default(0) }}</span> / <span
+                        id="weapons-count-total">≈{{ weapon_total_count|default('?') }}</span>
+                </div>
             </div>
 
             <script>(function () { try { const active = document.currentScript.parentElement.querySelector('.library-filter .active'); if (active) { active.scrollIntoView({ block: 'nearest', inline: 'center' }); } } catch (e) { } })();</script>
@@ -34,201 +38,218 @@
         </div>
     </div>
 
-    {% if weaponsByCrystal is empty %}
-    <div class="alert alert-warning">Нет данных для выбранного типа.</div>
-    {% else %}
-    {% for crystal, list in weaponsByCrystal %}
-    <div class="card mb-4">
-        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-            <div>
-                <h5 class="mb-1">{{ weaponGradeInfo[crystal].title|default('Грейд ' ~ crystal) }} ({{ crystal }})</h5>
-                {% if weaponGradeInfo[crystal] is defined %}
-                <div class="small text-muted">
-                    Уровень: {{ weaponGradeInfo[crystal].level }} — {{ weaponGradeInfo[crystal].desc }}
+    <div id="weapons-list">
+        {% if weaponsByCrystal is empty %}
+        <div class="alert alert-warning">Нет данных для выбранного типа.</div>
+        {% else %}
+        {% for crystal, list in weaponsByCrystal %}
+        <div class="card mb-4 weapon-grade-card" data-grade="{{ crystal }}" data-loaded-count="{{ list|length }}">
+            <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div>
+                    <h5 class="mb-1">{{ weaponGradeInfo[crystal].title|default('Грейд ' ~ crystal) }} ({{ crystal }})
+                    </h5>
+                    {% if weaponGradeInfo[crystal] is defined %}
+                    <div class="small text-muted">
+                        Уровень: {{ weaponGradeInfo[crystal].level }} — {{ weaponGradeInfo[crystal].desc }}
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
+                <span class="badge bg-primary align-self-start align-self-md-center mt-2 mt-md-0 total-count"
+                    data-initial="{{ list|length }}">{{ list|length }}</span>
             </div>
-            <span class="badge bg-primary align-self-start align-self-md-center mt-2 mt-md-0">{{ list|length }}</span>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-sm mb-0 align-middle weapon-table">
-                <thead class="table-light">
-                    <tr>
-                        <th>Предмет</th>
-                        <th class="text-center js-sortable" data-key="patk" title="Сортировать по pAtk">pAtk</th>
-                        <th class="text-center js-sortable" data-key="matk" title="Сортировать по mAtk">mAtk</th>
-                        <th class="text-center">Crit%</th>
-                        <th class="text-center">Atk Spd</th>
-                        <th class="text-end js-sortable" data-key="price" title="Сортировать по цене"
-                            style="min-width:110px">Цена</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for w in list %}
+            <div class="table-responsive">
+                <table class="table table-sm mb-0 align-middle weapon-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Предмет</th>
+                            <th class="text-center js-sortable" data-key="patk" title="Сортировать по pAtk">pAtk</th>
+                            <th class="text-center js-sortable" data-key="matk" title="Сортировать по mAtk">mAtk</th>
+                            <th class="text-center">Crit%</th>
+                            <th class="text-center">Atk Spd</th>
+                            <th class="text-end js-sortable" data-key="price" title="Сортировать по цене"
+                                style="min-width:110px">Цена</th>
+                        </tr>
+                    </thead>
+                    <tbody class="weapons-body">
+                        {% for w in list %}
 
-                    <tr data-order="{{ loop.index0 }}" data-patk="{{ w.pAtk|default(0) }}"
-                        data-matk="{{ w.mAtk|default(0) }}" data-price="{{ w.price|default(w._price|default(0)) }}"
-                        data-is-magic="{{ w.is_magic_weapon|default(0) }}">
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                {% if w.icon %}
-                                <img src="{{ get_icon(w.icon) }}" alt="" width="42" height="42" class="rounded"
-                                    loading="lazy" onerror="this.style.display='none'">
-                                {% endif %}
-                                <div class="d-flex flex-column">
-                                    <span class="fw-semibold">{{ w.name }}</span>
-                                    <span class="text-muted extra-line small">
-                                        <a href="/library/category/loot/craft">Крафт</a> / <a
-                                            href="/library/category/loot/drop">Дроп</a>
-                                    </span>
-                                    {% if w.skills is not empty %}
-                                    <span
-                                        class="text-muted extra-line small d-flex flex-wrap gap-1 align-items-start mt-1 skill-effects-line">
-                                        {% for skill in w.skills %}
-                                        <span class="skill-wrap has-pop">
-                                            {% if skill.icon %}
-                                            <img src="{{ get_skill(skill.icon) }}" alt="" width="18" height="18"
-                                                class="skill-icon rounded-1">
-                                            {% else %}
-                                            <span class="skill-icon-placeholder"
-                                                style="display:inline-block;width:18px;height:18px;background:rgba(0,0,0,0.08);"></span>
-                                            {% endif %}
-                                            <span class="skill-pop skill-pop-wide">
-                                                <span class="d-block fw-semibold mb-1">{{ skill.name|default('Skill ' ~
-                                                    skill.id) }}<span class="opacity-75"> Lv.{{ skill.level
-                                                        }}</span></span>
-                                                {% if skill.effect_text is defined and skill.effect_text %}
-                                                <span class="d-block effect-text">{{ skill.effect_text }}</span>
-                                                {% elseif skill.effects is defined and skill.effects %}
-                                                <span class="d-block">
-                                                    {% for eff in skill.effects %}
-                                                    <span class="d-block">{{ eff.formatted }} {{ eff.label }}</span>
-                                                    {% endfor %}
-                                                </span>
-                                                {% else %}
-                                                <span class="text-muted">Нет данных о бонусах</span>
-                                                {% endif %}
-                                            </span>
-                                        </span>
-                                        {% endfor %}
-                                    </span>
+                        <tr data-order="{{ loop.index0 }}" data-patk="{{ w.pAtk|default(0) }}"
+                            data-matk="{{ w.mAtk|default(0) }}" data-price="{{ w.price|default(w._price|default(0)) }}"
+                            data-is-magic="{{ w.is_magic_weapon|default(0) }}">
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if w.icon_path is defined %}
+                                    <img src="{{ w.icon_path }}" alt="" width="42" height="42" class="rounded"
+                                        loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">
+                                    {% elseif w.icon %}
+                                    <img src="{{ get_icon(w.icon) }}" alt="" width="42" height="42" class="rounded"
+                                        loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">
                                     {% endif %}
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-semibold">{{ w.name }}</span>
+                                        <span class="text-muted extra-line small">
+                                            <a href="/library/category/loot/craft">Крафт</a> / <a
+                                                href="/library/category/loot/drop">Дроп</a>
+                                        </span>
+                                        {% if w.skills is not empty %}
+                                        <span
+                                            class="text-muted extra-line small d-flex flex-wrap gap-1 align-items-start mt-1 skill-effects-line">
+                                            {% for skill in w.skills %}
+                                            <span class="skill-wrap has-pop">
+                                                {% if skill.icon_path is defined and skill.icon_path %}
+                                                <img src="{{ skill.icon_path }}" alt="" width="18" height="18"
+                                                    class="skill-icon rounded-1">
+                                                {% elseif skill.icon %}
+                                                <img src="{{ get_icon(skill.icon, 'skills') }}" alt="" width="18"
+                                                    height="18" class="skill-icon rounded-1">
+                                                {% else %}
+                                                <span class="skill-icon-placeholder"
+                                                    style="display:inline-block;width:18px;height:18px;background:rgba(0,0,0,0.08);"></span>
+                                                {% endif %}
+                                                <span class="skill-pop skill-pop-wide">
+                                                    <span class="d-block fw-semibold mb-1">{{ skill.name|default('Skill
+                                                        ' ~
+                                                        skill.id) }}<span class="opacity-75"> Lv.{{ skill.level
+                                                            }}</span></span>
+                                                    {% if skill.effect_text is defined and skill.effect_text %}
+                                                    <span class="d-block effect-text">{{ skill.effect_text }}</span>
+                                                    {% elseif skill.effects is defined and skill.effects %}
+                                                    <span class="d-block">
+                                                        {% for eff in skill.effects %}
+                                                        <span class="d-block">{{ eff.formatted }} {{ eff.label }}</span>
+                                                        {% endfor %}
+                                                    </span>
+                                                    {% else %}
+                                                    <span class="text-muted">Нет данных о бонусах</span>
+                                                    {% endif %}
+                                                </span>
+                                            </span>
+                                            {% endfor %}
+                                        </span>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
-                        {% set patk = w.pAtk %}
-                        {% set matk = w.mAtk %}
-                        {% set crit = w.critRate %}
-                        {% set spd = w.pAtkSpd %}
-                        <td class="text-center">{% if patk %}{{ patk }}{% if w.pAtk_enchant %}<span
-                                class="text-success small">+{{ w.pAtk_enchant }}</span>{% endif %}{% else %}<span
-                                class="text-muted">-</span>{% endif %}</td>
-                        <td class="text-center">{% if matk %}{{ matk }}{% if w.mAtk_enchant %}<span
-                                class="text-success small">+{{ w.mAtk_enchant }}</span>{% endif %}{% else %}<span
-                                class="text-muted">-</span>{% endif %}</td>
-                        <td class="text-center">{% if crit %}{{ crit }}{% else %}<span class="text-muted">-</span>{%
-                            endif %}</td>
-                        <td class="text-center">{% if spd %}{{ spd }}{% else %}<span class="text-muted">-</span>{% endif
-                            %}</td>
-                        <td class="text-end fw-semibold">{{ w.price_formatted|default(w.price|default('-')) }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            </td>
+                            {% set patk = w.pAtk %}
+                            {% set matk = w.mAtk %}
+                            {% set crit = w.critRate %}
+                            {% set spd = w.pAtkSpd %}
+                            <td class="text-center">{% if patk %}{{ patk }}{% if w.pAtk_enchant %}<span
+                                    class="text-success small">+{{ w.pAtk_enchant }}</span>{% endif %}{% else %}<span
+                                    class="text-muted">-</span>{% endif %}</td>
+                            <td class="text-center">{% if matk %}{{ matk }}{% if w.mAtk_enchant %}<span
+                                    class="text-success small">+{{ w.mAtk_enchant }}</span>{% endif %}{% else %}<span
+                                    class="text-muted">-</span>{% endif %}</td>
+                            <td class="text-center">{% if crit %}{{ crit }}{% else %}<span class="text-muted">-</span>{%
+                                endif %}</td>
+                            <td class="text-center">{% if spd %}{{ spd }}{% else %}<span class="text-muted">-</span>{%
+                                endif
+                                %}</td>
+                            <td class="text-end fw-semibold">{{ w.price_formatted|default(w.price|default('-')) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer py-2 bg-transparent load-more-wrapper d-none text-center">
+                <button class="btn btn-sm btn-outline-primary load-more-btn" type="button">Загрузить ещё</button>
+            </div>
+            <style>
+                .weapon-table tbody tr:hover {
+                    background: rgba(255, 255, 255, 0.04);
+                }
+
+                /* subtle hover */
+                [data-theme-mode=light] .weapon-table tbody tr:hover {
+                    background: rgba(0, 0, 0, 0.035);
+                }
+
+                .weapon-table td,
+                .weapon-table th {
+                    vertical-align: middle;
+                }
+
+                .weapon-table .extra-line {
+                    line-height: 1.0;
+                }
+
+                /* Skill hover label (CSS-only lightweight alternative to tooltips) */
+                .skill-wrap {
+                    position: relative;
+                    display: inline-block;
+                }
+
+                .skill-wrap .skill-icon {
+                    border-radius: 2px;
+                }
+
+                /* allow popups to escape clipping */
+                .card .table-responsive {
+                    overflow: visible;
+                }
+
+                .skill-pop {
+                    position: absolute;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    bottom: calc(100% + 8px);
+                    background: rgba(0, 0, 0, 0.8);
+                    color: #fff;
+                    padding: 6px 8px;
+                    border-radius: 8px;
+                    white-space: normal;
+                    font-size: 11px;
+                    line-height: 1.25;
+                    pointer-events: none;
+                    opacity: 0;
+                    transition: opacity .12s ease, transform .12s ease;
+                    transform-origin: bottom center;
+                    z-index: 99999;
+                    min-width: 180px;
+                    max-width: 260px;
+                }
+
+                .skill-pop-wide .effect-text {
+                    font-size: 11px;
+                }
+
+                .skill-effects-line .skill-wrap {
+                    margin-bottom: 2px;
+                }
+
+                .skill-wrap.has-pop:hover .skill-pop {
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(-4px);
+                }
+
+                .skill-wrap:hover .skill-pop {
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(-4px);
+                }
+
+                .skill-pop::after {
+                    content: '';
+                    position: absolute;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    top: 100%;
+                    width: 8px;
+                    height: 8px;
+                    background: rgba(0, 0, 0, 0.8);
+                    transform-origin: top center;
+                    transform: translateX(-50%) rotate(45deg);
+                    border-radius: 2px;
+                }
+            </style>
         </div>
-        <style>
-            .weapon-table tbody tr:hover {
-                background: rgba(255, 255, 255, 0.04);
-            }
-
-            /* subtle hover */
-            [data-theme-mode=light] .weapon-table tbody tr:hover {
-                background: rgba(0, 0, 0, 0.035);
-            }
-
-            .weapon-table td,
-            .weapon-table th {
-                vertical-align: middle;
-            }
-
-            .weapon-table .extra-line {
-                line-height: 1.0;
-            }
-
-            /* Skill hover label (CSS-only lightweight alternative to tooltips) */
-            .skill-wrap {
-                position: relative;
-                display: inline-block;
-            }
-
-            .skill-wrap .skill-icon {
-                border-radius: 2px;
-            }
-
-            /* allow popups to escape clipping */
-            .card .table-responsive {
-                overflow: visible;
-            }
-
-            .skill-pop {
-                position: absolute;
-                left: 50%;
-                transform: translateX(-50%);
-                bottom: calc(100% + 8px);
-                background: rgba(0, 0, 0, 0.8);
-                color: #fff;
-                padding: 6px 8px;
-                border-radius: 8px;
-                white-space: normal;
-                font-size: 11px;
-                line-height: 1.25;
-                pointer-events: none;
-                opacity: 0;
-                transition: opacity .12s ease, transform .12s ease;
-                transform-origin: bottom center;
-                z-index: 99999;
-                min-width: 180px;
-                max-width: 260px;
-            }
-
-            .skill-pop-wide .effect-text {
-                font-size: 11px;
-            }
-
-            .skill-effects-line .skill-wrap {
-                margin-bottom: 2px;
-            }
-
-            .skill-wrap.has-pop:hover .skill-pop {
-                opacity: 1;
-                transform: translateX(-50%) translateY(-4px);
-            }
-
-            .skill-wrap:hover .skill-pop {
-                opacity: 1;
-                transform: translateX(-50%) translateY(-4px);
-            }
-
-            .skill-pop::after {
-                content: '';
-                position: absolute;
-                left: 50%;
-                transform: translateX(-50%);
-                top: 100%;
-                width: 8px;
-                height: 8px;
-                background: rgba(0, 0, 0, 0.8);
-                transform-origin: top center;
-                transform: translateX(-50%) rotate(45deg);
-                border-radius: 2px;
-            }
-        </style>
+        {% endfor %}
+        {% endif %}
     </div>
-    {% endfor %}
-    {% endif %}
+    <div id="weapons-loadmore-container" class="text-center my-3"></div>
 
     <script>
         (function () {
+            console.debug('[weapons] lazy script init');
             function toNum(v) {
                 const n = parseFloat(String(v).replace(/[^0-9\-\.]/g, ''));
                 return Number.isFinite(n) ? n : 0;
@@ -266,34 +287,264 @@
             }
 
             const sortableHeaders = document.querySelectorAll('.js-sortable');
-            if (!sortableHeaders.length) return;
+            if (sortableHeaders.length) {
+                sortableHeaders.forEach(h => {
+                    h.style.cursor = 'pointer';
+                    h.addEventListener('click', function () {
+                        const key = this.dataset.key;
+                        const currentAsc = this.classList.contains('sort-asc');
+                        const newDir = currentAsc ? 'desc' : 'asc';
+                        const card = this.closest('.card');
+                        if (!card) return;
+                        const table = card.querySelector('.weapon-table');
+                        if (!table) return;
+                        const headersInCard = card.querySelectorAll('.js-sortable');
+                        clearHeaderStates(headersInCard);
+                        this.classList.add(newDir === 'asc' ? 'sort-asc' : 'sort-desc');
+                        if (!key) {
+                            restoreDefault(table);
+                        } else {
+                            sortBy(table, key, newDir);
+                        }
+                    });
+                });
+            }
+            // Infinite scroll / lazy load
+            const PER_PAGE = Number('{{ weapon_per_page|default(30) }}'); // sync with backend
+            const currentType = '{{ currentWeaponType|e("js") }}';
+            let page = 1; // first page already rendered on server
+            let totalPages = null;
+            let loading = false;
 
-            sortableHeaders.forEach(h => {
-                h.style.cursor = 'pointer';
-                h.addEventListener('click', function () {
-                    const key = this.dataset.key;
-                    const currentAsc = this.classList.contains('sort-asc');
-                    const newDir = currentAsc ? 'desc' : 'asc';
+            const listContainer = document.getElementById('weapons-list');
+            const gradeCards = listContainer ? listContainer.querySelectorAll('.weapon-grade-card') : [];
 
-                    // sort all visible tables for this grade block
-                    // find nearest card and sort its table only
-                    const card = this.closest('.card');
-                    if (!card) return;
-                    const table = card.querySelector('.weapon-table');
-                    if (!table) return;
-
-                    // reset other headers inside this table header
-                    const headersInCard = card.querySelectorAll('.js-sortable');
-                    clearHeaderStates(headersInCard);
-                    this.classList.add(newDir === 'asc' ? 'sort-asc' : 'sort-desc');
-
-                    if (!key) {
-                        restoreDefault(table);
-                    } else {
-                        sortBy(table, key, newDir);
+            function appendItems(byGrade) {
+                Object.keys(byGrade).forEach(grade => {
+                    let card = document.querySelector('.weapon-grade-card[data-grade="' + grade + '"]');
+                    if (!card) {
+                        // Создаём новый блок для нового грейда (мог отсутствовать в первой порции)
+                        card = document.createElement('div');
+                        card.className = 'card mb-4 weapon-grade-card';
+                        card.dataset.grade = grade;
+                        card.innerHTML = `
+                                                    <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                                                        <div>
+                                                            <h5 class="mb-1">Грейд ${grade} (${grade})</h5>
+                                                        </div>
+                                                        <span class="badge bg-primary align-self-start align-self-md-center mt-2 mt-md-0 total-count" data-initial="0">0</span>
+                                                    </div>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-sm mb-0 align-middle weapon-table">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>Предмет</th>
+                                                                    <th class="text-center js-sortable" data-key="patk">pAtk</th>
+                                                                    <th class="text-center js-sortable" data-key="matk">mAtk</th>
+                                                                    <th class="text-center">Crit%</th>
+                                                                    <th class="text-center">Atk Spd</th>
+                                                                    <th class="text-end js-sortable" data-key="price" style="min-width:110px">Цена</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="weapons-body"></tbody>
+                                                        </table>
+                                                    </div>`;
+                        // вставляем в конец контейнера
+                        const container = listContainer;
+                        if (container) {
+                            if (window._weaponsSentinel && container.contains(window._weaponsSentinel)) {
+                                container.insertBefore(card, window._weaponsSentinel);
+                            } else {
+                                container.appendChild(card);
+                            }
+                        }
+                    }
+                    const tbody = card.querySelector('tbody.weapons-body');
+                    if (!tbody) return;
+                    const startOrder = tbody.querySelectorAll('tr').length;
+                    byGrade[grade].forEach((w, idx) => {
+                        const tr = document.createElement('tr');
+                        tr.dataset.order = String(startOrder + idx);
+                        tr.dataset.patk = w.pAtk || 0;
+                        tr.dataset.matk = w.mAtk || 0;
+                        tr.dataset.price = w.price || (w._price || 0);
+                        tr.dataset.isMagic = w.is_magic_weapon || 0;
+                        tr.innerHTML = `
+                            <td>
+                              <div class="d-flex align-items-center gap-2">
+                                ${w.icon_path ? `<img src="${w.icon_path}" alt="" width="42" height="42" class="rounded" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">` : (w.icon ? `<img src="${window.get_icon ? get_icon(w.icon) : '/uploads/images/icon/' + w.icon + '.webp'}" alt="" width="42" height="42" class="rounded" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">` : '')}
+                                <div class="d-flex flex-column">
+                                  <span class="fw-semibold">${w.name || ''}</span>
+                                  <span class="text-muted extra-line small"><a href="/library/category/loot/craft">Крафт</a> / <a href="/library/category/loot/drop">Дроп</a></span>
+                                  ${Array.isArray(w.skills) && w.skills.length ? `<span class="text-muted extra-line small d-flex flex-wrap gap-1 align-items-start mt-1 skill-effects-line">${w.skills.map(skillHtml).join('')}</span>` : ''}
+                                </div>
+                              </div>
+                            </td>
+                            <td class="text-center">${formatMain(w.pAtk, w.pAtk_enchant)}</td>
+                            <td class="text-center">${formatMain(w.mAtk, w.mAtk_enchant)}</td>
+                            <td class="text-center">${w.critRate ? w.critRate : '<span class="text-muted">-</span>'}</td>
+                            <td class="text-center">${w.pAtkSpd ? w.pAtkSpd : '<span class="text-muted">-</span>'}</td>
+                            <td class="text-end fw-semibold">${w.price_formatted || (w.price ? w.price : '-')}</td>`;
+                        tbody.appendChild(tr);
+                    });
+                    // update badge
+                    const badge = card.querySelector('.total-count');
+                    if (badge) {
+                        const newCnt = tbody.querySelectorAll('tr').length;
+                        badge.textContent = newCnt;
                     }
                 });
-            });
+                // Перемещаем sentinel в конец (на случай если добавляли только строки внутри существующих карт не нужно, но безопасно)
+                if (window._weaponsSentinel && listContainer) {
+                    if (listContainer.lastElementChild !== window._weaponsSentinel) {
+                        listContainer.appendChild(window._weaponsSentinel);
+                    }
+                }
+                // Повторная инициализация сортировки для новых заголовков
+                initSorting();
+            }
+
+            function initSorting() {
+                const headers = document.querySelectorAll('.weapon-grade-card .js-sortable');
+                headers.forEach(h => {
+                    if (h.dataset._sortBound) return; // avoid duplicate binding
+                    h.dataset._sortBound = '1';
+                    h.style.cursor = 'pointer';
+                    h.addEventListener('click', function () {
+                        const key = this.dataset.key;
+                        const currentAsc = this.classList.contains('sort-asc');
+                        const newDir = currentAsc ? 'desc' : 'asc';
+                        const card = this.closest('.weapon-grade-card');
+                        const table = card && card.querySelector('.weapon-table');
+                        if (!table) return;
+                        const hdrs = card.querySelectorAll('.js-sortable');
+                        clearHeaderStates(hdrs);
+                        this.classList.add(newDir === 'asc' ? 'sort-asc' : 'sort-desc');
+                        if (!key) restoreDefault(table); else sortBy(table, key, newDir);
+                    });
+                });
+            }
+            initSorting();
+
+            function skillHtml(skill) {
+                const effects = skill.effects && skill.effects.length ? skill.effects.map(e => `<span class="d-block">${e.formatted || ''} ${e.label || ''}</span>`).join('') : '<span class="text-muted">Нет данных о бонусах</span>';
+                const iconPath = skill.icon_path || (skill.icon ? (window.get_icon ? get_icon(skill.icon, 'skills') : ('/uploads/images/skills/' + skill.icon + '.webp')) : null);
+                const iconHtml = iconPath ? `<img src="${iconPath}" alt="" width="18" height="18" class="skill-icon rounded-1">` : `<span class='skill-icon-placeholder' style='display:inline-block;width:18px;height:18px;background:rgba(0,0,0,0.08);'></span>`;
+                return `<span class="skill-wrap has-pop">${iconHtml}<span class="skill-pop skill-pop-wide"><span class="d-block fw-semibold mb-1">${skill.name || ('Skill ' + skill.id)}<span class="opacity-75"> Lv.${skill.level}</span></span>${skill.effect_text ? `<span class="d-block effect-text">${skill.effect_text}</span>` : `<span class="d-block">${effects}</span>`}</span></span>`;
+            }
+
+            function formatMain(base, ench) {
+                if (!base) return '<span class="text-muted">-</span>';
+                return base + (ench ? `<span class='text-success small'>+${ench}</span>` : '');
+            }
+
+            let _firstRequestDone = false;
+            const DATA_URL_BASE = '/library/items/weapons/data/' + encodeURIComponent(currentType);
+            async function loadNext() {
+                console.debug('[weapons] loadNext invoked', { page, totalPages, loading });
+                if (loading) { console.debug('[weapons] skip: already loading'); return; }
+                if (totalPages !== null && page >= totalPages) { console.debug('[weapons] skip: last page reached'); return; }
+                loading = true;
+                const nextPage = page + 1; // preview
+                showGlobalLoader(true);
+                let url = DATA_URL_BASE + '?page=' + nextPage + '&_=' + Date.now();
+                console.debug('[weapons] fetching', url);
+                try {
+                    const res = await fetch(url, { credentials: 'same-origin' });
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const data = await res.json();
+                    if (!_firstRequestDone) _firstRequestDone = true;
+                    totalPages = data.total_pages;
+                    page = data.page; // trust server page
+                    console.debug('[weapons] received page', page, { totalPages, total: data.total, grades: Object.keys(data.items_by_grade || {}) });
+                    appendItems(data.items_by_grade || {});
+                    // update debug counts
+                    try {
+                        const loadedNow = document.querySelectorAll('.weapon-grade-card tbody.weapons-body tr').length;
+                        const totalSpan = document.getElementById('weapons-count-total');
+                        const initSpan = document.getElementById('weapons-count-initial');
+                        if (initSpan) initSpan.textContent = loadedNow;
+                        if (totalSpan && data.total) totalSpan.textContent = data.total;
+                    } catch (e) { console.warn('[weapons] counter update error', e); }
+                } catch (e) {
+                    console.error('[weapons] load error', e);
+                    // rollback page increment on failure not needed since we only advance after success
+                } finally {
+                    showGlobalLoader(false);
+                    loading = false;
+                }
+            }
+
+            function showGlobalLoader(show) {
+                let el = document.getElementById('weapons-load-progress');
+                const holder = document.getElementById('weapons-loadmore-container') || document.querySelector('.container-fluid');
+                if (show) {
+                    if (!el) {
+                        el = document.createElement('div');
+                        el.id = 'weapons-load-progress';
+                        el.className = 'text-muted small';
+                        el.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Загрузка...';
+                        holder.appendChild(el);
+                    }
+                } else if (el) {
+                    el.remove();
+                }
+            }
+
+            // Scroll observer
+            const sentinel = document.createElement('div');
+            sentinel.style.height = '1px';
+            sentinel.id = 'weapons-infinite-sentinel';
+            if (listContainer) listContainer.appendChild(sentinel); else document.querySelector('.container-fluid').appendChild(sentinel);
+            window._weaponsSentinel = sentinel;
+            let ioSupported = 'IntersectionObserver' in window;
+            if (ioSupported) {
+                const io = new IntersectionObserver(entries => {
+                    entries.forEach(en => {
+                        if (en.isIntersecting) {
+                            console.debug('[weapons] sentinel intersecting');
+                            loadNext();
+                        }
+                    });
+                }, { root: null, rootMargin: '200px', threshold: 0 });
+                io.observe(sentinel);
+            } else {
+                console.warn('[weapons] IntersectionObserver not supported, using scroll fallback');
+            }
+            // Убрана кнопка "Загрузить ещё" — авто и скролл.
+            // Авто-запуски / fallback триггеры
+            // 1) Если страница короткая
+            setTimeout(() => {
+                if (document.body.scrollHeight <= window.innerHeight * 1.05) {
+                    console.debug('[weapons] auto-trigger: low height');
+                    loadNext();
+                }
+            }, 400);
+            // 2) Если через 1.5s не было первой загрузки
+            setTimeout(() => {
+                if (!_firstRequestDone) {
+                    console.debug('[weapons] auto-trigger: timeout, first request not done');
+                    loadNext();
+                }
+            }, 1500);
+            // 3) Scroll fallback (если IO не сработал или браузер без поддержки)
+            let scrollThrottle = 0;
+            window.addEventListener('scroll', () => {
+                const now = Date.now();
+                if (now - scrollThrottle < 200) return; // throttle
+                scrollThrottle = now;
+                if (_firstRequestDone && (totalPages !== null && page >= totalPages)) return;
+                const pos = window.scrollY + window.innerHeight;
+                const docH = document.documentElement.scrollHeight;
+                if (docH - pos < 300) {
+                    console.debug('[weapons] scroll bottom fallback trigger');
+                    loadNext();
+                }
+            }, { passive: true });
+            // 4) Экспорт для ручного вызова в консоли
+            window.weaponsLoadNext = loadNext;
+            console.debug('[weapons] expose window.weaponsLoadNext() for manual trigger');
+            console.debug('[weapons] infinite scroll initialized', { initialPage: page, perPage: PER_PAGE });
         })();
     </script>
 

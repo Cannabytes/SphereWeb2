@@ -4,6 +4,7 @@ namespace Ofey\Logan22\component\plugins\library;
 
 use SQLite3;
 use RuntimeException;
+use Ofey\Logan22\component\image\client_icon;
 
 /**
  * Lightweight repository for reading weapons data from local plugin SQLite DB (highfive.db).
@@ -92,6 +93,66 @@ class WeaponRepository
         }
         ksort($grouped); // alphabetical grade order; consumer can reorder if needed
         return $grouped;
+    }
+
+    /** Count weapons of a given type */
+    public function countWeaponsByType(string $weaponType): int
+    {
+        $stmt = $this->db->prepare('SELECT COUNT(1) AS cnt FROM weapons WHERE UPPER(weapon_type)=:t');
+        if (!$stmt) return 0;
+        $stmt->bindValue(':t', strtoupper($weaponType), SQLITE3_TEXT);
+        $res = $stmt->execute();
+        $row = $res?->fetchArray(SQLITE3_ASSOC);
+        return (int)($row['cnt'] ?? 0);
+    }
+
+    /**
+     * Return counts grouped by crystal (normalized, empty->NG)
+     * @return array<string,int>
+     */
+    public function getWeaponCountsByGrade(string $weaponType): array
+    {
+        $stmt = $this->db->prepare('SELECT COALESCE(NULLIF(TRIM(UPPER(crystal_type)),""),"NG") AS g, COUNT(1) AS c FROM weapons WHERE UPPER(weapon_type)=:t GROUP BY g');
+        if (!$stmt) return [];
+        $stmt->bindValue(':t', strtoupper($weaponType), SQLITE3_TEXT);
+        $res = $stmt->execute();
+        $out = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            if (!isset($row['g'])) continue;
+            $out[$row['g']] = (int)$row['c'];
+        }
+        return $out;
+    }
+
+    /**
+     * Paginated weapon list (flat) ordered by custom crystal grade ordering then name.
+     * Returns list of rows with an added key _grade (normalized crystal) for convenience.
+     * @return array<int,array<string,mixed>>
+     */
+    public function getWeaponsPage(string $weaponType, int $offset, int $limit): array
+    {
+        $offset = max(0, $offset);
+        $limit = max(1, $limit);
+        $desired = ['id', 'name', 'for', 'item_skill', 'weapon_type', 'crystal_type', 'icon', 'price', 'is_magic_weapon', 'pAtk', 'mAtk', 'critRate', 'pAtkSpd'];
+        $available = $this->getWeaponTableColumns();
+        $use = array_values(array_intersect($desired, $available));
+        $selectCols = $use ? implode(',', array_map(fn($c) => $c === 'for' ? '"for"' : $c, $use)) : '*';
+        $case = "CASE UPPER(COALESCE(NULLIF(TRIM(crystal_type),''),'NG'))\n            WHEN 'R' THEN 1 WHEN 'S84' THEN 2 WHEN 'S80' THEN 3 WHEN 'S' THEN 4 WHEN 'A' THEN 5 WHEN 'B' THEN 6 WHEN 'C' THEN 7 WHEN 'D' THEN 8 ELSE 9 END";
+        $sql = 'SELECT ' . $selectCols . ' FROM weapons WHERE UPPER(weapon_type)=:t ORDER BY ' . $case . ', name LIMIT :lim OFFSET :off';
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) return [];
+        $stmt->bindValue(':t', strtoupper($weaponType), SQLITE3_TEXT);
+        $stmt->bindValue(':lim', $limit, SQLITE3_INTEGER);
+        $stmt->bindValue(':off', $offset, SQLITE3_INTEGER);
+        $res = $stmt->execute();
+        $rows = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $grade = $row['crystal_type'] ?? '';
+            $grade = trim((string)$grade) === '' ? 'NG' : strtoupper($grade);
+            $row['_grade'] = $grade;
+            $rows[] = $row;
+        }
+        return $rows;
     }
 
     private function getWeaponTableColumns(): array
@@ -188,6 +249,21 @@ class WeaponRepository
             $result[] = ['skill_id' => $sid, 'skill_level' => $lvl];
         }
         return $result;
+    }
+
+    /**
+     * Build unified web path for a skill icon name using client_icon::getIcon
+     */
+    public static function resolveSkillIcon(?string $icon): string
+    {
+        if ($icon === null || $icon === '') {
+            return client_icon::getIcon('', 'skills');
+        }
+        // strip extension if present
+        if (pathinfo($icon, PATHINFO_EXTENSION) === 'webp') {
+            $icon = pathinfo($icon, PATHINFO_FILENAME);
+        }
+        return client_icon::getIcon($icon, 'skills');
     }
 
     /**

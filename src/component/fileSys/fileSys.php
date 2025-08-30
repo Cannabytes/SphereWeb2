@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by Logan22
  * Github -> https://github.com/Cannabytes/SphereWeb
@@ -9,7 +10,8 @@ namespace Ofey\Logan22\component\fileSys;
 
 use Ofey\Logan22\component\lang\lang;
 
-class fileSys {
+class fileSys
+{
 
     private static $root_dir = null;
     private static $sub_dir = "";
@@ -22,12 +24,14 @@ class fileSys {
         return str_replace(['(', ')'], '_', $input);
     }
 
-    public static function set_root_dir($root) {
+    public static function set_root_dir($root)
+    {
         self::$root_dir = $root;
         self::$sub_dir = str_replace($_SERVER['DOCUMENT_ROOT'], '', dirname($_SERVER["SCRIPT_FILENAME"]));
     }
 
-    public static function get_dir($dir = null): string {
+    public static function get_dir($dir = null): string
+    {
         if ($dir !== null) {
             $dir = (string)$dir;
             if ($dir[0] !== "/") {
@@ -45,9 +49,10 @@ class fileSys {
      *
      * Запись в JSON массива в файл
      */
-    static public function put(string $dir, array $content) {
+    static public function put(string $dir, array $content)
+    {
         $path = $dir . "/" . time() . ".json";
-        if(!file_exists(dirname($path)))
+        if (!file_exists(dirname($path)))
             mkdir(dirname($path), 0777, true);
         return file_put_contents($path, json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
@@ -69,7 +74,8 @@ class fileSys {
      *
      * @return array Вернет массив путей до файлов/папок.
      */
-    public static function get_dir_files(string $dir, array $options = []): array|string|int|false {
+    public static function get_dir_files(string $dir, array $options = []): array|string|int|false
+    {
         $options += [
             'basename' => false,
             'suffix' => '',
@@ -85,7 +91,7 @@ class fileSys {
 
         // Фильтруем пустые папки, если включена соответствующая опция
         if ($options['only_non_empty_folders']) {
-            $files = array_filter($files, function($file) {
+            $files = array_filter($files, function ($file) {
                 if (is_dir($file)) {
                     $dir_contents = scandir($file);
                     $dir_contents = array_diff($dir_contents, ['.', '..']);
@@ -95,8 +101,8 @@ class fileSys {
             });
         }
 
-        if($options['recursive']) {
-            $files = array_reduce($files, function($acc, $file) use ($options) {
+        if ($options['recursive']) {
+            $files = array_reduce($files, function ($acc, $file) use ($options) {
                 if (is_dir($file)) {
                     if ($options['include_folders']) {
                         $subfiles = static::get_dir_files($file, $options);
@@ -115,17 +121,17 @@ class fileSys {
             }, []);
         }
 
-        if($options['basename']) {
+        if ($options['basename']) {
             $files = array_map('basename', $files);
         }
 
-        if($options['suffix'] !== '') {
-            $files = array_map(function($file) use ($options) {
+        if ($options['suffix'] !== '') {
+            $files = array_map(function ($file) use ($options) {
                 return basename($file, $options['suffix']);
             }, $files);
         }
 
-        if($options['sort'] === 'ASC') {
+        if ($options['sort'] === 'ASC') {
             krsort($files, SORT_NUMERIC);
         } else {
             ksort($files, SORT_NUMERIC);
@@ -143,7 +149,8 @@ class fileSys {
      *
      * @return bool
      */
-    static public function is_timeout(int $eventTime, ?int $second = null): bool {
+    static public function is_timeout(int $eventTime, ?int $second = null): bool
+    {
         return abs(time() - $eventTime) > $second;
     }
 
@@ -153,24 +160,25 @@ class fileSys {
      *
      * @return bool|string
      */
-    static public function is_actual_stat_file($pathDir, bool $decode = false, $second = 60): bool|string|array {
+    static public function is_actual_stat_file($pathDir, bool $decode = false, $second = 60): bool|string|array
+    {
         $statInfo = self::get_dir_files($pathDir, [
             'basename' => false,
             'suffix'   => '.json',
             'sort'     => 'ASC',
             'fetchAll' => false,
         ]);
-        if(!self::is_timeout($statInfo, $second)) {
+        if (!self::is_timeout($statInfo, $second)) {
             $file_path = $pathDir . "/" . $statInfo . ".json";
-            if(!file_exists($file_path)) {
+            if (!file_exists($file_path)) {
                 return false;
             }
             $jsonFile = file_get_contents($file_path);
-            if(!$jsonFile) {
+            if (!$jsonFile) {
                 echo lang::get_phrase(232);
                 return false;
             }
-            if($decode) {
+            if ($decode) {
                 return json_decode($jsonFile, true);
             }
             return $jsonFile;
@@ -181,12 +189,13 @@ class fileSys {
     /**
      * Список папок
      */
-    public static function dir_list($dir = null): array|false {
-        if($dir == null || !is_dir($dir)) {
+    public static function dir_list($dir = null): array|false
+    {
+        if ($dir == null || !is_dir($dir)) {
             return false;
         }
         $dirList = scandir($dir);
-        if($dirList === false) {
+        if ($dirList === false) {
             return false;
         }
         $dirList = array_filter($dirList, fn($name) => is_dir($dir . DIRECTORY_SEPARATOR . $name) && $name !== '.' && $name !== '..');
@@ -196,7 +205,8 @@ class fileSys {
     /**
      * Список файлов в папке
      */
-    public static function file_list($dir, $fileFormats = []): false|array {
+    public static function file_list($dir, $fileFormats = []): false|array
+    {
         if ($dir === null || !is_dir($dir)) {
             return false;
         }
@@ -225,16 +235,17 @@ class fileSys {
 
 
 
-    public static function localdir($l = null, $root = false): string {
-        if($root){
+    public static function localdir($l = null, $root = false): string
+    {
+        if ($root) {
             return self::$root_dir . $l;
         }
         $root_dir = str_replace($_SERVER['DOCUMENT_ROOT'], '', self::$sub_dir);
         return $root_dir . $l;
     }
 
-    public static function getSubDir(): string {
+    public static function getSubDir(): string
+    {
         return self::$sub_dir;
     }
-
 }

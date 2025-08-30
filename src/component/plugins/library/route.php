@@ -24,6 +24,15 @@ $routes = [
 
     [
         "method" => "GET",
+        "pattern" => "/library/items/weapons/data/(.*)",
+        "file" => "library.php",
+        "call" => function ($type) {
+            (new library\library())->weaponsData($type);
+        },
+    ],
+
+    [
+        "method" => "GET",
         "pattern" => "/library/items/weapons/(.*)",
         "file" => "library.php",
         "call" => function ($type) {

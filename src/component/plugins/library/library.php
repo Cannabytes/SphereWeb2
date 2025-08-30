@@ -42,7 +42,17 @@ class library
         $types = $repo->getWeaponTypes();
         $type = $type ? strtoupper($type) : 'SWORD';
         if (!in_array($type, $types)) $type = $types[0] ?? 'SWORD';
-        $grouped = $repo->getWeaponsGroupedByCrystal($type);
+        // Загружаем только первые N предметов (остальное через AJAX)
+        $initialPerPage = 30;
+        $rows = $repo->getWeaponsPage($type, 0, $initialPerPage);
+        $totalCount = $repo->countWeaponsByType($type);
+        $initialCount = count($rows);
+        // Группируем подмножество по грейду
+        $grouped = [];
+        foreach ($rows as $r) {
+            $g = $r['_grade'] ?? 'NG';
+            $grouped[$g][] = $r;
+        }
         $typeLabels = $this->weaponTypes;
         foreach ($types as $t) if (!isset($typeLabels[$t])) $typeLabels[$t] = ucfirst(strtolower($t));
         $gradeOrder = ['R', 'S84', 'S80', 'S', 'A', 'B', 'C', 'D', 'NG'];
@@ -65,6 +75,9 @@ class library
         tpl::addVar('currentWeaponType', $type);
         tpl::addVar('weaponsByCrystal', $orderedGrouped);
         tpl::addVar('weaponGradeInfo', $gradeInfo);
+        tpl::addVar('weapon_per_page', $initialPerPage);
+        tpl::addVar('weapon_total_count', $totalCount);
+        tpl::addVar('weapon_initial_count', $initialCount);
         $stateLabels = StatLabels::all();
         foreach ($orderedGrouped as $grade => $items) {
             foreach ($items as $idx => $row) {
@@ -72,6 +85,10 @@ class library
                 $mainCodes = ['pAtk', 'mAtk', 'critRate', 'pAtkSpd'];
                 $mainBase = [];
                 $mainEnchant = [];
+                // Pre-resolve weapon icon full path (unified helper) so шаблон не строит несуществующие пути
+                if (!isset($orderedGrouped[$grade][$idx]['icon_path'])) {
+                    $orderedGrouped[$grade][$idx]['icon_path'] = client_icon::getIcon($row['icon'] ?? '', 'icon');
+                }
                 if (!empty($row['for'])) {
                     $decoded = json_decode($row['for'], true);
                     if (is_array($decoded)) {
@@ -112,7 +129,14 @@ class library
                         $lvl = max(1, (int)($s['skill_level'] ?? 1));
                         if ($sid <= 0) continue;
                         $meta = $repo->getSkillById($sid);
-                        $entry = ['id' => $sid, 'level' => $lvl, 'name' => $meta['name'] ?? ('Skill ' . $sid), 'icon' => $meta['icon'] ?? null];
+                        $entry = [
+                            'id' => $sid,
+                            'level' => $lvl,
+                            'name' => $meta['name'] ?? ('Skill ' . $sid),
+                            'icon' => $meta['icon'] ?? null,
+                            // Pre-resolved full web path using unified client_icon::getIcon
+                            'icon_path' => WeaponRepository::resolveSkillIcon($meta['icon'] ?? null),
+                        ];
                         if ($meta && !empty($meta['effects'])) {
                             $lvlEffects = [];
                             foreach ($meta['effects'] as $eff) {
@@ -151,6 +175,131 @@ class library
         $timing['total_ms'] = number_format(($time_total_end - $time_total_start) * 1000, 3, '.', '');
         tpl::addVar('db_timing', $timing);
         tpl::displayPlugin('/library/tpl/weapons.html');
+    }
+
+    /**
+     * AJAX endpoint: return next page of weapons (50 per page) flattened but grouped in response by grade.
+     * URL: /library/items/weapons/data/{type}?page=N (1-based)
+     * Response JSON: { page, per_page, total, total_pages, items_by_grade: {GRADE:[rows...]}}
+     */
+    public function weaponsData(string $type, ?int $page = null): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        try {
+            $repo = new WeaponRepository();
+        } catch (\Throwable $e) {
+            echo json_encode(['error' => 'db_unavailable']);
+            return;
+        }
+        $types = $repo->getWeaponTypes();
+        $type = strtoupper($type);
+        if (!in_array($type, $types, true)) {
+            echo json_encode(['error' => 'bad_type']);
+            return;
+        }
+        $perPage = 30; // должен совпадать с initialPerPage на странице
+        $page = $page ?? (isset($_GET['page']) ? (int)$_GET['page'] : 1);
+        if ($page < 1) $page = 1;
+        $total = $repo->countWeaponsByType($type);
+        $totalPages = $perPage > 0 ? (int)ceil($total / $perPage) : 1;
+        if ($totalPages < 1) $totalPages = 1;
+        if ($page > $totalPages) $page = $totalPages;
+        $offset = ($page - 1) * $perPage;
+        $rows = $repo->getWeaponsPage($type, $offset, $perPage);
+
+        // Post-process rows similar to full page logic (stats, enchant, skills, price formatting)
+        $stateLabels = StatLabels::all();
+        foreach ($rows as &$row) {
+            $mainCodes = ['pAtk', 'mAtk', 'critRate', 'pAtkSpd'];
+            $mainBase = [];
+            $mainEnchant = [];
+            $statsOut = [];
+            // Pre-resolve weapon icon
+            $row['icon_path'] = client_icon::getIcon($row['icon'] ?? '', 'icon');
+            if (!empty($row['for'])) {
+                $decoded = json_decode($row['for'], true);
+                if (is_array($decoded)) {
+                    $baseValues = [];
+                    $enchantValues = [];
+                    foreach ($decoded as $entry) {
+                        if (!isset($entry['stat'], $entry['type'], $entry['val'])) continue;
+                        $stat = $entry['stat'];
+                        $tag = $entry['type'];
+                        $val = $entry['val'];
+                        if ($tag === 'add' || $tag === 'set') $baseValues[$stat] = $val;
+                        elseif ($tag === 'enchant' && (int)$val > 0) $enchantValues[$stat] = $val;
+                    }
+                    foreach ($baseValues as $code => $val) {
+                        $label = $stateLabels[$code] ?? $code;
+                        $suffix = isset($enchantValues[$code]) ? ' (+' . $enchantValues[$code] . ' за заточку)' : '';
+                        $statsOut[] = ['code' => $code, 'label' => $label, 'value' => $val, 'extra' => $suffix];
+                    }
+                    foreach ($mainCodes as $code) {
+                        if (isset($baseValues[$code])) $mainBase[$code] = $baseValues[$code];
+                        if (isset($enchantValues[$code])) $mainEnchant[$code] = $enchantValues[$code];
+                    }
+                }
+            }
+            foreach ($mainCodes as $code) {
+                if (isset($mainBase[$code])) $row[$code] = $mainBase[$code];
+                if (isset($mainEnchant[$code])) $row[$code . '_enchant'] = $mainEnchant[$code];
+            }
+            $price = $row['price'] ?? '';
+            $row['price_formatted'] = is_numeric($price) ? number_format((float)$price, 0, '.', ' ') : $price;
+            $skillList = [];
+            if (array_key_exists('item_skill', $row)) {
+                $parsed = $repo->parseItemSkillRaw($row['item_skill']);
+                foreach ($parsed as $s) {
+                    $sid = (int)($s['skill_id'] ?? 0);
+                    $lvl = max(1, (int)($s['skill_level'] ?? 1));
+                    if ($sid <= 0) continue;
+                    $meta = $repo->getSkillById($sid);
+                    $entry = [
+                        'id' => $sid,
+                        'level' => $lvl,
+                        'name' => $meta['name'] ?? ('Skill ' . $sid),
+                        'icon' => $meta['icon'] ?? null,
+                        'icon_path' => WeaponRepository::resolveSkillIcon($meta['icon'] ?? null),
+                    ];
+                    if ($meta && !empty($meta['effects'])) {
+                        $lvlEffects = [];
+                        foreach ($meta['effects'] as $eff) {
+                            if (isset($eff['raw_values']) && is_array($eff['raw_values']) && $eff['raw_values']) {
+                                $vals = $eff['raw_values'];
+                                $idxLevel = $lvl - 1;
+                                $chosen = $vals[$idxLevel] ?? end($vals);
+                                $formatted = $this->formatSkillEffectValue($eff['tag'] ?? 'add', $eff['stat'] ?? '', $chosen);
+                                $lvlEffects[] = ['stat' => $eff['stat'] ?? null, 'label' => $eff['label'] ?? ($eff['stat'] ?? ''), 'formatted' => $formatted, 'text' => $formatted . ' ' . ($eff['label'] ?? ($eff['stat'] ?? ''))];
+                            } elseif (isset($eff['formatted'])) {
+                                $lvlEffects[] = $eff;
+                            }
+                        }
+                        if ($lvlEffects) {
+                            $entry['effects'] = $lvlEffects;
+                            $entry['effect_text'] = implode(', ', array_map(fn($e) => $e['text'] ?? ($e['formatted'] ?? ''), $lvlEffects));
+                        }
+                    }
+                    $skillList[] = $entry;
+                }
+            }
+            $row['skills'] = $skillList;
+            $row['stats'] = $statsOut;
+        }
+        unset($row);
+
+        // Group by grade for response
+        $byGrade = [];
+        foreach ($rows as $r) {
+            $g = $r['_grade'] ?? 'NG';
+            $byGrade[$g][] = $r;
+        }
+        echo json_encode([
+            'page' => $page,
+            'per_page' => $perPage,
+            'total' => $total,
+            'total_pages' => $totalPages,
+            'items_by_grade' => $byGrade,
+        ], JSON_UNESCAPED_UNICODE);
     }
 
     /** Armor list page */
