@@ -83,6 +83,32 @@ $routes = [
             (new library\library())->etcitems();
         },
     ],
+    // Pretty URLs for etcitems: more specific (with page) FIRST to avoid greediness
+    [
+        "method" => "GET",
+        "pattern" => "/library/items/etcitems/type/([^/]+)/page/([^/]+)",
+        "file" => "library.php",
+        "call" => function ($type, $page) {
+            (new library\library())->etcitems($type, $page);
+        },
+    ],
+    [
+        "method" => "GET",
+        "pattern" => "/library/items/etcitems/type/([^/]+)",
+        "file" => "library.php",
+        "call" => function ($type) {
+            (new library\library())->etcitems($type, null);
+        },
+    ],
+    // Page without type (defaults to 'other')
+    [
+        "method" => "GET",
+        "pattern" => "/library/items/etcitems/page/([^/]+)",
+        "file" => "library.php",
+        "call" => function ($page) {
+            (new library\library())->etcitems(null, $page);
+        },
+    ],
 
     [
         "method" => "GET",
@@ -146,6 +172,16 @@ $routes = [
         "file" => "library.php",
         "call" => function ($filter) {
             (new library\library())->npcsData($filter);
+        },
+    ],
+
+    // NPC detailed view by id
+    [
+        "method" => "GET",
+        "pattern" => "/library/npc/id/(\d+)",
+        "file" => "library.php",
+        "call" => function ($id) {
+            (new library\library())->npcView((int)$id);
         },
     ],
 

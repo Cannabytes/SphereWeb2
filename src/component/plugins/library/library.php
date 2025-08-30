@@ -421,8 +421,11 @@ class library
         tpl::displayPlugin('/library/tpl/recipes.html');
     }
 
-    /** Etc items list */
-    public function etcitems(): void
+    /** Etc items list
+     * @param string|null $type From pretty URL /type/{TYPE}
+     * @param int|string|null $page From pretty URL /page/{PAGE}
+     */
+    public function etcitems(?string $type = null, int|string|null $page = null): void
     {
         $time_total_start = microtime(true);
         $time_db_open_start = microtime(true);
@@ -440,20 +443,29 @@ class library
         }
 
         // Selected type: if not provided -> default to 'other' (if exists) else first.
-        $requestedType = $_GET['type'] ?? null;
+        // Priority: explicit param ($type) > query string ?type=
+        $requestedType = $type ?? ($_GET['type'] ?? null);
         $defaultType = in_array('other', $availableTypes, true) ? 'other' : ($availableTypes[0] ?? '');
         if ($requestedType === null || $requestedType === '') {
             $currentType = $defaultType; // direct access behaves like type=other
-        } elseif (in_array($requestedType, $availableTypes, true)) {
-            $currentType = $requestedType;
         } else {
-            $currentType = $defaultType;
+            // case-insensitive resolution of type
+            $found = null;
+            foreach ($availableTypes as $t) {
+                if (strcasecmp($t, $requestedType) === 0) {
+                    $found = $t;
+                    break;
+                }
+            }
+            $currentType = $found ?? $defaultType;
         }
         tpl::addVar('etc_default_type', $defaultType);
 
         // Pagination
         $perPage = 100; // fixed as requested
-        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        // Priority: explicit param ($page) > query string ?page=
+        $page = $page !== null ? (int)$page : (isset($_GET['page']) ? (int)$_GET['page'] : 1);
+        if ($page < 1) $page = 1;
         if ($page < 1) $page = 1;
 
         $time_read_start = microtime(true);
@@ -691,13 +703,59 @@ class library
             } else {
                 $skillsHtml = '<span class="text-muted">—</span>';
             }
-            $nameHtml = '<div class="fw-semibold">' . htmlspecialchars($r['name'] ?? '') . '</div>';
+            $npcId = (int)($r['id'] ?? 0);
+            $link = $npcId > 0 ? '/library/npc/id/' . $npcId : '#';
+            $nameHtml = '<div class="fw-semibold"><a href="' . $link . '" class="text-decoration-none">' . htmlspecialchars($r['name'] ?? '') . '</a></div>';
             if (!empty($r['title'])) $nameHtml .= '<div class="small text-muted">' . htmlspecialchars($r['title']) . '</div>';
             $data[] = [(string)($r['id'] ?? ''), $nameHtml, htmlspecialchars($r['level'] ?? ''), htmlspecialchars($r['type'] ?? ''), htmlspecialchars($r['race'] ?? ''), htmlspecialchars($r['hp'] ?? ''), htmlspecialchars($r['mp'] ?? ''), htmlspecialchars($r['attack_physical'] ?? ''), htmlspecialchars($r['attack_magical'] ?? ''), htmlspecialchars($r['defence_physical'] ?? ''), htmlspecialchars($r['defence_magical'] ?? ''), htmlspecialchars($r['attack_attack_speed'] ?? ''), htmlspecialchars($r['attack_critical'] ?? ''), htmlspecialchars($r['attack_accuracy'] ?? ''), htmlspecialchars($r['defence_evasion'] ?? ''), $skillsHtml];
         }
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode(['draw' => (int)$draw, 'recordsTotal' => $total, 'recordsFiltered' => $filtered, 'data' => $data], JSON_UNESCAPED_UNICODE);
         exit;
+    }
+
+    /**
+     * Detailed NPC page: /library/npc/id/{id}
+     * Shows full stats, skills (all), and placeholder sections for drop & spoil (future enhancement)
+     */
+    public function npcView(int $id): void
+    {
+        $repo = new NpcRepository();
+        $npc = $repo->findById($id);
+        if (!$npc) {
+            header('HTTP/1.1 404 Not Found');
+            tpl::addVar('npcNotFoundId', $id);
+            tpl::displayPlugin('/library/tpl/npc_view.html');
+            return;
+        }
+
+        // Basic derived stats & formatting
+        $mainStats = [
+            'hp' => 'HP',
+            'mp' => 'MP',
+            'attack_physical' => 'P.Atk',
+            'attack_magical' => 'M.Atk',
+            'defence_physical' => 'P.Def',
+            'defence_magical' => 'M.Def',
+            'attack_attack_speed' => 'Atk Spd',
+            'attack_critical' => 'Crit',
+            'attack_accuracy' => 'Accuracy',
+            'defence_evasion' => 'Evasion',
+        ];
+        $statsPrepared = [];
+        foreach ($mainStats as $code => $label) {
+            if (isset($npc[$code]) && $npc[$code] !== '') {
+                $statsPrepared[] = [
+                    'code' => $code,
+                    'label' => $label,
+                    'value' => is_numeric($npc[$code]) ? number_format((float)$npc[$code], 0, '.', ' ') : $npc[$code],
+                ];
+            }
+        }
+
+        tpl::addVar('npc', $npc);
+        tpl::addVar('npc_stats_prepared', $statsPrepared);
+        tpl::displayPlugin('/library/tpl/npc_view.html');
     }
 
     /** Armor sets page */

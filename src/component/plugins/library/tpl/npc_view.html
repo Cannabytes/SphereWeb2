@@ -1,0 +1,181 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-12 d-flex align-items-center justify-content-between flex-wrap gap-2">
+            {% if npc is defined and npc %}
+            <div>
+                <h2 class="mb-1">NPC: {{ npc.name|default('NoName') }} <small class="text-muted">(ID {{ npc.id }}, Lv.
+                        {{ npc.level }})</small></h2>
+                {% if npc.title %}<div class="text-muted small">{{ npc.title }}</div>{% endif %}
+            </div>
+            {% else %}
+            <h2 class="mb-1">NPC не найден</h2>
+            {% endif %}
+            <div class="ms-auto d-flex gap-2">
+                <a href="/library/npcs" class="btn btn-sm btn-outline-secondary">← Все NPC</a>
+                <a href="/library" class="btn btn-sm btn-outline-secondary">Библиотека</a>
+            </div>
+        </div>
+    </div>
+
+    {% if npc is not defined or not npc %}
+    <div class="alert alert-danger">NPC с ID {{ npcNotFoundId|default('?') }} не найден в базе.</div>
+    {% else %}
+
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header py-2"><strong>Основная информация</strong></div>
+                <div class="card-body small">
+                    <dl class="row mb-0">
+                        <dt class="col-5">ID</dt>
+                        <dd class="col-7">{{ npc.id }}</dd>
+                        <dt class="col-5">Имя</dt>
+                        <dd class="col-7">{{ npc.name|default('—') }}</dd>
+                        {% if npc.title %}<dt class="col-5">Титул</dt>
+                        <dd class="col-7">{{ npc.title }}</dd>{% endif %}
+                        <dt class="col-5">Тип</dt>
+                        <dd class="col-7">{{ npc.type|default('—') }}</dd>
+                        <dt class="col-5">Раса</dt>
+                        <dd class="col-7">{{ npc.race|default('—') }}</dd>
+                        <dt class="col-5">Уровень</dt>
+                        <dd class="col-7">{{ npc.level|default('?') }}</dd>
+                        <dt class="col-5">Агро</dt>
+                        <dd class="col-7">{{ npc.isAggressive|default('—') }}</dd>
+                        {% if npc.ai_type %}<dt class="col-5">AI</dt>
+                        <dd class="col-7">{{ npc.ai_type }}</dd>{% endif %}
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-header py-2"><strong>Базовые статы</strong></div>
+                <div class="card-body p-2">
+                    <div class="table-responsive" style="max-height:260px;">
+                        <table class="table table-sm table-striped align-middle mb-0">
+                            <tbody>
+                                {% for s in npc_stats_prepared %}
+                                <tr>
+                                    <th style="width:150px;">{{ s.label }}</th>
+                                    <td>{{ s.value }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                    <strong>Скиллы ({{ npc.skill_count }})</strong>
+                </div>
+                <div class="card-body p-2">
+                    {% if npc.skills and npc.skills|length > 0 %}
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for s in npc.skills %}
+                        <div class="skill-wrap has-pop">
+                            <img src="{{ get_skill(s.icon) }}" class="skill-icon rounded" width="32" height="32" alt="">
+                            <div class="skill-pop">
+                                <div class="fw-semibold mb-1">{{ s.name|default('Skill ' ~ s.id) }} <span
+                                        class="opacity-75">Lv. {{ s.level }}</span></div>
+                                {% if s.effect_text %}
+                                <div class="small mb-1">{{ s.effect_text }}</div>
+                                {% elseif s.effects %}
+                                {% for eff in s.effects %}
+                                <div class="small">{{ eff.formatted }} {{ eff.label }}</div>
+                                {% endfor %}
+                                {% elseif s.description %}
+                                <div class="small">{{ s.description }}</div>
+                                {% else %}
+                                <div class="text-muted small">Нет описания</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-muted small">Нет скиллов</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header py-2"><strong>Дроп / Спойл</strong></div>
+                <div class="card-body small p-2">
+                    <div class="alert alert-info mb-2 py-1 px-2">В разработке: интеграция дропа и спойла.</div>
+                    <p class="mb-1">Здесь будет таблица с предметами, шансом (в %), количеством min-max.</p>
+                    <p class="mb-0">Поддержка сортировки, фильтрации по типу предмета и отображение иконок.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header py-2"><strong>Дополнительно</strong></div>
+                <div class="card-body small p-2">
+                    <p class="mb-1">Расширенные характеристики, поведение AI, зоны спауна и т.п. можно добавить позднее.
+                    </p>
+                    <p class="mb-0 text-muted">Предложения по улучшениям приветствуются.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> {# end else wrapper #}
+{% endif %}
+
+</div>
+
+<style>
+    .skill-wrap {
+        position: relative;
+    }
+
+    .skill-icon {
+        display: block;
+    }
+
+    .skill-pop {
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 8px);
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, .85);
+        color: #fff;
+        padding: 6px 8px;
+        border-radius: 8px;
+        font-size: 11px;
+        width: 220px;
+        pointer-events: none;
+        opacity: 0;
+        transition: .12s ease;
+        z-index: 1000;
+    }
+
+    .skill-wrap:hover .skill-pop {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-4px);
+    }
+
+    .skill-pop:after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        width: 8px;
+        height: 8px;
+        background: rgba(0, 0, 0, .85);
+        transform: translateX(-50%) rotate(45deg);
+        border-radius: 2px;
+    }
+</style>
+{% endblock %}

@@ -22,7 +22,9 @@
                             <tr>
                                 <td class="text-center">{{ npc.id }}</td>
                                 <td>
-                                    <div class="fw-semibold">{{ npc.name|default('NoNPCname') }} (Lv. {{ npc.level }})
+                                    <div class="fw-semibold"><a href="/library/npc/id/{{ npc.id }}"
+                                            class="text-decoration-none">{{ npc.name|default('NoNPCname') }}</a> <span
+                                            class="opacity-75">(Lv. {{ npc.level }})</span>
                                     </div>
                                     {% if npc.title %}<div class="small text-muted">{{ npc.title }}</div>{% endif %}
                                     {% if npc.skills %}

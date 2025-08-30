@@ -98,6 +98,36 @@ class NpcRepository
         return $rows;
     }
 
+    /**
+     * Fetch single NPC by id with full skill list (no per-NPC limit) and parsed skill meta.
+     * Returns associative array or null if not found.
+     * @param int $id
+     * @return array<string,mixed>|null
+     */
+    public function findById(int $id): ?array
+    {
+        if ($id <= 0) return null;
+        $stmt = $this->db->prepare('SELECT * FROM npcs WHERE id = :id LIMIT 1');
+        $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+        $res = $stmt->execute();
+        $row = $res->fetchArray(SQLITE3_ASSOC);
+        if ($row === false) return null;
+
+        // Preload all skills for this NPC (no limit) for efficiency.
+        $skillIds = $this->extractSkillIds($row['skillList'] ?? '');
+        if ($skillIds) {
+            $this->loadSkillMetaBulk($skillIds); // populates caches
+            // parseSkillList() will now hit in-memory cache
+            $skills = $this->parseSkillList($row['skillList'] ?? '', 0); // 0 = unlimited
+        } else {
+            $skills = [];
+        }
+        unset($row['skillList']);
+        $row['skills'] = $skills;
+        $row['skill_count'] = count($skills);
+        return $row;
+    }
+
     public function countAll(): int
     {
         return (int)$this->db->querySingle('SELECT COUNT(*) FROM npcs');

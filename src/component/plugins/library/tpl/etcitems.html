@@ -17,17 +17,16 @@
     {% if etc_types is empty %}
     <div class="alert alert-info">Нет предметов.</div>
     {% else %}
-    <form id="etc-filter-form" class="row g-2 mb-3">
+    <form id="etc-filter-form" class="row g-2 mb-3" onsubmit="return false;">
         <div class="col-auto">
             <label for="etcType" class="form-label mb-1 small text-muted">Тип</label>
-            <select name="type" id="etcType" class="form-select form-select-sm"
-                onchange="this.form.page.value=1; this.form.submit();">
+            <select id="etcType" class="form-select form-select-sm"
+                onchange="location.href='/library/items/etcitems/type/' + encodeURIComponent(this.value) + '/page/1';">
                 {% for t,c in etc_types %}
                 <option value="{{ t }}" {% if t==etc_current_type %}selected{% endif %}>{{ t }} ({{ c }})</option>
                 {% endfor %}
             </select>
         </div>
-        <input type="hidden" name="page" value="{{ etc_page }}">
     </form>
 
     <div class="card custom-card">
@@ -67,28 +66,28 @@
 
     <nav aria-label="Пагинация" class="mt-3">
         <ul class="pagination pagination-sm flex-wrap mb-0">
-            {% set base = '/library/items/etcitems?type=' ~ etc_current_type %}
+            {% set base = '/library/items/etcitems/type/' ~ etc_current_type ~ '/page/' %}
             <li class="page-item {% if etc_page<=1 %}disabled{% endif %}"><a class="page-link"
-                    href="{{ base ~ '&page=' ~ (etc_page-1) }}" tabindex="-1">‹</a></li>
+                    href="{{ base ~ (etc_page-1) }}" tabindex="-1">‹</a></li>
             {% set start = etc_page - 3 %}
             {% set end = etc_page + 3 %}
             {% if start < 1 %}{% set end=end + (1-start) %}{% set start=1 %}{% endif %} {% if end> etc_pages %}{% set
                 start = start - (end-etc_pages) %}{% set end = etc_pages %}{% endif %}
                 {% if start < 1 %}{% set start=1 %}{% endif %} {% if start> 1 %}
-                    <li class="page-item"><a class="page-link" href="{{ base ~ '&page=1' }}">1</a></li>
+                    <li class="page-item"><a class="page-link" href="{{ base ~ '1' }}">1</a></li>
                     {% if start > 2 %}<li class="page-item disabled"><span class="page-link">…</span></li>{% endif %}
                     {% endif %}
                     {% for p in start..end %}
                     <li class="page-item {% if p==etc_page %}active{% endif %}"><a class="page-link"
-                            href="{{ base ~ '&page=' ~ p }}">{{ p }}</a></li>
+                            href="{{ base ~ p }}">{{ p }}</a></li>
                     {% endfor %}
                     {% if end < etc_pages %} {% if end < etc_pages - 1 %}<li class="page-item disabled"><span
                             class="page-link">…</span></li>{% endif %}
-                        <li class="page-item"><a class="page-link" href="{{ base ~ '&page=' ~ etc_pages }}">{{ etc_pages
-                                }}</a></li>
+                        <li class="page-item"><a class="page-link" href="{{ base ~ etc_pages }}">{{ etc_pages }}</a>
+                        </li>
                         {% endif %}
                         <li class="page-item {% if etc_page>=etc_pages %}disabled{% endif %}"><a class="page-link"
-                                href="{{ base ~ '&page=' ~ (etc_page+1) }}">›</a></li>
+                                href="{{ base ~ (etc_page+1) }}">›</a></li>
         </ul>
     </nav>
     {% endif %}
