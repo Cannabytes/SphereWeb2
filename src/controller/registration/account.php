@@ -24,7 +24,7 @@ class account
         $prefixEnable = config::load()->registration()->getEnablePrefix();
 
         $login = $_POST['login'] ?? board::error('Login not received');
-        if(!preg_match("/^[a-zA-Z0-9_]+$/", $login)){
+        if (!preg_match("/^[a-zA-Z0-9_]+$/", $login)) {
             board::response("notice", ["message" => lang::get_phrase(210), "ok" => false, "reloadCaptcha" => config::load()->captcha()->isGoogleCaptcha() == false]);
         }
 
@@ -105,6 +105,7 @@ class account
                 }
 
                 \Ofey\Logan22\model\user\user::self()->addLog(logTypes::LOG_REGISTRATION_ACCOUNT, 533, [$login]);
+                $old_prefix = $_SESSION['account_prefix'] ?? "";
                 board::response(
                     "notice_registration",
                     [
@@ -114,12 +115,10 @@ class account
                         "title" => $_SERVER['SERVER_NAME'] . " - " . $login . ".txt",
                         "content" => $content,
                         "redirect" => fileSys::localdir("/accounts"),
-                        "prefix" => config::load()->registration()->genPrefix(),
+                        "prefix" => $old_prefix,
                     ]
                 );
             }
         }
     }
-
-
 }
