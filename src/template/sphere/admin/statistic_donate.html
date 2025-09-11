@@ -14,7 +14,7 @@
                             <i class="fe fe-dollar-sign fs-35 text-primary"></i>
                         </div>
                         <div>
-                            <h5 class="mb-1 fw-semibold">{{donatePoint}}</h5>
+                            <h5 class="mb-1 fw-semibold">{{ donatePoint|number_format(1) }}</h5>
                             <p class="mb-0 text-muted fs-12">{{ phrase('Total donations') }}</p>
                         </div>
                     </div>
@@ -29,7 +29,7 @@
                             <i class="fe fe-credit-card fs-35 text-secondary"></i>
                         </div>
                         <div>
-                            <h5 class="mb-1 fw-semibold">${{dollars}}</h5>
+                            <h5 class="mb-1 fw-semibold">${{ dollars|number_format(1) }}</h5>
                             <p class="mb-0 text-muted fs-12">{{ phrase('Approximate amount') }}</p>
                         </div>
                     </div>
@@ -44,7 +44,7 @@
                             <i class="fe fe-users fs-35 text-success"></i>
                         </div>
                         <div>
-                            <h5 class="mb-1 fw-semibold">{{donate_users|length}}</h5>
+                            <h5 class="mb-1 fw-semibold">{{donors_count}}</h5>
                             <p class="mb-0 text-muted fs-12">{{ phrase('Total donors') }}</p>
                         </div>
                     </div>
@@ -75,7 +75,8 @@
                 <div class="card-header d-flex justify-content-between">
                     <div class="card-title">{{ phrase('Donation history') }}</div>
                     <div class="dropdown">
-                        <button class="btn btn-sm btn-light" type="button" id="timeline-dropdown" data-bs-toggle="dropdown">
+                        <button class="btn btn-sm btn-light" type="button" id="timeline-dropdown"
+                            data-bs-toggle="dropdown">
                             {{ phrase('Period') }} <i class="fe fe-chevron-down"></i>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="timeline-dropdown">
@@ -84,7 +85,7 @@
                             <li><a class="dropdown-item timeline-option" href="#" data-period="year">{{ phrase('Last year') }}</a></li>
                             <li><a class="dropdown-item timeline-option" href="#" data-period="all">{{ phrase('All time') }}</a></li>
                         </ul>
-                    </div>
+                    </div> 
                 </div>
                 <div class="card-body">
                     <div id="timeline-chart" class="chart-height"></div>
@@ -154,38 +155,15 @@
                     <div class="table-responsive">
                         <table id="file-export" class="table table-bordered w-100 table-fixed">
                             <thead>
-                            <tr>
-                                <th style="width: 20%;">{{ phrase('User') }}</th>
-                                <th style="width: 15%;">{{ phrase('donate_coin') }}</th>
-                                <th style="width: 35%;">{{ phrase('Message') }}</th>
-                                <th style="width: 10%;">{{ phrase('System') }}</th>
-                                <th style="width: 20%;">{{ phrase('Date') }}</th>
-                            </tr>
+                                <tr>
+                                    <th style="width: 20%;">{{ phrase('user') }}</th>
+                                    <th style="width: 15%;">{{ phrase('donate_coin') }}</th>
+                                    <th style="width: 35%;">{{ phrase('Message') }}</th>
+                                    <th style="width: 10%;">{{ phrase('System') }}</th>
+                                    <th style="width: 20%;">{{ phrase('Date') }}</th>
+                                </tr>
                             </thead>
-                            <tbody>
-                            {% for donate in donate_users %}
-                            {% set user = getUser(donate.user_id) %}
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <a href="/admin/user/info/{{user.getId()}}" class="text-default">
-                                        <div class="avatar avatar-rounded avatar-md me-3 cover-image" data-bs-image-src="{{user.getAvatar()}}" style="background: url('{{user.getAvatar()}}') center center;"></div>
-                                        </a>
-                                        <div>
-                                            <a href="/admin/user/info/{{user.getId()}}" class="text-default">{{user.getEmail()}}</a>
-                                            <small class="d-block text-muted">{{ phrase('Country') }}: {{user.getCountry()}}</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{donate.point}} {% if donate.sphere == false %}(${{formatFloatToHuman(balance_to_dollars(donate.point))}}){% endif %}</td>
-                                <td class="text-wrap">{{donate.message}}</td>
-                                <td>
-                                    <span class="badge bg-light text-dark">{{donate.pay_system}}</span>
-                                </td>
-                                <td>{{donate.date}}</td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
@@ -269,8 +247,6 @@
     .bg-info-transparent {
         background-color: rgba(3, 85, 208, 0.1);
     }
-
-
 </style>
 {% endblock %}
 
@@ -295,80 +271,51 @@
 <script src="{{template}}assets/js/apexcharts-stock-prices.js"></script>
 
 <script>
-    $(document).ready(function() {
-        // Инициализация DataTable
-        $('#file-export').DataTable({
+    $(document).ready(function () {
+        const dt = $('#file-export').DataTable({
+            processing: true,
+            serverSide: true,
+            deferRender: true,
+            searchDelay: 400,
+            ajax: { url: '/admin/statistic/donate/data', type: 'POST' },
             dom: 'Bfrtip',
             buttons: [
-                {
-                    extend: 'copy',
-                    text: '<i class="fe fe-copy me-1"></i> {{ phrase("Copy") }}',
-                    className: 'btn btn-sm btn-outline-primary'
-                },
-                {
-                    extend: 'csv',
-                    text: '<i class="fe fe-file-text me-1"></i> CSV',
-                    className: 'btn btn-sm btn-outline-primary'
-                },
-                {
-                    extend: 'excel',
-                    text: '<i class="fe fe-file me-1"></i> Excel',
-                    className: 'btn btn-sm btn-outline-primary'
-                },
-                {
-                    extend: 'pdf',
-                    text: '<i class="fe fe-file-text me-1"></i> PDF',
-                    className: 'btn btn-sm btn-outline-primary'
-                },
-                {
-                    extend: 'print',
-                    text: '<i class="fe fe-printer me-1"></i> {{ phrase("Print") }}',
-                    className: 'btn btn-sm btn-outline-primary'
-                }
+                { extend: 'copy', text: '<i class="fe fe-copy me-1"></i> {{ phrase("Copy") }}', className: 'btn btn-sm btn-outline-primary' },
+                { extend: 'csv', text: '<i class="fe fe-file-text me-1"></i> CSV', className: 'btn btn-sm btn-outline-primary' },
+                { extend: 'excel', text: '<i class="fe fe-file me-1"></i> Excel', className: 'btn btn-sm btn-outline-primary' },
+                { extend: 'pdf', text: '<i class="fe fe-file-text me-1"></i> PDF', className: 'btn btn-sm btn-outline-primary' },
+                { extend: 'print', text: '<i class="fe fe-printer me-1"></i> {{ phrase("Print") }}', className: 'btn btn-sm btn-outline-primary' }
             ],
+            columns: [
+                { data: 'user', orderable: false, width: '20%' },
+                { data: 'point', width: '15%' },
+                { data: 'message', width: '35%', orderable: false, className: 'text-wrap' },
+                { data: 'system', width: '10%', orderable: false },
+                { data: 'date', width: '20%' }
+            ],
+            order: [[4, 'desc']],
             language: {
                 searchPlaceholder: '{{ phrase("Search...") }}',
                 sSearch: '',
-                paginate: {
-                    first: '{{ phrase("First") }}',
-                    last: '{{ phrase("Last") }}',
-                    next: '{{ phrase("Next") }}',
-                    previous: '{{ phrase("Previous") }}'
-                },
+                paginate: { first: '{{ phrase("First") }}', last: '{{ phrase("Last") }}', next: '{{ phrase("Next") }}', previous: '{{ phrase("Previous") }}' },
                 info: '{{ phrase("Showing") }} _START_ {{ phrase("to") }} _END_ {{ phrase("of") }} _TOTAL_ {{ phrase("entries") }}',
                 lengthMenu: '{{ phrase("Show") }} _MENU_ {{ phrase("entries") }}',
                 emptyTable: '{{ phrase("No data available in table") }}'
             },
-            scrollX: true,
-            ordering: true,
-            order: [[4, 'desc']],
-            columnDefs: [
-                { width: "20%", targets: 0 },
-                { width: "15%", targets: 1 },
-                { width: "35%", targets: 2, className: "text-wrap" },
-                { width: "10%", targets: 3 },
-                { width: "20%", targets: 4 }
-            ],
-            drawCallback: function() {
-                $('.dataTables_paginate > .pagination').addClass('pagination-rounded');
-            }
+            drawCallback: function () { $('.dataTables_paginate > .pagination').addClass('pagination-rounded'); }
         });
 
-        // Расчет среднего пожертвования
-        var totalDonations = {{donatePoint}};
-        var totalDonors = {{donate_users|length}};
-        var averageDonation = totalDonors > 0 ? (totalDonations / totalDonors).toFixed(2) : 0;
+        const totalDonations = `{{ donatePoint }}`;
+        const totalDonors = `{{ donors_count }}`;
+        const averageDonation = totalDonors > 0 ? (totalDonations / totalDonors).toFixed(1) : 0;
         $('#average-donation').text(averageDonation);
     });
 </script>
 
 <script>
     // Данные для месячной статистики
-    var monthlyPoints = {{ monthly_statistic_pay|json_encode|raw }};
-
-    // Извлекаем массивы месяцев и значений для графиков
-    var months = Object.keys(monthlyPoints);
-    var points = Object.values(monthlyPoints);
+    var months = {{ monthly_months| json_encode | raw }};
+    var points = {{ monthly_values| json_encode | raw }};
 
     // Гистограмма месячных пожертвований
     var optionsBarChart = {
@@ -407,7 +354,7 @@
         },
         dataLabels: {
             enabled: true,
-            formatter: function(val) {
+            formatter: function (val) {
                 return val.toFixed(0);
             },
             offsetY: -20,
@@ -444,8 +391,8 @@
         },
         tooltip: {
             y: {
-                formatter: function(val) {
-                    return val.toFixed(2) + " {{ phrase('points') }}";
+                formatter: function (val) {
+                    return val.toFixed(1) + " {{ phrase('points') }}";
                 }
             }
         }
@@ -454,13 +401,7 @@
     barChart.render();
 
     // Данные для временной линии
-    {% set data_series = [] %}
-    {% for date, point in statistic_pay %}
-    {% set timestamp = date|date("U") * 1000 %}
-    {% set data_series = data_series | merge([[timestamp, point]]) %}
-    {% endfor %}
-
-    var dates = {{ data_series | json_encode | raw }};
+    var dates = {{ timeline_series| json_encode | raw }};
 
     // График временной линии
     var optionsTimelineChart = {
@@ -520,7 +461,7 @@
         yaxis: {
             labels: {
                 formatter: function (val) {
-                    return val.toFixed(2);
+                    return val.toFixed(1);
                 },
                 style: {
                     colors: "#8c9097",
@@ -551,7 +492,7 @@
             shared: false,
             y: {
                 formatter: function (val) {
-                    return val.toFixed(2);
+                    return val.toFixed(1);
                 }
             },
             x: {
@@ -563,7 +504,7 @@
     timelineChart.render();
 
     // Фильтрация по периодам
-    $('.timeline-option').on('click', function(e) {
+    $('.timeline-option').on('click', function (e) {
         e.preventDefault();
         var period = $(this).data('period');
         var filteredData = filterDataByPeriod(dates, period);
@@ -578,7 +519,7 @@
         var now = new Date().getTime();
         var filtered = [];
 
-        switch(period) {
+        switch (period) {
             case 'week':
                 var weekAgo = now - (7 * 24 * 60 * 60 * 1000);
                 filtered = data.filter(item => item[0] >= weekAgo);
@@ -601,23 +542,8 @@
     }
 
     // Подготовка данных для графика платежных систем
-    {% set payment_systems = {} %}
-    {% for donate in donate_users %}
-    {% set pay_system = donate.pay_system %}
-    {% if pay_system in payment_systems|keys %}
-    {% set payment_systems = payment_systems|merge({(pay_system): payment_systems[pay_system] + donate.point}) %}
-    {% else %}
-    {% set payment_systems = payment_systems|merge({(pay_system): donate.point}) %}
-    {% endif %}
-    {% endfor %}
-
-    var paySystems = [];
-    var payValues = [];
-
-    {% for system, value in payment_systems %}
-    paySystems.push("{{system}}");
-    payValues.push({{value}});
-    {% endfor %}
+    var paySystems = {{ pay_system_labels| json_encode | raw }};
+    var payValues = {{ pay_system_values| json_encode | raw }};
 
     // График распределения по платежным системам
     var optionsPaymentSystems = {
@@ -648,7 +574,7 @@
                             fontWeight: 400,
                             offsetY: 16,
                             formatter: function (val) {
-                                return val.toFixed(2);
+                                return val.toFixed(1);
                             }
                         },
                         total: {
@@ -662,7 +588,7 @@
                             formatter: function (w) {
                                 return w.globals.seriesTotals.reduce((a, b) => {
                                     return a + b;
-                                }, 0).toFixed(2);
+                                }, 0).toFixed(1);
                             }
                         }
                     }
@@ -753,7 +679,7 @@
         tooltip: {
             y: {
                 formatter: function (val) {
-                    return val.toFixed(2);
+                    return val.toFixed(1);
                 }
             }
         },
@@ -778,32 +704,15 @@
         '{{ phrase("Saturday") }}'];
 
     // Заполняем массив данными
-    {% for day in 0..6 %}
-    var dayData = {
-        name: daysOfWeek[{{day}}],
-    data: []
-    };
-
-    {% for hour in 0..23 %}
-    var count = 0;
-    {% for donate in donate_users %}
-    {% set donate_date = donate.date %}
-    {% set donate_day = donate_date|date('w') %}
-    {% set donate_hour = donate_date|date('G') %}
-
-    if ({{donate_day}} == {{day}} && {{donate_hour}} == {{hour}}) {
-        count++;
+    var heatmap = {{ heatmap| json_encode | raw }}; // {day:{hour:count}}
+    for (var d = 0; d < 7; d++) {
+        var dayData = { name: daysOfWeek[d], data: [] };
+        for (var h = 0; h < 24; h++) {
+            var c = (heatmap[d] && heatmap[d][h]) ? heatmap[d][h] : 0;
+            dayData.data.push({ x: h + ':00', y: c });
+        }
+        heatmapData.push(dayData);
     }
-    {% endfor %}
-
-    dayData.data.push({
-        x: '{{hour}}:00',
-        y: count
-    });
-    {% endfor %}
-
-    heatmapData.push(dayData);
-    {% endfor %}
 
     // График тепловой карты активности
     var optionsHeatmap = {
@@ -889,9 +798,9 @@
     heatmapChart.render();
 
     // Создаем обработчики событий для интерактивности
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Обработчик для переключения периодов в графике временной линии
-        $('.timeline-option').on('click', function(e) {
+        $('.timeline-option').on('click', function (e) {
             e.preventDefault();
             var period = $(this).data('period');
             var periodText = $(this).text();
