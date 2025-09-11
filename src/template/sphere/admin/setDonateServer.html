@@ -193,8 +193,7 @@
                                                         </thead>
                                                         <tbody>
 
-                                                        {% for table in
-                                                        server.donate().getTableCumulativeDiscountSystem() %}
+                                                        {% for table in server.donate().getTableCumulativeDiscountSystem() %}
                                                         <tr>
                                                             <th scope="row">{{table.coin}}</th>
                                                             <td>{{table.percent}}</td>
@@ -486,6 +485,7 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="col-xl-6">
                         <div class="card custom-card shadow-none mb-4 border">
                             <div class="card-header">
@@ -876,26 +876,13 @@
                                         aria-controls="additionalcountry-{{ donate.getName() }}">
                                     Показать все ({{ countryList|length - 4 }} еще)
                                 </button>
-                            <!-- Скрытые элементы в аккордионе -->
-                                <div class="collapse mt-2" id="additionalcountry-{{ donate.getName() }}">
-                                    <div class="row">
-                                        {% for dn, country in countryList|slice(4) %}
-                                            <div class="col-md-6">
-                                                <div class="form-check form-switch mb-2">
-                                                    <input class="form-check-input form-checked-success"
-                                                           type="checkbox"
-                                                           role="switch"
-                                                           id="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}"
-                                                           name="country_{{ donate.getName() }}[]"
-                                                           value="{{ dn|e('html_attr') }}"
-                                                           {{ (dn in checkListCountry) ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="country-switch-{{ donate.getName() }}-{{ dn|e('html_attr') }}">
-                                                        {{ country|e }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
+                            <!-- Скрытые элементы в аккордионе (ленивая отрисовка) -->
+                                <div class="collapse mt-2 additional-country-collapse"
+                                     id="additionalcountry-{{ donate.getName() }}"
+                                     data-pay-name="{{ donate.getName() }}"
+                                     data-country-list='{{ json_encode(countryList|slice(4))|e('html_attr') }}'
+                                     data-selected='{{ json_encode(checkListCountry)|e('html_attr') }}'>
+                                    <div class="row additional-country-container"></div>
                                 </div>
                             {% endif %}
                         </div>
@@ -1043,26 +1030,13 @@
                                                 aria-controls="additionalcountry-{{ donateInfo.name }}">
                                             Показать все ({{ countryList|length - 4 }} еще)
                                         </button>
-                                    <!-- Скрытые элементы в аккордионе -->
-                                        <div class="collapse mt-2" id="additionalcountry-{{ donateInfo.name }}">
-                                            <div class="row">
-                                                {% for dn, country in countryList|slice(4) %}
-                                                    <div class="col-md-6">
-                                                        <div class="form-check form-switch mb-2">
-                                                            <input class="form-check-input form-checked-success"
-                                                                   type="checkbox"
-                                                                   role="switch"
-                                                                   id="country-switch-{{ donateInfo.name }}-{{ dn|e('html_attr') }}"
-                                                                   name="country_{{ donateInfo.name }}[]"
-                                                                   value="{{ dn|e('html_attr') }}"
-                                                                   {{ (dn in checkListCountry) ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="country-switch-{{ donateInfo.name }}-{{ dn|e('html_attr') }}">
-                                                                {{ country|e }}
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                {% endfor %}
-                                            </div>
+                                    <!-- Скрытые элементы в аккордионе (ленивая отрисовка) -->
+                                        <div class="collapse mt-2 additional-country-collapse"
+                                             id="additionalcountry-{{ donateInfo.name }}"
+                                             data-pay-name="{{ donateInfo.name }}"
+                                             data-country-list='{{ json_encode(countryList|slice(4))|e('html_attr') }}'
+                                             data-selected='{{ json_encode(checkListCountry)|e('html_attr') }}'>
+                                            <div class="row additional-country-container"></div>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -1127,6 +1101,38 @@
 
 {% block js %}
 <script>
+
+    // Ленивая отрисовка стран в скрытых блоках
+    $(document).on('shown.bs.collapse', '.additional-country-collapse', function () {
+        var $wrap = $(this);
+        var $container = $wrap.find('.additional-country-container');
+        if ($container.data('rendered')) return; // уже отрисовано
+
+        var payName = $wrap.data('pay-name');
+        var listJson = $wrap.attr('data-country-list') || '{}';
+        var selectedJson = $wrap.attr('data-selected') || '[]';
+        var countryList = {};
+        var selected = [];
+        try { countryList = JSON.parse(listJson); } catch (e) { countryList = {}; }
+        try { selected = JSON.parse(selectedJson); } catch (e) { selected = []; }
+
+        var html = '';
+        Object.keys(countryList).forEach(function (dn) {
+            var country = countryList[dn];
+            var checked = selected.indexOf(dn) !== -1 ? 'checked' : '';
+            var id = 'country-switch-' + payName + '-' + dn;
+            html += '<div class="col-md-6">' +
+                '<div class="form-check form-switch mb-2">' +
+                '<input class="form-check-input form-checked-success" type="checkbox" role="switch"' +
+                ' id="' + id + '" name="country_' + payName + '[]" value="' + dn + '" ' + checked + '>' +
+                '<label class="form-check-label" for="' + id + '">' + $('<div>').text(country).html() + '</label>' +
+                '</div>' +
+                '</div>';
+        });
+
+        $container.html(html);
+        $container.data('rendered', true);
+    });
 
     $(document).on('click', '.saveDonateConfig', function () {
         let tableItemsBonus = {};
