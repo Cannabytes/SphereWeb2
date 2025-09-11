@@ -137,7 +137,16 @@ class statistic
             $email = htmlspecialchars($r['email'] ?? '');
             $country = htmlspecialchars($r['country'] ?? '');
             $point = (float)$r['point'];
-            $pointHtml = $point;
+            // Calculate USD equivalent
+            if (\Ofey\Logan22\model\server\server::get_count_servers() == 0) {
+                $usd = $point;
+            } else {
+                $ratioUSD = config::load()->donate()->getRatioUSD();
+                $sphereCoinCost = config::load()->donate()->getSphereCoinCost();
+                $ratio = $ratioUSD / max(1, $sphereCoinCost);
+                $usd = $point * $ratio;
+            }
+            $pointHtml = $point . ' <small class="text-muted">($' . number_format($usd, 2) . ')</small>';
             $message = htmlspecialchars($r['message'] ?? '');
             $pay = htmlspecialchars($r['pay_system'] ?? '');
             $date = htmlspecialchars($r['date']);
