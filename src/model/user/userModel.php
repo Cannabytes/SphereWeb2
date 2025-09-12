@@ -67,6 +67,9 @@ class userModel
 
     private bool $isFoundUser = false;
 
+    // Предзагруженные отпечатки (fingerprints) для пользователя. Если заполнены, повторный запрос в БД не выполняется.
+    private ?array $fingerprints = null;
+
     public function __construct(?int $userId = null)
     {
         if ($userId == null) {
@@ -100,11 +103,13 @@ class userModel
                     }
                 }
             }
-            if (isset($_SESSION['id']) &&
+            if (
+                isset($_SESSION['id']) &&
                 $_SESSION['id'] == $user['id'] &&
                 isset($_SESSION['oauth2']) &&
                 !$_SESSION['oauth2'] &&
-                !password_verify($_SESSION['password'], $user['password'])) {
+                !password_verify($_SESSION['password'], $user['password'])
+            ) {
 
                 session::clear();
                 redirect::location("/main");
@@ -131,11 +136,11 @@ class userModel
 
             if (isset($_SESSION['id']) && $userId == $_SESSION['id']) {
                 \Ofey\Logan22\component\sphere\server::setUser($this);
-                if(isset($_SESSION['lang'])){
-                    if($this->lang != $_SESSION['lang']){
+                if (isset($_SESSION['lang'])) {
+                    if ($this->lang != $_SESSION['lang']) {
                         $_SESSION['lang'] = $this->lang;
                     }
-                }else{
+                } else {
                     $_SESSION['lang'] = $this->lang;
                 }
             }
@@ -158,9 +163,7 @@ class userModel
             }
             $this->warehouse = $this->warehouse() ?? null;
             $this->accounts = null;
-
         }
-
     }
 
     public function getBrowser(): string
@@ -193,7 +196,8 @@ class userModel
     /**
      * Обновляет время последней активности пользователя
      */
-    public function updateLastActivity(): void {
+    public function updateLastActivity(): void
+    {
         if (!$this->isAuth()) {
             return;
         }
@@ -213,7 +217,8 @@ class userModel
     /**
      * Инициализация времени последней активности из БД
      */
-    private function initLastActivity(?string $lastActivityStr): void {
+    private function initLastActivity(?string $lastActivityStr): void
+    {
         if ($lastActivityStr === null || $lastActivityStr === '0000-00-00 00:00:00') {
             $this->lastActivity = null;
             return;
@@ -229,7 +234,8 @@ class userModel
 
     private static $validTimezones = null;
 
-    private function convertUtcToUserTime(DateTime $utcTime): DateTime {
+    private function convertUtcToUserTime(DateTime $utcTime): DateTime
+    {
         try {
             $timezone = $this->getTimezone();
 
@@ -257,7 +263,8 @@ class userModel
     /**
      * Проверяет, онлайн ли пользователь
      */
-    public function isOnline(): bool {
+    public function isOnline(): bool
+    {
         if ($this->lastActivity === null) {
             return false;
         }
@@ -267,7 +274,8 @@ class userModel
         return $diff < (self::ONLINE_THRESHOLD_MINUTES * 60);
     }
 
-    private function convertToServerTime(DateTime $userTime): DateTime {
+    private function convertToServerTime(DateTime $userTime): DateTime
+    {
         $serverTimezone = new \DateTimeZone(date_default_timezone_get());
 
         // Создаем копию времени
@@ -287,7 +295,8 @@ class userModel
     /**
      * Форматирует время последней активности для отображения
      */
-    public function getLastActivityFormatted(): string {
+    public function getLastActivityFormatted(): string
+    {
 
         if ($this->lastActivity === null) {
             return "Никогда не был на сайте";
@@ -359,7 +368,7 @@ class userModel
         $this->city = $user['city'];
         $this->serverId = $user['server_id'];
         $this->lang = $user['lang'];
-        if($loadWarehouse) {
+        if ($loadWarehouse) {
             $this->warehouse = $this->warehouse() ?? null;
         }
         $this->initLastActivity($user['last_activity']);
@@ -384,7 +393,8 @@ class userModel
     private function warehouse(): array
     {
         $items = sql::getRows(
-            "SELECT id, item_id, count, enchant, phrase FROM `warehouse` WHERE server_id = ? AND user_id = ? AND issued = 0", [
+            "SELECT id, item_id, count, enchant, phrase FROM `warehouse` WHERE server_id = ? AND user_id = ? AND issued = 0",
+            [
                 $this->serverId(),
                 $this->getId(),
             ]
@@ -392,7 +402,7 @@ class userModel
         $warehouseArray = [];
         foreach ($items as $item) {
             $warehouse = new warehouse();
-            $itemObj = item::getItem($item['item_id'], server::getServer($this->getServerId())->getKnowledgeBase());
+            $itemObj = item::getItem($item['item_id'], server::getServer($this->getServerId())?->getKnowledgeBase());
             if ($itemObj == null) {
                 continue;
             }
@@ -434,8 +444,7 @@ class userModel
             ]);
 
             self::addLog(logtypes::LOG_DONATE_SUCCESS, "LOG_DONATE_SUCCESS", [$amount, $pay_system]);
-
-        }else{
+        } else {
             // Если это бонус пожертвований
             self::addLog(logtypes::LOG_DONATE_BONUS_SUCCESS, "LOG_DONATE_BONUS_SUCCESS", [$amount]);
         }
@@ -636,7 +645,6 @@ class userModel
                 "isAllowAllItemsSplitting" => \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->stackableItem()->isAllowAllItemsSplitting(),
                 "splittableItems" => \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->stackableItem()->getSplittableItems(),
             ]);
-
         } catch (\Exception $e) {
             board::error('Ошибка при стаковании предметов: ' . $e->getMessage());
         }
@@ -1283,8 +1291,7 @@ class userModel
         int|string $count = 0,
         int|string $enchant = 0,
         string|int $phrase = 'none'
-    ): array
-    {
+    ): array {
         //Добавление лога
         $this->addLog(logTypes::LOG_WAREHOUSE_ADD, "LOG_WAREHOUSE_ADD", [$server_id, $item_id, $count, $enchant, lang::get_phrase($phrase)]);
 
@@ -1292,7 +1299,8 @@ class userModel
             $server_id = $this->serverId();
         }
         $stmt = sql::run(
-            "INSERT INTO `warehouse` (`user_id`, `server_id`, `item_id`, `count`, `enchant`, `phrase`) VALUES (?, ?, ?, ?, ?, ?)", [
+            "INSERT INTO `warehouse` (`user_id`, `server_id`, `item_id`, `count`, `enchant`, `phrase`) VALUES (?, ?, ?, ?, ?, ?)",
+            [
                 $this->getId(),
                 $server_id,
                 $item_id,
@@ -1399,7 +1407,7 @@ class userModel
             sql::run("DELETE FROM `warehouse` WHERE `id` = ?", [$objectId]);
         }
         $warehouse = self::warehouse();
-        foreach($warehouse AS &$item) {
+        foreach ($warehouse as &$item) {
             if ($item->getId() == $objectId) {
                 unset($item);
             }
@@ -1438,7 +1446,8 @@ class userModel
     private array $varCache = [];
 
     // Обновляем метод addVar чтобы он очищал кэш при добавлении новых данных
-    public function addVar(string $name, mixed $data, $server = null) {
+    public function addVar(string $name, mixed $data, $server = null)
+    {
         if ($server === null) {
             $server = 0;
         }
@@ -1459,7 +1468,8 @@ class userModel
         return $result;
     }
 
-    public function getVar(string $name, $serverId = null) {
+    public function getVar(string $name, $serverId = null)
+    {
         // Проверяем наличие данных в кэше
         if (isset($this->varCache[$name])) {
             return $this->varCache[$name];
@@ -1485,7 +1495,8 @@ class userModel
     }
 
     // Добавляем метод для очистки кэша
-    public function clearVarCache(): void {
+    public function clearVarCache(): void
+    {
         $this->varCache = [];
     }
 
@@ -1570,14 +1581,24 @@ class userModel
 
     public function getFingerprints(): array
     {
+        // Если уже предзагружены — просто возвращаем
+        if ($this->fingerprints !== null) {
+            return $this->fingerprints;
+        }
+        // Ленивая загрузка (старое поведение) — будет вызвана только если не было массовой предзагрузки
         $rows = sql::getRows(
             "SELECT DISTINCT `fingerprint` FROM `user_auth_log` WHERE `user_id` = ?",
             [$this->getId()]
         );
-
-        return array_column($rows, 'fingerprint');
+        $this->fingerprints = array_column($rows, 'fingerprint');
+        return $this->fingerprints;
     }
 
-
-
+    /**
+     * Устанавливает (кэширует) отпечатки пользователя без дополнительного SQL запроса.
+     */
+    public function setFingerprints(array $fingerprints): void
+    {
+        $this->fingerprints = $fingerprints;
+    }
 }
