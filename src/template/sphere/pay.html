@@ -533,7 +533,7 @@
                                     {{phrase('one_time_bonus_pct_topup')}}
                                     <br>
                                     <div class="table-responsive mt-4">
-                                        <table class="table table-sm text-nowrap table-bordered border-primary">
+                                        <table class="table table-sm text-nowrap table-bordered border-primary one-time-bonus-table">
                                             <thead>
                                             <tr>
                                                 <th>{{phrase('min_topup')}}</th>
@@ -542,7 +542,7 @@
                                             </thead>
                                             <tbody>
                                             {% for bonus in getServer().donate().getTableEnableOneTimeBonus() %}
-                                            <tr>
+                                            <tr data-coin="{{bonus.coin}}">
                                                 <th scope="row">{{bonus.coin}}</th>
                                                 <td>+{{bonus.percent}}%</td>
                                             </tr>
@@ -699,6 +699,12 @@
     font-weight: 600;
 }
 
+/* Visible highlight for one-time bonus rows */
+.one-time-highlight {
+    background: linear-gradient(90deg, rgba(16,185,129,0.08), rgba(16,185,129,0.04)) !important;
+    border-left: 4px solid rgba(16,185,129,0.9) !important;
+}
+
 </style>
 
 
@@ -828,6 +834,11 @@
            const initialize = () => {
                let getTableEnableOneTimeBonus = {{ getServer().donate().getTableEnableOneTimeBonus()|json_encode(constant('JSON_PRETTY_PRINT'))|raw }};
 
+               // Защита на случай, если шаблон вернёт undefined/null
+               if (typeof getTableEnableOneTimeBonus === 'undefined' || getTableEnableOneTimeBonus === null) {
+                   getTableEnableOneTimeBonus = [];
+               }
+
                // Преобразование строки в объект, если необходимо
                if (typeof getTableEnableOneTimeBonus === 'string') {
                    try {
@@ -854,6 +865,19 @@
 
                // Подсветка текущего бонуса в таблице
                selectTablePanel();
+
+               // Инициализация подсветки one-time bonus по текущему значению поля
+               try {
+                   const initVal = parseInt($('#numberOfCoinsPurchased').val(), 10) || 0;
+                   highlightOneTimeBonusRow(initVal);
+               } catch (e) {}
+
+               // Подсветка one-time bonus при вводе значения
+               $(document).on('input', '#numberOfCoinsPurchased', function() {
+                   const val = parseInt($(this).val(), 10) || 0;
+                   console.debug('one-time input changed, val=', val);
+                   highlightOneTimeBonusRow(val);
+               });
            };
 
            /**
@@ -892,6 +916,31 @@
                });
            };
 
+           // Highlight the highest one-time bonus row with data-coin <= enteredValue
+           const highlightOneTimeBonusRow = (enteredValue) => {
+               enteredValue = parseInt(enteredValue, 10) || 0;
+               let best = null;
+
+               const rows = $('.one-time-bonus-table tbody tr');
+               console.debug('highlightOneTimeBonusRow called, enteredValue=', enteredValue, 'rowsCount=', rows.length);
+               rows.each(function() {
+                   const coin = parseInt($(this).data('coin'), 10) || 0;
+                   if (coin <= enteredValue) {
+                       if (best === null || coin > parseInt($(best).data('coin'), 10)) {
+                           best = this;
+                       }
+                   }
+               });
+
+               $('.one-time-bonus-table tbody tr').removeClass('table-success one-time-highlight');
+               if (best) {
+                   $(best).addClass('table-success one-time-highlight');
+                   console.debug('highlightOneTimeBonusRow applied to', $(best).data('coin'));
+               } else {
+                   console.debug('highlightOneTimeBonusRow found no match');
+               }
+           };
+
            /**
             * Выделяет соответствующий блок бонуса на основе введенного количества монет
             * @param {number} coinCount - Количество монет
@@ -921,6 +970,9 @@
                if ($maxCostElement) {
                    $maxCostElement.addClass('alert alert-success');
                }
+
+               // Обновляем подсветку one-time bonus table
+               try { highlightOneTimeBonusRow(coinCount); } catch (e) {}
            };
 
            return {
@@ -960,6 +1012,7 @@
                    // Обновление UI
                    CurrencyManager.updateCurrencyValues(this.value);
                    BonusManager.selectBonusPanel(this.value);
+                   try { highlightOneTimeBonusRow(this.value); } catch (e) {}
 
                    // Обновление слайдера, если он инициализирован
                    if (slider && slider.noUiSlider) {
@@ -995,12 +1048,26 @@
                            $inputField.val(min);
                        }
 
+                       // Обновляем UI
                        BonusManager.selectBonusPanel($inputField.val());
+                       try { highlightOneTimeBonusRow($inputField.val()); } catch (e) {}
                        CurrencyManager.updateCurrencyValues($inputField.val());
+
+                       // Синхронизируем со слайдером, если он инициализирован
+                       if (slider && slider.noUiSlider) {
+                           try {
+                               slider.noUiSlider.set(parseInt($inputField.val()));
+                           } catch (e) {
+                               // ignore
+                           }
+                       }
                    }, 50);
                }).on("mouseup mouseleave", function() {
                    clearInterval(decrementTimer);
                    CurrencyManager.updateCurrencyValues($inputField.val());
+                   if (slider && slider.noUiSlider) {
+                       try { slider.noUiSlider.set(parseInt($inputField.val())); } catch (e) {}
+                   }
                });
 
                // Обработчик кнопки "плюс"
@@ -1020,12 +1087,26 @@
                            $inputField.val('1');
                        }
 
+                       // Обновляем UI
                        BonusManager.selectBonusPanel($inputField.val());
+                       try { highlightOneTimeBonusRow($inputField.val()); } catch (e) {}
                        CurrencyManager.updateCurrencyValues($inputField.val());
+
+                       // Синхронизируем со слайдером, если он инициализирован
+                       if (slider && slider.noUiSlider) {
+                           try {
+                               slider.noUiSlider.set(parseInt($inputField.val()));
+                           } catch (e) {
+                               // ignore
+                           }
+                       }
                    }, 50);
                }).on("mouseup mouseleave", function() {
                    clearInterval(incrementTimer);
                    CurrencyManager.updateCurrencyValues($inputField.val());
+                   if (slider && slider.noUiSlider) {
+                       try { slider.noUiSlider.set(parseInt($inputField.val())); } catch (e) {}
+                   }
                });
 
                // Обработчики одиночных кликов
