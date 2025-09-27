@@ -84,7 +84,7 @@ class client_icon
             }
         }
         if ($chronicle === null) {
-            $chronicle = server::getServer(user::self()->getServerId())->getKnowledgeBase();
+            $chronicle = server::getServer(user::self()->getServerId())?->getKnowledgeBase();
         }
         $icon = item::getItem($item_id, $chronicle);
 
@@ -191,7 +191,7 @@ class client_icon
             $object = "items/highFive";
             if ($dbVersion == null) {
                 if (server::getServer()) {
-                    $itemdb = server::getServer()->getKnowledgeBase();
+                    $itemdb = server::getServer()?->getKnowledgeBase();
                     if ($itemdb) {
                         $object = "items/" . $itemdb;
                     }

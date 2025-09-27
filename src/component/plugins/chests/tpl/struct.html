@@ -1,326 +1,328 @@
-
 <div class="mb-4">
-    <div class="chests-container" data-chests="{{ chests|json_encode|escape('html_attr') }}">
-        {% for id, chest in chests %}
+  <div class="chests-container" data-chests="{{ chests|json_encode|escape('html_attr') }}">
+    {% for id, chest in chests %}
 
-            <div class="chest-item chest-type-{{ chest.type|lower }}"
-                 data-chest-id="{{ id|raw }}"
-                 data-chest-name="{{ id|raw }}"
-                 data-chest-price="{{ chest.price }}"
-                 data-chest-icon="{{ chest.icon }}">
+    <div class="chest-item chest-type-{{ chest.type|lower }}" data-chest-id="{{ id|raw }}"
+      data-chest-name="{{ id|raw }}" data-chest-price="{{ chest.price }}" data-chest-icon="{{ chest.icon }}">
 
-                    <div class="chest-loader-overlay">
-            <div class="chest-loader-spinner"></div>
+      <div class="chest-loader-overlay">
+        <div class="chest-loader-spinner"></div>
+      </div>
+      <!-- Контейнер для плавающих иконок -->
+      <div class="floating-items-container">
+        {% if chest.items is defined and chest.items is not empty %}
+        <!-- Первая строка иконок в верхней части -->
+        <div class="floating-item" style="--position-x: 15%; --position-y: 15%;">
+          {% set itemInfo = get_item_info(chest.items[0].id) %}
+          <img src="{{ itemInfo.getIcon() }}" alt="Item">
         </div>
-              <!-- Контейнер для плавающих иконок -->
-                <div class="floating-items-container">
-                    {% if chest.items is defined and chest.items is not empty %}
-                  <!-- Первая строка иконок в верхней части -->
-                        <div class="floating-item" style="--position-x: 15%; --position-y: 15%;">
-                            {% set itemInfo = get_item_info(chest.items[0].id) %}
-                            <img src="{{ itemInfo.getIcon() }}" alt="Item">
-                        </div>
 
-                  <!-- Если у нас есть как минимум 2 предмета -->
-                        {% if chest.items|length > 1 %}
-                        <div class="floating-item" style="--position-x: 45%; --position-y: 10%;">
-                            {% set itemInfo = get_item_info(chest.items[1].id) %}
-                            <img src="{{ itemInfo.getIcon() }}" alt="Item">
-                        </div>
-                        {% endif %}
+        <!-- Если у нас есть как минимум 2 предмета -->
+        {% if chest.items|length > 1 %}
+        <div class="floating-item" style="--position-x: 45%; --position-y: 10%;">
+          {% set itemInfo = get_item_info(chest.items[1].id) %}
+          <img src="{{ itemInfo.getIcon() }}" alt="Item">
+        </div>
+        {% endif %}
 
-                  <!-- Если у нас есть как минимум 3 предмета -->
-                        {% if chest.items|length > 2 %}
-                        <div class="floating-item" style="--position-x: 75%; --position-y: 20%;">
-                            {% set itemInfo = get_item_info(chest.items[2].id) %}
-                            <img src="{{ itemInfo.getIcon() }}" alt="Item">
-                        </div>
-                        {% endif %}
+        <!-- Если у нас есть как минимум 3 предмета -->
+        {% if chest.items|length > 2 %}
+        <div class="floating-item" style="--position-x: 75%; --position-y: 20%;">
+          {% set itemInfo = get_item_info(chest.items[2].id) %}
+          <img src="{{ itemInfo.getIcon() }}" alt="Item">
+        </div>
+        {% endif %}
 
-                  <!-- Средняя часть кейса -->
-                        {% if chest.items|length > 3 %}
-                        <div class="floating-item" style="--position-x: 25%; --position-y: 40%;">
-                            {% set itemInfo = get_item_info(chest.items[3].id) %}
-                            <img src="{{ itemInfo.getIcon() }}" alt="Item">
-                        </div>
-                        {% endif %}
+        <!-- Средняя часть кейса -->
+        {% if chest.items|length > 3 %}
+        <div class="floating-item" style="--position-x: 25%; --position-y: 40%;">
+          {% set itemInfo = get_item_info(chest.items[3].id) %}
+          <img src="{{ itemInfo.getIcon() }}" alt="Item">
+        </div>
+        {% endif %}
 
-                        {% if chest.items|length > 4 %}
-                        <div class="floating-item" style="--position-x: 65%; --position-y: 45%;">
-                            {% set itemInfo = get_item_info(chest.items[4].id) %}
-                            <img src="{{ itemInfo.getIcon() }}" alt="Item">
-                        </div>
-                        {% endif %}
+        {% if chest.items|length > 4 %}
+        <div class="floating-item" style="--position-x: 65%; --position-y: 45%;">
+          {% set itemInfo = get_item_info(chest.items[4].id) %}
+          <img src="{{ itemInfo.getIcon() }}" alt="Item">
+        </div>
+        {% endif %}
 
-                  <!-- Нижняя часть кейса -->
-                        {% if chest.items|length > 5 %}
-                        <div class="floating-item" style="--position-x: 15%; --position-y: 65%;">
-                            {% set itemInfo = get_item_info(chest.items[5].id) %}
-                            <img src="{{ itemInfo.getIcon() }}" alt="Item">
-                        </div>
-                        {% endif %}
+        <!-- Нижняя часть кейса -->
+        {% if chest.items|length > 5 %}
+        <div class="floating-item" style="--position-x: 15%; --position-y: 65%;">
+          {% set itemInfo = get_item_info(chest.items[5].id) %}
+          <img src="{{ itemInfo.getIcon() }}" alt="Item">
+        </div>
+        {% endif %}
 
-                        {% if chest.items|length > 6 %}
-                        <div class="floating-item" style="--position-x: 50%; --position-y: 70%;">
-                            {% set itemInfo = get_item_info(chest.items[6].id) %}
-                            <img src="{{ itemInfo.getIcon() }}" alt="Item">
-                        </div>
-                        {% endif %}
+        {% if chest.items|length > 6 %}
+        <div class="floating-item" style="--position-x: 50%; --position-y: 70%;">
+          {% set itemInfo = get_item_info(chest.items[6].id) %}
+          <img src="{{ itemInfo.getIcon() }}" alt="Item">
+        </div>
+        {% endif %}
 
-                        {% if chest.items|length > 7 %}
-                        <div class="floating-item" style="--position-x: 80%; --position-y: 75%;">
-                            {% set itemInfo = get_item_info(chest.items[7].id) %}
-                            <img src="{{ itemInfo.getIcon() }}" alt="Item">
-                        </div>
-                        {% endif %}
+        {% if chest.items|length > 7 %}
+        <div class="floating-item" style="--position-x: 80%; --position-y: 75%;">
+          {% set itemInfo = get_item_info(chest.items[7].id) %}
+          <img src="{{ itemInfo.getIcon() }}" alt="Item">
+        </div>
+        {% endif %}
 
-                  <!-- Дополнительные иконки, если нужно более 8 -->
-                        {% if chest.items|length > 8 %}
-                        <div class="floating-item" style="--position-x: 30%; --position-y: 85%;">
-                            {% set itemInfo = get_item_info(chest.items[8].id) %}
-                            <img src="{{ itemInfo.getIcon() }}" alt="Item">
-                        </div>
-                        {% endif %}
+        <!-- Дополнительные иконки, если нужно более 8 -->
+        {% if chest.items|length > 8 %}
+        <div class="floating-item" style="--position-x: 30%; --position-y: 85%;">
+          {% set itemInfo = get_item_info(chest.items[8].id) %}
+          <img src="{{ itemInfo.getIcon() }}" alt="Item">
+        </div>
+        {% endif %}
 
-                        {% if chest.items|length > 9 %}
-                        <div class="floating-item" style="--position-x: 60%; --position-y: 25%;">
-                            {% set itemInfo = get_item_info(chest.items[9].id) %}
-                            <img src="{{ itemInfo.getIcon() }}" alt="Item">
-                        </div>
-                        {% endif %}
-                    {% endif %}
-                </div>
-                <div class="chest-header" style='background-image: url({{ chest.background|default('/src/component/plugins/chests/tpl/images/background/bg-1.png') }});'>
-                    <div class="chest-icon mt-4">
-                        <img src="/src/component/plugins/chests/tpl/images/chest/chest-{{ chest.icon }}.webp" alt="{{ id|raw }}">
-                    </div>
+        {% if chest.items|length > 9 %}
+        <div class="floating-item" style="--position-x: 60%; --position-y: 25%;">
+          {% set itemInfo = get_item_info(chest.items[9].id) %}
+          <img src="{{ itemInfo.getIcon() }}" alt="Item">
+        </div>
+        {% endif %}
+        {% endif %}
+      </div>
+      <div class="chest-header" style='background-image: url({{ chest.background|default('
+        /src/component/plugins/chests/tpl/images/background/bg-1.png') }});'>
+        <div class="chest-icon mt-4">
+          <img src="/src/component/plugins/chests/tpl/images/chest/chest-{{ chest.icon }}.webp" alt="{{ id|raw }}">
+        </div>
 
-                    <div class="chest-info">
-                        <h3 class="chest-name">{{ id|raw }}</h3>
-                        <div class="chest-type {% if chest.type == 'No Use' %}d-none{% endif %}">{{ chest.type }}</div>
-                    </div>
+        <div class="chest-info">
+          <h3 class="chest-name">{{ id|raw }}</h3>
+          <div class="chest-type {% if chest.type == 'No Use' %}d-none{% endif %}">{{ chest.type }}</div>
+        </div>
 
-                     <div class="chest-buy">
-                    <div class="price-tag">{{ chest.price }} {{ phrase('donate_coin') }}</div>
-                </div>
-                </div>
+        <div class="chest-buy">
+          <div class="price-tag">{{ chest.price }} {{ phrase('donate_coin') }}</div>
+        </div>
+      </div>
 
 
-            </div>
-        {% endfor %}
     </div>
+    {% endfor %}
+  </div>
 
-<!-- Обновленная структура модального окна для открытия кейса -->
-<div class="modal fade modal-blur" id="chestModal" tabindex="-1" aria-labelledby="chestModalLabel" aria-hidden="true">
+  <!-- Обновленная структура модального окна для открытия кейса -->
+  <div class="modal fade modal-blur" id="chestModal" tabindex="-1" aria-labelledby="chestModalLabel" aria-hidden="true">
     <button type="button" class="custom-modal-close" data-bs-dismiss="modal" aria-label="Закрыть">
-        <span aria-hidden="true">&times;</span>
+      <span aria-hidden="true">&times;</span>
     </button>
 
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div id="translation-data" style="display: none;"
-                     data-happy-win-chest="{{ phrase('happy_win_chest') }}"
-                     data-you-win-chest="{{ phrase('you_win_chest') }}"
-                     data-open-more-chest="{{ phrase('open_more_chest') }}">
-                </div>
+      <div class="modal-content">
+        <div class="modal-body">
+          <div id="translation-data" style="display: none;" data-happy-win-chest="{{ phrase('happy_win_chest') }}"
+            data-you-win-chest="{{ phrase('you_win_chest') }}" data-open-more-chest="{{ phrase('open_more_chest') }}">
+          </div>
 
-                <div class="chest-modal-container">
+          <div class="chest-modal-container">
 
-                    <div class="chest-items-container">
-                        <h5 class="text-center">{{ phrase('chest_items') }}</h5>
-                        <div class="items-list" id="chest-items-list"></div>
-                    </div>
-
-                    <div class="chest-preview-container mt-4">
-                        {% if getUser().isAuth() %}
-                        <div class="open-button-container">
-                            <div class="btn-group">
-                                <button type="button" class="open-chest-main-btn" id="open-chest-button">{{ phrase('open_chest') }}</button>
-                                <button type="button"
-                                        class="open-chest-main-btn dropdown-toggle dropdown-toggle-split"
-                                        id="dropdownMenuOpenChest" data-bs-toggle="dropdown"
-                                        aria-expanded="false" data-bs-reference="parent">
-                                    <span class="visually-hidden">Toggle Dropdown</span>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuOpenChest">
-                                    <li><a data-open-chest-count="1" class="dropdown-item" href="javascript:void(0);">Открыть 1 сундук</a></li>
-                                    <li><a data-open-chest-count="5" class="dropdown-item" href="javascript:void(0);">Открыть 5 сундуков</a></li>
-                                    <li><a data-open-chest-count="10" class="dropdown-item" href="javascript:void(0);">Открыть 10 сундуков</a></li>
-                                    <li><a data-open-chest-count="50" class="dropdown-item" href="javascript:void(0);">Открыть 50 сундуков</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        {% else %}
-                            {{ phrase('need_authorization_for_use_chest')|raw }}
-                        {% endif %}
-                    </div>
-
-                    <div class="opening-animation-container d-none">
-                        <div class="chest-opening-animation">
-                            <div class="chest-animation-image">
-                                <img id="chest-animation-img" src="" alt="Открытие кейса">
-                            </div>
-                            <div class="items-flying-container">
-                                </div>
-                        </div>
-                    </div>
-
-                  <div class="winning-container d-none">
-                        </div>
-                </div>
+            <div class="chest-items-container">
+              <h5 class="text-center">{{ phrase('chest_items') }}</h5>
+              <div class="items-list" id="chest-items-list"></div>
             </div>
+
+            <div class="chest-preview-container mt-4">
+              {% if getUser().isAuth() %}
+              <div class="open-button-container">
+                <div class="btn-group">
+                  <button type="button" class="open-chest-main-btn" id="open-chest-button">{{ phrase('open_chest')
+                    }}</button>
+                  <button type="button" class="open-chest-main-btn dropdown-toggle dropdown-toggle-split"
+                    id="dropdownMenuOpenChest" data-bs-toggle="dropdown" aria-expanded="false"
+                    data-bs-reference="parent">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuOpenChest">
+                    <li><a data-open-chest-count="1" class="dropdown-item" href="javascript:void(0);">Открыть 1
+                        сундук</a></li>
+                    <li><a data-open-chest-count="5" class="dropdown-item" href="javascript:void(0);">Открыть 5
+                        сундуков</a></li>
+                    <li><a data-open-chest-count="10" class="dropdown-item" href="javascript:void(0);">Открыть 10
+                        сундуков</a></li>
+                    <li><a data-open-chest-count="50" class="dropdown-item" href="javascript:void(0);">Открыть 50
+                        сундуков</a></li>
+                  </ul>
+                </div>
+              </div>
+              {% else %}
+              {{ phrase('need_authorization_for_use_chest')|raw }}
+              {% endif %}
+            </div>
+
+            <div class="opening-animation-container d-none">
+              <div class="chest-opening-animation">
+                <div class="chest-animation-image">
+                  <img id="chest-animation-img" src="" alt="Открытие кейса">
+                </div>
+                <div class="items-flying-container">
+                </div>
+              </div>
+            </div>
+
+            <div class="winning-container d-none">
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<!-- Добавляем HTML для звуков -->
-<div id="sound-container" style="display: none;">
+  <!-- Добавляем HTML для звуков -->
+  <div id="sound-container" style="display: none;">
     <!-- Звуки будут добавлены динамически через JavaScript -->
-</div>
+  </div>
 
-<!-- В начале HTML -->
-<style>
-.chest-loader-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(30, 32, 41, 0.85);
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 15px;
-  transition: opacity 0.5s ease;
-}
+  <!-- В начале HTML -->
+  <style>
+    .chest-loader-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(30, 32, 41, 0.85);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 15px;
+      transition: opacity 0.5s ease;
+    }
 
-.chest-loader-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  border-top-color: #3498db;
-  border-radius: 50%;
-  animation: chest-spin 1s linear infinite;
-}
+    .chest-loader-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #3498db;
+      border-radius: 50%;
+      animation: chest-spin 1s linear infinite;
+    }
 
-@keyframes chest-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+    @keyframes chest-spin {
+      0% {
+        transform: rotate(0deg);
+      }
 
-/* Скрываем кейсы до загрузки */
-.chest-item {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-</style>
+      100% {
+        transform: rotate(360deg);
+      }
+    }
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Добавляем загрузчики ко всем кейсам
-  document.querySelectorAll('.chest-item').forEach(function(item) {
-    const loader = document.createElement('div');
-    loader.className = 'chest-loader-overlay';
-    loader.innerHTML = '<div class="chest-loader-spinner"></div>';
-    item.appendChild(loader);
-  });
+    /* Скрываем кейсы до загрузки */
+    .chest-item {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+  </style>
 
-  // После загрузки всей страницы удаляем загрузчики и показываем кейсы
-  window.addEventListener('load', function() {
-    setTimeout(function() {
-      // Удаляем загрузчики
-      document.querySelectorAll('.chest-loader-overlay').forEach(function(loader) {
-        loader.style.opacity = '0';
-        setTimeout(function() { loader.remove(); }, 500);
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Добавляем загрузчики ко всем кейсам
+      document.querySelectorAll('.chest-item').forEach(function (item) {
+        const loader = document.createElement('div');
+        loader.className = 'chest-loader-overlay';
+        loader.innerHTML = '<div class="chest-loader-spinner"></div>';
+        item.appendChild(loader);
       });
 
-      // Показываем кейсы
-      document.querySelectorAll('.chest-item').forEach(function(item, index) {
-        setTimeout(function() {
-          item.style.opacity = '1';
-        }, index * 100);
+      // После загрузки всей страницы удаляем загрузчики и показываем кейсы
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          // Удаляем загрузчики
+          document.querySelectorAll('.chest-loader-overlay').forEach(function (loader) {
+            loader.style.opacity = '0';
+            setTimeout(function () { loader.remove(); }, 500);
+          });
+
+          // Показываем кейсы
+          document.querySelectorAll('.chest-item').forEach(function (item, index) {
+            setTimeout(function () {
+              item.style.opacity = '1';
+            }, index * 100);
+          });
+
+          // Синхронизируем анимацию плавающих иконок
+          document.querySelectorAll('.floating-item').forEach(function (item) {
+            // Сбрасываем анимацию, чтобы она началась заново
+            item.style.animation = 'none';
+            setTimeout(function () {
+              item.style.animation = '';
+            }, 10);
+          });
+        }, 300);
       });
+    });
+  </script>
 
-      // Синхронизируем анимацию плавающих иконок
-      document.querySelectorAll('.floating-item').forEach(function(item) {
-        // Сбрасываем анимацию, чтобы она началась заново
-        item.style.animation = 'none';
-        setTimeout(function() {
-          item.style.animation = '';
-        }, 10);
-      });
-    }, 300);
-  });
-});
-</script>
+  <script>
+    // Инициализируем глобальные данные кейсов
+    window.chestData = {};
 
-<script>
-// Инициализируем глобальные данные кейсов
-window.chestData = {};
-
-{% for id, chest in chests %}
-window.chestData["{{ id|raw }}"] = {
-  id: "{{ id|raw }}",
-  name: "{{ id|raw }}",
-  price: {{ chest.price }},
-type: "{{ chest.type }}",
-      icon: {{ chest.icon }},
-items: [
-  {% for item in chest.items %}
-{
-  id: {{ item.id }},
-  name: "{% set itemInfo = get_item_info(item.id) %}{{ itemInfo.getItemName()|escape('js') }}{% if itemInfo.getAddName() %} {{ itemInfo.getAddName()|escape('js') }}{% endif %}",
+    {% for id, chest in chests %}
+    window.chestData["{{ id|raw }}"] = {
+      id: "{{ id|raw }}",
+      name: "{{ id|raw }}",
+      price: {{ chest.price }},
+    type: "{{ chest.type }}",
+      icon: { { chest.icon } },
+    items: [
+      {% for item in chest.items %}
+    {
+      id: { { item.id } },
+      name: "{% set itemInfo = get_item_info(item.id) %}{{ itemInfo.getItemName()|escape('js') }}{% if itemInfo.getAddName() %} {{ itemInfo.getAddName()|escape('js') }}{% endif %}",
         icon: "{{ itemInfo.getIcon() }}",
-      count: {{ item.count }},
-  enchant: {{ item.enchant|default(0) }},
-  chance: {{ item.chance }}
-}{% if not loop.last %},{% endif %}
-{% endfor %}
+          count: { { item.count } },
+      enchant: { { item.enchant |default (0) } },
+      chance: { { item.chance } }
+    } {% if not loop.last %}, {% endif %}
+    {% endfor %}
 ]
 };
-{% endfor %}
+    {% endfor %}
 
-// Предзагрузка звуков
-document.addEventListener('DOMContentLoaded', function() {
-  try {
-    // Создаем скрытые аудио элементы для предзагрузки звуков
-    const sounds = [
-      { name: 'chest_open', path: '/src/component/plugins/chests/tpl/sounds/chest_open.mp3' },
-      { name: 'roulette_spin', path: '/src/component/plugins/chests/tpl/sounds/roulette_spin.mp3' },
-      { name: 'tick', path: '/src/component/plugins/chests/tpl/sounds/tick.mp3', loop: true }, // Зацикливаем звук тика
-      { name: 'win', path: '/src/component/plugins/chests/tpl/sounds/win.mp3' }
-    ];
+    // Предзагрузка звуков
+    document.addEventListener('DOMContentLoaded', function () {
+      try {
+        // Создаем скрытые аудио элементы для предзагрузки звуков
+        const sounds = [
+          { name: 'tick', path: '/src/component/plugins/chests/tpl/sounds/tick.mp3', loop: true }, // Зацикливаем звук тика
+          { name: 'win', path: '/src/component/plugins/chests/tpl/sounds/win.mp3' }
+        ];
 
-    const soundContainer = document.getElementById('sound-container');
+        const soundContainer = document.getElementById('sound-container');
 
-    // Если директория со звуками не существует, не пытаемся загрузить звуки
-    if (soundContainer) {
-      sounds.forEach(function(sound) {
-        const audio = document.createElement('audio');
-        audio.id = 'sound-' + sound.name;
-        audio.preload = 'auto';
-        audio.loop = !!sound.loop; // Устанавливаем зацикливание, если нужно
+        // Если директория со звуками не существует, не пытаемся загрузить звуки
+        if (soundContainer) {
+          sounds.forEach(function (sound) {
+            const audio = document.createElement('audio');
+            audio.id = 'sound-' + sound.name;
+            audio.preload = 'auto';
+            audio.loop = !!sound.loop; // Устанавливаем зацикливание, если нужно
 
-        const source = document.createElement('source');
-        source.src = sound.path;
-        source.type = 'audio/mpeg';
+            const source = document.createElement('source');
+            source.src = sound.path;
+            source.type = 'audio/mpeg';
 
-        audio.appendChild(source);
-        soundContainer.appendChild(audio);
+            audio.appendChild(source);
+            soundContainer.appendChild(audio);
 
-        // Добавляем обработчик ошибок
-        audio.onerror = function() {
-          console.log('Не удалось загрузить звук: ' + sound.path);
-        };
-      });
-    }
-  } catch (e) {
-    console.log('Ошибка при инициализации звуков:', e);
-  }
-});
-</script>
+            // Добавляем обработчик ошибок
+            audio.onerror = function () {
+              console.log('Не удалось загрузить звук: ' + sound.path);
+            };
+          });
+        }
+      } catch (e) {
+        console.log('Ошибка при инициализации звуков:', e);
+      }
+    });
+  </script>
 
-<link rel="stylesheet" href="/src/component/plugins/chests/tpl/css/chests.css?v={{ 'now'|date('U') }}">
-<script src="/src/component/plugins/chests/tpl/js/chests.js?v={{ 'now'|date('U') }}"></script>
+  <link rel="stylesheet" href="/src/component/plugins/chests/tpl/css/chests.css?v={{ 'now'|date('U') }}">
+  <script src="/src/component/plugins/chests/tpl/js/chests.js?v={{ 'now'|date('U') }}"></script>

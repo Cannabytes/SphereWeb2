@@ -1,4 +1,5 @@
 <?php
+
 namespace Ofey\Logan22\model\config;
 
 class registration
@@ -120,6 +121,4 @@ class registration
     {
         return $this->phraseRegistrationDownloadFile;
     }
-
-
 }

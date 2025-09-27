@@ -50,6 +50,7 @@ use Ofey\Logan22\route\Route;
 use ReflectionClass;
 use ReflectionFunction;
 use ReflectionMethod;
+use ReflectionObject;
 use RuntimeException;
 use Throwable;
 use Twig\Environment;
@@ -86,6 +87,285 @@ class tpl
     private static array $pluginsAllCustomAndComponents = [];
 
     private static false|array $donateSysCache = [];
+
+    // Page cache options set per-request (enable selectively)
+    private static ?array $pageCache = null; // ['ttl'=>int,'namespace'=>string,'keyParts'=>array,'includeUser'=>bool]
+
+    // Compute a stable cache file path for page cache
+    private static function buildPageCachePath(array $keyParts, string $namespace = 'page', bool $includeUser = false, bool $includeServer = true): string
+    {
+        try {
+            $lang = \Ofey\Logan22\controller\config\config::load()->lang()->lang_user_default();
+        } catch (\Throwable $e) {
+            $lang = 'en';
+        }
+
+        $serverId = 0;
+        if ($includeServer) {
+            try { $serverId = (int) \Ofey\Logan22\model\user\user::self()->getServerId(); } catch (\Throwable $e) { $serverId = 0; }
+        }
+        $userPart = 'guest';
+        if ($includeUser) {
+            try {
+                $uid = (int) (\Ofey\Logan22\model\user\user::self()->getId() ?? 0);
+                $userPart = $uid > 0 ? (string)$uid : 'guest';
+            } catch (\Throwable $e) {
+                $userPart = 'guest';
+            }
+        }
+
+        $prettyPath = null;
+        foreach ($keyParts as $part) {
+            if (is_string($part) && strpos($part, 'path:') === 0) {
+                $prettyPath = substr($part, 5);
+                break;
+            }
+        }
+
+        $dir = 'uploads/cache/plugins/' . trim($namespace, '/');
+        if ($includeServer) {
+            $dir .= '/' . $serverId;
+        }
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0777, true);
+        }
+
+        if ($prettyPath !== null && $prettyPath !== '') {
+            $relative = self::sanitizeCachePath($prettyPath);
+            if ($relative === '') {
+                $relative = 'index.html';
+            }
+            if (!preg_match('/\.[a-z0-9]{1,8}$/i', $relative)) {
+                $relative .= '.html';
+            }
+            $relative = str_replace(['\\'], '/', $relative);
+            $fullPath = rtrim($dir, '/\\') . '/' . str_replace('/', DIRECTORY_SEPARATOR, $relative);
+            $targetDir = dirname($fullPath);
+            if (!is_dir($targetDir)) {
+                @mkdir($targetDir, 0777, true);
+            }
+            return $fullPath;
+        }
+
+        $parts = array_map(function ($v) {
+            return is_scalar($v) ? (string)$v : json_encode($v, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }, $keyParts);
+        array_unshift($parts, $lang);
+        if ($includeServer) {
+            $parts[] = 'srv:' . $serverId;
+        }
+        if ($includeUser) {
+            $parts[] = 'usr:' . $userPart;
+        }
+        $hash = sha1(implode('|', $parts));
+        return $dir . '/' . $hash . '.html';
+    }
+
+    private static function sanitizeCachePath(string $path): string
+    {
+    $path = str_replace(['\\'], '/', $path);
+        $segments = array_filter(explode('/', $path), static function ($segment) {
+            return $segment !== '' && $segment !== '.';
+        });
+        if (!$segments) {
+            return '';
+        }
+        $safe = [];
+        foreach ($segments as $segment) {
+            $safe[] = self::sanitizeCacheSegment($segment);
+        }
+        return implode('/', $safe);
+    }
+
+    private static function sanitizeCacheSegment(string $segment): string
+    {
+        $segment = trim($segment);
+        if ($segment === '') {
+            return '_';
+        }
+        $dotPos = strrpos($segment, '.');
+        if ($dotPos !== false) {
+            $name = substr($segment, 0, $dotPos);
+            $ext = substr($segment, $dotPos + 1);
+            $name = preg_replace('/[^\p{L}0-9_-]+/u', '-', $name);
+            if ($name === null) {
+                $name = '';
+            }
+            $name = trim($name, '-_');
+            if ($name === '') {
+                $name = '_';
+            }
+            $ext = preg_replace('/[^A-Za-z0-9]/', '', $ext);
+            if ($ext === null || $ext === '') {
+                $ext = 'html';
+            }
+            return $name . '.' . strtolower($ext);
+        }
+        $clean = preg_replace('/[^\p{L}0-9_-]+/u', '-', $segment);
+        if ($clean === null) {
+            $clean = '';
+        }
+        $clean = trim($clean, '-_');
+        if ($clean === '') {
+            $clean = '_';
+        }
+        return $clean;
+    }
+
+    /**
+     * Минификация HTML: удаляет лишние пробелы, переносы строк, комментарии.
+     * Аккуратно сохраняет содержимое <pre>, <code>, <textarea>, <script>, <style>.
+     * Предотвращает поломку inline JS/CSS и значимых пробелов внутри pre/code.
+     *
+     * Алгоритм:
+     * 1. Вырезаем защищённые блоки и заменяем плейсхолдерами.
+     * 2. Удаляем HTML комментарии (кроме условных <!--[if ...]> и <!--noindex--> / <!--/noindex-->).
+     * 3. Схлопываем последовательности пробелов между тегами.
+     * 4. Удаляем пробелы вокруг > <, после чего восстанавливаем защищённые блоки.
+     */
+    private static function minifyHtml(?string $html): string
+    {
+        if ($html === null || $html === '') {
+            return '';
+        }
+
+        // Быстрый выход если нет хотя бы одного символа тега
+        if (strpos($html, '<') === false) {
+            return trim(preg_replace('/\s+/', ' ', $html));
+        }
+
+        $placeholders = [];
+        $i = 0;
+        $callbackStore = function ($matches) use (&$placeholders, &$i) {
+            $key = "##MINIFY_BLOCK_" . ($i++) . "##";
+            $placeholders[$key] = $matches[0];
+            return $key;
+        };
+
+        // Защищаем <pre>, <code>, <textarea>, <script>, <style>
+        $protectedPatterns = [
+            '#<pre\b[\s\S]*?<\/pre>#i',
+            '#<code\b[\s\S]*?<\/code>#i',
+            '#<textarea\b[\s\S]*?<\/textarea>#i',
+            '#<script\b[\s\S]*?<\/script>#i',
+            '#<style\b[\s\S]*?<\/style>#i',
+        ];
+        foreach ($protectedPatterns as $pattern) {
+            $html = preg_replace_callback($pattern, $callbackStore, $html);
+        }
+
+        // Удаляем обычные комментарии <!-- ... -->, но оставляем условные IE и noindex / googleoff|googleon
+        $html = preg_replace_callback('#<!--([\s\S]*?)-->#', function ($m) {
+            $c = $m[0];
+            if (preg_match('#^<!--\s*\[if|^<!--\s*/?noindex|^<!--\s*google(off|on)#i', $c)) {
+                return $c; // оставляем
+            }
+            return '';
+        }, $html);
+
+        // Удаляем пробелы между тегами: >   <  => ><
+        $html = preg_replace('#>\s+<#', '><', $html);
+        // Схлопываем множественные пробелы
+        $html = preg_replace('/\s{2,}/', ' ', $html);
+        // Убираем пробелы вокруг тегов
+        $html = preg_replace('/\s*(<[^>]+>)\s*/', '$1', $html);
+
+        // Восстанавливаем защищённые блоки
+        if (!empty($placeholders)) {
+            $html = strtr($html, $placeholders);
+        }
+
+        return trim($html);
+    }
+
+    // Try resolving content-cache; if hit, store content for later render and return true
+    public static function pageCacheTryServe(array $keyParts, int $ttl, string $namespace = 'page', bool $includeUser = false, bool $includeServer = true): bool
+    {
+        // Allow bypass with query
+        if (isset($_GET['no_cache'])) {
+            return false;
+        }
+        $path = self::buildPageCachePath($keyParts, $namespace, $includeUser, $includeServer);
+        if (is_file($path)) {
+            $expired = (time() - filemtime($path)) > $ttl;
+            if (!$expired) {
+                $content = @file_get_contents($path);
+                self::$pageCache = [
+                    'ttl' => max(1, (int)$ttl),
+                    'namespace' => $namespace,
+                    'keyParts' => $keyParts,
+                    'includeUser' => $includeUser,
+                    'includeServer' => $includeServer,
+                    'cachedContent' => $content,
+                    'hit' => true,
+                ];
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Enable page cache for this render; display() will capture and save
+    public static function pageCacheBegin(array $keyParts, int $ttl, string $namespace = 'page', bool $includeUser = false, bool $includeServer = true): void
+    {
+        self::$pageCache = [
+            'ttl' => max(1, (int)$ttl),
+            'namespace' => $namespace,
+            'keyParts' => $keyParts,
+            'includeUser' => $includeUser,
+            'includeServer' => $includeServer,
+            'hit' => false,
+        ];
+    }
+
+    /**
+     * Simpler API: enable full-page cache for the current request URL.
+     * Usage: call before heavy logic and before display/displayPlugin.
+     * - ttl: cache lifetime in seconds
+     * - namespace: logical bucket (e.g., 'wiki')
+     * - includeUser: separate cache per user if true
+     * - includeServer: separate cache per server if true
+     * - extraKeyParts: optional extra discriminators (e.g., ['db' => 'highfive.db'])
+     */
+    public static function useCache(int $ttl = 900, string $namespace = 'page', bool $includeUser = false, bool $includeServer = true, array $extraKeyParts = []): void
+    {
+        // Build key from current URL path + normalized query (excluding no_cache)
+        $path = '/';
+        if (!empty($_SERVER['REQUEST_URI'])) {
+            $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
+        }
+        $queryNorm = '';
+        if (!empty($_GET) && is_array($_GET)) {
+            $params = $_GET;
+            unset($params['no_cache']);
+            if (!empty($params)) {
+                ksort($params);
+                $pairs = [];
+                foreach ($params as $k => $v) {
+                    if (is_array($v)) {
+                        $v = http_build_query([$k => $v]);
+                        $pairs[] = $v; // already encoded k[]=v style
+                    } else {
+                        $pairs[] = rawurlencode((string)$k) . '=' . rawurlencode((string)$v);
+                    }
+                }
+                $queryNorm = implode('&', $pairs);
+            }
+        }
+
+        $keyParts = [$path];
+        if ($queryNorm !== '') { $keyParts[] = 'q:' . $queryNorm; }
+        foreach ($extraKeyParts as $k => $v) {
+            $keyParts[] = is_int($k) ? (string)$v : ($k . ':' . (is_scalar($v) ? (string)$v : md5(json_encode($v))));
+        }
+
+        // Try to resolve cached content; if HIT, don't schedule begin again
+        $hit = self::pageCacheTryServe($keyParts, $ttl, $namespace, $includeUser, $includeServer);
+        if (!$hit) {
+            // Otherwise, schedule saving after render
+            self::pageCacheBegin($keyParts, $ttl, $namespace, $includeUser, $includeServer);
+        }
+    }
 
     public static function template_design_route(): ?array
     {
@@ -997,9 +1277,11 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('grade_img', function ($crystal_type): string {
-            $grade_img = '';
             $dirGrade = "/uploads/images/grade";
-            $grade_img = match (strtolower($crystal_type)) {
+
+            $type = $crystal_type === null ? '' : strtolower($crystal_type);
+
+            return match ($type) {
                 'd', '1' => "<img src='{$dirGrade}/d.png' style='width:20px'>",
                 'c', '2' => "<img src='{$dirGrade}/c.png' style='width:20px'>",
                 'b', '3' => "<img src='{$dirGrade}/b.png' style='width:20px'>",
@@ -1013,7 +1295,6 @@ class tpl
                 'r110', '11' => "<img src='{$dirGrade}/r110.png' style='width:40px'>",
                 default => ''
             };
-            return $grade_img;
         }));
 
         $twig->addFunction(new TwigFunction('generation_words_password', function ($count = 10): array {
@@ -1191,6 +1472,85 @@ class tpl
                 return "Error loading template: " . $e->getMessage();
             }
         }, ['is_safe' => ['html']]));
+
+        // Fragment HTML cache: caches the rendered output of a template include
+        $twig->addFunction(new TwigFunction('cache_include', function (
+            $keyParts,
+            int $ttl,
+            string $template,
+            array $params = [],
+            string $namespace = 'fragments',
+            bool $includeUser = false,
+            bool $includeServer = true
+        ) use ($twig) {
+            // Normalize key parts to array
+            if (!is_array($keyParts)) {
+                $keyParts = [$keyParts];
+            }
+
+            // Derive file path for this fragment
+            $lang = \Ofey\Logan22\controller\config\config::load()->lang()->lang_user_default();
+            $serverId = 0;
+            if ($includeServer) {
+                try { $serverId = (int) \Ofey\Logan22\model\user\user::self()->getServerId(); } catch (\Throwable $e) { $serverId = 0; }
+            }
+            $userPart = 'guest';
+            if ($includeUser) {
+                try { $uid = (int) (\Ofey\Logan22\model\user\user::self()->getId() ?? 0); $userPart = $uid > 0 ? (string)$uid : 'guest'; } catch (\Throwable $e) { $userPart = 'guest'; }
+            }
+            $parts = array_map(fn($v) => is_scalar($v) ? (string)$v : json_encode($v, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), $keyParts);
+            array_unshift($parts, $lang, $template);
+            if ($includeServer) { $parts[] = 'srv:' . $serverId; }
+            if ($includeUser) { $parts[] = 'usr:' . $userPart; }
+            $hash = sha1(implode('|', $parts));
+            $dir = 'uploads/cache/' . trim($namespace, '/');
+            if ($includeServer) { $dir .= '/' . $serverId; }
+            if (!is_dir($dir)) { @mkdir($dir, 0777, true); }
+            $file = $dir . '/' . $hash . '.html';
+
+            if (is_file($file) && (time() - filemtime($file)) <= max(1, $ttl)) {
+                $html = file_get_contents($file) ?: '';
+                return new Markup($html, 'UTF-8');
+            }
+
+            try {
+                if (file_exists(self::customizeFilePath($template, true))) {
+                    $template = self::customizeFilePath($template, false);
+                }
+                $tpl = $twig->load($template);
+                $html = $tpl->render(array_merge(self::$allTplVars, $params));
+                $min = self::minifyHtml($html);
+                if ($min !== '') {
+                    $html = $min;
+                }
+                @file_put_contents($file, $html, LOCK_EX);
+                return new Markup($html, 'UTF-8');
+            } catch (\Throwable $e) {
+                // On error, do not break page; render directly without caching
+                try {
+                    $tpl = $twig->load($template);
+                    $html = $tpl->render(array_merge(self::$allTplVars, $params));
+                    $min = self::minifyHtml($html);
+                    if ($min !== '') { $html = $min; }
+                    return new Markup($html, 'UTF-8');
+                } catch (\Throwable $e2) {
+                    return new Markup('<!-- cache_include error: ' . htmlspecialchars($e2->getMessage()) . ' -->', 'UTF-8');
+                }
+            }
+        }, ['is_safe' => ['html']]));
+
+        // Page cache control from Twig (optional): enable capture-save in display()
+        $twig->addFunction(new TwigFunction('page_cache_begin', function (
+            int $ttl,
+            string $namespace = 'page',
+            $keyParts = [],
+            bool $includeUser = false,
+            bool $includeServer = true
+        ) {
+            if (!is_array($keyParts)) { $keyParts = [$keyParts]; }
+            self::pageCacheBegin($keyParts, $ttl, $namespace, $includeUser, $includeServer);
+            return '';
+        }));
 
 
         $twig->addFunction(new TwigFunction('news_poster', function ($image, $full = false) {
@@ -1406,7 +1766,17 @@ class tpl
             if ($time === null) {
                 return 'Не указано время';
             }
-            $timezone = auth::get_timezone();
+            $timezone = null;
+            try {
+                if (is_callable([auth::class, 'get_timezone'])) {
+                    $timezone = call_user_func([auth::class, 'get_timezone']);
+                }
+            } catch (\Throwable $e) {
+                $timezone = null;
+            }
+            if (!$timezone) {
+                $timezone = date_default_timezone_get() ?: 'UTC';
+            }
 
             $date = new DateTime($time);
             $date->setTimezone(new DateTimeZone($timezone));
@@ -1549,7 +1919,10 @@ class tpl
         }
 
         $twig->addFunction(new TwigFunction('get_user_variables', function ($varName) {
-            return auth::get_user_variables($varName);
+            if (is_callable([auth::class, 'get_user_variables'])) {
+                return call_user_func([auth::class, 'get_user_variables'], $varName);
+            }
+            return null;
         }));
 
         return $twig;
@@ -2387,9 +2760,10 @@ class tpl
                     board::html($html, $title, $cleaned['css'], $cleaned['js'], $externalResources);
                 }
             } else {
-                if ($template->hasBlock("css") || $template->hasBlock("js")) {
+                if ($template->hasBlock("css") || $template->hasBlock("js") || $template->hasBlock("title")) {
                     $css = $template->hasBlock("css") ? $template->renderBlock("css", self::$allTplVars) : '';
                     $js = $template->hasBlock("js") ? $template->renderBlock("js", self::$allTplVars) : '';
+                    $title = $template->hasBlock("title") ? $template->renderBlock("title", self::$allTplVars) : '';
 
                     $templatePath = self::$allTplVars['template'] ?? '';
                     $externalResources = self::extractExternalResources($css, $js, $templatePath);
@@ -2399,6 +2773,7 @@ class tpl
                     self::$allTplVars['page_external_js'] = $externalResources['external_js'];
                     self::$allTplVars['page_inline_css'] = $cleaned['css'];
                     self::$allTplVars['page_inline_js'] = $cleaned['js'];
+                    self::$allTplVars['page_title'] = $title;
 
                     // ОТЛАДКА: показываем что попало в переменные (только для read.html)
                     if ($tplName === 'read.html') {
@@ -2415,6 +2790,70 @@ class tpl
                             echo "<!-- CSS Content: " . htmlspecialchars(substr($cleaned['css'], 0, 200)) . "... -->";
                         }
                     }
+                }
+
+                // Content-only cache handling
+                if (self::$pageCache && !self::$ajaxLoad) {
+                    // If HIT: use cached content
+                    if (!empty(self::$pageCache['hit']) && isset(self::$pageCache['cachedContent'])) {
+                        $cachedContent = (string)self::$pageCache['cachedContent'];
+                        self::$allTplVars['__cached_content'] = $cachedContent;
+                                                $wrapper = "{% extends 'struct.html' %}\n" .
+                                                                     "{% block content %}{{ __cached_content|raw }}{% endblock %}\n" .
+                                                                     // CSS block: render external links then wrap inline CSS with <style>
+                                                                     "{% block css %}" .
+                                                                         "{% if page_external_css is defined %}{% for href in page_external_css %}<link rel=\"stylesheet\" href=\"{{ href }}\">{% endfor %}{% endif %}" .
+                                                                         "{% if page_inline_css is defined and page_inline_css %}<style>{{ page_inline_css|raw }}</style>{% endif %}" .
+                                                                     "{% endblock %}\n" .
+                                                                     // JS block: render external scripts then wrap inline JS with <script>
+                                                                     "{% block js %}" .
+                                                                         "{% if page_external_js is defined %}{% for src in page_external_js %}<script src=\"{{ src }}\"></script>{% endfor %}{% endif %}" .
+                                                                         "{% if page_inline_js is defined and page_inline_js %}<script>{{ page_inline_js|raw }}</script>{% endif %}" .
+                                                                     "{% endblock %}\n" .
+                                                                     "{% block title %}{% if page_title is defined %}{{ page_title|raw }}{% endif %}{% endblock %}";
+                        $tpl2 = $twig->createTemplate($wrapper);
+                        header('X-Page-Cache: HIT');
+                        // Heuristic: if cached content seems already minified (few line breaks)
+                        $isMin = (substr_count($cachedContent, "\n") < 5) ? '1' : '0';
+                        header('X-HTML-Minified: ' . $isMin);
+                        $tpl2->display(self::$allTplVars);
+                        self::$pageCache = null; // reset
+                        exit();
+                    }
+
+                    // MISS: render content block, save it, then render wrapper
+                    $contentHtml = $template->hasBlock('content') ? $template->renderBlock('content', self::$allTplVars) : '';
+                    $minified = self::minifyHtml($contentHtml);
+                    if ($minified !== '') {
+                        $contentHtml = $minified;
+                        header('X-HTML-Minified: 1');
+                    } else {
+                        header('X-HTML-Minified: 0');
+                    }
+                    $path = self::buildPageCachePath(
+                        self::$pageCache['keyParts'],
+                        self::$pageCache['namespace'],
+                        self::$pageCache['includeUser'],
+                        self::$pageCache['includeServer']
+                    );
+                    @file_put_contents($path, $contentHtml, LOCK_EX);
+                    self::$allTplVars['__cached_content'] = $contentHtml;
+                                        $wrapper = "{% extends 'struct.html' %}\n" .
+                                                             "{% block content %}{{ __cached_content|raw }}{% endblock %}\n" .
+                                                             "{% block css %}" .
+                                                                 "{% if page_external_css is defined %}{% for href in page_external_css %}<link rel=\"stylesheet\" href=\"{{ href }}\">{% endfor %}{% endif %}" .
+                                                                 "{% if page_inline_css is defined and page_inline_css %}<style>{{ page_inline_css|raw }}</style>{% endif %}" .
+                                                             "{% endblock %}\n" .
+                                                             "{% block js %}" .
+                                                                 "{% if page_external_js is defined %}{% for src in page_external_js %}<script src=\"{{ src }}\"></script>{% endfor %}{% endif %}" .
+                                                                 "{% if page_inline_js is defined and page_inline_js %}<script>{{ page_inline_js|raw }}</script>{% endif %}" .
+                                                             "{% endblock %}\n" .
+                                                             "{% block title %}{% if page_title is defined %}{{ page_title|raw }}{% endif %}{% endblock %}";
+                    $tpl2 = $twig->createTemplate($wrapper);
+                    header('X-Page-Cache: MISS-SAVED');
+                    $tpl2->display(self::$allTplVars);
+                    self::$pageCache = null; // reset
+                    exit();
                 }
 
                 // Используем display() вместо render() для потокового вывода, чтобы не собирать огромную строку в памяти
@@ -2462,7 +2901,77 @@ class tpl
             board::html($html, $title, $css, $js);
         } else {
             $template = $twig->load($tplName);
-            $template->display(self::$allTplVars);
+            if (self::$pageCache && !self::$ajaxLoad) {
+                // Precompute CSS/JS/TITLE blocks for wrapper
+                $css = $template->hasBlock("css") ? $template->renderBlock("css", self::$allTplVars) : '';
+                $js = $template->hasBlock("js") ? $template->renderBlock("js", self::$allTplVars) : '';
+                $title = $template->hasBlock("title") ? $template->renderBlock("title", self::$allTplVars) : '';
+                $templatePath = self::$allTplVars['template'] ?? '';
+                $externalResources = self::extractExternalResources($css, $js, $templatePath);
+                $cleaned = self::cleanExternalResources($css, $js);
+                self::$allTplVars['page_external_css'] = $externalResources['external_css'];
+                self::$allTplVars['page_external_js'] = $externalResources['external_js'];
+                self::$allTplVars['page_inline_css'] = $cleaned['css'];
+                self::$allTplVars['page_inline_js'] = $cleaned['js'];
+                self::$allTplVars['page_title'] = $title;
+
+                if (!empty(self::$pageCache['hit']) && isset(self::$pageCache['cachedContent'])) {
+                    // HIT: use cached content
+                    self::$allTplVars['__cached_content'] = (string)self::$pageCache['cachedContent'];
+                                        $wrapper = "{% extends 'struct.html' %}\n" .
+                                                             "{% block content %}{{ __cached_content|raw }}{% endblock %}\n" .
+                                                             "{% block css %}" .
+                                                                 "{% if page_external_css is defined %}{% for href in page_external_css %}<link rel=\"stylesheet\" href=\"{{ href }}\">{% endfor %}{% endif %}" .
+                                                                 "{% if page_inline_css is defined and page_inline_css %}<style>{{ page_inline_css|raw }}</style>{% endif %}" .
+                                                             "{% endblock %}\n" .
+                                                             "{% block js %}" .
+                                                                 "{% if page_external_js is defined %}{% for src in page_external_js %}<script src=\"{{ src }}\"></script>{% endfor %}{% endif %}" .
+                                                                 "{% if page_inline_js is defined and page_inline_js %}<script>{{ page_inline_js|raw }}</script>{% endif %}" .
+                                                             "{% endblock %}\n" .
+                                                             "{% block title %}{% if page_title is defined %}{{ page_title|raw }}{% endif %}{% endblock %}";
+                    $tpl2 = $twig->createTemplate($wrapper);
+                    header('X-Page-Cache: HIT');
+                    $isMin = (substr_count(self::$allTplVars['__cached_content'], "\n") < 5) ? '1' : '0';
+                    header('X-HTML-Minified: ' . $isMin);
+                    $tpl2->display(self::$allTplVars);
+                    self::$pageCache = null;
+                } else {
+                    // MISS: capture content block, save, then render wrapper
+                    $contentHtml = $template->hasBlock('content') ? $template->renderBlock('content', self::$allTplVars) : '';
+                    $minified = self::minifyHtml($contentHtml);
+                    if ($minified !== '') {
+                        $contentHtml = $minified;
+                        header('X-HTML-Minified: 1');
+                    } else {
+                        header('X-HTML-Minified: 0');
+                    }
+                    $path = self::buildPageCachePath(
+                        self::$pageCache['keyParts'],
+                        self::$pageCache['namespace'],
+                        self::$pageCache['includeUser'],
+                        self::$pageCache['includeServer']
+                    );
+                    @file_put_contents($path, $contentHtml, LOCK_EX);
+                    self::$allTplVars['__cached_content'] = $contentHtml;
+                                        $wrapper = "{% extends 'struct.html' %}\n" .
+                                                             "{% block content %}{{ __cached_content|raw }}{% endblock %}\n" .
+                                                             "{% block css %}" .
+                                                                 "{% if page_external_css is defined %}{% for href in page_external_css %}<link rel=\"stylesheet\" href=\"{{ href }}\">{% endfor %}{% endif %}" .
+                                                                 "{% if page_inline_css is defined and page_inline_css %}<style>{{ page_inline_css|raw }}</style>{% endif %}" .
+                                                             "{% endblock %}\n" .
+                                                             "{% block js %}" .
+                                                                 "{% if page_external_js is defined %}{% for src in page_external_js %}<script src=\"{{ src }}\"></script>{% endfor %}{% endif %}" .
+                                                                 "{% if page_inline_js is defined and page_inline_js %}<script>{{ page_inline_js|raw }}</script>{% endif %}" .
+                                                             "{% endblock %}\n" .
+                                                             "{% block title %}{% if page_title is defined %}{{ page_title|raw }}{% endif %}{% endblock %}";
+                    $tpl2 = $twig->createTemplate($wrapper);
+                    header('X-Page-Cache: MISS-SAVED');
+                    $tpl2->display(self::$allTplVars);
+                    self::$pageCache = null;
+                }
+            } else {
+                $template->display(self::$allTplVars);
+            }
         }
     }
 

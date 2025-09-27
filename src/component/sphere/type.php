@@ -110,6 +110,11 @@ enum type
     case BUY_BALANCE_PACK;
 
     case GEO_IP;
+    case GET_NPC_IMG;
+    case NPC_IMG_DOWNLOAD;
+    case NOTICE_NPC_IMG;
+    case WIKI_DB_LIST;
+    case WIKI_DB_DOWNLOAD;
 
     public static function url(type $type): string
     {
@@ -181,6 +186,11 @@ enum type
             self::BUY_BALANCE_PACK => '/api/balance/buy/pack',
             self::GEO_IP => '/api/geo/ip',
             self::GET_CACHED => '/api/server/get/cached',
+            self::GET_NPC_IMG => '/api/npc/image',
+            self::NPC_IMG_DOWNLOAD => '/api/npc/image/*img',
+            self::NOTICE_NPC_IMG => '/api/npc/moderation/upload',
+            self::WIKI_DB_LIST => '/api/wiki/files',
+            self::WIKI_DB_DOWNLOAD => '/api/wiki/download',
             default => null,
         };
     }

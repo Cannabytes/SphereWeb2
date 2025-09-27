@@ -2187,5 +2187,39 @@ Email: %%email%l%
     'i_agree_server_rules' => 'Я прочитав(ла) і погоджуюсь з <a href="%s" target="_blank" class="text-primary">Правилами сервера</a>',
     'personal account' => 'Особистий кабінет',
 
+    // Wiki Craft Calculator (recipe_product.html)
+    'Craft recipes' => 'Рецепти крафту',
+    'Craft for item' => 'Крафт предмета',
+    'No recipes found' => 'Рецептів не знайдено',
+    'Rare' => 'Рідкісний',
+    'Desired crafts' => 'Бажана кількість крафтів',
+    'Set how many times to craft' => 'Вкажіть, скільки разів крафтити',
+    'Max crafts from inventory' => 'Макс. крафтів за інвентарем',
+    'Apply max' => 'Застосувати максимум',
+    'Calculated from inputs below' => 'Обчислюється з даних нижче',
+    'Rare chance, %' => 'Шанс рідкісного, %',
+    'If the recipe can produce a rare variant' => 'Якщо рецепт може дати рідкісний варіант',
+    'Required per craft' => 'Потрібно на один крафт',
+    'You have' => 'У вас є',
+    'Price per unit' => 'Ціна за одиницю',
+    'Total required' => 'Всього потрібно',
+    'Missing' => 'Не вистачає',
+    'Cost' => 'Вартість',
+    'Total cost' => 'Загальна вартість',
+    'MP needed' => 'Потрібно MP',
+    'Expected normal output' => 'Очікуваний звичайний результат',
+    'Expected rare output' => 'Очікуваний рідкісний результат',
+    'Reset inputs' => 'Скинути значення',
+    'No ingredients' => 'Немає інгредієнтів',
+    'Chance' => 'Шанс',
+
+    // Wiki: Epic Bosses section
+    'Epic Bosses' => 'Епічні Боси',
+    'NPC — Epic Bosses' => 'Епічні Боси',
+
+    // Wiki item search UI
+    'Open item search (press Enter)' => 'Відкрити пошук предметів (Enter)',
+    'Search Items' => 'Пошук предметів',
+    'No items found' => 'Предметів не знайдено',
 ];
 

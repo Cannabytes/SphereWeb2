@@ -518,13 +518,13 @@ return array(
         'enable' => 1,
         'method' => 'GET',
         'pattern' => '/admin/users',
-        'func' => NULL,
+        'func' => 'controller\\admin\\users::showAll',
         'access' =>
         array(
             0 => 'admin',
         ),
         'weight' => 0,
-        'page' => '/admin/users.html',
+        'page' => '',
         'comment' => '',
     ),
     38 =>
@@ -2789,6 +2789,20 @@ return array(
     array(
         'enable' => 1,
         'method' => 'POST',
+        'pattern' => '/admin/users/search-lite',
+        'func' => 'controller\\admin\\users::searchLite',
+        'access' =>
+        array(
+            0 => 'admin',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => 'Lightweight user search for selectors',
+    ),
+    207 =>
+    array(
+        'enable' => 1,
+        'method' => 'POST',
         'pattern' => '/admin/statistic/donate/data',
         'func' => 'controller\\admin\\statistic::donateData',
         'access' =>
@@ -2798,5 +2812,33 @@ return array(
         'weight' => 0,
         'page' => '',
         'comment' => 'Donate DataTables server-side data',
+    ),
+    208 =>
+    array(
+        'enable' => 1,
+        'method' => 'GET',
+        'pattern' => '/admin/users/page/(\\d+)',
+        'func' => 'controller\\admin\\users::showAll',
+        'access' =>
+        array(
+            0 => 'admin',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => 'Users list pagination',
+    ),
+    209 =>
+    array(
+        'enable' => 1,
+        'method' => 'POST',
+        'pattern' => '/admin/users/search/email',
+        'func' => 'controller\\admin\\users::searchByEmail',
+        'access' =>
+        array(
+            0 => 'admin',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => 'Ajax search users by email',
     ),
 );

@@ -2,7 +2,7 @@
  * Новый механизм розыгрыша для кейсов - Магические кристаллы
  */
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Элементы интерфейса
     const modal = document.getElementById('chestModal');
     const openButton = document.getElementById('open-chest-button');
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Клик по кейсу
     document.querySelectorAll('.chest-item').forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function () {
             const chestId = this.dataset.chestId;
             const chestName = this.dataset.chestName;
             const chestPrice = this.dataset.chestPrice;
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Клик по кнопке открытия кейса
     if (openButton) {
-        openButton.addEventListener('click', function() {
+        openButton.addEventListener('click', function () {
             if (this.disabled) return;
 
             // Блокируем кнопку
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчики событий для кнопок открытия кейсов в выпадающем списке
     if (openChestDropdownItems.length > 0) {
         openChestDropdownItems.forEach(item => {
-            item.addEventListener('click', function(e) {
+            item.addEventListener('click', function (e) {
                 e.preventDefault();
                 const count = this.dataset.openChestCount;
                 if (count) {
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Обработка кнопки "открыть еще"
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target.id === 'open-again-btn' || e.target.classList.contains('btn-open-again')) {
             resetModalState();
         }
@@ -312,8 +312,6 @@ document.addEventListener('DOMContentLoaded', function() {
             openingContainer.style.opacity = '1';
         }, 10);
 
-        // Играем звук открытия
-        playSound('chest_open');
 
         // Эффект частиц
         createParticlesEffect(openingContainer);
@@ -584,7 +582,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Все невыигрышные кристаллы открыты, открываем выигрышные
                 setTimeout(() => {
                     // Звук для выигрышных кристаллов (может быть один для всех или по очереди)
-                    playSound('special_crystal');
 
                     // Открываем все выигрышные кристаллы
                     winningCrystals.forEach(crystal => {
@@ -649,7 +646,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-// Показ выигрышного предмета(ов)
+    // Показ выигрышного предмета(ов)
     function showWinningItem(winningItems) {
         restoreModalOpacity();
 
@@ -842,15 +839,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Определяем источник звука в зависимости от типа
         let soundSrc;
-        switch(soundName) {
+        switch (soundName) {
             case 'crystal_reveal':
                 soundSrc = 'tick';
                 break;
             case 'crystals_appear':
-                soundSrc = 'roulette_spin';
                 break;
             case 'special_crystal':
-                soundSrc = 'chest_open';
                 break;
             default:
                 soundSrc = soundName;
@@ -890,7 +885,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Добавляем стили для магических кристаллов
-(function() {
+(function () {
     if (!document.getElementById('crystals-styles')) {
         const style = document.createElement('style');
         style.id = 'crystals-styles';

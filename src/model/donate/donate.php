@@ -788,7 +788,6 @@ class donate
             $percent = $bonusData['percent'];
             $addSphereCoin = ($sphereCoin * $percent / 100);
 
-            // TODO: Добавить логирование о действий пользователя
             user::getUserId($user_id)
                 ->donateAdd($addSphereCoin)
                 ->AddHistoryDonate(

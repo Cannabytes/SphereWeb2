@@ -13,7 +13,7 @@
                         <a href="/admin" class="avatar border text-muted">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
                         </a>
-                        {{ phrase('Donation and Reward Settings') }}
+                        {{ phrase('Donation and Reward Settings') }} - {{server.getName()}} x{{server.getRateExp()}}
                     </div>
                     <div class="d-flex">
                         <button class="btn btn-sm btn-success btn-wave waves-light waves-effect waves-light saveDonateConfig"><i
@@ -1574,18 +1574,39 @@
         });
     }
 
-    // Функция заполнения платежных систем
-    // Функция заполнения платежных систем
+    // Функция заполнения платежных систем (устойчиво к разным форматам donateSystems)
     function fillPaymentSystems(systems) {
-        // Очищаем существующие табы и контент
+        if (!systems) {
+            console.warn('donateSystems: пусто');
+            return;
+        }
+
+        // Нормализация структуры: может прийти массив или объект с числовыми ключами
+        let systemsArray;
+        if (Array.isArray(systems)) {
+            systemsArray = systems;
+        } else if (typeof systems === 'object') {
+            systemsArray = Object.values(systems);
+        } else {
+            console.error('Неизвестный тип donateSystems:', typeof systems, systems);
+            return;
+        }
+
+        // Очистка контейнеров
         $('#v-pills-tab').empty();
         $('#v-pills-tabContent').empty();
 
-        systems.forEach((system, index) => {
-            const [name, data] = Object.entries(system)[0];
+        systemsArray.forEach((system, index) => {
+            if (!system || typeof system !== 'object') return;
+            const first = Object.entries(system)[0];
+            if (!first) return;
+            const [name, data] = first;
             const isActive = index === 0;
+            const enable = (data.enable === true || data.enable === 'true');
+            const forAdmin = (data.forAdmin === true || data.forAdmin === 'true');
+            const sortVal = data.sort ?? index;
 
-            // Создаем таб
+            // Таб (сортировка и стрелки)
             const $tab = $(`
             <div class="nav-link text-start d-flex justify-content-between align-items-center ${isActive ? 'active' : ''} donatelistSort"
                  id="${name}-tab"
@@ -1594,17 +1615,16 @@
                  type="button" role="tab"
                  aria-controls="${name}"
                  aria-selected="${isActive}"
-                 data-order="${data.sort}"
+                 data-order="${sortVal}"
                  data-name="${name}">
-                ${name}
+                ${data.customName || name}
                 <div class="ms-auto">
                     <i class="ri-arrow-down-line move-down" aria-hidden="true" style="cursor: pointer;"></i>
                     <i class="ri-arrow-up-line move-up" aria-hidden="true" style="cursor: pointer;"></i>
                 </div>
-            </div>
-        `);
+            </div>`);
 
-            // Создаем контент таба
+            // Контент
             const $content = $(`
             <div class="tab-pane ${isActive ? 'active show' : ''} donatePanelWrite"
                  id="${name}" role="tabpanel"
@@ -1612,91 +1632,87 @@
                  aria-labelledby="${name}-tab">
                 <div class="d-sm-flex">
                     <div data-pay-name="${name}">
-                        <div class="my-md-auto mt-4 ms-md-3">
-                            <!-- Переключатель включения платежной системы -->
-                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
-                                <div>
-                                    <p class="fs-14 mb-1 fw-semibold">Включить платежную систему ${name}</p>
-                                </div>
-                                <div class="custom-toggle-switch ms-sm-2 ms-0">
-                                    <input id="is_enable_${name}"
-                                           name="is_enable_${name}"
-                                           type="checkbox"
-                                           ${data.enable === "true" ? 'checked' : ''}>
-                                    <label for="is_enable_${name}"
-                                           class="label-primary mb-1"></label>
-                                </div>
-                            </div>
+                        <div class="my-md-auto mt-4 ms-md-3"></div>
+                    </div>
+                </div>
+            </div>`);
 
-                            <!-- Переключатель только для админа -->
-                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
-                                <div>
-                                    <p class="fs-14 mb-1 fw-semibold">Только для админа ${name}</p>
-                                </div>
-                                <div class="custom-toggle-switch ms-sm-2 ms-0">
-                                    <input id="forAdmin_${name}"
-                                           name="forAdmin_${name}"
-                                           type="checkbox"
-                                           ${data.forAdmin === "true" ? 'checked' : ''}>
-                                    <label for="forAdmin_${name}"
-                                           class="label-primary mb-1"></label>
-                                </div>
-                            </div>
-        `);
+            const $host = $content.find('.my-md-auto');
 
-            // Добавляем инпуты для системы
-            Object.entries(data.inputs || {}).forEach(([key, value]) => {
-                $content.find('.my-md-auto').append(`
-                <div class="form-floating mb-3">
-                    <input data-name="${key}"
-                           value="${value}"
-                           type="text"
-                           class="form-control"
-                           id="donateSys_${key}"
-                           placeholder="">
-                    <label for="donateSys_${key}">${key}</label>
+            // Переключатели
+            $host.append(`
+                <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                    <div><p class="fs-14 mb-1 fw-semibold">Включить платежную систему ${name}</p></div>
+                    <div class="custom-toggle-switch ms-sm-2 ms-0">
+                        <input id="is_enable_${name}" name="is_enable_${name}" type="checkbox" ${enable ? 'checked' : ''}>
+                        <label for="is_enable_${name}" class="label-primary mb-1"></label>
+                    </div>
+                </div>
+                <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                    <div><p class="fs-14 mb-1 fw-semibold">Только для админа ${name}</p></div>
+                    <div class="custom-toggle-switch ms-sm-2 ms-0">
+                        <input id="forAdmin_${name}" name="forAdmin_${name}" type="checkbox" ${forAdmin ? 'checked' : ''}>
+                        <label for="forAdmin_${name}" class="label-primary mb-1"></label>
+                    </div>
                 </div>
             `);
+
+            // Инпуты
+            Object.entries(data.inputs || {}).forEach(([key, value]) => {
+                const inputId = `donateSys_${key}_${name}`;
+                $host.append(`
+                    <div class="form-floating mb-3">
+                        <input data-name="${key}" value="${value}" type="text" class="form-control" id="${inputId}" placeholder="">
+                        <label for="${inputId}">${key}</label>
+                    </div>
+                `);
             });
 
-            // Добавляем описание и webhook
-            $content.find('.my-md-auto').append(`
-            <hr>
-            <div class="form-floating mb-3">
-                <input value="${data.description}"
-                       type="text"
-                       class="form-control"
-                       id="description_${name}"
-                       placeholder="">
-                <label for="description_${name}">Описание платежной системы</label>
-            </div>
+            // Прочие поля
+            $host.append(`
+                <hr>
+                <div class="form-floating mb-3">
+                    <input value="${data.customName || name}" type="text" class="form-control" id="payname_${name}" placeholder="">
+                    <label for="payname_${name}">Название системы</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input value="${data.description || ''}" type="text" class="form-control" id="description_${name}" placeholder="">
+                    <label for="description_${name}">Описание платежной системы</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input value="${data.currency || ''}" type="text" class="form-control" id="currency-${name}" placeholder="RUB">
+                    <label for="currency-${name}">Валюта</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input value="${sortVal}" type="number" class="form-control sort-input" id="sort_${name}" placeholder="0">
+                    <label for="sort_${name}">Сортировка</label>
+                </div>
+            `);
 
-            <div class="border rounded-3 p-3">
-                <p class="fs-15 fw-semibold mb-2">Webhook</p>
-                <p class="fs-12 text-muted">На сайте платежной системы в качестве уведомлений после успешной оплаты укажите POST запрос на адрес:</p>
-            </div>
+            // Страны (просто выводим список, чекбоксы уже есть в основной разметке при первичной загрузке)
+            if (Array.isArray(data.country)) {
+                $host.append(`<div class="mb-3"><small class="text-muted">Страны: ${data.country.join(', ')}</small></div>`);
+            }
 
-            <input type="hidden" value="${data.sort}"
-                   id="sort_${name}" class="sort-input">
-        `);
+            // Webhook (если нужен)
+            $host.append(`
+                <div class="border rounded-3 p-3 mb-3">
+                    <p class="fs-15 fw-semibold mb-2">Webhook</p>
+                    <p class="fs-12 text-muted">Укажите этот URL в панели платежной системы (если требуется).</p>
+                </div>
+            `);
 
             $('#v-pills-tab').append($tab);
             $('#v-pills-tabContent').append($content);
 
-            // Заполняем дополнительные поля
-            $(`#description_${name}`).val(data.description);
-            $(`#sort_${name}`).val(data.sort);
-
-            Object.entries(data.inputs || {}).forEach(([key, value]) => {
-                $(`[data-name="${key}"]`).val(value);
-            });
-
-            if (data.country && Array.isArray(data.country)) {
-                data.country.forEach(country => {
-                    $(`input[name="country_${name}[]"][value="${country}"]`).prop('checked', true);
+            // Отметим страны в чекбоксах если они уже существуют в DOM (могут отсутствовать если вкладка новая)
+            if (Array.isArray(data.country)) {
+                data.country.forEach(c => {
+                    $(`input[name="country_${name}[]"][value="${c}"]`).prop('checked', true);
                 });
             }
         });
+
     }
 
     function notifyError(message) {

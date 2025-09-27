@@ -2226,6 +2226,40 @@ Password: %%password%%',
     'i_agree_terms_of_service' => 'Я прочитал(а) и согласен(а) с <a href="%s" target="_blank" class="text-primary">Пользовательским соглашением</a>',
     'i_agree_server_rules' => 'Я прочитал(а) и согласен(а) с <a href="%s" target="_blank" class="text-primary">Правилами сервера</a>',
 
-    'personal account' => 'Личный кабинет',
+	'personal account' => 'Личный кабинет',
 
+	// Wiki Craft Calculator (recipe_product.html)
+	'Craft recipes' => 'Рецепты крафта',
+	'Craft for item' => 'Крафт предмета',
+	'No recipes found' => 'Рецептов не найдено',
+	'Rare' => 'Рарный',
+	'Desired crafts' => 'Желаемое количество крафтов',
+	'Set how many times to craft' => 'Укажите, сколько раз крафтить',
+	'Max crafts from inventory' => 'Макс. крафтов по инвентарю',
+	'Apply max' => 'Применить максимум',
+	'Calculated from inputs below' => 'Рассчитывается из значений ниже',
+	'Rare chance, %' => 'Шанс рара, %',
+	'If the recipe can produce a rare variant' => 'Если рецепт может дать рарный вариант',
+	'Required per craft' => 'Требуется на один крафт',
+	'You have' => 'У вас есть',
+	'Price per unit' => 'Цена на рынке',
+	'Total required' => 'Всего требуется',
+	'Missing' => 'Не хватает',
+	'Cost' => 'Стоимость',
+	'Total cost' => 'Общая стоимость',
+	'MP needed' => 'Потребуется MP',
+	'Expected normal output' => 'Ожидаемый обычный результат',
+	'Expected rare output' => 'Ожидаемый рарный результат',
+	'Reset inputs' => 'Сбросить значения',
+	'No ingredients' => 'Нет ингредиентов',
+	'Chance' => 'Шанс',
+
+	// Wiki: Epic Bosses section
+	'Epic Bosses' => 'Эпические Боссы',
+	'NPC — Epic Bosses' => 'Эпические Боссы',
+
+	// Wiki item search UI
+	'Open item search (press Enter)' => 'Открыть поиск предметов (Enter)',
+	'Search Items' => 'Поиск предметов',
+	'No items found' => 'Предметы не найдены',
 );

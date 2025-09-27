@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by Logan22
  * Github -> https://github.com/Cannabytes/SphereWeb
@@ -9,7 +10,8 @@ namespace Ofey\Logan22\component\account;
 
 use Ofey\Logan22\controller\config\config;
 
-class generation {
+class generation
+{
 
     static private array $fiveWord = [
         "which",
@@ -5772,21 +5774,24 @@ class generation {
     ];
 
     //Поможем юзеру с идеей нового слова
-    public static function word(): string {
+    public static function word(): string
+    {
         return self::$fiveWord[array_rand(self::$fiveWord, 1)];
     }
 
     //Генератор пароля
-    public static function password($default = 16, $special = true): string {
+    public static function password($default = 16, $special = true): string
+    {
         $characters = 'abcdefghijklmnopqrstuvwxyz';
-        if($special) {
+        if ($special) {
             $characters .= mb_strtoupper($characters);
             $special = '!@#$%^&*()_+-;:?~|<>,.';
         }
         return substr(str_shuffle("{$characters}0123456789" . $special), 0, $default);
     }
 
-    public static function createPrefix(): void {
-       echo json_encode(config::load()->registration()->genPrefix());
+    public static function createPrefix(): void
+    {
+        echo json_encode(config::load()->registration()->genPrefix());
     }
 }

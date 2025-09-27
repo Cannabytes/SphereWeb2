@@ -27,7 +27,7 @@ class user
             return self::$users[$userId];
         }
         if ($userId === 0) {
-            if(isset($_SESSION['id'])){
+            if (isset($_SESSION['id'])) {
                 $userId = $_SESSION['id'];
             }
         }
@@ -93,9 +93,33 @@ class user
             self::$users[$row['id']] = $user;
         }
 
+        // Предзагружаем fingerprints для всех пользователей одной выборкой, чтобы исключить N+1
+        if (!empty(self::$users)) {
+            $ids = array_keys(self::$users);
+            $placeholders = implode(',', array_fill(0, count($ids), '?'));
+            $fingerRows = sql::getRows(
+                "SELECT DISTINCT user_id, fingerprint FROM user_auth_log WHERE user_id IN ($placeholders)",
+                $ids
+            );
+            $map = [];
+            foreach ($fingerRows as $f) {
+                $uid = (int)$f['user_id'];
+                if (!isset($map[$uid])) {
+                    $map[$uid] = [];
+                }
+                if ($f['fingerprint']) {
+                    $map[$uid][] = $f['fingerprint'];
+                }
+            }
+            foreach ($map as $uid => $fps) {
+                if (isset(self::$users[$uid])) {
+                    self::$users[$uid]->setFingerprints($fps);
+                }
+            }
+        }
+
         self::$isLoaded = true;
 
         return self::$users;
     }
-
 }

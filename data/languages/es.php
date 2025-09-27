@@ -2160,4 +2160,38 @@ Contraseña: %%password%%',
     'i_agree_server_rules' => 'He leído y acepto las <a href="%s" target="_blank" class="text-primary">Reglas del Servidor</a>',
     'personal account' => 'Cuenta personal',
 
+    // Wiki Craft Calculator (recipe_product.html)
+    'Craft recipes' => 'Recetas de crafteo',
+    'Craft for item' => 'Crafteo del objeto',
+    'No recipes found' => 'No se encontraron recetas',
+    'Rare' => 'Raro',
+    'Desired crafts' => 'Crafteos deseados',
+    'Set how many times to craft' => 'Indica cuántas veces craftear',
+    'Max crafts from inventory' => 'Máx. crafteos por inventario',
+    'Apply max' => 'Aplicar máximo',
+    'Calculated from inputs below' => 'Calculado a partir de los datos de abajo',
+    'Rare chance, %' => 'Probabilidad de raro, %',
+    'If the recipe can produce a rare variant' => 'Si la receta puede producir una variante rara',
+    'Required per craft' => 'Requerido por crafteo',
+    'You have' => 'Tienes',
+    'Price per unit' => 'Precio por unidad',
+    'Total required' => 'Total requerido',
+    'Missing' => 'Falta',
+    'Cost' => 'Costo',
+    'Total cost' => 'Costo total',
+    'MP needed' => 'MP necesarios',
+    'Expected normal output' => 'Resultado normal esperado',
+    'Expected rare output' => 'Resultado raro esperado',
+    'Reset inputs' => 'Restablecer valores',
+    'No ingredients' => 'Sin ingredientes',
+    'Chance' => 'Probabilidad',
+
+    // Wiki: Epic Bosses section
+    'Epic Bosses' => 'Jefes Épicos',
+    'NPC — Epic Bosses' => 'Jefes Épicos',
+
+    // Wiki item search UI
+    'Open item search (press Enter)' => 'Abrir búsqueda de objetos (Enter)',
+    'Search Items' => 'Buscar objetos',
+    'No items found' => 'No se encontraron objetos',
 ];

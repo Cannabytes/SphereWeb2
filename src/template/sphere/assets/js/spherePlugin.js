@@ -18,11 +18,17 @@ $('#enablePlugin').on('change', function () {
     })
 });
 
-// Обработка изменения настроек плагина
+// Обработка изменения настроек плагина (checkbox/select/text)
 $('.pluginSetting').on('change', function () {
-    var setting = $(this).attr('id');
-    var value = $(this).is(':checked');
-    var dataType = $(this).data('type');
+    var $el = $(this);
+    var setting = $el.attr('id') || $el.attr('name');
+    var dataType = $el.data('type') || 'string';
+    var value;
+    if ($el.is(':checkbox')) {
+        value = $el.is(':checked');
+    } else {
+        value = $el.val();
+    }
     var serverPluginID = typeof serverId !== 'undefined' ? serverId : 0;
 
     AjaxSend("/admin/plugin/save/config", "POST", {

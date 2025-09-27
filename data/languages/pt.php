@@ -2154,5 +2154,38 @@ Password: %%password%%',
     'i_agree_server_rules' => 'Li e concordo com as <a href="%s" target="_blank" class="text-primary">Regras do Servidor</a>',
     'personal account' => 'Conta pessoal',
 
+    // Wiki Craft Calculator (recipe_product.html)
+    'Craft recipes' => 'Receitas de craft',
+    'Craft for item' => 'Craft do item',
+    'No recipes found' => 'Nenhuma receita encontrada',
+    'Rare' => 'Raro',
+    'Desired crafts' => 'Crafts desejados',
+    'Set how many times to craft' => 'Defina quantas vezes craftar',
+    'Max crafts from inventory' => 'Máx. crafts pelo inventário',
+    'Apply max' => 'Aplicar máximo',
+    'Calculated from inputs below' => 'Calculado a partir dos dados abaixo',
+    'Rare chance, %' => 'Chance de raro, %',
+    'If the recipe can produce a rare variant' => 'Se a receita puder produzir uma variante rara',
+    'Required per craft' => 'Necessário por craft',
+    'You have' => 'Você tem',
+    'Price per unit' => 'Preço por unidade',
+    'Total required' => 'Total necessário',
+    'Missing' => 'Faltando',
+    'Cost' => 'Custo',
+    'Total cost' => 'Custo total',
+    'MP needed' => 'MP necessário',
+    'Expected normal output' => 'Resultado normal esperado',
+    'Expected rare output' => 'Resultado raro esperado',
+    'Reset inputs' => 'Redefinir valores',
+    'No ingredients' => 'Sem ingredientes',
+    'Chance' => 'Chance',
 
+    // Wiki: Epic Bosses section
+    'Epic Bosses' => 'Chefes Épicos',
+    'NPC — Epic Bosses' => 'Chefes Épicos',
+
+    // Wiki item search UI
+    'Open item search (press Enter)' => 'Abrir busca de itens (Enter)',
+    'Search Items' => 'Buscar itens',
+    'No items found' => 'Nenhum item encontrado',
 ];

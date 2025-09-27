@@ -125,9 +125,11 @@ class server
                     }
                 }
             }
+
             if(self::$server_info==[]){
                 return null;
             }
+
             self::loadStatusServer(null);
 
             if (!empty(self::$server_info)) {
@@ -153,6 +155,7 @@ class server
             }
             return self::$server_info[$id] ?? (end(self::$server_info) instanceof serverModel ? end(self::$server_info) : null);
         }
+
         // Если self::$server_info не пуст, возвращаем первый сервер, иначе null
         return !empty(self::$server_info) ? current(self::$server_info) : null;
     }

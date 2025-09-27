@@ -116,15 +116,32 @@ class plugin
 
     public static function get(string $getNameClass): DynamicPluginSetting
     {
-        $serverId = isset($_POST['serverId']) && $_POST['serverId'] == 0 ? 0 : user::self()->getServerId();
+        $serverId = self::resolveServerIdFromRequest();
         if (isset(self::$plugins[$getNameClass])) {
-            return self::$plugins[$getNameClass];
+            $plugin = self::$plugins[$getNameClass];
+            if ($plugin->pluginServerId === null) {
+                $plugin->pluginServerId = $serverId;
+            }
+            return $plugin;
         }
         $pl                 = new DynamicPluginSetting();
         $pl->pluginName     = $getNameClass;
         $pl->pluginServerId = $serverId;
 
         return $pl;
+    }
+
+    private static function resolveServerIdFromRequest(): int
+    {
+        $rawServerId = $_POST['serverId'] ?? null;
+        if ($rawServerId === '' || $rawServerId === null) {
+            $rawServerId = user::self()->getServerId();
+        }
+        if ($rawServerId === '' || $rawServerId === null) {
+            return 0;
+        }
+
+        return (int) $rawServerId;
     }
 
     public static function __save_activator_plugin(): void

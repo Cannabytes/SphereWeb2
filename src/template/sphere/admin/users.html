@@ -8,8 +8,8 @@
   <div class="row">
     <div class="col-xl-12">
       <div class="card custom-card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <div class="card-title mb-0">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+          <div class="d-flex align-items-center gap-2">
             <a href="/admin" class="avatar border text-muted me-2">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
                 <path
@@ -17,78 +17,109 @@
                 </path>
               </svg>
             </a>
-            {{ phrase('users') }} ( {{getUsers()|length}} )
+            <div>
+              <h6 class="card-title mb-0">{{ phrase('users') }}</h6>
+              <div class="text-muted small">
+                {% if pagination.total_users > 0 %}
+                  {{ pagination.range_start }} – {{ pagination.range_end }} / {{ pagination.total_users }}
+                {% else %}
+                  0 / 0
+                {% endif %}
+              </div>
+            </div>
           </div>
-          <div>
-              <button id="clear-group-filter-btn" class="btn btn-sm btn-light" style="display:none;">
-                  Очистить фильтр
-              </button>
+          <div class="text-muted small">
+            Страница {{ pagination.current }} / {{ pagination.total }}
           </div>
         </div>
         <div class="card-body">
-          <div id="table-loader" class="text-center p-5">
-              <div class="spinner-border text-primary" role="status">
-                  <span class="visually-hidden">Loading...</span>
-              </div>
-              <p class="mt-2 text-muted">{{ phrase('Analyzing data and searching for multiaccounts') }}</p>
+          <div id="user-search-wrapper" class="mb-4">
+            <label for="user-search" class="form-label mb-1">Поиск по email</label>
+            <div class="position-relative">
+              <input type="text" id="user-search" class="form-control" autocomplete="off" placeholder="Введите email">
+              <div id="user-search-results" class="list-group user-search-results shadow-sm d-none"></div>
+            </div>
+            <small class="text-muted">Поиск выполняется мгновенно, минимальная длина запроса — 2 символа.</small>
           </div>
 
-          {# Таблица изначально скрыта, пока идет обработка #}
-          <span class="table-responsive" style="visibility: hidden;">
-            <table id="datatable-users" class="table table-bordered text-nowrap w-100">
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered text-nowrap align-middle mb-0">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>{{ phrase('user') }}</th>
-                  <th>{{ phrase('fingerprint') }}</th>
-                  <th>{{ phrase(114) }}</th>
-                  <th>{{ phrase('Date of entry') }}</th>
-                  <th>{{ phrase('donate_coin') }}</th>
-                  <th class="d-none">Group</th>
+                  <th class="text-center" style="width: 5%;">ID</th>
+                  <th style="width: 35%;">{{ phrase('user') }}</th>
+                  <th style="width: 15%;">{{ phrase(114) }}</th>
+                  <th style="width: 15%;">{{ phrase('Date of entry') }}</th>
+                  <th class="text-center" style="width: 15%;">{{ phrase('donate_coin') }}</th>
                 </tr>
               </thead>
               <tbody>
-                {% for i, user in getUsers() %}
-                <tr>
-                  <td style="width: 1px;">{{user.getId()}}</td>
-                  <td>
-                    <div class="d-flex align-items-center  mt-auto">
-                      <div class="avatar  avatar-md me-1 cover-image" data-bs-image-src="{{user.getAvatar()}}"
-                        style="background: url('{{user.getAvatar()}}') center center;"></div>
-                      <div>
-                        <a href="/admin/user/info/{{user.getId()}}" class="text-default">{{user.getEmail()}} <br>
-                          {{user.getName()}}</a>
-                        <small class="d-block text-muted">{{user.getDateCreate()|date("d F, Y")}}</small>
-                      </div>
-                    </div>
-                  </td>
-
-                  {% set fingerprints = user.getFingerprints() %}
-                  <td style="width: 1px;">
-                      {% if fingerprints %}
-                          {% for finger in fingerprints %}
-                              {{ finger }}{% if not loop.last %}, {% endif %}
-                          {% endfor %}
-                      {% endif %}
-                  </td>
-
-                  <td style="width: 1px;" data-order="{{ user.getDateCreate()|date('YmdHis') }}">{{user.getDateCreate()}}</td>
-                  <td style="width: 1px;" data-order="{{ user.getLastActive()|date('YmdHis') }}">{{user.getLastActive()}}</td>
-                  
-                  <td style="width: 1px;" class="text-center">
-                    <span data-user-id="{{user.getId()}}" data-user-balance="{{user.getDonate()}}"
-                      class="reply-btn btn btn-sm btn-success sendToBalance">
-                      <i class="ri-add-circle-line"></i>
-                    </span><br>
-                    <span id="user_id_count_{{user.getId()}}"
-                      data-user-balance="{{user.getDonate()}}">{{user.getDonate()}}</span>
-                  </td>
-                  <td class="d-none"></td>
-                </tr>
-                {% endfor %}
+                {% if users %}
+                  {% for user in users %}
+                    <tr>
+                      <td class="text-center fw-semibold">{{ user.id }}</td>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <div class="avatar avatar-md flex-shrink-0 me-2 cover-image" style="background:url('/uploads/avatar/{{ user.avatar|e }}') center center;"></div>
+                          <div class="min-w-0">
+                            <a href="/admin/user/info/{{ user.id }}" class="text-default fw-semibold text-truncate d-block">{{ user.email }}</a>
+                            <div class="text-muted small text-truncate">{{ user.name ?? '-' }}</div>
+                            {% if user.access_level %}
+                              <span class="badge bg-light text-dark border mt-1 text-uppercase">{{ user.access_level }}</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </td> 
+                      <td>
+                        <div class="text-muted small">{{ user.date_create_human }}</div>
+                      </td>
+                      <td>
+                        <div class="text-muted small">{{ user.last_activity_human }}</div>
+                      </td>
+                      <td class="text-center">
+                        <span data-user-id="{{ user.id }}" data-user-balance="{{ user.donate_point }}" class="reply-btn btn btn-sm btn-success sendToBalance"><i class="ri-add-circle-line"></i></span>
+                        <div id="user_id_count_{{ user.id }}" class="fw-semibold mt-1" data-user-balance="{{ user.donate_point }}">{{ user.donate_point }}</div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="6" class="text-center text-muted py-4">Пользователи не найдены</td>
+                  </tr>
+                {% endif %}
               </tbody>
             </table>
-          </span>
+          </div>
+
+          {% if pagination.total > 1 %}
+            <nav aria-label="Users pagination" class="mt-4">
+              <ul class="pagination justify-content-center gap-1 flex-wrap">
+                <li class="page-item{% if not pagination.has_prev %} disabled{% endif %}">
+                  <a class="page-link" href="{% if pagination.has_prev %}{{ pagination.base_path }}{% if pagination.prev_page > 1 %}/page/{{ pagination.prev_page }}{% endif %}{% else %}#{% endif %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                {% for p in pagination.pages %}
+                  {% set pageUrl = pagination.base_path %}
+                  {% if p > 1 %}
+                    {% set pageUrl = pageUrl ~ '/page/' ~ p %}
+                  {% endif %}
+                  <li class="page-item{% if p == pagination.current %} active{% endif %}">
+                    {% if p == pagination.current %}
+                      <span class="page-link">{{ p }}</span>
+                    {% else %}
+                      <a class="page-link" href="{{ pageUrl }}">{{ p }}</a>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+                <li class="page-item{% if not pagination.has_next %} disabled{% endif %}">
+                  <a class="page-link" href="{% if pagination.has_next %}{{ pagination.base_path }}{% if pagination.next_page > 1 %}/page/{{ pagination.next_page }}{% endif %}{% else %}#{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -102,7 +133,6 @@
       <input type="hidden" name="userid" value="">
       <div class="modal-header">
         <h6 class="modal-title" id="staticBackdropLabel">{{phrase('balance_topup')}}</h6>
-        </h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -128,189 +158,150 @@
 
 
 {% block css %}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
 <style>
-    #datatable-users thead th.sorting_asc,
-    #datatable-users thead th.sorting_desc {
-        background-color: rgba(13, 110, 253, 0.1) !important;
-    }
+  #user-search-wrapper .user-search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.5rem;
+    max-height: 320px;
+    overflow-y: auto;
+    border-radius: var(--bs-border-radius);
+    z-index: 1050;
+  }
+
+  #user-search-wrapper .user-search-results .list-group-item {
+    cursor: pointer;
+  }
+
+  #user-search-wrapper .user-search-results .avatar {
+    background-size: cover;
+  }
+
+  .multiaccount-badge {
+    font-size: 0.7rem;
+  }
+
+  .avatar.cover-image {
+    background-size: cover;
+  }
 </style>
 {% endblock %}
 
 
 {% block js %}
-<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.6/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
 <script>
-  $(document).ready(function () {
-    multiaccountphrase = "{{phrase('Multiaccount')}}";
-    const fingerprintToRows = new Map();
-    const rowToGroup = new Map();
+  $(function () {
+    const $searchInput = $('#user-search');
+    const $searchResults = $('#user-search-results');
+    const emptyTemplate = '<div class="list-group-item text-muted py-2">Пользователь не найден</div>';
+    const loadingTemplate = '<div class="list-group-item text-muted py-2">Поиск...</div>';
+    const errorTemplate = (message) => `<div class="list-group-item text-danger py-2">${message}</div>`;
+    let debounceId = null;
+  const escapeHtml = (value) => $('<div>').text(value == null ? '' : value).html();
 
-    $('#datatable-users tbody tr').each(function() {
-      const row = $(this);
-      const fingerprintsText = row.find('td:eq(2)').text();
-      if (fingerprintsText) {
-        const fingerprints = fingerprintsText.split(',').map(fp => fp.trim()).filter(fp => fp);
-        if (fingerprints.length > 0) {
-            fingerprints.forEach(fp => {
-                if (!fingerprintToRows.has(fp)) fingerprintToRows.set(fp, []);
-                fingerprintToRows.get(fp).push(row);
-            });
-        }
+    function hideResults() {
+      $searchResults.addClass('d-none').empty();
+    }
+
+    $searchInput.on('input', function () {
+      const query = $(this).val().trim();
+      clearTimeout(debounceId);
+
+      if (query.length < 2) {
+        hideResults();
+        return;
       }
-    });
 
-    let groupIdCounter = 1;
-    const rgbaColors = [
-      'rgba(13, 110, 253, 0.2)',  // Primary
-      'rgba(25, 135, 84, 0.2)',   // Success
-      'rgba(255, 193, 7, 0.2)',   // Warning
-      'rgba(220, 53, 69, 0.2)',   // Danger
-      'rgba(13, 202, 240, 0.2)',  // Info
-      'rgba(108, 117, 125, 0.2)', // Secondary
-      'rgba(33, 37, 41, 0.2)',    // Dark
-      'rgba(248, 249, 250, 0.2)', // Light
-      'rgba(111, 66, 193, 0.2)', // Purple
-      'rgba(214, 51, 132, 0.2)', // Pink
-      'rgba(253, 126, 20, 0.2)',  // Orange
-      'rgba(32, 201, 151, 0.2)',  // Teal
-    ];
+      $searchResults.removeClass('d-none').html(loadingTemplate);
 
-    fingerprintToRows.forEach((rows) => {
-      if (rows.length > 1) {
-        let assignedGroupId = null;
-        for (const row of rows) {
-          if (row.data('group-id')) {
-            assignedGroupId = row.data('group-id');
-            break;
+      debounceId = setTimeout(function () {
+        AjaxSend('/admin/users/search/email', 'POST', { query: query }, true).then(function (response) {
+          if (!response || response.ok === false) {
+            const message = response && response.message ? response.message : 'Ошибка поиска';
+            $searchResults.removeClass('d-none').html(errorTemplate(message));
+            return;
           }
-        }
-        if (!assignedGroupId) assignedGroupId = groupIdCounter++;
-        
-        const color = rgbaColors[(assignedGroupId - 1) % rgbaColors.length];
-        rows.forEach(row => {
-          row.data('group-id', assignedGroupId);
-          rowToGroup.set(row[0], { id: assignedGroupId, color: color });
+
+          if (!response.data || !response.data.length) {
+            $searchResults.removeClass('d-none').html(emptyTemplate);
+            return;
+          }
+
+          const items = response.data.map(function (user) {
+            const avatar = user.avatar ? user.avatar : 'none.jpeg';
+            const avatarUrl = `/uploads/avatar/${encodeURIComponent(avatar)}`;
+            const email = escapeHtml(user.email || '');
+            const name = user.name ? `<div class="text-muted small text-truncate">${escapeHtml(user.name)}</div>` : '';
+            const lastActive = user.last_activity ? `<small class="text-muted">${escapeHtml(user.last_activity)}</small>` : '';
+            return `
+              <a href="/admin/user/info/${user.id}" class="list-group-item list-group-item-action">
+                <div class="d-flex align-items-center">
+                  <div class="avatar avatar-sm flex-shrink-0 me-2 cover-image" style="background:url('${avatarUrl}') center center;"></div>
+                  <div class="min-w-0">
+                    <div class="fw-semibold text-truncate">${email}</div>
+                    ${name}
+                    ${lastActive}
+                  </div>
+                </div>
+              </a>
+            `;
+          }).join('');
+
+          $searchResults.removeClass('d-none').html(items);
+        }).catch(function () {
+          $searchResults.removeClass('d-none').html(errorTemplate('Ошибка поиска'));
         });
+      }, 300);
+    });
+
+    $(document).on('click', function (event) {
+      if (!$(event.target).closest('#user-search-wrapper').length) {
+        hideResults();
       }
     });
 
-    $('#datatable-users tbody tr').each(function() {
-      const row = $(this);
-      const groupInfo = rowToGroup.get(row[0]);
-      const fingerprintCell = row.find('td:eq(2)');
-
-      if (groupInfo) {
-        row.find('td:last').text(groupInfo.id);
-        const styleValue = 'background-color: ' + groupInfo.color + ' !important';
-        row.find('td').attr('style', styleValue);
-        fingerprintCell.html(`<a href="#" class="text-dark fw-bold show-group-btn" data-group-id="${groupInfo.id}">${multiaccountphrase}</a>`);
-      } else {
-        row.find('td:last').text('99999');
-        fingerprintCell.text('');
-      }
-    });
-    
-    var table = $('#datatable-users').DataTable({
-      language: { searchPlaceholder: 'Search...', sSearch: '' },
-      lengthMenu: [[10, 100, 1000, -1], [10, 100, 1000, "All"]],
-      buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-      autoWidth: true,
-      pageLength: 10,
-      order: [[6, 'asc']], 
-      columnDefs: [
-        { targets: 6, visible: false, type: 'num' },
-        { targets: 2, orderable: false }
-      ],
-      initComplete: function(settings, json) {
-          $('#table-loader').hide();
-          $('.table-responsive').css('visibility', 'visible');
+    $searchInput.on('keydown', function (event) {
+      if (event.key === 'Escape') {
+        hideResults();
+        $(this).blur();
       }
     });
 
-    const applyGroupBorders = () => {
-      $('#datatable-users tbody tr td').css({'border-top': '', 'border-bottom': '', 'border-left': '', 'border-right': ''});
-      const visibleRows = table.rows({ page: 'current' }).nodes();
-      
-      $(visibleRows).each(function(index) {
-        const currentRow = $(this);
-        const currentGroupId = currentRow.data('group-id');
-        if (!currentGroupId) return;
-
-        const prevGroupId = index > 0 ? $(visibleRows[index - 1]).data('group-id') : null;
-        const nextGroupId = index < visibleRows.length - 1 ? $(visibleRows[index + 1]).data('group-id') : null;
-        const groupInfo = rowToGroup.get(currentRow[0]);
-        if (!groupInfo) return;
-
-        const borderColor = groupInfo.color.replace(/rgba/g, 'rgb').replace(/,[^,)]+\)/, ')');
-        const borderStyle = `2px solid ${borderColor}`;
-        
-        currentRow.find('td:first-child').css('border-left', borderStyle);
-        currentRow.find('td:last-child').css('border-right', borderStyle);
-        if (currentGroupId !== prevGroupId) currentRow.find('td').css('border-top', borderStyle);
-        if (currentGroupId !== nextGroupId) currentRow.find('td').css('border-bottom', borderStyle);
-      });
-    };
-
-    const clearFilterBtn = $('#clear-group-filter-btn');
-
-    $('#datatable-users tbody').on('click', 'a.show-group-btn', function(e) {
-        e.preventDefault();
-        const groupId = $(this).data('group-id');
-        table.column(6).search('^' + groupId + '$', true, false).draw();
-        clearFilterBtn.show();
-    });
-
-    clearFilterBtn.on('click', function() {
-        table.column(6).search('').draw();
-        $(this).hide();
-    });
-    
-    $('#datatable-users thead').on('click', 'th:eq(2)', function() {
-        table.order([6, 'asc']).draw();
-    });
-
-    table.on('draw', applyGroupBorders);
-    applyGroupBorders();
-
-    var userid = 0;
+    // Balance modal logic
+    let userId = 0;
     $(document).on('click', '.sendToBalance', function () {
-        $('#balance').modal('show');
-        userid = $(this).data('user-id');
-        var userbalance = $(this).data('user-balance');
-        $('input[name="userid"]').val(userid);
-        $('#user-balance-show').text(userbalance);
+      $('#balance').modal('show');
+      userId = $(this).data('user-id');
+      const userBalance = $(this).data('user-balance');
+      $('input[name="userid"]').val(userId);
+      $('#user-balance-show').text(userBalance);
     });
 
     $('#balanceSend').on('click', function () {
-      var count = $('#countBalanceSend').val();
-      var addBonus = $('#isAddBonus').is(':checked');
+      const count = $('#countBalanceSend').val();
+      const addBonus = $('#isAddBonus').is(':checked');
       AjaxSend('/admin/users/sendToBalance', 'POST', {
-        'userid': userid, 'count': count, 'addBonus': addBonus,
+        userid: userId,
+        count: count,
+        addBonus: addBonus,
       }, true).then(function (data) {
         if (data.ok) {
-          let userBalance = $("#user_id_count_" + userid).attr("data-user-balance");
-          let newBalance = parseInt(userBalance) + parseInt(count);
-          if (!isNaN(newBalance)) {
-            $("#user_id_count_" + userid).attr("data-user-balance", newBalance).text(newBalance);
-            $('.sendToBalance[data-user-id="' + userid + '"]').attr("data-user-balance", newBalance);
-            $('#user-balance-show').text(newBalance);
-          }
-          noticeSuccess("{{phrase('balance_topup_successful')}}");
-        } else { noticeError(data.message); }
-        $("#countBalanceSend").val("");
+          const prevBalance = parseInt($('#user_id_count_' + userId).attr('data-user-balance'), 10) || 0;
+          const toAdd = parseInt(count, 10) || 0;
+          const newBalance = prevBalance + toAdd;
+          $('#user_id_count_' + userId).attr('data-user-balance', newBalance).text(newBalance);
+          $('.sendToBalance[data-user-id="' + userId + '"]').attr('data-user-balance', newBalance);
+          $('#user-balance-show').text(newBalance);
+          noticeSuccess("{{ phrase('balance_topup_successful') }}");
+        } else {
+          noticeError(data.message || 'Ошибка пополнения');
+        }
+        $('#countBalanceSend').val('');
         $('#balance').modal('hide');
+      }).catch(function () {
+        noticeError('Ошибка пополнения');
       });
     });
   });

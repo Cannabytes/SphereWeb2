@@ -2137,4 +2137,39 @@ Password: %%password%%',
     'i_agree_server_rules' => 'Έχω διαβάσει και συμφωνώ με τους <a href="%s" target="_blank" class="text-primary">Κανόνες του Διακομιστή</a>',
     'personal account' => 'Προσωπικός λογαριασμός',
 
+    
+    // Wiki Craft Calculator (recipe_product.html)
+    'Craft recipes' => 'Συνταγές κατασκευής',
+    'Craft for item' => 'Κατασκευή αντικειμένου',
+    'No recipes found' => 'Δεν βρέθηκαν συνταγές',
+    'Rare' => 'Σπάνιο',
+    'Desired crafts' => 'Επιθυμητές κατασκευές',
+    'Set how many times to craft' => 'Ορίστε πόσες φορές να κατασκευάσετε',
+    'Max crafts from inventory' => 'Μέγ. κατασκευές από αποθέματα',
+    'Apply max' => 'Εφαρμογή μέγιστου',
+    'Calculated from inputs below' => 'Υπολογισμένο από τις τιμές παρακάτω',
+    'Rare chance, %' => 'Πιθανότητα σπάνιου, %',
+    'If the recipe can produce a rare variant' => 'Αν η συνταγή μπορεί να δώσει σπάνια παραλλαγή',
+    'Required per craft' => 'Απαιτείται ανά κατασκευή',
+    'You have' => 'Έχετε',
+    'Price per unit' => 'Τιμή ανά μονάδα',
+    'Total required' => 'Σύνολο απαιτούμενων',
+    'Missing' => 'Λείπουν',
+    'Cost' => 'Κόστος',
+    'Total cost' => 'Συνολικό κόστος',
+    'MP needed' => 'Απαιτούμενο MP',
+    'Expected normal output' => 'Αναμενόμενο κανονικό αποτέλεσμα',
+    'Expected rare output' => 'Αναμενόμενο σπάνιο αποτέλεσμα',
+    'Reset inputs' => 'Επαναφορά τιμών',
+    'No ingredients' => 'Χωρίς υλικά',
+    'Chance' => 'Πιθανότητα',
+
+    // Wiki: Epic Bosses section
+    'Epic Bosses' => 'Επικοί Αρχηγοί',
+    'NPC — Epic Bosses' => 'Επικοί Αρχηγοί',
+
+    // Wiki item search UI
+    'Open item search (press Enter)' => 'Άνοιγμα αναζήτησης αντικειμένων (Enter)',
+    'Search Items' => 'Αναζήτηση αντικειμένων',
+    'No items found' => 'Δεν βρέθηκαν αντικείμενα',
 ];

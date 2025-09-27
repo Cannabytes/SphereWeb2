@@ -2203,4 +2203,39 @@ Password: %%password%%',
     'i_agree_server_rules' => 'I have read and agree to the <a href="%s" target="_blank" class="text-primary">Server Rules</a>',
     'personal account' => 'Personal account',
 
+	// Wiki Craft Calculator (recipe_product.html)
+	'Craft recipes' => 'Craft recipes',
+	'Craft for item' => 'Craft for item',
+	'No recipes found' => 'No recipes found',
+	'Rare' => 'Rare',
+	'Desired crafts' => 'Desired crafts',
+	'Set how many times to craft' => 'Set how many times to craft',
+	'Max crafts from inventory' => 'Max crafts from inventory',
+	'Apply max' => 'Apply max',
+	'Calculated from inputs below' => 'Calculated from inputs below',
+	'Rare chance, %' => 'Rare chance, %',
+	'If the recipe can produce a rare variant' => 'If the recipe can produce a rare variant',
+	'Required per craft' => 'Required per craft',
+	'You have' => 'You have',
+	'Price per unit' => 'Price per unit',
+	'Total required' => 'Total required',
+	'Missing' => 'Missing',
+	'Cost' => 'Cost',
+	'Total cost' => 'Total cost',
+	'MP needed' => 'MP needed',
+	'Expected normal output' => 'Expected normal output',
+	'Expected rare output' => 'Expected rare output',
+	'Reset inputs' => 'Reset inputs',
+	'No ingredients' => 'No ingredients',
+	'Chance' => 'Chance',
+
+	// Wiki: Epic Bosses section
+	'Epic Bosses' => 'Epic Bosses',
+	'NPC — Epic Bosses' => 'Epic Bosses',
+
+	// Wiki item search UI
+	'Open item search (press Enter)' => 'Open item search (press Enter)',
+	'Search Items' => 'Search Items',
+	'No items found' => 'No items found',
 ];
+

@@ -51,19 +51,31 @@ class DynamicPluginSetting
 
     public function save($data = null)
     {
-        if($data == null){
+        if ($data === null) {
             $data = $_POST;
         }
+
         $setting = $data['setting'] ?? null;
+        if ($setting === null || $setting === '') {
+            return;
+        }
+
         $value   = $data['value'] ?? null;
-        $type    = $data['type'] ?? 'string';
-        $serverId = isset($_POST['serverId']) && $_POST['serverId'] == 0 ? 0 : user::self()->getServerId();
+        $type    = strtolower((string)($data['type'] ?? 'string'));
+        $serverIdSource = $data['serverId'] ?? $this->pluginServerId ?? user::self()->getServerId();
+        if ($serverIdSource === '' || $serverIdSource === null) {
+            $serverIdSource = 0;
+        }
+        $serverId = (int) $serverIdSource;
+        $this->pluginServerId = $serverId;
+
         // Приведение значения к нужному типу
+        // Support arrays passed either as JSON string or native PHP array
         $value = match ($type) {
             'int', 'integer' => (int) $value,
             'float', 'double' => (float) $value,
             'bool', 'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
-            'array' => json_decode($value, true) ?: [],
+            'array' => (is_array($value) ? $value : (json_decode((string)$value, true) ?: [])),
             default => (string) $value,
         };
         $this->__set($setting, $value);
@@ -72,15 +84,15 @@ class DynamicPluginSetting
         $arr = $this->getFilteredData();
 
         sql::sql("DELETE FROM `settings` WHERE `key` = ? AND `serverId` = ?", [
-          '__PLUGIN__' . $this->pluginName,
+            '__PLUGIN__' . $this->pluginName,
             $serverId,
         ]);
 
         sql::run("INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES (?, ?, ?, ?)", [
-          '__PLUGIN__' . $this->pluginName,
-          json_encode($arr, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE),
+            '__PLUGIN__' . $this->pluginName,
+            json_encode($arr, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
             $serverId,
-          time::mysql(),
+            time::mysql(),
         ]);
     }
 }
