@@ -116,7 +116,12 @@
             <div class="d-flex align-items-center">
               <div class="flex-grow-1">
                 <h6 class="mb-0 text-muted">{{phrase('user_balance')}}</h6>
-                <h3 class="display-6 mb-0 text-primary">{{userInfo.getDonate()}}</h3>
+                <h3 id="user_profile_balance_value" data-user-balance="{{userInfo.getDonate()}}" class="display-6 mb-0 text-primary">{{userInfo.getDonate()}}</h3>
+                <div class="mt-2">
+                  <button type="button" class="btn btn-sm btn-success sendToBalance" data-user-id="{{userInfo.getId()}}" data-user-balance="{{userInfo.getDonate()}}">
+                    <i class="ri-add-circle-line me-1"></i> {{ phrase('balance_topup') }}
+                  </button>
+                </div>
               </div>
               <div class="avatar avatar-lg bg-primary-transparent rounded-circle p-2">
                 <i class="ri-coin-line fs-2 text-primary"></i>
@@ -547,6 +552,34 @@
   </div>
 </div>
 
+<!-- Balance modal (reuse from users.html) -->
+<div class="modal fade" id="balance" tabindex="-1" aria-labelledby="balance" data-bs-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <input type="hidden" name="userid" value="">
+      <div class="modal-header">
+        <h6 class="modal-title" id="staticBackdropLabel">{{phrase('balance_topup')}}</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{phrase('user_balance')}} : <span class="fs-15 fw-semibold" id="user-balance-show"></span>
+        {{phrase('donate_coin')}}
+        <br>
+        <label for="countBalanceSend" class="form-label">{{phrase('add_donate_coins')}}</label>
+        <input value="" type="text" class="form-control" name="count" id="countBalanceSend" placeholder="100">
+
+        <div class="form-check form-switch mt-2">
+          <input id="isAddBonus" name="addBonus" type="checkbox" class="form-check-input">
+          <label class="form-check-label" for="isAddBonus">{{phrase('add_topup_bonuses')}}</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="balanceSend" type="submit" class="btn btn-sm btn-success">{{ phrase(364) }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <style>
 /* Стили для временной шкалы */
 .timeline-container {
@@ -858,6 +891,49 @@ $(document).ready(function() {
   // Очистка состояния валидации при изменении значения
   $('input, select').on('change', function() {
     $(this).removeClass('is-invalid');
+  });
+
+  // Balance modal logic (profile page)
+  let profileUserId = null;
+  $(document).on('click', '.sendToBalance', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    profileUserId = $(this).data('user-id');
+    const userBalance = $(this).data('user-balance') || $('#user_profile_balance_value').data('user-balance') || 0;
+    $('input[name="userid"]').val(profileUserId);
+    $('#user-balance-show').text(userBalance);
+    $('#balance').modal('show');
+  });
+
+  $('#balanceSend').on('click', function () {
+    const count = $('#countBalanceSend').val();
+    const addBonus = $('#isAddBonus').is(':checked');
+    if (!profileUserId) return noticeError('User ID not set');
+
+    AjaxSend('/admin/users/sendToBalance', 'POST', {
+      userid: profileUserId,
+      count: count,
+      addBonus: addBonus,
+    }, true).then(function (data) {
+      if (data.ok) {
+        // update profile balance display
+        const prev = parseInt($('#user_profile_balance_value').attr('data-user-balance'), 10) || 0;
+        const toAdd = parseInt(count, 10) || 0;
+        const newBalance = prev + toAdd;
+        $('#user_profile_balance_value').attr('data-user-balance', newBalance).text(newBalance);
+        // update any other sendToBalance buttons for this user
+        $('.sendToBalance[data-user-id="' + profileUserId + '"]').attr('data-user-balance', newBalance);
+        $('#user-balance-show').text(newBalance);
+        noticeSuccess("{{ phrase('balance_topup_successful') }}");
+      } else {
+        noticeError(data.message || 'Ошибка пополнения');
+      }
+      $('#countBalanceSend').val('');
+      $('#balance').modal('hide');
+    }).catch(function () {
+      noticeError('Ошибка пополнения');
+    });
   });
 });
 </script>

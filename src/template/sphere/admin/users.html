@@ -160,7 +160,6 @@
 {% block css %}
 <style>
   #user-search-wrapper .user-search-results {
-    position: absolute;
     top: 100%;
     left: 0;
     right: 0;
@@ -172,12 +171,21 @@
   }
 
   #user-search-wrapper .user-search-results .list-group-item {
-    cursor: pointer;
+      cursor: pointer;
   }
 
   #user-search-wrapper .user-search-results .avatar {
     background-size: cover;
   }
+ 
+    #user-search-wrapper .user-search-results .avatar {
+      background-size: cover;
+    }
+
+    /* small spacing for the balance/topup button inside suggestion items */
+    #user-search-wrapper .user-search-results .sendToBalance {
+      margin-left: 0.5rem;
+    }
 
   .multiaccount-badge {
     font-size: 0.7rem;
@@ -235,8 +243,9 @@
             const email = escapeHtml(user.email || '');
             const name = user.name ? `<div class="text-muted small text-truncate">${escapeHtml(user.name)}</div>` : '';
             const lastActive = user.last_activity ? `<small class="text-muted">${escapeHtml(user.last_activity)}</small>` : '';
+            const donatePoint = typeof user.donate_point !== 'undefined' ? user.donate_point : 0;
             return `
-              <a href="/admin/user/info/${user.id}" class="list-group-item list-group-item-action">
+              <a href="/admin/user/info/${user.id}" class="list-group-item list-group-item-action d-flex align-items-center">
                 <div class="d-flex align-items-center">
                   <div class="avatar avatar-sm flex-shrink-0 me-2 cover-image" style="background:url('${avatarUrl}') center center;"></div>
                   <div class="min-w-0">
@@ -244,6 +253,11 @@
                     ${name}
                     ${lastActive}
                   </div>
+                </div>
+                <div class="ms-auto">
+                  <button type="button" class="btn btn-sm btn-success sendToBalance" data-user-id="${user.id}" data-user-balance="${donatePoint}" title="{{ phrase('balance_topup') }}">
+                    <i class="ri-add-circle-line"></i>
+                  </button>
                 </div>
               </a>
             `;
@@ -271,7 +285,12 @@
 
     // Balance modal logic
     let userId = 0;
-    $(document).on('click', '.sendToBalance', function () {
+    // Use event delegation for buttons in table and search results.
+    $(document).on('click', '.sendToBalance', function (e) {
+      // Prevent the default action when this button is inside an <a> in the search results
+      e.preventDefault();
+      e.stopPropagation();
+
       $('#balance').modal('show');
       userId = $(this).data('user-id');
       const userBalance = $(this).data('user-balance');
