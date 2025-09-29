@@ -2197,7 +2197,7 @@ Email: %%email%l%
     'Max crafts from inventory' => 'Макс. крафтів за інвентарем',
     'Apply max' => 'Застосувати максимум',
     'Calculated from inputs below' => 'Обчислюється з даних нижче',
-    'Rare chance, %' => 'Шанс рідкісного, %',
+    'Rare chance' => 'Шанс рідкісного, %',
     'If the recipe can produce a rare variant' => 'Якщо рецепт може дати рідкісний варіант',
     'Required per craft' => 'Потрібно на один крафт',
     'You have' => 'У вас є',
