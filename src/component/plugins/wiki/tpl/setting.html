@@ -29,8 +29,8 @@
         </div>
         <div class="card-body">
             {% if not sqliteEnabled %}
-            <div class="alert alert-warning" role="alert">
-                <strong>SQLite не доступен.</strong> Для работы плагина требуется расширение <code>sqlite3</code> в PHP. Включите его в конфигурации PHP (php.ini) и перезапустите веб-сервер. После этого вернитесь на эту страницу для активации плагина.
+            <div class="alert alert-info" role="alert">
+                <strong>SQLite не доступен.</strong> Для работы плагина требуется расширение <code>sqlite3</code> в PHP. Включите его в конфигурации PHP (php.ini). После этого вернитесь на эту страницу для активации плагина.
             </div>
             {% endif %}
             {% if pluginActive == false %}
