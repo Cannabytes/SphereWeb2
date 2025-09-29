@@ -1,0 +1,192 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="wiki-subnav mb-3">
+                <div class="subnav-header d-flex align-items-center gap-3 flex-wrap mb-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="try{if(history.length > 1){history.back();}else{location.href='/wiki';}}catch(e){location.href='/wiki';}">{{ phrase('Back') }}</button>
+                    <a href="/wiki" class="back-link d-inline-flex align-items-center gap-2">
+                        <span class="chevron" aria-hidden="true">←</span>
+                        <span class="label">{{ phrase('Library') }}</span>
+                    </a>
+                    <h1 class="h4 m-0 fw-semibold page-title">{{ phrase('NPC — Monsters') }}</h1>
+                </div>
+                <p class="small text-muted mb-0">Список монстров по диапазонам уровней. Выберите диапазон, чтобы отфильтровать и просмотреть подробные данные по монстрам.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <div class="btn-group mb-2" role="group" aria-label="Выбор уровней">
+                            {# Диапазоны: 1-10 ... 71-80; добавляем 81+ только если есть такие монстры #}
+                            {% set base_ranges = ['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80'] %}
+                            {% set level_ranges = has81plus ? base_ranges|merge(['81+']) : base_ranges %}
+                            {% for range in level_ranges %}
+                            <a href="/wiki/npcs/monsters/{{ range }}" class="btn btn-outline-primary {% if selected_range == range %}active{% endif %}">{{ range }}</a>
+                            {% endfor %}
+                        </div>
+                        <div class="ms-auto mb-2">
+                            <div class="d-flex" style="min-width:260px;">
+                                <input id="wiki-npc-search" type="search" class="form-control form-control-sm me-2" placeholder="{{ phrase('Open search (press Enter)') }}" aria-label="Search NPCs">
+                                <button id="wiki-npc-go" type="button" class="btn btn-sm text-muted" title="{{ phrase('Open search') }}">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {# Inline NPC search copied from index wiki page #}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if npc_list is defined and npc_list|length > 0 %}
+            {% include 'wiki/tpl/npcs_table_server.html' %}
+            {% if pages is defined and pages > 1 %}
+            <nav aria-label="Pagination" class="mt-3">
+                <ul class="pagination pagination-sm flex-wrap">
+                    {% set baseUrl = '/wiki/npcs/monsters/' ~ selected_range %}
+                    {% set q = '' %}
+                    {% if page > 1 %}
+                    <li class="page-item"><a class="page-link" href="{{ baseUrl }}?page=1">«</a></li>
+                    <li class="page-item"><a class="page-link" href="{{ baseUrl }}?page={{ page - 1 }}">‹</a></li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">«</span></li>
+                    <li class="page-item disabled"><span class="page-link">‹</span></li>
+                    {% endif %}
+
+                    {% set window = 3 %}
+                    {% set start = page - window %}
+                    {% if start < 1 %}{% set start=1 %}{% endif %} {% set end=page + window %} {% if end> pages %}{% set
+                        end = pages %}{% endif %}
+                        {% if start > 1 %}
+                        <li class="page-item"><a class="page-link" href="{{ baseUrl }}?page=1">1</a></li>
+                        {% if start > 2 %}<li class="page-item disabled"><span class="page-link">…</span></li>{% endif
+                        %}
+                        {% endif %}
+                        {% for p in range(start, end) %}
+                        {% if p == page %}
+                        <li class="page-item active"><span class="page-link">{{ p }}</span></li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ baseUrl }}?page={{ p }}">{{ p }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if end < pages %} {% if end < pages - 1 %}<li class="page-item disabled"><span
+                                class="page-link">…</span></li>{% endif %}
+                            <li class="page-item"><a class="page-link" href="{{ baseUrl }}?page={{ pages }}">{{ pages
+                                    }}</a></li>
+                            {% endif %}
+
+                            {% if page < pages %} <li class="page-item"><a class="page-link"
+                                    href="{{ baseUrl }}?page={{ page + 1 }}">›</a></li>
+                                <li class="page-item"><a class="page-link" href="{{ baseUrl }}?page={{ pages }}">»</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled"><span class="page-link">›</span></li>
+                                <li class="page-item disabled"><span class="page-link">»</span></li>
+                                {% endif %}
+                </ul>
+                <div class="small text-muted">{{ phrase('Page') }} {{ page }} / {{ pages }} • {{ phrase('Total') }}: {{ total }} • {{ phrase('Per page')|default('Per page') }}: {{
+                    per_page }}</div>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="alert alert-info">{{ phrase('No monsters for range') }}</div>
+            {% endif %}
+        </div>
+    </div>
+    <!-- NPC Search Modal (same structure as index.html) -->
+    <div class="modal fade" id="wikiNpcSearchModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ phrase('Search NPCs') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column">
+                    <div class="mb-3">
+                        <input id="wiki-npc-modal-input" type="search" class="form-control form-control-lg" placeholder="{{ phrase('Type at least X characters to start searching…')|replace({'X': (wiki_min_search_len|default(4))}) }}" autofocus>
+                    </div>
+                    <div id="wiki-npc-modal-results" style="flex:1 1 auto; min-height:0; overflow:auto; padding-right:6px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/src/component/plugins/wiki/tpl/css/_wiki_subnav.css">
+{% endblock %}
+
+{% block js %}
+<script>
+// NPC Search (same implementation as index.html)
+(function(){
+    const sidebarInput = document.getElementById('wiki-npc-search');
+    const openBtn = document.getElementById('wiki-npc-go');
+    const modalEl = document.getElementById('wikiNpcSearchModal');
+    const modalInputId = 'wiki-npc-modal-input';
+    const resultsId = 'wiki-npc-modal-results';
+    if(!modalEl) return;
+
+    const bsModal = new bootstrap.Modal(modalEl, { keyboard: true });
+    const MIN_LEN = (function(){ try { return Math.max(1, parseInt('{{ wiki_min_search_len|default(4) }}', 10)); } catch(e){ return 4; } })();
+    const MSG_SEARCHING = "{{ phrase('Searching…')|e('js') }}";
+    const MSG_HINT_INLINE = "{{ phrase('Enter at least X characters to search')|e('js') }}".replace('X', MIN_LEN);
+    const MSG_UNEXPECTED = "{{ phrase('Unexpected response')|e('js') }}";
+    const MSG_FAILED = "{{ phrase('Search failed')|e('js') }}";
+    const MSG_NONE = "{{ phrase('No NPCs found')|e('js') }}";
+
+    let pendingPrefill = null;
+    function openModal(prefill){ pendingPrefill = typeof prefill === 'string' ? prefill : ''; bsModal.show(); }
+    openBtn && openBtn.addEventListener('click', function(){ openModal(sidebarInput && sidebarInput.value ? sidebarInput.value : ''); });
+    sidebarInput && sidebarInput.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); openModal(sidebarInput.value); } });
+
+    let modalOpen = false; modalEl.addEventListener('shown.bs.modal', function(){ modalOpen = true; }); modalEl.addEventListener('hidden.bs.modal', function(){ modalOpen = false; });
+    sidebarInput && sidebarInput.addEventListener('input', function(e){ try { const q=(e.target.value||'').trim(); if(q.length===0) return; if(modalOpen) return; openModal(q); } catch(err){} });
+
+    let controller = null; let debounceTimer = null;
+    function escapeHtml(s){ const map={ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;' }; return String(s).replace(/[&<>"']/g, c=>map[c]||c); }
+    function renderModalMessage(msg, type='info'){ const el = document.getElementById(resultsId); if(el) el.innerHTML = '<div class="alert alert-'+(type==='error'?'danger':'info')+' mb-0">'+msg+'</div>'; }
+    function renderModalResults(items){ const el=document.getElementById(resultsId); if(!el) return; if(!items||!items.length){ renderModalMessage(MSG_NONE); return; } const list=document.createElement('div'); list.className='list-group'; items.forEach(it=>{ const a=document.createElement('a'); a.className='list-group-item list-group-item-action'; a.href='/wiki/npc/id/' + encodeURIComponent(it.id); const imgSrc = it.image ? it.image : '/src/component/plugins/wiki/tpl/img/other/nonpc.webp'; a.innerHTML = '<div class="d-flex align-items-center gap-2">'
+            + '<img src="'+escapeHtml(imgSrc)+'" width="48" height="48" class="rounded" style="object-fit:cover;" onerror="this.src=\'/src/component/plugins/wiki/tpl/img/other/nonpc.webp\'" loading="lazy">'
+            + '<div class="flex-fill ms-2">'
+                + '<div class="d-flex justify-content-between align-items-start">'
+                    + '<div>'
+                        + '<div class="fw-semibold">' + escapeHtml(it.name) + '</div>'
+                        + '<div class="small text-muted">Lv. ' + escapeHtml(String(it.level)) + '</div>'
+                    + '</div>'
+                    + '<div class="text-muted small ms-3 text-end">' + escapeHtml(it.type || '') + '</div>'
+                + '</div>'
+            + '</div>'
+        + '</div>'; list.appendChild(a); }); el.innerHTML=''; el.appendChild(list); }
+
+    function onModalInput(e){ const q=(e.target.value||'').trim(); if(sidebarInput){ try{ sidebarInput.value=q; }catch(e){} } if(q.length<MIN_LEN){ renderModalMessage(MSG_HINT_INLINE); return; } clearTimeout(debounceTimer); debounceTimer=setTimeout(()=>{ doSearch(q); }, 220); }
+    function doSearch(q){ renderModalMessage(MSG_SEARCHING); if(controller && typeof controller.abort==='function') try{ controller.abort(); }catch(e){} controller=(typeof AbortController!=='undefined')?new AbortController():null; fetch('/wiki/npcs/search?q='+encodeURIComponent(q), { credentials:'same-origin', signal: controller?controller.signal:undefined }) .then(r=>{ if(!r.ok) throw new Error('network'); return r.json(); }) .then(json=>{ if(json && json.items){ renderModalResults(json.items); } else if(json && json.error){ if(json.error==='too_short') renderModalMessage(MSG_HINT_INLINE); else renderModalMessage('Error: '+escapeHtml(json.error),'error'); } else { renderModalMessage(MSG_UNEXPECTED,'error'); } }).catch(err=>{ if(err && err.name==='AbortError') return; renderModalMessage(MSG_FAILED,'error'); }); }
+
+    modalEl.addEventListener('shown.bs.modal', function(){ const mi=document.getElementById(modalInputId); if(!mi) return; mi.removeEventListener('input', onModalInput); mi.addEventListener('input', onModalInput); mi.addEventListener('keydown', function(e){ if(e.key==='Escape'){ bsModal.hide(); } }); if(pendingPrefill!==null){ try{ mi.value=pendingPrefill||''; setTimeout(()=>{ try{ mi.focus(); mi.setSelectionRange(mi.value.length, mi.value.length); }catch(e){} }, 120); if((mi.value||'').trim().length>=MIN_LEN){ doSearch(mi.value.trim()); } else { renderModalMessage(MSG_HINT_INLINE); } }catch(e){} pendingPrefill=null; } else { setTimeout(()=>{ try{ mi.focus(); mi.select(); }catch(e){} }, 80); } });
+    modalEl.addEventListener('hidden.bs.modal', function(){ const mi=document.getElementById(modalInputId); if(mi) mi.removeEventListener('input', onModalInput); if(controller && typeof controller.abort==='function') try{ controller.abort(); }catch(e){} controller=null; debounceTimer && clearTimeout(debounceTimer); });
+})();
+</script>
+<style>
+/* Scroll & list styling same as index */
+.modal-dialog-scrollable .modal-body { overflow-y: hidden; }
+#wiki-npc-modal-results { overflow:auto; max-height:none; padding-right:6px; min-height:96px; }
+#wiki-npc-modal-results .list-group { margin-bottom:0; }
+#wiki-npc-modal-results::-webkit-scrollbar { width:10px; }
+#wiki-npc-modal-results::-webkit-scrollbar-track { background:transparent; }
+#wiki-npc-modal-results::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.12); border-radius:8px; }
+#wiki-npc-modal-results { scrollbar-width:thin; scrollbar-color:rgba(0,0,0,0.12) transparent; }
+#wiki-npc-modal-results .list-group .list-group-item { padding:8px 12px; }
+</style>
+{% endblock %}
+ 

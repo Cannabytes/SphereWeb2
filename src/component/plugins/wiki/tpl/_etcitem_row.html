@@ -1,0 +1,26 @@
+<tr>
+    <td class="text-center align-middle">
+        {% if i.icon %}
+        <img src="{{ get_icon(i.icon) }}" width="32" height="32" class="rounded" alt="" loading="lazy"
+            onerror="this.style.display='none'">
+        {% endif %}
+    </td>
+    <td class="align-middle">
+        <div class="d-flex flex-column">
+            <div class="d-flex align-items-center gap-2">
+                <span class="fw-semibold">{{ i.name }}</span>
+                {# Admin edit links removed: plugin no longer exposes built-in CRUD pages #}
+                {% if i.is_questitem in ['1','true','yes'] %}
+                <span class="badge bg-warning text-dark small">Quest</span>
+                {% endif %}
+            </div>
+            <div class="small text-muted mt-1">
+                {% include 'wiki/tpl/_loot_icons.html' with { 'item': i, 'compact': true } %}
+            </div>
+            <span class="text-muted small">ID: {{ i.id }}</span>
+        </div>
+    </td>
+    <td class="text-center align-middle">{% if i.is_stackable in ['1','true','yes'] %}Да{% else %}Нет{% endif %}</td>
+    <td class="text-end align-middle">{{ i.price_formatted|default('-') }}</td>
+    <td class="text-end align-middle">{{ i.weight|default('-') }}</td>
+</tr>

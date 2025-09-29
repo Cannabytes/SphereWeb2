@@ -1,0 +1,289 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="wiki-subnav mb-3">
+                <div class="subnav-header d-flex align-items-center gap-3 flex-wrap mb-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="try{if(history.length > 1){history.back();}else{location.href='/wiki';}}catch(e){location.href='/wiki';}">{{ phrase('Back') }}</button>
+                    <a href="/wiki" class="back-link d-inline-flex align-items-center gap-2">
+                        <span class="chevron" aria-hidden="true">←</span>
+                        <span class="label">{{ phrase('Library') }}</span>
+                    </a>
+                    <h1 class="h4 m-0 fw-semibold page-title">{{ phrase('Armor Sets') }}</h1>
+                </div>
+                <p class="small text-muted mb-0">{{ phrase('Armor sets description') }}</p>
+            </div>
+        </div>
+    </div>
+
+    {% if armorSetsByGrade is empty %}
+    <div class="alert alert-warning">{{ phrase('No armor sets data') }}</div>
+    {% else %}
+    {% for grade, sets in armorSetsByGrade %}
+    <div class="card mb-4">
+        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <div>
+                <h5 class="mb-1">{{ armorSetGradeInfo[grade].title|default(phrase('Grade') ~ ' ' ~ grade) }} ({{ grade }})</h5>
+                {% if armorSetGradeInfo[grade] is defined %}
+                <div class="small text-muted">{{ phrase('Level') }}: {{ armorSetGradeInfo[grade].level }} — {{
+                    armorSetGradeInfo[grade].desc }}</div>
+                {% endif %}
+            </div>
+            <span class="badge bg-primary align-self-start align-self-md-center mt-2 mt-md-0">{{ sets|length }}</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm mb-0 align-middle armorset-table">
+                <thead class="table-light">
+                    <tr>
+                        <th style="min-width:240px">{{ phrase('Set (Chest)') }}</th>
+                        <th class="text-center">{{ phrase('Legs') }}</th>
+                        <th class="text-center">{{ phrase('Head') }}</th>
+                        <th class="text-center">{{ phrase('Hands') }}</th>
+                        <th class="text-center">{{ phrase('Feet') }}</th>
+                        <th class="text-center">{{ phrase('Shield') }}</th>
+                        <th style="min-width:240px">{{ phrase('Bonuses') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for set in sets %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                {% if set.chest and set.chest.icon %}
+                                <img src="{{ get_icon(set.chest.icon) }}" alt="" width="38" height="38" class="rounded"
+                                    loading="lazy" onerror="this.style.display='none'">
+                                {% endif %}
+                                {# chest icon only; loot flags are rendered under the chest name below #}
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">{{ grade_img(set.chest.crystal_type|default(null))|raw }} {{ set.chest.name|default('Chest ' ~ set.id) }}</span>
+                                    <div class="text-muted extra-line small mt-1">
+                                        {# Show loot flags instead of raw ID; keep ID in title for accessibility #}
+                                        {# Show loot flags if any; otherwise show link to item page using ID as fallback #}
+                                        {% set __drop  = set.chest.is_drop  is defined ? ((set.chest.is_drop  ~ '') | lower) : '' %}
+                                        {% set __sweep = set.chest.is_sweep is defined ? ((set.chest.is_sweep ~ '') | lower) : '' %}
+                                        {% set __craft = set.chest.is_craft is defined ? ((set.chest.is_craft ~ '') | lower) : '' %}
+                                        {% set _drop  = __drop  in ['1','true','yes','y','on'] %}
+                                        {% set _spoil = __sweep in ['1','true','yes','y','on'] %}
+                                        {% set _craft = (__craft in ['1','true','yes','y','on']) or (set.chest.recipe_id is defined and set.chest.recipe_id not in [0,'0',null,'',false]) %}
+                                        {% if _craft or _drop or _spoil %}
+                                            {% include 'wiki/tpl/_loot_icons.html' with { 'item': set.chest } %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        {% set slots = ['legs','head','gloves','feet','shield'] %}
+                        {% for slot in slots %}
+                        <td class="text-center">
+                            {% if set.parts[slot] is defined %}
+                            <div class="d-flex flex-column gap-1">
+                                    {% for item in set.parts[slot] %}
+                                <span class="d-inline-flex align-items-center gap-1 small armorset-item-variant"
+                                    title="{{ item.name }} (ID {{ item.id }})">
+                                    {% if item.icon %}<img src="{{ get_icon(item.icon) }}" width="24" height="24" alt=""
+                                        class="rounded" loading="lazy" onerror="this.style.display='none'">{% endif %}
+                                    <div class="d-flex flex-column" style="max-width:120px">
+                                        <span class="">{{ grade_img(item.crystal_type|default(null))|raw }} {{ item.name }}</span>
+                                        <div class="mt-1">
+                                            {% include 'wiki/tpl/_loot_icons.html' with { 'item': item, 'compact': true } %}
+                                        </div>
+                                    </div>
+                                </span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                        <td>
+                            <div class="d-flex flex-column gap-1 small">
+                           
+                                {% if set.attributes is not empty %}
+                                <div>
+                                    {% for a in set.attributes %}
+                                    <span class="text-dark fw-normal me-1 mb-1">{{ a.label }} {{
+                                        a.formatted }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if set.skills is not empty %}
+                                <div class="d-flex flex-column gap-1">
+                                    {% for sk in set.skills %}
+                                    <div class="d-flex align-items-start gap-2">
+                                        {% if sk.icon_path is defined and sk.icon_path %}
+                                        <img src="{{ sk.icon_path }}" width="20" height="20" class="skill-icon" alt="" loading="lazy">
+                                        {% endif %}
+                                        <div>
+                                            
+                                            <div class="fs-6 ">{{ sk.name|default('Skill ' ~ sk.id) }} <span class="opacity-75"> Lv.{{ sk.level }}</span></div>
+                                              {% for txt in sk.effects %}
+                                                <span class="badge rounded-pill bg-dark-transparent me-1 mb-1">{{ txt.text }}</span>
+                                              {% endfor %}
+
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if set.chest.item_skills is defined and set.chest.item_skills is not empty %}
+                                <div class="mt-1">
+                                    <div class="small text-muted">{{ phrase('Item skills') }}</div>
+                                    <div class="d-flex flex-column gap-1">
+                                        {% for itk in set.chest.item_skills %}
+                                        <div class="d-flex align-items-start gap-2">
+                                            {% if itk.icon_path is defined and itk.icon_path %}
+                                            <img src="{{ itk.icon_path }}" width="18" height="18" class="skill-icon" alt="" loading="lazy">
+                                            {% endif %}
+                                            <div>
+                                                <div class="fs-6 ">{{ itk.name|default('Skill ' ~ itk.id) }} <span class="opacity-75">Lv.{{ itk.level }}</span></div>
+                                                {% if itk.effect_text %}
+                                                <div class="small effect-text">{{ itk.effect_text }}</div>
+                                                {% elseif itk.effects is defined and itk.effects is not empty %}
+                                                <div class="small text-muted">
+                                                        {% for e in itk.effects %}
+                                                        <span class="badge rounded-pill bg-dark-transparent me-1 mb-1">{{ e.formatted }} {{ e.label }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% else %}
+                                                <div class="small text-muted">{{ phrase('No bonus data') }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if set.shield_skills is not empty %}
+                                <div class="mt-1">
+                                    <span class="text-muted">{{ phrase('+ Shield') }}</span>
+                                    <div class="d-flex flex-column gap-1">
+                                        {% for sk in set.shield_skills %}
+                                        <div class="d-flex align-items-start gap-2">
+                                            {% if sk.icon_path is defined and sk.icon_path %}
+                                            <img src="{{ sk.icon_path }}" width="20" height="20" class="skill-icon" alt="" loading="lazy">
+                                            {% endif %}
+                                            <div>
+                                                <div class="fs-6 ">{{ sk.name|default('Skill ' ~ sk.id) }} <span class="opacity-75">Lv.{{ sk.level }}</span></div>
+                                                
+                                                 {% for txt in sk.effects %}
+                                                    <span class="badge rounded-pill bg-dark-transparent me-1 mb-1">{{ txt.text }}</span>
+                                                 {% endfor %} 
+                                                
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if set.enchant6_skill %}
+                                <div class="mt-1">
+                                    <span class="text-warning">{{ phrase('+6 all parts') }}</span>
+                                    <div class="d-flex align-items-start gap-1 mt-1">
+                                        <div class="d-flex align-items-start gap-2">
+                                            {% if set.enchant6_skill.icon_path is defined and set.enchant6_skill.icon_path %}
+                                            <img src="{{ set.enchant6_skill.icon_path }}" width="20" height="20" class="skill-icon" alt="" loading="lazy">
+                                            {% endif %}
+                                            <div>
+                                                <div class="fs-6 ">{{ set.enchant6_skill.name|default('Skill ' ~ set.enchant6_skill.id) }} <span class="opacity-75">Lv.{{ set.enchant6_skill.level }}</span></div>
+                                                {% if set.enchant6_skill.effect_text %}
+
+                                                {% for txt in set.enchant6_skill.effects %}
+                                                  <span class="badge rounded-pill bg-dark-transparent me-1 mb-1">{{ txt.text }}</span>
+                                                 {% endfor %}
+
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+ 
+</div>
+
+<style>
+    .armorset-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme-mode=light] .armorset-table tbody tr:hover {
+        background: rgba(0, 0, 0, 0.035);
+    }
+
+    .armorset-item-variant {
+        padding: 2px 4px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme-mode=light] .armorset-item-variant {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .skill-wrap {
+        position: relative;
+        display: inline-flex;
+    }
+
+    .skill-icon {
+        border-radius: 3px;
+    }
+
+    .skill-pop {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(100% + 6px);
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        padding: 5px 7px;
+        border-radius: 6px;
+        white-space: nowrap;
+        font-size: 11px;
+        line-height: 1;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity .12s ease, transform .12s ease;
+        z-index: 9999;
+    }
+
+    .skill-wrap:hover .skill-pop {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-4px);
+    }
+
+    .skill-pop::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        transform: translateX(-50%) rotate(45deg);
+        width: 8px;
+        height: 8px;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 2px;
+    }
+
+    .extra-line {
+        line-height: 1.0;
+    }
+</style>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/src/component/plugins/wiki/tpl/css/_wiki_subnav.css">
+{% endblock %}

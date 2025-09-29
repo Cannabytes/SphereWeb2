@@ -1,0 +1,36 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <h2 class="mb-2">{{ phrase('NPC — Raid Bosses') }}</h2>
+            <div class="mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="try{if(history.length > 1){history.back();}else{location.href='/wiki';}}catch(e){location.href='/wiki';}">{{ phrase('Back') }}</button>
+                    <a href="/wiki" class="btn btn-sm btn-outline-secondary">{{ phrase('Back to wiki') }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <div class="btn-group mb-2" role="group" aria-label="{{ phrase('Select levels') }}">
+                            {% set base_ranges = ['20-30','31-40','41-50','51-60','61-70','71-80'] %}
+                            {% set level_ranges = has81plus ? base_ranges|merge(['81+']) : base_ranges %}
+                            {% for range in level_ranges %}
+                            <a href="/wiki/npcs/raidboses/{{ range }}" class="btn btn-outline-danger {% if selected_range == range %}active{% endif %}">{{ range }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'wiki/tpl/npcs_table_server.html' %}
+</div>
+{% endblock %}

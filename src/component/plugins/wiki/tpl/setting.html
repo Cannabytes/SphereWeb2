@@ -1,0 +1,728 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card custom-card shadow-lg rounded">
+        <div class="card-header justify-content-between">
+            <div class="card-title">
+                <a href="/admin/extensions/paid" class="avatar border text-muted me-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                    </svg>
+                </a>
+                {{ phrase('Wiki settings') }}
+                <div class="mt-1 small">
+                    {% if sqliteEnabled %}
+                        <span class="badge bg-success">SQLite OK</span>
+                    {% else %}
+                        <span class="badge bg-danger">SQLite НЕ включен</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="prism-toggle">
+                <div class="custom-toggle-switch d-flex align-items-center">
+                    <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}" type="checkbox" {% if pluginActive %}checked{% endif %} {% if not sqliteEnabled %}disabled{% endif %}>
+                    <label for="enablePlugin" class="label-success {% if not sqliteEnabled %}opacity-50{% endif %}"></label>
+                    <span class="ms-3">{{phrase('Activating the plugin')}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if not sqliteEnabled %}
+            <div class="alert alert-warning" role="alert">
+                <strong>SQLite не доступен.</strong> Для работы плагина требуется расширение <code>sqlite3</code> в PHP. Включите его в конфигурации PHP (php.ini) и перезапустите веб-сервер. После этого вернитесь на эту страницу для активации плагина.
+            </div>
+            {% endif %}
+            {% if pluginActive == false %}
+            <div class="alert alert-danger" role="alert">
+                {{phrase('plugin_is_disabled_need_active')|raw}}
+            </div>
+            {% endif %}
+            <div class="form-check mb-2">
+                <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value="" id="showMainPage" {% if setting.showMainPage %}checked{% endif %} {% if pluginActive == false %}disabled{% endif %}>
+                <label class="form-check-label" for="showMainPage">
+                    {{ phrase('Show on main page') }}
+                </label>
+            </div>
+            <div class="form-check mb-4">
+                <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value="" id="addToMenu" {% if setting.addToMenu %}checked{% endif %} {% if pluginActive == false %}disabled{% endif %}>
+                <label class="form-check-label" for="addToMenu">
+                    {{ phrase('Add to menu') }}
+                </label>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Базы знаний NPC (локальные и на сервере)</label>
+                <ul class="list-group mb-2">
+                    {# Собираем карты локальных и серверных баз #}
+                    {% set localMap = {} %}
+                    {% for db in dbListUnified %}
+                        {% if db.isDownloaded %}
+                            {% set localMap = localMap|merge({ (db.name): db }) %}
+                        {% endif %}
+                    {% endfor %}
+                    {% set allNames = [] %}
+                    {% for db in dbListUnified %}
+                        {% if db.name not in allNames %}
+                            {% set allNames = allNames|merge([db.name]) %}
+                        {% endif %}
+                    {% endfor %}
+                    {% for local in dbFiles %}
+                        {% if local not in allNames %}
+                            {% set allNames = allNames|merge([local]) %}
+                        {% endif %}
+                    {% endfor %}
+                    {% for name in allNames %}
+                        {% set remote = null %}
+                        {% for db in dbListUnified %}
+                            {% if db.name == name %}
+                                {% set remote = db %}
+                            {% endif %}
+                        {% endfor %}
+                        {% set local = localMap[name] is defined ? localMap[name] : null %}
+                        <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="radio" name="dbFile" value="{{ name }}" class="form-check-input pluginSetting" data-type="string"
+                                    {% if local %} {% if currentDb == name %}checked{% endif %} {% if pluginActive == false %}disabled{% endif %} {% else %}disabled{% endif %} >
+                                <span class="fw-bold">{{ name }}</span>
+                                {% if local and remote and (remote.onServer is defined ? remote.onServer : true) %}
+                                            <div class="form-text mt-1 ms-4">{% if remote %}{{ remote.description|e }}{% else %}{{ dbDescriptions[name]|default('')|e }}{% endif %}</div>
+
+                                        {% elseif local and (remote is not defined or (remote.onServer is defined and not remote.onServer)) %}
+                                            <span class="badge bg-info ms-2">Только локальная</span>
+                                        {% elseif remote and (remote.onServer is defined and not remote.onServer) %}
+                                            <span class="badge bg-info ms-2">Только локальная</span>
+                                        {% elseif remote %}
+                                            <span class="badge bg-info ms-2">Только серверная</span>
+                                        {% endif %}
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                {% if remote and (remote.onServer is defined ? remote.onServer : true) and local %}
+                                    <button class="btn btn-sm btn-info" onclick="downloadDB('{{ name }}')" data-dbname="{{ name }}">Загрузить заново</button>
+                                {% elseif remote and (remote.onServer is defined ? remote.onServer : true) and not local %}
+                                    <button class="btn btn-sm btn-success" onclick="downloadDB('{{ name }}')" data-dbname="{{ name }}">Загрузить</button>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <small class="text-muted">Для выбора базы знаний она должна быть загружена локально. Если есть обновление на сервере — можно загрузить заново.</small>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label" for="npcSearchMinLen">Минимальная длина строки для поиска NPC</label>
+                <input id="npcSearchMinLen" type="number" min="1" max="50" step="1"
+                       class="form-control pluginSetting" data-type="int"
+                       value="{{ (setting.npcSearchMinLen ?? 4) }}" {% if pluginActive == false %}disabled{% endif %}>
+                <small class="text-muted">Сколько символов нужно ввести, чтобы начать поиск в модальном окне. По умолчанию 4.</small>
+            </div>
+
+            <div class="form-check mb-4">
+                <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value="" id="allowUserNpcImageUpload" {% if setting.allowUserNpcImageUpload %}checked{% endif %} {% if pluginActive == false %}disabled{% endif %}>
+                <label class="form-check-label" for="allowUserNpcImageUpload">
+                    {{ phrase('Allow users to upload NPC images') }}
+                </label>
+                <small class="text-muted d-block mt-1">Если отключено, загружать изображения NPC смогут только администраторы</small>
+            </div>
+
+            <div class="form-check mb-4">
+                <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value="" id="allowUploadToSphereAPI" {% if setting.allowUploadToSphereAPI is not defined or setting.allowUploadToSphereAPI %}checked{% endif %} {% if pluginActive == false %}disabled{% endif %}>
+                <label class="form-check-label" for="allowUploadToSphereAPI">
+                    {{ phrase('Allow uploading images to Sphere API server') }}
+                </label>
+                <small class="text-muted d-block mt-1">Разрешить загружать изображения на сервер Sphere API для общей базы данных</small>
+            </div>
+
+            <hr class="my-4" />
+
+            <h6 class="mb-2">Настройки загрузки изображений NPC</h6>
+
+            <div class="mb-3">
+                <label class="form-label" for="maxFiles">Максимум файлов за одно добавление</label>
+                <input id="maxFiles" type="number" min="1" step="1"
+                       class="form-control pluginSetting" data-type="int"
+                       value="{{ (setting.maxFiles ?? 10) }}" {% if pluginActive == false %}disabled{% endif %}>
+                <small class="text-muted">Сколько файлов пользователь может выбрать в модальном окне за одну отправку. По умолчанию 10.</small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="maxPendingPerUser">Максимум неподтверждённых изображений на пользователя</label>
+                <input id="maxPendingPerUser" type="number" min="0" step="1"
+                       class="form-control pluginSetting" data-type="int"
+                       value="{{ (setting.maxPendingPerUser ?? 30) }}" {% if pluginActive == false %}disabled{% endif %}>
+                <small class="text-muted">Сколько неподтверждённых (ожидающих модерации) изображений может иметь один пользователь одновременно. 0 — без ограничений.</small>
+            </div>
+
+            {% set trusted = setting.trustedUsers ?? [] %}
+            <div class="mb-4">
+                <label class="form-label">Доверенные пользователи (будут загружать изображения без модерации)</label>
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <button id="openTrustedUsersModal" class="btn btn-outline-primary" type="button" {% if pluginActive == false %}disabled{% endif %}>
+                        <i class="ri-user-add-line me-1"></i>Выбрать пользователей
+                    </button>
+                    <span id="trustedUsersCount" class="text-muted small">Выбрано: {{ trusted|length }}</span>
+                </div>
+                <div id="trustedUsersList" class="d-flex flex-wrap gap-2" data-selected='{{ trusted|json_encode|e('html_attr') }}'>
+                    {% if trusted|length > 0 %}
+                        {% for name in trusted %}
+                            <div class="trusted-user badge bg-secondary text-white me-1 mb-1" data-name="{{name}}">
+                                {{name}} <a href="#" class="ms-2 text-light remove-trusted" data-name="{{name}}" aria-label="Удалить">&times;</a>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted small">Никто не выбран</span>
+                    {% endif %}
+                </div>
+                <small class="text-muted d-block mt-1">Пользователи в этом списке смогут загружать изображения сразу в одобренные без модерации.</small>
+            </div>
+
+            <div class="modal fade" id="trustedUsersModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Выбор доверенных пользователей</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row g-3 align-items-stretch">
+                                <div class="col-lg-7">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body p-3">
+                                            <label for="trustedUsersSearch" class="form-label">Поиск пользователей</label>
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"><i class="ri-search-line"></i></span>
+                                                <input type="text" id="trustedUsersSearch" class="form-control" placeholder="Email, имя или ID" autocomplete="off">
+                                            </div>
+                                            <div id="trustedUsersSearchInfo" class="text-muted small mb-2">Введите запрос или просмотрите список ниже.</div>
+                                            <div class="border rounded-3 overflow-auto" style="max-height: 420px;">
+                                                <div class="list-group list-group-flush trusted-users-results" id="trustedUsersResults"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                <button class="btn btn-outline-secondary btn-sm" id="trustedPrevPage" type="button">Назад</button>
+                                                <div id="trustedPageInfo" class="text-muted small">Страница 1</div>
+                                                <button class="btn btn-outline-secondary btn-sm" id="trustedNextPage" type="button">Вперёд</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body p-3 d-flex flex-column">
+                                            <h6 class="mb-3">Выбрано (<span id="modalSelectedCount">0</span>)</h6>
+                                            <div class="border rounded-3 overflow-auto flex-grow-1" style="max-height: 420px;">
+                                                <div class="list-group list-group-flush" id="trustedSelectedList"></div>
+                                                <div class="text-muted small text-center py-4" id="trustedSelectedEmpty">Никто не выбран</div>
+                                            </div>
+                                            <p class="text-muted small mb-0 mt-3">Отметьте нужных пользователей или уберите их из списка выбранных. Сохраните изменения кнопкой ниже.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="button" class="btn btn-primary" id="trustedSaveBtn">Сохранить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+ 
+            <hr class="my-4" />
+                <span class="text-muted" style="font-size:0.95em;">Ожидает модерации: <strong>{{ pendingImagesCount|default(0) }}</strong></span>
+
+                <div class="mb-1">
+                    <a href="/admin/plugin/wiki/npc/images/moderation" class="btn btn-info btn-wave d-inline-flex align-items-center" style="font-weight:500;">
+                        <i class="ri-image-edit-line me-1"></i>
+                        Модерация изображений NPC
+                    </a>
+                </div>
+
+            <hr class="my-4" />
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="text-muted small">Текущий размер кэша: <strong>{{ cacheCount|default(0) }}</strong> файлов</div>
+                <form action="/admin/plugin/wiki/clear-cache" method="post" onsubmit="return confirm('Очистить кэш плагина wiki?');">
+                    <button type="submit" class="btn btn-danger btn-wave" {% if pluginActive == false %}disabled{% endif %}>
+                        <i class="ri-delete-bin-6-line align-middle me-1"></i>
+                        Очистить кэш <span class="badge bg-light text-dark ms-1">{{ cacheCount|default(0) }}</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    function downloadDB(filename) {
+        if (!filename) return;
+        if (!confirm('Загрузить базу знаний "' + filename + '"?')) return;
+        // Найти все кнопки для этого файла и заблокировать их, показать "Загрузка..."
+        document.querySelectorAll('button[data-dbname="' + filename + '"]').forEach(btn => {
+            btn.disabled = true;
+            btn.textContent = 'Загрузка...';
+        });
+        fetch('/admin/plugin/wiki/download-db?file=' + encodeURIComponent(filename), {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(resp => {
+            // Проверка на пустой или некорректный ответ
+            if (!resp.ok) throw new Error('Ошибка сети');
+            return resp.text();
+        })
+        .then(text => {
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                throw new Error('Некорректный ответ сервера');
+            }
+            if (data && data.ok) {
+                location.reload();
+            } else {
+                alert('Ошибка загрузки: ' + (data.error || 'Не удалось загрузить файл.'));
+                document.querySelectorAll('button[data-dbname="' + filename + '"]').forEach(btn => {
+                    btn.disabled = false;
+                    btn.textContent = btn.classList.contains('btn-warning') ? 'Загрузить заново' : 'Загрузить';
+                });
+            }
+        })
+        .catch((err) => {
+            alert('Ошибка запроса к серверу: ' + (err.message || ''));
+            document.querySelectorAll('button[data-dbname="' + filename + '"]').forEach(btn => {
+                btn.disabled = false;
+                btn.textContent = btn.classList.contains('btn-warning') ? 'Загрузить заново' : 'Загрузить';
+            });
+        });
+    }
+    const pluginName = "{{pluginName}}";
+    const pluginActive = "{{pluginActive}}";
+    const serverId = "{{getServer().getId()}}";
+    // JSON map of file -> description
+    const dbDescMap = (function(){
+        try {
+            const el = document.getElementById('db-descriptions');
+            return el ? JSON.parse(el.textContent || '{}') : {};
+        } catch(e){ return {}; }
+    })();
+    document.addEventListener('DOMContentLoaded', function(){
+        const sel = document.getElementById('dbFile');
+        const desc = document.getElementById('dbDesc');
+        if(sel && desc){
+            sel.addEventListener('change', function(){
+                const v = sel.value;
+                const text = dbDescMap[v] || 'Описание отсутствует.';
+                desc.textContent = text;
+            });
+        }
+        // Trusted users management
+        const trustedList = document.getElementById('trustedUsersList');
+        const trustedCountEl = document.getElementById('trustedUsersCount');
+        const openModalBtn = document.getElementById('openTrustedUsersModal');
+        const modalEl = document.getElementById('trustedUsersModal');
+
+        function parseInitialTrusted(){
+            if(!trustedList) return [];
+            const raw = trustedList.getAttribute('data-selected');
+            if(!raw) return [];
+            try {
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+            } catch(e){
+                return [];
+            }
+        }
+
+    let trustedMap = new Map(parseInitialTrusted().map(name => [name, { name: name, id: null, email: '', avatar: '' }]));
+
+        function getTrustedArray(){
+            return Array.from(trustedMap.keys());
+        }
+
+        function updateTrustedCount(){
+            if(trustedCountEl){
+                trustedCountEl.textContent = 'Выбрано: ' + trustedMap.size;
+            }
+        }
+
+        function renderTrustedBadges(){
+            if(!trustedList) return;
+            trustedList.innerHTML = '';
+            if(trustedMap.size === 0){
+                const placeholder = document.createElement('span');
+                placeholder.className = 'text-muted small';
+                placeholder.textContent = 'Никто не выбран';
+                trustedList.appendChild(placeholder);
+            } else {
+                trustedMap.forEach((_info, name) => {
+                    const badge = document.createElement('div');
+                    badge.className = 'trusted-user badge bg-secondary text-white me-1 mb-1';
+                    badge.setAttribute('data-name', name);
+
+                    const label = document.createElement('span');
+                    label.textContent = name;
+
+                    const remove = document.createElement('a');
+                    remove.href = '#';
+                    remove.className = 'ms-2 text-light remove-trusted';
+                    remove.dataset.name = name;
+                    remove.setAttribute('aria-label', 'Удалить');
+                    remove.innerHTML = '&times;';
+
+                    badge.appendChild(label);
+                    badge.appendChild(document.createTextNode(' '));
+                    badge.appendChild(remove);
+                    trustedList.appendChild(badge);
+                });
+            }
+            trustedList.setAttribute('data-selected', JSON.stringify(getTrustedArray()));
+            updateTrustedCount();
+        }
+
+        function saveTrusted(){
+            const arr = getTrustedArray();
+            AjaxSend('/admin/plugin/save/config', 'POST', {
+                pluginName: pluginName,
+                setting: 'trustedUsers',
+                value: JSON.stringify(arr),
+                type: 'array',
+                serverId: typeof serverId !== 'undefined' ? serverId : 0
+            }, false).catch(()=>{});
+        }
+
+        if(trustedList){
+            trustedList.addEventListener('click', function(e){
+                const trigger = e.target.closest('.remove-trusted');
+                if(!trigger) return;
+                e.preventDefault();
+                const name = trigger.dataset.name;
+                if(!name) return;
+                trustedMap.delete(name);
+                renderTrustedBadges();
+                saveTrusted();
+            });
+        }
+
+        renderTrustedBadges();
+
+        // Modal logic for selecting trusted users
+        if(modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal){
+            const modalInstance = new bootstrap.Modal(modalEl);
+            const searchInput = document.getElementById('trustedUsersSearch');
+            const resultsContainer = document.getElementById('trustedUsersResults');
+            const selectedListEl = document.getElementById('trustedSelectedList');
+            const selectedEmptyEl = document.getElementById('trustedSelectedEmpty');
+            const modalSelectedCount = document.getElementById('modalSelectedCount');
+            const prevBtn = document.getElementById('trustedPrevPage');
+            const nextBtn = document.getElementById('trustedNextPage');
+            const pageInfo = document.getElementById('trustedPageInfo');
+            const saveBtn = document.getElementById('trustedSaveBtn');
+            const searchInfo = document.getElementById('trustedUsersSearchInfo');
+
+            let modalSelection = new Map();
+            let currentQuery = '';
+            let currentPage = 1;
+            let hasMore = false;
+            let isLoading = false;
+            const pageSize = 20;
+
+            function debounce(fn, delay){
+                let timer = null;
+                return function(...args){
+                    clearTimeout(timer);
+                    timer = setTimeout(() => fn.apply(this, args), delay);
+                };
+            }
+    
+            function buildAvatarUrl(avatar){
+                const file = (avatar && typeof avatar === 'string' && avatar.trim() !== '') ? avatar.trim() : 'none.jpeg';
+                return '/uploads/avatar/' + encodeURIComponent(file);
+            }
+
+            function updateSelectedSummary(){
+                if(!selectedListEl || !selectedEmptyEl || !modalSelectedCount) return;
+                selectedListEl.innerHTML = '';
+                if(modalSelection.size === 0){
+                    selectedEmptyEl.style.display = 'block';
+                } else {
+                    selectedEmptyEl.style.display = 'none';
+                    const frag = document.createDocumentFragment();
+                    Array.from(modalSelection.values())
+                        .sort((a, b) => a.name.localeCompare(b.name, 'ru', { sensitivity: 'base' }))
+                        .forEach(user => {
+                            const item = document.createElement('div');
+                            item.className = 'list-group-item d-flex align-items-center justify-content-between gap-2';
+
+                            const infoWrap = document.createElement('div');
+                            infoWrap.className = 'd-flex flex-column';
+                            const contentWrap = document.createElement('div');
+                            contentWrap.className = 'd-flex align-items-center gap-2 flex-grow-1';
+        
+                            const avatarWrap = document.createElement('div');
+                            avatarWrap.className = 'flex-shrink-0';
+                            const avatarImg = document.createElement('img');
+                            avatarImg.src = buildAvatarUrl(user.avatar);
+                            avatarImg.alt = user.name || 'avatar';
+                            avatarImg.className = 'rounded-circle';
+                            avatarImg.style.width = '40px';
+                            avatarImg.style.height = '40px';
+                            avatarImg.style.objectFit = 'cover';
+                            avatarWrap.appendChild(avatarImg);
+
+                            const title = document.createElement('span');
+                            title.className = 'fw-semibold';
+                            title.textContent = user.name || '[Без имени]';
+
+                            const meta = document.createElement('span');
+                            meta.className = 'text-muted small';
+                            meta.textContent = user.email || '—';
+                            if(user.id){
+                                const idBadge = document.createElement('span');
+                                idBadge.className = 'badge bg-light text-dark ms-2';
+                                idBadge.textContent = 'ID ' + user.id;
+                                meta.appendChild(idBadge);
+                            }
+
+                            infoWrap.appendChild(title);
+                            infoWrap.appendChild(meta);
+        
+                            contentWrap.appendChild(avatarWrap);
+                            contentWrap.appendChild(infoWrap);
+
+                            const removeBtn = document.createElement('button');
+                            removeBtn.type = 'button';
+                            removeBtn.className = 'btn btn-sm btn-outline-danger';
+                            removeBtn.dataset.removeName = user.name;
+                            removeBtn.textContent = 'Убрать';
+
+                            item.appendChild(contentWrap);
+                            item.appendChild(removeBtn);
+                            frag.appendChild(item);
+                        });
+                    selectedListEl.appendChild(frag);
+                }
+                modalSelectedCount.textContent = modalSelection.size;
+            }
+
+            function setResultsLoading(){
+                if(!resultsContainer) return;
+                resultsContainer.innerHTML = '<div class="py-4 text-center text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Загрузка…</div>';
+            }
+
+            function renderResults(items){
+                if(!resultsContainer) return;
+                resultsContainer.innerHTML = '';
+                if(!items.length){
+                    resultsContainer.innerHTML = '<div class="text-center text-muted py-3">Ничего не найдено</div>';
+                    return;
+                }
+                const frag = document.createDocumentFragment();
+                items.forEach(user => {
+                    const wrapper = document.createElement('label');
+                    wrapper.className = 'list-group-item d-flex align-items-center justify-content-between gap-3';
+
+                    const infoBlock = document.createElement('div');
+                    infoBlock.className = 'd-flex align-items-center gap-3 flex-grow-1';
+
+                    const avatarWrap = document.createElement('div');
+                    avatarWrap.className = 'flex-shrink-0';
+                    const avatarImg = document.createElement('img');
+                    avatarImg.src = buildAvatarUrl(user.avatar);
+                    avatarImg.alt = (user.name || 'avatar');
+                    avatarImg.className = 'rounded-circle';
+                    avatarImg.style.width = '40px';
+                    avatarImg.style.height = '40px';
+                    avatarImg.style.objectFit = 'cover';
+                    avatarWrap.appendChild(avatarImg);
+
+                    const info = document.createElement('div');
+                    info.className = 'd-flex flex-column';
+
+                    const title = document.createElement('span');
+                    title.className = 'fw-semibold';
+                    title.textContent = user.name || '[Без имени]';
+
+                    const meta = document.createElement('span');
+                    meta.className = 'text-muted small';
+                    meta.textContent = user.email || '—';
+                    if(user.id){
+                        const badge = document.createElement('span');
+                        badge.className = 'badge bg-light text-dark ms-2';
+                        badge.textContent = 'ID ' + user.id;
+                        meta.appendChild(badge);
+                    }
+
+                    info.appendChild(title);
+                    info.appendChild(meta);
+                    
+                    infoBlock.appendChild(avatarWrap);
+                    infoBlock.appendChild(info);
+
+                    const checkWrap = document.createElement('div');
+                    checkWrap.className = 'form-check mb-0';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'form-check-input trusted-user-checkbox';
+                    checkbox.dataset.name = user.name || '';
+                    checkbox.dataset.email = user.email || '';
+                    checkbox.dataset.id = user.id || '';
+                    checkbox.dataset.avatar = user.avatar || '';
+                    checkbox.checked = modalSelection.has(user.name || '');
+
+                    checkWrap.appendChild(checkbox);
+
+                    if(checkbox.checked){
+                        wrapper.classList.add('active');
+                    }
+
+                    wrapper.appendChild(infoBlock);
+                    wrapper.appendChild(checkWrap);
+                    frag.appendChild(wrapper);
+                });
+                resultsContainer.appendChild(frag);
+            }
+
+            function fetchUsers(){
+                if(isLoading) return;
+                isLoading = true;
+                setResultsLoading();
+                AjaxSend('/admin/users/search-lite', 'POST', {
+                    q: currentQuery,
+                    page: currentPage,
+                    limit: pageSize
+                }, true).then(resp => {
+                    if(!resp || resp.ok === false){
+                        throw new Error(resp && resp.message ? resp.message : 'Не удалось получить данные');
+                    }
+                    const rows = Array.isArray(resp.data) ? resp.data : [];
+                    renderResults(rows);
+                    hasMore = !!resp.hasMore;
+                    if(pageInfo) pageInfo.textContent = 'Страница ' + currentPage;
+                    if(prevBtn) prevBtn.disabled = currentPage <= 1;
+                    if(nextBtn) nextBtn.disabled = !hasMore;
+                    if(searchInfo){
+                        if(typeof resp.total === 'number'){
+                            searchInfo.textContent = 'Найдено записей: ' + resp.total;
+                        } else {
+                            searchInfo.textContent = rows.length ? 'Показаны результаты поиска' : 'Ничего не найдено';
+                        }
+                    }
+                }).catch(err => {
+                    if(resultsContainer){
+                        resultsContainer.innerHTML = '<div class="alert alert-danger mb-0">' + (err.message || 'Ошибка загрузки') + '</div>';
+                    }
+                    if(searchInfo){
+                        searchInfo.textContent = 'Не удалось загрузить пользователей';
+                    }
+                    if(prevBtn) prevBtn.disabled = true;
+                    if(nextBtn) nextBtn.disabled = true;
+                }).finally(() => {
+                    isLoading = false;
+                });
+            }
+
+            const handleSearchInput = debounce(function(){
+                currentQuery = searchInput ? searchInput.value.trim() : '';
+                currentPage = 1;
+                fetchUsers();
+            }, 400);
+
+            if(searchInput){
+                searchInput.addEventListener('input', handleSearchInput);
+            }
+
+            if(prevBtn){
+                prevBtn.addEventListener('click', function(){
+                    if(currentPage > 1 && !isLoading){
+                        currentPage--;
+                        fetchUsers();
+                    }
+                });
+            }
+
+            if(nextBtn){
+                nextBtn.addEventListener('click', function(){
+                    if(hasMore && !isLoading){
+                        currentPage++;
+                        fetchUsers();
+                    }
+                });
+            }
+
+            if(resultsContainer){
+                resultsContainer.addEventListener('change', function(e){
+                    const checkbox = e.target.closest('.trusted-user-checkbox');
+                    if(!checkbox) return;
+                    const name = checkbox.dataset.name || '';
+                    const email = checkbox.dataset.email || '';
+                    const id = checkbox.dataset.id || '';
+                    const avatar = checkbox.dataset.avatar || '';
+                    if(checkbox.checked){
+                        modalSelection.set(name, { name: name, email: email, id: id, avatar: avatar });
+                        const row = checkbox.closest('.list-group-item');
+                        if(row) row.classList.add('active');
+                    } else {
+                        modalSelection.delete(name);
+                        const row = checkbox.closest('.list-group-item');
+                        if(row) row.classList.remove('active');
+                    }
+                    updateSelectedSummary();
+                });
+            }
+
+            if(selectedListEl){
+                selectedListEl.addEventListener('click', function(e){
+                    const btn = e.target.closest('[data-remove-name]');
+                    if(!btn) return;
+                    const name = btn.getAttribute('data-remove-name');
+                    modalSelection.delete(name);
+                    if(resultsContainer){
+                        const checkboxes = resultsContainer.querySelectorAll('.trusted-user-checkbox');
+                        checkboxes.forEach(function(cb){
+                            if((cb.dataset.name || '') === name){
+                                cb.checked = false;
+                                const row = cb.closest('.list-group-item');
+                                if(row) row.classList.remove('active');
+                            }
+                        });
+                    }
+                    updateSelectedSummary();
+                });
+            }
+
+            if(openModalBtn){
+                openModalBtn.addEventListener('click', function(){
+                    modalSelection = new Map(trustedMap);
+                    currentQuery = '';
+                    currentPage = 1;
+                    if(searchInput) searchInput.value = '';
+                    updateSelectedSummary();
+                    fetchUsers();
+                    modalInstance.show();
+                });
+            }
+
+            if(saveBtn){
+                saveBtn.addEventListener('click', function(){
+                    trustedMap = new Map(modalSelection);
+                    renderTrustedBadges();
+                    saveTrusted();
+                    modalInstance.hide();
+                });
+            }
+
+            modalEl.addEventListener('hidden.bs.modal', function(){
+                if(resultsContainer) resultsContainer.innerHTML = '';
+            });
+        } else if(openModalBtn){
+            openModalBtn.addEventListener('click', function(){
+                alert('Модальное окно выбора пользователей недоступно. Убедитесь, что Bootstrap загружен.');
+            });
+        }
+    });
+</script>
+<script id="db-descriptions" type="application/json">{{ (dbDescriptions|default({}))|json_encode|raw }}</script>
+<script src="{{template}}/assets/js/spherePlugin.js?v=0.0.4"></script>
+{% endblock %}

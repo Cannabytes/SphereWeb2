@@ -344,14 +344,32 @@ class lang
             $phrase = $this->phrasesData[$key];
         }
 
-        // Проверяем, достаточно ли аргументов передано
         $missing_values_count = max(0, substr_count($phrase, '%s') - count($values));
-        $default_values = array_fill(0, $missing_values_count, ''); // Заполняем массив значениями по умолчанию
-
-        // Дополняем массив значений по умолчанию переданными значениями
+        $default_values = array_fill(0, $missing_values_count, ''); 
+        
         $values = array_merge($values, $default_values);
 
-        $result = vsprintf($phrase, $values);
+        try {
+            $result = vsprintf($phrase, $values);
+        } catch (\ValueError $e) {
+            $placeholderCount = substr_count($phrase, '%s');
+            $valuesCount = count($values);
+            $logMsg = sprintf('[%s] LangError: key=%s placeholders=%d values=%d phrase="%s" values=%s',
+                date('Y-m-d H:i:s'),
+                $key,
+                $placeholderCount,
+                $valuesCount,
+                $phrase,
+                json_encode($values)
+            );
+            $logFile =  fileSys::dir_list('lang_errors.log');
+            if (!is_dir(dirname($logFile))) {
+                mkdir(dirname($logFile), 0755, true);
+            }
+            error_log($logMsg . PHP_EOL, 3, $logFile);
+            $result = $phrase;
+        }
+
         if (empty($values)) {
             $this->cache[$key] = $result;
         }

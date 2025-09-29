@@ -1,0 +1,2087 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="wiki-subnav ">
+                <div class="subnav-header d-flex align-items-center gap-3 flex-wrap mb-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="try{if(history.length > 1){history.back();}else{location.href='/wiki';}}catch(e){location.href='/wiki';}">{{ phrase('Back') }}</button>
+                    <a href="/wiki" class="back-link d-inline-flex align-items-center gap-2">
+                        <span class="chevron" aria-hidden="true">←</span>
+                        <span class="label">{{ phrase('Library') }}</span>
+                    </a>
+                    {{ npc_backlink(npc)|raw }}
+                    <h1 class="h4 m-0 fw-semibold page-title">— {{ npc.name|default('NPC') }}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if npc is not defined or not npc %}
+    <div class="alert alert-danger">{{ phrase('NPC not found in db')|format(npcNotFoundId|default('?')) }}</div>
+    {% else %}
+
+    <div class="row g-3">
+        <div class="col-lg-3">
+            <div class="card h-100">
+                {% set _type = npc.type|default('') %}
+                {% set _isRaid = _type and ('raid' in _type|lower) %}
+                <div class="card-header py-2 d-flex align-items-center justify-content-between">
+                    <strong>{{ npc.name|default('NoName') }}</strong>
+                    {% if _isRaid %}
+                        <span class="badge bg-danger">{{ phrase('NPC — Raid Bosses') }}</span>
+                    {% endif %}
+                </div>
+                <div class="card-body small text-center">
+                    {# NPC photo area #}
+                    {% if npc_images is defined and npc_images|length > 0 %}
+                    <div class="mb-2">
+                        <div id="npcImageCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                {% for image in npc_images %}
+                                <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                    <div class="npc-photo">
+                                        <a href="{{ image }}" class="glightbox" data-gallery="npc-gallery">
+                                            <img class="object-fit-contain rounded" src="{{ image }}" alt="NPC {{ npc.name }}" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'" style="cursor: pointer;">
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if npc_images|length > 1 %}
+                            <button class="carousel-control-prev" type="button" data-bs-target="#npcImageCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#npcImageCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% else %}
+                    {% set npc_image = '/uploads/images/npc/' ~ (npc.id|default('0')) ~ '.webp' %}
+                    <div class="mb-2">
+                        {# Add no-npc-photo class when there are no npc_images to apply fallback styling #}
+                        <div class="npc-photo {% if not (npc_images is defined and npc_images|length > 0) %}no-npc-photo{% endif %}">
+                            {% if npc_images is defined and npc_images|length > 0 %}
+                                {# handled above but keep safe guard #}
+                                <a href="{{ npc_images[0] }}" class="glightbox" data-gallery="npc-gallery">
+                                    <img src="{{ npc_images[0] }}" alt="NPC {{ npc.name }}" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'" style="cursor: pointer;">
+                                </a>
+                            {% else %}
+                                <a href="/src/component/plugins/wiki/tpl/img/other/nonpc.webp" class="glightbox" data-gallery="npc-gallery">
+                                    <img src="/src/component/plugins/wiki/tpl/img/other/nonpc.webp" alt="NPC {{ npc.name }}" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'" style="cursor: pointer;">
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if npc.title %}
+                    <div class="text-muted small mb-2">{{ npc.title }}</div>
+                    {% endif %}
+                 
+                    {# Upload image button - show to admin always, or to users if setting allows #}
+                    {% set isAdmin = wikiIsAdmin|default(false) %}
+                    {% set allowUserUpload = wikiAllowUserUpload|default(false) %}
+                    {% if wikiCanUploadImages|default(false) %}
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadNpcImageModal">
+                            <i class="ri-upload-2-line me-1"></i>
+                            {{ phrase('Upload image') }}
+                        </button>
+                    </div>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header py-2"><strong>{{ phrase('Basic stats') }}</strong></div>
+                <div class="card-body p-2">
+                    <div class="table-responsive" style="max-height:320px; overflow:auto;">
+                        {# Prepare right-side basic fields as an array of label/value pairs #}
+                        {% set basic = [] %}
+                        {% set basic = basic|merge([{'label':'ID','value': npc.id}]) %}
+                        {% if npc.title %}
+                            {% set basic = basic|merge([{'label': phrase('Title'),'value': npc.title}]) %}
+                        {% endif %}
+                        {% set basic = basic|merge([{'label': phrase('Type'),'value': npc.type|default('—')}]) %}
+                        {% set basic = basic|merge([{'label': phrase('Level'),'value': npc.level|default('?')}]) %}
+                        {% set basic = basic|merge([{'label': phrase('Aggro'),'value': npc.isAggressive|default('—')}]) %}
+                        {# Move Atk Spd to the right-side basic stats #}
+                        {% if npc.attack_attack_speed is defined and npc.attack_attack_speed is not same as('') %}
+                            {% set basic = basic|merge([{'label':'Atk Spd','value': npc.attack_attack_speed}]) %}
+                        {% endif %}
+                        {% if npc.ai_type %}
+                            {% set basic = basic|merge([{'label':'AI','value': npc.ai_type}]) %}
+                        {% endif %}
+
+                        {# Left side uses npc_stats_prepared array #}
+                        {% set left = npc_stats_prepared|default([]) %}
+                        {% set right = basic %}
+                        {# If right has fewer entries than left, move one item from left to right to even out #}
+                        {% if (right|length) < (left|length) and (left|length) > 0 %}
+                            {% set moved = left|last %}
+                            {% set left = left|slice(0, left|length - 1) %}
+                            {% set right = right|merge([{'label': moved.label, 'value': moved.value}]) %}
+                        {% endif %}
+                        {# Limit both sides to 8 items each for a balanced table #}
+                        {% set left = left|slice(0, 8) %}
+                        {% set right = right|slice(0, 8) %}
+                        {% set rows = 8 %}
+
+                        <table class="table table-sm table-striped align-middle mb-0">
+                            <tbody>
+                                {% for i in 0..(rows - 1) %}
+                                <tr>
+                                    {% if left[i] is defined %}
+                                        <th style="width:160px;">{{ left[i].label }}</th>
+                                        <td style="width:180px;">{{ left[i].value }}</td>
+                                    {% else %}
+                                        <th style="width:160px;"></th>
+                                        <td style="width:180px;"></td>
+                                    {% endif %}
+
+                                    {% if right[i] is defined %}
+                                        <th style="width:160px;">{{ right[i].label }}</th>
+                                        <td>{{ right[i].value }}</td>
+                                    {% else %}
+                                        <th style="width:160px;"></th>
+                                        <td></td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {# Skills moved here under the table #}
+                    <div class="mt-2 pt-2">
+                        <div class="fw-semibold small text-muted mb-1">{{ phrase('Skills') }}</div>
+                        {% if npc.skills and npc.skills|length > 0 %}
+                        <div class="d-flex flex-wrap align-items-center gap-1">
+                            {% for s in npc.skills %}
+                            {% set skillIcon = (s.icon is defined and s.icon) ? get_skill(s.icon) : null %}
+                            {% if not skillIcon %}
+                                {% set skillIcon = '/uploads/images/icon/NOIMAGE.webp' %}
+                            {% endif %}
+                            <div class="skill-wrap has-pop text-center me-1 mb-1" style="width:24px;">
+                                <img src="{{ skillIcon }}" class="skill-icon rounded" width="24" height="24" alt="" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">
+                                <div class="skill-pop">
+                                    <div class="fw-semibold mb-1">{{ s.name|default('Skill ' ~ s.id) }} <span class="opacity-75">Lv. {{ s.level }}</span></div>
+                                    {% if s.effect_text %}
+                                    <div class="small">{{ s.effect_text }}</div>
+                                    {% elseif s.effects %}
+                                        {% for eff in s.effects %}
+                                        <div class="small">{{ eff.formatted }} {{ eff.label }}</div>
+                                        {% endfor %}
+                                    {% elseif s.description %}
+                                    <div class="small">{{ s.description }}</div>
+                                    {% else %}
+                                    <div class="text-muted small">{{ phrase('No description') }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-muted small">{{ phrase('No skills') }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="col-lg-5">
+            <div class="card h-100 d-flex flex-column">
+                <div class="card-header py-2"><strong>{{ phrase('Map') }}</strong></div>
+                <div class="card-body p-2 d-flex flex-column">
+                    <div id="map-container" data-src="/src/component/plugins/wiki/tpl/img/map/highfive.webp" data-spawns='{{ npc.spawn_points|default([])|json_encode|e("html_attr") }}' data-offx="{{ map_calibration.x|default(0) }}" data-offy="{{ map_calibration.y|default(0) }}" style="position:relative; flex:1 1 auto; min-height:360px;">
+                        <canvas id="mapCanvas" style="width:100%;height:100%;display:block;cursor:grab;"></canvas>
+                        <!-- Visible fallback image in case canvas loader fails (hidden by default) -->
+                        <img id="mapFallback" alt="{{ phrase('Map') }}" style="display:none;position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .28s ease;" />
+                        <!-- Preloader while the map image is loading -->
+                        <div id="mapPreloader" style="position:absolute;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:4;pointer-events:none;">
+                            <div style="text-align:center;backdrop-filter: blur(4px);">
+                                <div class="spinner-border spinner-border-sm" role="status" style="width:36px;height:36px;margin-bottom:8px;color:#6c757d;"></div>
+                                <div style="font-size:13px;">{{ phrase('Map loading…') }}</div>
+                            </div>
+                        </div>
+                        <div id="mapBadge" style="position:absolute;left:8px;top:8px;background:rgba(0,0,0,.55);color:#fff;border-radius:10px;padding:2px 8px;font-size:12px;z-index:3;pointer-events:none;display:none;"></div>
+                        <div id="mapControls" style="position:absolute;right:8px;top:8px;display:none;gap:6px;z-index:3;">
+                            <button type="button" id="btnZoomOut" class="btn btn-sm btn-dark" title="{{ phrase('Zoom out') }}" style="opacity:.8; min-width:32px; min-height:32px;">-</button>
+                            <button type="button" id="btnZoomIn" class="btn btn-sm btn-dark" title="{{ phrase('Zoom in') }}" style="opacity:.8; min-width:32px; min-height:32px;">+</button>
+                            <button type="button" id="btnPrevCluster" class="btn btn-sm btn-dark" title="{{ phrase('Previous cluster') }}" style="opacity:.8;">◀</button>
+                            <span id="clusterLabel" class="btn btn-sm btn-secondary" style="opacity:.8;">1/1</span>
+                            <button type="button" id="btnNextCluster" class="btn btn-sm btn-dark" title="{{ phrase('Next cluster') }}" style="opacity:.8;">▶</button>
+                            <button type="button" id="btnShowAll" class="btn btn-sm btn-secondary" title="{{ phrase('Show all') }}" style="opacity:.8;">{{ phrase('All') }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-12">
+            <div class="card h-100">
+                {# compute counts for header: separate Drop and Spoil item counts #}
+                {% set groups_count = npc.drop_groups is defined ? npc.drop_groups|length : 0 %}
+                {% set drop_items_count = 0 %}
+                {% set spoil_items_count = 0 %}
+                {% if npc.drop_groups is defined %}
+                    {% for g in npc.drop_groups %}
+                        {% set __len = (g.items is defined ? g.items|length : 0) %}
+                        {% if g.drop_type is defined and g.drop_type == 0 %}
+                            {% set spoil_items_count = spoil_items_count + __len %}
+                        {% else %}
+                            {% set drop_items_count = drop_items_count + __len %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                    <strong>{{ phrase('Drop') }} [{{ drop_items_count|default(0) }}] / {{ phrase('Spoil') }} [{{ spoil_items_count|default(0) }}]</strong>
+                </div>
+                <div class="card-body small p-2">
+                    {# Готовим раздельные списки групп: Drop (!=0) и Spoil (==0) #}
+                    {% set all_groups = npc.drop_groups|default([]) %}
+                    {% set drop_groups = [] %}
+                    {% set spoil_groups = [] %}
+                    {% for g in all_groups %}
+                        {% if g.drop_type is defined and g.drop_type == 0 %}
+                            {% set spoil_groups = spoil_groups|merge([g]) %}
+                        {% else %}
+                            {% set drop_groups = drop_groups|merge([g]) %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if (drop_groups|length) == 0 and (spoil_groups|length) == 0 %}
+                        <div class="text-muted small">Дроп/спойл не настроен для этого NPC.</div>
+                    {% else %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="fw-semibold mb-1">{{ phrase('Drop') }}</div>
+                            {% if drop_groups|length > 0 %}
+                                {% for group in drop_groups %}
+                                {# assign group color based on index for visual separation #}
+                                {% set __idx = loop.index0 %}
+                                {% set __class = 'group-color-' ~ (__idx % 8) %}
+                                <div class="mb-3 group-block {{ __class }}">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="text-muted small">{{ phrase('Group') }} {{ group.group_id is defined ? group.group_id : loop.index }} — {{ phrase('Chance') }}: {{ group.chance is defined ? (group.chance ~ '%') : '—' }}</div>
+                                    </div>
+                                    {% if group.items is defined and group.items|length > 0 %}
+                                    <div class="table-responsive mt-2">
+                                        <table class="table table-hover table-sm mb-0 drop-table">
+                                            <colgroup>
+                                                <col style="width:44px;" />
+                                                <col />
+                                                <col style="width:110px;" />
+                                                <col style="width:110px;" />
+                                            </colgroup>
+                                            <thead class="small text-muted">
+                                                <tr>
+                                                    <th></th>
+                                                    <th>{{ phrase('Item') }}</th>
+                                                    <th class="text-end">{{ phrase('Quantity') }}</th>
+                                                    <th class="text-end">{{ phrase('Chance') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for it in group.items %}
+                                                {% set _info = (item_lookup[it.item_id]|default(null)) %}
+                                                {% set displayName = it.name is defined and it.name ? it.name : (_info and _info.name ? _info.name : ('Item ' ~ it.item_id)) %}
+                                                <tr>
+                                                    <td>
+                                                        {% set iconPath = null %}
+                                                        {% if it.icon is defined and it.icon %}
+                                                            {% set iconPath = get_icon(it.icon) %}
+                                                        {% elseif it.icon_id is defined and it.icon_id %}
+                                                            {% set iconPath = get_icon(it.icon_id) %}
+                                                        {% elseif _info and _info.icon_path %}
+                                                            {% set iconPath = _info.icon_path %}
+                                                        {% endif %}
+                                                        {% if iconPath %}
+                                                        <img src="{{ iconPath }}" width="36" height="36" class="rounded" alt="" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">
+                                                        {% else %}
+                                                        <img src="/uploads/images/icon/NOIMAGE.webp" width="36" height="36" class="rounded" alt="" loading="lazy">
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <div class="fw-semibold d-flex align-items-center gap-2">
+                                                            <span class="wiki-item" data-item-id="{{ it.item_id }}">{{ grade_img(_info.crystal_type|default(null))|raw }} {{ displayName }}</span>
+                                                            <span class="item-icons d-inline-flex align-items-center" style="margin-left:6px; gap:4px;">
+                                                                {# Craft icon: determine craftability using it.is_craft or preloaded item lookup in _info #}
+                                                                {% set _isCraft = false %}
+                                                                {% if it.is_craft is defined %}
+                                                                    {% set _isCraft = (it.is_craft ~ '')|lower in ['1','true','yes','y','on'] %}
+                                                                {% elseif _info %}
+                                                                    {% if _info.is_craft is defined and _info.is_craft %}
+                                                                        {% set _isCraft = true %}
+                                                                    {% elseif _info.recipe_id is defined and _info.recipe_id %}
+                                                                        {% set _isCraft = true %}
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                                {% if _isCraft %}
+                                                                <a href="/wiki/items/recipes/production/{{ it.item_id }}" title="{{ phrase('Craft') }}: {{ displayName }}" class="text-decoration-none">
+                                                                    <img src="/src/component/plugins/wiki/tpl/img/other/drop.webp" width="18" height="18" alt="craft" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'" style="transform:rotate(180deg)">
+                                                                </a>
+                                                                {% endif %}
+                                                                {# show Drop icon only if item is droppable #}
+                                                                {% set _canDrop = false %}
+                                                                {% if it.is_drop is defined %}
+                                                                    {% set _canDrop = (it.is_drop ~ '')|lower in ['1','true','yes','y','on'] %}
+                                                                {% elseif _info and _info.is_drop is defined %}
+                                                                    {% set _canDrop = _info.is_drop ? true : false %}
+                                                                {% endif %}
+                                                                {% if _canDrop %}
+                                                                <a href="/wiki/items/sources/{{ it.item_id }}/drop" title="{{ phrase('Drop') }}: {{ displayName }}" class="text-decoration-none">
+                                                                    <img src="/src/component/plugins/wiki/tpl/img/other/drop.webp" width="18" height="18" alt="drop" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">
+                                                                </a>
+                                                                {% endif %}
+                                                                {# show Spoil icon only if item is sweepable #}
+                                                                {% set _canSpoil = false %}
+                                                                {% if it.is_sweep is defined %}
+                                                                    {% set _canSpoil = (it.is_sweep ~ '')|lower in ['1','true','yes','y','on'] %}
+                                                                {% elseif _info and _info.is_sweep is defined %}
+                                                                    {% set _canSpoil = _info.is_sweep ? true : false %}
+                                                                {% endif %}
+                                                                {% if _canSpoil %}
+                                                                <a href="/wiki/items/sources/{{ it.item_id }}/spoil" title="{{ phrase('Spoil') }}: {{ displayName }}" class="text-decoration-none">
+                                                                    <img src="/src/component/plugins/wiki/tpl/img/other/spoil.webp" width="18" height="18" alt="spoil" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">
+                                                                </a>
+                                                                {% endif %}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-end">{{ it.min|default('?') }}{% if it.max is defined and it.max is not same as(it.min) %} - {{ it.max }}{% endif %}</td>
+                                                    <td class="text-end">{{ it.chance is defined ? (it.chance ~ '%') : '—' }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-muted small mt-2">{{ phrase('No items in this group') }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-muted small">{{ phrase('No drop') }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="fw-semibold mb-1">{{ phrase('Spoil') }}</div>
+                            {% if spoil_groups|length > 0 %}
+                                {% for group in spoil_groups %}
+                                {% set __idx = loop.index0 %}
+                                {% set __class = 'group-color-' ~ (__idx % 8) %}
+                                <div class="mb-3 group-block {{ __class }}">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="text-muted small">{{ phrase('Obtained via Spoil/Sweeper') }}</div>
+                                    </div>
+                                    {% if group.items is defined and group.items|length > 0 %}
+                                    <div class="table-responsive mt-2">
+                                        <table class="table table-hover table-sm mb-0 drop-table">
+                                            <colgroup>
+                                                <col style="width:44px;" />
+                                                <col />
+                                                <col style="width:110px;" />
+                                                <col style="width:110px;" />
+                                            </colgroup>
+                                            <thead class="small text-muted">
+                                                <tr>
+                                                    <th></th>
+                                                    <th>{{ phrase('Item') }}</th>
+                                                    <th class="text-end">{{ phrase('Quantity') }}</th>
+                                                    <th class="text-end">{{ phrase('Chance') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for it in group.items %}
+                                                {% set _info = (item_lookup[it.item_id]|default(null)) %}
+                                                {% set displayName = it.name is defined and it.name ? it.name : (_info and _info.name ? _info.name : ('Item ' ~ it.item_id)) %}
+                                                <tr>
+                                                    <td>
+                                                        {% set iconPath = null %}
+                                                        {% if it.icon is defined and it.icon %}
+                                                            {% set iconPath = get_icon(it.icon) %}
+                                                        {% elseif it.icon_id is defined and it.icon_id %}
+                                                            {% set iconPath = get_icon(it.icon_id) %}
+                                                        {% elseif _info and _info.icon_path %}
+                                                            {% set iconPath = _info.icon_path %}
+                                                        {% endif %}
+                                                        {% if iconPath %}
+                                                        <img src="{{ iconPath }}" width="36" height="36" class="rounded" alt="" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">
+                                                        {% else %}
+                                                        <img src="/uploads/images/icon/NOIMAGE.webp" width="36" height="36" class="rounded" alt="" loading="lazy">
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <div class="fw-semibold d-flex align-items-center gap-2">
+                                                            <span class="wiki-item" data-item-id="{{ it.item_id }}">{{ grade_img(_info.crystal_type|default(null))|raw }} {{ displayName }}</span>
+                                                            <span class="item-icons d-inline-flex align-items-center" style="margin-left:6px; gap:4px;">
+                                                                {% set _isCraft = false %}
+                                                                {% if it.is_craft is defined %}
+                                                                    {% set _isCraft = (it.is_craft ~ '')|lower in ['1','true','yes','y','on'] %}
+                                                                {% elseif _info %}
+                                                                    {% if _info.is_craft is defined and _info.is_craft %}
+                                                                        {% set _isCraft = true %}
+                                                                    {% elseif _info.recipe_id is defined and _info.recipe_id %}
+                                                                        {% set _isCraft = true %}
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                                {% if _isCraft %}
+                                                                <a href="/wiki/items/recipes/production/{{ it.item_id }}" title="{{ phrase('Craft') }}: {{ displayName }}" class="text-decoration-none">
+                                                                    <img src="/src/component/plugins/wiki/tpl/img/other/drop.webp" width="18" height="18" alt="craft" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'" style="transform:rotate(180deg)">
+                                                                </a>
+                                                                {% endif %}
+                                                                {# show Drop icon only if item is droppable #}
+                                                                {% set _canDrop = false %}
+                                                                {% if it.is_drop is defined %}
+                                                                    {% set _canDrop = (it.is_drop ~ '')|lower in ['1','true','yes','y','on'] %}
+                                                                {% elseif _info and _info.is_drop is defined %}
+                                                                    {% set _canDrop = _info.is_drop ? true : false %}
+                                                                {% endif %}
+                                                                {% if _canDrop %}
+                                                                <a href="/wiki/items/sources/{{ it.item_id }}/drop" title="{{ phrase('Drop') }}: {{ displayName }}" class="text-decoration-none">
+                                                                    <img src="/src/component/plugins/wiki/tpl/img/other/drop.webp" width="18" height="18" alt="drop" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">
+                                                                </a>
+                                                                {% endif %}
+                                                                {# show Spoil icon only if item is sweepable; support both is_sweep and is_spoil flags #}
+                                                                {% set _canSpoil = false %}
+                                                                {% if it.is_sweep is defined %}
+                                                                    {% set _canSpoil = (it.is_sweep ~ '')|lower in ['1','true','yes','y','on'] %}
+                                                                {% elseif it.is_spoil is defined %}
+                                                                    {% set _canSpoil = (it.is_spoil ~ '')|lower in ['1','true','yes','y','on'] %}
+                                                                {% elseif _info %}
+                                                                    {% if _info.is_sweep is defined %}
+                                                                        {% set _canSpoil = _info.is_sweep ? true : false %}
+                                                                    {% elseif _info.is_spoil is defined %}
+                                                                        {% set _canSpoil = _info.is_spoil ? true : false %}
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                                {% if _canSpoil %}
+                                                                <a href="/wiki/items/sources/{{ it.item_id }}/spoil" title="{{ phrase('Spoil') }}: {{ displayName }}" class="text-decoration-none">
+                                                                    <img src="/src/component/plugins/wiki/tpl/img/other/spoil.webp" width="18" height="18" alt="spoil" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">
+                                                                </a>
+                                                                {% endif %}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-end">{{ it.min|default('?') }}{% if it.max is defined and it.max is not same as(it.min) %} - {{ it.max }}{% endif %}</td>
+                                                    <td class="text-end">{{ it.chance is defined ? (it.chance ~ '%') : '—' }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-muted small mt-2">{{ phrase('No items in this group') }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-muted small">{{ phrase('No spoil') }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+ 
+</div>  
+{% endif %}
+
+</div>
+
+<style>
+    /* Reserve a fixed responsive area for NPC photo to prevent layout shifts
+       when carousel images change size. Images will cover the box. */
+    .npc-photo {
+        width: 100%;
+        border-radius: .375rem;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Allow variable height but cap it to avoid huge images pushing layout */
+        min-height: 240px;
+        max-height: 360px;
+    }
+    /* Images should scale proportionally and never exceed container's max-height.
+       Use max-height on the img and keep width:auto so aspect ratio is preserved. */
+    .npc-photo img {
+        max-height: 360px; /* never exceed this visual limit */
+        width: auto;       /* let browser compute width based on aspect ratio */
+        height: auto;
+        display: block;
+        object-fit: contain;
+        object-position: center center;
+        max-width: 100%; /* ensure it doesn't overflow horizontally */
+    }
+    .no-npc-photo img {
+        max-height: 360px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        object-position: center center;
+        max-width: 100%;
+        display: block;
+    }
+    .skill-wrap {
+        position: relative;
+    }
+
+    .skill-icon {
+        display: block;
+    }
+
+    .skill-pop {
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 8px);
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, .85);
+        color: #fff;
+        padding: 6px 8px;
+        border-radius: 8px;
+        font-size: 11px;
+        width: 220px;
+        pointer-events: none;
+        opacity: 0;
+        transition: .12s ease;
+        z-index: 1000;
+    }
+
+    .skill-wrap:hover .skill-pop {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-4px);
+    }
+
+    .skill-pop:after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        width: 8px;
+        height: 8px;
+        background: rgba(0, 0, 0, .85);
+        transform: translateX(-50%) rotate(45deg);
+        border-radius: 2px;
+    }
+</style>
+<style>
+    /* Map canvas helper styles */
+    #map-container { position: relative; }
+    #mapCanvas {
+        background: #5f72c900;
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+    cursor: grab;
+    z-index: 2;
+    }
+    #mapFallback { position: absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; z-index: 1; }
+</style>
+
+<style>
+/* Group color palette for drop/spoil groups */
+.group-block{ padding-left:10px; }
+.group-block{ padding-left:10px; }
+.group-color-0{ border-left:4px solid #0d6efd; }
+.group-color-1{ border-left:4px solid #198754; }
+.group-color-2{ border-left:4px solid #dc3545; }
+.group-color-3{ border-left:4px solid #6f42c1; }
+.group-color-4{ border-left:4px solid #fd7e14; }
+.group-color-5{ border-left:4px solid #20c997; }
+.group-color-6{ border-left:4px solid #0dcaf0; }
+.group-color-7{ border-left:4px solid #ffc107; }
+</style>
+
+<script>
+// Canvas map with markers from backend npc.spawn_points
+(function(){
+    function runMap(){
+        const container = document.getElementById('map-container');
+        if(!container) return;
+        const canvas = document.getElementById('mapCanvas');
+    const fallbackImg = document.getElementById('mapFallback');
+    const badge = document.getElementById('mapBadge');
+    const controls = document.getElementById('mapControls');
+    const btnPrev = document.getElementById('btnPrevCluster');
+    const btnNext = document.getElementById('btnNextCluster');
+    const btnAll  = document.getElementById('btnShowAll');
+    const clusterLabel = document.getElementById('clusterLabel');
+    const btnZoomIn = document.getElementById('btnZoomIn');
+    const btnZoomOut = document.getElementById('btnZoomOut');
+    const src = container.getAttribute('data-src') || '';
+    const calOffX = parseFloat(container.getAttribute('data-offx')||'0') || 0;
+    const calOffY = parseFloat(container.getAttribute('data-offy')||'0') || 0;
+    const ctx = canvas && canvas.getContext ? canvas.getContext('2d') : null;
+        if(!ctx){ if(fallbackImg){ fallbackImg.src = src; fallbackImg.style.display = 'block'; } return; }
+
+    const fileName = src.split('/').pop() || 'highfive.webp';
+    const candidates = [ src, (src && src.startsWith('/')) ? (window.location.origin + src) : null, '/src/component/plugins/wiki/tpl/img/map/' + fileName, '/tpl/img/map/' + fileName, '/uploads/images/' + fileName ].filter(Boolean);
+
+    let img = null, tryIndex = 0;
+    const state = { x:0, y:0, scale:1, clusters: [], clusterIndex: -1 };
+    // tiny debounce helper
+    function debounce(fn, wait){ let t = null; return function(...args){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), wait); }; }
+    // Reference dimensions the old mapping was calibrated for.
+    // Vertical сейчас у вас совпадает — используем высоту как эталон и применяем равномерный масштаб по обеим осям.
+    const REF_W = 1812, REF_H = 2620;
+        // Zoom configuration
+        const ZOOM = {
+            STEP_IN: 1.08,     // multiply on wheel up
+            STEP_OUT: 0.92,    // multiply on wheel down
+            MIN_REL: 1.0,      // min zoom = coverScale * MIN_REL
+            MAX_REL: 13.0,      // max zoom = coverScale * MAX_REL
+            PAD: 40,           // padding around focus bbox in px
+            FOCUS_REL: 4.2,    // default focus zoom factor (1.0 = fit bbox exactly)
+            INIT_MAX_REL: 5.0, // initial focus cap: coverScale * INIT_MAX_REL
+            CLUSTER_EPS: 160   // clustering radius in px (image space)
+        };
+
+        // spawn points passed by backend via data attribute
+        let spawnPoints = [];
+    try {
+            const spawnsStr = container.getAttribute('data-spawns') || '[]';
+            spawnPoints = JSON.parse(spawnsStr);
+        } catch(err){ spawnPoints = []; }
+        try { if (badge) { badge.textContent = 'Метки: ' + (spawnPoints ? spawnPoints.length : 0); badge.style.display = 'block'; } } catch(e) {}
+    try { console.debug('[NPC Map] spawnPoints', spawnPoints); } catch(e) {}
+
+        let pointsPx = [];
+
+        function getScale(){
+            if(!img || !img.width || !img.height) return { s: 1 };
+            const s = img.height / REF_H; // доверяем вертикали
+            return { s };
+        }
+
+    function computeClusters(points, eps){
+            if(!points || !points.length) return [];
+            const clusters = [];
+            for(const pt of points){
+                let attached = false;
+                for(const cl of clusters){
+                    // if point is close to any existing point in cluster
+                    for(const q of cl.points){
+                        const dx = pt.ix - q.ix, dy = pt.iy - q.iy;
+                        if(dx*dx + dy*dy <= eps*eps){ cl.points.push(pt); attached = true; break; }
+                    }
+                    if(attached) break;
+                }
+                if(!attached){ clusters.push({ points: [pt] }); }
+            }
+            // compute bbox and center for each cluster
+            clusters.forEach(cl => {
+                let minx=Infinity,miny=Infinity,maxx=-Infinity,maxy=-Infinity;
+                cl.points.forEach(p=>{ if(p.ix<minx)minx=p.ix; if(p.iy<miny)miny=p.iy; if(p.ix>maxx)maxx=p.ix; if(p.iy>maxy)maxy=p.iy; });
+                cl.minx=minx; cl.miny=miny; cl.maxx=maxx; cl.maxy=maxy;
+                cl.cx = (minx+maxx)/2; cl.cy=(miny+maxy)/2; cl.size = cl.points.length;
+            });
+            // sort by cluster size desc
+            clusters.sort((a,b)=> b.size - a.size);
+            return clusters;
+        }
+
+    function tryLoad(){
+            if(tryIndex >= candidates.length){ if(fallbackImg){ fallbackImg.src = candidates[0] || src; fallbackImg.style.display = 'block'; } return; }
+            const url = candidates[tryIndex++];
+            img = new Image(); img.crossOrigin = 'anonymous';
+            img.onload = function(){
+                // Rebuild points in image pixel space with current scale
+                const sc = getScale();
+                function worldToImageX(wx){ return Math.round(sc.s * (285 + (wx + 107823) / 200 + calOffX)); }
+                function worldToImageY(wy){ return Math.round(sc.s * (2580 + (wy - 255420) / 200 + calOffY)); }
+                pointsPx = (spawnPoints || []).map(p => ({
+                    x: p.x, y: p.y,
+                    // Если сервер уже дал ix/iy — просто равномерно масштабируем, не добавляя калибровку второй раз
+                    ix: Number.isFinite(p.ix) ? Math.round(sc.s * p.ix) : worldToImageX(p.x),
+                    iy: Number.isFinite(p.iy) ? Math.round(sc.s * p.iy) : worldToImageY(p.y),
+                })).filter(p => Number.isFinite(p.ix) && Number.isFinite(p.iy));
+                // On first successful load, hide preloader and fade-in fallback (for accessibility) then init canvas
+                try {
+                    const pre = document.getElementById('mapPreloader');
+                    const fb = document.getElementById('mapFallback');
+                    if(fb){ fb.src = img.src; fb.style.display = 'block'; fb.style.opacity = '0'; }
+                    // small timeout to ensure DOM paints before transitions
+                    setTimeout(function(){ if(pre) pre.style.transition = 'opacity .22s ease', pre.style.opacity = '0'; if(fb) fb.style.opacity = '1'; setTimeout(()=>{ if(pre && pre.parentNode) pre.parentNode.removeChild(pre); }, 260); }, 40);
+                } catch(e){}
+                initCanvas(); draw();
+            };
+            img.onerror = tryLoad; img.src = url;
+        }
+
+        function resizeCanvas(){
+            const rect = container.getBoundingClientRect();
+            const ratio = window.devicePixelRatio || 1;
+            canvas.width = Math.max(1, Math.floor(rect.width * ratio));
+            canvas.height = Math.max(1, Math.floor(rect.height * ratio));
+            canvas.style.width = rect.width + 'px'; canvas.style.height = rect.height + 'px';
+            ctx.setTransform(ratio,0,0,ratio,0,0);
+            clampPosition();
+            draw();
+        }
+
+        function getZoomBounds(rect){
+            const coverScale = Math.max(rect.width / img.width, rect.height / img.height);
+            return { coverScale, min: coverScale * ZOOM.MIN_REL, max: coverScale * ZOOM.MAX_REL };
+        }
+
+        function focusOnMarkers(opts){
+            if(!spawnPoints || spawnPoints.length === 0 || !img) return;
+            const rect = container.getBoundingClientRect();
+            const options = Object.assign({ pad: ZOOM.PAD, minScale: 1, maxScale: Infinity }, opts || {});
+            const focusRel = (opts && typeof opts.focusRel === 'number') ? opts.focusRel : ZOOM.FOCUS_REL;
+            // compute bounds in image pixels using precomputed ix,iy from backend if present
+            let minx=Infinity, miny=Infinity, maxx=-Infinity, maxy=-Infinity;
+            pointsPx.forEach(p=>{ const ix=p.ix, iy=p.iy; if(!Number.isFinite(ix)||!Number.isFinite(iy)) return; minx=Math.min(minx, ix); miny=Math.min(miny, iy); maxx=Math.max(maxx, ix); maxy=Math.max(maxy, iy); });
+            if(!isFinite(minx) || !isFinite(miny) || !isFinite(maxx) || !isFinite(maxy)) return;
+            const bboxW = Math.max(1, (maxx - minx) + options.pad*2);
+            const bboxH = Math.max(1, (maxy - miny) + options.pad*2);
+            const scaleX = rect.width / bboxW; const scaleY = rect.height / bboxH;
+            const needed = Math.max(scaleX, scaleY);
+            const desiredBase = needed * focusRel;
+            const desired = Math.min(Math.max(desiredBase, options.minScale), options.maxScale);
+            state.scale = desired;
+            // center bbox in container
+            const centerX = (minx + maxx) / 2; const centerY = (miny + maxy) / 2;
+            state.x = rect.width/2 - centerX * state.scale;
+            state.y = rect.height/2 - centerY * state.scale;
+            clampPosition();
+        }
+
+        function focusOnCluster(index, opts){
+            if(!state.clusters || !state.clusters.length || !img) return;
+            index = Math.max(0, Math.min(state.clusters.length-1, index|0));
+            const rect = container.getBoundingClientRect();
+            const options = Object.assign({ pad: ZOOM.PAD, minScale: 1, maxScale: Infinity }, opts || {});
+            const focusRel = (opts && typeof opts.focusRel === 'number') ? opts.focusRel : ZOOM.FOCUS_REL;
+            const cl = state.clusters[index];
+            const bboxW = Math.max(1, (cl.maxx - cl.minx) + options.pad*2);
+            const bboxH = Math.max(1, (cl.maxy - cl.miny) + options.pad*2);
+            const scaleX = rect.width / bboxW; const scaleY = rect.height / bboxH;
+            const needed = Math.max(scaleX, scaleY);
+            const desiredBase = needed * focusRel;
+            const desired = Math.min(Math.max(desiredBase, options.minScale), options.maxScale);
+            state.scale = desired;
+            state.x = rect.width/2 - cl.cx * state.scale;
+            state.y = rect.height/2 - cl.cy * state.scale;
+            state.clusterIndex = index;
+            updateControls();
+            clampPosition();
+        }
+
+        function updateControls(){
+            if(!controls) return;
+            // Always show zoom buttons
+            if(btnZoomIn) btnZoomIn.style.display = 'inline-block';
+            if(btnZoomOut) btnZoomOut.style.display = 'inline-block';
+            
+            if(state.clusters && state.clusters.length > 1){
+                controls.style.display = 'flex';
+                if(clusterLabel) clusterLabel.style.display = 'inline-block';
+                if(btnPrev) btnPrev.style.display = 'inline-block';
+                if(btnNext) btnNext.style.display = 'inline-block';
+                if(btnAll) btnAll.style.display = 'inline-block';
+                if(clusterLabel) clusterLabel.textContent = ((state.clusterIndex|0)+1) + '/' + state.clusters.length;
+            } else {
+                // Hide cluster-specific controls
+                if(btnPrev) btnPrev.style.display = 'none';
+                if(btnNext) btnNext.style.display = 'none';
+                if(clusterLabel) clusterLabel.style.display = 'none';
+                if(btnAll) btnAll.style.display = 'none';
+                controls.style.display = 'flex'; // Keep flex for zoom buttons
+            }
+        }
+
+    function initCanvas(){
+            const rect = container.getBoundingClientRect();
+            // Exact cover scale so the image fills the block, preserving aspect ratio
+            const coverScale = Math.max(rect.width / img.width, rect.height / img.height);
+            state.scale = coverScale;
+            if(spawnPoints && spawnPoints.length){
+                // Build clusters in image pixel space
+                state.clusters = computeClusters(pointsPx, ZOOM.CLUSTER_EPS); // радиус объединения
+                // If много разнесённых кластеров — фокус на крупнейшем, с мягким ограничением зума
+                const bounds = getZoomBounds(rect);
+                const initMax = bounds.coverScale * ZOOM.INIT_MAX_REL;
+                if(state.clusters.length > 1){
+                    state.clusterIndex = 0;
+                    focusOnCluster(0, { minScale: bounds.min, maxScale: initMax, pad: ZOOM.PAD, focusRel: ZOOM.FOCUS_REL });
+                } else {
+                    focusOnMarkers({ minScale: bounds.min, maxScale: initMax, pad: ZOOM.PAD, focusRel: ZOOM.FOCUS_REL });
+                }
+                updateControls();
+            }
+            clampPosition(); resizeCanvas();
+        }
+
+        function clampPosition(){
+            const rect = container.getBoundingClientRect();
+            const iw = img.width * state.scale, ih = img.height * state.scale;
+            if(iw <= rect.width){ state.x = (rect.width - iw)/2; }
+            else { state.x = Math.min(0, Math.max(rect.width - iw, state.x)); }
+            if(ih <= rect.height){ state.y = (rect.height - ih)/2; }
+            else { state.y = Math.min(0, Math.max(rect.height - ih, state.y)); }
+        }
+
+        function drawMarkers(){
+            if(!spawnPoints || !spawnPoints.length) return;
+            ctx.save();
+            ctx.translate(state.x, state.y);
+            ctx.scale(state.scale, state.scale);
+            pointsPx.forEach((p)=>{
+                const ix = p.ix; const iy = p.iy;
+                // draw a target-like marker
+                ctx.beginPath(); ctx.strokeStyle = 'rgba(255,255,40,0.95)'; ctx.lineWidth = 2/state.scale; ctx.arc(ix, iy, 5, 0, Math.PI*2); ctx.stroke();
+                ctx.beginPath(); ctx.strokeStyle = 'rgba(255,0,0,0.95)'; ctx.lineWidth = 2/state.scale; ctx.arc(ix, iy, 3, 0, Math.PI*2); ctx.stroke();
+                // crosshair
+                ctx.strokeStyle = 'rgba(255,0,0,0.7)'; ctx.lineWidth = 1/state.scale; ctx.beginPath(); ctx.moveTo(ix-6,iy); ctx.lineTo(ix+6,iy); ctx.moveTo(ix,iy-6); ctx.lineTo(ix,iy+6); ctx.stroke();
+            });
+            ctx.restore();
+        }
+
+    // World->image mapping in reference coordinate space is scaled during img onload
+
+        function draw(){ if(!ctx || !img) return; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.save(); ctx.translate(state.x, state.y); ctx.scale(state.scale, state.scale); ctx.drawImage(img,0,0); ctx.restore(); drawMarkers(); }
+
+        // Interaction
+        let isDown=false, last={x:0,y:0};
+        // Touch support variables
+        let lastTouches = [], initialDistance = 0, initialScale = 1, initialCenter = {x:0,y:0};
+
+        canvas.addEventListener('mousedown', function(e){ isDown=true; canvas.style.cursor='grabbing'; last.x=e.clientX; last.y=e.clientY; });
+        window.addEventListener('mouseup', function(){ isDown=false; canvas.style.cursor='grab'; });
+        window.addEventListener('mousemove', function(e){ if(!isDown) return; const dx=e.clientX-last.x, dy=e.clientY-last.y; state.x += dx; state.y += dy; last.x=e.clientX; last.y=e.clientY; clampPosition(); draw(); });
+
+        // Touch event handlers for mobile support
+        canvas.addEventListener('touchstart', function(e){
+            e.preventDefault();
+            const touches = e.touches;
+            if(touches.length === 1){
+                // Single touch - start panning
+                isDown = true;
+                canvas.style.cursor = 'grabbing';
+                last.x = touches[0].clientX;
+                last.y = touches[0].clientY;
+            } else if(touches.length === 2){
+                // Two touches - start pinch zoom
+                isDown = false; // Disable panning during pinch
+                const touch1 = touches[0], touch2 = touches[1];
+                initialDistance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) + 
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+                initialScale = state.scale;
+                initialCenter.x = (touch1.clientX + touch2.clientX) / 2;
+                initialCenter.y = (touch1.clientY + touch2.clientY) / 2;
+            }
+            lastTouches = Array.from(touches);
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', function(e){
+            e.preventDefault();
+            const touches = e.touches;
+            if(touches.length === 1 && isDown){
+                // Single touch - panning
+                const dx = touches[0].clientX - last.x;
+                const dy = touches[0].clientY - last.y;
+                state.x += dx;
+                state.y += dy;
+                last.x = touches[0].clientX;
+                last.y = touches[0].clientY;
+                clampPosition();
+                draw();
+            } else if(touches.length === 2){
+                // Two touches - pinch zoom
+                const touch1 = touches[0], touch2 = touches[1];
+                const currentDistance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) + 
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+                if(initialDistance > 0){
+                    const rect = container.getBoundingClientRect();
+                    const scaleFactor = currentDistance / initialDistance;
+                    const prevScale = state.scale;
+                    const newScale = initialScale * scaleFactor;
+                    const bounds = getZoomBounds(rect);
+                    state.scale = Math.min(Math.max(newScale, bounds.min), bounds.max);
+                    
+                    // Zoom towards the center point between fingers
+                    const currentCenterX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+                    const currentCenterY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+                    
+                    // Adjust position to keep the zoom center point fixed
+                    state.x = currentCenterX - (currentCenterX - state.x) * (state.scale / prevScale);
+                    state.y = currentCenterY - (currentCenterY - state.y) * (state.scale / prevScale);
+                    
+                    clampPosition();
+                    draw();
+                }
+            }
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', function(e){
+            e.preventDefault();
+            const touches = e.touches;
+            if(touches.length === 0){
+                // No more touches - stop panning
+                isDown = false;
+                canvas.style.cursor = 'grab';
+                initialDistance = 0;
+                initialScale = 1;
+            } else if(touches.length === 1){
+                // One touch remaining - switch to panning
+                isDown = true;
+                last.x = touches[0].clientX;
+                last.y = touches[0].clientY;
+            }
+        }, { passive: false });
+
+    container.addEventListener('wheel', function(e){ e.preventDefault(); if(!img) return; const rect = container.getBoundingClientRect(); const mx=e.clientX-rect.left, my=e.clientY-rect.top; const factor = e.deltaY>0?ZOOM.STEP_OUT:ZOOM.STEP_IN; const prevScale=state.scale; const bounds=getZoomBounds(rect); const target=prevScale*factor; state.scale = Math.min(Math.max(target, bounds.min), bounds.max);
+            state.x = mx - (mx - state.x) * (state.scale / prevScale);
+            state.y = my - (my - state.y) * (state.scale / prevScale);
+            clampPosition(); draw(); }, { passive:false });
+
+        canvas.addEventListener('dblclick', function(){ initCanvas(); draw(); });
+    window.addEventListener('resize', function(){ setTimeout(resizeCanvas, 80); });
+
+    // Controls handlers
+    if(btnPrev) btnPrev.addEventListener('click', function(){ if(!state.clusters || state.clusters.length<2) return; const rect = container.getBoundingClientRect(); const bounds=getZoomBounds(rect); state.clusterIndex = (state.clusterIndex - 1 + state.clusters.length) % state.clusters.length; focusOnCluster(state.clusterIndex, { minScale: bounds.min, maxScale: bounds.max, pad: ZOOM.PAD }); draw(); });
+    if(btnNext) btnNext.addEventListener('click', function(){ if(!state.clusters || state.clusters.length<2) return; const rect = container.getBoundingClientRect(); const bounds=getZoomBounds(rect); state.clusterIndex = (state.clusterIndex + 1) % state.clusters.length; focusOnCluster(state.clusterIndex, { minScale: bounds.min, maxScale: bounds.max, pad: ZOOM.PAD }); draw(); });
+    if(btnAll) btnAll.addEventListener('click', function(){ const rect = container.getBoundingClientRect(); const bounds=getZoomBounds(rect); focusOnMarkers({ minScale: bounds.min, maxScale: bounds.max, pad: ZOOM.PAD, focusRel: 1.0 }); state.clusterIndex = -1; updateControls(); draw(); });
+
+    // Zoom button handlers
+    if(btnZoomIn) btnZoomIn.addEventListener('click', function(){
+        if(!img) return;
+        const rect = container.getBoundingClientRect();
+        const bounds = getZoomBounds(rect);
+        const prevScale = state.scale;
+        const target = prevScale * ZOOM.STEP_IN;
+        state.scale = Math.min(Math.max(target, bounds.min), bounds.max);
+        // Zoom towards center
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        state.x = centerX - (centerX - state.x) * (state.scale / prevScale);
+        state.y = centerY - (centerY - state.y) * (state.scale / prevScale);
+        clampPosition();
+        draw();
+    });
+    if(btnZoomOut) btnZoomOut.addEventListener('click', function(){
+        if(!img) return;
+        const rect = container.getBoundingClientRect();
+        const bounds = getZoomBounds(rect);
+        const prevScale = state.scale;
+        const target = prevScale * ZOOM.STEP_OUT;
+        state.scale = Math.min(Math.max(target, bounds.min), bounds.max);
+        // Zoom towards center
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        state.x = centerX - (centerX - state.x) * (state.scale / prevScale);
+        state.y = centerY - (centerY - state.y) * (state.scale / prevScale);
+        clampPosition();
+        draw();
+    });
+
+        tryLoad();
+
+    // Re-init or resize canvas when surrounding layout changes (images loading or other content affects flex sizing).
+    try {
+        const debouncedInit = debounce(function(){ try{ if(img && img.width && img.height){ initCanvas(); draw(); } else { resizeCanvas(); } }catch(e){} }, 120);
+        if (window.ResizeObserver && container) {
+            const ro = new ResizeObserver(debouncedInit);
+            ro.observe(container);
+            // also observe parent just in case flex container changes size
+            if(container.parentElement) ro.observe(container.parentElement);
+        }
+        // Also try once more after full window load (helps when other images change layout after DOMContentLoaded)
+        window.addEventListener('load', function(){ setTimeout(function(){ try{ if(img && img.width) { initCanvas(); draw(); } else { resizeCanvas(); } }catch(e){} }, 120); });
+    } catch(e) { console.debug('[NPC Map] resize observer init failed', e); }
+    }
+
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runMap); else runMap();
+})();
+</script>
+
+<div id="wikiItemTooltip" style="display:none;"></div>
+<style>
+  #wikiItemTooltip { position: fixed; z-index: 5000; max-width: 320px; background: rgba(18,18,22,.96); color:#fff; font-size:12px; line-height:1.3; padding:10px 12px 12px; border-radius:10px; box-shadow:0 6px 18px -4px rgba(0,0,0,.55),0 2px 6px -2px rgba(0,0,0,.6); pointer-events:none; backdrop-filter: blur(6px); border:1px solid rgba(255,255,255,.08); }
+  #wikiItemTooltip.fade-in { animation: wi-fade .14s ease-out; }
+  @keyframes wi-fade { from { opacity:0; transform: translateY(4px);} to { opacity:1; transform: translateY(0);} }
+  #wikiItemTooltip .wit-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  #wikiItemTooltip .wit-head img { width:40px; height:40px; object-fit:contain; border-radius:6px; background:#23252b; box-shadow:0 0 0 1px rgba(255,255,255,.06) inset; }
+  #wikiItemTooltip .wit-name { font-weight:600; font-size:13px; }
+  #wikiItemTooltip .wit-add { font-size:11px; opacity:.75; }
+  #wikiItemTooltip .wit-desc { font-size:11px; opacity:.85; margin-top:4px; line-height:1.25; }
+  #wikiItemTooltip table { width:100%; border-collapse:collapse; margin-top:6px; font-size:11px; }
+  #wikiItemTooltip th, #wikiItemTooltip td { padding:2px 4px; vertical-align:top; }
+  #wikiItemTooltip th { text-align:left; font-weight:600; color:#c9d4ff; }
+  #wikiItemTooltip .wit-flags { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+  #wikiItemTooltip .wit-flag { background:#2d3139; padding:2px 6px; border-radius:4px; font-size:10px; text-transform:uppercase; letter-spacing:.5px; }
+  .wiki-item { cursor:help; position:relative; }
+  .wiki-item.loading { opacity:.65; }
+</style>
+<script>
+(function(){
+  const apiCache = new Map();
+  const tooltip = document.getElementById('wikiItemTooltip');
+  if(!tooltip) return;
+  let hideTimer=null; let currentId=null; let lastPos={x:0,y:0};
+  const OFFSET= {x:16,y:16};
+  const body = document.body;
+  // Enhance existing rows where span without data-item-id exists: try infer id from nearby links (/wiki/items/recipes/production/{id} or /wiki/items/sources/{id}/drop)
+  function inferIds() {
+      document.querySelectorAll('table.drop-table tbody tr').forEach(tr=>{
+          const nameSpan = tr.querySelector('td:nth-child(2) .fw-semibold span:not([data-item-id])');
+          if(!nameSpan) return;
+          // look for anchor patterns inside same name cell or next cells
+          let id=null;
+          tr.querySelectorAll('a[href*="/wiki/items/"]').forEach(a=>{
+              if(id) return;
+              const m = a.getAttribute('href').match(/\/wiki\/items\/(?:recipes\/production|sources)\/(\d+)/);
+              if(m) id=parseInt(m[1],10);
+          });
+          if(id){
+              nameSpan.classList.add('wiki-item');
+              nameSpan.setAttribute('data-item-id', id);
+          }
+      });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', inferIds); else inferIds();
+    function buildHtml(d){
+         const desc = (d.description||'').trim();
+      const flags = [];
+      if(d.flags){ Object.entries(d.flags).forEach(([k,v])=>{ if(v) flags.push(k); }); }
+         const statsRows = (Array.isArray(d.stats)? d.stats: []).map(s=>`<tr><th>${escapeHtml(s.label||s.code)}</th><td>${escapeHtml(s.value)}</td></tr>`).join('');
+      return `<div class="wit-head">`+
+          `<img src="${(d.icon||'/uploads/images/icon/NOIMAGE.webp') }" alt="">`+
+          `<div style="flex:1 1 auto;min-width:0;">`+
+              `<div class="wit-name">${escapeHtml(d.name||('Item '+d.id))}</div>`+
+              (d.add_name?`<div class="wit-add">${escapeHtml(d.add_name)}</div>`:'')+
+          `</div>`+
+        `</div>`+
+        (desc?`<div class="wit-desc">${escapeHtml(desc)}</div>`:'')+
+        `<table>`+
+         `<tr><th>ID</th><td>${d.id}</td></tr>`+
+             (d.source?`<tr><th>Source</th><td>${escapeHtml(d.source)}</td></tr>`:'')+
+             (d.item_type?`<tr><th>Type</th><td>${escapeHtml(d.item_type)}</td></tr>`:'')+
+         (d.crystal_type?`<tr><th>Grade</th><td>${escapeHtml(d.crystal_type)}</td></tr>`:'')+
+         (d.price?`<tr><th>Price</th><td>${Number(d.price).toLocaleString()}</td></tr>`:'')+
+             statsRows +
+        `</table>`+
+        (flags.length?`<div class="wit-flags">${flags.map(f=>`<span class="wit-flag">${escapeHtml(f)}</span>`).join('')}</div>`:'');
+  }
+  function escapeHtml(str){ return String(str).replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[s])); }
+  function positionTooltip(x,y){
+      const vpW = window.innerWidth, vpH = window.innerHeight; tooltip.style.left='0px'; tooltip.style.top='0px';
+      tooltip.style.display='block';
+      const rect = tooltip.getBoundingClientRect();
+      let tx = x+OFFSET.x, ty = y+OFFSET.y;
+      if(tx+rect.width+8>vpW) tx = Math.max(8, x - rect.width - 12);
+      if(ty+rect.height+8>vpH) ty = Math.max(8, y - rect.height - 12);
+      tooltip.style.left = tx+ 'px'; tooltip.style.top = ty + 'px';
+  }
+  function showLoading(){ tooltip.innerHTML='<div class="wit-head"><div class="spinner-border spinner-border-sm" style="width:20px;height:20px;"></div><div class="wit-name">Loading…</div></div>'; tooltip.classList.add('fade-in'); positionTooltip(lastPos.x,lastPos.y); }
+  function showData(d){ tooltip.innerHTML = buildHtml(d); tooltip.classList.add('fade-in'); positionTooltip(lastPos.x,lastPos.y); }
+  function hideTooltip(){ tooltip.style.display='none'; currentId=null; }
+  function fetchItem(id, el){
+      if(apiCache.has(id)){ showData(apiCache.get(id)); return; }
+      el && el.classList.add('loading');
+      showLoading();
+      fetch('/wiki/item', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+          body: 'id=' + encodeURIComponent(id)
+      }).then(r=>{ if(!r.ok) throw new Error('http '+r.status); return r.json(); }).then(j=>{ if(j && j.ok){ apiCache.set(id,j); if(currentId==id) showData(j); } else { tooltip.innerHTML='<div style="font-size:12px;color:#ffb4b4;">Error</div>'; } }).catch(err=>{ console.error('[wiki:item] fetch fail', err); tooltip.innerHTML='<div style="font-size:12px;color:#ffb4b4;">Error</div>'; }).finally(()=>{ el && el.classList.remove('loading'); });
+  }
+        function handleEnter(e){
+                const target = e.target;
+                // Do not show item tooltip when hovering icons next to the name
+                if(target && target.closest && target.closest('.item-icons')) return;
+                const t = target.closest('.wiki-item'); if(!t) return; // if data-item-id missing attempt late inference
+         if(!t.getAttribute('data-item-id')){ inferIds(); }
+         if(!t.getAttribute('data-item-id')) return; if(hideTimer){ clearTimeout(hideTimer); hideTimer=null; }
+      const id=parseInt(t.getAttribute('data-item-id'),10); if(!id) return; currentId=id; lastPos={x:e.clientX,y:e.clientY}; console.debug('[wiki:item:hover] fetch id', id); fetchItem(id,t); }
+  body.addEventListener('mouseover', handleEnter, true);
+  body.addEventListener('touchstart', handleEnter, {passive:true, capture:true});
+  body.addEventListener('mousemove', function(e){ if(!currentId) return; lastPos={x:e.clientX,y:e.clientY}; if(tooltip.style.display==='block') positionTooltip(lastPos.x,lastPos.y); });
+        body.addEventListener('mouseout', function(e){ const t=e.target.closest('.wiki-item'); if(!t) return; hideTimer=setTimeout(hideTooltip, 120); }, true);
+  body.addEventListener('scroll', function(){ if(currentId) hideTooltip(); }, true);
+  window.addEventListener('blur', hideTooltip);
+})();
+</script>
+
+<!-- GLightbox JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+<script>
+// Initialize GLightbox for NPC images
+document.addEventListener('DOMContentLoaded', function() {
+    const lightbox = GLightbox({
+        selector: '.glightbox',
+        touchNavigation: true,
+        loop: true,
+        autoplayVideos: false,
+        zoomable: true,
+        draggable: true,
+        openEffect: 'fade',
+        closeEffect: 'fade',
+        slideEffect: 'slide',
+        moreText: 'Посмотреть еще',
+        moreLength: 60,
+        closeButton: true,
+        touchFollowAxis: true,
+        keyboardNavigation: true,
+        plyr: {
+            css: 'https://cdn.plyr.io/3.6.8/plyr.css',
+            js: 'https://cdn.plyr.io/3.6.8/plyr.js',
+            config: {
+                ratio: '16:9',
+                youtube: {
+                    noCookie: true,
+                    rel: 0,
+                    showinfo: 0,
+                    iv_load_policy: 3
+                },
+                vimeo: {
+                    byline: false,
+                    portrait: false,
+                    title: false,
+                    speed: true,
+                    transparent: false
+                }
+            }
+        }
+    });
+    
+    // Optional: Add click analytics or custom behavior
+    lightbox.on('open', function() {
+        console.debug('[GLightbox] Gallery opened');
+    });
+    
+    lightbox.on('slide_before_change', function(data) {
+        console.debug('[GLightbox] Slide changed to:', data.current);
+    });
+});
+</script>
+
+{# Modal for NPC image upload #}
+{% set isAdmin = wikiIsAdmin|default(false) %}
+{% set allowUserUpload = wikiAllowUserUpload|default(false) %}
+{% if wikiCanUploadImages|default(false) %}
+<div class="modal fade" id="uploadNpcImageModal" tabindex="-1" aria-labelledby="uploadNpcImageModalLabel" aria-hidden="true"
+    data-max-files="{{ setting.maxFiles|default(10)|e('html_attr') }}"
+    data-max-pending="{{ setting.maxPendingPerUser|default(30)|e('html_attr') }}"
+    data-pending-count="{{ pendingUploadsCount|default(0)|e('html_attr') }}"
+    data-trusted-users='{{ setting.trustedUsers|default([])|json_encode|raw }}'
+    data-is-admin="{{ isAdmin ? '1' : '0' }}"
+    data-current-user="{{ (user is defined and user.getName()) ? user.getName()|e('html_attr') : '' }}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadNpcImageModalLabel">
+                    <i class="ri-upload-2-line me-2"></i>
+                    {{ phrase('Upload NPC image') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="npcImageUploadForm" enctype="multipart/form-data">
+                    <input type="hidden" name="npc_id" value="{{ npc.id }}">
+                    <div class="mb-3">
+                        <label for="npcImageFiles" class="form-label">{{ phrase('Select image') }}</label>
+                        <div id="fileDropZone" class="drop-zone text-center p-4 border border-2 border-dashed rounded-3 ">
+                            <div class="dz-inner">
+                                <i class="ri-upload-cloud-2-line display-5 text-primary mb-2"></i>
+                                <p class="fs-6 mb-1">{{ phrase('Drop images here or click to browse') }}</p>
+                                <p class="text-muted small mb-0">{{ phrase('You can select up to %s images')|format(setting.maxFiles|default(10)) }}</p>
+                            </div>
+                            <input type="file" id="npcImageFiles" name="images[]" accept="image/jpeg,image/png,image/gif,image/webp" multiple hidden>
+                        </div>
+                        <div class="form-text mt-2">
+                            {{ phrase('Supported formats: JPG, PNG, GIF, WebP. Max size: 10MB') }}<br>
+                            {{ phrase('Images larger than 1920x1280 will be automatically resized') }}
+                        </div>
+                    </div>
+
+                    <div class="mb-2" id="selectedImagesWrapper" style="display:none;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-semibold">{{ phrase('Selected images') }}</span>
+                            <span class="text-muted small" id="selectedImagesCount"></span>
+                        </div>
+                        <div id="selectedImagesBar" class="d-flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <div id="imagePreview" class="mb-3" style="display: none;">
+                        <label class="form-label">{{ phrase('Preview') }}</label>
+                        <div class="form-text">{{ phrase('Drag to select the part of the image you want to upload') }}</div>
+                        <div class="crop-area-wrapper mt-2">
+                            <div id="cropArea" class="crop-area">
+                                <img id="previewImg" src="" alt="Preview" class="rounded" />
+                                <div id="cropOverlay" class="crop-overlay"></div>
+                                <div id="cropSelection" class="crop-selection" style="display:none;"></div>
+                            </div>
+                        </div>
+                        <div id="cropInfo" class="small text-muted mt-2">{{ phrase('Full image will be uploaded') }}</div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="resetCropBtn" style="display:none;">
+                            <i class="ri-eraser-line me-1"></i>
+                            {{ phrase('Reset selection') }}
+                        </button>
+                    </div>
+                </form>
+                <div id="uploadProgress" style="display: none;">
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted mt-1 d-block">{{ phrase('Uploading and processing...') }}</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase('Cancel') }}</button>
+                <button type="button" class="btn btn-primary" id="uploadNpcImageBtn">
+                    <i class="ri-upload-cloud-line me-1"></i>
+                    {{ phrase('Upload') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #imagePreview .crop-area-wrapper {
+        max-height: 360px;
+        overflow: auto;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 0.5rem;
+        background: rgba(0,0,0,0.03);
+        padding: 0.5rem;
+    }
+    .drop-zone {
+        position: relative;
+        border-style: dashed;
+        cursor: pointer;
+        transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    }
+    .drop-zone.drag-over {
+        background: rgba(13,110,253,0.08);
+        border-color: rgba(13,110,253,0.6);
+        color: var(--bs-primary);
+    }
+    .drop-zone input[type="file"] {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    .selected-image-chip {
+        position: relative;
+        width: 72px;
+        height: 72px;
+        border: 2px solid transparent;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        cursor: pointer;
+        background: rgba(0,0,0,0.05);
+        transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .selected-image-chip.active {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 2px rgba(13,110,253,0.25);
+        transform: translateY(-2px);
+    }
+    .selected-image-chip img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .selected-image-chip .remove-image {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 22px;
+        height: 22px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.55);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        line-height: 1;
+        opacity: 0;
+        transition: opacity .15s ease, background-color .15s ease;
+    }
+    .selected-image-chip:hover .remove-image,
+    .selected-image-chip.active .remove-image {
+        opacity: 1;
+    }
+    .selected-image-chip .remove-image:hover {
+        background: rgba(220,53,69,0.9);
+    }
+    #cropArea {
+        position: relative;
+        display: inline-block;
+        max-width: 100%;
+    }
+    #cropArea img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        pointer-events: none;
+    }
+    #cropOverlay {
+        position: absolute;
+        inset: 0;
+        cursor: crosshair;
+    }
+    #cropSelection {
+        position: absolute;
+        border: 2px dashed rgba(13,110,253,0.9);
+        background: rgba(13,110,253,0.25);
+        box-shadow: 0 0 0 9999px rgba(0,0,0,0.35);
+        pointer-events: none;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('uploadNpcImageModal');
+    const MAX_FILES = (function(){
+        try{
+            if(modal && modal.getAttribute){
+                const v = modal.getAttribute('data-max-files');
+                const n = parseInt(String(v||'').replace(/[^0-9\-]/g,''), 10);
+                if(!isNaN(n) && n>0) return n;
+            }
+        }catch(e){}
+        return 10;
+    })();
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    const ACCEPTED_MIME = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const MIN_SELECTION = 8;
+
+    const form = document.getElementById('npcImageUploadForm');
+    const npcIdInput = form ? form.querySelector('input[name="npc_id"]') : null;
+    const fileInput = document.getElementById('npcImageFiles');
+    const dropZone = document.getElementById('fileDropZone');
+    const selectedImagesWrapper = document.getElementById('selectedImagesWrapper');
+    const selectedImagesBar = document.getElementById('selectedImagesBar');
+    const selectedImagesCount = document.getElementById('selectedImagesCount');
+    const previewDiv = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const cropOverlay = document.getElementById('cropOverlay');
+    const cropSelection = document.getElementById('cropSelection');
+    const cropInfo = document.getElementById('cropInfo');
+    const resetCropBtn = document.getElementById('resetCropBtn');
+    const uploadBtn = document.getElementById('uploadNpcImageBtn');
+    const progressDiv = document.getElementById('uploadProgress');
+    const progressBar = progressDiv ? progressDiv.querySelector('.progress-bar') : null;
+
+    if (!modal || !form || !fileInput || !dropZone || !previewDiv || !previewImg || !cropOverlay || !cropSelection || !uploadBtn) {
+        return;
+    }
+
+    // Server-side settings exposed to client for upload limiting (read from modal data attributes)
+    function _parseJsonAttr(v, def){ try{ return JSON.parse(v); }catch(e){ return def; } }
+    const _modalEl = modal; // already defined above
+    const serverSettingMaxPending = (function(){ try{ const v=_modalEl.getAttribute('data-max-pending'); const n=parseInt(String(v||'').replace(/[^0-9\-]/g,''),10); return isNaN(n)? 30: n; }catch(e){ return 30; } })();
+    const serverPendingCount = (function(){ try{ const v=_modalEl.getAttribute('data-pending-count'); const n=parseInt(String(v||'').replace(/[^0-9\-]/g,''),10); return isNaN(n)? 0: n; }catch(e){ return 0; } })();
+    const serverTrustedUsers = (function(){ try{ const v=_modalEl.getAttribute('data-trusted-users'); return _parseJsonAttr(v, []); }catch(e){ return []; } })();
+    const isAdminClient = (function(){ try{ return String(_modalEl.getAttribute('data-is-admin')) === '1'; }catch(e){ return false; } })();
+    const currentUserName = (function(){ try{ const v=_modalEl.getAttribute('data-current-user'); return v? String(v): null; }catch(e){ return null; } })();
+
+    function remainingSlots(){
+        if(isAdminClient === true || isAdminClient === 'true') return Infinity;
+        const name = currentUserName ? String(currentUserName).toLowerCase() : null;
+        const trustedLower = Array.isArray(serverTrustedUsers) ? serverTrustedUsers.map(s=>String(s).toLowerCase()) : [];
+        if(name && trustedLower.includes(name)) return Infinity;
+        if(!serverSettingMaxPending || serverSettingMaxPending <= 0) return Infinity;
+        return Math.max(0, serverSettingMaxPending - (serverPendingCount || 0));
+    }
+
+    dropZone.setAttribute('role', 'button');
+    dropZone.setAttribute('tabindex', '0');
+
+    const TEXT_FULL_IMAGE = "{{ phrase('Full image will be uploaded')|e('js') }}";
+    const TEXT_SELECTED_TEMPLATE = "{{ phrase('Selected area: %s×%s px')|e('js') }}";
+    const TEXT_PREPARE_ERROR = "{{ phrase('Error preparing cropped image')|e('js') }}";
+    const TEXT_MAX_FILES = "{{ phrase('You can select up to %s images')|format(setting.maxFiles|default(10))|e('js') }}";
+    const TEXT_NO_IMAGES = "{{ phrase('Please select at least one image')|e('js') }}";
+    const TEXT_FILE_TOO_LARGE = "{{ phrase('File too large. Maximum size is 10MB')|e('js') }}";
+    const TEXT_UNSUPPORTED_TYPE = "{{ phrase('Unsupported image format. Use JPG, PNG, GIF, or WebP')|e('js') }}";
+    const TEXT_UPLOAD_SUCCESS = "{{ phrase('All images uploaded successfully! The page will reload.')|e('js') }}";
+    const TEXT_UPLOAD_GENERIC_FAIL = "{{ phrase('Upload failed. Please try again.')|e('js') }}";
+    const TEXT_RESPONSE_ERROR = "{{ phrase('Error processing server response')|e('js') }}";
+    const TEXT_NETWORK_ERROR = "{{ phrase('Network error. Please try again.')|e('js') }}";
+
+    let images = [];
+    let activeImageId = null;
+    let selectionRect = null;
+    let pointerAnchor = null;
+    let pointerId = null;
+    let imageNaturalWidth = 0;
+    let imageNaturalHeight = 0;
+
+    function getActiveImage() {
+        return images.find((img) => img.id === activeImageId) || null;
+    }
+
+    function updateSelectionLimit(){
+        const remaining = Math.max(0, MAX_FILES - images.length);
+        const limitReached = remaining === 0;
+        if (fileInput) {
+            fileInput.disabled = limitReached;
+        }
+        if (dropZone) {
+            dropZone.classList.toggle('disabled', limitReached);
+            dropZone.setAttribute('aria-disabled', limitReached ? 'true' : 'false');
+            if (limitReached) {
+                dropZone.setAttribute('title', TEXT_MAX_FILES);
+            } else {
+                dropZone.removeAttribute('title');
+            }
+        }
+        return remaining;
+    }
+
+    function updateCropInfo() {
+        if (!selectionRect || !imageNaturalWidth || !imageNaturalHeight) {
+            cropInfo.textContent = TEXT_FULL_IMAGE;
+            return;
+        }
+        const overlayRect = cropOverlay.getBoundingClientRect();
+        if (!overlayRect.width || !overlayRect.height) {
+            cropInfo.textContent = TEXT_FULL_IMAGE;
+            return;
+        }
+        const naturalWidth = Math.round(selectionRect.width * (imageNaturalWidth / overlayRect.width));
+        const naturalHeight = Math.round(selectionRect.height * (imageNaturalHeight / overlayRect.height));
+        cropInfo.textContent = TEXT_SELECTED_TEMPLATE.replace('%s', naturalWidth).replace('%s', naturalHeight);
+        resetCropBtn.style.display = 'inline-flex';
+    }
+
+    function clearCropSelection(options = {}) {
+        selectionRect = null;
+        cropSelection.style.display = 'none';
+        if (!options.keepStored) {
+            const active = getActiveImage();
+            if (active) {
+                active.selection = null;
+            }
+        }
+        resetCropBtn.style.display = 'none';
+        updateCropInfo();
+    }
+
+    function drawSelection() {
+        if (!selectionRect) {
+            cropSelection.style.display = 'none';
+            updateCropInfo();
+            return;
+        }
+        cropSelection.style.display = 'block';
+        cropSelection.style.left = selectionRect.x + 'px';
+        cropSelection.style.top = selectionRect.y + 'px';
+        cropSelection.style.width = selectionRect.width + 'px';
+        cropSelection.style.height = selectionRect.height + 'px';
+        updateCropInfo();
+    }
+
+    function getRelativePosition(event) {
+        const rect = cropOverlay.getBoundingClientRect();
+        let x = event.clientX - rect.left;
+        let y = event.clientY - rect.top;
+        x = Math.max(0, Math.min(rect.width, x));
+        y = Math.max(0, Math.min(rect.height, y));
+        return { x, y, rect };
+    }
+
+    function setSelectionFromAnchor(event) {
+        if (!pointerAnchor) {
+            return;
+        }
+        const { x, y, rect } = getRelativePosition(event);
+        let startX = pointerAnchor.x;
+        let startY = pointerAnchor.y;
+        let width = x - pointerAnchor.x;
+        let height = y - pointerAnchor.y;
+        if (width < 0) {
+            startX += width;
+            width = Math.abs(width);
+        }
+        if (height < 0) {
+            startY += height;
+            height = Math.abs(height);
+        }
+        startX = Math.max(0, Math.min(rect.width - width, startX));
+        startY = Math.max(0, Math.min(rect.height - height, startY));
+        width = Math.min(rect.width - startX, width);
+        height = Math.min(rect.height - startY, height);
+        selectionRect = { x: startX, y: startY, width, height };
+        drawSelection();
+    }
+
+    function storeCurrentSelection() {
+        const active = getActiveImage();
+        if (!active || !selectionRect || !imageNaturalWidth || !imageNaturalHeight) {
+            return;
+        }
+        const overlayRect = cropOverlay.getBoundingClientRect();
+        if (!overlayRect.width || !overlayRect.height) {
+            return;
+        }
+        const scaleX = imageNaturalWidth / overlayRect.width;
+        const scaleY = imageNaturalHeight / overlayRect.height;
+        let sx = Math.max(0, Math.round(selectionRect.x * scaleX));
+        let sy = Math.max(0, Math.round(selectionRect.y * scaleY));
+        let sw = Math.max(1, Math.round(selectionRect.width * scaleX));
+        let sh = Math.max(1, Math.round(selectionRect.height * scaleY));
+        if (sx + sw > imageNaturalWidth) {
+            sw = imageNaturalWidth - sx;
+        }
+        if (sy + sh > imageNaturalHeight) {
+            sh = imageNaturalHeight - sy;
+        }
+        active.selection = { x: sx, y: sy, width: sw, height: sh };
+    }
+
+    function applyStoredSelection(selection) {
+        if (!selection || !imageNaturalWidth || !imageNaturalHeight) {
+            clearCropSelection({ keepStored: true });
+            return;
+        }
+        const overlayRect = cropOverlay.getBoundingClientRect();
+        if (!overlayRect.width || !overlayRect.height) {
+            requestAnimationFrame(function() {
+                applyStoredSelection(selection);
+            });
+            return;
+        }
+        const scaleX = overlayRect.width / imageNaturalWidth;
+        const scaleY = overlayRect.height / imageNaturalHeight;
+        const x = Math.max(0, Math.min(overlayRect.width, selection.x * scaleX));
+        const y = Math.max(0, Math.min(overlayRect.height, selection.y * scaleY));
+        const width = Math.max(1, Math.min(overlayRect.width - x, selection.width * scaleX));
+        const height = Math.max(1, Math.min(overlayRect.height - y, selection.height * scaleY));
+        selectionRect = { x, y, width, height };
+        drawSelection();
+    }
+
+    function updateProgress(percent, index, total) {
+        if (!progressBar) {
+            return;
+        }
+        const overall = Math.min(100, Math.round(((index - 1) + percent / 100) / total * 100));
+        progressBar.style.width = overall + '%';
+        progressBar.setAttribute('aria-valuenow', overall.toString());
+        progressBar.textContent = overall + '%';
+    }
+
+    function renderSelectedImages() {
+        if (!selectedImagesBar) {
+            return;
+        }
+        selectedImagesBar.innerHTML = '';
+        images.forEach(function(image) {
+            const chip = document.createElement('div');
+            chip.className = 'selected-image-chip' + (image.id === activeImageId ? ' active' : '');
+            chip.dataset.imageId = image.id;
+
+            const thumb = document.createElement('img');
+            thumb.src = image.dataUrl;
+            thumb.alt = '';
+            chip.appendChild(thumb);
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'remove-image';
+            removeBtn.innerHTML = '&times;';
+            removeBtn.addEventListener('click', function(event) {
+                event.stopPropagation();
+                removeImage(image.id);
+            });
+            chip.appendChild(removeBtn);
+
+            chip.addEventListener('click', function() {
+                if (activeImageId !== image.id) {
+                    setActiveImage(image.id);
+                }
+            });
+
+            selectedImagesBar.appendChild(chip);
+        });
+
+        if (selectedImagesWrapper) {
+            selectedImagesWrapper.style.display = images.length ? '' : 'none';
+        }
+        if (selectedImagesCount) {
+            selectedImagesCount.textContent = images.length ? images.length + ' / ' + MAX_FILES : '';
+        }
+        updateSelectionLimit();
+    }
+
+    function removeImage(id) {
+        const wasActive = id === activeImageId;
+        images = images.filter(function(img) {
+            return img.id !== id;
+        });
+        if (!images.length) {
+            activeImageId = null;
+            clearCropSelection();
+            previewDiv.style.display = 'none';
+            previewImg.src = '';
+        } else if (wasActive) {
+            activeImageId = images[0].id;
+            clearCropSelection({ keepStored: true });
+        }
+        renderSelectedImages();
+        loadActiveImage();
+    }
+
+    function setActiveImage(id) {
+        if (activeImageId === id) {
+            return;
+        }
+        clearCropSelection({ keepStored: true });
+        activeImageId = id;
+        renderSelectedImages();
+        loadActiveImage();
+    }
+
+    function loadActiveImage() {
+        const active = getActiveImage();
+        if (!active) {
+            return;
+        }
+        previewDiv.style.display = 'block';
+        clearCropSelection({ keepStored: true });
+        if (previewImg.src !== active.dataUrl) {
+            previewImg.src = active.dataUrl;
+        } else if (active.selection) {
+            applyStoredSelection(active.selection);
+        } else {
+            updateCropInfo();
+        }
+    }
+
+    function handleFiles(fileList) {
+        if (!fileList || !fileList.length) {
+            return;
+        }
+        if (images.length >= MAX_FILES) {
+            console.warn('[wiki:npc-upload] max files reached');
+            updateSelectionLimit();
+            return;
+        }
+        const files = Array.from(fileList);
+        let limitReached = false;
+        let hasTooLarge = false;
+        let hasUnsupported = false;
+
+        // Enforce server-side remaining slots (consider already selected images in the modal)
+        const slots = remainingSlots();
+        const maxByUi = Math.max(0, MAX_FILES - images.length);
+        let freeSlots;
+        if (slots === Infinity) {
+            freeSlots = maxByUi;
+        } else {
+            freeSlots = Math.min(maxByUi, Math.max(0, slots - images.length));
+        }
+        if (freeSlots === 0) {
+            console.warn('[wiki:npc-upload] no free slots');
+            updateSelectionLimit();
+            return;
+        }
+        if (files.length > freeSlots) {
+            console.warn('[wiki:npc-upload] trimming to free slots:', freeSlots);
+            files.splice(freeSlots);
+        }
+
+        for (const file of files) {
+            if (images.length >= MAX_FILES) {
+                limitReached = true;
+                break;
+            }
+            const mime = (file.type || '').toLowerCase();
+            if (!ACCEPTED_MIME.includes(mime)) {
+                hasUnsupported = true;
+                continue;
+            }
+            if (file.size > MAX_FILE_SIZE) {
+                hasTooLarge = true;
+                continue;
+            }
+            if (images.some((img) => img.file.name === file.name && img.file.size === file.size)) {
+                continue;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imageEntry = {
+                    id: 'img-' + Date.now() + '-' + Math.random().toString(16).slice(2),
+                    file: file,
+                    dataUrl: event.target.result,
+                    selection: null,
+                    naturalWidth: null,
+                    naturalHeight: null
+                };
+                images.push(imageEntry);
+                if (!activeImageId) {
+                    activeImageId = imageEntry.id;
+                }
+                renderSelectedImages();
+                if (imageEntry.id === activeImageId) {
+                    loadActiveImage();
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        if (limitReached) { console.warn('[wiki:npc-upload] limit reached'); }
+        if (hasTooLarge) { console.warn('[wiki:npc-upload] some files too large'); }
+        if (hasUnsupported) { console.warn('[wiki:npc-upload] some files unsupported'); }
+        updateSelectionLimit();
+    }
+
+    function prepareImageForUpload(image) {
+        return new Promise((resolve, reject) => {
+            if (!image.selection) {
+                resolve({ blob: image.file, name: image.file.name, meta: null });
+                return;
+            }
+
+            const img = new Image();
+            img.onload = function() {
+                const selection = image.selection;
+                let sx = selection.x;
+                let sy = selection.y;
+                let sw = selection.width;
+                let sh = selection.height;
+
+                if (sx + sw > img.naturalWidth) {
+                    sw = img.naturalWidth - sx;
+                }
+                if (sy + sh > img.naturalHeight) {
+                    sh = img.naturalHeight - sy;
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = sw;
+                canvas.height = sh;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+
+                const originalMime = (image.file.type || '').toLowerCase();
+                let targetMime = 'image/png';
+                let quality = 0.95;
+                if (originalMime.includes('jpeg') || originalMime.includes('jpg')) {
+                    targetMime = 'image/jpeg';
+                    quality = 0.92;
+                } else if (originalMime.includes('webp')) {
+                    targetMime = 'image/webp';
+                    quality = 0.9;
+                }
+
+                canvas.toBlob(function(blob) {
+                    if (!blob) {
+                        reject(new Error(TEXT_PREPARE_ERROR));
+                        return;
+                    }
+                    const baseName = image.file.name.replace(/\.[^/.]+$/, '');
+                    const ext = targetMime.split('/')[1] || 'png';
+                    resolve({
+                        blob: blob,
+                        name: baseName + '_crop.' + ext,
+                        meta: { width: sw, height: sh }
+                    });
+                }, targetMime, quality);
+            };
+            img.onerror = function() {
+                reject(new Error(TEXT_PREPARE_ERROR));
+            };
+            img.src = image.dataUrl;
+        });
+    }
+
+    function uploadSingleImage(image, npcId, index, total) {
+        return prepareImageForUpload(image).then((prepared) => {
+            return new Promise((resolve, reject) => {
+                const formData = new FormData();
+                formData.append('npc_id', npcId);
+                formData.append('image', prepared.blob, prepared.name);
+                if (prepared.meta) {
+                    formData.append('crop_meta', JSON.stringify(prepared.meta));
+                }
+
+                const xhr = new XMLHttpRequest();
+
+                updateProgress(0, index, total);
+
+                xhr.upload.addEventListener('progress', function(e) {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        updateProgress(percent, index, total);
+                    }
+                });
+
+                xhr.addEventListener('load', function() {
+                    if (xhr.status === 200) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                updateProgress(100, index, total);
+                                resolve(response);
+                            } else {
+                                reject(new Error(response.message || TEXT_UPLOAD_GENERIC_FAIL));
+                            }
+                        } catch (err) {
+                            reject(new Error(TEXT_RESPONSE_ERROR));
+                        }
+                    } else {
+                        reject(new Error(TEXT_UPLOAD_GENERIC_FAIL));
+                    }
+                });
+
+                xhr.addEventListener('error', function() {
+                    reject(new Error(TEXT_NETWORK_ERROR));
+                });
+
+                xhr.open('POST', '/wiki/npc/upload-image', true);
+                xhr.send(formData);
+            });
+        });
+    }
+
+    function resetUploader() {
+        images = [];
+        activeImageId = null;
+        selectionRect = null;
+        pointerAnchor = null;
+        pointerId = null;
+        imageNaturalWidth = 0;
+        imageNaturalHeight = 0;
+        form.reset();
+        if (fileInput) {
+            fileInput.value = '';
+        }
+        if (dropZone) {
+            dropZone.classList.remove('drag-over');
+        }
+    renderSelectedImages();
+        clearCropSelection();
+        previewDiv.style.display = 'none';
+        previewImg.src = '';
+        if (progressBar) {
+            progressBar.style.width = '0%';
+            progressBar.textContent = '';
+            progressBar.setAttribute('aria-valuenow', '0');
+        }
+        if (progressDiv) {
+            progressDiv.style.display = 'none';
+        }
+        updateSelectionLimit();
+    }
+
+    cropOverlay.addEventListener('pointerdown', function(e) {
+        if (!getActiveImage()) {
+            return;
+        }
+        cropOverlay.setPointerCapture(e.pointerId);
+        pointerId = e.pointerId;
+        const pos = getRelativePosition(e);
+        pointerAnchor = { x: pos.x, y: pos.y };
+        selectionRect = { x: pos.x, y: pos.y, width: 0, height: 0 };
+        drawSelection();
+        e.preventDefault();
+    });
+
+    cropOverlay.addEventListener('pointermove', function(e) {
+        if (pointerId === null || e.pointerId !== pointerId) {
+            return;
+        }
+        setSelectionFromAnchor(e);
+        e.preventDefault();
+    });
+
+    function finalizeSelection(e) {
+        if (pointerId === null || e.pointerId !== pointerId) {
+            return;
+        }
+        cropOverlay.releasePointerCapture(pointerId);
+        pointerId = null;
+        pointerAnchor = null;
+        if (!selectionRect || selectionRect.width < MIN_SELECTION || selectionRect.height < MIN_SELECTION) {
+            clearCropSelection();
+        } else {
+            storeCurrentSelection();
+            drawSelection();
+        }
+        e.preventDefault();
+    }
+
+    cropOverlay.addEventListener('pointerup', finalizeSelection);
+    cropOverlay.addEventListener('pointercancel', finalizeSelection);
+
+    if (resetCropBtn) {
+        resetCropBtn.addEventListener('click', function() {
+            clearCropSelection();
+        });
+    }
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            handleFiles(fileInput.files);
+            fileInput.value = '';
+        });
+    }
+
+    dropZone.addEventListener('click', function() {
+        if (dropZone.classList.contains('disabled')) {
+            console.warn('[wiki:npc-upload] max files reached');
+            return;
+        }
+        fileInput.click();
+    });
+
+    dropZone.addEventListener('keydown', function(e) {
+        if (dropZone.classList.contains('disabled')) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                console.warn('[wiki:npc-upload] max files reached');
+            }
+            return;
+        }
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            fileInput.click();
+        }
+    });
+
+    dropZone.addEventListener('dragenter', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!dropZone.classList.contains('disabled')) {
+            dropZone.classList.add('drag-over');
+        }
+    });
+
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!dropZone.classList.contains('disabled')) {
+            dropZone.classList.add('drag-over');
+        }
+    });
+
+    dropZone.addEventListener('dragleave', function(e) {
+        if (!dropZone.contains(e.relatedTarget)) {
+            dropZone.classList.remove('drag-over');
+        }
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('drag-over');
+        if (dropZone.classList.contains('disabled')) {
+            console.warn('[wiki:npc-upload] max files reached');
+            return;
+        }
+        if (e.dataTransfer && e.dataTransfer.files) {
+            handleFiles(e.dataTransfer.files);
+        }
+    });
+
+    previewImg.addEventListener('load', function() {
+        const active = getActiveImage();
+        if (!active) {
+            return;
+        }
+        imageNaturalWidth = previewImg.naturalWidth;
+        imageNaturalHeight = previewImg.naturalHeight;
+        active.naturalWidth = imageNaturalWidth;
+        active.naturalHeight = imageNaturalHeight;
+        if (active.selection) {
+            applyStoredSelection(active.selection);
+        } else {
+            clearCropSelection({ keepStored: true });
+        }
+    });
+
+    if (uploadBtn) {
+        uploadBtn.addEventListener('click', async function() {
+            if (!images.length) {
+                console.warn('[wiki:npc-upload] no images selected');
+                return;
+            }
+            if (!npcIdInput) {
+                console.error('[wiki:npc-upload] missing npc id input');
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            if (progressDiv) {
+                progressDiv.style.display = 'block';
+            }
+            if (progressBar) {
+                progressBar.style.width = '0%';
+                progressBar.textContent = '';
+                progressBar.setAttribute('aria-valuenow', '0');
+            }
+
+            const total = images.length;
+
+            try {
+                for (let i = 0; i < total; i++) {
+                    await uploadSingleImage(images[i], npcIdInput.value, i + 1, total);
+                }
+                window.location.reload();
+            } catch (error) {
+                console.error('[wiki:npc-upload]', error);
+            } finally {
+                uploadBtn.disabled = false;
+                if (progressDiv) {
+                    progressDiv.style.display = 'none';
+                }
+                if (progressBar) {
+                    progressBar.style.width = '0%';
+                    progressBar.textContent = '';
+                    progressBar.setAttribute('aria-valuenow', '0');
+                }
+            }
+        });
+    }
+
+    if (modal) {
+        modal.addEventListener('hidden.bs.modal', function() {
+            resetUploader();
+        });
+    }
+
+    updateSelectionLimit();
+});
+</script>
+{% endif %}
+
+{% block css %}
+<link rel="stylesheet" href="/src/component/plugins/wiki/tpl/css/_wiki_subnav.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+{% endblock %}
+{% endblock %}

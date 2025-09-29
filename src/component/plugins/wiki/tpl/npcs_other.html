@@ -1,0 +1,18 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <h2 class="mb-2">{{ phrase('NPC — Other') }}</h2>
+            <div class="mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="try{if(history.length > 1){history.back();}else{location.href='/wiki';}}catch(e){location.href='/wiki';}">{{ phrase('Back') }}</button>
+                    <a href="/wiki" class="btn btn-sm btn-outline-secondary">{{ phrase('Back to wiki') }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'wiki/tpl/npcs_table_server.html' %}
+</div>
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-body">
+      <div class="alert alert-info">Встроенные инструменты администрирования (создание брони) были удалены.</div>
+      <a href="/admin/plugin/wiki" class="btn btn-link">Назад к настройкам плагина</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header py-2"><strong>Добавление экипировки</strong></div>
+    <div class="card-body">
+      {% if errors is defined and errors %}
+      <div class="alert alert-danger"><ul class="mb-0">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>
+      {% endif %}
+      <form method="post">
+        <div class="row g-2">
+          <div class="col-md-2"><label class="form-label">ID</label><input name="id" type="number" class="form-control" value="{{ prefill.id|default('') }}" required></div>
+          <div class="col-md-4"><label class="form-label">Название</label><input name="name" class="form-control" value="{{ prefill.name|default('') }}" required></div>
+          <div class="col-md-3"><label class="form-label">Иконка</label><input name="icon" class="form-control" value="{{ prefill.icon|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">Тип брони</label><input name="armor_type" class="form-control" value="{{ prefill.armor_type|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">Часть тела</label><input name="bodypart" class="form-control" value="{{ prefill.bodypart|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">Цена</label><input name="price" class="form-control" value="{{ prefill.price|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">Вес</label><input name="weight" class="form-control" value="{{ prefill.weight|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">Crystal type</label><input name="crystal_type" class="form-control" value="{{ prefill.crystal_type|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">Crystal count</label><input name="crystal_count" class="form-control" value="{{ prefill.crystal_count|default('') }}"></div>
+
+          <div class="col-12"><hr></div>
+          <div class="col-md-4"><label class="form-label">for_npc</label><input name="for_npc" class="form-control" value="{{ prefill.for_npc|default('') }}"></div>
+          <div class="col-md-4"><label class="form-label">item_skill</label><input name="item_skill" class="form-control" value="{{ prefill.item_skill|default('') }}"></div>
+          <div class="col-md-4"><label class="form-label">equip_condition</label><input name="equip_condition" class="form-control" value="{{ prefill.equip_condition|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">duration</label><input name="duration" class="form-control" value="{{ prefill.duration|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">equip_reuse_delay</label><input name="equip_reuse_delay" class="form-control" value="{{ prefill.equip_reuse_delay|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">useskilldistime</label><input name="useskilldistime" class="form-control" value="{{ prefill.useskilldistime|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">unequip_skill</label><input name="unequip_skill" class="form-control" value="{{ prefill.unequip_skill|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">enchant4_skill</label><input name="enchant4_skill" class="form-control" value="{{ prefill.enchant4_skill|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">reuse_delay</label><input name="reuse_delay" class="form-control" value="{{ prefill.reuse_delay|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">attack_range</label><input name="attack_range" class="form-control" value="{{ prefill.attack_range|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">random_damage</label><input name="random_damage" class="form-control" value="{{ prefill.random_damage|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">time</label><input name="time" class="form-control" value="{{ prefill.time|default('') }}"></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="enchant_enabled" id="enchant_enabled" {% if prefill.enchant_enabled in ['1','true','yes'] %}checked{% endif %}><label for="enchant_enabled" class="form-check-label">Enchant</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_dropable" id="is_dropable" {% if prefill.is_dropable in ['1','true','yes'] %}checked{% endif %}><label for="is_dropable" class="form-check-label">Dropable</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_sellable" id="is_sellable" {% if prefill.is_sellable in ['1','true','yes'] %}checked{% endif %}><label for="is_sellable" class="form-check-label">Sellable</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_tradable" id="is_tradable" {% if prefill.is_tradable in ['1','true','yes'] %}checked{% endif %}><label for="is_tradable" class="form-check-label">Tradable</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_depositable" id="is_depositable" {% if prefill.is_depositable in ['1','true','yes'] %}checked{% endif %}><label for="is_depositable" class="form-check-label">Depositable</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_destroyable" id="is_destroyable" {% if prefill.is_destroyable in ['1','true','yes'] %}checked{% endif %}><label for="is_destroyable" class="form-check-label">Destroyable</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="element_enabled" id="element_enabled" {% if prefill.element_enabled in ['1','true','yes'] %}checked{% endif %}><label for="element_enabled" class="form-check-label">Element</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_oly_restricted" id="is_oly_restricted" {% if prefill.is_oly_restricted in ['1','true','yes'] %}checked{% endif %}><label for="is_oly_restricted" class="form-check-label">Oly restricted</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_premium" id="is_premium" {% if prefill.is_premium in ['1','true','yes'] %}checked{% endif %}><label for="is_premium" class="form-check-label">Premium</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_freightable" id="is_freightable" {% if prefill.is_freightable in ['1','true','yes'] %}checked{% endif %}><label for="is_freightable" class="form-check-label">Freightable</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="ex_immediate_effect" id="ex_immediate_effect" {% if prefill.ex_immediate_effect in ['1','true','yes'] %}checked{% endif %}><label for="ex_immediate_effect" class="form-check-label">Immediate effect</label></div>
+
+          <div class="col-12"><hr></div>
+          <div class="col-md-12">
+            <label class="form-label">FOR JSON</label>
+            <textarea name="for" class="form-control" rows="3" placeholder='{"type":"item","stat":"pDef","value":10}'>{{ prefill.for|default('') }}</textarea>
+          </div>
+          <div class="col-12">
+            <div class="card mt-3">
+              <div class="card-header">Конструктор FOR</div>
+              <div class="card-body">
+                <div class="row g-2 align-items-end">
+                  <div class="col-md-4">
+                    <label class="form-label">type</label>
+                    <select class="form-select" id="for_type">
+                      <option value="set">set</option>
+                      <option value="add">add</option>
+                      <option value="mul">mul</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">stat</label>
+                    <select class="form-select" id="for_stat">
+                      {% for s in [
+                        'pAtk','mAtk','pDef','mDef','pAtkSpd','mAtkSpd','hp','cp','mp','pvpAtk','pvpDef','critRate','critDamage','accCombat','evasion','speed','walkSpeed','runSpeed','flySpeed','pAccuracy','mAccuracy'
+                      ] %}
+                        <option value="{{ s }}">{{ s }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">value</label>
+                    <input type="number" class="form-control" id="for_value" value="0">
+                  </div>
+                  <div class="col-md-2">
+                    <button type="button" class="btn btn-outline-secondary" id="btnAddFor">Добавить</button>
+                  </div>
+                </div>
+                <div class="mt-2 small text-muted">
+                  <div id="forPreviewList" class="list-group mb-2"></div>
+                  <div id="forPreview"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 mt-3"><button class="btn btn-primary">Создать</button></div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+(function(){
+  const btn=document.getElementById('btnAddFor'); if(!btn) return;
+  const area=document.querySelector('textarea[name="for"]');
+  const preview=document.getElementById('forPreview');
+  const previewList=document.getElementById('forPreviewList');
+  const getData=()=>({
+    type:document.getElementById('for_type').value,
+    stat:document.getElementById('for_stat').value,
+    value:Number(document.getElementById('for_value').value||0)
+  });
+
+  const parseArea = ()=>{ const v = (area.value||'').trim(); if(!v) return []; try{ const j = JSON.parse(v); return Array.isArray(j)?j:[j]; }catch(e){ return null; } };
+
+  const renderPreview = ()=>{
+    const arr = parseArea();
+    try{ preview.textContent = arr === null ? 'Неверный JSON' : (arr.length ? JSON.stringify(arr) : ''); }catch(e){ preview.textContent = 'Неверный JSON'; }
+    previewList.innerHTML = '';
+    if(!arr || !arr.length) return;
+    arr.forEach((it, idx)=>{
+      const label = document.createElement('div');
+      label.className = 'list-group-item d-flex justify-content-between align-items-start';
+      const left = document.createElement('div');
+      left.className = 'ms-2 me-auto';
+      left.innerHTML = '<strong>'+String(it.type)+'</strong> <small class="text-muted">'+String(it.stat)+'='+(it.value||0)+'</small>';
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'btn btn-sm btn-outline-danger';
+      del.textContent = 'Удалить';
+      del.addEventListener('click', function(){ removeAt(idx); });
+      label.appendChild(left);
+      label.appendChild(del);
+      previewList.appendChild(label);
+    });
+  };
+
+  const removeAt = (index)=>{ const arr = parseArea(); if(!arr) return; arr.splice(index,1); area.value = JSON.stringify(arr); renderPreview(); };
+
+  btn.addEventListener('click',()=>{ const obj=getData(); let cur=(area.value||'').trim(); if(!cur){ area.value=JSON.stringify([obj]); } else { try{ const j=JSON.parse(cur); const arr=Array.isArray(j)?j:[j]; arr.push(obj); area.value=JSON.stringify(arr); }catch(e){ area.value=JSON.stringify([obj]); } } renderPreview(); });
+
+  area.addEventListener('input',renderPreview);
+  renderPreview();
+})();
+</script>
+{% endblock %}

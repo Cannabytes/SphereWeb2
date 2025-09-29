@@ -1,0 +1,165 @@
+/* Shared sub-navigation (wiki) */
+.wiki-subnav {
+    position: relative;
+    padding: 1rem 1.25rem 1.1rem;
+    border-radius: 1rem;
+    background: linear-gradient(145deg, rgba(0, 0, 0, .35), rgba(0, 0, 0, .15));
+    backdrop-filter: blur(8px) saturate(150%);
+    -webkit-backdrop-filter: blur(8px) saturate(150%);
+    box-shadow: 0 4px 16px -6px rgba(0, 0, 0, .4), 0 2px 4px -1px rgba(0, 0, 0, .35);
+}
+
+[data-theme-mode=light] .wiki-subnav {
+    background: linear-gradient(145deg, rgba(255, 255, 255, .85), rgba(255, 255, 255, .65));
+    box-shadow: 0 3px 12px -4px rgba(0, 0, 0, .15), 0 1px 2px rgba(0, 0, 0, .08);
+}
+
+.wiki-subnav .page-title {
+    letter-spacing: .5px;
+}
+
+.wiki-subnav .back-link {
+    font-weight: 600;
+    color: var(--bs-primary);
+    padding: .45rem .85rem;
+    border-radius: .7rem;
+    background: rgba(var(--bs-primary-rgb), .08);
+    line-height: 1;
+    transition: background .18s, color .18s, box-shadow .18s;
+    text-decoration: none;
+}
+
+.wiki-subnav .back-link:hover,
+.wiki-subnav .back-link:focus-visible {
+    background: rgba(var(--bs-primary-rgb), .15);
+    box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), .25);
+    color: var(--bs-primary);
+    text-decoration: none;
+}
+
+.wiki-subnav .back-link .chevron {
+    font-size: 1.05em;
+    font-weight: 600;
+}
+
+/* Filter pills */
+.wiki-filter {
+    margin-top: .35rem;
+}
+
+.wiki-filter ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.wiki-filter ul::-webkit-scrollbar {
+    height: 8px;
+}
+
+.wiki-filter ul::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.wiki-filter ul::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, .3);
+    border-radius: 20px;
+}
+
+[data-theme-mode=light] .wiki-filter ul::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, .15);
+}
+
+@media (max-width:575.98px) {
+    .wiki-filter ul {
+        flex-wrap: nowrap;
+        padding-bottom: .25rem;
+        margin-bottom: -.25rem;
+    }
+}
+
+@media (min-width:576px) {
+    .wiki-filter ul {
+        flex-wrap: wrap;
+    }
+}
+
+.wiki-subpill { 
+    --pill-bg: rgba(255, 255, 255, .06);
+    --pill-bg-hover: rgba(255, 255, 255, .12);
+    --pill-active: linear-gradient(135deg, var(--bs-primary), var(--bs-primary));
+    display: inline-flex;
+    align-items: center;
+    height: 38px;
+    padding: 0 .95rem;
+    border-radius: 0.5rem;
+    font-size: .9rem;
+    font-weight: 600;
+    letter-spacing: .5px;
+    text-decoration: none;
+    position: relative;
+    background: var(--pill-bg);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    transition: background .18s, color .18s, transform .18s, box-shadow .18s;
+    white-space: nowrap;
+}
+
+[data-theme-mode=light] .wiki-subpill {
+    --pill-bg: rgba(0, 0, 0, .05);
+    --pill-bg-hover: rgba(0, 0, 0, .08);
+}
+
+.wiki-subpill:hover {
+    background: var(--pill-bg-hover);
+}
+
+.wiki-subpill:active {
+    transform: translateY(1px);
+}
+
+.wiki-subpill.active {
+    background: var(--pill-active);
+    color: #fff;
+    box-shadow: 0 4px 12px -4px rgba(var(--bs-primary-rgb), .55), 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+.wiki-subpill.active:hover {
+    color: #fff;
+}
+
+.wiki-subpill:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), .5);
+}
+
+.wiki-subpill:not(.active)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .25) inset, 0 1px 0 rgba(255, 255, 255, .07);
+}
+
+[data-theme-mode=light] .wiki-subpill:not(.active)::after {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .18) inset, 0 1px 0 rgba(255, 255, 255, .5);
+}
+
+.wiki-subpill.active::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(120deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, .05));
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    opacity: .35;
+}
+
+/* Utility JS hook (see inline script) */
+.wiki-filter .active {
+    position: relative;
+}

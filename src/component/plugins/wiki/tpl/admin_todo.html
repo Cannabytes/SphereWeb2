@@ -1,0 +1,21 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-body">
+      <div class="alert alert-info">Временные административные страницы были удалены.</div>
+      <a href="/admin/plugin/wiki" class="btn btn-link">Назад к настройкам плагина</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+  <div class="alert alert-secondary mt-2">
+    Раздел «{{ section|default('') }}» — {{ action|default('') }}. Страница будет реализована позже.
+  </div>
+  <div class="mt-2">
+    <a class="btn btn-link p-0" href="/admin/plugin/wiki">Назад к меню Wiki</a>
+  </div>
+{% endblock %}

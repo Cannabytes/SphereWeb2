@@ -1,0 +1,265 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card custom-card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-sm align-middle w-100">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>HP</th>
+                                <th>HP</th>
+                                <th>MP</th>
+                                <th>P.Atk</th>
+                                <th>M.Atk</th>
+                                <th>P.Def</th>
+                                <th>M.Atk Spd</th>
+                                <th>Range</th>
+                                <th>M.Def</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for npc in npc_list %}
+                            <tr>
+                                <td class="text-center align-middle">
+                                    {% if npc.image is defined and npc.image %}
+                                    <img src="{{ npc.image }}" alt="{{ npc.name|e }}" width="48" height="48" style="object-fit:cover;border-radius:6px;">
+                                    {% else %}
+                                    <img src="/src/component/plugins/wiki/tpl/img/other/nonpc.webp" alt="no image" width="48" height="48" style="object-fit:cover;border-radius:6px;opacity:.9;">
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="fw-semibold d-flex align-items-center gap-2">
+                                        <div>
+                                            <a href="/wiki/npc/id/{{ npc.id }}" class="text-decoration-none">{{ npc.name|default('NoNPCname') }}</a>
+                                            <span class="opacity-75">(Lv. {{ npc.level }})</span>
+                                        </div>
+                                        <img src="/src/component/plugins/wiki/tpl/img/other/location.webp" alt="location" width="28" height="28" title="{{ phrase('Find NPC on map') }}" class="npc-location-icon" data-npc-id="{{ npc.id }}" style="object-fit:cover;border-radius:6px;opacity:.95;cursor:pointer;">
+                                    </div>
+                                    {% if npc.title %}<div class="small text-muted">{{ npc.title }}</div>{% endif %}
+                                    {% if npc.skills %}
+                                    <div class="d-flex flex-wrap gap-1 skill-effects-line">
+                                        {% for s in npc.skills %}
+                                        <span class="skill-wrap has-pop">
+                                            <img data-skill-id="{{s.id}}" src="{{ get_skill(s.icon) }}" alt=""
+                                                class="skill-icon rounded-1" width="18" height="18" loading="lazy">
+                                            <span class="skill-pop">
+                                                <span class="d-block fw-semibold mb-1">{{ s.name|default('Skill ' ~
+                                                    s.id) }}<span class="opacity-75"> Lv.{{ s.level }}</span></span>
+                                                {% if s.effect_text is defined and s.effect_text %}
+                                                <span class="d-block effect-text">{{ s.effect_text }}</span>
+                                                {% elseif s.effects is defined and s.effects %}
+                                                <span class="d-block">
+                                                    {% for eff in s.effects %}
+                                                    <span class="d-block">{{ eff.formatted }} {{ eff.label }}</span>
+                                                    {% endfor %}
+                                                </span>
+                                                {% elseif s.description %}
+                                                <span class="d-block effect-text">{{ s.description }}</span>
+                                                {% else %}
+                                                <span class="text-muted">{{ phrase('No bonus data') }}</span>
+                                                {% endif %}
+                                            </span>
+                                        </span>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <span class="text-muted">—</span>
+                                    {% endif %}
+
+                                </td>
+                                <td class="text-end">{{ (npc.hp|default(0)|round(0, 'floor')) >= 100000 ? (npc.hp|default(0)|round(0, 'floor')|number_format(0, ',', ' ')) : (npc.hp|default(0)|round(0, 'floor')) }}</td>
+                                <td class="text-end">{{ (npc.mp|default(0)|round(0, 'floor')) >= 100000 ? (npc.mp|default(0)|round(0, 'floor')|number_format(0, ',', ' ')) : (npc.mp|default(0)|round(0, 'floor')) }}</td>
+                                <td class="text-end">{{ (npc.attack_physical|default(0)|round(0, 'floor')) >= 100000 ? (npc.attack_physical|default(0)|round(0, 'floor')|number_format(0, ',', ' ')) : (npc.attack_physical|default(0)|round(0, 'floor')) }}</td>
+                                <td class="text-end">{{ (npc.attack_magical|default(0)|round(0, 'floor')) >= 100000 ? (npc.attack_magical|default(0)|round(0, 'floor')|number_format(0, ',', ' ')) : (npc.attack_magical|default(0)|round(0, 'floor')) }}</td>
+                                <td class="text-end">{{ (npc.defence_physical|default(0)|round(0, 'floor')) >= 100000 ? (npc.defence_physical|default(0)|round(0, 'floor')|number_format(0, ',', ' ')) : (npc.defence_physical|default(0)|round(0, 'floor')) }}</td>
+                                <td class="text-end">{{ (npc.defence_magical|default(0)|round(0, 'floor')) >= 100000 ? (npc.defence_magical|default(0)|round(0, 'floor')|number_format(0, ',', ' ')) : (npc.defence_magical|default(0)|round(0, 'floor')) }}</td>
+                                <td class="text-end">{{ (npc.attack_magic_speed|default(0)|round(0, 'floor')) >= 100000 ? (npc.attack_magic_speed|default(0)|round(0, 'floor')|number_format(0, ',', ' ')) : (npc.attack_magic_speed|default(0)|round(0, 'floor')) }}</td>
+                                <td class="text-end">{{ (npc.attack_range|default(0)|round(0, 'floor')) >= 100000 ? (npc.attack_range|default(0)|round(0, 'floor')|number_format(0, ',', ' ')) : (npc.attack_range|default(0)|round(0, 'floor')) }}</td>
+
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    /* Skill tooltip styles (mirrors weapons/armorsets for consistency) */
+    .skill-effects-line .skill-wrap {
+        margin-bottom: 2px;
+    }
+
+    .skill-wrap {
+        position: relative;
+        display: inline-block;
+    }
+
+    .skill-wrap .skill-icon {
+        border-radius: 2px;
+    }
+
+    .card .table-responsive {
+        overflow: visible;
+    }
+
+    .skill-pop {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(100% + 8px);
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        padding: 6px 8px;
+        border-radius: 8px;
+        white-space: normal;
+        font-size: 11px;
+        line-height: 1.25;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity .12s ease, transform .12s ease;
+        transform-origin: bottom center;
+        z-index: 9999;
+        min-width: 160px;
+        max-width: 260px;
+    }
+
+    .skill-wrap.has-pop:hover .skill-pop,
+    .skill-wrap:hover .skill-pop {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-4px);
+    }
+
+    .skill-pop::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        width: 8px;
+        height: 8px;
+        background: rgba(0, 0, 0, 0.8);
+        transform: translateX(-50%) rotate(45deg);
+        border-radius: 2px;
+    }
+
+    .effect-text {
+        font-size: 11px;
+    }
+</style>
+<!-- Modal for NPC map -->
+<div class="modal fade" id="npcMapModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ phrase('Find NPC on map') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="min-height:480px;">
+                <div id="npc-map-wrapper" style="position:relative; width:100%; height:560px;">
+                    <canvas id="npcMapCanvas" style="width:100%;height:100%;display:block;cursor:grab;background:#000"></canvas>
+                    <img id="npcMapFallback" style="display:none;position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;" />
+                    <div id="npcMapPreloader" style="position:absolute;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:4;pointer-events:none;">
+                        <div style="text-align:center;backdrop-filter: blur(4px);">
+                            <div class="spinner-border" role="status" style="width:36px;height:36px;margin-bottom:8px;color:#6c757d;"></div>
+                            <div style="font-size:13px;">{{ phrase('Map loading…') }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function(){
+    // Enhanced modal map runner based on npc_view.html logic.
+    function fetchJson(url){ return fetch(url, { credentials: 'same-origin' }).then(r=>{ if(!r.ok) throw new Error('network'); return r.json(); }); }
+
+    const modalEl = document.getElementById('npcMapModal');
+    const container = document.getElementById('npc-map-wrapper');
+    const canvas = document.getElementById('npcMapCanvas');
+    const fallbackImg = document.getElementById('npcMapFallback');
+    const preloader = document.getElementById('npcMapPreloader');
+    const ctx = canvas && canvas.getContext ? canvas.getContext('2d') : null;
+
+    // Map constants (match npc_view.html reference sizes)
+    const REF_W = 1812, REF_H = 2620;
+    const ZOOM = { STEP_IN: 1.08, STEP_OUT: 0.92, MIN_REL: 1.0, MAX_REL: 13.0, PAD: 40, FOCUS_REL: 4.2, INIT_MAX_REL: 5.0, CLUSTER_EPS: 160 };
+
+    let img = null; // loaded Image
+    let spawnPoints = [];
+    let pointsPx = [];
+    const state = { x:0, y:0, scale:1, clusters: [], clusterIndex: -1 };
+
+    function debounce(fn, wait){ let t=null; return function(...a){ clearTimeout(t); t=setTimeout(()=>fn.apply(this,a), wait); }; }
+
+    function getScale(){ if(!img||!img.width||!img.height) return { s:1 }; const s = img.height / REF_H; return { s }; }
+
+    function computeClusters(points, eps){ if(!points||!points.length) return []; const clusters=[]; for(const pt of points){ let attached=false; for(const cl of clusters){ for(const q of cl.points){ const dx=pt.ix-q.ix, dy=pt.iy-q.iy; if(dx*dx+dy*dy<=eps*eps){ cl.points.push(pt); attached=true; break; } } if(attached) break; } if(!attached) clusters.push({points:[pt]}); } clusters.forEach(cl=>{ let minx=Infinity,miny=Infinity,maxx=-Infinity,maxy=-Infinity; cl.points.forEach(p=>{ if(p.ix<minx)minx=p.ix; if(p.iy<miny)miny=p.iy; if(p.ix>maxx)maxx=p.ix; if(p.iy>maxy)maxy=p.iy; }); cl.minx=minx; cl.miny=miny; cl.maxx=maxx; cl.maxy=maxy; cl.cx=(minx+maxx)/2; cl.cy=(miny+maxy)/2; cl.size=cl.points.length; }); clusters.sort((a,b)=>b.size-b.size?b.size-a.size:0); return clusters; }
+
+    function tryLoadMapImage(srcCandidates, calOffX, calOffY){
+        let tryIndex = 0;
+        function worldToImageX(wx){ const sc = getScale(); return Math.round(sc.s * (285 + (wx + 107823) / 200 + calOffX)); }
+        function worldToImageY(wy){ const sc = getScale(); return Math.round(sc.s * (2580 + (wy - 255420) / 200 + calOffY)); }
+
+        function loadNext(){ if(tryIndex>=srcCandidates.length){ if(fallbackImg){ fallbackImg.src = srcCandidates[0]||''; fallbackImg.style.display='block'; } return; }
+            const url = srcCandidates[tryIndex++]; img = new Image(); img.crossOrigin='anonymous'; img.onload = function(){ const sc = getScale(); pointsPx = (spawnPoints||[]).map(p=>({ x:p.x, y:p.y, ix: Number.isFinite(p.ix) ? Math.round(sc.s * p.ix) : worldToImageX(p.x), iy: Number.isFinite(p.iy) ? Math.round(sc.s * p.iy) : worldToImageY(p.y) })).filter(p=>Number.isFinite(p.ix)&&Number.isFinite(p.iy)); if(preloader){ preloader.style.opacity='0'; setTimeout(()=>{ if(preloader&&preloader.parentNode) preloader.parentNode.removeChild(preloader); },260); } initCanvas(); draw(); };
+            img.onerror = loadNext; img.src = url;
+        }
+        loadNext();
+    }
+
+    function resizeCanvas(){ if(!container||!canvas) return; const rect = container.getBoundingClientRect(); const ratio = window.devicePixelRatio||1; canvas.width = Math.max(1, Math.floor(rect.width * ratio)); canvas.height = Math.max(1, Math.floor(rect.height * ratio)); canvas.style.width = rect.width + 'px'; canvas.style.height = rect.height + 'px'; if(ctx) ctx.setTransform(ratio,0,0,ratio,0,0); clampPosition(); draw(); }
+
+    function getZoomBounds(rect){ if(!img) return { coverScale:1, min:1, max:100 }; const coverScale = Math.max(rect.width / img.width, rect.height / img.height); return { coverScale, min: coverScale * ZOOM.MIN_REL, max: coverScale * ZOOM.MAX_REL }; }
+
+    function focusOnMarkers(opts){ if(!spawnPoints||!spawnPoints.length||!img) return; const rect = container.getBoundingClientRect(); const options = Object.assign({ pad: ZOOM.PAD, minScale:1, maxScale:Infinity }, opts||{}); const focusRel = (opts&&typeof opts.focusRel==='number')?opts.focusRel:ZOOM.FOCUS_REL; let minx=Infinity,miny=Infinity,maxx=-Infinity,maxy=-Infinity; pointsPx.forEach(p=>{ const ix=p.ix, iy=p.iy; if(!Number.isFinite(ix)||!Number.isFinite(iy)) return; minx=Math.min(minx, ix); miny=Math.min(miny, iy); maxx=Math.max(maxx, ix); maxy=Math.max(maxy, iy); }); if(!isFinite(minx)||!isFinite(miny)||!isFinite(maxx)||!isFinite(maxy)) return; const bboxW = Math.max(1, (maxx-minx)+options.pad*2); const bboxH = Math.max(1, (maxy-miny)+options.pad*2); const scaleX = rect.width / bboxW; const scaleY = rect.height / bboxH; const needed = Math.max(scaleX, scaleY); const desiredBase = needed * focusRel; const desired = Math.min(Math.max(desiredBase, options.minScale), options.maxScale); state.scale = desired; const centerX = (minx+maxx)/2; const centerY = (miny+maxy)/2; state.x = rect.width/2 - centerX * state.scale; state.y = rect.height/2 - centerY * state.scale; clampPosition(); }
+
+    function focusOnCluster(index, opts){ if(!state.clusters||!state.clusters.length||!img) return; index = Math.max(0, Math.min(state.clusters.length-1, index|0)); const rect = container.getBoundingClientRect(); const options = Object.assign({ pad: ZOOM.PAD, minScale:1, maxScale:Infinity }, opts||{}); const focusRel = (opts&&typeof opts.focusRel==='number')?opts.focusRel:ZOOM.FOCUS_REL; const cl = state.clusters[index]; const bboxW = Math.max(1, (cl.maxx - cl.minx) + options.pad*2); const bboxH = Math.max(1, (cl.maxy - cl.miny) + options.pad*2); const scaleX = rect.width / bboxW; const scaleY = rect.height / bboxH; const needed = Math.max(scaleX, scaleY); const desiredBase = needed * focusRel; const desired = Math.min(Math.max(desiredBase, options.minScale), options.maxScale); state.scale = desired; state.x = rect.width/2 - cl.cx * state.scale; state.y = rect.height/2 - cl.cy * state.scale; state.clusterIndex = index; clampPosition(); }
+
+    function updateControls(){ /* no controls in modal version; keep for parity */ }
+
+    function initCanvas(){ const rect = container.getBoundingClientRect(); const coverScale = Math.max(rect.width / img.width, rect.height / img.height); state.scale = coverScale; if(spawnPoints && spawnPoints.length){ state.clusters = computeClusters(pointsPx, ZOOM.CLUSTER_EPS); const bounds = getZoomBounds(rect); const initMax = bounds.coverScale * ZOOM.INIT_MAX_REL; if(state.clusters.length>1){ state.clusterIndex = 0; focusOnCluster(0, { minScale: bounds.min, maxScale: initMax, pad: ZOOM.PAD, focusRel: ZOOM.FOCUS_REL }); } else { focusOnMarkers({ minScale: bounds.min, maxScale: initMax, pad: ZOOM.PAD, focusRel: ZOOM.FOCUS_REL }); } updateControls(); } clampPosition(); resizeCanvas(); }
+
+    function clampPosition(){ const rect = container.getBoundingClientRect(); if(!img) return; const iw = img.width * state.scale, ih = img.height * state.scale; if(iw <= rect.width){ state.x = (rect.width - iw)/2; } else { state.x = Math.min(0, Math.max(rect.width - iw, state.x)); } if(ih <= rect.height){ state.y = (rect.height - ih)/2; } else { state.y = Math.min(0, Math.max(rect.height - ih, state.y)); } }
+
+    function drawMarkers(){ if(!spawnPoints||!spawnPoints.length) return; ctx.save(); ctx.translate(state.x, state.y); ctx.scale(state.scale, state.scale); pointsPx.forEach((p)=>{ const ix=p.ix, iy=p.iy; ctx.beginPath(); ctx.strokeStyle='rgba(255,255,40,0.95)'; ctx.lineWidth = 2/state.scale; ctx.arc(ix, iy, 5, 0, Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.strokeStyle='rgba(255,0,0,0.95)'; ctx.lineWidth = 2/state.scale; ctx.arc(ix, iy, 3, 0, Math.PI*2); ctx.stroke(); ctx.strokeStyle='rgba(255,0,0,0.7)'; ctx.lineWidth = 1/state.scale; ctx.beginPath(); ctx.moveTo(ix-6,iy); ctx.lineTo(ix+6,iy); ctx.moveTo(ix,iy-6); ctx.lineTo(ix,iy+6); ctx.stroke(); }); ctx.restore(); }
+
+    function draw(){ if(!ctx||!img) return; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.save(); ctx.translate(state.x, state.y); ctx.scale(state.scale, state.scale); ctx.drawImage(img,0,0); ctx.restore(); drawMarkers(); }
+
+    // Interaction (mouse + touch)
+    let isDown=false, last={x:0,y:0}; let lastTouches=[], initialDistance=0, initialScale=1, initialCenter={x:0,y:0};
+    canvas.addEventListener('mousedown', function(e){ isDown=true; canvas.style.cursor='grabbing'; last.x=e.clientX; last.y=e.clientY; });
+    window.addEventListener('mouseup', function(){ isDown=false; canvas.style.cursor='grab'; });
+    window.addEventListener('mousemove', function(e){ if(!isDown) return; const dx=e.clientX-last.x, dy=e.clientY-last.y; state.x += dx; state.y += dy; last.x=e.clientX; last.y=e.clientY; clampPosition(); draw(); });
+
+    canvas.addEventListener('touchstart', function(e){ e.preventDefault(); const touches = e.touches; if(touches.length===1){ isDown=true; canvas.style.cursor='grabbing'; last.x=touches[0].clientX; last.y=touches[0].clientY; } else if(touches.length===2){ isDown=false; const t1=touches[0], t2=touches[1]; initialDistance = Math.hypot(t2.clientX-t1.clientX, t2.clientY-t1.clientY); initialScale = state.scale; initialCenter.x = (t1.clientX + t2.clientX)/2; initialCenter.y = (t1.clientY + t2.clientY)/2; } lastTouches = Array.from(touches); }, { passive:false });
+
+    canvas.addEventListener('touchmove', function(e){ e.preventDefault(); const touches = e.touches; if(touches.length===1 && isDown){ const dx = touches[0].clientX - last.x; const dy = touches[0].clientY - last.y; state.x += dx; state.y += dy; last.x = touches[0].clientX; last.y = touches[0].clientY; clampPosition(); draw(); } else if(touches.length===2){ const t1=touches[0], t2=touches[1]; const currentDistance = Math.hypot(t2.clientX-t1.clientX, t2.clientY-t1.clientY); if(initialDistance>0){ const rect = container.getBoundingClientRect(); const scaleFactor = currentDistance / initialDistance; const prevScale = state.scale; const newScale = initialScale * scaleFactor; const bounds = getZoomBounds(rect); state.scale = Math.min(Math.max(newScale, bounds.min), bounds.max); const currentCenterX = (t1.clientX + t2.clientX)/2 - rect.left; const currentCenterY = (t1.clientY + t2.clientY)/2 - rect.top; state.x = currentCenterX - (currentCenterX - state.x) * (state.scale / prevScale); state.y = currentCenterY - (currentCenterY - state.y) * (state.scale / prevScale); clampPosition(); draw(); } } }, { passive:false });
+
+    canvas.addEventListener('touchend', function(e){ e.preventDefault(); const touches = e.touches; if(touches.length===0){ isDown=false; canvas.style.cursor='grab'; initialDistance=0; initialScale=1; } else if(touches.length===1){ isDown=true; last.x = touches[0].clientX; last.y = touches[0].clientY; } }, { passive:false });
+
+    container.addEventListener('wheel', function(e){ e.preventDefault(); if(!img) return; const rect = container.getBoundingClientRect(); const mx = e.clientX - rect.left, my = e.clientY - rect.top; const factor = e.deltaY>0?ZOOM.STEP_OUT:ZOOM.STEP_IN; const prevScale = state.scale; const bounds = getZoomBounds(rect); const target = prevScale * factor; state.scale = Math.min(Math.max(target, bounds.min), bounds.max); state.x = mx - (mx - state.x) * (state.scale / prevScale); state.y = my - (my - state.y) * (state.scale / prevScale); clampPosition(); draw(); }, { passive:false });
+
+    canvas.addEventListener('dblclick', function(){ initCanvas(); draw(); });
+    window.addEventListener('resize', debounce(resizeCanvas, 80));
+
+    // Modal workflow: fetch points and start map
+    function openModalWithNpc(id){ if(!id) return; modalEl._pendingNpcId = id; const bsModal = new bootstrap.Modal(modalEl, { keyboard:true }); bsModal.show(); }
+
+    modalEl.addEventListener('shown.bs.modal', function(){ setTimeout(function(){ resizeCanvas(); if(img) draw(); }, 80); const id = modalEl._pendingNpcId; if(!id) return; if(preloader) preloader.style.display='flex'; fetchJson('/wiki/npc/spawns/' + encodeURIComponent(id)).then(function(resp){ spawnPoints = resp.points || []; const cal = (resp.map_calibration||{x:0,y:0}); const imgPath = '/src/component/plugins/wiki/tpl/img/map/highfive.webp'; const candidates = [ imgPath, window.location.origin + imgPath ]; tryLoadCandidates = [imgPath]; // minimal candidate list
+            // build candidates similar to npc_view
+            const fileName = imgPath.split('/').pop() || 'highfive.webp'; const candidatesList = [ imgPath, (imgPath && imgPath.startsWith('/')) ? (window.location.origin + imgPath) : null, '/src/component/plugins/wiki/tpl/img/map/' + fileName, '/tpl/img/map/' + fileName, '/uploads/images/' + fileName ].filter(Boolean);
+            // initialize loading and mapping
+            tryLoadMapImage(candidatesList, parseFloat(cal.x||0)||0, parseFloat(cal.y||0)||0);
+        }).catch(function(){ if(preloader) preloader.style.display='none'; }); modalEl._pendingNpcId = null; });
+
+    document.addEventListener('click', function(e){ const el = e.target.closest && e.target.closest('.npc-location-icon'); if(!el) return; const npcId = el.getAttribute('data-npc-id'); openModalWithNpc(npcId); }, false);
+
+    // Re-init after layout changes
+    try { const debouncedInit = debounce(function(){ try{ if(img && img.width && img.height){ initCanvas(); draw(); } else { resizeCanvas(); } }catch(e){} }, 120); if(window.ResizeObserver && container){ const ro = new ResizeObserver(debouncedInit); ro.observe(container); if(container.parentElement) ro.observe(container.parentElement); } window.addEventListener('load', function(){ setTimeout(function(){ try{ if(img && img.width) { initCanvas(); draw(); } else { resizeCanvas(); } }catch(e){} }, 120); }); } catch(e) { console.debug('[NPC Map Modal] resize observer init failed', e); }
+
+})();
+</script>

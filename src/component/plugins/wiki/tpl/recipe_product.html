@@ -1,0 +1,400 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid" data-product-id="{{ product_id|default(0) }}">
+  <div class="row">
+    <div class="col-12 mb-3">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <a href="/wiki/items/recipes" class="btn btn-sm btn-outline-secondary">← {{ phrase('Craft recipes') }}</a>
+      </div>
+      <h2 class="mb-1">{{ phrase('Craft for item') }}</h2>
+      {% if product_meta %}
+      <div class="d-flex align-items-center gap-2 mb-2">
+        {% if product_meta.icon_path %}
+        <img src="{{ product_meta.icon_path }}" width="36" height="36" class="rounded" alt="" loading="lazy" onerror="this.style.display='none'">
+        {% endif %}
+        <div>
+          <div class="fw-semibold">{{ grade_img(product_meta.crystal_type)|raw }} {{ product_meta.name }}</div>
+          <div class="text-muted small">ID: {{ product_meta.id }}{% if product_meta.source %} • {{ product_meta.source|capitalize }}{% endif %}</div>
+        </div>
+      </div>
+      {% else %}
+      <div class="text-muted">ID: {{ product_id }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if recipes|length == 0 %}
+  <div class="alert alert-info">{{ phrase('No recipes found') }}</div>
+  {% else %}
+    <div class="d-flex flex-column gap-3">
+      <div class="card custom-card">
+        <div class="card-body">
+          <ul class="nav nav-tabs mb-3 border-bottom-0" role="tablist">
+            {% for r in recipes %}
+            {% set rid = r.id|default(r.recipeId|default(0)) %}
+            <li class="nav-item" role="presentation">
+              <a class="nav-link {% if loop.first %}active{% endif %}" id="tab-{{ rid }}" data-bs-toggle="tab" role="tab" href="#recipe-{{ rid }}" aria-controls="recipe-{{ rid }}" aria-selected="{% if loop.first %}true{% else %}false{% endif %}" {% if not loop.first %}tabindex="-1"{% endif %}>
+                {% if r._recipe and r._recipe.icon %}
+                  <img src="{{ get_icon(r._recipe.icon) }}" width="20" height="20" class="rounded me-2" alt="" loading="lazy" onerror="this.style.display='none'">
+                {% endif %}
+                <span class="d-none d-md-inline">{{ r._recipe.name|default(r.name) }}</span>
+                <span class="d-inline d-md-none small">{{ loop.index }}</span>
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+
+          <div class="tab-content">
+          {% for r in recipes %}
+            {% set rid = r.id|default(r.recipeId|default(0)) %}
+            <div class="tab-pane text-muted {% if loop.first %}show active{% endif %}" id="recipe-{{ rid }}" role="tabpanel" aria-labelledby="tab-{{ rid }}">
+          <div class="recipe-card card custom-card" data-recipe-id="{{ rid }}" data-success-rate="{{ r.successRate|default(100) }}" data-product-count="{{ r._product.count|default(1) }}" data-use-mp="{{ r.useMP|default(0) }}" {% if r._product_rare %}data-rare-count="{{ r._product_rare.count|default(1) }}"{% endif %}>
+            <div class="card-body">
+              <div class="d-flex flex-wrap align-items-start gap-3">
+                <div class="d-flex align-items-center gap-2 flex-grow-1">
+                  {% if r._recipe and r._recipe.icon %}
+                    <img src="{{ get_icon(r._recipe.icon) }}" width="40" height="40" class="rounded" alt="" loading="lazy" onerror="this.style.display='none'">
+                  {% endif %}
+                  <div>
+                    <div class="fw-semibold">{{ r._recipe.name|default(r.name) }}</div>
+                    <div class="text-muted small">Lv {{ r.craftLevel|default('-') }}{% if r.type %} • {{ r.type }}{% endif %}{% if r.useMP %} • MP: {{ r.useMP }}{% endif %} • {{ phrase('Chance') }}: {{ r.successRate|default(100) }}%</div>
+                  </div>
+                </div>
+                 
+              </div>
+
+              <hr class="my-3">
+
+              <div class="row g-3 align-items-end">
+                <div class="col-12 col-md-4">
+                  <label class="form-label">{{ phrase('Desired crafts') }}</label>
+                  <div class="input-group">
+                    <button class="btn btn-outline-secondary btn-sm js-dec" type="button">−</button>
+                    <input type="number" class="form-control form-control-sm js-desired" value="1" min="1" step="1">
+                    <button class="btn btn-outline-secondary btn-sm js-inc" type="button">+</button>
+                  </div>
+                  <div class="form-text">{{ phrase('Set how many times to craft') }}</div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <label class="form-label">{{ phrase('Max crafts from inventory') }}</label>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="fw-semibold js-max-from-have">0</div>
+                    <button class="btn btn-outline-primary btn-sm js-apply-max" type="button">{{ phrase('Apply max') }}</button>
+                  </div>
+                  <div class="form-text">{{ phrase('Calculated from inputs below') }}</div>
+                </div>
+                {% if r._product_rare %}
+                <div class="col-12 col-md-4">
+                  <label class="form-label">{{ phrase('Rare chance, %') }}</label>
+                  <input type="number" class="form-control form-control-sm js-rare-chance" value="0" min="0" max="100" step="0.1">
+                  <div class="form-text">{{ phrase('If the recipe can produce a rare variant') }}</div>
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="mt-3">
+                <div class="ingredients-grid row g-3 mb-3">
+                  {% for ing in r._ingredients %}
+                  <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
+                    <div class="card border custom-card shadow-none h-100 ing-row" data-ing-id="{{ ing.id }}" data-req-per-craft="{{ ing.count }}">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                          <div class="d-flex align-items-center gap-2">
+                            {% if ing.icon %}
+                            <span class="avatar avatar-xm">
+                              <img src="{{ get_icon(ing.icon) }}" width="48" height="48" class="rounded" alt="" loading="lazy" onerror="this.style.display='none'">
+                            </span>
+                            {% endif %}
+                            <div>
+                              <div class="fw-semibold">{{ ing.name|default('Item ' ~ ing.id) }}</div>
+                              <div class="text-muted small">{{ phrase('Required per craft') }}: <span class="js-req">{{ ing.count }}</span></div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row g-2">
+                          <div class="col-6">
+                            <label class="form-label">{{ phrase('You have') }}</label>
+                            <input type="number" class="form-control form-control-sm js-have" value="0" min="0" step="1">
+                          </div>
+                          <div class="col-6">
+                            <label class="form-label">{{ phrase('Price per unit') }}</label>
+                            <input type="number" class="form-control form-control-sm js-price" value="" min="0" step="1">
+                          </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-3 flex-wrap gap-2 text-center">
+                          <div class="flex-grow-1">
+                            <div class="small text-muted">{{ phrase('Total required') }}</div>
+                            <div class="fw-semibold js-total-req">0</div>
+                          </div>
+                          <div class="flex-grow-1">
+                            <div class="small text-muted">{{ phrase('Missing') }}</div>
+                            <div class="fw-semibold js-missing">0</div>
+                          </div>
+                          <div class="flex-grow-1 text-end">
+                            <div class="small text-muted">{{ phrase('Cost') }}</div>
+                            <div class="fw-semibold js-cost">0</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% else %}
+                  <div class="col-12 text-muted">{{ phrase('No ingredients') }}</div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <hr class="my-3">
+
+              <!-- Result items from desired crafts -->
+              <div class=" align-items-center gap-2 mb-3">
+                <div class="product-box d-flex align-items-center gap-2 ms-auto">
+                  {% if r._product.icon %}
+                  <img src="{{ get_icon(r._product.icon) }}" width="36" height="36" class="rounded" alt="" loading="lazy" onerror="this.style.display='none'">
+                  {% endif %}
+                  <div>
+                    <div class="fw-semibold">{{ grade_img(r._product.crystal_type)|raw }} {{ r._product.name }} <span class="text-muted">x<span class="js-total-out-now">{{ r._product.count|default(1) }}</span></span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <div class="p-2 rounded border">
+                    <div class="d-flex justify-content-between"><span class="text-muted">{{ phrase('Total cost') }}</span><span class="fw-semibold js-sum-cost">0</span></div>
+                    <div class="d-flex justify-content-between"><span class="text-muted">{{ phrase('MP needed') }}</span><span class="fw-semibold">{{ r.useMP|default(0) }} × <span class="js-desired-out">1</span> = <span class="js-sum-mp">0</span></span></div>
+                  </div>
+                </div>
+                
+              </div>
+              <div class="mt-2 d-flex gap-2">
+                <button class="btn btn-sm btn-outline-secondary js-reset" type="button">{{ phrase('Reset inputs') }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block css %}
+<style>
+  /* Cards-based ingredients layout */
+  .recipe-card .ingredients-grid .card .avatar img{ object-fit: cover; border-radius: 8px; }
+  .recipe-card input.form-control-sm{ height:32px; }
+  .recipe-card .js-desired{ width:140px; }
+  .recipe-card .js-rare-chance{ width:140px; }
+  .product-box img{ object-fit:cover; border-radius:6px; }
+  /* tab panes: use fade/show classes for smoothness */
+  .tab-pane{ display:none; }
+  .tab-pane.show.active{ display:block; }
+
+  /* recipes tabs: nicer visual style */
+  .recipes-nav{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .recipes-nav .nav-link{ white-space:nowrap; padding:0.5rem 0.75rem; display:inline-flex; align-items:center; gap:.5rem; border:1px solid transparent; margin-right:0.25rem; }
+  .recipes-nav .nav-link.active{ background:#fff; border-color:#dee2e6 #dee2e6 #fff; box-shadow:0 1px 0 rgba(0,0,0,0.03); }
+  .recipes-nav .nav-link:hover{ text-decoration:none; }
+  .recipes-nav .nav-link img{ object-fit:cover; border-radius:4px; }
+  @media (max-width: 576px){
+    .recipe-card .js-desired, .recipe-card .js-rare-chance{ width:100%; max-width:240px; }
+  }
+</style>
+{% endblock %}
+
+{% block js %}
+<script>
+  (function(){
+  const PRODUCT_ID = (function(){ const el = document.querySelector('[data-product-id]'); return el ? (parseInt(el.dataset.productId||'0',10)||0) : 0; })();
+    const storageKeyPrices = 'wiki_craft_prices';
+    const storageKeyState = (rid) => 'wiki_craft_state_p' + PRODUCT_ID + '_r' + rid;
+
+    function loadPrices(){
+      try { return JSON.parse(localStorage.getItem(storageKeyPrices) || '{}'); } catch(e){ return {}; }
+    }
+    function savePrices(map){
+      try { localStorage.setItem(storageKeyPrices, JSON.stringify(map)); } catch(e){}
+    }
+    const priceMap = loadPrices();
+
+    function loadState(rid){
+      try { return JSON.parse(localStorage.getItem(storageKeyState(rid)) || '{}'); } catch(e){ return {}; }
+    }
+    function saveState(rid, data){
+      try { localStorage.setItem(storageKeyState(rid), JSON.stringify(data)); } catch(e){}
+    }
+
+    function fmt(n){
+      if (n === null || n === undefined || isNaN(n)) return '0';
+      return new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(n);
+    }
+
+    function recalcCard(card){
+      const rid = card.dataset.recipeId;
+      const success = parseFloat(card.dataset.successRate || '100')/100;
+      const prodCount = parseInt(card.dataset.productCount || '1', 10) || 1;
+      const rareCount = parseInt(card.dataset.rareCount || '0', 10) || 0;
+      const desiredEl = card.querySelector('.js-desired');
+      const desired = Math.max(1, parseInt(desiredEl.value || '1', 10));
+      card.querySelector('.js-desired-out').textContent = desired;
+
+      let maxCrafts = Infinity;
+      let sumCost = 0;
+      const ingRows = card.querySelectorAll('.ing-row');
+      const state = { desired, ings: {}, rareChance: null };
+      const rareChanceEl = card.querySelector('.js-rare-chance');
+      const rareChance = rareChanceEl ? Math.max(0, Math.min(100, parseFloat(rareChanceEl.value || '0'))) / 100 : 0;
+      if (rareChanceEl) state.rareChance = rareChance * 100;
+      ingRows.forEach(row =>{
+        const ingId = row.dataset.ingId;
+        const req = Math.max(0, parseInt(row.dataset.reqPerCraft || '0', 10));
+        const haveEl = row.querySelector('.js-have');
+        const priceEl = row.querySelector('.js-price');
+        const have = Math.max(0, parseInt(haveEl.value || '0', 10));
+        const price = Math.max(0, parseFloat(priceEl.value || '0')) || 0;
+        const totalReq = req * desired;
+        const missing = Math.max(0, totalReq - have);
+        const cost = missing * price;
+        row.querySelector('.js-total-req').textContent = fmt(totalReq);
+        row.querySelector('.js-missing').textContent = fmt(missing);
+        row.querySelector('.js-cost').textContent = fmt(cost);
+        sumCost += cost;
+        if (req > 0){
+          const craftsByThis = Math.floor(have / req);
+          if (craftsByThis < maxCrafts) maxCrafts = craftsByThis;
+        }
+        state.ings[ingId] = { have, price };
+      });
+      if (!isFinite(maxCrafts)) maxCrafts = 0;
+      card.querySelector('.js-max-from-have').textContent = fmt(maxCrafts);
+      card.querySelector('.js-sum-cost').textContent = fmt(sumCost);
+  const mpPer = parseInt(card.dataset.useMp || '0', 10) || 0;
+  const mpEl = card.querySelector('.js-sum-mp');
+      if (mpEl){ mpEl.textContent = fmt(mpPer * desired); }
+  // update 'craftable now' output based on current inputs
+  const outNowEls = card.querySelectorAll('.js-total-out-now');
+  outNowEls.forEach(el => el.textContent = fmt(maxCrafts * prodCount));
+
+      // expected outputs
+  const expNormal = desired * success * prodCount;
+      const expRare = rareCount > 0 ? desired * success * rareChance * rareCount : 0;
+      const enEl = card.querySelector('.js-exp-normal'); if (enEl) enEl.textContent = fmt(expNormal);
+      const erEl = card.querySelector('.js-exp-rare'); if (erEl) erEl.textContent = fmt(expRare);
+
+      // persist
+      saveState(rid, state);
+    }
+
+    function bindCard(card){
+      const rid = card.dataset.recipeId;
+      // restore state
+      const state = loadState(rid);
+      const desiredEl = card.querySelector('.js-desired');
+      if (state.desired){ desiredEl.value = state.desired; }
+      const rareChanceEl = card.querySelector('.js-rare-chance');
+      if (rareChanceEl && state.rareChance !== undefined && state.rareChance !== null){ rareChanceEl.value = state.rareChance; }
+      card.querySelectorAll('.ing-row').forEach(row =>{
+        const ingId = row.dataset.ingId;
+        const haveEl = row.querySelector('.js-have');
+        const priceEl = row.querySelector('.js-price');
+        const ingState = (state.ings && state.ings[ingId]) ? state.ings[ingId] : {};
+        if (ingState.have !== undefined) haveEl.value = ingState.have;
+        // price priority: stored price map -> per-recipe state -> 0
+        if (priceMap[ingId] !== undefined) priceEl.value = priceMap[ingId];
+        else if (ingState.price !== undefined) priceEl.value = ingState.price;
+      });
+
+      // events
+      function onChange(){ recalcCard(card); }
+      desiredEl.addEventListener('input', onChange);
+      const decBtn = card.querySelector('.js-dec');
+      const incBtn = card.querySelector('.js-inc');
+      if (decBtn) decBtn.addEventListener('click', function(){ let v = parseInt(desiredEl.value||'1',10)||1; desiredEl.value = Math.max(1, v-1); recalcCard(card); });
+      if (incBtn) incBtn.addEventListener('click', function(){ let v = parseInt(desiredEl.value||'1',10)||1; desiredEl.value = v+1; recalcCard(card); });
+      const applyMax = card.querySelector('.js-apply-max');
+      if (applyMax) applyMax.addEventListener('click', function(){ const max = parseInt(card.querySelector('.js-max-from-have').textContent.replace(/\D/g,'')||'0',10)||0; if (max>0){ desiredEl.value = max; recalcCard(card);} });
+  const rareChanceEl2 = card.querySelector('.js-rare-chance');
+  if (rareChanceEl2) rareChanceEl2.addEventListener('input', onChange);
+      card.querySelectorAll('.js-have,.js-price').forEach(el =>{
+        el.addEventListener('input', function(){
+          const row = this.closest('.ing-row');
+          if (row && this.classList.contains('js-price')){
+            const id = row.dataset.ingId; priceMap[id] = this.value ? parseFloat(this.value) : 0; savePrices(priceMap);
+          }
+          recalcCard(card);
+        });
+      });
+      const resetBtn = card.querySelector('.js-reset');
+      if (resetBtn) resetBtn.addEventListener('click', function(){
+        desiredEl.value = 1;
+        if (rareChanceEl2) rareChanceEl2.value = 0;
+        card.querySelectorAll('.js-have').forEach(i => i.value = 0);
+        // keep prices, just reset per-recipe state
+        recalcCard(card);
+      });
+
+      recalcCard(card);
+    }
+
+    // bind cards inside currently visible tab panes
+    function bindAllVisibleCards(){
+      document.querySelectorAll('.tab-pane.show.active .recipe-card').forEach(bindCard);
+    }
+
+    // initial bind for first visible tabs
+    bindAllVisibleCards();
+
+    // Tab behaviour: use anchor tabs (data-bs-toggle="tab"), persist last tab in localStorage
+    const TAB_KEY = 'wiki_craft_active_tab_p' + PRODUCT_ID;
+    const nav = document.querySelector('.recipes-nav');
+    if (nav){
+      nav.addEventListener('click', function(e){
+        const a = e.target.closest('a[data-bs-toggle="tab"]');
+        if (!a) return;
+        e.preventDefault();
+        const target = a.getAttribute('href');
+        if (!target) return;
+        // deactivate all nav links and panes
+        nav.querySelectorAll('.nav-link').forEach(n => { n.classList.remove('active'); n.setAttribute('aria-selected','false'); });
+        document.querySelectorAll('.tab-pane').forEach(p => { p.classList.remove('show','active'); });
+        // activate clicked
+        a.classList.add('active'); a.setAttribute('aria-selected','true');
+        const pane = document.querySelector(target);
+        if (pane) pane.classList.add('show','active');
+        // persist
+        try { localStorage.setItem(TAB_KEY, target); } catch(e){}
+        // bind inputs inside newly shown pane
+        pane && pane.querySelectorAll('.recipe-card').forEach(bindCard);
+      });
+
+      // keyboard support: Enter/Space activates focused tab
+      nav.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' '){
+          const a = e.target.closest('a[data-bs-toggle="tab"]');
+          a && a.click();
+        }
+      });
+
+      // restore last active tab if present
+      try{
+        const last = localStorage.getItem(TAB_KEY);
+        if (last){
+          const a = nav.querySelector('a[href="' + last + '"]');
+          const pane = document.querySelector(last);
+          if (a && pane){
+            nav.querySelectorAll('.nav-link').forEach(n => { n.classList.remove('active'); n.setAttribute('aria-selected','false'); });
+            document.querySelectorAll('.tab-pane').forEach(p => { p.classList.remove('show','active'); });
+            a.classList.add('active'); a.setAttribute('aria-selected','true');
+            pane.classList.add('show','active');
+            pane.querySelectorAll('.recipe-card').forEach(bindCard);
+          }
+        }
+      }catch(e){}
+    }
+  })();
+</script>
+{% endblock %}

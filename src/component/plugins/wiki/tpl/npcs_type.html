@@ -1,0 +1,22 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <h2 class="mb-2">{{ phrase('NPC list') }} — {{ phrase('Type') }}: {{ npc_type }}</h2>
+            <div class="mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="try{if(history.length > 1){history.back();}else{location.href='/wiki';}}catch(e){location.href='/wiki';}">{{ phrase('Back') }}</button>
+                    <a href="/wiki" class="btn btn-sm btn-outline-secondary">{{ phrase('Back to wiki') }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if npc_list is defined and npc_list|length > 0 %}
+    {% include 'wiki/tpl/npcs_table_server.html' %}
+    {% else %}
+    <div class="alert alert-warning">{{ phrase('No NPC for type') }}</div>
+    {% endif %}
+</div>
+{% endblock %}

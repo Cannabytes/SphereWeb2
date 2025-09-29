@@ -1,0 +1,100 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="wiki-subnav ">
+        <div class="subnav-header d-flex align-items-center gap-3 flex-wrap mb-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary" onclick="try{if(history.length > 1){history.back();}else{location.href='/wiki';}}catch(e){location.href='/wiki';}">{{ phrase('Back') }}</button>
+          <a href="/wiki" class="back-link d-inline-flex align-items-center gap-2">
+            <span class="chevron" aria-hidden="true">←</span>
+            <span class="label">{{ phrase('Library') }}</span>
+          </a>
+          <h1 class="h5 m-0 fw-semibold page-title">
+            — {{ phrase('Item sources') }}
+          </h1>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header py-2 d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        {% if item_meta and item_meta.icon_path %}
+          <img src="{{ item_meta.icon_path }}" width="32" height="32" class="rounded" alt="" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">
+        {% else %}
+          <img src="/uploads/images/icon/NOIMAGE.webp" width="32" height="32" class="rounded" alt="" loading="lazy">
+        {% endif %}
+        <div>
+          <div class="fw-semibold">{{ item_meta and item_meta.name ? item_meta.name : ('Item ' ~ item_id) }}</div>
+          <div class="small text-muted">
+            {{ phrase('Total') }}: {{ source_total|default(0) }} ·
+            {{ phrase('Drop') }}: {{ source_drop_count|default(0) }} ·
+            {{ phrase('Spoil') }}: {{ source_spoil_count|default(0) }}
+          </div>
+        </div>
+      </div>
+      <div class="btn-group btn-group-sm" role="group" aria-label="Filters">
+        {% set base = '/wiki/items/sources/' ~ item_id %}
+        <a href="{{ base ~ '/all' }}" class="btn btn-outline-secondary {% if filter_type == 'all' %}active{% endif %}">{{ phrase('All') }}</a>
+        <a href="{{ base ~ '/drop' }}" class="btn btn-outline-secondary {% if filter_type == 'drop' %}active{% endif %}">{{ phrase('Drop') }}</a>
+        <a href="{{ base ~ '/spoil' }}" class="btn btn-outline-secondary {% if filter_type == 'spoil' %}active{% endif %}">{{ phrase('Spoil') }}</a>
+      </div>
+    </div>
+    <div class="card-body p-2">
+      {% if sources is empty %}
+        <div class="text-muted small">{{ phrase('No NPCs found') }}</div>
+      {% else %}
+        <div class="table-responsive">
+          <table class="table table-hover table-sm align-middle mb-0">
+            <colgroup>
+              <col style="width:64px;">
+              <col>
+              <col style="width:120px;">
+              <col style="width:160px;">
+              <col style="width:100px;">
+            </colgroup>
+            <thead class="small text-muted">
+              <tr>
+                <th></th>
+                <th>{{ phrase('NPC') }}</th>
+                <th class="text-end">{{ phrase('Level') }}</th>
+                <th class="text-end">{{ phrase('Quantity') }}</th>
+                <th class="text-end">{{ phrase('Chance') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for s in sources %}
+              {% set isSpoil = s.drop_type is defined and s.drop_type == 0 %}
+              <tr>
+                <td class="text-center">
+                  <div class="ratio ratio-1x1" style="width:48px;">
+                    {% if s.image %}
+                      <img src="{{ s.image }}" class="rounded object-fit-cover" alt="{{ s.name|default('NPC') }}" loading="lazy" onerror="this.src='/uploads/images/icon/NOIMAGE.webp'">
+                    {% else %}
+                      <img src="/src/component/plugins/wiki/tpl/img/other/nonpc.webp" class="rounded object-fit-cover" alt="{{ s.name|default('NPC') }}" loading="lazy">
+                    {% endif %}
+                  </div>
+                </td>
+                <td>
+                  <a class="fw-semibold text-decoration-none" href="{{ s.link }}">{{ s.name|default('NPC ' ~ s.npc_id) }}</a>
+                  {% if s.title %}<div class="small text-muted">{{ s.title }}</div>{% endif %}
+                </td>
+                <td class="text-end">{{ s.level|default('—') }}</td>
+                <td class="text-end">{{ s.min|default('?') }}{% if s.max is defined and s.max is not same as(s.min) %} - {{ s.max }}{% endif %}</td>
+                <td class="text-end">{{ s.chance is defined ? (s.chance ~ '%') : '—' }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% block css %}
+<link rel="stylesheet" href="/src/component/plugins/wiki/tpl/css/_wiki_subnav.css">
+{% endblock %}
+{% endblock %}

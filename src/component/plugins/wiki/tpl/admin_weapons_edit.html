@@ -1,0 +1,89 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-body">
+      <div class="alert alert-info">Встроенные инструменты администрирования (редактирование оружия) были удалены.</div>
+      <a href="/admin/plugin/wiki" class="btn btn-link">Назад к настройкам плагина</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header py-2"><strong>Редактирование оружия #{{ prefill.id }}</strong></div>
+    <div class="card-body">
+      <form method="post" action="/admin/plugin/wiki/weapons/edit">
+        <input type="hidden" name="id" value="{{ prefill.id }}">
+        <div class="row g-2">
+          <div class="col-md-2"><label class="form-label">ID</label><input type="number" class="form-control form-control-sm" value="{{ prefill.id }}" disabled></div>
+          <div class="col-md-4"><label class="form-label">Название</label><input name="name" class="form-control form-control-sm" value="{{ prefill.name|default('') }}" required></div>
+          <div class="col-md-3"><label class="form-label">Иконка</label><input name="icon" class="form-control form-control-sm" value="{{ prefill.icon|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">Тип оружия</label>
+            <select name="weapon_type" class="form-select form-select-sm">
+              <option value="">-- select --</option>
+              {% for t in ['SWORD','BLUNT','DAGGER','BOW','POLE','DUAL','ETC','FIST','DUALFIST','FISHINGROD','NULL','RAPIER','ANCIENTSWORD','CROSSBOW','FLAG','OWNTHING','DUALDAGGER'] %}
+              <option value="{{ t }}" {% if prefill.weapon_type==t %}selected{% endif %}>{{ t }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-3"><label class="form-label">Часть тела</label><input name="bodypart" class="form-control form-control-sm" value="{{ prefill.bodypart|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">Цена</label><input name="price" class="form-control form-control-sm" value="{{ prefill.price|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">Вес</label><input name="weight" class="form-control form-control-sm" value="{{ prefill.weight|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">Range</label><input name="attack_range" class="form-control form-control-sm" value="{{ prefill.attack_range|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">Rnd Dmg</label><input name="random_damage" class="form-control form-control-sm" value="{{ prefill.random_damage|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">Soulshots</label><input name="soulshots" class="form-control form-control-sm" value="{{ prefill.soulshots|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">Spiritshots</label><input name="spiritshots" class="form-control form-control-sm" value="{{ prefill.spiritshots|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">MP consume</label><input name="mp_consume" class="form-control form-control-sm" value="{{ prefill.mp_consume|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">Reuse delay</label><input name="reuse_delay" class="form-control form-control-sm" value="{{ prefill.reuse_delay|default('') }}"></div>
+          <div class="col-md-3"><label class="form-label">Item skill</label><input name="item_skill" class="form-control form-control-sm" value="{{ prefill.item_skill|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">Crystal type</label><input name="crystal_type" class="form-control form-control-sm" value="{{ prefill.crystal_type|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">Crystal count</label><input name="crystal_count" class="form-control form-control-sm" value="{{ prefill.crystal_count|default('') }}"></div>
+
+          <div class="col-12"><hr></div>
+          <div class="col-md-4"><label class="form-label">for_npc</label><input name="for_npc" class="form-control" value="{{ prefill.for_npc|default('') }}"></div>
+          <div class="col-md-4"><label class="form-label">change_weaponid</label><input name="change_weaponid" class="form-control" value="{{ prefill.change_weaponid|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">oncrit_chance</label><input name="oncrit_chance" class="form-control" value="{{ prefill.oncrit_chance|default('') }}"></div>
+          <div class="col-md-4"><label class="form-label">oncrit_skill</label><input name="oncrit_skill" class="form-control" value="{{ prefill.oncrit_skill|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">reduced_soulshot</label><input name="reduced_soulshot" class="form-control" value="{{ prefill.reduced_soulshot|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">reduced_mp_consume</label><input name="reduced_mp_consume" class="form-control" value="{{ prefill.reduced_mp_consume|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">onmagic_chance</label><input name="onmagic_chance" class="form-control" value="{{ prefill.onmagic_chance|default('') }}"></div>
+          <div class="col-md-4"><label class="form-label">onmagic_skill</label><input name="onmagic_skill" class="form-control" value="{{ prefill.onmagic_skill|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">duration</label><input name="duration" class="form-control" value="{{ prefill.duration|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">equip_reuse_delay</label><input name="equip_reuse_delay" class="form-control" value="{{ prefill.equip_reuse_delay|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">useskilldistime</label><input name="useskilldistime" class="form-control" value="{{ prefill.useskilldistime|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">enchant4_skill</label><input name="enchant4_skill" class="form-control" value="{{ prefill.enchant4_skill|default('') }}"></div>
+          <div class="col-md-4"><label class="form-label">unequip_skill</label><input name="unequip_skill" class="form-control" value="{{ prefill.unequip_skill|default('') }}"></div>
+          <div class="col-md-2"><label class="form-label">time</label><input name="time" class="form-control" value="{{ prefill.time|default('') }}"></div>
+          <div class="col-12"><hr></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_magic_weapon" id="is_magic_weapon" {% if prefill.is_magic_weapon in ['1','true','yes'] %}checked{% endif %}><label for="is_magic_weapon" class="form-check-label">Magic</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_dropable" id="is_dropable" {% if prefill.is_dropable in ['1','true','yes'] %}checked{% endif %}><label for="is_dropable" class="form-check-label">Dropable</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_sellable" id="is_sellable" {% if prefill.is_sellable in ['1','true','yes'] %}checked{% endif %}><label for="is_sellable" class="form-check-label">Sellable</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_tradable" id="is_tradable" {% if prefill.is_tradable in ['1','true','yes'] %}checked{% endif %}><label for="is_tradable" class="form-check-label">Tradable</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="element_enabled" id="element_enabled" {% if prefill.element_enabled in ['1','true','yes'] %}checked{% endif %}><label for="element_enabled" class="form-check-label">Element</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="enchant_enabled" id="enchant_enabled" {% if prefill.enchant_enabled in ['1','true','yes'] %}checked{% endif %}><label for="enchant_enabled" class="form-check-label">Enchant</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="isattackweapon" id="isattackweapon" {% if prefill.isattackweapon in ['1','true','yes'] %}checked{% endif %}><label for="isattackweapon" class="form-check-label">Is attack</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_oly_restricted" id="is_oly_restricted" {% if prefill.is_oly_restricted in ['1','true','yes'] %}checked{% endif %}><label for="is_oly_restricted" class="form-check-label">Oly restricted</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_depositable" id="is_depositable" {% if prefill.is_depositable in ['1','true','yes'] %}checked{% endif %}><label for="is_depositable" class="form-check-label">Depositable</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_destroyable" id="is_destroyable" {% if prefill.is_destroyable in ['1','true','yes'] %}checked{% endif %}><label for="is_destroyable" class="form-check-label">Destroyable</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_premium" id="is_premium" {% if prefill.is_premium in ['1','true','yes'] %}checked{% endif %}><label for="is_premium" class="form-check-label">Premium</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="blessed" id="blessed" {% if prefill.blessed in ['1','true','yes'] %}checked{% endif %}><label for="blessed" class="form-check-label">Blessed</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="is_freightable" id="is_freightable" {% if prefill.is_freightable in ['1','true','yes'] %}checked{% endif %}><label for="is_freightable" class="form-check-label">Freightable</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="isforceequip" id="isforceequip" {% if prefill.isforceequip in ['1','true','yes'] %}checked{% endif %}><label for="isforceequip" class="form-check-label">Force equip</label></div>
+          <div class="col-md-3 form-check"><input class="form-check-input" type="checkbox" name="useweaponskillsonly" id="useweaponskillsonly" {% if prefill.useweaponskillsonly in ['1','true','yes'] %}checked{% endif %}><label for="useweaponskillsonly" class="form-check-label">Use weapon skills only</label></div>
+          <div class="col-md-2 form-check"><input class="form-check-input" type="checkbox" name="enchanted" id="enchanted" {% if prefill.enchanted in ['1','true','yes'] %}checked{% endif %}><label for="enchanted" class="form-check-label">Enchanted</label></div>
+
+          <div class="col-12 mt-3">
+            <label class="form-label">FOR JSON</label>
+            <textarea name="for" class="form-control" rows="3">{{ prefill.for|default('') }}</textarea>
+          </div>
+
+          <div class="col-12 mt-3"><button class="btn btn-primary">Сохранить</button></div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

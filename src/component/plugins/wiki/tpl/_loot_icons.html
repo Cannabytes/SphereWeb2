@@ -1,0 +1,42 @@
+{# Reusable loot flags renderer.
+  Inputs:
+   - item: array with keys id, is_drop, is_sweep, is_craft
+   - compact: bool (optional) to reduce spacing
+#}
+{# Robust truthy parse for 1/true/yes/on/y and numbers #}
+{% set __drop  = item.is_drop  is defined ? ((item.is_drop  ~ '') | lower) : '' %}
+{% set __sweep = item.is_sweep is defined ? ((item.is_sweep ~ '') | lower) : '' %}
+{% set __craft = item.is_craft is defined ? ((item.is_craft ~ '') | lower) : '' %}
+{% set _drop  = __drop  in ['1','true','yes','y','on'] %}
+{% set _spoil = __sweep in ['1','true','yes','y','on'] %}
+{% set _craft = (__craft in ['1','true','yes','y','on']) or (item.recipe_id is defined and item.recipe_id not in [0,'0',null,'',false]) %}
+{% if _craft or _drop or _spoil %}
+<span class="loot-flags {% if compact %}loot-flags-compact{% endif %}">
+  {% if _craft %}
+    <a href="/wiki/items/recipes/production/{{ item.id }}" class="loot-flag" title="{{ phrase('Craft') }}">
+      <img src="/src/component/plugins/wiki/tpl/img/other/drop.webp" alt="Craft" width="14" height="14" class="loot-ico" style="transform:rotate(180deg)">
+      <span class="loot-txt d-none d-sm-inline">{{ phrase('Craft') }}</span>
+    </a>
+  {% endif %}
+  {% if _drop %}
+    <a href="/wiki/items/sources/{{ item.id }}/drop" class="loot-flag" title="{{ phrase('Drop') }}">
+      <img src="/src/component/plugins/wiki/tpl/img/other/drop.webp" alt="Drop" width="14" height="14" class="loot-ico">
+      <span class="loot-txt d-none d-sm-inline">{{ phrase('Drop') }}</span>
+    </a>
+  {% endif %}
+  {% if _spoil %}
+    <a href="/wiki/items/sources/{{ item.id }}/spoil" class="loot-flag" title="{{ phrase('Spoil') }}">
+      <img src="/src/component/plugins/wiki/tpl/img/other/spoil.webp" alt="Spoil" width="14" height="14" class="loot-ico">
+      <span class="loot-txt d-none d-sm-inline">{{ phrase('Spoil') }}</span>
+    </a>
+  {% endif %}
+</span>
+{% endif %}
+
+<style>
+.loot-flags { display:inline-flex; gap:6px; align-items:center; }
+.loot-flags-compact { gap:4px; }
+.loot-flag { display:inline-flex; align-items:center; gap:4px; text-decoration:none; color:inherit; opacity:.9 }
+.loot-flag:hover { opacity:1 }
+.loot-ico { border-radius:2px; vertical-align:middle }
+</style>

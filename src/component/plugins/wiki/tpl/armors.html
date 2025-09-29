@@ -1,0 +1,214 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="wiki-subnav mb-3">
+                <div class="subnav-header d-flex align-items-center gap-3 flex-wrap mb-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="try{if(history.length > 1){history.back();}else{location.href='/wiki';}}catch(e){location.href='/wiki';}">{{ phrase('Back') }}</button>
+                    <a href="/wiki" class="back-link d-inline-flex align-items-center gap-2">
+                        <span class="chevron" aria-hidden="true">←</span>
+                        <span class="label">{{ phrase('Library') }}</span>
+                    </a>
+                    <h1 class="h4 m-0 fw-semibold page-title">{{ phrase(itemType|capitalize ~ ' — Title')|format(armorBodypartLabels[currentArmorPart]|default(currentArmorPart)) }}</h1>
+                </div>
+                <nav class="wiki-filter" aria-label="{{ phrase(itemType|capitalize ~ ' part') }}">
+                    <ul class="nav flex-nowrap flex-md-wrap gap-2 mb-0" role="list">
+                        {% for bp in armorBodyparts %}
+                        {% set isActive = (bp == currentArmorPart) %}
+                        <li class="nav-item" role="presentation">
+                            <a class="wiki-subpill {% if isActive %}active{% endif %}"
+                                href="/wiki/items/{{ itemType }}/{{ bp|lower }}" {% if isActive %}aria-current="page" {%
+                                endif %}>
+                                <span class="pill-label">{{ armorBodypartLabels[bp]|default(bp) }}</span>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </nav>
+            </div>
+
+            <script>(function () { try { const active = document.currentScript.parentElement.querySelector('.wiki-filter .active'); if (active) { active.scrollIntoView({ block: 'nearest', inline: 'center' }); } } catch (e) { } })();</script>
+        </div>
+    </div>
+
+    {% if armorsByCrystal is empty %}
+    <div class="alert alert-warning">{{ phrase('No data for selection') }}</div>
+    {% else %}
+    {% for crystal, list in armorsByCrystal %}
+    <div class="card mb-4">
+        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <div>
+                <h5 class="mb-1">{{ armorGradeInfo[crystal].title|default(phrase('Grade') ~ ' ' ~ crystal) }} ({{ crystal }})</h5>
+                {% if armorGradeInfo[crystal] is defined %}
+                <div class="small text-muted">
+                    {{ phrase('Level') }}: {{ armorGradeInfo[crystal].level }} — {{ armorGradeInfo[crystal].desc }}
+                </div>
+                {% endif %}
+            </div>
+            <span class="badge bg-primary align-self-start align-self-md-center mt-2 mt-md-0">{{ list|length }}</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-sm mb-0 align-middle armor-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>{{ phrase('Item') }}</th>
+                        <th class="text-center">{{ phrase('Type') }}</th>
+                        <th class="text-end" style="min-width:110px">{{ phrase('Price') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in list %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                {% if a.icon %}
+                                <img src="{{ get_icon(a.icon) }}" alt="" width="42" height="42" class="rounded"
+                                    loading="lazy" onerror="this.style.display='none'">
+                                {% endif %}
+                                <div class="d-flex flex-column">
+                                        <span class="fw-semibold d-inline-flex align-items-center gap-2">{{ grade_img(a.crystal_type)|raw }} {{ a.name }}
+                                        {# Admin edit link removed #}
+                                    </span>
+                                    <span class="text-muted extra-line small">
+                                        {% include 'wiki/tpl/_loot_icons.html' with { 'item': a } %}
+                                    </span>
+                                    {% if a.stats is not empty %}
+                                    <span class="text-muted extra-line small d-block mt-1">
+                                        {% for s in a.stats %}
+                                        <span class="me-2">{{ s.label }}: {{ s.formatted }}{% if s.extra %} <small
+                                                class="text-success">({{ s.extra }})</small>{% endif %}</span>
+                                        {% endfor %}
+                                    </span>
+                                    {% endif %}
+                                    {% if a.skills is not empty %}
+                                    <span
+                                        class="text-muted extra-line small d-flex flex-wrap gap-1 align-items-start mt-1 skill-effects-line">
+                                        {% for skill in a.skills %}
+                                        <span class="skill-wrap has-pop" data-skill-id="{{ skill.id }}"
+                                            data-skill-level="{{ skill.level }}">
+                                            {% if skill.icon %}
+                                            <img src="{{ get_skill(skill.icon) }}" alt="" width="18" height="18"
+                                                class="skill-icon rounded-1">
+                                            {% else %}
+                                            <span class="skill-icon-placeholder"
+                                                style="display:inline-block;width:18px;height:18px;background:rgba(0,0,0,0.08);"></span>
+                                            {% endif %}
+                                            <span class="skill-pop skill-pop-wide">
+                                                <span class="d-block fw-semibold mb-1">{{ skill.name|default('Skill ' ~
+                                                    skill.id) }}<span class="opacity-75"> Lv.{{ skill.level
+                                                        }}</span></span>
+                                                {% if skill.effect_text is defined and skill.effect_text %}
+                                                <span class="d-block effect-text">{{ skill.effect_text }}</span>
+                                                {% elseif skill.effects is defined and skill.effects %}
+                                                <span class="d-block">
+                                                    {% for eff in skill.effects %}
+                                                    <span class="d-block">{{ eff.formatted }} {{ eff.label }}</span>
+                                                    {% endfor %}
+                                                </span>
+                                                {% else %}
+                                                <span class="text-muted">{{ phrase('No bonus data') }}</span>
+                                                {% endif %}
+                                            </span>
+                                        </span>
+                                        {% endfor %}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">{{ a.armor_type|default('-') }}</td>
+                        <td class="text-end fw-semibold">{{ a.price_formatted|default(a.price|default('-')) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="mt-3">
+        {% if db_timing is defined %}
+        <div class="small text-muted">DB open: {{ db_timing.db_open_s }} s; Read: {{ db_timing.read_s }} s; Total: {{
+            db_timing.total_s }} s</div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/src/component/plugins/wiki/tpl/css/_wiki_subnav.css">
+<style>
+    .armor-table .skill-wrap {
+        position: relative;
+        display: inline-block;
+    }
+
+    .armor-table .skill-icon {
+        border-radius: 2px;
+    }
+
+    .armor-table .skill-effects-line .skill-wrap {
+        margin-bottom: 2px;
+    }
+
+    .armor-table .skill-pop {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(100% + 8px);
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        padding: 6px 8px;
+        border-radius: 8px;
+        font-size: 11px;
+        line-height: 1.25;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity .12s ease, transform .12s ease;
+        transform-origin: bottom center;
+        z-index: 10000;
+        /* above table */
+        min-width: 180px;
+        max-width: 260px;
+        white-space: normal;
+    }
+
+    .armor-table .skill-wrap.has-pop:hover .skill-pop {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-4px);
+    }
+
+    .armor-table .skill-pop::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 100%;
+        width: 8px;
+        height: 8px;
+        background: rgba(0, 0, 0, 0.8);
+        transform-origin: top center;
+        transform: translateX(-50%) rotate(45deg);
+        border-radius: 2px;
+    }
+
+    /* Allow tooltip to escape table scroll container */
+    .armor-table-wrapper,
+    .card .table-responsive {
+        overflow: visible !important;
+    }
+
+    .armor-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme-mode=light] .armor-table tbody tr:hover {
+        background: rgba(0, 0, 0, 0.035);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,256 @@
+{% extends 'struct.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card custom-card shadow-lg rounded">
+        <div class="card-header justify-content-between">
+            <div class="card-title">
+                <a href="/admin/plugin/wiki" class="avatar border text-muted me-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4C16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                    </svg>
+                </a>
+                {{ phrase('NPC Image Moderation') }}
+            </div>
+        </div>
+        <div class="card-body">
+            {% if pending_images|length > 0 %}
+                <div class="alert alert-info">
+                    <i class="ri-information-line me-2"></i>
+                    {{ phrase('Images awaiting moderation') }}: <strong>{{ pending_images|length }}</strong>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <button type="button" class="btn btn-outline-success btn-sm" id="approveAllBtn">
+                        <i class="ri-checkbox-circle-line me-1"></i>
+                        {{ phrase('Approve all') }}
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" id="rejectAllBtn">
+                        <i class="ri-delete-bin-line me-1"></i>
+                        {{ phrase('Reject all') }}
+                    </button>
+                </div>
+
+                <div class="row g-4">
+                    {% for image in pending_images %}
+                    <div class="col-lg-6 col-xl-4" id="image-{{ image.filename }}">
+                        <div class="card border">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">NPC ID: {{ image.npc_id }}</h6>
+                                <span class="badge bg-warning">{{ phrase('Pending') }}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <img src="{{ image.file_url }}" alt="NPC Image" class="img-fluid rounded" 
+                                         style="max-height: 200px; max-width: 100%; object-fit: contain;">
+                                </div>
+                                
+                                <div class="row text-sm">
+                                    <div class="col-6">
+                                        <strong>{{ phrase('Original name') }}:</strong><br>
+                                        <small class="text-muted">{{ image.original_name }}</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>{{ phrase('File size') }}:</strong><br>
+                                        <small class="text-muted">{{ image.file_size_formatted }}</small>
+                                    </div>
+                                    <div class="col-6 mt-2">
+                                        <strong>{{ phrase('Dimensions') }}:</strong><br>
+                                        <small class="text-muted">{{ image.dimensions }}</small>
+                                    </div>
+                                    <div class="col-6 mt-2">
+                                        <strong>{{ phrase('Uploaded') }}:</strong><br>
+                                        <small class="text-muted">{{ image.upload_time }}</small>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <strong>{{ phrase('User') }}:</strong><br>
+                                        <small class="text-muted">{{ image.user_email }} (ID: {{ image.user_id }})</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between">
+                                <button type="button" class="btn btn-success btn-sm approve-btn" 
+                                        data-filename="{{ image.filename }}" data-npc-id="{{ image.npc_id }}">
+                                    <i class="ri-check-line me-1"></i>
+                                    {{ phrase('Approve') }}
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm reject-btn" 
+                                        data-filename="{{ image.filename }}">
+                                    <i class="ri-close-line me-1"></i>
+                                    {{ phrase('Reject') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="ri-image-line" style="font-size: 4rem; color: #6c757d;"></i>
+                    </div>
+                    <h5 class="text-muted">{{ phrase('No images awaiting moderation') }}</h5>
+                    <p class="text-muted">{{ phrase('All uploaded images have been processed') }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const processingHtml = '<i class="ri-loader-4-line ri-spin me-1"></i>{{ phrase("Processing...") }}';
+
+    const approveAllBtn = document.getElementById('approveAllBtn');
+    if (approveAllBtn) {
+        approveAllBtn.addEventListener('click', function() {
+            const originalHtml = this.innerHTML;
+            const button = this;
+            button.disabled = true;
+            button.innerHTML = processingHtml;
+
+            fetch('/admin/plugin/wiki/npc/images/approve-all', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: ''
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    button.disabled = false;
+                    button.innerHTML = originalHtml;
+                    console.error('Approve-all failed:', data && data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Approve-all network error:', error);
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            });
+        });
+    }
+
+    const rejectAllBtn = document.getElementById('rejectAllBtn');
+    if (rejectAllBtn) {
+        rejectAllBtn.addEventListener('click', function() {
+            const originalHtml = this.innerHTML;
+            const button = this;
+            button.disabled = true;
+            button.innerHTML = processingHtml;
+
+            fetch('/admin/plugin/wiki/npc/images/reject-all', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: ''
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    button.disabled = false;
+                    button.innerHTML = originalHtml;
+                    console.error('Reject-all failed:', data && data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Reject-all network error:', error);
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            });
+        });
+    }
+
+    // Approve image
+    document.querySelectorAll('.approve-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const filename = this.dataset.filename;
+            const npcId = this.dataset.npcId;
+            const card = document.getElementById('image-' + filename);
+
+            this.disabled = true;
+            this.innerHTML = processingHtml;
+
+            fetch('/admin/plugin/wiki/npc/images/approve', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `filename=${encodeURIComponent(filename)}&npc_id=${encodeURIComponent(npcId)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    card.style.transition = 'opacity 0.3s ease';
+                    card.style.opacity = '0.5';
+                    setTimeout(() => {
+                        card.remove();
+                        // Check if no more images
+                        if (document.querySelectorAll('[id^="image-"]').length === 0) {
+                            location.reload();
+                        }
+                    }, 300);
+                } else {
+                    this.disabled = false;
+                    this.innerHTML = '<i class="ri-check-line me-1"></i>{{ phrase("Approve") }}';
+                    console.error('Approve failed:', data && data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Approve network error:', error);
+                this.disabled = false;
+                this.innerHTML = '<i class="ri-check-line me-1"></i>{{ phrase("Approve") }}';
+            });
+        });
+    });
+
+    // Reject image
+    document.querySelectorAll('.reject-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const filename = this.dataset.filename;
+            const card = document.getElementById('image-' + filename);
+
+            this.disabled = true;
+            this.innerHTML = processingHtml;
+
+            fetch('/admin/plugin/wiki/npc/images/reject', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `filename=${encodeURIComponent(filename)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    card.style.transition = 'opacity 0.3s ease';
+                    card.style.opacity = '0.5';
+                    setTimeout(() => {
+                        card.remove();
+                        // Check if no more images
+                        if (document.querySelectorAll('[id^="image-"]').length === 0) {
+                            location.reload();
+                        }
+                    }, 300);
+                } else {
+                    this.disabled = false;
+                    this.innerHTML = '<i class="ri-close-line me-1"></i>{{ phrase("Reject") }}';
+                    console.error('Reject failed:', data && data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Reject network error:', error);
+                this.disabled = false;
+                this.innerHTML = '<i class="ri-close-line me-1"></i>{{ phrase("Reject") }}';
+            });
+        });
+    });
+
+});
+</script>
+{% endblock %}

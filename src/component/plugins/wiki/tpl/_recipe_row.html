@@ -1,0 +1,47 @@
+<tr>
+    <td class="text-center fw-semibold">{{ r.craftLevel }}</td>
+    <td>
+        <div class="d-flex align-items-center gap-2">
+            {% if r._recipe and r._recipe.icon %}
+            <img src="{{ get_icon(r._recipe.icon) }}" width="32" height="32" class="rounded" alt="" loading="lazy"
+                onerror="this.style.display='none'">
+            {% endif %}
+            <div class="d-flex flex-column">
+                <span class="fw-semibold">{{ r._recipe.name|default(r.name) }}</span>
+                {# Loot icons (Craft/Drop/Spoil) re-used from partial; it already checks is_drop/is_sweep/is_craft #}
+                {% set __rid = (r._recipe is defined and r._recipe.id is defined and r._recipe.id) ? r._recipe.id : (r.recipeId is defined ? r.recipeId : null) %}
+                {% if __rid %}
+                    {% set __item = r._recipe is defined and r._recipe ? r._recipe : {'id': __rid, 'is_drop': 0, 'is_sweep': 0, 'is_craft': 0} %}
+                    <span class="mt-1">
+                        {% include 'wiki/tpl/_loot_icons.html' with {'item': __item, 'compact': true} %}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </td>
+    <td>
+        {% if r._product %}
+        <div class="d-flex align-items-center gap-1">
+            {% if r._product.icon %}<img src="{{ get_icon(r._product.icon) }}" width="28" height="28" class="rounded"
+                alt="" loading="lazy" onerror="this.style.display='none'">{% endif %}
+            <span>{{grade_img(r._product.crystal_type)|raw}} <a href="/wiki/items/recipes/production/{{ r._product.id }}" class="text-decoration-none">{{ r._product.name }}</a>
+                <span class="text-muted"> x{{ r._product.count }}</span></span>
+        </div>
+        {% else %}<span class="text-muted">-</span>{% endif %}
+    </td>
+    <td style="min-width:220px">
+        <div class="d-flex flex-wrap gap-1">
+            {% for ing in r._ingredients %}
+            <span class="ingredient badge bg-light text-dark d-flex align-items-center gap-1">
+                {% if ing.icon %}<img src="{{ get_icon(ing.icon) }}" width="32" height="32" alt="" loading="lazy"
+                    onerror="this.style.display='none'">{% endif %}
+                <span>{{ ing.name|default('Item ' ~ ing.id) }}<span class="text-muted"> x{{ ing.count }}</span></span>
+            </span>
+            {% else %}<span class="text-muted">—</span>
+            {% endfor %}
+        </div>
+    </td>
+    <td class="text-center">{% if r.successRate is not null %}{{ r.successRate }}%{% else %}<span
+            class="text-muted">-</span>{% endif %}</td>
+    <td class="text-center">{% if r.useMP %}{{ r.useMP }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
+</tr>
