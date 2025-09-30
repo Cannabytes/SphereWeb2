@@ -793,6 +793,15 @@ class options
                         746,
                     ],
                 ],
+                [
+                    "id" => 2,
+                    "name" => "PTS HighFive Strix",
+                    "desc" => "ПТС сборка",
+                    "hash" => "",
+                    "protocols" => [
+                        273, 196, 388,
+                    ],
+                ],
             ]),
         ]);
         tpl::display("/admin/server_add.html");
