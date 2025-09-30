@@ -126,7 +126,7 @@
   {% endif %}
 
 
-  {% if getUser().isAuth() %}
+  {% if getUser().isAuth() and getServerCount() > 0 %}
 
   <div class="row">
     <div class="col-xl-12">
@@ -136,12 +136,10 @@
         </div>
         <div class="card-body">
 
-          <!-- Форма регистрации аккаунта -->
           <div class="row mb-4">
             <div class="col-12">
               <form action="/registration/account" method="POST">
 
-                <!-- Информационный блок -->
                 <div class="row mb-3">
                   <div class="col-12">
                     <div

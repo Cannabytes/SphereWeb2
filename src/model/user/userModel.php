@@ -7,7 +7,6 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use Ofey\Logan22\component\alert\board;
-use Ofey\Logan22\component\finger\finger;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\session\session;

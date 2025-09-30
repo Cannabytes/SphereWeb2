@@ -11,6 +11,7 @@ use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\plugin\plugin;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\model\server\server;
 
 class wiki
 {
@@ -787,12 +788,28 @@ class wiki
         $currentDb = isset($setting['dbFile']) && is_string($setting['dbFile']) && $setting['dbFile'] !== ''
             ? $setting['dbFile']
             : 'highfive.db';
+
+        if (server::get_count_servers() === 0) {
+            tpl::addVar('noServers', true);
+            tpl::addVar('dbListUnified', []);
+            tpl::addVar('dbFiles', $files);
+            tpl::addVar('currentDb', $currentDb);
+            tpl::addVar('cacheCount', $cacheCount);
+            tpl::addVar('setting', $setting);
+            tpl::addVar('dbDescriptions', $descriptions);
+            tpl::addVar('sqliteEnabled', $sqliteEnabled);
+            tpl::displayPlugin("wiki/tpl/setting.html");
+            return;
+        }
+        
         // Получение списка файлов баз данных NPC с Go-сервера
         $dbListWiki = \Ofey\Logan22\component\sphere\server::send(type::WIKI_DB_LIST, [])->show()->getResponse();
+       
         $DbFiles = [];
         if (is_array($dbListWiki) && isset($dbListWiki['files']) && is_array($dbListWiki['files'])) {
             $DbFiles = $dbListWiki['files'];
         }
+
         // Собираем объединённый список для шаблона
         $dbs = [];
         foreach ($DbFiles as $file) {

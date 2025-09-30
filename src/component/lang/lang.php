@@ -17,6 +17,10 @@ class lang {
        return \Ofey\Logan22\controller\config\config::load()->lang()->getPhrase($key, ...$values);
     }
 
+    public static function phrase($key, ...$values): string {
+        return \Ofey\Logan22\controller\config\config::load()->lang()->getPhrase($key, ...$values);
+    }
+
     public static function get_other_phrase($lang, $key, ...$values): string
     {
         return \Ofey\Logan22\controller\config\config::load()->lang()->getOtherPhrase($lang, $key, ...$values);

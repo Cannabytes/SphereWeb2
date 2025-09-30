@@ -12,11 +12,7 @@
                 </a>
                 {{ phrase('Wiki settings') }}
                 <div class="mt-1 small">
-                    {% if sqliteEnabled %}
-                        <span class="badge bg-success">SQLite OK</span>
-                    {% else %}
-                        <span class="badge bg-danger">SQLite НЕ включен</span>
-                    {% endif %}
+                    {% if sqliteEnabled == false %} <span class="badge bg-danger">SQLite НЕ включен</span> {% endif %}
                 </div>
             </div>
             <div class="prism-toggle">
@@ -37,6 +33,12 @@
             <div class="alert alert-danger" role="alert">
                 {{phrase('plugin_is_disabled_need_active')|raw}}
             </div>
+            {% if getServerCount() == 0 %}
+                <div class="alert alert-danger" role="alert">
+                    {{ phrase('plugin_requires_server')|raw }}
+                </div>
+            {% endif %}
+
             {% endif %}
             <div class="form-check mb-2">
                 <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value="" id="showMainPage" {% if setting.showMainPage %}checked{% endif %} {% if pluginActive == false %}disabled{% endif %}>

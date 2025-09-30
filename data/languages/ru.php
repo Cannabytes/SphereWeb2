@@ -778,7 +778,7 @@ return array(
 	'add_to_store' => 'Добавить в магазин',
 	'add_to_the_list_of_streams' => 'Добавить в список стримов',
 	'add_topup_bonuses' => 'Зачислять бонусы пополнения к балансу',
-	'additional_extensions' => 'Дополнительные расширения',
+	'additional_extensions' => 'Плагины',
 	'additional_settings' => 'Дополнительные настройки',
 	'admin' => 'Администратор',
 	'admin_only_enable' => 'Включить только для администратора',
@@ -2262,4 +2262,28 @@ Password: %%password%%',
 	'Open item search (press Enter)' => 'Открыть поиск предметов (Enter)',
 	'Search Items' => 'Поиск предметов',
 	'No items found' => 'Предметы не найдены',
+
+	'current_announcements_and_updates' => 'Актуальные объявления и обновления проекта',
+	'sphereweb_news_and_team_chat' => 'Раздел для новостей о SphereWeb и общения с командой',
+	'game_server_news' => 'Раздел для новостей игрового сервера',
+	'updates_and_innovations' => 'Обновления и нововведения',
+	'server_updates_and_features' => 'Раздел для публикации обновлений и новых возможностей сервера',
+	'sphereweb_installation_success' => 'Установка SphereWeb прошла успешно',
+	'clan_section' => 'Клановый раздел',
+	'clan_discussion_recruitment' => 'Обсуждение клановых вопросов, набор в кланы и взаимодействие между кланами',
+	'clans_seeking_members' => 'Для кланов, которые ищут новых участников',
+	'players_seeking_clan' => 'Для игроков, которые ищут клан для вступления',
+	'general_discussion' => 'Обсуждение любых тем, спор ради спора',
+	'offtopic_conversations' => 'Разговоры на отвлеченные темы',
+	'creativity_hobbies_fun' => 'Творчество, балавство, хобби, юмор',
+	'archive' => 'Архив',
+	'project_news' => 'Новости проекта',
+	'clan_search' => 'Поиск клана',
+	'clan_recruitment' => 'Набор в клан',
+	'flame' => 'Флейм',
+	'plugin_requires_server' => 'Для работы данного плагина нужен подключенный сервер',
+
+
+
+
 );
