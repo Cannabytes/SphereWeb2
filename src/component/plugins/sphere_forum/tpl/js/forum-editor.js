@@ -334,16 +334,29 @@ window.ForumEditor = (function() {
             content = quill.root.innerHTML;
         }
 
-        // Проверяем наличие контента
+        // Если нет контента и нет загруженных изображений/вложений — ошибка
         if (!content) {
+            if (uploadedAttachments.length > 0 || uploadedImages.length > 0) {
+                return null; // считаем, что сообщение есть за счёт вложений
+            }
             return "Сообщение не может быть пустым";
         }
 
         // Очищаем HTML теги и лишние пробелы
         const plainText = content.replace(/<[^>]*>/g, '').trim();
 
-        // Проверка минимальной длины
+        // Если в тексте нет видимого текста, но есть загруженные вложения/изображения или <img> теги — разрешаем
         if (plainText.length < 1) {
+            // проверяем массивы загруженных вложений/изображений
+            if (uploadedAttachments.length > 0 || uploadedImages.length > 0) {
+                return null;
+            }
+
+            // Дополнительная страховка: если в HTML есть теги <img>, считаем что есть содержание
+            if (/<img\b[^>]*>/i.test(content)) {
+                return null;
+            }
+
             return "Сообщение слишком короткое. Минимальная длина - 1 символ.";
         }
 

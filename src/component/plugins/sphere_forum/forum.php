@@ -363,11 +363,14 @@ class forum
             // Проверяем на флуд перед обработкой сообщения
             $antiFlood = new AntiFlood(AntiFlood::TYPE_POST);
             $antiFlood->checkFlood();
-
             $this->validateMessageInput();
 
             $topicId = (int)$_POST['topicId'];
-            $message = $_POST['message'];
+            $message = isset($_POST['message']) ? $_POST['message'] : '';
+            // Собираем прикрепленные файлы (если были прикреплены через FilePond/uploadImage)
+            $attachments = isset($_POST['attachments']) && is_array($_POST['attachments'])
+                ? array_map('intval', $_POST['attachments'])
+                : [];
             $replyToId = isset($_POST['replyToId']) ? (int)$_POST['replyToId'] : null;
 
             // Проверяем существование поста, на который отвечают
@@ -385,8 +388,16 @@ class forum
             $thread = $this->getThreadById($topicId);
             $category = $this->getCategoryById($thread->getCategoryId());
 
-            // Валидируем содержание сообщения
-            $this->validateMessageContent($message, $category);
+            // Если текcт сообщения пустой, но есть прикрепленные файлы/изображения - считаем, что сообщение есть
+            $plainTextCheck = trim(strip_tags($message));
+            if ($plainTextCheck === '' && empty($attachments)) {
+                throw new Exception("Необходимо указать тему и сообщение");
+            }
+
+            // Валидируем содержание сообщения только если в тексте есть контент
+            if ($plainTextCheck !== '') {
+                $this->validateMessageContent($message, $category);
+            }
 
             if (!user::self()->isAdmin() && !$category->canReplyTopics()) {
                 throw new Exception("Ответы в этом разделе запрещены");
@@ -436,8 +447,8 @@ class forum
 
     private function validateMessageInput(): void
     {
-        if (!isset($_POST['topicId']) || !isset($_POST['message'])) {
-            throw new Exception("Необходимо указать тему и сообщение");
+        if (!isset($_POST['topicId'])) {
+            throw new Exception("Необходимо указать тему");
         }
     }
 
