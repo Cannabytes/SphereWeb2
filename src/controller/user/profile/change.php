@@ -117,12 +117,12 @@ class change
             $error[] = lang::get_phrase(189);
             $ok = false;
         }
-        if (!preg_match("/^[a-zA-Z0-9_\-]+$/u", $name)) {
+        if (!preg_match("/^[\p{L}0-9_\-]+$/u", $name)) {
             $error[] = lang::get_phrase(190);
             $ok = false;
         }
         if ($ok) {
-            if (!ctype_alpha($name[0])) {
+            if (!preg_match('/^\p{L}/u', $name)) {
                 $error[] = "Имя должно начинаться с буквы";
                 $ok = false;
             }
