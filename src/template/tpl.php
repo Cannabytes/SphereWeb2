@@ -88,8 +88,15 @@ class tpl
 
     private static false|array $donateSysCache = [];
 
-    // Page cache options set per-request (enable selectively)
-    private static ?array $pageCache = null; // ['ttl'=>int,'namespace'=>string,'keyParts'=>array,'includeUser'=>bool]
+    private static ?array $pageCache = null;
+    
+    public static function templatePath($file = ""): string
+    {
+        if ($file !== "") {
+            return rtrim(self::$templatePath, '/') . '/' . ltrim($file, '/');
+        }
+        return self::$templatePath;
+    }
 
     // Compute a stable cache file path for page cache
     private static function buildPageCachePath(array $keyParts, string $namespace = 'page', bool $includeUser = false, bool $includeServer = true): string

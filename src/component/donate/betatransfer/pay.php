@@ -141,7 +141,7 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
             board::notice(false, "Максимальная пополнение до 20000 UAH");
         }
 
-        $response = $this->payment(strval(round($amount, 1)), $currency, user::self()->getId() . '_' . mt_rand(0, 999999), ['paymentSystem' => 'Card']);
+        $response = $this->payment(strval(round($amount, 1)), $currency, user::self()->getId() . '_' . mt_rand(0, 999999));
 
         if (isset($response['body'])) {
             $body = $response['body'];

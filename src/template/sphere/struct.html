@@ -50,7 +50,7 @@
   <link id="style" href="{{template}}/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Style Css -->
-  <link href="{{template}}/assets/css/styles.min.css?v=11" rel="stylesheet">
+  <link href="{{template}}/assets/css/{{ config().palette().styleFile() }}?v=0.0.0.3" rel="stylesheet">
 
   <!-- Icons Css -->
   <link href="{{template}}/assets/css/icons.css" rel="stylesheet">
@@ -86,8 +86,12 @@
 
 </head>
 
-<body>
-
+<body class="has-video-bg">
+  
+  {% if config().palette().getStyleFileConfig().video %}
+    {{ config().palette().getStyleFileConfig().video_to_body|raw }}
+  {% endif %}
+   
   {{ include('modals.html') }}
 
   <div class="page">
@@ -134,21 +138,21 @@
       }
     });
   </script>
-{% block js %}{% endblock %}
+  {% block js %}{% endblock %}
 
 
-{% if getUser().isAuth() %}
-<script src="https://cdn.jsdelivr.net/npm/@thumbmarkjs/thumbmarkjs@0.20.6/dist/thumbmark.umd.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const keysToInclude = [
-    'webgl.commonImageHash',
-    'audio.sampleHash',
-    'system.platform',
-    'locales.timezone',
-    'hardware.videocard.renderer',
-  ];
-  ThumbmarkJS.getFingerprintData()
+  {% if getUser().isAuth() %}
+  <script src="https://cdn.jsdelivr.net/npm/@thumbmarkjs/thumbmarkjs@0.20.6/dist/thumbmark.umd.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const keysToInclude = [
+        'webgl.commonImageHash',
+        'audio.sampleHash',
+        'system.platform',
+        'locales.timezone',
+        'hardware.videocard.renderer',
+      ];
+      ThumbmarkJS.getFingerprintData()
         .then(data => {
           const filteredData = {};
           keysToInclude.forEach(keyPath => {
@@ -166,17 +170,18 @@ document.addEventListener('DOMContentLoaded', function() {
               });
             }
           });
-          $.post('/finger/check', {finger: JSON.stringify(filteredData)}, function(response) {
+          $.post('/finger/check', { finger: JSON.stringify(filteredData) }, function (response) {
             if (response === false) {
               location.reload();
             }
           })
         })
-        .catch(err => {console.error("Ошибка при получении данных ThumbmarkJS:", err);
-  });
-});
-</script>
-{% endif %}
+        .catch(err => {
+          console.error("Ошибка при получении данных ThumbmarkJS:", err);
+        });
+    });
+  </script>
+  {% endif %}
 
   <!-- Load: {{pointTime}} sec. / Query count: {{get_db_count_request()}} / Sphere Api Request: {{get_sphere_api_count_request()}} -->
 </body>

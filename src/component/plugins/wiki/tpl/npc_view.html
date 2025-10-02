@@ -111,6 +111,7 @@
                         {% set basic = basic|merge([{'label': phrase('Type'),'value': npc.type|default('—')}]) %}
                         {% set basic = basic|merge([{'label': phrase('Level'),'value': npc.level|default('?')}]) %}
                         {% set basic = basic|merge([{'label': phrase('Aggro'),'value': npc.isAggressive|default('—')}]) %}
+             
                         {# Move Atk Spd to the right-side basic stats #}
                         {% if npc.attack_attack_speed is defined and npc.attack_attack_speed is not same as('') %}
                             {% set basic = basic|merge([{'label':'Atk Spd','value': npc.attack_attack_speed}]) %}
@@ -118,6 +119,7 @@
                         {% if npc.ai_type %}
                             {% set basic = basic|merge([{'label':'AI','value': npc.ai_type}]) %}
                         {% endif %}
+                        {% set basic = basic|merge([{'label':'EXP','value': npc.exp|default('—')}]) %}
 
                         {# Left side uses npc_stats_prepared array #}
                         {% set left = npc_stats_prepared|default([]) %}
@@ -132,6 +134,7 @@
                         {% set left = left|slice(0, 8) %}
                         {% set right = right|slice(0, 8) %}
                         {% set rows = 8 %}
+                        
 
                         <table class="table table-sm table-striped align-middle mb-0">
                             <tbody>

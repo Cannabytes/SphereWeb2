@@ -3010,6 +3010,8 @@ class wiki
             'attack_magic_speed' => 'M.Atk Spd',
             'attack_range' => 'Range',
             'attack_critical' => 'Crit',
+            'exp' => 'Exp',
+            'sp' => 'SP',
         ];
         $statsPrepared = [];
         foreach ($mainStats as $code => $label) {

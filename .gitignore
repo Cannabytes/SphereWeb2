@@ -17,5 +17,5 @@ todo.txt
 errors.log
 patch/*
 *~
-.vscode/sftp.json
 .lh/
+.vscode/

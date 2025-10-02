@@ -347,38 +347,37 @@
                                     <div class="position-relative ">
                                         <div class="position-absolute w-100 h-100 bg-dark opacity-25 border  rounded"></div>
                                         <div class="position-relative">
-                                            {% if isForumSettingEnabled(user.getId(), 'showPvPPK') %}
-
-                                            {# pvp pk all count #}
+                                            {# Считаем суммарные значения всегда (онлайн время нужно показывать даже если PvP/PK скрыты) #}
                                             {% set onlineTime = 0 %}
                                             {% set pvp = 0 %}
                                             {% set pk = 0 %}
                                             {% for i, account in getUser(post.getUserId()).getAccounts() %}
-                                            {% for character in account.getCharacters() %}
-                                            {% set pvp = pvp + character.getPvp() %}
-                                            {% set pk = pk + character.getPk() %}
-                                            {% set onlineTime = onlineTime + character.getTimeInGame() %}
+                                                {% for character in account.getCharacters() %}
+                                                    {% set pvp = pvp + character.getPvp() %}
+                                                    {% set pk = pk + character.getPk() %}
+                                                    {% set onlineTime = onlineTime + character.getTimeInGame() %}
+                                                {% endfor %}
                                             {% endfor %}
-                                            {% endfor %}
 
-                                            <div class="d-flex align-items-center  bg-opacity-10">
-                                                <div class="text-center flex-grow-1">
-                                                    <div  class="text-{{clan.getTextColor()}} fw-bold">{{pvp}} <small class="text-{{clan.getTextColor()}}" >PvP</small></div>
-
+                                            {# Отображаем PvP/PK только если включено в настройках пользователя #}
+                                            {% if isForumSettingEnabled(user.getId(), 'showPvPPK') %}
+                                                <div class="d-flex align-items-center  bg-opacity-10">
+                                                    <div class="text-center flex-grow-1">
+                                                        <div class="text-{{clan.getTextColor()}} fw-bold">{{pvp}} <small class="text-{{clan.getTextColor()}}" >PvP</small></div>
+                                                    </div>
+                                                    <div class="text-center  flex-grow-1">
+                                                        <div class="text-{{clan.getTextColor()}} fw-bold">{{pk}} <small class="text-{{clan.getTextColor()}}">PK</small></div>
+                                                    </div>
                                                 </div>
-                                                <div class="text-center  flex-grow-1">
-                                                    <div class="text-{{clan.getTextColor()}} fw-bold">{{pk}} <small class="text-{{clan.getTextColor()}}">PK</small></div>
-                                                </div>
-                                            </div>
-
-
                                             {% endif %}
+
+                                            {# Время в игре отображаем независимо от показа PvP/PK, но только если включена соответствующая настройка #}
                                             {% if isForumSettingEnabled(user.getId(), 'showGameTime') %}
-                                            <div class="text-center bg-opacity-10">
-                                   <span class="text-{{clan.getTextColor()}} fw-semibold">
-                                       {{timeHasPassed(onlineTime,true)}}
-                                   </span>
-                                            </div>
+                                                <div class="text-center bg-opacity-10">
+                                                    <span class="text-{{clan.getTextColor()}} fw-semibold">
+                                                        {{timeHasPassed(onlineTime,true)}}
+                                                    </span>
+                                                </div>
                                             {% endif %}
 
                                             <!-- Characters -->
@@ -620,10 +619,14 @@
                                 {% set pvp = 0 %}
                                 {% set pk = 0 %}
 
-                                {% set character = getUser(post.getUserId()).getAccounts() %}
-                                {% set pvp = pvp + character.getPvp() %}
-                                {% set pk = pk + character.getPk() %}
-                                {% set onlineTime = onlineTime + character.getTimeInGame() %}
+                                {# Правильно итерируем аккаунты и персонажей, чтобы корректно суммировать значения #}
+                                {% for ai, account in getUser(post.getUserId()).getAccounts() %}
+                                    {% for ci, character in account.getCharacters() %}
+                                        {% set pvp = pvp + character.getPvp() %}
+                                        {% set pk = pk + character.getPk() %}
+                                        {% set onlineTime = onlineTime + character.getTimeInGame() %}
+                                    {% endfor %}
+                                {% endfor %}
 
 
                                 <div class="card-body p-0">

@@ -822,6 +822,12 @@ class options
             'client_list_default' => client::all(),
             'timezone_list_default' => timezone::all(),
         ]);
+        $stylesPath = fileSys::localdir(tpl::templatePath("styles.php"), true);
+        if(file_exists($stylesPath)){
+           require $stylesPath;
+           tpl::addVar(['stylesConfig' => $stylesConfig ?? null]);
+        }
+
         tpl::display("/admin/setting.html");
     }
 

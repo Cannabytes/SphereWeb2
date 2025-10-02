@@ -3,7 +3,8 @@
 
 namespace Ofey\Logan22\model\config;
 
-use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\component\fileSys\fileSys;
+use Ofey\Logan22\template\tpl;
 
 class palette
 {
@@ -19,8 +20,8 @@ class palette
     public ?string $toggled = "detached-close";
     public string $pageStyle = "regular";
     public string $width = "fullwidth";
-    public string $style = "";
-
+    public string $style = ""; 
+    public string $styleFile = "styles.css"; 
 
     public function __construct($setting)
     {
@@ -37,6 +38,8 @@ class palette
             $this->pageStyle = $setting['page-style'] ?? "regular";
             $this->width = $setting['width'] ?? "fullwidth";
             $this->style = $setting['style'] ?? "";
+            $this->styleFile = $setting['styleFile'] ?? "styles.css";
+            
     }
 
     public function getAll(): array
@@ -50,17 +53,36 @@ class palette
             'data-menu-position' => $this->menuPosition,
             'data-nav-style' => $this->navStyle,
             'data-bg-img' => $this->bgImg,
-//            'data-vertical-style' => $this->verticalStyle,
             'data-toggled' => $this->toggled,
             'data-page-style' => $this->pageStyle,
             'data-width' => $this->width,
-            'style' => $this->style,
+            'style' => $this->style, 
+            'styleFile' => $this->styleFile, 
         ];
+    }
+
+    public function getStyleFileConfig() {
+        $stylesPath = fileSys::localdir(tpl::templatePath("styles.php"), true);
+        if(file_exists($stylesPath)){
+           require $stylesPath;
+            // Нужно пройтись по всем стилям и найти тот, который соответствует $this->styleFile
+            foreach ($stylesConfig as $style) {
+                if ($style['name'] === $this->styleFile) {
+                    return $style; 
+                }
+            }
+        }
+        return false;
     }
 
     public function getStyle(): string
     {
         return $this->style;
+    }
+
+    public function styleFile(): string
+    {
+        return $this->styleFile;
     }
 
 

@@ -514,7 +514,9 @@ class forum
     private function updateCategoryPostCount(int $categoryId, bool $addIncrementTopic = false): void
     {
         $postCount = sql::getValue(
-            "SELECT COUNT(*) FROM `forum_threads` WHERE `category_id` = ?",
+            "SELECT COUNT(p.id) FROM `forum_posts` p
+             JOIN `forum_threads` t ON p.thread_id = t.id
+             WHERE t.category_id = ?",
             [$categoryId]
         );
 
