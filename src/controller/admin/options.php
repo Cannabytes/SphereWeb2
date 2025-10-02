@@ -105,7 +105,7 @@ class options
         $cached_ip = $_POST['cached_ip'] ?? null;
         $cached_port = $_POST['cached_port'] ?? null;
         $cached_WebAdmin = $_POST['cached_WebAdmin'] ?? null;
-        $showOnlineInStatusServer = $_POST['showOnlineInStatusServer'] ?? true;
+        $showOnlineInStatusServer = $_POST['showOnlineInStatusServer'] ?? false;
 
         if($platform == "pts"){
             if (!filter_var($cached_ip, FILTER_VALIDATE_IP)) {
@@ -415,7 +415,7 @@ class options
         $maxOnline = $_POST['max_online'] ?? 200;
         $timezone = $_POST['timezone_server'] ?? "Europe/Kyiv";
         $resetHWID = $_POST['resetHWID'] ?? false;
-        $showOnlineInStatusServer = $_POST['showOnlineInStatusServer'] ?? true;
+        $showOnlineInStatusServer = $_POST['showOnlineInStatusServer'] ?? false;
 
         if (!\Ofey\Logan22\model\server\server::getServer($serverId)) {
             board::error("Server not find");
