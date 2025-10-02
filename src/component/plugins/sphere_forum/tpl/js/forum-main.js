@@ -1,10 +1,9 @@
-// forum-main.js
 const ForumMain = (function () {
-    // Приватные переменные
     let quill = null;
     let pond = null;
     let replyToId = null;
     let originalPosition = null;
+    let answerPanelPlaceholder = null;
     let currentReplyButton = null;
 
     async function handleSaveEditMessage() {
@@ -16,7 +15,6 @@ const ForumMain = (function () {
                 return;
             }
 
-            // Получаем данные опроса через модуль ForumPolls
             const pollData = window.ForumPolls ? ForumPolls.collectPollData() : null;
 
             const response = await AjaxSend("/forum/post/edit", "POST", {
@@ -37,6 +35,7 @@ const ForumMain = (function () {
         initializeDropdowns();
         initializeEventListeners();
         initializeEditor();
+        initializeAnswerPanelPlaceholder();
         initializeModals();
         initializePoll();
         initializeTooltips();
@@ -54,6 +53,14 @@ const ForumMain = (function () {
     function initializeEditor() {
         if (document.querySelector('#message-post')) {
             quill = ForumEditor.initialize('#message-post');
+        }
+    }
+
+    function initializeAnswerPanelPlaceholder() {
+        const answerPanel = $('.answer-panel');
+        if (answerPanel.length && !answerPanelPlaceholder) {
+            answerPanelPlaceholder = $('<div class="answer-panel-placeholder" style="display:none;"></div>');
+            answerPanel.after(answerPanelPlaceholder);
         }
     }
 
@@ -339,14 +346,20 @@ const ForumMain = (function () {
     }
 
     function returnPanelToOriginalPosition(answerPanel) {
-        if (!originalPosition) return;
+        if (!answerPanel || !answerPanel.length) {
+            return;
+        }
 
         clearPreviousReplyState();
 
-        if (originalPosition.nextSibling) {
-            answerPanel.insertBefore(originalPosition.nextSibling);
-        } else {
-            originalPosition.parent.append(answerPanel);
+        if (answerPanelPlaceholder && answerPanelPlaceholder.length) {
+            answerPanelPlaceholder.after(answerPanel);
+        } else if (originalPosition) {
+            if (originalPosition.nextSibling) {
+                answerPanel.insertBefore(originalPosition.nextSibling);
+            } else if (originalPosition.parent && originalPosition.parent.length) {
+                originalPosition.parent.append(answerPanel);
+            }
         }
 
         answerPanel.removeClass('border-bottom');
@@ -381,14 +394,24 @@ const ForumMain = (function () {
         if (!container.hasClass('list-group-item')) {
             container.addClass('list-group-item list-group-item-light');
         }
-
         const likesHtml = likes.map(like => `
-            <span class="avatar avatar-sm m-2 like-item like-item-new">
-                <img src="${like.like_image}" alt="img" class="like-image">
+            <span class="avatar avatar-sm m-2 like-item like-item-new" data-bs-toggle="tooltip" title="${like.user_name}">
+                <img src="${like.like_image}" alt="${like.user_name}" class="like-image">
             </span>
         `).join('');
 
         container.html(likesHtml);
+
+        // Инициализируем тултипы для новых элементов
+        try {
+            const tooltipEls = container.find('[data-bs-toggle="tooltip"]');
+            tooltipEls.each(function () {
+                // eslint-disable-next-line no-undef
+                new bootstrap.Tooltip(this);
+            });
+        } catch (e) {
+            console.warn('Tooltip init error for likes:', e);
+        }
     }
 
     function updateSubscriptionButton($btn, wasSubscribed) {

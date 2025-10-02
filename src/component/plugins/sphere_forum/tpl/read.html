@@ -500,16 +500,22 @@
 
                                 {% endif %}
 
-                                {% set likes = getPostLikes(post.getId()) %}
-                                <div id="post-buff-{{post.getId()}}"
-                                     data-post-id="{{post.getId()}}"
-                                     class="avatar-list-stacked post-likes {% if likes|length > 0 %}list-group-item list-group-item-light{% endif %}">
-                                    {% for like in likes %}
-                                    <span class="avatar avatar-sm m-2">
-                                    <img src="{{like.like_image}}" alt="img">
-                                </span>
-                                    {% endfor %}
-                                </div>
+                          {% set likes = getPostLikes(post.getId()) %}
+                          {# Собираем массив имён, кто ставил лайк #}
+                          {% set likeNames = [] %}
+                          {% for l in likes %}
+                             {% set likeNames = likeNames|merge([l.user_name]) %}
+                          {% endfor %}
+                          <div id="post-buff-{{post.getId()}}"
+                              data-post-id="{{post.getId()}}"
+                              class="avatar-list-stacked post-likes {% if likes|length > 0 %}list-group-item list-group-item-light{% endif %}"
+                              {% if likeNames|length > 0 %}data-bs-toggle="tooltip" title="{{ likeNames|join(', ') }}"{% endif %}>
+                             {% for like in likes %}
+                             <span class="avatar avatar-sm m-2" data-bs-toggle="tooltip" title="{{ like.user_name }}">
+                                 <img src="{{like.like_image}}" alt="{{ like.user_name }}">
+                             </span>
+                             {% endfor %}
+                          </div>
 
                                 {% if getUser().isAuth() %}
                                 <div class="post-action">
@@ -1109,4 +1115,20 @@
 <script src="{{template_plugin}}/tpl/js/forum-posts.js?v=0.0.0.4"></script>
 <script src="{{template_plugin}}/tpl/js/forum-moderation.js?v=0.0.0.5"></script>
 <script src="{{template_plugin}}/tpl/js/forum-main.js?v=0.0.0.5"></script>
+
+<script>
+    // Инициализация тултипов Bootstrap для элементов с data-bs-toggle="tooltip"
+    document.addEventListener('DOMContentLoaded', function () {
+        try {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function (el) {
+                // eslint-disable-next-line no-undef
+                new bootstrap.Tooltip(el);
+            });
+        } catch (e) {
+            // Если bootstrap не доступен или что-то пошло не так, просто игнорируем
+            console.warn('Tooltip init error:', e);
+        }
+    });
+</script>
 {% endblock %}
