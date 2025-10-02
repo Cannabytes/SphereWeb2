@@ -50,7 +50,7 @@ class serverModel
     // Есть ли данный сервер на сервере сферы
     private bool $resetHWID = false;
     private ?bool $resetItemsToWarehouse = false;
-    private ?bool $showOnlyStatus = false;
+    private ?bool $showOnlineInStatusServer = true;
 
     private ?bool $isSphereServer = null;
 
@@ -86,7 +86,7 @@ class serverModel
         $this->maxOnline = filter_var($server['maxOnline'] ?? 200, FILTER_VALIDATE_INT);
         $this->resetHWID = filter_var($server['resetHWID'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->resetItemsToWarehouse = filter_var($server['resetItemsToWarehouse'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $this->showOnlyStatus = filter_var($server['showOnlyStatus'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->showOnlineInStatusServer = filter_var($server['showOnlineInStatusServer'] ?? true, FILTER_VALIDATE_BOOLEAN);
         if ($server_data) {
             foreach ($server_data as $data) {
                 $this->server_data[] = new serverDataModel($data);
@@ -192,9 +192,9 @@ class serverModel
         return $this->resetItemsToWarehouse;
     }
 
-    public function isShowOnlyStatus(): bool
+    public function ShowOnlineInStatusServer(): bool
     {
-        return $this->showOnlyStatus;
+        return $this->showOnlineInStatusServer;
     }
 
     public function isDefault(): ?bool

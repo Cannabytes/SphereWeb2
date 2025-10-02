@@ -105,7 +105,7 @@ class options
         $cached_ip = $_POST['cached_ip'] ?? null;
         $cached_port = $_POST['cached_port'] ?? null;
         $cached_WebAdmin = $_POST['cached_WebAdmin'] ?? null;
-        $showOnlyStatus = $_POST['showOnlyStatus'] ?? false;
+        $showOnlineInStatusServer = $_POST['showOnlineInStatusServer'] ?? true;
 
         if($platform == "pts"){
             if (!filter_var($cached_ip, FILTER_VALIDATE_IP)) {
@@ -197,7 +197,7 @@ class options
                 "timezone" => $timezone,
                 "resetHWID" => $resetHWID,
                 "platform" => $platform,
-                "showOnlyStatus" => $showOnlyStatus,
+                "showOnlineInStatusServer" => $showOnlineInStatusServer,
             ];
 
             sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
@@ -415,7 +415,7 @@ class options
         $maxOnline = $_POST['max_online'] ?? 200;
         $timezone = $_POST['timezone_server'] ?? "Europe/Kyiv";
         $resetHWID = $_POST['resetHWID'] ?? false;
-        $showOnlyStatus = $_POST['showOnlyStatus'] ?? false;
+        $showOnlineInStatusServer = $_POST['showOnlineInStatusServer'] ?? true;
 
         if (!\Ofey\Logan22\model\server\server::getServer($serverId)) {
             board::error("Server not find");
@@ -452,7 +452,7 @@ class options
             "default" => $server->isDefault(),
             'position' => $server->getPosition(),
             'platform' => $platform,
-            'showOnlyStatus' => $showOnlyStatus,
+            'showOnlineInStatusServer' => $showOnlineInStatusServer,
         ];
 
         $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

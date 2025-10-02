@@ -55,7 +55,9 @@
             {% endif %}
 
 
- {% if SSL %}
+{% set daysLeft = SSL.DaysLeft|default(0) %}
+{% if SSL and (not SSL.IsValid or daysLeft <= 30) %}
+
 <div class="card custom-card mt-2">
     <div class="card-header bg-light p-2 d-flex justify-content-between align-items-center">
         <h6 class="card-title mb-0">
@@ -68,7 +70,6 @@
     </div>
     <div class="card-body p-2">
         {% if SSL.IsValid %}
-            {% set daysLeft = SSL.DaysLeft|default(0) %}
 
             {% if daysLeft < 30 %}
                 <div class="alert alert-warning py-1 px-2 mb-2 small">
@@ -130,8 +131,8 @@
         {% endif %}
         <p class="small mb-0">{{ phrase('ssl_certificate_desc') }}</p>
     </div>
-</div>
-{% else %}
+    </div>
+{% elseif not SSL %}
 <div class="card custom-card mt-2">
     <div class="card-header bg-light p-2">
         <h6 class="card-title mb-0">
