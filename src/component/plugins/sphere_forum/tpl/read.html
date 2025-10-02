@@ -519,13 +519,13 @@
                                                 class="ri-time-fill"></i> {{post.getCreatedAt()|date("F d, Y H:i:s")}}
                                         </button>
 
-                                        {% if getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_delete_posts') %}
-
                                         <button type="button" class="btn  btn-sm text-muted reply-button"
                                                 data-post-id="{{post.getId()}}"
                                                 data-author-name="{{getUser(post.getUserId()).getName()}}">
                                             <i class="ri-reply-line"></i> {{phrase('reply')}}
                                         </button>
+
+                                        {% if getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_delete_posts') %}
 
                                         <a href="/forum/post/edit/{{post.getId()}}/page/{{currentPage}}"
                                            class="btn  btn-sm text-muted"><i
