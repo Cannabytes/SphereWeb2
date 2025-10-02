@@ -567,7 +567,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editLoginDbModalLabel">Редактировать Login Server DB</h5>
+                <h5 class="modal-title" id="editLoginDbModalLabel">Редактировать Login Server DB [<span class="platformType"></span>]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -615,7 +615,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editGameDbModalLabel">Редактировать Game Server DB</h5>
+                <h5 class="modal-title" id="editGameDbModalLabel">Редактировать Game Server DB [<span class="platformType"></span>]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -972,6 +972,9 @@
         $('#edit_login_password').val(''); // Пароль не заполняем из соображений безопасности
         $('#edit_login_name').empty().prop('disabled', true); // Очищаем select и делаем неактивным
         $('#saveEditLoginDb').prop('disabled', true); // Кнопка Сохранить неактивна
+
+        // Устанавливаем платформу
+        $('.platformType').text( $("#platform").val().toUpperCase() );
     });
 
     // Обработчик открытия модального окна для редактирования Game DB
@@ -990,6 +993,9 @@
         $('#edit_game_password').val(''); // Пароль не заполняем из соображений безопасности
         $('#edit_game_name').empty().prop('disabled', true); // Очищаем select и делаем неактивным
         $('#saveEditGameDb').prop('disabled', true); // Кнопка Сохранить неактивна
+
+        // Устанавливаем платформу
+        $('.platformType').text( $("#platform").val().toUpperCase() );
     });
 
     // Обработчик кнопки "Выбрать БД" для редактирования Login DB
@@ -1002,6 +1008,7 @@
                 "port": $("#edit_login_port").val(),
                 "user": $("#edit_login_user").val(),
                 "password": $("#edit_login_password").val(),
+                "platform": $("#platform").val(),
             },
             dataType: 'json',
             success: function (response) {
@@ -1054,6 +1061,7 @@
                 "port": $("#edit_game_port").val(),
                 "user": $("#edit_game_user").val(),
                 "password": $("#edit_game_password").val(),
+                "platform": $("#platform").val(),
             },
             dataType: 'json',
             success: function (response) {
