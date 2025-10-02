@@ -1,6 +1,3 @@
-// forum-editor.js v1
-
-// Глобальный объект для управления форумным редактором
 window.ForumEditor = (function() {
     let quill = null;
     let uploadedAttachments = [];
@@ -8,9 +5,8 @@ window.ForumEditor = (function() {
     let lastInsertPosition = null;
     let pond = null;
     let lightbox = null;
-    let isUploadInProgress = false; // Добавляем флаг для отслеживания загрузки
-
-    // Конфигурация панели инструментов Quill
+    let isUploadInProgress = false;  
+    
     const toolbarOptions = [
         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
         [{ 'font': [] }],
@@ -23,7 +19,7 @@ window.ForumEditor = (function() {
         ['clean']
     ];
 
-    // Инициализация кастомных форматов Quill
+
     function initializeQuillCustomFormats() {
         const Block = Quill.import('blots/block');
         const Inline = Quill.import('blots/inline');
@@ -324,39 +320,30 @@ window.ForumEditor = (function() {
 
     // Обработчик вставки изображений
     function handleImagePaste(node, delta) {
-        return new Delta(); // Игнорируем прямую вставку изображений
+        return new Delta();
     }
 
-    // Валидация контента
     function validateContent(content = null) {
-        // Если контент не передан, получаем его из редактора
         if (content === null && quill) {
             content = quill.root.innerHTML;
         }
 
-        // Если нет контента и нет загруженных изображений/вложений — ошибка
         if (!content) {
             if (uploadedAttachments.length > 0 || uploadedImages.length > 0) {
-                return null; // считаем, что сообщение есть за счёт вложений
+                return null; 
             }
             return "Сообщение не может быть пустым";
         }
 
-        // Очищаем HTML теги и лишние пробелы
         const plainText = content.replace(/<[^>]*>/g, '').trim();
 
-        // Если в тексте нет видимого текста, но есть загруженные вложения/изображения или <img> теги — разрешаем
         if (plainText.length < 1) {
-            // проверяем массивы загруженных вложений/изображений
             if (uploadedAttachments.length > 0 || uploadedImages.length > 0) {
                 return null;
             }
-
-            // Дополнительная страховка: если в HTML есть теги <img>, считаем что есть содержание
             if (/<img\b[^>]*>/i.test(content)) {
                 return null;
             }
-
             return "Сообщение слишком короткое. Минимальная длина - 1 символ.";
         }
 
