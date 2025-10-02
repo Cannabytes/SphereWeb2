@@ -24,9 +24,7 @@
         </svg>
       </div>
       <ul class="main-menu">
-
-
-
+ 
         <li class="slide glow-element {{classColorMenu()}}">
           <a href="/main" class="side-menu__item">
             <i class="fe fe-home side-menu__icon"></i>
@@ -225,6 +223,19 @@
 
             <div class="d-flex align-items-center justify-content-center flex-wrap">
               <div class="row pt-2 pb-1 ">
+                
+             {% if getServer().isShowOnlyStatus() %}
+
+               <div class="col-12 ">
+                  {% if server.getStatus().getGameServer() %}
+                  <div class="fs-1 fw-semibold text-success">ON</div>
+                  {% else %}
+                  <div class="fs-3 fw-semibold text-danger">OFF</div>
+                  {% endif %}
+                  <div class="fs-sm fw-semibold text-uppercase text-muted">{{phrase('status')}}</div>
+                </div>
+
+             {% else %}
 
                 <div class="col-6 border-end">
                   {% if server.getStatus().getGameServer() %}
@@ -235,11 +246,14 @@
                   <div class="fs-sm fw-semibold text-uppercase text-muted">{{phrase('status')}}</div>
                 </div>
 
+                
                 <div class="col-6">
                   <div class="fs-3 fw-semibold">{% if server.getStatus().getOnline() >= 10000 %}∞{% else
                     %}{{server.getStatus().getOnline}}{% endif %}</div>
                   <div class="fs-sm fw-semibold text-uppercase text-muted">Online</div>
                 </div>
+
+              {% endif %}
 
                 <div class="fw-semibold text-start text-center">
                   {{server.getName()}}

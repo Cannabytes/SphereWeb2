@@ -105,6 +105,7 @@ class options
         $cached_ip = $_POST['cached_ip'] ?? null;
         $cached_port = $_POST['cached_port'] ?? null;
         $cached_WebAdmin = $_POST['cached_WebAdmin'] ?? null;
+        $showOnlyStatus = $_POST['showOnlyStatus'] ?? false;
 
         if($platform == "pts"){
             if (!filter_var($cached_ip, FILTER_VALIDATE_IP)) {
@@ -196,6 +197,7 @@ class options
                 "timezone" => $timezone,
                 "resetHWID" => $resetHWID,
                 "platform" => $platform,
+                "showOnlyStatus" => $showOnlyStatus,
             ];
 
             sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
@@ -250,14 +252,17 @@ class options
         $server = \Ofey\Logan22\model\server\server::getServer($server_id);
         $database = \Ofey\Logan22\component\sphere\server::send(type::GET_DATABASE_LIST)->show()->getResponse();
         $cached = [];
+
         if($server->getPlatform() == "pts"){
-            $cached = \Ofey\Logan22\component\sphere\server::send(type::GET_CACHED, ["id" => $server->getId()])->show()->getResponse();
+            $cached = \Ofey\Logan22\component\sphere\server::send(type::GET_CACHED, ["id" => $server->getId()])->show(false)->getResponse();
+            if(isset($cached['error'])){
+                $cached = [];
+            }
         }
 
         $defaultDB = $database['defaultDB'];
         $gameServers = $database['gameservers'];
         $loginServers = $database['loginservers'];
-
 
         foreach ($defaultDB as $db) {
             if ($db['id'] == $server->getId()) {
@@ -410,6 +415,7 @@ class options
         $maxOnline = $_POST['max_online'] ?? 200;
         $timezone = $_POST['timezone_server'] ?? "Europe/Kyiv";
         $resetHWID = $_POST['resetHWID'] ?? false;
+        $showOnlyStatus = $_POST['showOnlyStatus'] ?? false;
 
         if (!\Ofey\Logan22\model\server\server::getServer($serverId)) {
             board::error("Server not find");
@@ -446,6 +452,7 @@ class options
             "default" => $server->isDefault(),
             'position' => $server->getPosition(),
             'platform' => $platform,
+            'showOnlyStatus' => $showOnlyStatus,
         ];
 
         $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
