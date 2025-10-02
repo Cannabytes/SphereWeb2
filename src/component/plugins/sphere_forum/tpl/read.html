@@ -501,15 +501,9 @@
                                 {% endif %}
 
                           {% set likes = getPostLikes(post.getId()) %}
-                          {# Собираем массив имён, кто ставил лайк #}
-                          {% set likeNames = [] %}
-                          {% for l in likes %}
-                             {% set likeNames = likeNames|merge([l.user_name]) %}
-                          {% endfor %}
                           <div id="post-buff-{{post.getId()}}"
                               data-post-id="{{post.getId()}}"
-                              class="avatar-list-stacked post-likes {% if likes|length > 0 %}list-group-item list-group-item-light{% endif %}"
-                              {% if likeNames|length > 0 %}data-bs-toggle="tooltip" title="{{ likeNames|join(', ') }}"{% endif %}>
+                              class="avatar-list-stacked post-likes {% if likes|length > 0 %}list-group-item list-group-item-light{% endif %}">
                              {% for like in likes %}
                              <span class="avatar avatar-sm m-2" data-bs-toggle="tooltip" title="{{ like.user_name }}">
                                  <img src="{{like.like_image}}" alt="{{ like.user_name }}">
