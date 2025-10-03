@@ -48,6 +48,7 @@ class items_increase
             'items' => $items['items'],
             'serverId' => $serverId,
             'getItems' => $series,
+            'chronicle' => server::getServer($serverId)?->getKnowledgeBase(),
         ]);
         tpl::displayPlugin("/items_increase/tpl/show.html");
     }

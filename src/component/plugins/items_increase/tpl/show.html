@@ -22,7 +22,7 @@
                             <button type="button" class="btn btn-primary input-group-text" id="itemAdd">Добавить</button>
                         </div>
                         {% for id in items %}
-                        {% set itemInfo = get_item_info(id) %}
+                        {% set itemInfo = get_item_info(id, chronicle) %}
 
                         <div class="d-sm-flex d-block align-items-top mt-3">
                             <div class="d-flex flex-fill align-items-center">
