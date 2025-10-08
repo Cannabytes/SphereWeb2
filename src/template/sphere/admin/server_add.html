@@ -571,34 +571,72 @@
     const collectionInfo = JSON.parse('{{collections|raw}}');
     const collectionInfoPTS = JSON.parse('{{collectionsPTS|raw}}');
 
+    const allChronicleOptionsHtml = $('#version_client').html();
+
+    function updateChronicleOptionsForPlatform(platform) {
+        const currentCollectionInfo = platform === 'pts' ? collectionInfoPTS : collectionInfo;
+
+        const $temp = $('<select>' + allChronicleOptionsHtml + '</select>');
+
+        $temp.find('option').each(function () {
+            const $opt = $(this);
+            let protocolsStr = $opt.data('protocol');
+
+            let protocols = [];
+            if (protocolsStr !== undefined && protocolsStr !== null) {
+                if (typeof protocolsStr === 'string') {
+                    try {
+                        const cleaned = protocolsStr.replace(/^[\[]+|[\]]+$/g, '');
+                        protocols = cleaned === '' ? [] : cleaned.split(',').map(s => Number(s.trim()));
+                    } catch (e) {
+                        protocols = [];
+                    }
+                } else if (Array.isArray(protocolsStr)) {
+                    protocols = protocolsStr.map(Number);
+                }
+            }
+
+            const hasBuilds = currentCollectionInfo.some(collection =>
+                collection.protocols && collection.protocols.some(p => protocols.includes(Number(p)))
+            );
+
+            if (!hasBuilds) {
+                $opt.remove();
+            }
+        });
+
+        if ($temp.find('option').length === 0) {
+            $('#version_client').html('<option value="" disabled selected>Нет доступных хроник</option>');
+            return;
+        }
+
+        $('#version_client').html($temp.html());
+    }
+
 
     $(document).ready(function() {
 
         $('#platform').on('change', handlePlatformChange);
+
+        updateChronicleOptionsForPlatform($('#platform').val());
+
         handlePlatformChange.call($('#platform'));
 
-        // Функция для проверки пересечения массивов
         function hasCommonElement(arr1, arr2) {
             return arr1.some(item => arr2.includes(Number(item)));
         }
 
-        // Функция обновления списка сборок
         function updateCollections(selectedProtocols) {
-            // Очищаем текущий список
             $('#collection').empty();
 
-            // Определяем, какую коллекцию использовать
             const currentCollectionInfo = $('#platform').val() === 'pts' ? collectionInfoPTS : collectionInfo;
 
-            // Преобразуем строку протоколов в массив чисел
             const protocols = selectedProtocols.map(Number);
 
-            // Фильтруем доступные сборки
             const availableCollections = currentCollectionInfo.filter(collection =>
                   hasCommonElement(protocols, collection.protocols)
             );
 
-            // Добавляем опции в select
             if (availableCollections.length > 0) {
                 availableCollections.forEach(collection => {
                     $('#collection').append(
@@ -609,7 +647,6 @@
                     );
                 });
             } else {
-                // Если нет доступных сборок, добавляем placeholder
                 $('#collection').append(
                       $('<option>', {
                           value: '',
@@ -621,27 +658,50 @@
             }
         }
 
-        // Обработчик изменения выбранной хроники
         $('#version_client').on('change', function() {
             const selectedOption = $(this).find('option:selected');
             const protocolsStr = selectedOption.data('protocol');
 
-            // Проверяем, является ли значение строкой и преобразуем его в массив
-            const protocols = typeof protocolsStr === 'string'
-                  ? JSON.parse(protocolsStr.replace(/[\[\]]/g, '').split(','))
-                  : protocolsStr;
+            let protocols = [];
+            if (protocolsStr !== undefined && protocolsStr !== null && protocolsStr !== '') {
+                if (typeof protocolsStr === 'string') {
+                    try {
+                        const cleaned = protocolsStr.replace(/^[\[]+|[\]]+$/g, '');
+                        protocols = cleaned === '' ? [] : cleaned.split(',').map(s => Number(s.trim()));
+                    } catch (e) {
+                        protocols = [];
+                    }
+                } else if (Array.isArray(protocolsStr)) {
+                    protocols = protocolsStr.map(Number);
+                }
+            }
 
             updateCollections(protocols);
         });
 
         function handlePlatformChange() {
+            const platformVal = $(this).val();
+
+            updateChronicleOptionsForPlatform(platformVal);
+
             const selectedOption = $('#version_client').find('option:selected');
             const protocolsStr = selectedOption.data('protocol');
-            const protocols = typeof protocolsStr === 'string'
-                  ? JSON.parse(protocolsStr.replace(/[\[\]]/g, '').split(','))
-                  : protocolsStr;
 
-            if($(this).val() === 'pts') {
+            let protocols = [];
+            if (protocolsStr !== undefined && protocolsStr !== null && protocolsStr !== '') {
+                if (typeof protocolsStr === 'string') {
+                    try {
+                        const cleaned = protocolsStr.replace(/^[\[]+|[\]]+$/g, '');
+                        protocols = cleaned === '' ? [] : cleaned.split(',').map(s => Number(s.trim()));
+                    } catch (e) {
+                        protocols = [];
+                    }
+                } else if (Array.isArray(protocolsStr)) {
+                    protocols = protocolsStr.map(Number);
+                }
+            }
+
+            if(platformVal === 'pts') {
                 $("#login_port").val(1433);
                 $("#game_port").val(1433);
                 $(".pts_cached_data").removeClass("d-none")
@@ -655,7 +715,6 @@
         }
 
 
-        // Инициализация при загрузке страницы
         const initialProtocols = $('#version_client option:selected').data('protocol');
         if (initialProtocols) {
             const protocols = typeof initialProtocols === 'string'
@@ -668,7 +727,6 @@
 
 
 
-    //Добавление логин-сервера
     $("#add_new_login_server").on("click", function () {
         let host = $("#login_host").val();
         let name = $("#login_name").val();
@@ -686,7 +744,6 @@
                   console.log("Server response:", response);
 
                   if (response && response.success === true) {
-                      // Формируем разметку с использованием response.id
                       let newLoginDB = `
                 <div class="form-check form-switch mb-2">
                     <input class="form-check-input" type="radio"
@@ -696,16 +753,9 @@
                         ${host}@${name}
                     </label>
                 </div>`;
-
-                      // Убираем выбор с других радиокнопок
                       $("#logindblist input[type='radio']").prop("checked", false);
-
-                      // Добавляем новую разметку в div с id="logindblist"
                       $("#logindblist").append(newLoginDB);
-
-                      // Ставим галочку для нового радио
                       $(`#logindb_${response.id}`).prop("checked", true);
-
                       $('#add_new_login_server_panel').collapse('hide')
                   }
               })
@@ -731,7 +781,6 @@
                   console.log("Server response:", response);
 
                   if (response && response.success === true) {
-                      // Формируем разметку с использованием response.id
                       let newGameDB = `
                 <div class="form-check form-switch mb-2">
                     <input class="form-check-input" type="radio"
@@ -741,17 +790,10 @@
                         ${host}@${name}
                     </label>
                 </div>`;
-
-                      // Снимаем все галочки
                       $("#gamedblist input[type='checkbox']").prop("checked", false);
-
                       $("#gamedblist").append(newGameDB);
-
-                      // Ставим галочку для нового чекбокса
                       $(`#gamedb_${response.id}`).prop("checked", true);
-
                       $('#add_new_game_server_panel').collapse('hide')
-
                   }
               })
               .catch(function (error) {
