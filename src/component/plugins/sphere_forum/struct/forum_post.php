@@ -21,6 +21,7 @@ class forum_post
     private ?array $replyData = null;
 
     public bool $hasUnread = false;
+    public bool $canView = true;
 
     public function __construct(array $message)
     {

@@ -182,8 +182,12 @@
 
                                         {% if not section.shouldHideLastTopic() and section.getLastReplyUserId() %}
                                                 <small class="d-flex flex-wrap align-items-center">
+                                                    {% if section.getLastThread() and section.getLastThread().canView %}
                                                     <a href="/forum/topic/{{ transliterateToEn( section.getLastThread().getTitle() ) }}.{{ section.getLastThread().getId() }}"
                                                        class="ms-1 me-1 text-break">  <i class='bx bx-right-arrow-alt'></i> {{ section.getLastThread().getTitle() }}</a>
+                                                    {% elseif section.getLastThread() %}
+                                                    <span class="ms-1 me-1 text-break text-muted"><i class='ri-lock-line me-1'></i> {{ section.getLastThread().getTitle() }}</span>
+                                                    {% endif %}
                                                     <span class="me-1">от</span>
                                                     <div class="d-inline-flex align-items-center flex-wrap">
                                                         <span class="avatar avatar-sm avatar-rounded me-1">
@@ -776,6 +780,7 @@
                 </span>
                                 </div>
                                 <div class="flex-fill overflow-hidden"> <!-- добавлен класс overflow-hidden -->
+                                    {% if lastMessage.canView %}
                                     <a href="/forum/topic/{{transliterateToEn(lastMessage.getTitle())}}.{{lastMessage.getThreadId()}}"
                                        class="text-primary ">
                                         <p class="{% if lastMessage.hasUnread %}fw-semibold{% endif %} mb-0 fs-14 text-break">
@@ -787,6 +792,12 @@
                                             {{lastMessage.getTitle()}}
                                         </p>
                                     </a>
+                                    {% else %}
+                                        <p class="{% if lastMessage.hasUnread %}fw-semibold{% endif %} mb-0 fs-14 text-break text-muted">
+                                            <i class="ri-lock-line me-1"></i>
+                                            {{lastMessage.getTitle()}}
+                                        </p>
+                                    {% endif %}
                                     <span class="fs-12">От <a href="javascript:void(0);"
                                                               class="font-weight-semibold text-primary">{{user.getName()}}</a> - {{lastMessage.getUpdatedAt() | date("d F - H:i")}}</span>
                                 </div>
@@ -805,6 +816,7 @@
                 </span>
                                 </div>
                                 <div class="flex-fill overflow-hidden">
+                                    {% if thread.canView %}
                                     <a href="/forum/topic/{{transliterateToEn(thread.title)}}.{{thread.id}}"
                                        class="text-primary">
                                         <p class="{% if thread.hasUnread %}fw-semibold{% endif %} mb-0 fs-14 text-break">
@@ -816,6 +828,12 @@
                                             {{thread.title}}
                                         </p>
                                     </a>
+                                    {% else %}
+                                        <p class="{% if thread.hasUnread %}fw-semibold{% endif %} mb-0 fs-14 text-break text-muted">
+                                            <i class="ri-lock-line me-1"></i>
+                                            {{thread.title}}
+                                        </p>
+                                    {% endif %}
                                     <span class="fs-12">
                     <a href="/forum/{{transliterateToEn(thread.category.name)}}.{{thread.category.id}}"
                        class="font-weight-semibold text-primary">{{thread.category.name}}</a>

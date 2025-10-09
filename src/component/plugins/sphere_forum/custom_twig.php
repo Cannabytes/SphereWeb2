@@ -7,6 +7,7 @@ use Ofey\Logan22\component\plugins\sphere_forum\struct\forum_category;
 use Ofey\Logan22\component\plugins\sphere_forum\struct\forum_post;
 use Ofey\Logan22\component\plugins\sphere_forum\struct\forum_thread;
 use Ofey\Logan22\component\plugins\sphere_forum\struct\ForumClan;
+use Ofey\Logan22\component\plugins\sphere_forum\struct\ForumModerator;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\user;
 
@@ -96,6 +97,7 @@ class custom_twig
             u.avatar as author_avatar,
             c.name as category_name,
             c.is_moderated,
+            c.can_view_topics,
             (SELECT COUNT(*) FROM forum_posts WHERE thread_id = t.id) as posts_count
         FROM forum_threads t
         JOIN users u ON t.user_id = u.id
@@ -135,6 +137,18 @@ class custom_twig
                 }
             }
 
+            // Проверяем права на просмотр темы
+            $canView = true;
+            if (!user::self()->isAdmin() && 
+                !ForumModerator::isUserModerator(user::self()->getId(), $thread['category_id'])) {
+                if (!(bool)$thread['can_view_topics']) {
+                    // Если пользователь не автор темы - нет прав на просмотр
+                    if ($thread['user_id'] !== user::self()->getId()) {
+                        $canView = false;
+                    }
+                }
+            }
+
             $threads[] = [
                 'id' => (int)$thread['id'],
                 'title' => $thread['title'],
@@ -145,6 +159,7 @@ class custom_twig
                 'is_closed' => (bool)$thread['is_closed'],
                 'is_pinned' => (bool)$thread['is_pinned'],
                 'hasUnread' => $hasUnread,
+                'canView' => $canView,
                 'author' => [
                     'id' => (int)$thread['user_id'],
                 ],
@@ -164,7 +179,11 @@ class custom_twig
 
     public function getLastMessagesForum(): array {
         $messagesRows = sql::getRows("
-        SELECT p.*, t.title AS thread_title 
+        SELECT p.*, 
+               t.title AS thread_title,
+               t.user_id AS thread_author_id,
+               c.id AS category_id,
+               c.can_view_topics
         FROM forum_posts p 
         JOIN forum_threads t ON p.thread_id = t.id 
         JOIN forum_categories c ON t.category_id = c.id 
@@ -203,6 +222,19 @@ class custom_twig
                 $post->hasUnread = false;
             }
 
+            // Проверяем права на просмотр темы
+            $canView = true;
+            if (!user::self()->isAdmin() && 
+                !ForumModerator::isUserModerator(user::self()->getId(), $message['category_id'])) {
+                if (!(bool)$message['can_view_topics']) {
+                    // Если пользователь не автор темы - нет прав на просмотр
+                    if ($message['thread_author_id'] !== user::self()->getId()) {
+                        $canView = false;
+                    }
+                }
+            }
+
+            $post->canView = $canView;
             $messages[] = $post;
         }
         return $messages;

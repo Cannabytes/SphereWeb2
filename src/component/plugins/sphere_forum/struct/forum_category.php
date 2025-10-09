@@ -197,7 +197,27 @@ class forum_category
         if (!$thread) {
             return $this->thread = false;
         }
-        return $this->thread = new forum_thread($thread);
+        
+        $threadObject = new forum_thread($thread);
+        
+        // Проверяем права на просмотр темы
+        $canView = true;
+        if (!\Ofey\Logan22\model\user\user::self()->isAdmin() && 
+            !\Ofey\Logan22\component\plugins\sphere_forum\struct\ForumModerator::isUserModerator(
+                \Ofey\Logan22\model\user\user::self()->getId(), 
+                $this->getId()
+            )) {
+            if (!$this->canViewTopics) {
+                // Если пользователь не автор темы - нет прав на просмотр
+                if ($thread['user_id'] !== \Ofey\Logan22\model\user\user::self()->getId()) {
+                    $canView = false;
+                }
+            }
+        }
+        
+        $threadObject->canView = $canView;
+        
+        return $this->thread = $threadObject;
     }
 
     public function getLastThreadId(): ?int

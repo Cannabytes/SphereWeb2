@@ -22,6 +22,7 @@ class forum_thread
     private bool $isClosed;
     private bool $isApproved;
     public bool $hasUnread = false;
+    public bool $canView = true;
     private ?int $poll_id = null;
 
     /**
