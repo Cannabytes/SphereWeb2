@@ -579,26 +579,52 @@
         <div class="card-body pb-0">
 
           {% if forum().isNotError() %}
-          <ul class="task-list">
-            {% for forum in forum().lastMessage() %}
-            <li class="d-sm-flex">
-              <div>
-                <i class="task-icon bg-primary"></i>
-                <h6 class="fw-semibold">{{forum.title}}<span
-                    class="text-muted fs-11 mx-2 fw-normal">{{forum.last_post_date|date('h:m:s d.m.Y')}}</span>
-                </h6>
-                <p class="text-muted fs-12 mb-0">
-                  <a href="javascript:void(0)" class="fw-semibold text-primary">
-                    <span class="avatar avatar-sm online me-2 avatar-rounded">
-                      <img src="{{forum.avatar}}" alt="img">
-                    </span> {{forum.username}}</a>:
-                  {{truncateWord(forum.message, 160)}}
-                </p>
-              </div>
-
-            </li>
-            {% endfor %}
-          </ul>
+            <div class="list-group">
+              {% if forum().getSort() == "threads" %}
+                {% for forum in forum().lastThreads() %}
+                  <a href="{{ forum.thread_url }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex align-items-center">
+                      <div>
+                        <span class="avatar cover-image avatar-sm bg-white text-default avatar-rounded me-2">
+                          <img src="{{ forum.avatar }}" alt="img" class="avatar-img">
+                        </span>
+                      </div>
+                      <div class="ms-2 w-100 d-flex justify-content-between align-items-center">
+                        <div>
+                          <span class="fw-semibold me-1">{{ forum.username }}</span>
+                            <span class="text-muted fs-12">:</span>
+                          <span class="text-truncate" >{{ forum.title }}</span>
+                        </div>
+                        <div class="text-muted fs-11 ms-3">{{ forum.last_post_date|date('h:m:s d.m.Y') }}</div>
+                      </div>
+                    </div>
+                  </a>
+                {% endfor %}
+              {% else %}
+                {% for forum in forum().lastMessage() %}
+                  <a href="{{ forum.thread_url|default('javascript:void(0)') }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex align-items-center">
+                      <div>
+                        <span class="avatar cover-image avatar-sm bg-white text-default avatar-rounded me-2">
+                          <img src="{{ forum.avatar }}" alt="img" class="avatar-img">
+                        </span>
+                      </div>
+                      <div class="ms-2 w-100">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div>
+                            <span class="fw-semibold me-1">{{ forum.username }}</span> 
+                            <span class="text-muted fs-12">:</span>
+                            <span class="text-truncate" >{{ forum.title }}</span>
+                          </div>
+                          <div class="text-muted fs-11 ms-3">{{ forum.last_post_date|date('h:m:s d.m.Y') }}</div>
+                        </div>
+                        <div class="text-muted fs-12 mt-1">{{ truncateWord(forum.message, 220) }}</div>
+                      </div>
+                    </div>
+                  </a>
+                {% endfor %}
+              {% endif %}
+            </div>
           {% else %}
           {{ forum().getMessageError() }}
           {% endif %}

@@ -1,0 +1,290 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{ phrase('xenforo_importer') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-body">
+                    <h4 class="mb-3 fw-semibold">
+                        <i class="bi bi-database-fill-down"></i>
+                        {{ phrase('xenforo_importer') }}
+                    </h4>
+
+                    <!-- Предупреждение -->
+                    <div class="alert alert-warning" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>{{ phrase('xenforo_warning') }}</strong>
+                        <br>
+                        <small>{{ phrase('xenforo_transaction_info') }}</small>
+                    </div>
+
+                    <div class="row gx-3">
+                        <!-- Connection form -->
+                        <div class="col-md-6">
+                            <div class="card custom-card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="bi bi-database-gear me-2"></i>{{ phrase('xenforo_db_connection') }}</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="connectionForm">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="host" class="form-label">{{ phrase('xenforo_host') }}</label>
+                                                <input type="text" class="form-control" id="host" name="host" value="localhost" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="port" class="form-label">{{ phrase('xenforo_port') }}</label>
+                                                <input type="number" class="form-control" id="port" name="port" value="3306" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="database" class="form-label">{{ phrase('xenforo_database') }}</label>
+                                            <input type="text" class="form-control" id="database" name="database" required>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="username" class="form-label">{{ phrase('xenforo_username') }}</label>
+                                                <input type="text" class="form-control" id="username" name="username" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="password" class="form-label">{{ phrase('xenforo_password') }}</label>
+                                                <input type="password" class="form-control" id="password" name="password">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="prefix" class="form-label">{{ phrase('xenforo_prefix') }}</label>
+                                            <input type="text" class="form-control" id="prefix" name="prefix" value="xf_" required>
+                                            <small class="form-text text-muted">По умолчанию: xf_</small>
+                                        </div>
+
+                                        <button type="button" class="btn btn-primary" onclick="testConnection()">
+                                            <i class="bi bi-plug-fill me-2"></i>{{ phrase('xenforo_test_connection') }}
+                                        </button>
+                                    </form>
+
+                                    <div id="connectionResult" class="mt-3" style="display:none"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Import options and result -->
+                        <div class="col-md-6">
+                            <div class="card custom-card mb-4" id="importOptionsCard" style="display:none">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="bi bi-gear-fill me-2"></i>{{ phrase('xenforo_import_options') }}</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="importForm">
+                                        <input type="hidden" id="import_host" name="host">
+                                        <input type="hidden" id="import_port" name="port">
+                                        <input type="hidden" id="import_database" name="database">
+                                        <input type="hidden" id="import_username" name="username">
+                                        <input type="hidden" id="import_password" name="password">
+                                        <input type="hidden" id="import_prefix" name="prefix">
+
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="import_users" name="import_users" checked>
+                                            <label class="form-check-label" for="import_users">{{ phrase('xenforo_import_users') }} <span id="users_count" class="badge bg-secondary ms-2"></span></label>
+                                        </div>
+
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="import_categories" name="import_categories" checked>
+                                            <label class="form-check-label" for="import_categories">{{ phrase('xenforo_import_categories') }} <span id="categories_count" class="badge bg-secondary ms-2"></span></label>
+                                        </div>
+
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="import_threads" name="import_threads" checked>
+                                            <label class="form-check-label" for="import_threads">{{ phrase('xenforo_import_threads') }} <span id="threads_count" class="badge bg-secondary ms-2"></span></label>
+                                        </div>
+
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="checkbox" id="import_posts" name="import_posts" checked>
+                                            <label class="form-check-label" for="import_posts">{{ phrase('xenforo_import_posts') }} <span id="posts_count" class="badge bg-secondary ms-2"></span></label>
+                                        </div>
+
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="fast_mode" name="fast_mode" value="1">
+                                            <label class="form-check-label" for="fast_mode">{{ phrase('xenforo_fast_mode') }}</label>
+                                            <small class="form-text text-muted d-block">{{ phrase('xenforo_fast_mode_hint') }}</small>
+                                        </div>
+
+                                        <button type="button" class="btn btn-success" onclick="startImport()">
+                                            <i class="bi bi-play-fill me-2"></i>{{ phrase('xenforo_start_import') }}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div id="importResult" class="card" style="display:none">
+                                <div class="card-header"><h6 class="mb-0"><i class="bi bi-bar-chart-fill me-2"></i>{{ phrase('xenforo_stats') }}</h6></div>
+                                <div class="card-body"><div id="importStats"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function testConnection() {
+    const formData = new FormData(document.getElementById('connectionForm'));
+    const resultDiv = document.getElementById('connectionResult');
+
+    resultDiv.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">{{ phrase("xenforo_loading") }}</span></div>';
+    resultDiv.style.display = 'block';
+
+    fetch('/admin/xenforo/importer/test-connection', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.type === 'success') {
+            resultDiv.innerHTML = `
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>${data.message}</strong>
+                </div>
+            `;
+
+            // Показываем опции импорта
+            document.getElementById('importOptionsCard').style.display = 'block';
+            document.getElementById('users_count').textContent = data.stats.users;
+            document.getElementById('categories_count').textContent = data.stats.categories;
+            document.getElementById('threads_count').textContent = data.stats.threads;
+            document.getElementById('posts_count').textContent = data.stats.posts;
+
+            // Копируем данные подключения
+            document.getElementById('import_host').value = document.getElementById('host').value;
+            document.getElementById('import_port').value = document.getElementById('port').value;
+            document.getElementById('import_database').value = document.getElementById('database').value;
+            document.getElementById('import_username').value = document.getElementById('username').value;
+            document.getElementById('import_password').value = document.getElementById('password').value;
+            document.getElementById('import_prefix').value = document.getElementById('prefix').value;
+        } else {
+            resultDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-x-circle-fill me-2"></i>
+                    <strong>${data.message}</strong>
+                </div>
+            `;
+            document.getElementById('importOptionsCard').style.display = 'none';
+        }
+    })
+    .catch(error => {
+        resultDiv.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="bi bi-x-circle-fill me-2"></i>
+                <strong>Ошибка: ${error.message}</strong>
+            </div>
+        `;
+    });
+}
+
+function startImport() {
+        if (!confirm('{{ phrase("xenforo_confirm_start_import") }}')) {
+        return;
+    }
+
+    const formData = new FormData(document.getElementById('importForm'));
+    const resultDiv = document.getElementById('importResult');
+    const statsDiv = document.getElementById('importStats');
+
+    // Создаем HTML для прогресс-баров
+    statsDiv.innerHTML = `
+        <div class="mb-3">
+            <h6><i class="bi bi-people-fill me-2"></i>{{ phrase('xenforo_import_users') }}</h6>
+            <div class="progress" style="height: 25px;">
+                <div id="progress-users" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">0 / 0 (0%)</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <h6><i class="bi bi-folder-fill me-2"></i>{{ phrase('xenforo_import_categories') }}</h6>
+            <div class="progress" style="height: 25px;">
+                <div id="progress-categories" class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" style="width: 0%">0 / 0 (0%)</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <h6><i class="bi bi-chat-left-text-fill me-2"></i>{{ phrase('xenforo_import_threads') }}</h6>
+            <div class="progress" style="height: 25px;">
+                <div id="progress-threads" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 0%">0 / 0 (0%)</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <h6><i class="bi bi-chat-dots-fill me-2"></i>{{ phrase('xenforo_import_posts') }}</h6>
+            <div class="progress" style="height: 25px;">
+                <div id="progress-posts" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%">0 / 0 (0%)</div>
+            </div>
+        </div>
+        <div id="import-status" class="alert alert-info">
+            <i class="bi bi-hourglass-split me-2"></i>{{ phrase('xenforo_preparing_import') }}
+        </div>
+    `;
+    resultDiv.style.display = 'block';
+
+    // Создаем параметры для URL
+    const params = new URLSearchParams(formData);
+    const url = '/admin/xenforo/importer/stream-import?' + params.toString();
+
+    // Используем EventSource для получения прогресса
+    const eventSource = new EventSource(url);
+
+    eventSource.addEventListener('progress', function(e) {
+        const data = JSON.parse(e.data);
+        const progressBar = document.getElementById('progress-' + data.stage);
+        
+        if (progressBar) {
+            progressBar.style.width = data.percent + '%';
+            progressBar.textContent = data.current + ' / ' + data.total + ' (' + data.percent + '%)';
+            progressBar.setAttribute('aria-valuenow', data.percent);
+        }
+
+        document.getElementById('import-status').innerHTML = `
+            <i class="bi bi-hourglass-split me-2"></i>${data.message}
+        `;
+    });
+
+    eventSource.addEventListener('complete', function(e) {
+        const data = JSON.parse(e.data);
+        eventSource.close();
+        
+        document.getElementById('import-status').className = 'alert alert-success';
+        document.getElementById('import-status').innerHTML = `
+            <i class="bi bi-check-circle-fill me-2"></i><strong>${data.message}</strong>
+        `;
+
+        // Убираем анимацию с прогресс-баров
+        document.querySelectorAll('.progress-bar').forEach(bar => {
+            bar.classList.remove('progress-bar-animated');
+        });
+    });
+
+    eventSource.addEventListener('error', function(e) {
+        if (e.data) {
+            const data = JSON.parse(e.data);
+            document.getElementById('import-status').className = 'alert alert-danger';
+            document.getElementById('import-status').innerHTML = `
+                <i class="bi bi-x-circle-fill me-2"></i><strong>${data.message}</strong>
+            `;
+        }
+        eventSource.close();
+    });
+
+    eventSource.onerror = function() {
+        eventSource.close();
+        document.getElementById('import-status').className = 'alert alert-danger';
+        document.getElementById('import-status').innerHTML = `
+            <i class="bi bi-x-circle-fill me-2"></i><strong>{{ phrase('xenforo_connection_error_server') }}</strong>
+        `;
+    };
+}
+</script>
+{% endblock %}

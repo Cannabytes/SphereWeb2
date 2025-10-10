@@ -3,7 +3,6 @@
 namespace Ofey\Logan22\controller\config;
 
 use Ofey\Logan22\model\config\background;
-use Ofey\Logan22\model\config\cache;
 use Ofey\Logan22\model\config\captcha;
 use Ofey\Logan22\model\config\donate;
 use Ofey\Logan22\model\config\email;
@@ -33,8 +32,6 @@ class config
     private static ?registration $registration = null;
 
     private static ?email $email = null;
-
-    private static ?cache $cache = null;
 
     private static ?other $other = null;
 

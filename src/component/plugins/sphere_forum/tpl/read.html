@@ -333,7 +333,7 @@
                                         <strong data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Moderator" class="badge bg-success h6 mb-1">{{user.getName()}}</strong>
                                         {% else %}
                                         <h5 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="User" class="fw-semibold mb-1 text-center">
-                                            {% if isForumSettingEnabled(user.getId(), 'showFlagCountry') %}
+                                            {% if isForumSettingEnabled(user.getId(), 'showFlagCountry') and user.getCountry() != "" %}
                                             <img class="avatar avatar-xs" src="/uploads/images/flags/{{user.getCountry()|lower}}.png">
                                             {% endif %}
                                             {{user.getName()}}</h5>

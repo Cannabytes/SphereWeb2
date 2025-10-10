@@ -1144,22 +1144,11 @@ class tpl
 
             return preg_replace($pattern, '', $message);
         }));
-
-        $twig->addFunction(new TwigFunction('last_forum_message', function ($last_message = 10) {
-            return forum::get_last_message($last_message);
-        }));
-
-        $twig->addFunction(new TwigFunction('last_forum_thread', function ($last_thread = 10) {
-            return forum::get_last_thread($last_thread);
-        }));
-
+ 
         $twig->addFunction(new TwigFunction('get_forum_link', function ($thread) {
             return forum::get_link($thread);
         }));
-
-        $twig->addFunction(new TwigFunction('forum_enable', function () {
-            return forum::forum_enable();
-        }));
+ 
 
         $twig->addFunction(new TwigFunction('get_avatar', function ($img = "none.jpeg", $thumb = false) {
             if ($thumb) {

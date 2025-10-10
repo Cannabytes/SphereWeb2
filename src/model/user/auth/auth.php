@@ -16,8 +16,10 @@ use Ofey\Logan22\component\request\request;
 use Ofey\Logan22\component\request\request_config;
 use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\component\plugins\xenforo_importer\system\XenForoPasswordHandler;
 
 class auth
 {
@@ -175,7 +177,46 @@ class auth
         if ($user_info['password'] == "GOOGLE") {
             board::error("Войдите через Google");
         }
-        if (password_verify($password, $user_info['password'])) {
+        
+        // Проверяем пароль
+        $passwordVerified = false;
+        $needsRehash = false;
+        
+        // Проверка пароля XenForo (с префиксом xenforo:)
+        if (XenForoPasswordHandler::isXenForoPassword($user_info['password'])) {
+            if (XenForoPasswordHandler::verify($password, $user_info['password'])) {
+                $passwordVerified = true;
+                $needsRehash = true; // XenForo пароли всегда нужно обновлять
+            }
+        }
+        // Проверка обычного bcrypt пароля
+        elseif (password_verify($password, $user_info['password'])) {
+            $passwordVerified = true;
+            // Проверяем, нужно ли обновить хэш (например, если изменился алгоритм)
+            if (password_needs_rehash($user_info['password'], PASSWORD_BCRYPT)) {
+                $needsRehash = true;
+            }
+        }
+        
+        if ($passwordVerified) {
+            // Если пароль нужно обновить (XenForo или устаревший bcrypt)
+            if ($needsRehash) {
+                $newPasswordHash = password_hash($password, PASSWORD_BCRYPT);
+                sql::run(
+                    "UPDATE users SET password = ? WHERE id = ?",
+                    [$newPasswordHash, $user_info['id']]
+                );
+            }
+            
+            // Получаем текущий IP пользователя
+            $currentIP = self::getRealIP();
+            
+            // Обновляем IP если необходимо
+            self::updateUserIPIfNeeded($user_info['id'], $currentIP);
+            
+            // Обновляем географические данные (timezone, country, city) если необходимо
+            self::updateUserGeoDataIfNeeded($user_info['id'], $currentIP);
+            
             $requestFinger = $_POST['finger'];
             $finger = finger::createFingerHash($requestFinger);
             self::addAuthLog($user_info['id'], $finger);
@@ -184,6 +225,7 @@ class auth
             session::add('password', $password);
             board::response("notice", ["message" => lang::get_phrase(165), "ok" => true, "redirect" => "/main"]);
         }
+        
         board::response(
             "notice",
             ["message" => lang::get_phrase(166), "ok" => false, "reloadCaptcha" => true]
@@ -240,16 +282,140 @@ class auth
 
     }
 
+    /**
+     * Получает реальный IP-адрес пользователя с учетом различных конфигураций серверов
+     * Проверяет множество заголовков для надежного определения IP
+     */
     private static function getRealIP(): string
     {
-        if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-            return $_SERVER['HTTP_CF_CONNECTING_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
-        } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
-            return $_SERVER['REMOTE_ADDR'];
+        // Список заголовков для проверки (в порядке приоритета)
+        $headers = [
+            'HTTP_CF_CONNECTING_IP',    // CloudFlare
+            'HTTP_X_REAL_IP',            // Nginx proxy
+            'HTTP_CLIENT_IP',            // Прокси
+            'HTTP_X_FORWARDED_FOR',      // Стандартный заголовок прокси
+            'HTTP_X_FORWARDED',          // Альтернативный вариант
+            'HTTP_X_CLUSTER_CLIENT_IP',  // Кластерные прокси
+            'HTTP_FORWARDED_FOR',        // RFC 7239
+            'HTTP_FORWARDED',            // RFC 7239
+            'REMOTE_ADDR'                // Прямое подключение
+        ];
+
+        foreach ($headers as $header) {
+            if (!empty($_SERVER[$header])) {
+                $ip = $_SERVER[$header];
+                
+                // Если IP содержит несколько адресов (прокси-цепочка), берем первый
+                if (strpos($ip, ',') !== false) {
+                    $ips = explode(',', $ip);
+                    $ip = trim($ips[0]);
+                }
+                
+                // Валидация IP-адреса
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                    return $ip;
+                }
+                
+                // Если валидация не прошла, но IP выглядит корректно (включая приватные сети)
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
+            }
         }
+
         return 'unknown';
+    }
+    
+    /**
+     * Проверяет, нужно ли обновить IP пользователя
+     * Обновляет если IP отсутствует, равен 0.0.0.0 или unknown
+     */
+    private static function updateUserIPIfNeeded(int $userId, string $currentIP): void
+    {
+        $userInfo = sql::run("SELECT ip FROM users WHERE id = ?", [$userId])->fetch();
+        
+        if (!$userInfo) {
+            return;
+        }
+        
+        $storedIP = $userInfo['ip'] ?? '';
+        
+        // Проверяем условия для обновления IP
+        $needsUpdate = (
+            empty($storedIP) || 
+            $storedIP === '0.0.0.0' || 
+            $storedIP === 'unknown' ||
+            $storedIP === '::1' || // localhost IPv6
+            $storedIP === '127.0.0.1' // localhost IPv4
+        );
+        
+        if ($needsUpdate && $currentIP !== 'unknown') {
+            sql::run("UPDATE users SET ip = ? WHERE id = ?", [$currentIP, $userId]);
+        }
+    }
+    
+    /**
+     * Обновляет географические данные пользователя (timezone, country, city)
+     * Обновляет если данные отсутствуют или некорректны
+     */
+    private static function updateUserGeoDataIfNeeded(int $userId, string $currentIP): void
+    {
+        if ($currentIP === 'unknown' || $currentIP === '0.0.0.0' || $currentIP === '127.0.0.1' || $currentIP === '::1') {
+            return;
+        }
+        
+        $userInfo = sql::run("SELECT timezone, country, city FROM users WHERE id = ?", [$userId])->fetch();
+        
+        if (!$userInfo) {
+            return;
+        }
+        
+        // Проверяем, нужно ли обновить географические данные
+        $needsUpdate = (
+            empty($userInfo['timezone']) || 
+            empty($userInfo['country']) || 
+            empty($userInfo['city']) ||
+            $userInfo['timezone'] === 'unknown' ||
+            $userInfo['country'] === 'unknown' ||
+            $userInfo['city'] === 'unknown'
+        );
+        
+        if ($needsUpdate) {
+            $geoData = timezone::get_timezone_ip($currentIP);
+            
+            if ($geoData !== null && is_array($geoData)) {
+                $timezone = $geoData['timezone'] ?? null;
+                $country = $geoData['country'] ?? null;
+                $city = $geoData['city'] ?? null;
+                
+                // Обновляем только если получили валидные данные
+                if ($timezone || $country || $city) {
+                    $updateFields = [];
+                    $updateValues = [];
+                    
+                    if ($timezone && empty($userInfo['timezone'])) {
+                        $updateFields[] = "timezone = ?";
+                        $updateValues[] = $timezone;
+                    }
+                    
+                    if ($country && empty($userInfo['country'])) {
+                        $updateFields[] = "country = ?";
+                        $updateValues[] = $country;
+                    }
+                    
+                    if ($city && empty($userInfo['city'])) {
+                        $updateFields[] = "city = ?";
+                        $updateValues[] = $city;
+                    }
+                    
+                    if (!empty($updateFields)) {
+                        $updateValues[] = $userId;
+                        $updateSQL = "UPDATE users SET " . implode(", ", $updateFields) . " WHERE id = ?";
+                        sql::run($updateSQL, $updateValues);
+                    }
+                }
+            }
+        }
     }
 
     private static function getDeviceType(string $userAgent): string

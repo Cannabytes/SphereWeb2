@@ -40,24 +40,37 @@
                             {{phrase('forum_engine')}}
                             <label class="visually-hidden" for="specificSizeSelect">Preference</label>
                             <select name="engine" class="form-select" id="specificSizeSelect">
+                                <option {% if forum().getEngine() == 'sphere' %}selected{% endif %} value="sphere">Sphere Forum</option>
                                 <option {% if forum().getEngine() == 'xenforo' %}selected{% endif %} value="xenforo">XenForo</option>
                                 <option disabled {% if forum().getEngine() == 'ips4' %}selected{% endif %} value="ips4">IPS 4</option>
                             </select>
                             </div>
 
-                            <div class="col-sm-2">
+                            <div id="forumExternalFields" class="col-sm-2">
                                 {{phrase('forum_link')}}
                             <input name="url" type="text" class="form-control" id="url" value="{{forum().getURL()}}" placeholder="https://forum.example.net">
                             </div>
                         </div>
 
+                        {# If Sphere engine selected but sphere_forum plugin is not active - show notice with link to plugin admin #}
+                        {% if forum().getEngine() == 'sphere' and not getPluginActive('sphere_forum') %}
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="alert alert-info mt-2" role="alert">
+                                        Для использования встроенного Sphere Forum включите соответствующий плагин: <a href="/admin/sphere/forum" class="alert-link">/admin/sphere/forum</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div id="forumDBFields" class="row gx-3 gy-2">
                         <hr>
                         <label class="form-check-label" for="autoSizingCheck2">
                             {{phrase('forum_db_connection')}}
                         </label>
                             <div class="col-sm-2">
                                 <label class="" for="host">Host</label>
-                                <input value="{{forum().getHost()}}" name="host" type="text" class="form-control" id="host" placeholder="127.0.0.1">
+                                <input value="{{forum().getHost() }}" name="host" type="text" class="form-control" id="host" placeholder="127.0.0.1">
                             </div>
                             <div class="col-sm-1">
                                 <label class="" for="port">PORT</label>
@@ -75,7 +88,9 @@
                                 <label class="" for="name">Name DB</label>
                                 <input value="{{forum().getName()}}" name="name" type="text" class="form-control" id="name" placeholder="forum">
                             </div>
+                        </div>
                             <hr>
+                            
                             <div class="col-sm-3">
                                 {{phrase('output_sorting')}}
                                 <select name="sort" class="form-select">
@@ -109,20 +124,51 @@
 {% block js %}
 <script>
     $(document).ready(function() {
+        function toggleForumFields() {
+            const engine = $('#specificSizeSelect').val();
+            if (engine === 'sphere') {
+                // Sphere engine -> hide external url and DB fields
+                $('#forumExternalFields').hide();
+                $('#forumDBFields').hide();
+            } else {
+                $('#forumExternalFields').show();
+                $('#forumDBFields').show();
+            }
+        }
+
+        // Initialize visibility on load
+        toggleForumFields();
+
+        // When engine changes, toggle fields
+        $('#specificSizeSelect').on('change', function() {
+            toggleForumFields();
+        });
+
         $('#saveForum').on('click', function(e) {
             e.preventDefault();
             console.log('Attempting to submit form');
 
             let formData = {};
+            // Only gather inputs/selects that are visible (or checkboxes anywhere)
             $('#forumForm').find('input, select').each(function() {
+                // skip elements without name
+                if (!this.name) return;
+
+                // Always include checkboxes (they may be outside toggled blocks)
                 if (this.type === 'checkbox') {
                     formData[this.name] = this.checked ? 'true' : 'false';
-                } else {
-                    formData[this.name] = $(this).val();
+                    return;
                 }
+
+                // Skip elements inside hidden containers
+                if ($(this).closest('#forumExternalFields').length && $(this).closest('#forumExternalFields').is(':hidden')) return;
+                if ($(this).closest('#forumDBFields').length && $(this).closest('#forumDBFields').is(':hidden')) return;
+
+                formData[this.name] = $(this).val();
             });
+
             console.log(formData)
-            AjaxSend("/admin/forum", "POST", formData, true).then(function (response){
+            AjaxSend("/admin/forum", "POST", formData, false).then(function (response){
                 console.log(response);
             })
 
