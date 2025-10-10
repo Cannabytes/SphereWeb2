@@ -380,6 +380,9 @@ $routes = [
 
             $clanId = $_POST['clan_id'] ?? null;
             $message = $_POST['message'] ?? '';
+            
+            // XSS защита: очищаем сообщение
+            $message = \Ofey\Logan22\component\request\XssSecurity::clean($message);
 
             if (!$clanId || !$message) {
                 http_response_code(400);
@@ -521,6 +524,9 @@ $routes = [
             try {
                 $clanId = $_POST['clan_id'] ?? null;
                 $description = $_POST['description'] ?? '';
+                
+                // XSS защита: очищаем описание
+                $description = \Ofey\Logan22\component\request\XssSecurity::clean($description);
 
                 if (!$clanId || !$description) {
                     throw new \Exception('Отсутствуют необходимые параметры');
@@ -557,6 +563,11 @@ $routes = [
             try {
                 $clanId = $_POST['clan_id'] ?? null;
                 $clanNameGame = $_POST['clan_name_game'] ?? null;
+                
+                // XSS защита: очищаем название клана
+                if ($clanNameGame !== null) {
+                    $clanNameGame = \Ofey\Logan22\component\request\XssSecurity::cleanText($clanNameGame);
+                }
 
                 if (!$clanId) {
                     throw new Exception('Отсутствует ID клана');

@@ -48,7 +48,13 @@ class forum_post
 
     public function getContent(): string
     {
-        return $this->content;
+        $content = $this->content;
+        $replacements = [
+            '<div><br></div>' => '',
+            'onclick' => 'оnсlick',
+            'none' => 'nоne',
+        ];
+        return strtr($content, $replacements);
     }
 
     public function getCreatedAt(): string

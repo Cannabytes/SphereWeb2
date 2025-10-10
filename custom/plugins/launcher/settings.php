@@ -3,6 +3,7 @@ return [
     "PLUGIN_HIDE" => false,
     "PLUGIN_ENABLE" => true,
     "PLUGIN_NAME" => "sphere-launcher",
+    "PLUGIN_PHRASE_ID" => "sphere-launcher",
     "PLUGIN_VERSION" => "2.0.3",
     "PLUGIN_AUTHOR" => "Logan22",
     "PLUGIN_GITHUB" => "",

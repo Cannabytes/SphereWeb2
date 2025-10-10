@@ -384,10 +384,8 @@
                                         <span class="avatar avatar-lg me-1">
                                             <img src="{{getUser(thread.last_user_id).getAvatar()}}" alt="img">
                                         </span>
-                                        <!-- Основной контейнер с фиксированной шириной -->
-                                        <div class="w-75"> <!-- Используем w-75 для ширины 75% -->
+                                        <div class="w-75"> 
                                             <span class="d-block mb-0">
-                                                <!-- Имя треда с обрезкой -->
                                                 <span class="text-muted d-inline-block text-truncate w-75">
                                                     {{ phrase(sectionInfo.thread_name) }}
                                                     {% if getUser().isAdmin() or isUserModerator %}
@@ -395,17 +393,15 @@
                                                     {% endif %}
                                                 </span>
                                             </span>
-                                            <!-- Сообщение с обрезкой -->
                                             <div class="text-muted small d-block text-truncate">
                                                 {{getUser(thread.last_user_id).getName()}}:
                                                 {% if thread.private and thread.owner_id != getUser().getId() and
                                                 getUser().isAdmin() == false and isUserModerator == false %}
                                                 <i class="bi bi-eye-slash"></i>
                                                 {% else %}
-                                                {{strip_html_tags(thread.message)}}
+                                                {{strip_html_tags(thread.message)|raw}}
                                                 {% endif %}
                                             </div>
-                                            <!-- Дата -->
                                             <div class="text-muted">
                                                 <div class="fw-normal fs-11">
                                                     {{thread.date_update|date("H:m d.m.Y")}}

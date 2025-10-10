@@ -8,6 +8,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\plugins\sphere_forum\struct\ForumClan;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\component\request\XssSecurity;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
@@ -24,12 +25,15 @@ class ForumClans
             if(user::self()->isGuest()){
                 redirect::location("/forum");
             }
-            // Проверяем файлы
             $logoFile = isset($_FILES['clanLogo']) ? $_FILES['clanLogo'] : null;
             $bgFile = isset($_FILES['clanBackground']) ? $_FILES['clanBackground'] : null;
 
             $clanName = trim($_POST['clanName']);
             $clanDescription = trim($_POST['clanDescription']);
+            
+            $clanName = XssSecurity::clean($clanName);
+            $clanDescription = XssSecurity::clean($clanDescription);
+            
             $data = [
                 'clanName' => $clanName,
                 'clanDescription' => $clanDescription,
@@ -41,7 +45,6 @@ class ForumClans
 
             $this->validateClanData($data);
 
-            // Обработка изображений
             $logoPath = $logoFile ? $this->handleImage($logoFile, 'logo_') : null;
             $backgroundPath = $bgFile ? $this->handleImage($bgFile, 'bg_') : null;
 
@@ -77,22 +80,18 @@ class ForumClans
 
     private function validateClanData($data)
     {
-        // Проверка названия клана
         if (!isset($data['clanName']) || mb_strlen($data['clanName']) < 3 || mb_strlen($data['clanName']) > 16) {
             board::error('Название клана должно содержать от 3 до 16 символов');
         }
 
-        // Проверка описания
         if (!isset($data['clanDescription']) || strlen($data['clanDescription']) > 255) {
             board::error('Описание клана не должно превышать 255 символов');
         }
 
-        // Проверка типа принятия
         if (!isset($data['acceptance']) || !in_array((int)$data['acceptance'], [1, 2])) {
             board::error('Некорректный тип принятия в клан');
         }
 
-        // Проверка цвета текста
         $this->validateColor($data['nameColor']);
     }
 
@@ -116,7 +115,7 @@ class ForumClans
     {
         if (!$file['error']) {
             $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-            $maxSize = 2 * 1024 * 1024; // 2MB
+            $maxSize = 2 * 1024 * 1024;
 
             if (!in_array($file['type'], $allowedTypes)) {
                 board::error('Неподдерживаемый формат изображения');
@@ -143,19 +142,15 @@ class ForumClans
 
             $manager = ImageManager::gd();
 
-            // Читаем изображение
             $image = $manager->read($tmpName);
 
-            // Получаем исходные размеры
             $originalWidth = $image->width();
             $originalHeight = $image->height();
 
-            // Сохраняем оригинальное изображение
             if (!$image->save($uploadDir . $filename)) {
                 throw new Exception("Ошибка при сохранении изображения");
             }
 
-            // Создаем миниатюру
             $thumbImage = $image;
             if ($originalHeight > 300) {
                 $thumbImage = $image->scale(height: 300);
@@ -441,6 +436,9 @@ class ForumClans
 
             $clanId = $_POST['clan_id'] ?? null;
             $message = $_POST['message'] ?? '';
+            
+            // XSS защита: очищаем сообщение
+            $message = XssSecurity::clean($message);
 
             if (!$clanId) {
                 throw new \Exception('Не указан ID клана');
@@ -491,6 +489,9 @@ class ForumClans
             $postId = $_POST['post_id'] ?? null;
             $message = $_POST['message'] ?? '';
             $clanId = $_POST['clan_id'] ?? null;
+            
+            // XSS защита: очищаем сообщение
+            $message = XssSecurity::clean($message);
 
             if (!$postId || !$message || !$clanId) {
                 throw new \Exception('Не все обязательные поля заполнены');

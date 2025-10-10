@@ -2,6 +2,7 @@
 
 namespace Ofey\Logan22\component\plugins\sphere_forum\struct;
 
+use Ofey\Logan22\component\request\XssSecurity;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\user;
 
@@ -175,6 +176,9 @@ class ForumClan {
     }
 
     public function sendMessage($userId, $message): array {
+        // XSS защита: очищаем сообщение от потенциально опасного содержимого
+        $message = XssSecurity::clean($message);
+        
         // Валидация сообщения
         $message = trim($message);
         if (empty($message)) {
@@ -268,6 +272,9 @@ class ForumClan {
     public function createPost($userId, $message, array $images = []): array {
         $this->checkPostRateLimit($userId);
 
+        // XSS защита: очищаем сообщение от потенциально опасного содержимого
+        $message = XssSecurity::clean($message);
+        
         $message = trim($message);
         if (empty($message) && empty($images)) {
             throw new \Exception('Сообщение не может быть пустым');
@@ -335,6 +342,9 @@ class ForumClan {
         if ($post['user_id'] != user::self()->getId() && $this->getOwnerId() != user::self()->getId()) {
             throw new \Exception('Нет прав на редактирование');
         }
+
+        // XSS защита: очищаем сообщение от потенциально опасного содержимого
+        $message = XssSecurity::clean($message);
 
         // Выполняем запрос и проверяем результат
         $stmt = sql::run(
@@ -437,6 +447,9 @@ class ForumClan {
                 throw new \Exception('Нет прав на редактирование описания');
             }
 
+            // XSS защита: очищаем описание от потенциально опасного содержимого
+            $description = XssSecurity::clean($description);
+
             $stmt = sql::run(
                 "UPDATE forum_clans SET desc_full = ? WHERE id = ? AND owner_id = ?",
                 [$description, $this->getId(), user::self()->getId()]
@@ -462,7 +475,7 @@ class ForumClan {
     }
 
     public function deletePostAsAdmin($postId): bool {
-        if (!user::isAdmin()) {
+        if (!user::self()->isAdmin()) {
             throw new \Exception('Недостаточно прав');
         }
 

@@ -1141,7 +1141,6 @@ class tpl
         //Удаление сообщения тегов форума из текста
         $twig->addFunction(new TwigFunction('forum_message_clear_tag', function ($message) {
             $pattern = '/\[(.*?)\]/s';
-
             return preg_replace($pattern, '', $message);
         }));
  

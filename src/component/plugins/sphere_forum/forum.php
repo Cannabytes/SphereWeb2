@@ -12,6 +12,7 @@ use Ofey\Logan22\component\plugins\sphere_forum\struct\{forum_category,
     ForumUserSettings
 };
 use Ofey\Logan22\component\fileSys\fileSys;
+use Ofey\Logan22\component\request\XssSecurity;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\links\http;
 use Ofey\Logan22\component\plugins\sphere_forum\system\AntiFlood;
@@ -339,6 +340,13 @@ class forum
             [$threadId, self::POSTS_PER_PAGE, $offset]
         );
 
+        // Обрабатываем содержимое постов через XSS-фильтр на чтении
+        foreach ($posts as &$postRow) {
+            if (isset($postRow['content']) && is_string($postRow['content'])) {
+                $postRow['content'] = XssSecurity::clean($postRow['content']);
+            }
+        }
+
         return array_map(fn($post) => new forum_post($post), $posts);
     }
 
@@ -360,20 +368,19 @@ class forum
     public function addTopicMessage(): void
     {
         try {
-            // Проверяем на флуд перед обработкой сообщения
             $antiFlood = new AntiFlood(AntiFlood::TYPE_POST);
             $antiFlood->checkFlood();
             $this->validateMessageInput();
 
             $topicId = (int)$_POST['topicId'];
             $message = isset($_POST['message']) ? $_POST['message'] : '';
-            // Собираем прикрепленные файлы (если были прикреплены через FilePond/uploadImage)
+            
+            $message = XssSecurity::clean($message);
             $attachments = isset($_POST['attachments']) && is_array($_POST['attachments'])
                 ? array_map('intval', $_POST['attachments'])
                 : [];
             $replyToId = isset($_POST['replyToId']) ? (int)$_POST['replyToId'] : null;
 
-            // Проверяем существование поста, на который отвечают
             if ($replyToId) {
                 $replyPost = sql::getRow(
                     "SELECT id FROM forum_posts WHERE id = ? AND thread_id = ?",
@@ -384,17 +391,14 @@ class forum
                 }
             }
 
-            // Получаем тему и категорию
             $thread = $this->getThreadById($topicId);
             $category = $this->getCategoryById($thread->getCategoryId());
 
-            // Если текcт сообщения пустой, но есть прикрепленные файлы/изображения - считаем, что сообщение есть
             $plainTextCheck = trim(strip_tags($message));
             if ($plainTextCheck === '' && empty($attachments)) {
                 throw new Exception("Необходимо указать тему и сообщение");
             }
 
-            // Валидируем содержание сообщения только если в тексте есть контент
             if ($plainTextCheck !== '') {
                 $this->validateMessageContent($message, $category);
             }
@@ -416,21 +420,17 @@ class forum
                 $this->incrementThreadReplies($topicId);
                 $this->incrementCategoryPostCount($thread->getCategoryId());
                 ForumTracker::notifyAboutNewPost($topicId, $lastPostId, $replyToId);
-                // Получаем общее количество постов в теме
                 $totalPosts = sql::getValue(
                     "SELECT COUNT(*) FROM forum_posts WHERE thread_id = ?",
                     [$topicId]
                 );
-                // Вычисляем номер последней страницы
-                $postsPerPage = self::POSTS_PER_PAGE; // Используем константу из класса
+                $postsPerPage = self::POSTS_PER_PAGE;
                 $lastPage = ceil($totalPosts / $postsPerPage);
                 sql::commit();
-                // Формируем URL для редиректа
                 $thread = $this->getThreadById($topicId);
                 $custom_twig = new custom_twig();
                 $translit = $custom_twig->transliterateToEn($thread->getTitle());
                 $redirectUrl = "/forum/topic/{$translit}.{$topicId}";
-                // Добавляем номер страницы только если страниц больше одной
                 if ($lastPage > 1) {
                     $redirectUrl .= "?page={$lastPage}";
                 }
@@ -466,28 +466,23 @@ class forum
         // Очищаем от пробелов в начале и конце
         $plainText = trim($plainText);
 
-        // Проверяем минимальную длину (например, 5 символов)
         if (mb_strlen($plainText) < 1) {
             throw new Exception("Сообщение слишком короткое. Минимальная длина - 1 символов.");
         }
 
-        // Проверяем максимальную длину
         if (mb_strlen($plainText) > $category->getMaxPostLength()) {
             throw new Exception("Сообщение слишком длинное. Максимальная длина - {$category->getMaxPostLength()} символов.");
         }
 
-        // Проверяем, что сообщение не состоит только из пробелов или спецсимволов
         if (preg_match('/^\s*$/', $plainText)) {
             throw new Exception("Сообщение не может быть пустым.");
         }
 
-        // Проверяем на повторяющиеся символы (например "ааааааа" или ".........")
         if (preg_match('/^(.)\1+$/', $plainText)) {
             throw new Exception("Сообщение не может состоять из повторяющихся символов.");
         }
     }
 
-    // Добавлены остальные методы с аналогичными улучшениями...
 
     private function validateThreadAccess(forum_thread $thread): void
     {
@@ -658,6 +653,10 @@ class forum
             $categoryId = (int)$_POST['categoryId'];
             $title = trim($_POST['title']);
             $message = trim($_POST['content']);
+
+            // XSS защита: очищаем название темы и сообщение
+            $title = XssSecurity::clean($title);
+            $message = XssSecurity::clean($message);
 
             // Валидация названия темы
             $this->validateTopicTitle($title);
@@ -973,6 +972,10 @@ class forum
 
             $name = $_POST['name'];
             $description = $_POST['description'] ?? "";
+            
+            // XSS защита: очищаем название и описание
+            $name = XssSecurity::clean($name);
+            $description = XssSecurity::clean($description);
 
             $this->insertCategory($name, $description);
 
@@ -1279,6 +1282,10 @@ class forum
 
             $postId = (int)$_POST['postId'];
             $message = $_POST['content'];
+            
+            // XSS защита: очищаем сообщение от потенциально опасного содержимого
+            $message = XssSecurity::clean($message);
+            
             $returnPage = (int)($_POST['returnPage'] ?? 1);
 
             $post = $this->getPostById($postId);
@@ -1360,6 +1367,12 @@ class forum
             $parent = $_POST['parent'] ?? null;
             $icon = $_POST['icon'] ?? null;
             $link = $_POST['link'] ?? null;
+            
+            // XSS защита: очищаем пользовательские данные
+            $name = XssSecurity::clean($name);
+            $description = XssSecurity::clean($description);
+            $icon = XssSecurity::clean($icon);
+            $link = XssSecurity::cleanUrl($link);
 
             // Валидация и приведение типов для числовых параметров
             $canUsersDeleteOwnThreads = isset($_POST['canUsersDeleteOwnThreads']) && $_POST['canUsersDeleteOwnThreads'] === 'true' ? 1 : 0;
@@ -1669,6 +1682,11 @@ class forum
             $newDescription = $_POST['newDescription'] ?? ""; // Добавляем получение описания
             $newIcon = $_POST['icon'] ?? null; // Добавляем получение иконки
             $titleColor = $_POST['titleColor'] ?? 'dark'; // Добавляем получение цвета
+            
+            // XSS защита: очищаем название, описание и иконку
+            $newName = XssSecurity::clean($newName);
+            $newDescription = XssSecurity::clean($newDescription);
+            $newIcon = XssSecurity::clean($newIcon);
 
             sql::run(
                 "UPDATE `forum_categories` 
@@ -2348,6 +2366,9 @@ class forum
             $threadId = $_POST['threadId'] ?? board::error("Не указана тема");
             $title = $_POST['title'] ?? board::error("Не указано новое название");
 
+            // XSS защита: очищаем название темы
+            $title = XssSecurity::clean($title);
+
             if (empty(trim($title))) {
                 throw new Exception("Название темы не может быть пустым");
             }
@@ -2399,6 +2420,9 @@ class forum
             $postId = $_POST['postId'] ?? board::error("Не указан пост");
             $likeImage = $_POST['likeImage'] ?? board::error("Не указано изображение лайка");
             $message = $_POST['message'] ?? "";
+            
+            // XSS защита: очищаем сообщение
+            $message = XssSecurity::clean($message);
 
             // Получаем информацию о посте
             $post = sql::getRow("SELECT id, user_id FROM forum_posts WHERE id = ?", [$postId]);
@@ -2688,6 +2712,11 @@ class forum
             $name = $_POST['name'] ?? board::error("Не указано название");
             $link = $_POST['link'] ?? board::error("Не указана ссылка");
             $icon = $_POST['icon'] ?? null;
+            
+            // XSS защита: очищаем пользовательские данные
+            $name = XssSecurity::clean($name);
+            $icon = XssSecurity::clean($icon);
+            $link = XssSecurity::cleanUrl($link);
 
             // Проверяем корректность URL
             if (!filter_var($link, FILTER_VALIDATE_URL)) {
@@ -2881,6 +2910,9 @@ class forum
             }
 
             $username = $_POST['username'] ?? throw new Exception("Не указан пользователь");
+            
+            // XSS защита: очищаем имя пользователя
+            $username = XssSecurity::cleanText($username);
 
             // Корректно обрабатываем categoryId
             $categoryId = isset($_POST['categoryId']) && $_POST['categoryId'] !== ''
