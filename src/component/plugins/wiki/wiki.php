@@ -2138,8 +2138,9 @@ class wiki
         $out = ['items' => [], 'total' => 0, 'pages' => 1];
         try { $db = WikiDb::get(); } catch (\Throwable $e) { return $out; }
 
-        $isSpoil = ($kind === 'spoil');
-        $cond = $isSpoil ? 'd.group_id = 0' : '(d.group_id IS NULL OR d.group_id != 0)';
+    $isSpoil = ($kind === 'spoil');
+    // For 'drop' we require group_id != 0. For 'spoil' we require group_id = 0.
+    $cond = $isSpoil ? 'd.group_id = 0' : 'd.group_id != 0';
 
         // Unified items union for joining names/icons/grades
         $itemsCte = "WITH items AS (\n"
@@ -3686,7 +3687,7 @@ class wiki
         }
 
         // Try cached sources per item+filter
-    if (tpl::pageCacheTryServe(self::pageCacheKey('item_sources', ['item' => $itemId, 'filter' => $filter]), self::$pageCacheTtl, 'wiki', false, true)) {
+        if (tpl::pageCacheTryServe(self::pageCacheKey('item_sources', ['item' => $itemId, 'filter' => $filter]), self::$pageCacheTtl, 'wiki', false, true)) {
             tpl::displayPlugin('/wiki/tpl/item_sources.html');
             return;
         }
@@ -3703,22 +3704,23 @@ class wiki
             return;
         }
 
-        // Always load ALL sources for counts; filter only for display later
-        // Only include drop sources from spawnable NPCs
-        // Use GROUP BY d.npc_id and aggregate to prevent duplicate NPC rows when multiple drops exist
         $sqlAll = "SELECT d.npc_id,
                     d.item_id,
                     MIN(d.min) AS min,
                     MAX(d.max) AS max,
-                    MAX(d.chance) AS chance,
+                    MAX(CASE WHEN (d.group_id IS NOT NULL AND d.group_id != 0) THEN d.chance ELSE NULL END) AS drop_chance,
+                    MAX(CASE WHEN (d.group_id = 0 OR d.drop_type = 0) THEN d.chance ELSE NULL END) AS spoil_chance,
+                    MAX(CASE WHEN (d.group_id IS NOT NULL AND d.group_id != 0) THEN 1 ELSE 0 END) AS has_drop,
+                    MAX(CASE WHEN (d.group_id = 0 OR d.drop_type = 0) THEN 1 ELSE 0 END) AS has_spoil,
                     MAX(d.group_id) AS group_id,
                     MAX(d.drop_type) AS drop_type,
+                    COALESCE(MAX(CASE WHEN (d.group_id IS NOT NULL AND d.group_id != 0) THEN d.chance ELSE NULL END), MAX(CASE WHEN (d.group_id = 0 OR d.drop_type = 0) THEN d.chance ELSE NULL END)) AS display_chance,
                     n.name, n.level, n.type, n.title
                 FROM drops d
                 LEFT JOIN npcs n ON n.id = d.npc_id
-                WHERE d.item_id = :item AND (n.is_spawn = 1 OR n.type = 'GrandBoss')
+                WHERE d.item_id = :item AND (n.is_spawn = 1 OR n.type = 'GrandBoss' OR d.group_id = 0 OR d.drop_type = 0)
                 GROUP BY d.npc_id
-                ORDER BY n.level DESC, n.name ASC, chance DESC";
+                ORDER BY n.level DESC, n.name ASC, display_chance DESC";
 
         $stmtAll = $db->prepare($sqlAll);
         if ($stmtAll) {
@@ -3738,15 +3740,23 @@ class wiki
                     'title'    => isset($r['title']) ? (string)$r['title'] : null,
                     'min'      => isset($r['min']) ? (int)$r['min'] : null,
                     'max'      => isset($r['max']) ? (int)$r['max'] : null,
-                    'chance'   => isset($r['chance']) ? (float)$r['chance'] : null,
+                    // choose chance based on current filter: spoil -> spoil_chance, drop -> drop_chance, default -> display_chance
+                    'chance'   => (
+                        isset($filter) && $filter === 'spoil' ? (isset($r['spoil_chance']) ? (float)$r['spoil_chance'] : (isset($r['display_chance']) ? (float)$r['display_chance'] : (isset($r['chance']) ? (float)$r['chance'] : null))) : (
+                        isset($filter) && $filter === 'drop'  ? (isset($r['drop_chance'])  ? (float)$r['drop_chance']  : (isset($r['display_chance']) ? (float)$r['display_chance'] : (isset($r['chance']) ? (float)$r['chance'] : null))) : (
+                        isset($r['display_chance']) ? (float)$r['display_chance'] : (isset($r['chance']) ? (float)$r['chance'] : null)
+                    ))),
                     'group_id' => isset($r['group_id']) ? (int)$r['group_id'] : null,
                     'drop_type'=> isset($r['drop_type']) ? (int)$r['drop_type'] : null,
+                    'drop_chance' => isset($r['drop_chance']) ? (float)$r['drop_chance'] : null,
+                    'spoil_chance' => isset($r['spoil_chance']) ? (float)$r['spoil_chance'] : null,
+                    'has_drop' => isset($r['has_drop']) ? (int)$r['has_drop'] : 0,
+                    'has_spoil' => isset($r['has_spoil']) ? (int)$r['has_spoil'] : 0,
                     'link'     => '/wiki/npc/id/' . $npcId,
                 ];
             }
         }
 
-        // Preload NPC images for all involved NPCs (download if missing)
         $imagesByNpc = [];
         $seen = [];
         foreach ($all as $row) {
@@ -3756,7 +3766,6 @@ class wiki
             $imgs = $this->getNpcImages($nid);
             $imagesByNpc[$nid] = $imgs;
         }
-        // Attach first image (if any)
         foreach ($all as &$row) {
             $nid = (int)$row['npc_id'];
             $img = $imagesByNpc[$nid][0] ?? null;
@@ -3764,22 +3773,22 @@ class wiki
         }
         unset($row);
 
-        // Load item meta (name/icon) using existing helper
         $itemMeta = $this->loadItemsLookupByIds([$itemId]);
         $meta = $itemMeta[$itemId] ?? null;
-        // Compute counts on ALL rows (not filtered)
         $totalAll = count($all);
         $dropCountAll = 0; $spoilCountAll = 0;
         foreach ($all as $s) {
-            if ((int)($s['drop_type'] ?? 1) === 0) $spoilCountAll++; else $dropCountAll++;
+            $isSpoil = !empty($s['has_spoil']);
+            $isDrop = !empty($s['has_drop']);
+            if ($isSpoil) $spoilCountAll++;
+            if ($isDrop) $dropCountAll++;
         }
-    // Now filter for display
+
         $sourcesDisplay = array_values(array_filter($all, function($r) use ($filter) {
             if ($filter === 'all') return true;
-            $isSpoil = ((int)($r['drop_type'] ?? 1) === 0);
-            return $filter === 'spoil' ? $isSpoil : !$isSpoil;
+            if ($filter === 'spoil') return !empty($r['has_spoil']);
+            return !empty($r['has_drop']);
         }));
-
         tpl::addVar('item_id', $itemId);
         tpl::addVar('item_meta', $meta);
         tpl::addVar('sources', $sourcesDisplay);
@@ -3787,15 +3796,10 @@ class wiki
         tpl::addVar('source_drop_count', $dropCountAll);
         tpl::addVar('source_spoil_count', $spoilCountAll);
         tpl::addVar('filter_type', $filter);
-    // Save cache for item sources page
-    tpl::pageCacheBegin(self::pageCacheKey('item_sources', ['item' => $itemId, 'filter' => $filter]), self::$pageCacheTtl, 'wiki', false, true);
+        tpl::pageCacheBegin(self::pageCacheKey('item_sources', ['item' => $itemId, 'filter' => $filter]), self::$pageCacheTtl, 'wiki', false, true);
         tpl::displayPlugin('/wiki/tpl/item_sources.html');
     }
 
-    /**
-     * Try to get cached NPC images; if not present, request from Sphere API to download then re-scan.
-     * Returns array of web paths (strings).
-     */
     private function getNpcImages(int $npcId): array
     {
         $npcId = (int)$npcId;
@@ -3814,19 +3818,16 @@ class wiki
             }
         }
         if ($images) return $images;
-        // Try to fetch from server API
         try {
             $npcImgRequest = \Ofey\Logan22\component\sphere\server::send(type::GET_NPC_IMG, [
                 'npcid' => (string)$npcId,
             ])->show()->getResponse();
             if (!empty($npcImgRequest) && is_array($npcImgRequest)) {
-                // Support both shapes: ["images"=>[...]] or simple array
                 $imagesList = $npcImgRequest;
                 if (isset($npcImgRequest['images']) && is_array($npcImgRequest['images'])) {
                     $imagesList = $npcImgRequest['images'];
                 }
                 foreach ($imagesList as $img) {
-                    // Normalize to string path
                     $imgStr = null;
                     if (is_string($img)) {
                         $imgStr = $img;
@@ -3849,7 +3850,6 @@ class wiki
                     }
                     try { @file_put_contents($savePath, $res['content']); } catch (\Throwable $e) {}
                 }
-                // Re-scan local folder after attempt
                 if (is_dir($fullRangeDir)) {
                     $files = @scandir($fullRangeDir) ?: [];
                     foreach ($files as $file) {
@@ -3860,7 +3860,6 @@ class wiki
                 }
             }
         } catch (\Throwable $e) {
-            // ignore
         }
         return $images;
     }
@@ -3873,7 +3872,6 @@ class wiki
         header('Content-Type: application/json; charset=utf-8');
         
         try {
-            // Check if user is logged in
             $user = \Ofey\Logan22\model\user\user::self();
             if (!$user) {
                 echo json_encode(['success' => false, 'message' => 'User not logged in']);
