@@ -3,7 +3,7 @@ return [
     "PLUGIN_HIDE" => false,
     "PLUGIN_ENABLE" => true,
     "PLUGIN_NAME" => "winroll",
-    "PLUGIN_PHRASE_ID" => "winroll_name",
+    "PLUGIN_PHRASE_ID" => "winroll",
     "PLUGIN_VERSION" => "1.0.0",
     "PLUGIN_AUTHOR" => "Logan22",
     "PLUGIN_DESCRIPTION" => "winroll_description_plugin",

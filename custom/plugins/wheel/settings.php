@@ -3,6 +3,7 @@ return [
 "PLUGIN_HIDE" => false,
 "PLUGIN_ENABLE" => true,
 "PLUGIN_NAME" => "wheel",
+"PLUGIN_PHRASE_ID" => "wheel",
 "PLUGIN_VERSION" => "1.0.0",
 "PLUGIN_AUTHOR" => "Logan22",
 "PLUGIN_GITHUB" => "",

@@ -3,6 +3,7 @@ return [
 "PLUGIN_HIDE" => false,
 "PLUGIN_ENABLE" => true,
 "PLUGIN_NAME" => "sphere statistic",
+"PLUGIN_PHRASE_ID" => "sphere statistic",
 "PLUGIN_VERSION" => "1.0.0",
 "PLUGIN_AUTHOR" => "Logan22",
 "PLUGIN_GITHUB" => "",

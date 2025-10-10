@@ -30,7 +30,7 @@
 
             {% for plugin in show_plugins() %}
             <tr>
-              <td><a href="{{plugin.PLUGIN_ADMIN_PAGE}}" class="btn btn-sm btn-light">{{phrase(plugin.PLUGIN_NAME)}}</a></td>
+              <td><a href="{{plugin.PLUGIN_ADMIN_PAGE}}" class="btn btn-sm btn-light">{{phrase(plugin.PLUGIN_PHRASE_ID)}}</a></td>
               <td>
                  {{phrase(plugin.PLUGIN_DESCRIPTION)}}
               </td>
