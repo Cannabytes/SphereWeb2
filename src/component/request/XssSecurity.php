@@ -7,6 +7,7 @@ class XssSecurity
     private const ALLOWED_TAGS = '<p><br><strong><em><u><s><ul><ol><li><blockquote><code><pre><a><img><h1><h2><h3><h4><h5><h6><table><thead><tbody><tr><th><td><div><span>';
 
     private const DANGEROUS_ATTRIBUTES = [
+        'id',
         'onclick','ondblclick','onmousedown','onmouseup','onmouseover',
         'onmousemove','onmouseout','onmouseenter','onmouseleave',
         'onload','onunload','onchange','onsubmit','onreset',
@@ -20,6 +21,52 @@ class XssSecurity
         'formaction','action','background','dynsrc','lowsrc'
     ];
 
+    /**
+     * Разрешённые классы Bootstrap по умолчанию (примерный набор).
+     * Дополняйте по необходимости — это белый список.
+     */
+    private const ALLOWED_BOOTSTRAP_CLASSES = [
+        'd-block','d-inline','d-inline-block','d-flex','d-inline-flex','justify-content-start','justify-content-center','justify-content-end','align-items-start','align-items-center','align-items-end',
+        // Spacing
+        'm-0','mt-0','mb-0','ml-0','mr-0','p-0','pt-0','pb-0','pl-0','pr-0',
+        'm-1','mt-1','mb-1','ml-1','mr-1','p-1','pt-1','pb-1','pl-1','pr-1',
+        'm-2','mt-2','mb-2','ml-2','mr-2','p-2','pt-2','pb-2','pl-2','pr-2',
+        'm-3','mt-3','mb-3','ml-3','mr-3','p-3','pt-3','pb-3','pl-3','pr-3',
+        'm-4','mt-4','mb-4','ml-4','mr-4','p-4','pt-4','pb-4','pl-4','pr-4',
+        'm-5','mt-5','mb-5','ml-5','mr-5','p-5','pt-5','pb-5','pl-5','pr-5',
+        // Text and colors
+        'text-left','text-center', 'blockquote', 'custom-blockquote', 'text-end', 'text-justify', 'text-right','text-muted','text-primary','text-secondary','text-success','text-danger','text-warning','text-info','text-light','text-dark',
+        // Buttons & badges
+        'btn', 'info', 'btn-primary','btn-secondary','btn-success','btn-danger','btn-warning','btn-info','btn-light','btn-dark','badge','badge-primary','badge-secondary','badge-success','badge-danger','badge-warning','badge-info','badge-light','badge-dark',
+        // Utilities commonly used
+        'img-fluid','rounded','rounded-circle','border','shadow','table','table-striped','table-bordered'
+    ];
+
+    /**
+     * Замены классов (например, от редактора Quill -> классы Bootstrap)
+     */
+    private const CLASS_REPLACEMENTS = [
+        'ql-align-center' => 'text-center',
+        'ql-align-right' => 'text-end',
+        'ql-align-justify' => 'text-justify',
+        'ql-align-left' => 'text-left',
+    ];
+
+    /**
+     * Добавляемые/заменяемые классы для конкретных тегов
+     * Ключ — имя тега в нижнем регистре, значение — строка класса, которая будет установлена/добавлена
+     */
+    private const TAG_CLASS_ADDITIONS = [
+        'blockquote' => 'blockquote custom-blockquote info mb-0 text-center',
+    ];
+
+    /**
+     * Запрещённые классы (чёрный список)
+     */
+    private const DISALLOWED_CLASSES = [
+        'hidden','invisible','sr-only','screen-reader','visually-hidden'
+    ];
+
     public static function clean(string $content, bool $stripAllTags = false): string
     {
         if ($content === '') {
@@ -30,16 +77,190 @@ class XssSecurity
             return strip_tags($content);
         }
 
+        $content = str_replace(["\r\n", "\r"], "\n", $content);
+
+        $content = preg_replace('/\n{3,}/', "\n\n", $content);
+
+        $content = preg_replace('/(?:(?:<br\s*\\/?>)\s*){3,}/i', '<br><br>', $content);
+
+        $content = preg_replace(
+            '/(?:(?:<p[^>]*>\s*<br\s*\\/?>\s*<\/p>\s*){3,})/i',
+            '<p><br></p><p><br></p>',
+            $content
+        );
+
         $content = strip_tags($content, self::ALLOWED_TAGS);
         $content = self::removeDangerousAttributes($content);
         $content = self::blockDangerousProtocols($content);
         $content = self::removeDangerousTags($content);
+        $content = self::filterAttributesAndClasses($content);
         $content = self::cleanStyleAttributes($content);
         $content = self::blockBase64Content($content);
         $content = self::cleanHtmlEntities($content);
         $content = htmlspecialchars_decode($content, ENT_QUOTES | ENT_HTML5);
         $content = self::removeDangerousAttributes($content);
         $content = self::blockDangerousProtocols($content);
+
+        return $content;
+    }
+
+
+    /**
+     * Удаляет все атрибуты, стили и классы, которые не разрешены.
+     * - Полностью удаляет атрибуты, не перечисленные в безопасном списке
+     * - Удаляет style атрибуты (Bootstrap стиль должен быть задан через классы)
+     * - Оставляет только разрешённые классы из ALLOWED_BOOTSTRAP_CLASSES и удаляет те, которые в DISALLOWED_CLASSES
+     *
+     * @param string $content
+     * @return string
+     */
+    private static function filterAttributesAndClasses(string $content): string
+    {
+        // Разрешённые атрибуты по умолчанию для безопасного HTML
+        $allowedAttrs = [
+            'href','src','alt','title','width','height','colspan','rowspan','scope','role','aria-label','aria-hidden','rel','target','type'
+        ];
+
+        // Удаляем все event-атрибуты и data-атрибуты, кроме data-* если они нужны — здесь блокируем все data-*
+        $content = preg_replace('/\sdata-[a-z0-9_-]*\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $content);
+
+        // Удаляем все атрибуты, кроме разрешённых и class/href/src/alt/title и aria-атрибутов
+        $content = preg_replace_callback('/<([a-z][a-z0-9]*)\b([^>]*)>/i', function($matches) use ($allowedAttrs) {
+            $tag = $matches[1];
+            $attrString = $matches[2];
+
+            // Найдём все атрибуты
+            preg_match_all('/([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*("([^"]*)"|\'([^\']*)\'|([^\s>]+))/i', $attrString, $aMatches, PREG_SET_ORDER);
+
+            $keep = [];
+            foreach ($aMatches as $m) {
+                $attrName = strtolower($m[1]);
+                $attrVal = isset($m[3]) && $m[3] !== '' ? $m[3] : (isset($m[4]) && $m[4] !== '' ? $m[4] : (isset($m[5]) ? $m[5] : ''));
+
+                // Always skip dangerous attributes
+                if (in_array($attrName, self::DANGEROUS_ATTRIBUTES, true)) {
+                    continue;
+                }
+
+                // Allow aria-* attributes
+                if (strpos($attrName, 'aria-') === 0) {
+                    $keep[$attrName] = $attrVal;
+                    continue;
+                }
+                // Allow only whitelisted attributes or class/href/src/alt/title/style
+                if (in_array($attrName, $allowedAttrs, true) || in_array($attrName, ['class','href','src','alt','title','style'], true)) {
+                    $keep[$attrName] = $attrVal;
+                }
+            }
+
+            // Если для тега определены добавляемые классы — добавляем их в $keep (даже если изначально нет class)
+            $tagLower = strtolower($tag);
+            if (isset(self::TAG_CLASS_ADDITIONS[$tagLower])) {
+                $additional = trim(self::TAG_CLASS_ADDITIONS[$tagLower]);
+                if ($additional !== '') {
+                    if (isset($keep['class']) && trim($keep['class']) !== '') {
+                        $keep['class'] = trim($additional . ' ' . $keep['class']);
+                    } else {
+                        $keep['class'] = $additional;
+                    }
+                }
+            }
+
+            // Обработка class: применяем замены классов (например от редактора) и оставляем только разрешённые
+            if (isset($keep['class'])) {
+                $classStr = trim($keep['class']);
+                if ($classStr !== '') {
+                    $clsParts = preg_split('/\s+/', $classStr);
+                    foreach ($clsParts as &$cp) {
+                        if (isset(self::CLASS_REPLACEMENTS[$cp])) {
+                            $cp = self::CLASS_REPLACEMENTS[$cp];
+                        }
+                    }
+                    $keep['class'] = implode(' ', $clsParts);
+                }
+
+                $classes = preg_split('/\s+/', trim($keep['class']));
+                    // Для некоторых тегов добавляем/заменяем класс целиком или дополняем
+                    $tagLower = strtolower($tag);
+                    if (isset(self::TAG_CLASS_ADDITIONS[$tagLower])) {
+                        // Добавим эти классы в начало — но учитываем уже существующие
+                        $additional = trim(self::TAG_CLASS_ADDITIONS[$tagLower]);
+                        if ($additional !== '') {
+                            $keep['class'] = trim($additional . ' ' . $keep['class']);
+                        }
+                    }
+            
+                    $out = [];
+                    foreach ($classes as $c) {
+                        if ($c === '') continue;
+                        // Блокировка конкретных запрещённых
+                        if (in_array($c, self::DISALLOWED_CLASSES, true)) continue;
+
+                        // Разрешаем только точные совпадения с белым списком
+                        if (in_array($c, self::ALLOWED_BOOTSTRAP_CLASSES, true)) {
+                            $out[] = $c;
+                            continue;
+                        }
+
+                        // Разрешим некоторые утилитарные классы с префиксами, например col-*, text-*, mt-*, p-*
+                        if (preg_match('/^(col-(xs-|sm-|md-|lg-|xl-)?[0-9]+|col|text-(left|center|right|muted|primary|secondary|success|danger|warning|info|light|dark)|m[tblrxy]?-[0-5]|p[tblrxy]?-[0-5])$/', $c)) {
+                            $out[] = $c;
+                            continue;
+                        }
+                    }
+
+                    if (count($out) > 0) {
+                        $keep['class'] = implode(' ', $out);
+                    } else {
+                        unset($keep['class']);
+                    }
+            }
+
+            // Обработка style: оставляем только color и background-color и очищаем значения
+            if (isset($keep['style'])) {
+                $styleVal = $keep['style'];
+
+                // Найдём все допустимые декларации color/background-color
+                preg_match_all('/\s*(color|background-color)\s*:\s*([^;]+);?/i', $styleVal, $sMatches, PREG_SET_ORDER);
+                $newDecls = [];
+                foreach ($sMatches as $sd) {
+                    $prop = strtolower($sd[1]);
+                    $valRaw = trim($sd[2]);
+
+                    // Блокируем опасные токены
+                    if (preg_match('/(expression|javascript:|data:|url\(|behavior|@import)/i', $valRaw)) {
+                        continue;
+                    }
+
+                    // Удаляем лишние кавычки и теги
+                    $valSan = trim($valRaw, "\"' ");
+                    $valSan = strip_tags($valSan);
+
+                    // Простая проверка допустимых символов в значении цвета (hex, rgb, rgba, слова)
+                    if (preg_match('/^[#0-9a-zA-Z\s%,().-]+$/', $valSan)) {
+                        $newDecls[] = $prop . ': ' . $valSan;
+                    }
+                }
+
+                if (count($newDecls) > 0) {
+                    // Обновляем стиль: объединяем декларации и гарантируем точку с запятой в конце
+                    $keep['style'] = implode('; ', $newDecls) . ';';
+                } else {
+                    unset($keep['style']);
+                }
+            }
+
+            // Собираем обратно атрибуты в строку
+            $attrParts = [];
+            foreach ($keep as $n => $v) {
+                // Экранируем значения
+                $vEsc = htmlspecialchars($v, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $attrParts[] = $n . '="' . $vEsc . '"';
+            }
+
+            $newTag = '<' . $tag . (count($attrParts) ? ' ' . implode(' ', $attrParts) : '') . '>';
+            return $newTag;
+        }, $content);
 
         return $content;
     }

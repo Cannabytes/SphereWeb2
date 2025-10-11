@@ -49,11 +49,44 @@ class forum_post
     public function getContent(): string
     {
         $content = $this->content;
+        $content = str_replace(["\r\n", "\r"], "\n", $content);
+
+        $content = preg_replace('/\n{3,}/', "\n\n", $content);
+
+        $content = preg_replace('/(?:(?:<br\s*\\/?>)\s*){3,}/i', '<br><br>', $content);
+
+        $content = preg_replace(
+            '/(?:(?:<p[^>]*>\s*<br\s*\\/?>\s*<\/p>\s*){3,})/i',
+            '<p><br></p><p><br></p>',
+            $content
+        );
+        
         $replacements = [
             '<div><br></div>' => '',
+            '<br><br>' => '<br>',
+            "\n\n" => "\n",
+            '<p class="mb-0"><br></p>' => '',
             'onclick' => 'оnсlick',
             'none' => 'nоne',
+            'id' => 'іd',
+            'script' => 'ѕcript',
+            'onerror' => 'оnеrror',
+            'onload' => 'оnlоad',
+            'onmouseover' => 'оnmоuseover',
+            'onfocus' => 'оnfосus',
+            'onmouseout' => 'оnmоut',
+            'onmouseenter' => 'оnmоuseentеr',
+            'onmouseleave' => 'оnmоuseleavе',
+            'onkeydown' => 'оnkeydоwn',
+            'onkeyup' => 'оnkeyuр',
+            'onkeypress' => 'оnkeyрrеss',
+            'onchange' => 'оnсhangе',
+            'onselect' => 'оnѕelect',
+            'onpaste' => 'оnpaste',
+            'oncopy' => 'оnсoрy',
+            'oncut' => 'оnсut',
         ];
+        
         return strtr($content, $replacements);
     }
 

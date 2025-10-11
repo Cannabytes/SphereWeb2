@@ -1571,28 +1571,21 @@ class forum
 
             sql::beginTransaction();
             try {
-                // Обработка изображений в сообщении
                 $filesToDelete = [];
 
-
-                // Получаем файлы из БД
                 $attachedFiles = sql::getRows(
                     "SELECT filename FROM forum_attachments WHERE post_id = ?",
                     [$post->getId()]
                 );
 
-                // Получаем изображения для удаления
                 $filesToDelete = $this->extractImagesToDelete($post->getContent());
                 $filesToDelete = array_unique($filesToDelete);
-                // Добавляем прикрепленные файлы в список для удаления
                 foreach ($attachedFiles as $file) {
                     $filesToDelete[] = $file['filename'];
                 }
-                // Удаляем физические файлы
                 foreach ($filesToDelete as $filename) {
                     $this->deleteForumFiles($filename);
                 }
-                // Удаляем записи из БД
                 if (!empty($filesToDelete)) {
                     $placeholders = str_repeat('?,', count($filesToDelete) - 1) . '?';
                     sql::run(
@@ -1601,13 +1594,10 @@ class forum
                     );
                 }
 
-                // Удаляем лайки к посту
                 sql::run("DELETE FROM forum_post_likes WHERE post_id = ?", [$messageId]);
 
-                // Удаляем само сообщение
                 sql::run("DELETE FROM forum_posts WHERE id = ?", [$messageId]);
 
-                // Уменьшаем счетчики
                 $this->decrementThreadReplies($thread->getId());
                 $this->decrementCategoryPostCount($thread->getCategoryId());
 

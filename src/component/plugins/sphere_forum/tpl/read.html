@@ -438,7 +438,7 @@
                                 </div>
                                 {% endif %}
 
-                                <div class="post mb-3" >{{post.getContent()|replace({'<p class="mb-0"><br></p>': ''})|raw}}</div>
+                                <div class="post mb-3" >{{post.getContent()|raw}}</div>
 
                                 {% if thread.getPoll() and post.getId() == firstPostId %}
                                 <div class="card border ">
