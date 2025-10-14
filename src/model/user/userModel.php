@@ -1,5 +1,4 @@
 <?php
-/////
 
 namespace Ofey\Logan22\model\user;
 
@@ -719,11 +718,25 @@ class userModel
      */
     public function setAvatar(?string $avatar): userModel
     {
+        // Если передан файл — убираем возможную query-string и добавляем cache-buster
+        if ($avatar !== null) {
+            // Удаляем существующую query-string, если есть
+            $base = preg_replace('/\?.*$/', '', $avatar);
+            try {
+                $rand = bin2hex(random_bytes(2)); // 4 hex chars
+            } catch (\Exception $e) {
+                $rand = substr(md5(uniqid('', true)), 0, 4);
+            }
+            $avatarToStore = $base . '?c=' . $rand;
+        } else {
+            $avatarToStore = null;
+        }
+
         sql::run('UPDATE `users` SET `avatar` = ? WHERE `id` = ?', [
-            $avatar,
+            $avatarToStore,
             $this->getId(),
         ]);
-        $this->avatar = $avatar;
+        $this->avatar = $avatarToStore;
 
         return $this;
     }

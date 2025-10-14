@@ -211,8 +211,8 @@ class plugin
                 if ($isEnabled) {
                     // Получаем данные плагина
                     $pluginData = [
-                        'showMainPage' => true,
-                        'addToMenu' => true
+                        'showMainPage' => false,
+                        'addToMenu' => false,
                     ];
 
                     // Если плагин уже настроен, получаем его текущие настройки

@@ -315,8 +315,8 @@
                                  {% endif %}>
                                 <div class=" mt-1">
                                     <div class="d-flex flex-column align-items-center">
-                                        <span class="avatar avatar-xxl {% if user.isOnline() %}online{%else%}offline{% endif %} mb-1">
-                                            <img src="{{user.getAvatar()}}" alt="" class="avatar avatar-xxl">
+                                        <span class="{% if user.isOnline() %}online{%else%}offline{% endif %} mb-1">
+                                            <img src="{{user.getAvatar()}}" alt="" class="{% if user.getAvatar()|split('/')|last|slice(0,5) == 'user_' %}img-fluid shadow-lg rounded{% else %}avatar avatar-xxl{% endif %}">
                                         </span>
                                         {% if user.isAdmin() %}
                                         <span class="badge bg-light text-muted m-1">{{phrase('admin')}}</span>
@@ -345,7 +345,7 @@
 
                                 <div class="card-body p-0 ">
                                     <div class="position-relative ">
-                                        <div class="position-absolute w-100 h-100 bg-dark opacity-25 border  rounded"></div>
+                                        <div class="position-absolute w-100 h-100 border  rounded"></div>
                                         <div class="position-relative">
                                             {# Считаем суммарные значения всегда (онлайн время нужно показывать даже если PvP/PK скрыты) #}
                                             {% set onlineTime = 0 %}
@@ -602,11 +602,11 @@
 
 
                         <div class="col-2 me-3 ">
-                            <div class="overflow-hidden border ">
+                            <div class=" ">
                                 <div class="border-bottom mt-1">
                                     <div class="d-flex flex-column align-items-center">
-                                                <span class="avatar avatar-xxl online mb-1">
-                                                    <img src="{{getUser().getAvatar()}}" alt="" class="avatar avatar-xxl">
+                                                <span class="online mb-1">
+                                                    <img src="{{getUser().getAvatar()}}" alt="" class="{% if getUser().getAvatar()|split('/')|last|slice(0,5) == 'user_' %}img-fluid shadow-lg rounded{% else %}avatar avatar-xxl{% endif %}">
                                                 </span>
                                         <h5 class="fw-semibold mb-1 text-center">{{getUser().getName()}}</h5>
                                     </div>

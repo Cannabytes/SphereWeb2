@@ -1,0 +1,160 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card custom-card shadow-lg rounded">
+        <div class="card-header justify-content-between">
+            <div class="card-title">
+                <a href="/admin/extensions/paid" class="avatar border text-muted me-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                    </svg>
+                </a>
+                {{phrase('avatar_upload_admin_title')}}
+            </div>
+            <div class="prism-toggle">
+                <div class="custom-toggle-switch d-flex align-items-center">
+                    <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}" type="checkbox" {% if pluginActive %}checked{% endif %}>
+                    <label for="enablePlugin" class="label-success"></label>
+                    <span class="ms-3">{{phrase('Activating the plugin')}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            {% if pluginActive == false %}
+            <div class="alert alert-danger" role="alert">
+                {{phrase('plugin_is_disabled_need_active')|raw}}
+            </div>
+            {% endif %}
+
+            {# System status (if provided by controller) #}
+            {% if systemStatus is defined %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-gear me-2"></i>{{phrase('avatar_upload_system_requirements')}}
+                        {% if systemStatus.ready %}
+                            <span class="badge bg-success ms-2">{{phrase('avatar_upload_all_requirements_met')}}</span>
+                        {% else %}
+                            <span class="badge bg-danger ms-2">{{phrase('avatar_upload_requirements_not_met')}}</span>
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Требование</th>
+                                    <th>Статус</th>
+                                    <th>Сообщение</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, req in systemStatus.requirements %}
+                                <tr>
+                                    <td>{{ req.name }}</td>
+                                    <td>
+                                        {% if req.status %}
+                                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> OK</span>
+                                        {% else %}
+                                            <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Fail</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ req.message }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {# Removed "Show on main page" and "Add to menu" options per request #}
+
+            <hr class="my-4">
+
+            <h5 class="mb-3">{{phrase('avatar_upload_cost_settings')}}</h5>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="isFree" id="isFreeTrue" value="true" {% if setting.isFree %}checked{% endif %} {% if pluginActive == false %}disabled{% endif %}>
+                <label class="form-check-label" for="isFreeTrue">{{phrase('avatar_upload_free_option')}}</label>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="isFree" id="isFreeFalse" value="false" {% if not setting.isFree %}checked{% endif %} {% if pluginActive == false %}disabled{% endif %}>
+                <label class="form-check-label" for="isFreeFalse">{{phrase('avatar_upload_paid_option')}}</label>
+            </div>
+
+            <div class="mb-3 {% if setting.isFree %}d-none{% endif %}" id="costContainer">
+                <label for="cost" class="form-label">{{phrase('avatar_upload_cost_label')}}</label>
+                <input type="number" class="form-control" id="cost" name="cost" min="0" step="0.1" value="{{ setting.cost ?? 1 }}" {% if pluginActive == false %}disabled{% endif %}>
+                <div class="form-text">{{phrase('avatar_upload_cost_hint')}}</div>
+            </div>
+
+            <div class="mt-4">
+                <button type="button" class="btn btn-primary" id="saveSettings" {% if pluginActive == false %}disabled{% endif %}>
+                    <i class="bi bi-check-circle me-2"></i>{{phrase('avatar_upload_save_settings')}}
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{# Inject variables and include spherePlugin.js so activation toggle is wired #}
+<script>
+    const pluginName = "{{pluginName}}";
+    const pluginActive = "{{pluginActive}}";
+</script>
+<script src="{{template}}/assets/js/spherePlugin.js?v=0.0.4"></script>
+
+<script>
+    $(document).ready(function() {
+        // Показываем/скрываем поле стоимости
+        $('input[name="isFree"]').on('change', function() {
+            if ($(this).val() === 'false' && $(this).is(':checked')) {
+                $('#costContainer').show();
+            } else {
+                $('#costContainer').hide();
+            }
+        });
+
+            // Сохранение настроек
+        $('#saveSettings').on('click', function() {
+            const isFree = $('input[name="isFree"]:checked').val();
+            const cost = $('#cost').val();
+
+            // Сохраняем isFree
+            const saveIsFree = AjaxSend('/admin/plugin/save/config', 'POST', {
+                pluginName: pluginName,
+                setting: 'isFree',
+                value: isFree,
+                type: 'bool',
+                serverId: 0
+            }, false);
+
+            // Сохраняем cost
+            const saveCost = AjaxSend('/admin/plugin/save/config', 'POST', {
+                pluginName: pluginName,
+                setting: 'cost',
+                value: cost,
+                type: 'float',
+                serverId: 0
+            }, false);
+
+            Promise.all([saveIsFree, saveCost])
+                .then(() => {
+                    showNotification('{{phrase("avatar_upload_settings_saved")}}', 'success');
+                })
+                .catch(err => {
+                    console.error('Ошибка при сохранении настроек:', err);
+                    showNotification('{{phrase("Error saving")}}', 'error');
+                });
+        });
+    });
+</script>
+
+{% endblock %}

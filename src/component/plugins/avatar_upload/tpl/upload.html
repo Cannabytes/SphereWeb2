@@ -1,0 +1,152 @@
+{% extends 'struct.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<link rel="stylesheet" href="/src/component/plugins/avatar_upload/tpl/css/style.css?v=0.0.1">
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="bi bi-person-circle me-2"></i>{{ phrase('avatar_upload_page_title') }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <!-- Left column: current avatar, cost and requirements -->
+                        <div class="col-lg-5">
+                            <div class="card custom-card mb-3">
+                                <div class="card-body text-center">
+                                    <h5 class="mb-3">{{ phrase('avatar_upload_current_avatar') }}</h5>
+                                    <div class="mb-3">
+                                        <img src="{{ currentAvatar }}" alt="Current Avatar" class="img-fluid rounded" style="max-width: 180px;">
+                                    </div>
+                                    {% if not setting.isFree %}
+                                    <div class="alert alert-info d-flex align-items-center">
+                                        <i class="bi bi-info-circle me-3" style="font-size: 1.1rem;"></i>
+                                        <div>
+                                            {{ phrase('avatar_upload_cost_info') }}: <strong class="ms-2">{{ setting.cost ?? 1 }} Donate Coin</strong>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-success d-flex align-items-center">
+                                        <i class="bi bi-check-circle me-3" style="font-size: 1.1rem;"></i>
+                                        <div><strong>{{ phrase('avatar_upload_free_info') }}</strong></div>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="text-start mt-3">
+                                        <strong><i class="bi bi-exclamation-triangle me-2 text-muted"></i>{{ phrase('avatar_upload_requirements') }}:</strong>
+                                        <ul class="mb-0 mt-2 text-muted">
+                                            <li>{{ phrase('avatar_upload_formats') }}</li>
+                                            <li>{{ phrase('avatar_upload_min_size_req') }}</li>
+                                            <li>{{ phrase('avatar_upload_max_size_req') }}</li>
+                                            <li>{{ phrase('avatar_upload_resize_info') }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right column: upload area -->
+                        <div class="col-lg-7">
+                            {# Область загрузки файла: делаем неактивной если загрузка платная и у пользователя недостаточно средств #}
+                            {% set userBalance = getUser().getBalance() %}
+                            {% set isAdmin = (getUser() and getUser().isAdmin()) ? true : false %}
+                            {# Если не бесплатно, и баланс меньше стоимости, и пользователь не админ — блокируем #}
+                            {% if not setting.isFree and userBalance < setting.cost and not isAdmin %}
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div id="fileUploadArea" class="w-100 text-center py-5" aria-disabled="true" style="pointer-events: none; opacity: 0.65; border: 2px dashed #e9ecef; border-radius: .375rem;">
+                                        <div class="mb-3"><i class="bi bi-x-circle text-danger" style="font-size: 2rem;"></i></div>
+                                        <h5 class="mb-2">{{ phrase('avatar_upload_not_enough_funds')|default('Недостаточно средств') }}</h5>
+                                        <p class="text-muted mb-1">{{ phrase('avatar_upload_current_balance')|default('На Вашем счёте') }}: <strong>{{ userBalance }}</strong></p>
+                                        <p class="text-muted mb-0">{{ phrase('avatar_upload_required_cost')|default('Требуется') }}: <strong>{{ setting.cost }}</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp,image/gif" disabled style="display: none;">
+                            {% else %}
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div id="fileUploadArea" class="w-100 text-center py-5" style="border: 2px dashed #e9ecef; border-radius: .375rem; cursor: pointer;">
+                                        <div class="mb-3"><i class="bi bi-cloud-upload" style="font-size: 2rem;"></i></div>
+                                        <h5 class="mb-2">{{ phrase('avatar_upload_drag_drop') }}</h5>
+                                        <p class="text-muted mb-0">{{ phrase('avatar_upload_select_photo') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display: none;">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для обрезки аватара -->
+<div class="modal fade" id="cropAvatarModal" tabindex="-1" aria-labelledby="cropAvatarModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cropAvatarModalLabel">
+                    <i class="bi bi-crop me-2"></i>{{phrase('avatar_upload_crop_title')}}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Область обрезки -->
+                        <div class="crop-container" id="cropContainer">
+                            <img id="cropImage" src="" alt="Crop Image">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <!-- Предварительный просмотр -->
+                        <div class="text-center">
+                            <h6 class="mb-3">{{phrase('avatar_upload_preview')}}</h6>
+                            <div class="avatar-preview-box mx-auto">
+                                <div class="preview"></div>
+                            </div>
+                            <div class="mt-3 text-muted small">
+                                <i class="bi bi-info-circle me-1"></i>
+                                {{phrase('avatar_upload_crop_hint')}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>{{phrase('avatar_upload_cancel')}}
+                </button>
+                <button type="button" class="btn btn-primary" id="uploadAvatar">
+                    <i class="bi bi-check-circle me-2"></i>{{phrase('avatar_upload_upload_button')}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+    // Передаем переводы в JavaScript
+    window.avatarUploadPhrases = {
+        uploading: '{{phrase("avatar_upload_uploading")}}',
+        pleaseSelect: '{{phrase("avatar_upload_please_select")}}',
+        minCropSize: '{{phrase("avatar_upload_min_crop_size")}}',
+        fileTooLarge: '{{phrase("avatar_upload_file_too_large")}}',
+        fileReadError: '{{phrase("avatar_upload_file_read_error")}}'
+    };
+</script>
+<script src="/src/component/plugins/avatar_upload/tpl/js/avatar_uploader.js?v=0.0.2"></script>
+{% endblock %}
