@@ -23,10 +23,12 @@ class index
         $sphereAPIError = null;
 
         $info = server::send(type::SERVER_FULL_INFO)->show(false)->getResponse();
+
         if (isset($info['error']) or $info === null) {
             $sphereAPIError = true;
             $info['servers'] = [];
         }
+
         if (config::load()->enabled()->isEnableEmulation() == false) {
             if (isset($info['servers'])) {
                 $restart = false;
@@ -34,10 +36,17 @@ class index
                     $id = $server['id'];
                     \Ofey\Logan22\model\server\server::loadStatusServer($server);
                     $getServer = \Ofey\Logan22\model\server\server::isServer($id, $server);
+
                     if ($getServer == null) {
+                        $name = $server['info']['name'] ?? "NoName #{$id}";
                         $serverNew = new serverModel($server, []);
                         $serverNew->setId($id);
-                        $serverNew->setName("NoName #{$id}");
+                        $serverNew->setName($name);
+                        $serverNew->setRateExp($server['info']['rateExp'] ?? 1);
+                        $serverNew->setRateSp($server['info']['rateSp'] ?? 1);
+                        $serverNew->setRateAdena($server['info']['rateAdena'] ?? 1);
+                        $serverNew->setRateDrop($server['info']['rateDrop'] ?? 1);
+                        $serverNew->setChronicle($server['info']['chronicle'] ?? "NoChronicle");
                         $serverNew->setEnabled($server['enabled']);
                         $serverNew->save();
                         $restart = true;
@@ -51,6 +60,7 @@ class index
                 }
             }
         }
+
         if (!$sphereAPIError) {
             tpl::addVar([
                 "launcher" => $info['launcher'] ?? null,
@@ -67,6 +77,7 @@ class index
                 "SSL" => $info['SSL'],
             ]);
         }
+
 
         $updateLog = "uploads/update_log.php";
         if (file_exists($updateLog)) {

@@ -170,6 +170,14 @@ class options
             "cachedIP" => $cached_ip,
             "cachedPort" => (int)$cached_port,
             "cachedWebAdmin" => $cached_WebAdmin,
+            "info" => [
+                "name" => $name,
+                "rateExp" => (int)$rateExp,
+                "rateSp" => (int)$rateSp,
+                "rateAdena" => (int)$rateAdena,
+                "rateDrop" => (int)$rateDrop,
+                "chronicle" => $version_client,
+            ],
         ])->show()->getResponse();
 
         if (isset($data['id'])) {
@@ -480,6 +488,14 @@ class options
             "cachedIP" => $cached_ip,
             "cachedPort" => (int)$cached_port,
             "cachedWebAdmin" => $cached_WebAdmin,
+            "info" => [
+                "name" => $name,
+                "rateExp" => (int)$rateExp,
+                "rateSp" => (int)$rateSp,
+                "rateAdena" => (int)$rateAdena,
+                "rateDrop" => (int)$rateDrop,
+                "chronicle" => $version_client,
+            ],
         ])->show()->getResponse();
 
         if (isset($data["success"])) {
