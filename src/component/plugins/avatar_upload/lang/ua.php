@@ -88,4 +88,6 @@ return [
     'avatar_upload_preview' => 'Попередній перегляд',
     'avatar_upload_crop_hint' => 'Виділіть область для аватара',
     'avatar_upload_paste_hint' => 'Або натисніть Ctrl+V щоб вставити зображення',
+    'avatar_upload_start' => 'Початок',
+    'avatar_upload_end' => 'Кінець',
 ];

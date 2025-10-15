@@ -88,4 +88,6 @@ return [
     'avatar_upload_preview' => 'Vista previa',
     'avatar_upload_crop_hint' => 'Seleccione el área para su avatar',
     'avatar_upload_paste_hint' => 'O presione Ctrl+V para pegar una imagen',
+    'avatar_upload_start' => 'Inicio',
+    'avatar_upload_end' => 'Fin',
 ];

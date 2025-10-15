@@ -649,11 +649,13 @@ class VideoAvatarUploader {
         // Обновляем метки
         const clipDuration = this.endValue - this.startValue;
         
+        const startText = (window.avatarVideoPhrases && window.avatarVideoPhrases.startLabel) ? window.avatarVideoPhrases.startLabel : 'Start';
+        const endText = (window.avatarVideoPhrases && window.avatarVideoPhrases.endLabel) ? window.avatarVideoPhrases.endLabel : 'End';
         if (this.startTimeLabel) {
-            this.startTimeLabel.innerHTML = `<i class="bi bi-play-circle me-1"></i>Начало: <strong>${this.startValue.toFixed(2)}s</strong>`;
+            this.startTimeLabel.innerHTML = `<i class="bi bi-play-circle me-1"></i>${startText}: <strong>${this.startValue.toFixed(2)}s</strong>`;
         }
         if (this.endTimeLabel) {
-            this.endTimeLabel.innerHTML = `<i class="bi bi-stop-circle me-1"></i>Конец: <strong>${this.endValue.toFixed(2)}s</strong>`;
+            this.endTimeLabel.innerHTML = `<i class="bi bi-stop-circle me-1"></i>${endText}: <strong>${this.endValue.toFixed(2)}s</strong>`;
         }
         if (this.durationLabel) {
             this.durationLabel.innerHTML = `<i class="bi bi-hourglass-split me-1"></i>${clipDuration.toFixed(2)}s`;

@@ -137,7 +137,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle me-2"></i>{{phrase('avatar_upload_cancel')}}
                 </button>
-                <button type="button" class="btn btn-primary" id="uploadAvatar">
+                <button type="button" class="btn btn-success" id="uploadAvatar">
                     <i class="bi bi-check-circle me-2"></i>{{phrase('avatar_upload_upload_button')}}
                 </button>
             </div>
@@ -200,10 +200,6 @@
                             </div>
                         </div>
 
-                        <div class="alert alert-info mb-0">
-                            <i class="bi bi-info-circle me-2"></i>
-                            <small>{{ phrase('avatar_upload_video_instructions') }}</small>
-                        </div>
                     </div>
 
                     <!-- Правая колонка: Превью финального аватара -->
@@ -237,7 +233,7 @@
                             </div>
                             <hr>
                             <div class="d-grid gap-2">
-                                <button type="button" class="btn btn-primary" id="uploadVideoAvatar">
+                                <button type="button" class="btn btn-success" id="uploadVideoAvatar">
                                     <i class="bi bi-check-circle me-2"></i>{{ phrase('avatar_upload_video_upload_button') }}
                                 </button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -275,13 +271,16 @@
         preparing: '{{phrase("avatar_upload_video_preparing")}}',
         uploading: '{{phrase("avatar_upload_uploading")}}',
         durationHint: '{{phrase("avatar_upload_video_duration_hint")}}'
+    ,
+        startLabel: '{{phrase("avatar_upload_start")}}',
+        endLabel: '{{phrase("avatar_upload_end")}}'
     };
     window.avatarVideoConfig = {
         minDuration: 1,
         maxDuration: 6,
         minCrop: 100,
         maxCrop: 1024,
-        maxFileSize: 209715200 // 200MB
+        maxFileSize: 10*1024*1024
     };
 </script>
 <script src="/src/component/plugins/avatar_upload/tpl/js/avatar_uploader.js?v=0.2.0"></script>

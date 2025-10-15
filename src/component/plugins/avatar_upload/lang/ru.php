@@ -88,4 +88,6 @@ return [
     'avatar_upload_preview' => 'Предпросмотр',
     'avatar_upload_crop_hint' => 'Выделите область для аватара',
     'avatar_upload_paste_hint' => 'Или нажмите Ctrl+V чтобы вставить изображение',
+    'avatar_upload_start' => 'Начало',
+    'avatar_upload_end' => 'Конец',
 ];

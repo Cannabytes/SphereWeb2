@@ -89,4 +89,6 @@ return [
     'avatar_upload_preview' => 'Preview',
     'avatar_upload_crop_hint' => 'Select the area for your avatar',
     'avatar_upload_paste_hint' => 'Or press Ctrl+V to paste an image',
+    'avatar_upload_start' => 'Start',
+    'avatar_upload_end' => 'End',
 ];
