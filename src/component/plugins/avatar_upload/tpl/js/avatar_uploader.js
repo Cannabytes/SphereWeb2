@@ -113,40 +113,67 @@ class AvatarUploader {
 
         const reader = new FileReader();
         reader.onload = (e) => {
+            const dataUrl = e.target.result;
             const cropImage = document.getElementById('cropImage');
             if (!cropImage) {
                 return;
             }
 
-            cropImage.src = e.target.result;
+            // Validate image by loading into a temporary Image
+            const tmpImg = new Image();
+            let validated = false;
 
-            if (this.modal) {
-                this.modal.show();
-            }
+            tmpImg.onload = () => {
+                // Check natural dimensions
+                if (tmpImg.naturalWidth > 0 && tmpImg.naturalHeight > 0) {
+                    validated = true;
+                    // assign to actual img used by cropper
+                    cropImage.src = dataUrl;
 
-            setTimeout(() => {
-                if (this.cropper) {
-                    this.cropper.destroy();
+                    if (this.modal) {
+                        this.modal.show();
+                    }
+
+                    setTimeout(() => {
+                        if (this.cropper) {
+                            this.cropper.destroy();
+                        }
+
+                        this.cropper = new Cropper(cropImage, {
+                            aspectRatio: 1,
+                            viewMode: 2,
+                            dragMode: 'move',
+                            autoCropArea: 1,
+                            restore: false,
+                            guides: true,
+                            center: true,
+                            highlight: false,
+                            cropBoxMovable: true,
+                            cropBoxResizable: true,
+                            toggleDragModeOnDblclick: false,
+                            minCropBoxWidth: 100,
+                            minCropBoxHeight: 100,
+                            preview: '.preview',
+                            ready: () => $('#cropContainer').addClass('fade-in'),
+                        });
+                    }, 300);
+                } else {
+                    this.showError(window.avatarUploadPhrases?.fileReadError || 'Invalid image file');
                 }
+            };
 
-                this.cropper = new Cropper(cropImage, {
-                    aspectRatio: 1,
-                    viewMode: 2,
-                    dragMode: 'move',
-                    autoCropArea: 1,
-                    restore: false,
-                    guides: true,
-                    center: true,
-                    highlight: false,
-                    cropBoxMovable: true,
-                    cropBoxResizable: true,
-                    toggleDragModeOnDblclick: false,
-                    minCropBoxWidth: 100,
-                    minCropBoxHeight: 100,
-                    preview: '.preview',
-                    ready: () => $('#cropContainer').addClass('fade-in'),
-                });
-            }, 300);
+            tmpImg.onerror = () => {
+                if (!validated) {
+                    this.showError(window.avatarUploadPhrases?.fileReadError || 'Invalid image file');
+                }
+            };
+
+            // Start loading the dataUrl into tmpImg
+            try {
+                tmpImg.src = dataUrl;
+            } catch (err) {
+                this.showError(window.avatarUploadPhrases?.fileReadError || 'Invalid image file');
+            }
         };
 
         reader.onerror = () => {
@@ -188,9 +215,9 @@ class AvatarUploader {
         const displayedW = Math.round(cropData.width);
         const displayedH = Math.round(cropData.height);
         const cropSizeDisplayed = Math.min(displayedW, displayedH);
-    const maxCropImg = 1024; // allow up to 1024x1024 for images (display pixels)
-    const minAllowed = this.MIN_CROP_IMG - this.CROP_TOLERANCE;
-    const maxAllowed = maxCropImg + this.CROP_TOLERANCE;
+        const maxCropImg = 1024; // allow up to 1024x1024 for images (display pixels)
+        const minAllowed = this.MIN_CROP_IMG - this.CROP_TOLERANCE;
+        const maxAllowed = maxCropImg + this.CROP_TOLERANCE;
         if (cropSizeDisplayed < minAllowed || cropSizeDisplayed > maxAllowed) {
             this.showError(window.avatarUploadPhrases?.minCropSize || `Select a square area between ${this.MIN_CROP_IMG}×${this.MIN_CROP_IMG} and ${maxCropImg}×${maxCropImg} pixels`);
             return;
@@ -231,11 +258,7 @@ class AvatarUploader {
     }
 
     showError(message) {
-        if (typeof showNotification === 'function') {
-            showNotification(message, 'error');
-        } else {
-            alert(message);
-        }
+        noticeError(message);
     }
 }
 
@@ -331,10 +354,10 @@ class VideoAvatarUploader {
         universalFileInput.off('.videoUpload');
         this.uploadButton.off('.videoUpload');
 
-        // Обработка выбора файла
+        // Обработка выбора файла (только видео)
         universalFileInput.on('change.videoUpload', (e) => {
             const file = e.target.files[0];
-            if (file) {
+            if (file && this.isAllowedVideo(file)) {
                 this.handleFile(file);
             }
         });

@@ -13,6 +13,7 @@ use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Ofey\Logan22\model\log\logTypes;
 
 class avatar_upload
 {
@@ -47,6 +48,14 @@ class avatar_upload
         }
 
         $setting = plugin::getSetting("avatar_upload");
+
+        // Rate limit: не более 5 загрузок аватарки в час
+        try {
+            $this->checkUploadRate();
+        } catch (\Exception $e) {
+            board::error($e->getMessage());
+            return;
+        }
         tpl::addVar('setting', $setting);
         tpl::addVar('currentAvatar', user::self()->getAvatar());
         tpl::displayPlugin("/avatar_upload/tpl/upload.html");
@@ -88,6 +97,13 @@ class avatar_upload
         }
 
         $setting = plugin::getSetting("avatar_upload");
+        // Rate limit: не более 5 загрузок аватарки в час
+        try {
+            $this->checkUploadRate();
+        } catch (\Exception $e) {
+            board::error($e->getMessage());
+            return;
+        }
         
         // Проверяем, платная ли услуга
         if (!($setting['isFree'] ?? true)) {
@@ -133,6 +149,9 @@ class avatar_upload
 
             // Обновляем аватар пользователя
             user::self()->setAvatar($filename);
+
+            // Логируем успешную загрузку
+            $this->logUpload();
 
             board::success(lang::get_phrase('avatar_upload_success'));
         } catch (\Exception $e) {
@@ -281,6 +300,9 @@ class avatar_upload
         }
 
         user::self()->setAvatar($filename);
+
+        // Логируем успешную загрузку
+        $this->logUpload();
 
         board::alert([
             'type' => 'notice',
@@ -451,4 +473,50 @@ class avatar_upload
                 'avatarUrl' => user::self()->getAvatar()
             ]);
     }
+
+        /**
+         * Проверить лимит загрузок аватара (не более 5 в час)
+         *
+         * @throws \Exception
+         */
+        private function checkUploadRate(): void
+        {
+            // Админам проверка не нужна
+            if (user::self()->isAdmin()) {
+                return;
+            }
+
+            // Получаем логи пользователя по типу LOG_CHANGE_AVATAR и считаем за последний час
+            $logs = user::self()->getLogs(logTypes::LOG_CHANGE_AVATAR);
+            if (empty($logs)) {
+                return;
+            }
+
+            $oneHourAgo = strtotime('-1 hour');
+            $count = 0;
+            foreach ($logs as $log) {
+                $time = is_numeric($log['time']) ? (int)$log['time'] : strtotime($log['time']);
+                if ($time >= $oneHourAgo) {
+                    $count++;
+                }
+            }
+
+            $limit = 5;
+            if ($count >= $limit) {
+                throw new \Exception(lang::get_phrase('avatar_upload_rate_limit_exceeded', $limit));
+            }
+        }
+
+        /**
+         * Логировать успешную загрузку аватара
+         */
+        private function logUpload(): void
+        {
+            try {
+                // Используем общий лог системы
+                user::self()->addLog(logTypes::LOG_CHANGE_AVATAR, 'LOG_CHANGE_AVATAR');
+            } catch (\Throwable $e) {
+                // Не критично — пропускаем ошибку логирования
+            }
+        }
 }

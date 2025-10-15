@@ -2,6 +2,8 @@
 
 namespace Ofey\Logan22\component\plugins\avatar_upload;
 
+use Ofey\Logan22\model\db\sql;
+
 /**
  * Установочный класс для плагина Avatar Upload
  * Проверяет требования и создает необходимые директории
@@ -74,6 +76,7 @@ class installer
             file_put_contents($htaccess, $content);
         }
         
+    // Никаких действий с БД при установке - логирование будет использовать встроенные логи пользователя
         return true;
     }
     
