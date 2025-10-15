@@ -176,6 +176,17 @@
     z-index: 2;
 }
 
+/* Поднимаем активный ползунок выше */
+#timelineStart:active,
+#timelineStart:focus {
+    z-index: 5;
+}
+
+#timelineEnd:active,
+#timelineEnd:focus {
+    z-index: 4;
+}
+
 .timeline-range::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;

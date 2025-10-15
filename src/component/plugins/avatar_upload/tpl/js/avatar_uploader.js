@@ -274,6 +274,9 @@ class VideoAvatarUploader {
         this.currentEndTime = 0;
         this._previewReadyHandler = null;
         this._previewTimeUpdateHandler = null;
+        this.isDraggingStart = false;
+        this.isDraggingEnd = false;
+        this.lastInteractedSlider = null;
 
         this.config = window.avatarVideoConfig || {};
     this.MIN_DURATION = this.config.minDuration ?? 1;
@@ -336,26 +339,66 @@ class VideoAvatarUploader {
         });
 
         if (this.timelineStart) {
-            // Используем 'change' для применения изменений после отпускания
+            this.timelineStart.addEventListener('mousedown', () => {
+                this.isDraggingStart = true;
+                this.isDraggingEnd = false;
+                this.lastInteractedSlider = 'start';
+            });
+            
+            this.timelineStart.addEventListener('touchstart', () => {
+                this.isDraggingStart = true;
+                this.isDraggingEnd = false;
+                this.lastInteractedSlider = 'start';
+            });
+            
             this.timelineStart.addEventListener('input', () => {
-                this.updateTimeline();
+                if (this.isDraggingStart) {
+                    this.updateTimeline();
+                }
             });
             
             this.timelineStart.addEventListener('change', () => {
+                this.isDraggingStart = false;
                 this.renderCurrentFrame();
                 this.updatePreview();
             });
         }
 
         if (this.timelineEnd) {
+            this.timelineEnd.addEventListener('mousedown', () => {
+                this.isDraggingEnd = true;
+                this.isDraggingStart = false;
+                this.lastInteractedSlider = 'end';
+            });
+            
+            this.timelineEnd.addEventListener('touchstart', () => {
+                this.isDraggingEnd = true;
+                this.isDraggingStart = false;
+                this.lastInteractedSlider = 'end';
+            });
+            
             this.timelineEnd.addEventListener('input', () => {
-                this.updateTimeline();
+                if (this.isDraggingEnd) {
+                    this.updateTimeline();
+                }
             });
             
             this.timelineEnd.addEventListener('change', () => {
+                this.isDraggingEnd = false;
                 this.updatePreview();
             });
         }
+        
+        // Общие обработчики для сброса флагов перетаскивания
+        document.addEventListener('mouseup', () => {
+            this.isDraggingStart = false;
+            this.isDraggingEnd = false;
+        });
+        
+        document.addEventListener('touchend', () => {
+            this.isDraggingStart = false;
+            this.isDraggingEnd = false;
+        });
 
         this.uploadButton.on('click.videoUpload', () => {
             this.uploadVideo();
@@ -458,6 +501,12 @@ class VideoAvatarUploader {
 
         const createCropper = () => {
             try {
+                // Проверяем что canvas имеет содержимое перед созданием cropper
+                if (this.videoCropCanvas.width === 0 || this.videoCropCanvas.height === 0) {
+                    console.warn('Canvas has no dimensions, skipping cropper creation');
+                    return;
+                }
+                
                 this.cropper = new Cropper(this.videoCropCanvas, {
                     aspectRatio: 1,
                     viewMode: 1,
@@ -484,18 +533,28 @@ class VideoAvatarUploader {
         };
 
         const initWithFrame = () => {
+            // Даем видео время полностью инициализироваться
+            if (this.videoElement.readyState < 2) {
+                console.warn('Video not ready for frame rendering');
+                return;
+            }
+            
             this.renderVideoFrame(0).then(() => {
-                createCropper();
+                // Небольшая задержка перед созданием cropper для стабильности
+                setTimeout(() => createCropper(), 100);
             }).catch((err) => {
                 console.warn('Initial frame render failed:', err);
-                createCropper();
+                // Не пытаемся создать cropper если рендеринг не удался
             });
         };
 
         if (this.videoElement.readyState >= 2) {
             initWithFrame();
         } else {
-            const onReady = () => initWithFrame();
+            const onReady = () => {
+                // Дополнительная задержка для стабильности
+                setTimeout(() => initWithFrame(), 100);
+            };
             this.videoElement.addEventListener('loadeddata', onReady, { once: true });
         }
     }
@@ -509,6 +568,12 @@ class VideoAvatarUploader {
 
             const drawFrame = () => {
                 try {
+                    // Ждем пока видео загрузится и будут доступны размеры
+                    if (this.videoElement.readyState < 2) {
+                        reject(new Error('Video not ready'));
+                        return;
+                    }
+                    
                     const width = this.videoElement.videoWidth;
                     const height = this.videoElement.videoHeight;
                     
@@ -529,7 +594,8 @@ class VideoAvatarUploader {
 
             if (this.videoElement.readyState >= 2) {
                 const onSeeked = () => {
-                    drawFrame();
+                    // Дополнительная проверка перед отрисовкой
+                    setTimeout(() => drawFrame(), 50);
                 };
 
                 this.videoElement.addEventListener('seeked', onSeeked, { once: true });
@@ -590,9 +656,9 @@ class VideoAvatarUploader {
         let start = parseFloat(this.timelineStart.value) || 0;
         let end = parseFloat(this.timelineEnd.value) || this.duration;
         
-        // Определяем какой ползунок активен
-        const isStartActive = this.timelineStart === document.activeElement;
-        const isEndActive = this.timelineEnd === document.activeElement;
+        // Определяем какой ползунок активен на основе флагов перетаскивания
+        const isStartActive = this.isDraggingStart || this.lastInteractedSlider === 'start';
+        const isEndActive = this.isDraggingEnd || this.lastInteractedSlider === 'end';
 
         // Проверка пересечения: если start догнал или перешёл end
         if (start >= end) {
