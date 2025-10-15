@@ -251,9 +251,14 @@ class VideoAvatarUploader {
         this.avatarPreviewCanvas = document.getElementById('avatarPreviewCanvas');
         this.avatarPreviewVideo = document.getElementById('avatarPreviewVideo');
 
-        this.timelineStart = document.getElementById('timelineStart');
-        this.timelineEnd = document.getElementById('timelineEnd');
-        this.timelineSelection = document.getElementById('timelineSelection');
+        // Кастомный двойной слайдер
+        this.sliderContainer = document.getElementById('customDualSlider');
+        this.sliderHandleStart = document.getElementById('sliderHandleStart');
+        this.sliderHandleEnd = document.getElementById('sliderHandleEnd');
+        this.sliderTrackActive = document.getElementById('sliderTrackActive');
+        this.tooltipStart = document.getElementById('tooltipStart');
+        this.tooltipEnd = document.getElementById('tooltipEnd');
+        
         this.startTimeLabel = document.getElementById('startTimeLabel');
         this.endTimeLabel = document.getElementById('endTimeLabel');
         this.durationLabel = document.getElementById('durationLabel');
@@ -274,15 +279,19 @@ class VideoAvatarUploader {
         this.currentEndTime = 0;
         this._previewReadyHandler = null;
         this._previewTimeUpdateHandler = null;
-        this.isDraggingStart = false;
-        this.isDraggingEnd = false;
-        this.lastInteractedSlider = null;
+        
+        // Состояние слайдера
+        this.isDragging = false;
+        this.activeHandle = null;
+        this.sliderRect = null;
+        this.startValue = 0;
+        this.endValue = 4;
 
         this.config = window.avatarVideoConfig || {};
-    this.MIN_DURATION = this.config.minDuration ?? 1;
-    this.MAX_DURATION = this.config.maxDuration ?? 6;
-    this.MIN_CROP = this.config.minCrop ?? 100;
-    this.MAX_CROP = this.config.maxCrop ?? 1024;
+        this.MIN_DURATION = this.config.minDuration ?? 1;
+        this.MAX_DURATION = this.config.maxDuration ?? 6;
+        this.MIN_CROP = this.config.minCrop ?? 100;
+        this.MAX_CROP = this.config.maxCrop ?? 1024;
         this.MAX_FILE_SIZE = this.config.maxFileSize ?? (200 * 1024 * 1024);
         this.CROP_TOLERANCE = 1;
 
@@ -338,71 +347,300 @@ class VideoAvatarUploader {
             }
         });
 
-        if (this.timelineStart) {
-            this.timelineStart.addEventListener('mousedown', () => {
-                this.isDraggingStart = true;
-                this.isDraggingEnd = false;
-                this.lastInteractedSlider = 'start';
-            });
-            
-            this.timelineStart.addEventListener('touchstart', () => {
-                this.isDraggingStart = true;
-                this.isDraggingEnd = false;
-                this.lastInteractedSlider = 'start';
-            });
-            
-            this.timelineStart.addEventListener('input', () => {
-                if (this.isDraggingStart) {
-                    this.updateTimeline();
-                }
-            });
-            
-            this.timelineStart.addEventListener('change', () => {
-                this.isDraggingStart = false;
-                this.renderCurrentFrame();
-                this.updatePreview();
-            });
-        }
-
-        if (this.timelineEnd) {
-            this.timelineEnd.addEventListener('mousedown', () => {
-                this.isDraggingEnd = true;
-                this.isDraggingStart = false;
-                this.lastInteractedSlider = 'end';
-            });
-            
-            this.timelineEnd.addEventListener('touchstart', () => {
-                this.isDraggingEnd = true;
-                this.isDraggingStart = false;
-                this.lastInteractedSlider = 'end';
-            });
-            
-            this.timelineEnd.addEventListener('input', () => {
-                if (this.isDraggingEnd) {
-                    this.updateTimeline();
-                }
-            });
-            
-            this.timelineEnd.addEventListener('change', () => {
-                this.isDraggingEnd = false;
-                this.updatePreview();
-            });
-        }
-        
-        // Общие обработчики для сброса флагов перетаскивания
-        document.addEventListener('mouseup', () => {
-            this.isDraggingStart = false;
-            this.isDraggingEnd = false;
-        });
-        
-        document.addEventListener('touchend', () => {
-            this.isDraggingStart = false;
-            this.isDraggingEnd = false;
-        });
+        // Инициализация кастомного двойного слайдера
+        this.initCustomSlider();
 
         this.uploadButton.on('click.videoUpload', () => {
             this.uploadVideo();
         });
+    }
+
+    initCustomSlider() {
+        if (!this.sliderHandleStart || !this.sliderHandleEnd || !this.sliderContainer) {
+            return;
+        }
+
+        // Обработка начала перетаскивания
+        const handleMouseDown = (e, handle) => {
+            e.preventDefault();
+            this.isDragging = true;
+            this.activeHandle = handle;
+            this.sliderRect = this.sliderContainer.getBoundingClientRect();
+            // Save previous values to detect expansion vs shrinking
+            this.prevStartValue = this.startValue;
+            this.prevEndValue = this.endValue;
+            
+            // Поднимаем активный handle выше
+            if (handle === 'start') {
+                this.sliderHandleStart.style.zIndex = '20';
+                this.sliderHandleEnd.style.zIndex = '10';
+            } else {
+                this.sliderHandleEnd.style.zIndex = '20';
+                this.sliderHandleStart.style.zIndex = '10';
+            }
+        };
+
+        // Mouse events (only left button)
+        this.sliderHandleStart.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return; // ignore non-left clicks
+            handleMouseDown(e, 'start');
+        });
+        this.sliderHandleEnd.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            handleMouseDown(e, 'end');
+        });
+
+        // Touch events
+        this.sliderHandleStart.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleMouseDown(e.touches[0], 'start');
+        }, { passive: false });
+
+        this.sliderHandleEnd.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleMouseDown(e.touches[0], 'end');
+        }, { passive: false });
+
+        // Обработка перемещения
+        const handleMove = (clientX) => {
+            if (!this.isDragging || !this.activeHandle || !this.sliderRect) {
+                return;
+            }
+
+            const x = clientX - this.sliderRect.left;
+            const percent = Math.max(0, Math.min(1, x / this.sliderRect.width));
+            const value = percent * this.duration;
+
+            if (this.activeHandle === 'start') {
+                // Proposed new start, clamped by hard limits (0 .. end - MIN_DURATION)
+                let proposedStart = Math.max(0, Math.min(value, this.endValue - this.MIN_DURATION));
+
+                // Determine if this movement would expand the clip (start moved left)
+                const expanding = typeof this.prevStartValue === 'number' ? (proposedStart < this.prevStartValue) : (proposedStart < this.startValue);
+
+                // If expanding beyond MAX_DURATION is attempted, block expansion (but allow shrinking)
+                if (expanding) {
+                    const allowedMinStart = Math.max(0, this.endValue - this.MAX_DURATION);
+                    if (proposedStart < allowedMinStart) {
+                        proposedStart = allowedMinStart; // block expansion past max length
+                    }
+                }
+
+                this.startValue = proposedStart;
+                this.prevStartValue = this.startValue;
+            } else {
+                // Proposed new end, clamped by hard limits (start + MIN_DURATION .. duration)
+                let proposedEnd = Math.min(this.duration, Math.max(value, this.startValue + this.MIN_DURATION));
+
+                // Determine if this movement would expand the clip (end moved right)
+                const expanding = typeof this.prevEndValue === 'number' ? (proposedEnd > this.prevEndValue) : (proposedEnd > this.endValue);
+
+                // If expanding beyond MAX_DURATION is attempted, block expansion (but allow shrinking)
+                if (expanding) {
+                    const allowedMaxEnd = Math.min(this.duration, this.startValue + this.MAX_DURATION);
+                    if (proposedEnd > allowedMaxEnd) {
+                        proposedEnd = allowedMaxEnd; // block expansion past max length
+                    }
+                }
+
+                this.endValue = proposedEnd;
+                this.prevEndValue = this.endValue;
+            }
+
+            // Ensure clip length still respects MAX_DURATION (fallback safety)
+            const clipLength = this.endValue - this.startValue;
+            if (clipLength > this.MAX_DURATION) {
+                if (this.activeHandle === 'start') {
+                    this.startValue = this.endValue - this.MAX_DURATION;
+                } else {
+                    this.endValue = this.startValue + this.MAX_DURATION;
+                }
+            }
+
+            this.updateSliderUI();
+        };
+
+        document.addEventListener('mousemove', (e) => {
+            if (this.isDragging) {
+                handleMove(e.clientX);
+            }
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (this.isDragging && e.touches.length > 0) {
+                e.preventDefault();
+                handleMove(e.touches[0].clientX);
+            }
+        }, { passive: false });
+
+        // Обработка окончания перетаскивания
+        const handleEnd = () => {
+            if (this.isDragging) {
+                this.isDragging = false;
+                this.activeHandle = null;
+                this.sliderRect = null;
+                
+                // Обновляем превью и кадр
+                this.renderCurrentFrame();
+                this.updatePreview();
+            }
+        };
+
+        document.addEventListener('mouseup', handleEnd);
+        document.addEventListener('touchend', handleEnd);
+        document.addEventListener('touchcancel', handleEnd);
+
+        // Start dragging by clicking on the track (left button) — supports press+hold to drag
+        this.sliderContainer.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return; // only left button
+            // ignore if clicked directly on handles — their handlers take over
+            if (e.target === this.sliderHandleStart || e.target === this.sliderHandleEnd ||
+                e.target.parentElement === this.sliderHandleStart || e.target.parentElement === this.sliderHandleEnd) {
+                return;
+            }
+
+            // determine nearest handle and start dragging it
+            const rect = this.sliderContainer.getBoundingClientRect();
+            this.sliderRect = rect;
+            const x = e.clientX - rect.left;
+            const percent = Math.max(0, Math.min(1, x / rect.width));
+            const value = percent * this.duration;
+
+            const distToStart = Math.abs(value - this.startValue);
+            const distToEnd = Math.abs(value - this.endValue);
+
+            const chosen = (distToStart < distToEnd) ? 'start' : 'end';
+            // initialize prev values
+            this.prevStartValue = this.startValue;
+            this.prevEndValue = this.endValue;
+
+            // start drag
+            this.isDragging = true;
+            this.activeHandle = chosen;
+            if (chosen === 'start') {
+                this.sliderHandleStart.style.zIndex = '20';
+                this.sliderHandleEnd.style.zIndex = '10';
+            } else {
+                this.sliderHandleEnd.style.zIndex = '20';
+                this.sliderHandleStart.style.zIndex = '10';
+            }
+
+            // move immediately to clicked position but respect MAX_DURATION
+            if (chosen === 'start') {
+                let proposedStart = Math.max(0, Math.min(value, this.endValue - this.MIN_DURATION));
+                const allowedMinStart = Math.max(0, this.endValue - this.MAX_DURATION);
+                if (proposedStart < allowedMinStart) proposedStart = allowedMinStart;
+                this.startValue = proposedStart;
+                this.prevStartValue = this.startValue;
+            } else {
+                let proposedEnd = Math.min(this.duration, Math.max(value, this.startValue + this.MIN_DURATION));
+                const allowedMaxEnd = Math.min(this.duration, this.startValue + this.MAX_DURATION);
+                if (proposedEnd > allowedMaxEnd) proposedEnd = allowedMaxEnd;
+                this.endValue = proposedEnd;
+                this.prevEndValue = this.endValue;
+            }
+
+            this.updateSliderUI();
+            // prevent text selection while dragging
+            e.preventDefault();
+        });
+
+        // touchstart on track to begin dragging
+        this.sliderContainer.addEventListener('touchstart', (e) => {
+            if (!e.touches || e.touches.length === 0) return;
+            const touch = e.touches[0];
+            // ignore if started on handles (their touchstart takes over)
+            if (touch.target === this.sliderHandleStart || touch.target === this.sliderHandleEnd) return;
+
+            const rect = this.sliderContainer.getBoundingClientRect();
+            this.sliderRect = rect;
+            const x = touch.clientX - rect.left;
+            const percent = Math.max(0, Math.min(1, x / rect.width));
+            const value = percent * this.duration;
+
+            const distToStart = Math.abs(value - this.startValue);
+            const distToEnd = Math.abs(value - this.endValue);
+
+            const chosen = (distToStart < distToEnd) ? 'start' : 'end';
+            this.prevStartValue = this.startValue;
+            this.prevEndValue = this.endValue;
+
+            this.isDragging = true;
+            this.activeHandle = chosen;
+            if (chosen === 'start') {
+                this.sliderHandleStart.style.zIndex = '20';
+                this.sliderHandleEnd.style.zIndex = '10';
+            } else {
+                this.sliderHandleEnd.style.zIndex = '20';
+                this.sliderHandleStart.style.zIndex = '10';
+            }
+
+            if (chosen === 'start') {
+                let proposedStart = Math.max(0, Math.min(value, this.endValue - this.MIN_DURATION));
+                const allowedMinStart = Math.max(0, this.endValue - this.MAX_DURATION);
+                if (proposedStart < allowedMinStart) proposedStart = allowedMinStart;
+                this.startValue = proposedStart;
+                this.prevStartValue = this.startValue;
+            } else {
+                let proposedEnd = Math.min(this.duration, Math.max(value, this.startValue + this.MIN_DURATION));
+                const allowedMaxEnd = Math.min(this.duration, this.startValue + this.MAX_DURATION);
+                if (proposedEnd > allowedMaxEnd) proposedEnd = allowedMaxEnd;
+                this.endValue = proposedEnd;
+                this.prevEndValue = this.endValue;
+            }
+
+            this.updateSliderUI();
+            e.preventDefault();
+        }, { passive: false });
+
+        // prevent right-click menu on slider
+        this.sliderContainer.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+    }
+
+    updateSliderUI() {
+        if (!this.sliderHandleStart || !this.sliderHandleEnd || !this.sliderTrackActive || !this.duration) {
+            return;
+        }
+
+        const startPercent = (this.startValue / this.duration) * 100;
+        const endPercent = (this.endValue / this.duration) * 100;
+
+        // Позиционируем handles
+        this.sliderHandleStart.style.left = `${startPercent}%`;
+        this.sliderHandleEnd.style.left = `${endPercent}%`;
+
+        // Обновляем активную часть трека
+        this.sliderTrackActive.style.left = `${startPercent}%`;
+        this.sliderTrackActive.style.width = `${endPercent - startPercent}%`;
+
+        // Обновляем tooltips
+        if (this.tooltipStart) {
+            this.tooltipStart.textContent = `${this.startValue.toFixed(2)}s`;
+        }
+        if (this.tooltipEnd) {
+            this.tooltipEnd.textContent = `${this.endValue.toFixed(2)}s`;
+        }
+
+        // Обновляем метки
+        const clipDuration = this.endValue - this.startValue;
+        
+        if (this.startTimeLabel) {
+            this.startTimeLabel.innerHTML = `<i class="bi bi-play-circle me-1"></i>Начало: <strong>${this.startValue.toFixed(2)}s</strong>`;
+        }
+        if (this.endTimeLabel) {
+            this.endTimeLabel.innerHTML = `<i class="bi bi-stop-circle me-1"></i>Конец: <strong>${this.endValue.toFixed(2)}s</strong>`;
+        }
+        if (this.durationLabel) {
+            this.durationLabel.innerHTML = `<i class="bi bi-hourglass-split me-1"></i>${clipDuration.toFixed(2)}s`;
+        }
+        if (this.clipDurationInfo) {
+            this.clipDurationInfo.textContent = `${clipDuration.toFixed(2)}s`;
+        }
+        if (this.clipRangeInfo) {
+            this.clipRangeInfo.textContent = `${this.startValue.toFixed(2)}s - ${this.endValue.toFixed(2)}s`;
+        }
     }
 
     isAllowedVideo(file) {
@@ -456,21 +694,12 @@ class VideoAvatarUploader {
                 return;
             }
 
+            // Устанавливаем начальные значения слайдера
             const defaultDuration = Math.min(4, Math.min(this.duration, this.MAX_DURATION));
-
-            if (this.timelineStart) {
-                this.timelineStart.min = 0;
-                this.timelineStart.max = this.duration;
-                this.timelineStart.value = 0;
-            }
-
-            if (this.timelineEnd) {
-                this.timelineEnd.min = 0;
-                this.timelineEnd.max = this.duration;
-                this.timelineEnd.value = defaultDuration;
-            }
-
-            this.updateTimeline();
+            this.startValue = 0;
+            this.endValue = defaultDuration;
+            
+            this.updateSliderUI();
 
             if (this.videoModal) {
                 this.videoModal.show();
@@ -617,7 +846,7 @@ class VideoAvatarUploader {
     }
 
     renderCurrentFrame() {
-        const time = parseFloat(this.timelineStart?.value || 0);
+        const time = this.startValue;
         this.renderVideoFrame(time).then(() => {
             if (this.cropper) {
                 try {
@@ -648,80 +877,13 @@ class VideoAvatarUploader {
         this.cropUpdateTimer = setTimeout(() => this.updatePreview(), 150);
     }
 
-    updateTimeline() {
-        if (!this.timelineStart || !this.timelineEnd || !this.timelineSelection) {
-            return;
-        }
-
-        let start = parseFloat(this.timelineStart.value) || 0;
-        let end = parseFloat(this.timelineEnd.value) || this.duration;
-        
-        // Определяем какой ползунок активен на основе флагов перетаскивания
-        const isStartActive = this.isDraggingStart || this.lastInteractedSlider === 'start';
-        const isEndActive = this.isDraggingEnd || this.lastInteractedSlider === 'end';
-
-        // Проверка пересечения: если start догнал или перешёл end
-        if (start >= end) {
-            if (isStartActive) {
-                // Пользователь двигает start вправо → сдвигаем end
-                end = Math.min(start + this.MIN_DURATION, this.duration);
-                this.timelineEnd.value = end;
-            } else if (isEndActive) {
-                // Пользователь двигает end влево → сдвигаем start
-                start = Math.max(end - this.MIN_DURATION, 0);
-                this.timelineStart.value = start;
-            }
-        }
-
-        // Проверка максимальной длительности
-        const clipLength = end - start;
-        if (clipLength > this.MAX_DURATION) {
-            if (isStartActive) {
-                // Двигаем start → ограничиваем end
-                end = Math.min(start + this.MAX_DURATION, this.duration);
-                this.timelineEnd.value = end;
-            } else if (isEndActive) {
-                // Двигаем end → ограничиваем start
-                start = Math.max(end - this.MAX_DURATION, 0);
-                this.timelineStart.value = start;
-            }
-        }
-        
-        // Сохраняем текущие значения
-        start = parseFloat(this.timelineStart.value);
-        end = parseFloat(this.timelineEnd.value);
-
-        const duration = this.duration || 1;
-        const startPercent = (start / duration) * 100;
-        const endPercent = (end / duration) * 100;
-
-        this.timelineSelection.style.left = `${startPercent}%`;
-        this.timelineSelection.style.width = `${Math.max(endPercent - startPercent, 0)}%`;
-
-        if (this.startTimeLabel) {
-            this.startTimeLabel.textContent = `${start.toFixed(2)}s`;
-        }
-        if (this.endTimeLabel) {
-            this.endTimeLabel.textContent = `${end.toFixed(2)}s`;
-        }
-        if (this.durationLabel) {
-            this.durationLabel.textContent = `Длительность: ${(end - start).toFixed(2)}s`;
-        }
-        if (this.clipDurationInfo) {
-            this.clipDurationInfo.textContent = `${(end - start).toFixed(2)}s`;
-        }
-        if (this.clipRangeInfo) {
-            this.clipRangeInfo.textContent = `${start.toFixed(2)}s - ${end.toFixed(2)}s`;
-        }
-    }
-
     updatePreview() {
         if (!this.cropper || !this.videoElement || !this.avatarPreviewVideo || !this.avatarPreviewCanvas) {
             return;
         }
 
-        this.currentStartTime = parseFloat(this.timelineStart?.value || 0);
-        this.currentEndTime = parseFloat(this.timelineEnd?.value || this.duration);
+        this.currentStartTime = this.startValue;
+        this.currentEndTime = this.endValue;
 
         if (!Number.isFinite(this.currentStartTime)) {
             this.currentStartTime = 0;
@@ -876,11 +1038,26 @@ class VideoAvatarUploader {
             return;
         }
 
-        const start = this.timelineStart ? parseFloat(this.timelineStart.value) || 0 : 0;
-        const end = this.timelineEnd ? parseFloat(this.timelineEnd.value) || this.duration : this.duration;
-        const clipDuration = end - start;
+        // Clamp start/end to valid numeric bounds and apply small tolerance for floating math
+        const EPS = 0.001;
+        let start = Number.isFinite(this.startValue) ? this.startValue : 0;
+        let end = Number.isFinite(this.endValue) ? this.endValue : this.duration || 0;
 
-        if (clipDuration < this.MIN_DURATION || clipDuration > this.MAX_DURATION) {
+        // Ensure within [0, duration]
+        start = Math.max(0, Math.min(start, this.duration || 0));
+        end = Math.max(0, Math.min(end, this.duration || 0));
+
+        // Ensure minimum spacing
+        if (end <= start) {
+            end = Math.min(this.duration || 0, start + this.MIN_DURATION);
+        }
+
+        let clipDuration = end - start;
+        // Normalize small floating errors
+        if (Math.abs(clipDuration - this.MAX_DURATION) <= EPS) clipDuration = this.MAX_DURATION;
+        if (Math.abs(clipDuration - this.MIN_DURATION) <= EPS) clipDuration = this.MIN_DURATION;
+
+        if (clipDuration + EPS < this.MIN_DURATION || clipDuration - EPS > this.MAX_DURATION) {
             this.showError(window.avatarVideoPhrases?.durationInvalid || 'Clip duration must be between 1 and 6 seconds');
             return;
         }
@@ -906,9 +1083,12 @@ class VideoAvatarUploader {
         this.setUploadingState(true);
 
         const formData = new FormData();
-        formData.append('video', this.videoFile);
-        formData.append('start', start.toFixed(2));
-        formData.append('end', end.toFixed(2));
+    formData.append('video', this.videoFile);
+    // send start/end rounded to 2 decimals
+    const startStr = start.toFixed(2);
+    const endStr = end.toFixed(2);
+    formData.append('start', startStr);
+    formData.append('end', endStr);
         formData.append('cropX', Math.max(0, realX));
         formData.append('cropY', Math.max(0, realY));
         formData.append('cropSize', cropSize);
@@ -930,8 +1110,22 @@ class VideoAvatarUploader {
             error: (xhr) => {
                 this.setUploadingState(false);
                 let errorMsg = 'An error occurred while uploading video';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMsg = xhr.responseJSON.message;
+                try {
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    } else if (xhr.responseText) {
+                        // try parse JSON, otherwise show text
+                        try {
+                            const parsed = JSON.parse(xhr.responseText);
+                            if (parsed && parsed.message) errorMsg = parsed.message;
+                        } catch (e) {
+                            // not JSON, use raw text if short
+                            const txt = xhr.responseText.trim();
+                            if (txt) errorMsg = txt.length > 200 ? txt.slice(0, 200) + '...' : txt;
+                        }
+                    }
+                } catch (e) {
+                    // fallback to generic
                 }
                 this.showError(errorMsg);
             },

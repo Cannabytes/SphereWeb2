@@ -2,7 +2,7 @@
 
 {% block css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-<link rel="stylesheet" href="/src/component/plugins/avatar_upload/tpl/css/style.css?v=0.1.8">
+<link rel="stylesheet" href="/src/component/plugins/avatar_upload/tpl/css/style.css?v=0.2.0">
 {% endblock %}
 
 {% block content %}
@@ -172,15 +172,30 @@
                                 <i class="bi bi-clock me-2"></i>{{ phrase('avatar_upload_video_timeline') }}
                             </label>
                             <div class="timeline-wrapper position-relative">
-                                <div class="timeline-track">
-                                    <div id="timelineSelection" class="timeline-selection"></div>
-                                    <input type="range" class="timeline-range" id="timelineStart" min="0" max="0" step="0.05" value="0">
-                                    <input type="range" class="timeline-range" id="timelineEnd" min="0" max="0" step="0.05" value="0">
+                                <div class="custom-dual-slider" id="customDualSlider">
+                                    <div class="slider-track">
+                                        <div class="slider-track-inactive"></div>
+                                        <div class="slider-track-active" id="sliderTrackActive"></div>
+                                    </div>
+                                    <div class="slider-handle slider-handle-start" id="sliderHandleStart" data-handle="start">
+                                        <div class="slider-handle-inner"></div>
+                                        <div class="slider-tooltip" id="tooltipStart">0.00s</div>
+                                    </div>
+                                    <div class="slider-handle slider-handle-end" id="sliderHandleEnd" data-handle="end">
+                                        <div class="slider-handle-inner"></div>
+                                        <div class="slider-tooltip" id="tooltipEnd">4.00s</div>
+                                    </div>
                                 </div>
-                                <div class="timeline-labels d-flex justify-content-between mt-2 small text-muted">
-                                    <span id="startTimeLabel">0.00s</span>
-                                    <span id="durationLabel">Длительность: 4.00s</span>
-                                    <span id="endTimeLabel">0.00s</span>
+                                <div class="timeline-labels d-flex justify-content-between mt-3 small text-muted">
+                                    <span id="startTimeLabel">
+                                        <i class="bi bi-play-circle me-1"></i>Начало: <strong>0.00s</strong>
+                                    </span>
+                                    <span id="durationLabel" class="text-primary fw-bold">
+                                        <i class="bi bi-hourglass-split me-1"></i>4.00s
+                                    </span>
+                                    <span id="endTimeLabel">
+                                        <i class="bi bi-stop-circle me-1"></i>Конец: <strong>0.00s</strong>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -269,5 +284,5 @@
         maxFileSize: 209715200 // 200MB
     };
 </script>
-<script src="/src/component/plugins/avatar_upload/tpl/js/avatar_uploader.js?v=0.1.9"></script>
+<script src="/src/component/plugins/avatar_upload/tpl/js/avatar_uploader.js?v=0.2.0"></script>
 {% endblock %}
