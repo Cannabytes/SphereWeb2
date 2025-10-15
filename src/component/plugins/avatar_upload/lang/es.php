@@ -58,7 +58,7 @@ return [
     'avatar_upload_video_drag_drop' => 'Arrastra y suelta el video aquí o haz clic para seleccionar',
     'avatar_upload_select_video' => 'Selecciona un video corto (MP4, WebM, MOV, MKV, AVI)',
     'avatar_upload_video_formats' => 'Formatos de video: MP4, WebM, MOV, MKV, AVI',
-    'avatar_upload_video_max_size_req' => 'Tamaño máximo de video: 200MB',
+    'avatar_upload_video_max_size_req' => 'Tamaño máximo de video: 10MB',
     'avatar_upload_video_duration_hint' => 'Selecciona un clip de 1 a 6 segundos y recorta un área cuadrada (100-1024px)',
     'avatar_upload_final_result' => 'Resultado final del avatar',
     'avatar_upload_crop_size' => 'Tamaño de recorte',

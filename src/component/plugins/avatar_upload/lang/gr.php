@@ -58,7 +58,7 @@ return [
     'avatar_upload_video_drag_drop' => 'Drag and drop video here or click to select',
     'avatar_upload_select_video' => 'Select a short video (MP4, WebM, MOV, MKV, AVI)',
     'avatar_upload_video_formats' => 'Video formats: MP4, WebM, MOV, MKV, AVI',
-    'avatar_upload_video_max_size_req' => 'Maximum video size: 200MB',
+    'avatar_upload_video_max_size_req' => 'Maximum video size: 10MB',
     'avatar_upload_video_duration_hint' => 'Select a clip from 1 to 6 seconds and crop a square area (100-1024px)',
     'avatar_upload_final_result' => 'Τελικό αποτέλεσμα аватара',
     'avatar_upload_crop_size' => 'Μέγεθος περικοπής',

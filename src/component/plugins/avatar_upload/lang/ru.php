@@ -58,7 +58,7 @@ return [
     'avatar_upload_video_drag_drop' => 'Перетащите видео сюда или нажмите для выбора',
     'avatar_upload_select_video' => 'Выберите короткое видео (MP4, WebM, MOV, MKV, AVI)',
     'avatar_upload_video_formats' => 'Форматы видео: MP4, WebM, MOV, MKV, AVI',
-    'avatar_upload_video_max_size_req' => 'Максимальный размер видео: 200MB',
+    'avatar_upload_video_max_size_req' => 'Максимальный размер видео: 10MB',
     'avatar_upload_video_duration_hint' => 'Выберите клип длиной 1–6 секунд и обрежьте квадратную область (100-1024px)',
     'avatar_upload_final_result' => 'Окончательный результат аватара',
     'avatar_upload_crop_size' => 'Размер обрезки',
