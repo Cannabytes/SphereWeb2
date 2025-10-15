@@ -84,7 +84,8 @@ return [
     'avatar_upload_cost_hint' => 'Вкажіть вартість завантаження аватара в Donate Coin',
     'avatar_upload_save_settings' => 'Зберегти Налаштування',
     'avatar_upload_file_read_error' => 'Не вдалося прочитати файл',
-    'avatar_upload_crop_title' => 'Обрізка Аватара',
-    'avatar_upload_preview' => 'Попередній Перегляд',
+    'avatar_upload_crop_title' => 'Обрізка аватара',
+    'avatar_upload_preview' => 'Попередній перегляд',
     'avatar_upload_crop_hint' => 'Виділіть область для аватара',
+    'avatar_upload_paste_hint' => 'Або натисніть Ctrl+V щоб вставити зображення',
 ];

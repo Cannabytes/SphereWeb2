@@ -87,7 +87,8 @@ return [
     'avatar_upload_file_read_error' => 'Falha ao ler o arquivo',
     'avatar_upload_crop_title' => 'Cortar Avatar',
     'avatar_upload_preview' => 'Pré-visualização',
-    'avatar_upload_crop_hint' => 'Selecione a área para seu avatar',
+    'avatar_upload_crop_hint' => 'Selecione a área para o seu avatar',
+    'avatar_upload_paste_hint' => 'Ou pressione Ctrl+V para colar uma imagem',
 ];
 
 

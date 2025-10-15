@@ -22,8 +22,8 @@ class AvatarUploader {
     }
 
     bindEvents() {
-        const fileUploadArea = $('#fileUploadArea');
-        const avatarInput = $('#avatarInput');
+        const fileUploadArea = $('#universalUploadArea');
+        const avatarInput = $('#universalFileInput');
 
         if (!fileUploadArea.length || !avatarInput.length) {
             return;
@@ -69,19 +69,41 @@ class AvatarUploader {
             fileUploadArea.removeClass('dragover');
 
             const file = e.originalEvent.dataTransfer?.files?.[0];
-            if (file && file.type.startsWith('image/')) {
+            if (file) {
                 this.handleFile(file);
             } else {
-                this.showError(window.avatarUploadPhrases?.pleaseSelect || 'Please select an image');
+                this.showError(window.avatarUploadPhrases?.pleaseSelect || 'Please select a file');
             }
         });
 
         $('#uploadAvatar').on('click.avatarUpload', () => {
             this.uploadAvatar();
         });
+
+        // Обработка вставки из буфера обмена (Ctrl+V)
+        $(document).on('paste.avatarUpload', (e) => {
+            const items = e.originalEvent.clipboardData?.items;
+            if (!items) return;
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.type.indexOf('image') !== -1) {
+                    const blob = item.getAsFile();
+                    if (blob) {
+                        this.handleFile(blob);
+                    }
+                    break;
+                }
+            }
+        });
     }
 
     handleFile(file) {
+        // Если это не изображение, пропускаем
+        if (!file.type.startsWith('image/')) {
+            return;
+        }
+
         if (file.size > this.maxSize) {
             this.showError(window.avatarUploadPhrases?.fileTooLarge || 'File size must not exceed 5MB');
             return;
@@ -141,8 +163,16 @@ class AvatarUploader {
         }
 
         this.selectedFile = null;
-        $('#avatarInput').val('');
+        $('#universalFileInput').val('');
         $('#cropContainer').removeClass('fade-in');
+    }
+
+    destroy() {
+        $(document).off('.avatarUpload');
+        if (this.cropper) {
+            this.cropper.destroy();
+            this.cropper = null;
+        }
     }
 
     uploadAvatar() {
@@ -251,6 +281,7 @@ class VideoAvatarUploader {
     this.MIN_CROP = this.config.minCrop ?? 100;
     this.MAX_CROP = this.config.maxCrop ?? 1024;
         this.MAX_FILE_SIZE = this.config.maxFileSize ?? (200 * 1024 * 1024);
+        this.CROP_TOLERANCE = 1;
 
         if (this.videoModalElement) {
             this.videoModalElement.addEventListener('hidden.bs.modal', () => this.reset());
@@ -273,60 +304,44 @@ class VideoAvatarUploader {
     }
 
     bindEvents() {
-        if (!this.videoUploadArea.length || !this.videoInput.length) {
+        const universalUploadArea = $('#universalUploadArea');
+        const universalFileInput = $('#universalFileInput');
+
+        if (!universalUploadArea.length || !universalFileInput.length) {
             return;
         }
 
-        if (this.videoInput.prop('disabled')) {
-            this.videoUploadArea.attr('title', window.avatarVideoPhrases?.select || 'Video upload unavailable');
+        if (universalFileInput.prop('disabled')) {
             return;
         }
 
-        this.videoUploadArea.off('.videoUpload');
-        this.videoInput.off('.videoUpload');
+        universalUploadArea.off('.videoUpload');
+        universalFileInput.off('.videoUpload');
         this.uploadButton.off('.videoUpload');
 
-        this.videoUploadArea.on('click.videoUpload', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.videoInput[0].click();
-        });
-
-        this.videoInput.on('change.videoUpload', (e) => {
+        // Обработка выбора файла
+        universalFileInput.on('change.videoUpload', (e) => {
             const file = e.target.files[0];
             if (file) {
                 this.handleFile(file);
             }
         });
 
-        this.videoUploadArea.on('dragover.videoUpload', function dragOver(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            $(this).addClass('dragover');
-        });
-
-        this.videoUploadArea.on('dragleave.videoUpload', function dragLeave(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            $(this).removeClass('dragover');
-        });
-
-        this.videoUploadArea.on('drop.videoUpload', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.videoUploadArea.removeClass('dragover');
-
+        // Drag & Drop
+        universalUploadArea.on('drop.videoUpload', (e) => {
             const file = e.originalEvent.dataTransfer?.files?.[0];
             if (file && this.isAllowedVideo(file)) {
                 this.handleFile(file);
-            } else {
-                this.showError(window.avatarVideoPhrases?.select || 'Please select a video file');
             }
         });
 
         if (this.timelineStart) {
+            // Используем 'change' для применения изменений после отпускания
             this.timelineStart.addEventListener('input', () => {
                 this.updateTimeline();
+            });
+            
+            this.timelineStart.addEventListener('change', () => {
                 this.renderCurrentFrame();
                 this.updatePreview();
             });
@@ -335,6 +350,9 @@ class VideoAvatarUploader {
         if (this.timelineEnd) {
             this.timelineEnd.addEventListener('input', () => {
                 this.updateTimeline();
+            });
+            
+            this.timelineEnd.addEventListener('change', () => {
                 this.updatePreview();
             });
         }
@@ -440,13 +458,6 @@ class VideoAvatarUploader {
 
         const createCropper = () => {
             try {
-                const canvasEl = this.videoCropCanvas;
-                const measurable = canvasEl && typeof canvasEl.offsetWidth === 'number' && canvasEl.offsetWidth > 0 && canvasEl.width > 0;
-                if (!measurable) {
-                    setTimeout(createCropper, 80);
-                    return;
-                }
-
                 this.cropper = new Cropper(this.videoCropCanvas, {
                     aspectRatio: 1,
                     viewMode: 1,
@@ -465,36 +476,27 @@ class VideoAvatarUploader {
                     crop: (event) => this.onCropChange(event),
                     ready: () => {
                         this.updatePreview();
-                        this.renderCurrentFrame();
                     },
                 });
             } catch (err) {
-                console.warn('Failed to create Cropper, retrying...', err);
-                setTimeout(createCropper, 120);
+                console.error('Failed to create Cropper:', err);
             }
         };
 
-        const ensureInitialFrame = () => {
-            this.renderVideoFrame(Math.max(0, this.currentStartTime || 0)).then(() => {
+        const initWithFrame = () => {
+            this.renderVideoFrame(0).then(() => {
                 createCropper();
             }).catch((err) => {
-                console.warn('Failed to render initial frame:', err);
+                console.warn('Initial frame render failed:', err);
                 createCropper();
             });
         };
 
         if (this.videoElement.readyState >= 2) {
-            ensureInitialFrame();
+            initWithFrame();
         } else {
-            const onSeeked = () => {
-                ensureInitialFrame();
-            };
-            this.videoElement.addEventListener('seeked', onSeeked, { once: true });
-            try {
-                this.videoElement.currentTime = 0;
-            } catch (err) {
-                console.warn('Seek error:', err);
-            }
+            const onReady = () => initWithFrame();
+            this.videoElement.addEventListener('loadeddata', onReady, { once: true });
         }
     }
 
@@ -505,10 +507,11 @@ class VideoAvatarUploader {
                 return;
             }
 
-            const onSeeked = () => {
+            const drawFrame = () => {
                 try {
                     const width = this.videoElement.videoWidth;
                     const height = this.videoElement.videoHeight;
+                    
                     if (!width || !height) {
                         reject(new Error('Video dimensions unavailable'));
                         return;
@@ -524,21 +527,25 @@ class VideoAvatarUploader {
                 }
             };
 
-            const handleError = (err) => {
-                this.videoElement.removeEventListener('seeked', onSeeked);
-                reject(err);
-            };
+            if (this.videoElement.readyState >= 2) {
+                const onSeeked = () => {
+                    drawFrame();
+                };
 
-            this.videoElement.addEventListener('seeked', onSeeked, { once: true });
-            this.videoElement.addEventListener('error', handleError, { once: true });
+                this.videoElement.addEventListener('seeked', onSeeked, { once: true });
 
-            try {
-                const clamped = Math.max(0, Math.min(time, this.duration));
-                this.videoElement.currentTime = clamped;
-            } catch (err) {
-                this.videoElement.removeEventListener('seeked', onSeeked);
-                this.videoElement.removeEventListener('error', handleError);
-                reject(err);
+                try {
+                    const clamped = Math.max(0, Math.min(time, this.duration || 0));
+                    this.videoElement.currentTime = clamped;
+                } catch (err) {
+                    this.videoElement.removeEventListener('seeked', onSeeked);
+                    reject(err);
+                }
+            } else {
+                const onReady = () => {
+                    this.renderVideoFrame(time).then(resolve).catch(reject);
+                };
+                this.videoElement.addEventListener('loadeddata', onReady, { once: true });
             }
         });
     }
@@ -548,11 +555,9 @@ class VideoAvatarUploader {
         this.renderVideoFrame(time).then(() => {
             if (this.cropper) {
                 try {
-                    const dataUrl = this.videoCropCanvas.toDataURL('image/png');
-                    this.cropper.replace(dataUrl, false);
+                    this.cropper.replace(this.videoCropCanvas.toDataURL('image/png'));
                 } catch (err) {
-                    console.warn('Failed to replace cropper image, recreating cropper.', err);
-                    this.initCropper();
+                    console.warn('Cropper replace failed:', err);
                 }
             }
         }).catch((err) => {
@@ -584,27 +589,41 @@ class VideoAvatarUploader {
 
         let start = parseFloat(this.timelineStart.value) || 0;
         let end = parseFloat(this.timelineEnd.value) || this.duration;
+        
+        // Определяем какой ползунок активен
+        const isStartActive = this.timelineStart === document.activeElement;
+        const isEndActive = this.timelineEnd === document.activeElement;
 
+        // Проверка пересечения: если start догнал или перешёл end
         if (start >= end) {
-            if (this.timelineStart === document.activeElement) {
+            if (isStartActive) {
+                // Пользователь двигает start вправо → сдвигаем end
                 end = Math.min(start + this.MIN_DURATION, this.duration);
                 this.timelineEnd.value = end;
-            } else {
+            } else if (isEndActive) {
+                // Пользователь двигает end влево → сдвигаем start
                 start = Math.max(end - this.MIN_DURATION, 0);
                 this.timelineStart.value = start;
             }
         }
 
+        // Проверка максимальной длительности
         const clipLength = end - start;
         if (clipLength > this.MAX_DURATION) {
-            if (this.timelineStart === document.activeElement) {
+            if (isStartActive) {
+                // Двигаем start → ограничиваем end
                 end = Math.min(start + this.MAX_DURATION, this.duration);
                 this.timelineEnd.value = end;
-            } else {
+            } else if (isEndActive) {
+                // Двигаем end → ограничиваем start
                 start = Math.max(end - this.MAX_DURATION, 0);
                 this.timelineStart.value = start;
             }
         }
+        
+        // Сохраняем текущие значения
+        start = parseFloat(this.timelineStart.value);
+        end = parseFloat(this.timelineEnd.value);
 
         const duration = this.duration || 1;
         const startPercent = (start / duration) * 100;
@@ -907,7 +926,7 @@ class VideoAvatarUploader {
         this.duration = 0;
         this.currentStartTime = 0;
         this.currentEndTime = 0;
-        this.videoInput.val('');
+        $('#universalFileInput').val('');
         this.setUploadingState(false);
 
         if (this.cropSizeInfo) this.cropSizeInfo.textContent = '—';

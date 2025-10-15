@@ -60,7 +60,13 @@
                       <td class="text-center fw-semibold">{{ user.id }}</td>
                       <td>
                         <div class="d-flex align-items-center">
-                          <div class="avatar avatar-md flex-shrink-0 me-2 cover-image" style="background:url('/uploads/avatar/{{ user.avatar|e }}') center center;"></div>
+                        
+   {% if getUser().isAvatarVideo() %}
+                                            <video src="{{ getUser().getAvatar() }}" class="avatar bradius avatar-xl me-3" autoplay loop muted playsinline></video>
+                                        {% else %}
+                                            <img src="{{ getUser().getAvatar() }}" alt="Current Avatar" class="img-fluid rounded" style="max-width: 180px;">
+                                        {% endif %}
+                         
                           <div class="min-w-0">
                             <a href="/admin/user/info/{{ user.id }}" class="text-default fw-semibold text-truncate d-block">{{ user.email }}</a>
                             <div class="text-muted small text-truncate">{{ user.name ?? '-' }}</div>

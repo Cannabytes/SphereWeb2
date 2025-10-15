@@ -129,7 +129,6 @@ class avatar_upload
             if (!($setting['isFree'] ?? true)) {
                 $cost = (float)($setting['cost'] ?? 0);
                 user::self()->donateDeduct($cost);
-                user::self()->AddHistoryDonate(-$cost, lang::get_phrase('avatar_upload'), "avatar_upload");
             }
 
             // Обновляем аватар пользователя

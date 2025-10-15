@@ -87,4 +87,5 @@ return [
     'avatar_upload_crop_title' => 'Περικόψτε το Avatar',
     'avatar_upload_preview' => 'Προεπισκόπηση',
     'avatar_upload_crop_hint' => 'Επιλέξτε την περιοχή για το avatar',
+    'avatar_upload_paste_hint' => 'ή πατήστε Ctrl+V για να επικολλήσετε μια εικόνα',
 ];

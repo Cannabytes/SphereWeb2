@@ -36,13 +36,14 @@
           <!-- Имя и email -->
           <div class="text-center mb-3">
             <h4 class="fw-bold mb-2 text-primary">
-               <span class="avatar avatar-sm border-2 border-white {% if userInfo.isOnline() %}online{% endif %}">
+
                 {% if userInfo.isAvatarVideo() %}
-                  <video src="{{ userInfo.getAvatar() }}" alt="{{userInfo.getName()}}" class="rounded-circle" width="40" height="40" autoplay loop muted playsinline style="object-fit:cover;"></video>
+                  <video src="{{ userInfo.getAvatar() }}" alt="{{userInfo.getName()}}" class="rounded-circle" autoplay loop muted playsinline></video>
                 {% else %}
+                <span class="avatar avatar-sm border-2 border-white {% if userInfo.isOnline() %}online{% endif %}">
                   <img src="{{userInfo.getAvatar()}}" alt="{{userInfo.getName()}}" class="rounded-circle">
+                </span>
                 {% endif %}
-              </span>
               {{userInfo.getName()}}</h4>
             <div class="d-flex align-items-center justify-content-center">
               <i class="ri-mail-line me-2 text-muted"></i>
@@ -282,9 +283,6 @@
                   <div class="timeline-right">
                     <div class="timeline-content p-3 bg-light rounded shadow-sm">
                       <div class="d-flex align-items-center">
-                        <span class="avatar avatar-sm avatar-rounded me-3">
-                          <img src="{{userInfo.getAvatar()}}" alt="">
-                        </span>
                         <div>
                           <p class="mb-0 text-dark">{{log.message}}</p>
                         </div>
@@ -322,9 +320,6 @@
                   <div class="timeline-right">
                     <div class="timeline-content p-3 bg-light-success rounded shadow-sm">
                       <div class="d-flex align-items-center">
-                        <span class="avatar avatar-sm avatar-rounded me-3">
-                          <img src="{{userInfo.getAvatar()}}" alt="">
-                        </span>
                         <div class="flex-grow-1">
                           <p class="mb-1 fw-semibold text-dark">{{history.message}}</p>
                           <div class="d-flex align-items-center">
