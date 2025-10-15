@@ -309,6 +309,7 @@ class VideoAvatarUploader {
         this.sliderRect = null;
         this.startValue = 0;
         this.endValue = 4;
+    this.rangeDragStartPointer = 0;
 
         this.config = window.avatarVideoConfig || {};
         this.MIN_DURATION = this.config.minDuration ?? 1;
@@ -434,7 +435,28 @@ class VideoAvatarUploader {
             const percent = Math.max(0, Math.min(1, x / this.sliderRect.width));
             const value = percent * this.duration;
 
-            if (this.activeHandle === 'start') {
+            if (this.activeHandle === 'range') {
+                // Move both handles preserving clip length
+                const clipLength = this.prevEndValue - this.prevStartValue;
+                if (!Number.isFinite(clipLength) || clipLength <= 0) {
+                    // nothing to do
+                    return;
+                }
+
+                // Compute delta from initial pointer (prevStartValue used as baseline)
+                const delta = value - this.rangeDragStartPointer;
+                let proposedStart = this.prevStartValue + delta;
+
+                // Clamp so range stays within [0, duration]
+                if (proposedStart < 0) proposedStart = 0;
+                if (proposedStart + clipLength > this.duration) proposedStart = Math.max(0, this.duration - clipLength);
+
+                this.startValue = proposedStart;
+                this.endValue = this.startValue + clipLength;
+
+                // update prevs so further move delta is always relative to initial drag start
+                // (we keep prevStart/prevEnd static during a range drag to preserve behavior)
+            } else if (this.activeHandle === 'start') {
                 // Proposed new start, clamped by hard limits (0 .. end - MIN_DURATION)
                 let proposedStart = Math.max(0, Math.min(value, this.endValue - this.MIN_DURATION));
 
@@ -471,17 +493,25 @@ class VideoAvatarUploader {
             }
 
             // Ensure clip length still respects MAX_DURATION (fallback safety)
-            const clipLength = this.endValue - this.startValue;
-            if (clipLength > this.MAX_DURATION) {
+            const clipLengthNow = this.endValue - this.startValue;
+            if (clipLengthNow > this.MAX_DURATION) {
                 if (this.activeHandle === 'start') {
                     this.startValue = this.endValue - this.MAX_DURATION;
-                } else {
+                } else if (this.activeHandle === 'end') {
                     this.endValue = this.startValue + this.MAX_DURATION;
+                } else if (this.activeHandle === 'range') {
+                    // reduce if somehow exceeds duration
+                    this.startValue = Math.max(0, Math.min(this.startValue, this.duration - this.MAX_DURATION));
+                    this.endValue = this.startValue + Math.min(clipLengthNow, this.MAX_DURATION);
                 }
             }
 
             this.updateSliderUI();
         };
+
+    // Enhanced: allow dragging the whole selected range when the user starts drag inside the active track
+    // The range drag uses initial pointer value and initial start/end to translate both handles together
+    // (preserving clip length) and clamps to [0, duration].
 
         document.addEventListener('mousemove', (e) => {
             if (this.isDragging) {
@@ -532,7 +562,13 @@ class VideoAvatarUploader {
             const distToStart = Math.abs(value - this.startValue);
             const distToEnd = Math.abs(value - this.endValue);
 
-            const chosen = (distToStart < distToEnd) ? 'start' : 'end';
+            // If clicked between start and end (inside active range), begin dragging the whole range
+            let chosen;
+            if (value >= this.startValue && value <= this.endValue) {
+                chosen = 'range';
+            } else {
+                chosen = (distToStart < distToEnd) ? 'start' : 'end';
+            }
             // initialize prev values
             this.prevStartValue = this.startValue;
             this.prevEndValue = this.endValue;
@@ -540,6 +576,16 @@ class VideoAvatarUploader {
             // start drag
             this.isDragging = true;
             this.activeHandle = chosen;
+            // For range drag, store baseline values and pointer
+            if (chosen === 'range') {
+                this.prevStartValue = this.startValue;
+                this.prevEndValue = this.endValue;
+                // store pointer position in seconds to compute delta
+                this.rangeDragStartPointer = value;
+                // visually elevate track handles appropriately
+                this.sliderHandleStart.style.zIndex = '10';
+                this.sliderHandleEnd.style.zIndex = '10';
+            }
             if (chosen === 'start') {
                 this.sliderHandleStart.style.zIndex = '20';
                 this.sliderHandleEnd.style.zIndex = '10';
@@ -555,12 +601,14 @@ class VideoAvatarUploader {
                 if (proposedStart < allowedMinStart) proposedStart = allowedMinStart;
                 this.startValue = proposedStart;
                 this.prevStartValue = this.startValue;
-            } else {
+            } else if (chosen === 'end') {
                 let proposedEnd = Math.min(this.duration, Math.max(value, this.startValue + this.MIN_DURATION));
                 const allowedMaxEnd = Math.min(this.duration, this.startValue + this.MAX_DURATION);
                 if (proposedEnd > allowedMaxEnd) proposedEnd = allowedMaxEnd;
                 this.endValue = proposedEnd;
                 this.prevEndValue = this.endValue;
+            } else if (chosen === 'range') {
+                // nothing immediate to change on click other than marking drag state; movement handled in handleMove
             }
 
             this.updateSliderUI();
@@ -581,10 +629,17 @@ class VideoAvatarUploader {
             const percent = Math.max(0, Math.min(1, x / rect.width));
             const value = percent * this.duration;
 
+
             const distToStart = Math.abs(value - this.startValue);
             const distToEnd = Math.abs(value - this.endValue);
 
-            const chosen = (distToStart < distToEnd) ? 'start' : 'end';
+            // If touched between start and end (inside active range), begin dragging the whole range
+            let chosen;
+            if (value >= this.startValue && value <= this.endValue) {
+                chosen = 'range';
+            } else {
+                chosen = (distToStart < distToEnd) ? 'start' : 'end';
+            }
             this.prevStartValue = this.startValue;
             this.prevEndValue = this.endValue;
 
@@ -593,9 +648,14 @@ class VideoAvatarUploader {
             if (chosen === 'start') {
                 this.sliderHandleStart.style.zIndex = '20';
                 this.sliderHandleEnd.style.zIndex = '10';
-            } else {
+            } else if (chosen === 'end') {
                 this.sliderHandleEnd.style.zIndex = '20';
                 this.sliderHandleStart.style.zIndex = '10';
+            } else if (chosen === 'range') {
+                // store pointer baseline for range drag
+                this.rangeDragStartPointer = value;
+                this.sliderHandleStart.style.zIndex = '10';
+                this.sliderHandleEnd.style.zIndex = '10';
             }
 
             if (chosen === 'start') {
@@ -604,12 +664,14 @@ class VideoAvatarUploader {
                 if (proposedStart < allowedMinStart) proposedStart = allowedMinStart;
                 this.startValue = proposedStart;
                 this.prevStartValue = this.startValue;
-            } else {
+            } else if (chosen === 'end') {
                 let proposedEnd = Math.min(this.duration, Math.max(value, this.startValue + this.MIN_DURATION));
                 const allowedMaxEnd = Math.min(this.duration, this.startValue + this.MAX_DURATION);
                 if (proposedEnd > allowedMaxEnd) proposedEnd = allowedMaxEnd;
                 this.endValue = proposedEnd;
                 this.prevEndValue = this.endValue;
+            } else if (chosen === 'range') {
+                // nothing to update immediately
             }
 
             this.updateSliderUI();
