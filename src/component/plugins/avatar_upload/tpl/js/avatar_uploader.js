@@ -1,100 +1,88 @@
-/**
- * Avatar Upload Plugin - JavaScript
- * Обработка загрузки и обрезки аватаров
- */
-
 class AvatarUploader {
     constructor() {
         this.cropper = null;
         this.selectedFile = null;
         this.modal = null;
+        this.maxSize = 5 * 1024 * 1024;
+    // Minimum crop for images (px)
+    this.MIN_CROP_IMG = 100;
+        // Small tolerance to account for rounding/scale issues
+        this.CROP_TOLERANCE = 1;
         this.init();
     }
 
     init() {
-        // Инициализация модального окна Bootstrap
         const modalElement = document.getElementById('cropAvatarModal');
         if (modalElement) {
             this.modal = new bootstrap.Modal(modalElement);
-            
-            // Очистка при закрытии модального окна
-            modalElement.addEventListener('hidden.bs.modal', () => {
-                this.cancelCrop();
-            });
+            modalElement.addEventListener('hidden.bs.modal', () => this.cancelCrop());
         }
-        
+
         this.bindEvents();
     }
 
     bindEvents() {
-        const self = this;
         const fileUploadArea = $('#fileUploadArea');
         const avatarInput = $('#avatarInput');
 
-        // Если input отключён (пользователь не имеет средств), не привязываем обработчики
+        if (!fileUploadArea.length || !avatarInput.length) {
+            return;
+        }
+
         if (avatarInput.prop('disabled')) {
-            // Добавим подсказку при наведении, если нужно показать причину
             fileUploadArea.attr('title', window.avatarUploadPhrases?.pleaseSelect || 'You cannot upload');
             return;
         }
 
-        // Unbind all previous handlers to prevent duplicates and recursion
         fileUploadArea.off('.avatarUpload');
         avatarInput.off('.avatarUpload');
         $('#uploadAvatar').off('.avatarUpload');
 
-        // Клик по области загрузки — trigger native file input click
-        fileUploadArea.on('click.avatarUpload', function(e) {
+        fileUploadArea.on('click.avatarUpload', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            // Use native DOM click (does not trigger jQuery event handlers, prevents recursion)
             avatarInput[0].click();
         });
 
-        // Выбор файла
-        avatarInput.on('change.avatarUpload', function(e) {
+        avatarInput.on('change.avatarUpload', (e) => {
             const file = e.target.files[0];
             if (file) {
-                self.handleFile(file);
+                this.handleFile(file);
             }
         });
 
-        // Drag & Drop события
-        fileUploadArea.on('dragover.avatarUpload', function(e) {
+        fileUploadArea.on('dragover.avatarUpload', function dragOver(e) {
             e.preventDefault();
             e.stopPropagation();
             $(this).addClass('dragover');
         });
 
-        fileUploadArea.on('dragleave.avatarUpload', function(e) {
+        fileUploadArea.on('dragleave.avatarUpload', function dragLeave(e) {
             e.preventDefault();
             e.stopPropagation();
             $(this).removeClass('dragover');
         });
 
-        fileUploadArea.on('drop.avatarUpload', function(e) {
+        fileUploadArea.on('drop.avatarUpload', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            $(this).removeClass('dragover');
-            
-            const file = e.originalEvent.dataTransfer.files[0];
+            fileUploadArea.removeClass('dragover');
+
+            const file = e.originalEvent.dataTransfer?.files?.[0];
             if (file && file.type.startsWith('image/')) {
-                self.handleFile(file);
+                this.handleFile(file);
             } else {
-                self.showError(window.avatarUploadPhrases?.pleaseSelect || 'Please select an image');
+                this.showError(window.avatarUploadPhrases?.pleaseSelect || 'Please select an image');
             }
         });
 
-        // Кнопка загрузки
-        $('#uploadAvatar').on('click.avatarUpload', function() {
-            self.uploadAvatar();
+        $('#uploadAvatar').on('click.avatarUpload', () => {
+            this.uploadAvatar();
         });
     }
 
     handleFile(file) {
-        // Проверка размера файла
-        const maxSize = 5 * 1024 * 1024; // 5MB
-        if (file.size > maxSize) {
+        if (file.size > this.maxSize) {
             this.showError(window.avatarUploadPhrases?.fileTooLarge || 'File size must not exceed 5MB');
             return;
         }
@@ -102,26 +90,24 @@ class AvatarUploader {
         this.selectedFile = file;
 
         const reader = new FileReader();
-        const self = this;
-
-        reader.onload = function(e) {
+        reader.onload = (e) => {
             const cropImage = document.getElementById('cropImage');
-            cropImage.src = e.target.result;
-            
-            // Открываем модальное окно
-            if (self.modal) {
-                self.modal.show();
+            if (!cropImage) {
+                return;
             }
 
-            // Небольшая задержка для корректной инициализации после показа модального окна
+            cropImage.src = e.target.result;
+
+            if (this.modal) {
+                this.modal.show();
+            }
+
             setTimeout(() => {
-                // Уничтожаем предыдущий cropper если существует
-                if (self.cropper) {
-                    self.cropper.destroy();
+                if (this.cropper) {
+                    this.cropper.destroy();
                 }
 
-                // Инициализация Cropper.js
-                self.cropper = new Cropper(cropImage, {
+                this.cropper = new Cropper(cropImage, {
                     aspectRatio: 1,
                     viewMode: 2,
                     dragMode: 'move',
@@ -133,19 +119,16 @@ class AvatarUploader {
                     cropBoxMovable: true,
                     cropBoxResizable: true,
                     toggleDragModeOnDblclick: false,
-                    minCropBoxWidth: 256,
-                    minCropBoxHeight: 256,
+                    minCropBoxWidth: 100,
+                    minCropBoxHeight: 100,
                     preview: '.preview',
-                    ready: function() {
-                        // Анимация появления
-                        $('#cropContainer').addClass('fade-in');
-                    }
+                    ready: () => $('#cropContainer').addClass('fade-in'),
                 });
             }, 300);
         };
 
-        reader.onerror = function() {
-            self.showError(window.avatarUploadPhrases?.fileReadError || 'Failed to read file');
+        reader.onerror = () => {
+            this.showError(window.avatarUploadPhrases?.fileReadError || 'Failed to read file');
         };
 
         reader.readAsDataURL(file);
@@ -156,7 +139,7 @@ class AvatarUploader {
             this.cropper.destroy();
             this.cropper = null;
         }
-        
+
         this.selectedFile = null;
         $('#avatarInput').val('');
         $('#cropContainer').removeClass('fade-in');
@@ -169,50 +152,51 @@ class AvatarUploader {
         }
 
         const cropData = this.cropper.getData(true);
-        
-        // Проверка минимального размера
-        if (cropData.width < 256 || cropData.height < 256) {
-            this.showError(window.avatarUploadPhrases?.minCropSize || 'Minimum crop area size: 256x256 pixels');
+        // Use rounded crop values and a small tolerance to avoid false negatives due to scaling/rounding
+        // Compute real pixel size using cropper image data (natural size) to support scaled displays
+        // Use displayed crop box size (in CSS/display pixels) to validate min/max
+        const displayedW = Math.round(cropData.width);
+        const displayedH = Math.round(cropData.height);
+        const cropSizeDisplayed = Math.min(displayedW, displayedH);
+    const maxCropImg = 1024; // allow up to 1024x1024 for images (display pixels)
+    const minAllowed = this.MIN_CROP_IMG - this.CROP_TOLERANCE;
+    const maxAllowed = maxCropImg + this.CROP_TOLERANCE;
+        if (cropSizeDisplayed < minAllowed || cropSizeDisplayed > maxAllowed) {
+            this.showError(window.avatarUploadPhrases?.minCropSize || `Select a square area between ${this.MIN_CROP_IMG}×${this.MIN_CROP_IMG} and ${maxCropImg}×${maxCropImg} pixels`);
             return;
         }
 
-        // Блокируем кнопку
         const uploadBtn = $('#uploadAvatar');
         const originalText = uploadBtn.html();
         const uploadingText = window.avatarUploadPhrases?.uploading || 'Uploading...';
-        uploadBtn.prop('disabled', true).html('<i class="spinner-border spinner-border-sm me-2"></i>' + uploadingText);
+        uploadBtn.prop('disabled', true).html(`<i class="spinner-border spinner-border-sm me-2"></i>${uploadingText}`);
 
         const formData = new FormData();
         formData.append('avatar', this.selectedFile);
         formData.append('cropData', JSON.stringify(cropData));
 
-        const self = this;
-
-        // Отправка на сервер
         $.ajax({
             url: '/avatar/upload/process',
             type: 'POST',
             data: formData,
             processData: false,
             contentType: false,
-            success: function(response) {
+            success: (response) => {
                 if (response.ok) {
-                    location.reload();
+                    window.location.reload();
                 } else {
                     uploadBtn.prop('disabled', false).html(originalText);
-                    self.showError(response.message || 'Error uploading');
+                    this.showError(response.message || 'Error uploading');
                 }
             },
-            error: function(xhr) {
+            error: (xhr) => {
                 uploadBtn.prop('disabled', false).html(originalText);
-                
                 let errorMsg = 'An error occurred while uploading';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMsg = xhr.responseJSON.message;
                 }
-                
-                self.showError(errorMsg);
-            }
+                this.showError(errorMsg);
+            },
         });
     }
 
@@ -223,17 +207,724 @@ class AvatarUploader {
             alert(message);
         }
     }
+}
 
-    showSuccess(message) {
+class VideoAvatarUploader {
+    constructor() {
+        this.videoUploadArea = $('#videoUploadArea');
+        this.videoInput = $('#videoInput');
+        this.videoElement = document.getElementById('videoPreview');
+        this.videoModalElement = document.getElementById('videoCropModal');
+        this.videoModal = this.videoModalElement ? new bootstrap.Modal(this.videoModalElement) : null;
+
+        this.videoCropCanvas = document.getElementById('videoCropCanvas');
+        this.avatarPreviewCanvas = document.getElementById('avatarPreviewCanvas');
+        this.avatarPreviewVideo = document.getElementById('avatarPreviewVideo');
+
+        this.timelineStart = document.getElementById('timelineStart');
+        this.timelineEnd = document.getElementById('timelineEnd');
+        this.timelineSelection = document.getElementById('timelineSelection');
+        this.startTimeLabel = document.getElementById('startTimeLabel');
+        this.endTimeLabel = document.getElementById('endTimeLabel');
+        this.durationLabel = document.getElementById('durationLabel');
+
+        this.cropSizeInfo = document.getElementById('cropSizeInfo');
+        this.clipDurationInfo = document.getElementById('clipDurationInfo');
+        this.clipRangeInfo = document.getElementById('clipRangeInfo');
+
+        this.uploadButton = $('#uploadVideoAvatar');
+        this.cropper = null;
+        this.videoFile = null;
+        this.objectUrl = null;
+        this.previewInterval = null;
+        this.duration = 0;
+        this.originalButtonHtml = null;
+        this.cropUpdateTimer = null;
+        this.currentStartTime = 0;
+        this.currentEndTime = 0;
+        this._previewReadyHandler = null;
+        this._previewTimeUpdateHandler = null;
+
+        this.config = window.avatarVideoConfig || {};
+    this.MIN_DURATION = this.config.minDuration ?? 1;
+    this.MAX_DURATION = this.config.maxDuration ?? 6;
+    this.MIN_CROP = this.config.minCrop ?? 100;
+    this.MAX_CROP = this.config.maxCrop ?? 1024;
+        this.MAX_FILE_SIZE = this.config.maxFileSize ?? (200 * 1024 * 1024);
+
+        if (this.videoModalElement) {
+            this.videoModalElement.addEventListener('hidden.bs.modal', () => this.reset());
+            this.videoModalElement.addEventListener('shown.bs.modal', () => {
+                setTimeout(() => {
+                    try {
+                        if (this.cropper) {
+                            this.cropper.destroy();
+                            this.cropper = null;
+                        }
+                        this.initCropper();
+                    } catch (err) {
+                        console.warn('Cropper init skipped:', err);
+                    }
+                }, 60);
+            });
+        }
+
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        if (!this.videoUploadArea.length || !this.videoInput.length) {
+            return;
+        }
+
+        if (this.videoInput.prop('disabled')) {
+            this.videoUploadArea.attr('title', window.avatarVideoPhrases?.select || 'Video upload unavailable');
+            return;
+        }
+
+        this.videoUploadArea.off('.videoUpload');
+        this.videoInput.off('.videoUpload');
+        this.uploadButton.off('.videoUpload');
+
+        this.videoUploadArea.on('click.videoUpload', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.videoInput[0].click();
+        });
+
+        this.videoInput.on('change.videoUpload', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                this.handleFile(file);
+            }
+        });
+
+        this.videoUploadArea.on('dragover.videoUpload', function dragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $(this).addClass('dragover');
+        });
+
+        this.videoUploadArea.on('dragleave.videoUpload', function dragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $(this).removeClass('dragover');
+        });
+
+        this.videoUploadArea.on('drop.videoUpload', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.videoUploadArea.removeClass('dragover');
+
+            const file = e.originalEvent.dataTransfer?.files?.[0];
+            if (file && this.isAllowedVideo(file)) {
+                this.handleFile(file);
+            } else {
+                this.showError(window.avatarVideoPhrases?.select || 'Please select a video file');
+            }
+        });
+
+        if (this.timelineStart) {
+            this.timelineStart.addEventListener('input', () => {
+                this.updateTimeline();
+                this.renderCurrentFrame();
+                this.updatePreview();
+            });
+        }
+
+        if (this.timelineEnd) {
+            this.timelineEnd.addEventListener('input', () => {
+                this.updateTimeline();
+                this.updatePreview();
+            });
+        }
+
+        this.uploadButton.on('click.videoUpload', () => {
+            this.uploadVideo();
+        });
+    }
+
+    isAllowedVideo(file) {
+        const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-matroska', 'video/x-msvideo'];
+        if (allowedTypes.includes(file.type)) {
+            return true;
+        }
+        const extension = (file.name || '').split('.').pop()?.toLowerCase();
+        const allowedExtensions = ['mp4', 'webm', 'mov', 'mkv', 'avi'];
+        return allowedExtensions.includes(extension);
+    }
+
+    handleFile(file) {
+        if (file.size > this.MAX_FILE_SIZE) {
+            this.showError(window.avatarVideoPhrases?.fileTooLarge || 'Video file is too large');
+            return;
+        }
+
+        if (!this.isAllowedVideo(file)) {
+            this.showError(window.avatarVideoPhrases?.invalid || 'Unsupported video format');
+            return;
+        }
+
+        this.videoFile = file;
+        this.prepareVideo(file);
+    }
+
+    prepareVideo(file) {
+        if (!this.videoElement) {
+            return;
+        }
+
+        if (this.objectUrl) {
+            URL.revokeObjectURL(this.objectUrl);
+            this.objectUrl = null;
+        }
+
+        this.objectUrl = URL.createObjectURL(file);
+        this.duration = 0;
+
+        const onLoadedMetadata = () => {
+            this.duration = this.videoElement.duration || 0;
+
+            if (!Number.isFinite(this.duration) || this.duration <= 0) {
+                this.showError(window.avatarVideoPhrases?.invalid || 'Unable to read video duration');
+                return;
+            }
+
+            if (this.duration < this.MIN_DURATION) {
+                this.showError(window.avatarVideoPhrases?.durationInvalid || 'Clip duration is too short');
+                return;
+            }
+
+            const defaultDuration = Math.min(4, Math.min(this.duration, this.MAX_DURATION));
+
+            if (this.timelineStart) {
+                this.timelineStart.min = 0;
+                this.timelineStart.max = this.duration;
+                this.timelineStart.value = 0;
+            }
+
+            if (this.timelineEnd) {
+                this.timelineEnd.min = 0;
+                this.timelineEnd.max = this.duration;
+                this.timelineEnd.value = defaultDuration;
+            }
+
+            this.updateTimeline();
+
+            if (this.videoModal) {
+                this.videoModal.show();
+            }
+        };
+
+        const onVideoError = () => {
+            this.showError(window.avatarVideoPhrases?.invalid || 'Failed to load video');
+        };
+
+        this.videoElement.addEventListener('loadedmetadata', onLoadedMetadata, { once: true });
+        this.videoElement.addEventListener('error', onVideoError, { once: true });
+
+        this.videoElement.pause();
+        this.videoElement.src = this.objectUrl;
+        this.videoElement.load();
+    }
+
+    initCropper() {
+        if (!this.videoElement || !this.videoCropCanvas) {
+            return;
+        }
+
+        if (this.cropper) {
+            this.cropper.destroy();
+            this.cropper = null;
+        }
+
+        const createCropper = () => {
+            try {
+                const canvasEl = this.videoCropCanvas;
+                const measurable = canvasEl && typeof canvasEl.offsetWidth === 'number' && canvasEl.offsetWidth > 0 && canvasEl.width > 0;
+                if (!measurable) {
+                    setTimeout(createCropper, 80);
+                    return;
+                }
+
+                this.cropper = new Cropper(this.videoCropCanvas, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'none',
+                    autoCropArea: 0.7,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: true,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                    minCropBoxWidth: 100,
+                    minCropBoxHeight: 100,
+                    background: false,
+                    crop: (event) => this.onCropChange(event),
+                    ready: () => {
+                        this.updatePreview();
+                        this.renderCurrentFrame();
+                    },
+                });
+            } catch (err) {
+                console.warn('Failed to create Cropper, retrying...', err);
+                setTimeout(createCropper, 120);
+            }
+        };
+
+        const ensureInitialFrame = () => {
+            this.renderVideoFrame(Math.max(0, this.currentStartTime || 0)).then(() => {
+                createCropper();
+            }).catch((err) => {
+                console.warn('Failed to render initial frame:', err);
+                createCropper();
+            });
+        };
+
+        if (this.videoElement.readyState >= 2) {
+            ensureInitialFrame();
+        } else {
+            const onSeeked = () => {
+                ensureInitialFrame();
+            };
+            this.videoElement.addEventListener('seeked', onSeeked, { once: true });
+            try {
+                this.videoElement.currentTime = 0;
+            } catch (err) {
+                console.warn('Seek error:', err);
+            }
+        }
+    }
+
+    renderVideoFrame(time) {
+        return new Promise((resolve, reject) => {
+            if (!this.videoElement || !this.videoCropCanvas) {
+                reject(new Error('Video element not ready'));
+                return;
+            }
+
+            const onSeeked = () => {
+                try {
+                    const width = this.videoElement.videoWidth;
+                    const height = this.videoElement.videoHeight;
+                    if (!width || !height) {
+                        reject(new Error('Video dimensions unavailable'));
+                        return;
+                    }
+
+                    this.videoCropCanvas.width = width;
+                    this.videoCropCanvas.height = height;
+                    const ctx = this.videoCropCanvas.getContext('2d');
+                    ctx.drawImage(this.videoElement, 0, 0, width, height);
+                    resolve();
+                } catch (err) {
+                    reject(err);
+                }
+            };
+
+            const handleError = (err) => {
+                this.videoElement.removeEventListener('seeked', onSeeked);
+                reject(err);
+            };
+
+            this.videoElement.addEventListener('seeked', onSeeked, { once: true });
+            this.videoElement.addEventListener('error', handleError, { once: true });
+
+            try {
+                const clamped = Math.max(0, Math.min(time, this.duration));
+                this.videoElement.currentTime = clamped;
+            } catch (err) {
+                this.videoElement.removeEventListener('seeked', onSeeked);
+                this.videoElement.removeEventListener('error', handleError);
+                reject(err);
+            }
+        });
+    }
+
+    renderCurrentFrame() {
+        const time = parseFloat(this.timelineStart?.value || 0);
+        this.renderVideoFrame(time).then(() => {
+            if (this.cropper) {
+                try {
+                    const dataUrl = this.videoCropCanvas.toDataURL('image/png');
+                    this.cropper.replace(dataUrl, false);
+                } catch (err) {
+                    console.warn('Failed to replace cropper image, recreating cropper.', err);
+                    this.initCropper();
+                }
+            }
+        }).catch((err) => {
+            console.error('Error rendering frame:', err);
+        });
+    }
+
+    onCropChange(event) {
+        const width = Math.round(event.detail.width);
+        const height = Math.round(event.detail.height);
+        const size = Math.min(width, height);
+
+        if (this.cropSizeInfo) {
+            this.cropSizeInfo.textContent = `${size} × ${size} px`;
+            this.cropSizeInfo.style.color = (size < this.MIN_CROP || size > this.MAX_CROP) ? '#dc3545' : '#198754';
+        }
+
+        if (this.cropUpdateTimer) {
+            clearTimeout(this.cropUpdateTimer);
+        }
+
+        this.cropUpdateTimer = setTimeout(() => this.updatePreview(), 150);
+    }
+
+    updateTimeline() {
+        if (!this.timelineStart || !this.timelineEnd || !this.timelineSelection) {
+            return;
+        }
+
+        let start = parseFloat(this.timelineStart.value) || 0;
+        let end = parseFloat(this.timelineEnd.value) || this.duration;
+
+        if (start >= end) {
+            if (this.timelineStart === document.activeElement) {
+                end = Math.min(start + this.MIN_DURATION, this.duration);
+                this.timelineEnd.value = end;
+            } else {
+                start = Math.max(end - this.MIN_DURATION, 0);
+                this.timelineStart.value = start;
+            }
+        }
+
+        const clipLength = end - start;
+        if (clipLength > this.MAX_DURATION) {
+            if (this.timelineStart === document.activeElement) {
+                end = Math.min(start + this.MAX_DURATION, this.duration);
+                this.timelineEnd.value = end;
+            } else {
+                start = Math.max(end - this.MAX_DURATION, 0);
+                this.timelineStart.value = start;
+            }
+        }
+
+        const duration = this.duration || 1;
+        const startPercent = (start / duration) * 100;
+        const endPercent = (end / duration) * 100;
+
+        this.timelineSelection.style.left = `${startPercent}%`;
+        this.timelineSelection.style.width = `${Math.max(endPercent - startPercent, 0)}%`;
+
+        if (this.startTimeLabel) {
+            this.startTimeLabel.textContent = `${start.toFixed(2)}s`;
+        }
+        if (this.endTimeLabel) {
+            this.endTimeLabel.textContent = `${end.toFixed(2)}s`;
+        }
+        if (this.durationLabel) {
+            this.durationLabel.textContent = `Длительность: ${(end - start).toFixed(2)}s`;
+        }
+        if (this.clipDurationInfo) {
+            this.clipDurationInfo.textContent = `${(end - start).toFixed(2)}s`;
+        }
+        if (this.clipRangeInfo) {
+            this.clipRangeInfo.textContent = `${start.toFixed(2)}s - ${end.toFixed(2)}s`;
+        }
+    }
+
+    updatePreview() {
+        if (!this.cropper || !this.videoElement || !this.avatarPreviewVideo || !this.avatarPreviewCanvas) {
+            return;
+        }
+
+        this.currentStartTime = parseFloat(this.timelineStart?.value || 0);
+        this.currentEndTime = parseFloat(this.timelineEnd?.value || this.duration);
+
+        if (!Number.isFinite(this.currentStartTime)) {
+            this.currentStartTime = 0;
+        }
+        if (!Number.isFinite(this.currentEndTime) || this.currentEndTime <= this.currentStartTime) {
+            this.currentEndTime = Math.min(this.duration, this.currentStartTime + this.MIN_DURATION);
+        }
+
+        if (this.previewInterval) {
+            clearInterval(this.previewInterval);
+            this.previewInterval = null;
+        }
+
+        const canvas = this.avatarPreviewCanvas;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            return;
+        }
+
+        const previewWidth = 250;
+        const previewHeight = 250;
+        canvas.width = previewWidth;
+        canvas.height = previewHeight;
+        ctx.clearRect(0, 0, previewWidth, previewHeight);
+
+        if (this.avatarPreviewVideo.src !== this.objectUrl) {
+            this.avatarPreviewVideo.src = this.objectUrl || '';
+            if (this.objectUrl) {
+                this.avatarPreviewVideo.load();
+            }
+        }
+
+        const drawFrame = () => {
+            if (!this.cropper) {
+                return;
+            }
+
+            const sourceVideo = (this.avatarPreviewVideo.readyState >= 2) ? this.avatarPreviewVideo : this.videoElement;
+            if (!sourceVideo || !sourceVideo.videoWidth || !sourceVideo.videoHeight) {
+                return;
+            }
+
+            const cropData = this.cropper.getData(true);
+            const currentTime = this.avatarPreviewVideo.currentTime;
+
+            if (currentTime < this.currentStartTime || currentTime >= this.currentEndTime) {
+                if (this.avatarPreviewVideo.readyState >= 2) {
+                    try {
+                        this.avatarPreviewVideo.currentTime = this.currentStartTime;
+                    } catch (err) {
+                        console.warn('Preview seek error:', err);
+                    }
+                }
+                return;
+            }
+
+            try {
+                const scaleX = this.videoCropCanvas.width ? (this.videoElement.videoWidth / this.videoCropCanvas.width) : 1;
+                const scaleY = this.videoCropCanvas.height ? (this.videoElement.videoHeight / this.videoCropCanvas.height) : 1;
+
+                const sx = Math.round(cropData.x * scaleX);
+                const sy = Math.round(cropData.y * scaleY);
+                const sw = Math.round(cropData.width * scaleX);
+                const sh = Math.round(cropData.height * scaleY);
+
+                ctx.clearRect(0, 0, previewWidth, previewHeight);
+                ctx.drawImage(sourceVideo, sx, sy, sw, sh, 0, 0, previewWidth, previewHeight);
+            } catch (err) {
+                try {
+                    ctx.clearRect(0, 0, previewWidth, previewHeight);
+                    ctx.drawImage(sourceVideo, 0, 0, sourceVideo.videoWidth, sourceVideo.videoHeight, 0, 0, previewWidth, previewHeight);
+                } catch (fallbackErr) {
+                    console.warn('Preview draw error:', fallbackErr);
+                }
+            }
+        };
+
+        const startLoop = () => {
+            if (this.previewInterval) {
+                clearInterval(this.previewInterval);
+            }
+
+            drawFrame();
+
+            const playPromise = this.avatarPreviewVideo.play();
+            if (playPromise && typeof playPromise.then === 'function') {
+                playPromise.catch(() => {
+                    this.avatarPreviewVideo.pause();
+                });
+            }
+
+            this.previewInterval = setInterval(drawFrame, 33);
+        };
+
+        if (this._previewReadyHandler) {
+            this.avatarPreviewVideo.removeEventListener('loadeddata', this._previewReadyHandler);
+            this.avatarPreviewVideo.removeEventListener('canplay', this._previewReadyHandler);
+            this._previewReadyHandler = null;
+        }
+        if (this._previewTimeUpdateHandler) {
+            this.avatarPreviewVideo.removeEventListener('timeupdate', this._previewTimeUpdateHandler);
+        }
+
+        this._previewTimeUpdateHandler = () => {
+            if (this.avatarPreviewVideo.currentTime >= this.currentEndTime) {
+                try {
+                    this.avatarPreviewVideo.currentTime = this.currentStartTime;
+                } catch (err) {
+                    console.warn('Preview loop seek error:', err);
+                }
+            }
+        };
+        this.avatarPreviewVideo.addEventListener('timeupdate', this._previewTimeUpdateHandler);
+
+        if (this.avatarPreviewVideo.readyState >= 2) {
+            startLoop();
+        } else if (this.objectUrl) {
+            this._previewReadyHandler = startLoop;
+            this.avatarPreviewVideo.addEventListener('loadeddata', this._previewReadyHandler, { once: true });
+            this.avatarPreviewVideo.addEventListener('canplay', this._previewReadyHandler, { once: true });
+        }
+
+        try {
+            this.avatarPreviewVideo.currentTime = this.currentStartTime;
+        } catch (err) {
+            console.warn('Preview initial seek error:', err);
+        }
+    }
+
+    setUploadingState(isUploading) {
+        if (!this.uploadButton.length) {
+            return;
+        }
+
+        if (isUploading) {
+            if (!this.originalButtonHtml) {
+                this.originalButtonHtml = this.uploadButton.html();
+            }
+            const text = window.avatarVideoPhrases?.uploading || 'Uploading...';
+            this.uploadButton.prop('disabled', true).html(`<i class="spinner-border spinner-border-sm me-2"></i>${text}`);
+        } else {
+            this.uploadButton.prop('disabled', false);
+            if (this.originalButtonHtml) {
+                this.uploadButton.html(this.originalButtonHtml);
+            }
+        }
+    }
+
+    uploadVideo() {
+        if (!this.cropper || !this.videoFile) {
+            this.showError(window.avatarVideoPhrases?.select || 'Select a video first');
+            return;
+        }
+
+        const start = this.timelineStart ? parseFloat(this.timelineStart.value) || 0 : 0;
+        const end = this.timelineEnd ? parseFloat(this.timelineEnd.value) || this.duration : this.duration;
+        const clipDuration = end - start;
+
+        if (clipDuration < this.MIN_DURATION || clipDuration > this.MAX_DURATION) {
+            this.showError(window.avatarVideoPhrases?.durationInvalid || 'Clip duration must be between 1 and 6 seconds');
+            return;
+        }
+
+        const cropData = this.cropper.getData(true);
+        const scaleX = this.videoCropCanvas.width ? (this.videoElement.videoWidth / this.videoCropCanvas.width) : 1;
+        const scaleY = this.videoCropCanvas.height ? (this.videoElement.videoHeight / this.videoCropCanvas.height) : 1;
+
+        const realX = Math.round(cropData.x * scaleX);
+        const realY = Math.round(cropData.y * scaleY);
+        const realWidth = Math.round(cropData.width * scaleX);
+        const realHeight = Math.round(cropData.height * scaleY);
+        const cropSize = Math.min(realWidth, realHeight);
+
+        // Use tolerance and rounded sizes to avoid rejecting exact MIN_CROP due to rounding/scale issues
+    const minAllowed = this.MIN_CROP - this.CROP_TOLERANCE;
+    const maxAllowed = this.MAX_CROP + this.CROP_TOLERANCE;
+        if (cropSize < minAllowed || cropSize > maxAllowed) {
+            this.showError(`Select a square area between ${this.MIN_CROP}×${this.MIN_CROP} and ${this.MAX_CROP}×${this.MAX_CROP} pixels`);
+            return;
+        }
+
+        this.setUploadingState(true);
+
+        const formData = new FormData();
+        formData.append('video', this.videoFile);
+        formData.append('start', start.toFixed(2));
+        formData.append('end', end.toFixed(2));
+        formData.append('cropX', Math.max(0, realX));
+        formData.append('cropY', Math.max(0, realY));
+        formData.append('cropSize', cropSize);
+
+        $.ajax({
+            url: '/avatar/upload/video',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: (response) => {
+                this.setUploadingState(false);
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    this.showError(response.message || 'Error uploading video');
+                }
+            },
+            error: (xhr) => {
+                this.setUploadingState(false);
+                let errorMsg = 'An error occurred while uploading video';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                this.showError(errorMsg);
+            },
+        });
+    }
+
+    reset() {
+        if (this.cropUpdateTimer) {
+            clearTimeout(this.cropUpdateTimer);
+            this.cropUpdateTimer = null;
+        }
+
+        if (this.previewInterval) {
+            clearInterval(this.previewInterval);
+            this.previewInterval = null;
+        }
+
+        if (this._previewReadyHandler) {
+            this.avatarPreviewVideo.removeEventListener('loadeddata', this._previewReadyHandler);
+            this.avatarPreviewVideo.removeEventListener('canplay', this._previewReadyHandler);
+            this._previewReadyHandler = null;
+        }
+        if (this._previewTimeUpdateHandler) {
+            this.avatarPreviewVideo.removeEventListener('timeupdate', this._previewTimeUpdateHandler);
+            this._previewTimeUpdateHandler = null;
+        }
+
+        if (this.cropper) {
+            this.cropper.destroy();
+            this.cropper = null;
+        }
+
+        if (this.videoElement) {
+            this.videoElement.pause();
+            this.videoElement.removeAttribute('src');
+            this.videoElement.load();
+        }
+
+        if (this.avatarPreviewVideo) {
+            this.avatarPreviewVideo.pause();
+            this.avatarPreviewVideo.removeAttribute('src');
+            this.avatarPreviewVideo.load();
+        }
+
+        if (this.videoCropCanvas) {
+            const ctx = this.videoCropCanvas.getContext('2d');
+            if (ctx) {
+                ctx.clearRect(0, 0, this.videoCropCanvas.width, this.videoCropCanvas.height);
+            }
+        }
+
+        if (this.objectUrl) {
+            URL.revokeObjectURL(this.objectUrl);
+            this.objectUrl = null;
+        }
+
+        this.videoFile = null;
+        this.duration = 0;
+        this.currentStartTime = 0;
+        this.currentEndTime = 0;
+        this.videoInput.val('');
+        this.setUploadingState(false);
+
+        if (this.cropSizeInfo) this.cropSizeInfo.textContent = '—';
+        if (this.clipDurationInfo) this.clipDurationInfo.textContent = '—';
+        if (this.clipRangeInfo) this.clipRangeInfo.textContent = '—';
+    }
+
+    showError(message) {
         if (typeof showNotification === 'function') {
-            showNotification(message, 'success');
+            showNotification(message, 'error');
         } else {
             alert(message);
         }
     }
 }
 
-// Инициализация при загрузке страницы
-$(document).ready(function() {
+$(document).ready(() => {
     new AvatarUploader();
+    new VideoAvatarUploader();
 });

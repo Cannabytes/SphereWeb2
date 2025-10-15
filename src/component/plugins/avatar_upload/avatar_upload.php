@@ -3,9 +3,9 @@
 namespace Ofey\Logan22\component\plugins\avatar_upload;
 
 use Ofey\Logan22\component\alert\board;
-use Ofey\Logan22\component\image\caching;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\component\sphere\server as SphereServer;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\plugin\plugin;
@@ -142,6 +142,156 @@ class avatar_upload
     }
 
     /**
+     * Загрузка и обработка видео аватара
+     */
+    public function uploadVideo(): void
+    {
+        if (!user::self()->isAuth()) {
+            board::error(lang::get_phrase('avatar_upload_not_authorized'));
+            return;
+        }
+
+        if (!plugin::getPluginActive("avatar_upload")) {
+            board::error(lang::get_phrase('avatar_upload_plugin_disabled'));
+            return;
+        }
+
+        $setting = plugin::getSetting("avatar_upload");
+
+        $cost = 0.0;
+        if (!($setting['isFree'] ?? true)) {
+            $cost = (float)($setting['cost'] ?? 1);
+            if (!user::self()->isAdmin() && !user::self()->canAffordPurchase($cost)) {
+                board::error(lang::get_phrase('avatar_upload_insufficient_funds', $cost));
+                return;
+            }
+        }
+
+        if (!isset($_FILES['video']) || $_FILES['video']['error'] !== UPLOAD_ERR_OK) {
+            board::error(lang::get_phrase('avatar_upload_video_file_error'));
+            return;
+        }
+
+        $file = $_FILES['video'];
+
+        $validation = $this->validateVideo($file);
+        if (!is_array($validation)) {
+            board::error($validation);
+            return;
+        }
+
+        $start = isset($_POST['start']) ? (float)$_POST['start'] : 0.0;
+        $end = isset($_POST['end']) ? (float)$_POST['end'] : 0.0;
+        $cropX = isset($_POST['cropX']) ? (int)$_POST['cropX'] : 0;
+        $cropY = isset($_POST['cropY']) ? (int)$_POST['cropY'] : 0;
+        $cropSize = isset($_POST['cropSize']) ? (int)$_POST['cropSize'] : 0;
+
+        $minDuration = 1.0;
+        $maxDuration = 6.0;
+        $clipDuration = $end - $start;
+
+        if ($start < 0 || $end <= 0 || $clipDuration < $minDuration || $clipDuration > $maxDuration || $end <= $start) {
+            board::error(lang::get_phrase('avatar_upload_video_duration_invalid'));
+            return;
+        }
+
+    // Accept the same minimum/max as client-side (100..1024)
+    $minCrop = 100;
+    $maxCrop = 1024;
+
+        if ($cropSize < $minCrop || $cropSize > $maxCrop || $cropX < 0 || $cropY < 0) {
+            board::error(lang::get_phrase('avatar_upload_video_crop_invalid'));
+            return;
+        }
+
+        $fields = [
+            'start' => number_format($start, 2, '.', ''),
+            'end' => number_format($end, 2, '.', ''),
+            'cropX' => $cropX,
+            'cropY' => $cropY,
+            'cropSize' => $cropSize,
+            'link' => 'true',
+            'file' => [
+                'path' => $file['tmp_name'],
+                'name' => $file['name'],
+                'type' => $validation['mime'],
+            ],
+        ];
+
+        $response = SphereServer::sendMultipart('/api/video/process', $fields, 180);
+        $responseData = $response->getResponse();
+
+        if ($responseData === null) {
+            $error = SphereServer::isError() ?: lang::get_phrase('avatar_upload_video_processing_error', 'sphere api unreachable');
+            board::error($error);
+            return;
+        }
+
+        if (!empty($responseData['json']) && isset($responseData['json']['error'])) {
+            $errorMessage = is_array($responseData['json']['error']) && isset($responseData['json']['error']['Message'])
+                ? $responseData['json']['error']['Message']
+                : $responseData['json']['error'];
+            board::error($errorMessage);
+            return;
+        }
+
+        $videoBinary = null;
+        if (!empty($responseData['json']) && ($responseData['json']['success'] ?? false) && !empty($responseData['json']['url'])) {
+            $download = SphereServer::sendCustomDownload($responseData['json']['url']);
+            if ($download['http_code'] !== 200 || $download['content'] === false) {
+                board::error(lang::get_phrase('avatar_upload_video_processing_error', 'download failed'));
+                return;
+            }
+            $videoBinary = $download['content'];
+        } elseif (isset($responseData['content_type']) && str_contains((string)$responseData['content_type'], 'video')) {
+            $videoBinary = $responseData['body'];
+        } else {
+            $decoded = json_decode((string)$responseData['body'], true);
+            if (is_array($decoded) && isset($decoded['error'])) {
+                $message = is_array($decoded['error']) && isset($decoded['error']['Message'])
+                    ? $decoded['error']['Message']
+                    : $decoded['error'];
+                board::error($message);
+            } else {
+                board::error(lang::get_phrase('avatar_upload_video_processing_error', 'unknown response'));
+            }
+            return;
+        }
+
+        if ($videoBinary === null || $videoBinary === false) {
+            board::error(lang::get_phrase('avatar_upload_video_processing_error', 'empty data'));
+            return;
+        }
+
+        $uploadDir = 'uploads/avatar/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $userId = user::self()->getId();
+        $filename = "user_{$userId}.webm";
+        $filePath = $uploadDir . $filename;
+
+        if (file_put_contents($filePath, $videoBinary) === false) {
+            board::error(lang::get_phrase('avatar_upload_video_processing_error', 'storage error'));
+            return;
+        }
+
+        if ($cost > 0) {
+            user::self()->donateDeduct($cost);
+        }
+
+        user::self()->setAvatar($filename);
+
+        board::alert([
+            'type' => 'notice',
+            'ok' => true,
+            'message' => lang::get_phrase('avatar_upload_video_success'),
+            'avatarUrl' => user::self()->getAvatar(),
+        ]);
+    }
+
+    /**
      * Валидация загруженного изображения
      */
     private function validateImage($file): string|bool
@@ -172,7 +322,8 @@ class avatar_upload
         $height = $imageInfo[1];
 
         // Проверка минимальных размеров
-        $minSize = 256;
+            // Match client-side minimum (100x100)
+            $minSize = 100;
         if ($width < $minSize || $height < $minSize) {
             return lang::get_phrase('avatar_upload_min_size');
         }
@@ -197,6 +348,49 @@ class avatar_upload
     }
 
     /**
+     * Валидация загруженного видео файла
+     */
+    private function validateVideo(array $file): array|string
+    {
+        if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+            return lang::get_phrase('avatar_upload_video_invalid_file');
+        }
+
+        $maxSize = 200 * 1024 * 1024; // 200MB
+        if (($file['size'] ?? 0) > $maxSize) {
+            return lang::get_phrase('avatar_upload_video_file_too_large');
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo ? finfo_file($finfo, $file['tmp_name']) : null;
+        if ($finfo) {
+            finfo_close($finfo);
+        }
+
+        if (!$mimeType) {
+            return lang::get_phrase('avatar_upload_video_invalid_file');
+        }
+
+        $allowed = [
+            'video/mp4',
+            'video/webm',
+            'video/quicktime',
+            'video/x-matroska',
+            'video/x-msvideo',
+            'video/avi',
+            'video/mov',
+        ];
+
+        if (!in_array($mimeType, $allowed, true)) {
+            return lang::get_phrase('avatar_upload_video_invalid_file');
+        }
+
+        return [
+            'mime' => $mimeType,
+        ];
+    }
+
+    /**
      * Обработка и сохранение изображения используя Intervention Image v3
      */
     private function processImage($tmpPath, $cropData): string
@@ -216,9 +410,9 @@ class avatar_upload
         // Обрезаем изображение
         $image->crop($width, $height, $x, $y);
 
-        // Изменяем размер до 512x512
-        $finalSize = 512;
-        $image->scale($finalSize, $finalSize);
+    // Изменяем размер до 1024x1024
+    $finalSize = 1024;
+    $image->scale($finalSize, $finalSize);
 
         // Определяем путь для сохранения
         $uploadDir = 'uploads/avatar/';

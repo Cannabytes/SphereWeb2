@@ -20,14 +20,19 @@
 
       </div>
 
-      <div class="d-flex align-items-center p-3 border-bottom">
-        <div class="me-2 lh-1">
-                                <span class="avatar avatar-lg online me-2 avatar-rounded chatstatusperson">
-                                    <img class="chatimageperson" src="{{getUser(getTicket.user_id).getAvatar()}}" alt="img">
-                                </span>
-        </div>
-        <div class="flex-fill">
-          <a href="/admin/user/info/{{getTicket.user_id}}" class="chatnameperson responsive-userinfo-open"    >{{getUser(getTicket.user_id).getName()}} - {{getUser(getTicket.user_id).getEmail()}}</a>
+    <div class="d-flex align-items-center p-3 border-bottom">
+    {% set ticketUser = getUser(getTicket.user_id) %}
+    <div class="me-2 lh-1">
+                <span class="avatar avatar-lg online me-2 avatar-rounded chatstatusperson">
+                  {% if ticketUser.isAvatarVideo() %}
+                    <video class="chatimageperson" src="{{ ticketUser.getAvatar() }}" alt="img" autoplay loop muted playsinline style="width:56px; height:56px; object-fit:cover;"></video>
+                  {% else %}
+                    <img class="chatimageperson" src="{{ ticketUser.getAvatar() }}" alt="img">
+                  {% endif %}
+                </span>
+    </div>
+          <div class="flex-fill">
+          <a href="/admin/user/info/{{ticketUser.getId()}}" class="chatnameperson responsive-userinfo-open">{{ticketUser.getName()}} - {{ticketUser.getEmail()}}</a>
           <p class="text-muted mb-0 chatpersonstatus">online</p>
         </div>
         {% if id != 0 %}
@@ -97,20 +102,28 @@
                   {% endfor %}
                 </div>
               </div>
-              <div class="chat-user-profile">
-                                            <span class="avatar avatar-md online avatar-rounded">
-                                                <img src="{{userInfo.getAvatar()}}" alt="img">
-                                            </span>
-              </div>
+        <div class="chat-user-profile">
+                      <span class="avatar avatar-md online avatar-rounded">
+                        {% if userInfo.isAvatarVideo() %}
+                          <video src="{{ userInfo.getAvatar() }}" class="img-fluid rounded-circle" autoplay loop muted playsinline style="width:48px; height:48px; object-fit:cover;"></video>
+                        {% else %}
+                          <img src="{{userInfo.getAvatar()}}" alt="img">
+                        {% endif %}
+                      </span>
+        </div>
             </div>
           </li>
           {% else %}
           <li class="chat-item-start">
             <div class="chat-list-inner">
               <div class="chat-user-profile">
-                                            <span class="avatar avatar-md online avatar-rounded chatstatusperson">
-                                                <img class="chatimageperson" src="{{userInfo.getAvatar()}}" alt="img">
-                                            </span>
+                      <span class="avatar avatar-md online avatar-rounded chatstatusperson">
+                        {% if userInfo.isAvatarVideo() %}
+                          <video class="chatimageperson" src="{{ userInfo.getAvatar() }}" autoplay loop muted playsinline style="width:48px; height:48px; object-fit:cover; border-radius:50%;"></video>
+                        {% else %}
+                          <img class="chatimageperson" src="{{userInfo.getAvatar()}}" alt="img">
+                        {% endif %}
+                      </span>
               </div>
               <div class="ms-3">
                                             <span class="chatting-user-info d-inline-flex align-items-center">
@@ -253,9 +266,9 @@
 {% if getTicket.is_closed == 0 %}
 <script>
   // Глобальные переменные
-  let owner_last_message_author = {{owner_last_message_author ?? 0}};
-  let last_element_id = {{last_element_id ?? 0}};
-  const ticketId = {{id ?? 0}};
+  let owner_last_message_author = {{ owner_last_message_author|default(0)|json_encode|raw }};
+  let last_element_id = {{ last_element_id|default(0)|json_encode|raw }};
+  const ticketId = {{ id|default(0)|json_encode|raw }};
 
   $('#messageText').keypress(function(event) {
     if (event.which === 13) {

@@ -225,6 +225,162 @@ class server
         return $instance;
     }
 
+        /**
+         * Отправляет multipart/form-data запрос к Sphere API, позволяя передавать файлы и дополнительные поля.
+         * Ответ сохраняется в $instance->response с ключами body, http_code, content_type и json (если удалось декодировать).
+         */
+        static public function sendMultipart(string $url, array $fields = [], int $timeout = 120, array $extraHeaders = []): self
+        {
+            self::isOffline();
+            $instance = new self();
+            if (self::$isOfflineServer === true) {
+                if (self::$showError) {
+                    board::error("Сервер недоступен");
+                }
+                self::$error = 'Sphere Server is offline';
+
+                return $instance;
+            }
+
+            self::$error = false;
+
+            if (self::$installLink != null) {
+                $link = rtrim(self::$installLink, '/');
+            } else {
+                $link = rtrim(config::load()->sphereApi()->getIp() . ':' . config::load()->sphereApi()->getPort(), '/');
+            }
+
+            if (!preg_match('/^https?:\/\//i', $link)) {
+                $link = 'http://' . $link;
+            }
+
+            $fullUrl = rtrim($link, '/') . '/' . ltrim($url, '/');
+
+            $preparedFields = [];
+            foreach ($fields as $key => $value) {
+                if ($value instanceof \CURLFile) {
+                    $preparedFields[$key] = $value;
+                    continue;
+                }
+                if (is_array($value) && isset($value['path'])) {
+                    $preparedFields[$key] = curl_file_create(
+                        $value['path'],
+                        $value['type'] ?? null,
+                        $value['name'] ?? basename($value['path'])
+                    );
+                    continue;
+                }
+                $preparedFields[$key] = $value;
+            }
+
+            $ch = curl_init();
+            $headers = [
+                'Authorization: BoberKurwa',
+            ];
+
+            if (self::$user !== null) {
+                if (self::$server_id == null) {
+                    self::$server_id = self::$user->getServerId();
+                }
+                $headers[] = "User-Id: " . self::$user->getId();
+                $headers[] = "User-Email: " . self::$user->getEmail();
+                $headers[] = "User-Server-Id: " . self::$server_id;
+                $headers[] = "User-IP: " . self::$user->getIp();
+                $headers[] = "User-isBot: " . 0;
+            } else {
+                $server_id = \Ofey\Logan22\model\server\server::getLastServer()?->getId();
+                if (isset($_SESSION['server_id'])) {
+                    $server_id = $_SESSION['server_id'];
+                }
+                $headers[] = "User-Id: " . 0;
+                if (type::SPHERE_INSTALL != $url) {
+                    $headers[] = "User-Server-Id: " . $server_id;
+                }
+            }
+
+            $headers[] = "Token: " . self::getToken();
+
+            $host = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? '');
+            if (empty($host) || !self::is_valid_domain(parse_url($host, PHP_URL_HOST))) {
+                $host = $_SERVER['SERVER_NAME'] ?? $host;
+            }
+
+            $parsedHost = parse_url($host, PHP_URL_HOST) ?: $host;
+            $parsedHost = preg_replace('/:\\d+$/', '', $parsedHost);
+            $headers[] = "Domain: " . $parsedHost;
+
+            if (!empty($extraHeaders)) {
+                $headers = array_merge($headers, $extraHeaders);
+            }
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_URL, $fullUrl);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $preparedFields);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+
+            self::$countRequest++;
+            $responseBody = curl_exec($ch);
+
+            if ($responseBody === false) {
+                self::$codeError = "sphereapi_unavailable";
+                self::$error = 'Ошибка соединения с Sphere API. Попробуйте еще раз. Возможно сервер на перезагрузке либо указаны неверные данные подключения к Sphere API. Если ошибка повторится, обратитесь в службу поддержки.';
+                self::$isOfflineServer = true;
+
+                return $instance;
+            }
+
+            if (curl_errno($ch)) {
+                sql::sql("DELETE FROM `server_cache` WHERE `type` = 'sphereServer'");
+                sql::sql("INSERT INTO `server_cache` (`server_id`, `type`, `data`, `date_create`) VALUES (0, ?, ?, ?)", [
+                    "sphereServer",
+                    json_encode(["connect" => false, "error" => "Not connect to Sphere Server"], JSON_UNESCAPED_UNICODE),
+                    time::mysql(),
+                ]);
+                self::$isOfflineServer = true;
+
+                return $instance;
+            }
+
+            $info = curl_getinfo($ch);
+            curl_close($ch);
+
+            $contentType = $info['content_type'] ?? null;
+            $httpCode = $info['http_code'] ?? 0;
+            $decodedJson = null;
+
+            if ($contentType && str_contains($contentType, 'application/json')) {
+                $decodedJson = json_decode($responseBody, true);
+            } else {
+                $decodedJson = json_decode($responseBody, true);
+                if ($decodedJson === null && json_last_error() !== JSON_ERROR_NONE) {
+                    $decodedJson = null;
+                }
+            }
+
+            if (is_array($decodedJson) && isset($decodedJson['error'])) {
+                self::$error = is_array($decodedJson['error']) && isset($decodedJson['error']['Message'])
+                    ? $decodedJson['error']['Message']
+                    : $decodedJson['error'];
+                if (isset($decodedJson['code'])) {
+                    self::$codeError = $decodedJson['code'];
+                }
+            }
+
+            $instance->response = [
+                'body' => $responseBody,
+                'http_code' => $httpCode,
+                'content_type' => $contentType,
+                'info' => $info,
+                'json' => $decodedJson,
+            ];
+
+            return $instance;
+        }
+
     static public function sendCustom(string $url, array $arr = []): self
     {
         self::isOffline();
@@ -399,16 +555,13 @@ class server
         $parsedHost = parse_url($host, PHP_URL_HOST) ?: $host;
         $parsedHost = preg_replace('/:\d+$/', '', $parsedHost);
         $headers[] = "Domain: " . $parsedHost;
-        // --- Конец логики формирования URL и заголовков ---
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_URL, $full_url);
-        // Это GET-запрос, поэтому POST и POSTFIELDS не указываем
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60); // Увеличенный таймаут для скачивания
         curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
 
-        // Отключаем проверку SSL для самоподписанных сертификатов Go
         if ($protocol === 'https') {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
@@ -479,7 +632,7 @@ class server
         //Проверка наличия файла с токеном
         if (file_exists(fileSys::get_dir("/data/token.php"))) {
             require_once(fileSys::get_dir("/data/token.php"));
-            self::$token = __TOKEN__;
+            self::$token = defined('__TOKEN__') ? (string)constant('__TOKEN__') : "disable";
         } else {
             self::$token = "disable";
         }

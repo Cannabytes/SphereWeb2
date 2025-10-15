@@ -51,7 +51,12 @@
                             {% for user in users %}
                             {% set userInfo = getUser(user.user_id) %}
                             <tr>
-                                <td><img class="avatar avatar-md" src="{{userInfo.getAvatar()}}">
+                                <td>
+                                    {% if userInfo.isAvatarVideo() %}
+                                        <video class="avatar avatar-md" src="{{ userInfo.getAvatar() }}" width="40" height="40" autoplay loop muted playsinline style="object-fit:cover;border-radius:50%;"></video>
+                                    {% else %}
+                                        <img class="avatar avatar-md" src="{{userInfo.getAvatar()}}">
+                                    {% endif %}
                                     <a href="/admin/user/info/{{userInfo.getId()}}">{{ userInfo.getEmail() }}</a></td>
                                 <td>{{ user.date_create }}</td>
                                 <td>{{ userInfo.getHistoryDonate(true) }}</td>

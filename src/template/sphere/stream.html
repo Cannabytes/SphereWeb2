@@ -46,7 +46,11 @@
 
                     <div class="d-sm-flex align-items-top">
                                                 <span class="avatar avatar-sm">
-                                                    <img src="{{userInfo.getAvatar()}}" alt="img">
+                                                    {% if userInfo.isAvatarVideo() %}
+                                                        <video src="{{ userInfo.getAvatar() }}" class="img-fluid rounded-circle" autoplay loop muted playsinline style="width:32px; height:32px; object-fit:cover;"></video>
+                                                    {% else %}
+                                                        <img src="{{userInfo.getAvatar()}}" alt="img">
+                                                    {% endif %}
                                                 </span>
 
                     </div>

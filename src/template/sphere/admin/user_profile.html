@@ -37,7 +37,11 @@
           <div class="text-center mb-3">
             <h4 class="fw-bold mb-2 text-primary">
                <span class="avatar avatar-sm border-2 border-white {% if userInfo.isOnline() %}online{% endif %}">
-                <img src="{{userInfo.getAvatar()}}" alt="{{userInfo.getName()}}" class="rounded-circle">
+                {% if userInfo.isAvatarVideo() %}
+                  <video src="{{ userInfo.getAvatar() }}" alt="{{userInfo.getName()}}" class="rounded-circle" width="40" height="40" autoplay loop muted playsinline style="object-fit:cover;"></video>
+                {% else %}
+                  <img src="{{userInfo.getAvatar()}}" alt="{{userInfo.getName()}}" class="rounded-circle">
+                {% endif %}
               </span>
               {{userInfo.getName()}}</h4>
             <div class="d-flex align-items-center justify-content-center">

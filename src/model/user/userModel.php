@@ -1534,6 +1534,26 @@ class userModel
     }
 
     /**
+     * Check if the user's avatar is a video (webm).
+     *
+     * @return bool
+     */
+    public function isAvatarVideo(): bool
+    {
+        if (empty($this->avatar)) {
+            return false;
+        }
+
+        // Remove query string if present (e.g. ?c=1234)
+        $base = preg_replace('/\?.*$/', '', $this->avatar);
+        $baseLower = mb_strtolower($base);
+
+        return str_ends_with($baseLower, '.webm');
+    }
+
+    
+
+    /**
      * @return string|null
      */
     public function getTimezone(): ?string

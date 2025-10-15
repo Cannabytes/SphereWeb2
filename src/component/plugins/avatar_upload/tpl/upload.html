@@ -2,27 +2,31 @@
 
 {% block css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-<link rel="stylesheet" href="/src/component/plugins/avatar_upload/tpl/css/style.css?v=0.0.1">
+<link rel="stylesheet" href="/src/component/plugins/avatar_upload/tpl/css/style.css?v=0.1.0">
 {% endblock %}
 
 {% block content %}
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12">
-            <div class="card custom-card">
-                <div class="card-header">
-                    <h4 class="mb-0"><i class="bi bi-person-circle me-2"></i>{{ phrase('avatar_upload_page_title') }}</h4>
-                </div>
+
                 <div class="card-body">
+                    {% set userBalance = getUser().getBalance() %}
+                    {% set isAdmin = (getUser() and getUser().isAdmin()) ? true : false %}
+                    {% set uploadDisabled = not setting.isFree and userBalance < (setting.cost ?? 0) and not isAdmin %}
+
                     <div class="row g-4">
-                        <!-- Left column: current avatar, cost and requirements -->
+
                         <div class="col-lg-5">
+                      
                             <div class="card custom-card mb-3">
                                 <div class="card-body text-center">
-                                    <h5 class="mb-3">{{ phrase('avatar_upload_current_avatar') }}</h5>
                                     <div class="mb-3">
-                                        <img src="{{ currentAvatar }}" alt="Current Avatar" class="img-fluid rounded" style="max-width: 180px;">
+                                        {% if getUser().isAvatarVideo() %}
+                                            <video src="{{ getUser().getAvatar() }}" class="img-fluid rounded" style="max-width: 200px;" autoplay loop muted playsinline></video>
+                                        {% else %}
+                                            <img src="{{ getUser().getAvatar() }}" alt="Current Avatar" class="img-fluid rounded" style="max-width: 180px;">
+                                        {% endif %}
                                     </div>
                                     {% if not setting.isFree %}
                                     <div class="alert alert-info d-flex align-items-center">
@@ -45,6 +49,9 @@
                                             <li>{{ phrase('avatar_upload_min_size_req') }}</li>
                                             <li>{{ phrase('avatar_upload_max_size_req') }}</li>
                                             <li>{{ phrase('avatar_upload_resize_info') }}</li>
+                                            <li>{{ phrase('avatar_upload_video_formats') }}</li>
+                                            <li>{{ phrase('avatar_upload_video_max_size_req') }}</li>
+                                            <li>{{ phrase('avatar_upload_video_duration_hint') }}</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -53,34 +60,63 @@
 
                         <!-- Right column: upload area -->
                         <div class="col-lg-7">
-                            {# Область загрузки файла: делаем неактивной если загрузка платная и у пользователя недостаточно средств #}
-                            {% set userBalance = getUser().getBalance() %}
-                            {% set isAdmin = (getUser() and getUser().isAdmin()) ? true : false %}
-                            {# Если не бесплатно, и баланс меньше стоимости, и пользователь не админ — блокируем #}
-                            {% if not setting.isFree and userBalance < setting.cost and not isAdmin %}
                             <div class="card custom-card">
                                 <div class="card-body">
-                                    <div id="fileUploadArea" class="w-100 text-center py-5" aria-disabled="true" style="pointer-events: none; opacity: 0.65; border: 2px dashed #e9ecef; border-radius: .375rem;">
-                                        <div class="mb-3"><i class="bi bi-x-circle text-danger" style="font-size: 2rem;"></i></div>
-                                        <h5 class="mb-2">{{ phrase('avatar_upload_not_enough_funds')|default('Недостаточно средств') }}</h5>
-                                        <p class="text-muted mb-1">{{ phrase('avatar_upload_current_balance')|default('На Вашем счёте') }}: <strong>{{ userBalance }}</strong></p>
-                                        <p class="text-muted mb-0">{{ phrase('avatar_upload_required_cost')|default('Требуется') }}: <strong>{{ setting.cost }}</strong></p>
+                                    <ul class="nav nav-pills mb-3" id="avatarUploadTabs" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="image-tab" data-bs-toggle="pill" data-bs-target="#image-upload-pane" type="button" role="tab" aria-controls="image-upload-pane" aria-selected="true">
+                                                <i class="bi bi-image me-2"></i>{{ phrase('avatar_upload_image_tab') }}
+                                            </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="video-tab" data-bs-toggle="pill" data-bs-target="#video-upload-pane" type="button" role="tab" aria-controls="video-upload-pane" aria-selected="false">
+                                                <i class="bi bi-camera-reels me-2"></i>{{ phrase('avatar_upload_video_tab') }}
+                                            </button>
+                                        </li>
+                                    </ul>
+
+                                    <div class="tab-content" id="avatarUploadTabContent">
+                                        <div class="tab-pane fade show active" id="image-upload-pane" role="tabpanel" aria-labelledby="image-tab">
+                                            {% if uploadDisabled %}
+                                            <div id="fileUploadArea" class="w-100 text-center py-5 disabled-upload" aria-disabled="true">
+                                                <div class="mb-3"><i class="bi bi-x-circle text-danger" style="font-size: 2rem;"></i></div>
+                                                <h5 class="mb-2">{{ phrase('avatar_upload_not_enough_funds')|default('Недостаточно средств') }}</h5>
+                                                <p class="text-muted mb-1">{{ phrase('avatar_upload_current_balance')|default('На Вашем счёте') }}: <strong>{{ userBalance }}</strong></p>
+                                                <p class="text-muted mb-0">{{ phrase('avatar_upload_required_cost')|default('Требуется') }}: <strong>{{ setting.cost }}</strong></p>
+                                            </div>
+                                            <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp,image/gif" disabled style="display: none;">
+                                            {% else %}
+                                            <div id="fileUploadArea" class="w-100 text-center py-5 upload-area clickable">
+                                                <div class="mb-3"><i class="bi bi-cloud-upload" style="font-size: 2rem;"></i></div>
+                                                <h5 class="mb-2">{{ phrase('avatar_upload_drag_drop') }}</h5>
+                                                <p class="text-muted mb-0">{{ phrase('avatar_upload_select_photo') }}</p>
+                                            </div>
+                                            <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display: none;">
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="tab-pane fade" id="video-upload-pane" role="tabpanel" aria-labelledby="video-tab">
+                                            {% if uploadDisabled %}
+                                            <div id="videoUploadArea" class="w-100 text-center py-5 disabled-upload" aria-disabled="true">
+                                                <div class="mb-3"><i class="bi bi-x-circle text-danger" style="font-size: 2rem;"></i></div>
+                                                <h5 class="mb-2">{{ phrase('avatar_upload_not_enough_funds')|default('Недостаточно средств') }}</h5>
+                                                <p class="text-muted mb-1">{{ phrase('avatar_upload_current_balance')|default('На Вашем счёте') }}: <strong>{{ userBalance }}</strong></p>
+                                                <p class="text-muted mb-0">{{ phrase('avatar_upload_required_cost')|default('Требуется') }}: <strong>{{ setting.cost }}</strong></p>
+                                            </div>
+                                            <input type="file" id="videoInput" accept="video/mp4,video/webm,video/quicktime,video/x-matroska,video/x-msvideo" disabled style="display: none;">
+                                            {% else %}
+                                            <div id="videoUploadArea" class="w-100 text-center py-5 upload-area clickable">
+                                                <div class="mb-3"><i class="bi bi-camera-reels" style="font-size: 2rem;"></i></div>
+                                                <h5 class="mb-2">{{ phrase('avatar_upload_video_drag_drop') }}</h5>
+                                                <p class="text-muted mb-0">{{ phrase('avatar_upload_select_video') }}</p>
+                                            </div>
+                                            <div class="small text-muted mt-3">{{ phrase('avatar_upload_video_duration_hint') }}</div>
+                                            <input type="file" id="videoInput" accept="video/mp4,video/webm,video/quicktime,video/x-matroska,video/x-msvideo" style="display: none;">
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp,image/gif" disabled style="display: none;">
-                            {% else %}
-                            <div class="card custom-card">
-                                <div class="card-body">
-                                    <div id="fileUploadArea" class="w-100 text-center py-5" style="border: 2px dashed #e9ecef; border-radius: .375rem; cursor: pointer;">
-                                        <div class="mb-3"><i class="bi bi-cloud-upload" style="font-size: 2rem;"></i></div>
-                                        <h5 class="mb-2">{{ phrase('avatar_upload_drag_drop') }}</h5>
-                                        <p class="text-muted mb-0">{{ phrase('avatar_upload_select_photo') }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display: none;">
-                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -134,6 +170,98 @@
     </div>
 </div>
 
+<!-- Модальное окно для обработки видео аватара -->
+<div class="modal fade" id="videoCropModal" tabindex="-1" aria-labelledby="videoCropModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-fullscreen-lg-down" style="max-width: 1400px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="videoCropModalLabel">
+                    <i class="bi bi-camera-reels me-2"></i>{{ phrase('avatar_upload_video_modal_title') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-4">
+                    <!-- Левая колонка: Видео с кроппером -->
+                    <div class="col-lg-8">
+                        <div class="video-crop-wrapper mb-3">
+                            <div id="videoCropContainer" class="position-relative">
+                                <canvas id="videoCropCanvas" style="max-width: 100%; display: block;"></canvas>
+                            </div>
+                        </div>
+                        <video id="videoPreview" style="display: none;" muted playsinline></video>
+                        
+                        <!-- Временная шкала с выбором диапазона -->
+                        <div class="timeline-container mb-3">
+                            <label class="form-label fw-bold mb-2">
+                                <i class="bi bi-clock me-2"></i>{{ phrase('avatar_upload_video_timeline') }}
+                            </label>
+                            <div class="timeline-wrapper position-relative">
+                                <div class="timeline-track">
+                                    <div id="timelineSelection" class="timeline-selection"></div>
+                                    <input type="range" class="timeline-range" id="timelineStart" min="0" max="0" step="0.05" value="0">
+                                    <input type="range" class="timeline-range" id="timelineEnd" min="0" max="0" step="0.05" value="0">
+                                </div>
+                                <div class="timeline-labels d-flex justify-content-between mt-2 small text-muted">
+                                    <span id="startTimeLabel">0.00s</span>
+                                    <span id="durationLabel">Длительность: 4.00s</span>
+                                    <span id="endTimeLabel">0.00s</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <small>{{ phrase('avatar_upload_video_instructions') }}</small>
+                        </div>
+                    </div>
+
+                    <!-- Правая колонка: Превью финального аватара -->
+                    <div class="col-lg-4">
+                        <div class="avatar-preview-card">
+                            <h6 class="mb-3 fw-bold text-center">
+                                <i class="bi bi-eye me-2"></i>{{ phrase('avatar_upload_preview') }}
+                            </h6>
+                            <div class="final-avatar-preview mx-auto mb-3">
+                                <canvas id="avatarPreviewCanvas" class="avatar-preview-canvas"></canvas>
+                                <video id="avatarPreviewVideo" style="display:none;" loop muted playsinline></video>
+                            </div>
+                            <div class="text-center mb-3">
+                                <div class="badge bg-primary mb-2">250 × 250 px</div>
+                                <p class="small text-muted mb-0">{{ phrase('avatar_upload_final_result') }}</p>
+                            </div>
+                            <hr>
+                            <div class="crop-info small">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">{{ phrase('avatar_upload_crop_size') }}:</span>
+                                    <strong id="cropSizeInfo">—</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">{{ phrase('avatar_upload_clip_duration') }}:</span>
+                                    <strong id="clipDurationInfo">—</strong>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted">{{ phrase('avatar_upload_clip_range') }}:</span>
+                                    <strong id="clipRangeInfo">—</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>{{ phrase('avatar_upload_cancel') }}
+                </button>
+                <button type="button" class="btn btn-primary" id="uploadVideoAvatar">
+                    <i class="bi bi-check-circle me-2"></i>{{ phrase('avatar_upload_video_upload_button') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<canvas id="videoFrameCanvas" class="d-none"></canvas>
+
 {% endblock %}
 
 {% block js %}
@@ -147,6 +275,23 @@
         fileTooLarge: '{{phrase("avatar_upload_file_too_large")}}',
         fileReadError: '{{phrase("avatar_upload_file_read_error")}}'
     };
+    window.avatarVideoPhrases = {
+        select: '{{phrase("avatar_upload_video_select_prompt")}}',
+        fileTooLarge: '{{phrase("avatar_upload_video_file_too_large")}}',
+        invalid: '{{phrase("avatar_upload_video_invalid_file")}}',
+        durationInvalid: '{{phrase("avatar_upload_video_duration_invalid")}}',
+        cropInvalid: '{{phrase("avatar_upload_video_crop_invalid")}}',
+        preparing: '{{phrase("avatar_upload_video_preparing")}}',
+        uploading: '{{phrase("avatar_upload_uploading")}}',
+        durationHint: '{{phrase("avatar_upload_video_duration_hint")}}'
+    };
+    window.avatarVideoConfig = {
+        minDuration: 1,
+        maxDuration: 6,
+        minCrop: 100,
+        maxCrop: 1024,
+        maxFileSize: 209715200 // 200MB
+    };
 </script>
-<script src="/src/component/plugins/avatar_upload/tpl/js/avatar_uploader.js?v=0.0.2"></script>
+<script src="/src/component/plugins/avatar_upload/tpl/js/avatar_uploader.js?v=0.1.4"></script>
 {% endblock %}

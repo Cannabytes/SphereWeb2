@@ -138,13 +138,17 @@
         <a href="#" class="header-link dropdown-toggle" id="mainHeaderProfile" data-bs-toggle="dropdown"
            data-bs-auto-close="outside" aria-expanded="false">
           <div class="d-flex align-items-center">
+            {% set selfUser = getUser() %}
             <div class="me-xxl-2 me-0">
-              <img src="{{ getUser().getAvatar() }}" alt="img" width="32" height="32"
-                   class="rounded-circle user_self_avatar">
+              {% if selfUser.isAvatarVideo() %}
+                <video src="{{ selfUser.getAvatar() }}" alt="img" width="32" height="32" class="rounded-circle user_self_avatar" autoplay loop muted playsinline style="object-fit:cover;"></video>
+              {% else %}
+                <img src="{{ selfUser.getAvatar() }}" alt="img" width="32" height="32" class="rounded-circle user_self_avatar">
+              {% endif %}
             </div>
             <div class="d-xxl-block d-none my-auto">
-              <h6 class="fw-semibold mb-0 lh-1 fs-14">{{getUser().getName()}}</h6>
-              <span class="op-7 fw-normal d-block fs-11 text-muted">{{getUser().getEmail()}}</span>
+              <h6 class="fw-semibold mb-0 lh-1 fs-14">{{selfUser.getName()}}</h6>
+              <span class="op-7 fw-normal d-block fs-11 text-muted">{{selfUser.getEmail()}}</span>
             </div>
           </div>
         </a>

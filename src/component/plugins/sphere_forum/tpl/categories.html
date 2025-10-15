@@ -191,8 +191,14 @@
                                                     <span class="me-1">от</span>
                                                     <div class="d-inline-flex align-items-center flex-wrap">
                                                         <span class="avatar avatar-sm avatar-rounded me-1">
-                                                            <img src="{{ getUser(section.getLastReplyUserId()).getAvatar() }}" alt="img"
-                                                                 class="rounded-circle">
+                                                       
+                                                        {% set lastReplyUser = getUser(section.getLastReplyUserId()) %}
+                                                        {% if lastReplyUser.isAvatarVideo() %}
+                                                            <video src="{{ lastReplyUser.getAvatar() }}" class="img-fluid rounded" autoplay loop muted playsinline></video>
+                                                        {% else %}
+                                                            <img src="{{ lastReplyUser.getAvatar() }}" alt="img" class="rounded-circle">
+                                                        {% endif %}
+                                                            
                                                         </span>
                                                         <span class="text-truncate">{{ getUser(section.getLastReplyUserId()).getName() }}</span>
                                                     </div>
@@ -542,8 +548,15 @@
                                     {{phrase('Category')}}: {{ thread.category.name }}<br>
                                     {{phrase(263)}}:
                                     <span class="avatar avatar-xs avatar-rounded">
-                                                        <img src="{{getUser(thread.author.id).getAvatar()}}" alt=""
-                                                             id="profile-img">
+
+                                                     {% set threadAuthor = getUser(thread.author.id) %}
+                                                     {% if threadAuthor.isAvatarVideo() %}
+                                                         <video src="{{ threadAuthor.getAvatar() }}" class="img-fluid rounded" autoplay loop muted playsinline></video>
+                                                      {% else %}
+                                                          <img src="{{ threadAuthor.getAvatar() }}" alt="" id="profile-img">
+                                                      {% endif %}
+
+                                                       
                                                     </span>
                                     {{ thread.author.name }}<br>
                                     {{phrase(262)}}: {{ thread.created_at|date("d.m.Y H:i") }}
@@ -693,7 +706,11 @@
                             <div class="flex-grow-1">
                                 <div class="fw-semibold d-flex align-items-center">
                                     <span class="avatar avatar-xs {% if user.isOnline() %}online{%else%}offline{% endif %} me-1  ">
-                                            <img src="{{user.getAvatar()}}" alt="" class="">
+                                        {% if user.isAvatarVideo() %}
+                                            <video src="{{ user.getAvatar() }}" class="img-fluid rounded" autoplay loop muted playsinline style="max-width: 40px; max-height:40px;"></video>
+                                        {% else %}
+                                            <img src="{{ user.getAvatar() }}" alt="" class="">
+                                        {% endif %}
                                     </span>
                                     {{ user.getName() }}
                                     {% if notification.notification_type == 'reply_to_post' %}
@@ -775,11 +792,15 @@
                         <div class="message-block border-0 bg-transparent mb-2">
                             <div class="d-flex">
                                 <div class="me-3">
-                <span class="avatar avatar-md avatar-rounded bg-light text-muted">
-                    <img src="{{user.getAvatar()}}" alt="img">
-                </span>
+                                <span class="avatar avatar-md avatar-rounded bg-light text-muted">
+                                    {% if user.isAvatarVideo() %}
+                                        <video src="{{ user.getAvatar() }}" class="img-fluid rounded" autoplay loop muted playsinline></video>
+                                    {% else %}
+                                        <img src="{{ user.getAvatar() }}" alt="img">
+                                    {% endif %}
+                                </span>
                                 </div>
-                                <div class="flex-fill overflow-hidden"> <!-- добавлен класс overflow-hidden -->
+                                <div class="flex-fill overflow-hidden"> 
                                     {% if lastMessage.canView %}
                                     <a href="/forum/topic/{{transliterateToEn(lastMessage.getTitle())}}.{{lastMessage.getThreadId()}}"
                                        class="text-primary ">
@@ -812,7 +833,11 @@
                             <div class="d-flex">
                                 <div class="me-3">
                 <span class="avatar avatar-md avatar-rounded bg-light text-muted">
-                    <img src="{{user.getAvatar()}}" alt="img">
+                    {% if user.isAvatarVideo() %}
+                        <video src="{{ user.getAvatar() }}" class="img-fluid rounded" autoplay loop muted playsinline style="max-width: 56px; max-height:56px;"></video>
+                    {% else %}
+                        <img src="{{ user.getAvatar() }}" alt="img">
+                    {% endif %}
                 </span>
                                 </div>
                                 <div class="flex-fill overflow-hidden">

@@ -21,6 +21,14 @@ $routes = [
     ],
     [
         "method"  => "POST",
+        "pattern" => "/avatar/upload/video",
+        "file"    => "avatar_upload.php",
+        "call"    => function() {
+            (new avatar_upload\avatar_upload())->uploadVideo();
+        },
+    ],
+    [
+        "method"  => "POST",
         "pattern" => "/avatar/get/current",
         "file"    => "avatar_upload.php",
         "call"    => function() {

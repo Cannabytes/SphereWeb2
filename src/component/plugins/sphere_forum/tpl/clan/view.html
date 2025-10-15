@@ -42,9 +42,13 @@
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         {{phrase('leader')}}
                                         <span class="d-flex align-items-center">
-                                            <img src="{{ getUser(clan.getOwnerId()).getAvatar() }}"
-                                                 class="avatar avatar-xs me-2">
-                                            {{ getUser(clan.getOwnerId()).getName() }}
+                                            {% set ownerUser = getUser(clan.getOwnerId()) %}
+                                            {% if ownerUser.isAvatarVideo() %}
+                                                <video src="{{ ownerUser.getAvatar() }}" class="avatar avatar-xs me-2" width="24" height="24" autoplay loop muted playsinline style="object-fit:cover;border-radius:50%;"></video>
+                                            {% else %}
+                                                <img src="{{ ownerUser.getAvatar() }}" class="avatar avatar-xs me-2">
+                                            {% endif %}
+                                            {{ ownerUser.getName() }}
                                         </span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -233,7 +237,11 @@
                                             <tr>
                                                 <td>
                                                     <div class="d-flex align-items-center">
-                                                        <img src="{{ user.getAvatar() }}" class="avatar avatar-sm me-2">
+                                                        {% if user.isAvatarVideo() %}
+                                                            <video src="{{ user.getAvatar() }}" class="avatar avatar-sm me-2" width="32" height="32" autoplay loop muted playsinline style="object-fit:cover;border-radius:50%;"></video>
+                                                        {% else %}
+                                                            <img src="{{ user.getAvatar() }}" class="avatar avatar-sm me-2">
+                                                        {% endif %}
                                                         <span>{{ user.getName() }}</span>
                                                     </div>
                                                 </td>
@@ -308,7 +316,11 @@
                                             <tr>
                                                 <td>
                                                     <div class="d-flex align-items-center">
-                                                        <img src="{{ user.getAvatar() }}" class="avatar avatar-sm me-2">
+                                                        {% if user.isAvatarVideo() %}
+                                                            <video src="{{ user.getAvatar() }}" class="avatar avatar-sm me-2" width="32" height="32" autoplay loop muted playsinline style="object-fit:cover;border-radius:50%;"></video>
+                                                        {% else %}
+                                                            <img src="{{ user.getAvatar() }}" class="avatar avatar-sm me-2">
+                                                        {% endif %}
                                                         <span>{{ user.getName() }}</span>
                                                     </div>
                                                 </td>
@@ -719,13 +731,17 @@
         }
 
         function appendMessage(message) {
+            console.log(message)
             const isCurrentUser = message.user_id == currentUserId;
+            const avatarHtml = message.isVideoAvatar
+                ? `<video src="/uploads/avatar/${message.avatar}" class="avatar avatar-sm" autoplay loop muted playsinline style="object-fit:cover;border-radius:50%;"></video>`
+                : `<img src="/uploads/avatar/${message.avatar}" class="avatar avatar-sm">`;
             const html = `
             <div class="message ${isCurrentUser ? 'message-out' : 'message-in'}" data-message-id="${message.id}">
                 <div class="alert alert-${isCurrentUser ? 'success' : 'info'} bg-opacity-75">
                     <div class="d-flex align-items-center gap-2">
                         <div class="message-avatar">
-                            <img src="/uploads/avatar/${message.avatar}" class="avatar avatar-sm">
+                            ${avatarHtml}
                         </div>
                         <div class="d-flex flex-column">
                             <strong>${escapeHtml(message.name)}</strong>

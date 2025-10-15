@@ -51,9 +51,15 @@
                 </td>
                 <td>
                   <div class="d-flex align-items-center">
-                    <img src="{{ getUser(clan.getOwnerId()).getAvatar() }}"
-                         class="avatar avatar-xs me-2" alt="Аватар лидера">
-                    {{ getUser(clan.getOwnerId()).getName() }}
+                    {% set ownerUser = getUser(clan.getOwnerId()) %}
+                    <span class="avatar avatar-xs me-2">
+                      {% if ownerUser.isAvatarVideo() %}
+                        <video src="{{ ownerUser.getAvatar() }}" class="img-fluid rounded-circle" autoplay loop muted playsinline style="width:24px; height:24px; object-fit:cover;"></video>
+                      {% else %}
+                        <img src="{{ ownerUser.getAvatar() }}" class="avatar avatar-xs" alt="Аватар лидера">
+                      {% endif %}
+                    </span>
+                    {{ ownerUser.getName() }}
                   </div>
                 </td>
                 <td>

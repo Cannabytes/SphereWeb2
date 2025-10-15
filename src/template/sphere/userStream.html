@@ -57,11 +57,16 @@
 
                     <div class="main-mail-content my-0">
 
-                      <p class="fs-14 fw-semibold mb-1">
-              <span class="avatar avatar-sm  me-1 avatar-rounded ">
-                                        <img src="{{getUser().getAvatar()}}" alt="">
-                                    </span> {{getUser().getName()}} 🖐
-                      </p>
+                <p class="fs-14 fw-semibold mb-1">
+                <span class="avatar avatar-sm  me-1 avatar-rounded ">
+                            {% set gu = getUser() %}
+                            {% if gu.isAvatarVideo() %}
+                              <video src="{{ gu.getAvatar() }}" width="32" height="32" autoplay loop muted playsinline style="object-fit:cover;border-radius:50%;"></video>
+                            {% else %}
+                              <img src="{{gu.getAvatar()}}" alt="">
+                            {% endif %}
+                          </span> {{getUser().getName()}} 🖐
+                    </p>
                       <p class="mb-2 fs-12 text-muted">Earth, our home, is the third planet from the sun. While
                         scientists continue to hunt for clues of life beyond Earth,is the third planet from the sun.
                         While scientists continue to hunt for clues of life beyond Earth, our home planet remains the

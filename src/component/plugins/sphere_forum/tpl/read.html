@@ -315,8 +315,13 @@
                                  {% endif %}>
                                 <div class=" mt-1">
                                     <div class="d-flex flex-column align-items-center">
-                                        <span class="{% if user.isOnline() %}online{%else%}offline{% endif %} mb-1">
-                                            <img src="{{user.getAvatar()}}" alt="" class="{% if user.getAvatar()|split('/')|last|slice(0,5) == 'user_' %}img-fluid shadow-lg rounded{% else %}avatar avatar-xxl{% endif %}">
+                                        {% set displayUser = user %}
+                                        <span class="{% if displayUser.isOnline() %}online{%else%}offline{% endif %} mb-1">
+                                            {% if displayUser.isAvatarVideo() %}
+                                                <video src="{{ displayUser.getAvatar() }}" class="img-fluid rounded" style="max-width: 200px;" autoplay loop muted playsinline></video>
+                                            {% else %}
+                                                <img src="{{displayUser.getAvatar()}}" alt="" class="{% if displayUser.getAvatar()|split('/')|last|slice(0,5) == 'user_' %}img-fluid shadow-lg rounded{% else %}avatar avatar-xxl{% endif %}">
+                                            {% endif %}
                                         </span>
                                         {% if user.isAdmin() %}
                                         <span class="badge bg-light text-muted m-1">{{phrase('admin')}}</span>
@@ -605,8 +610,13 @@
                             <div class=" ">
                                 <div class="border-bottom mt-1">
                                     <div class="d-flex flex-column align-items-center">
+                                                {% set panelUser = getUser() %}
                                                 <span class="online mb-1">
-                                                    <img src="{{getUser().getAvatar()}}" alt="" class="{% if getUser().getAvatar()|split('/')|last|slice(0,5) == 'user_' %}img-fluid shadow-lg rounded{% else %}avatar avatar-xxl{% endif %}">
+                                                    {% if panelUser.isAvatarVideo() %}
+                                                        <video src="{{ panelUser.getAvatar() }}" class="img-fluid rounded" style="max-width: 200px;" autoplay loop muted playsinline></video>
+                                                    {% else %}
+                                                        <img src="{{panelUser.getAvatar()}}" alt="" class="{% if panelUser.getAvatar()|split('/')|last|slice(0,5) == 'user_' %}img-fluid shadow-lg rounded{% else %}avatar avatar-xxl{% endif %}">
+                                                    {% endif %}
                                                 </span>
                                         <h5 class="fw-semibold mb-1 text-center">{{getUser().getName()}}</h5>
                                     </div>

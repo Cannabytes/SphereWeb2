@@ -34,7 +34,11 @@
                                     <div class="d-flex align-items-top {% if id == ticket.id %}p-2 bg-success-transparent mb-1 rounded{% endif %}">
                                         <div class="me-1 lh-1">
                                                     <span class="avatar avatar-md offline me-2 avatar-rounded" >
-                                                        <img  src="{{userInfo.getAvatar()}}" alt="img">
+                                                        {% if userInfo.isAvatarVideo() %}
+                                                            <video src="{{ userInfo.getAvatar() }}" class="img-fluid rounded-circle" autoplay loop muted playsinline style="width:48px; height:48px; object-fit:cover;"></video>
+                                                        {% else %}
+                                                            <img  src="{{userInfo.getAvatar()}}" alt="img">
+                                                        {% endif %}
                                                     </span>
                                         </div>
                                         <div class="flex-fill">
@@ -107,9 +111,13 @@
                                         {% endfor %}
                                     </div>
                                 </div>
-                                <div class="chat-user-profile">
+                                        <div class="chat-user-profile">
                                             <span class="avatar avatar-md online avatar-rounded">
-                                                <img src="{{userInfo.getAvatar()}}" alt="img">
+                                                {% if userInfo.isAvatarVideo() %}
+                                                    <video src="{{ userInfo.getAvatar() }}" class="img-fluid rounded-circle" autoplay loop muted playsinline style="width:48px; height:48px; object-fit:cover;"></video>
+                                                {% else %}
+                                                    <img src="{{userInfo.getAvatar()}}" alt="img">
+                                                {% endif %}
                                             </span>
                                 </div>
                             </div>
@@ -119,7 +127,11 @@
                             <div class="chat-list-inner">
                                 <div class="chat-user-profile">
                                             <span class="avatar avatar-md online avatar-rounded chatstatusperson">
-                                                <img class="chatimageperson" src="{{userInfo.getAvatar()}}" alt="img">
+                                                {% if userInfo.isAvatarVideo() %}
+                                                    <video class="chatimageperson" src="{{ userInfo.getAvatar() }}" autoplay loop muted playsinline style="width:48px; height:48px; object-fit:cover; border-radius:50%;"></video>
+                                                {% else %}
+                                                    <img class="chatimageperson" src="{{userInfo.getAvatar()}}" alt="img">
+                                                {% endif %}
                                             </span>
                                 </div>
                                 <div class="ms-3">
@@ -250,9 +262,9 @@
 
 <script>
     // Глобальные переменные
-    let owner_last_message_author = {{owner_last_message_author ?? 0}};
-    let last_element_id = {{last_element_id ?? 0}};
-    const ticketId = {{id ?? 0}};
+    let owner_last_message_author = {{ owner_last_message_author|default(0)|json_encode|raw }};
+    let last_element_id = {{ last_element_id|default(0)|json_encode|raw }};
+    const ticketId = {{ id|default(0)|json_encode|raw }};
 
     // Обработчик отправки сообщения
     $('#messageText').keypress(function(event) {

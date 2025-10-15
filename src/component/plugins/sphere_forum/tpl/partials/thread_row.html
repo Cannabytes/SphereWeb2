@@ -1,7 +1,12 @@
 <td width="55%">
     <div class="d-flex align-items-center">
+        {% set threadAuthor = getUser(thread.getAuthorId()) %}
         <span class="avatar avatar-lg me-2 d-none d-md-inline-block">
-            <img src="{{ getUser(thread.getAuthorId()).getAvatar() }}" alt="img">
+            {% if threadAuthor.isAvatarVideo() %}
+                <video src="{{ threadAuthor.getAvatar() }}" class="img-fluid rounded" autoplay loop muted playsinline style="width:48px; height:48px; object-fit:cover;"></video>
+            {% else %}
+                <img src="{{ threadAuthor.getAvatar() }}" alt="img">
+            {% endif %}
         </span>
         <div>
 
@@ -76,14 +81,17 @@
 <td width="15%">
     <span class="d-flex align-items-center text-muted small">
         {{phrase('answered')}}:
+        {% set lastReplyUser = getUser(thread.getLastReplyUserId()) %}
         <span class="avatar avatar-sm avatar-rounded mx-2"
               style="width: 24px; height: 24px;">
-            <img src="{{ getUser(thread.getLastReplyUserId()).getAvatar() }}"
-                 alt="img"
-                 class="rounded-circle w-100 h-100">
+            {% if lastReplyUser.isAvatarVideo() %}
+                <video src="{{ lastReplyUser.getAvatar() }}" class="img-fluid rounded-circle" autoplay loop muted playsinline style="width:24px; height:24px; object-fit:cover;"></video>
+            {% else %}
+                <img src="{{ lastReplyUser.getAvatar() }}" alt="img" class="rounded-circle w-100 h-100">
+            {% endif %}
         </span>
         <strong>
-            {{ getUser(thread.getLastReplyUserId()).getName() }}
+            {{ lastReplyUser.getName() }}
         </strong>
     </span>
     <span class="text-muted small">

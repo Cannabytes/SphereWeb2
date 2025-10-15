@@ -381,8 +381,13 @@
                                 thread.private == false %}
                                 <a href="/support/read/{{thread.id}}" class="text-decoration-none">{% endif %}
                                     <div class="d-flex align-items-center">
+                                        {% set lastUser = getUser(thread.last_user_id) %}
                                         <span class="avatar avatar-lg me-1">
-                                            <img src="{{getUser(thread.last_user_id).getAvatar()}}" alt="img">
+                                            {% if lastUser.isAvatarVideo() %}
+                                                <video src="{{ lastUser.getAvatar() }}" class="img-fluid rounded-circle" autoplay loop muted playsinline style="width:56px; height:56px; object-fit:cover;"></video>
+                                            {% else %}
+                                                <img src="{{ lastUser.getAvatar() }}" alt="img">
+                                            {% endif %}
                                         </span>
                                         <div class="w-75"> 
                                             <span class="d-block mb-0">

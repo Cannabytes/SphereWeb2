@@ -170,6 +170,13 @@ class ForumClan {
             [$this->getId(), $lastMessageId]
         );
         if ($messages !== null && $messages !== false && is_array($messages) && !empty($messages)) {
+            foreach ($messages as &$msg) {
+                $avatar = $msg['avatar'] ?? '';
+                $path = parse_url($avatar, PHP_URL_PATH) ?: $avatar;
+                $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                $msg['isVideoAvatar'] = ($ext === 'webm');
+            }
+            unset($msg);
             return array_reverse($messages);
         }
         return [];

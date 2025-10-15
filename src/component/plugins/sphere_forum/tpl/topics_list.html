@@ -918,11 +918,15 @@
        class="ms-1 me-1 text-break">{{ section.getLastThread().getTitle() }}</a>
     <span class="me-1">от</span>
     <div class="d-inline-flex align-items-center flex-wrap">
+        {% set lastReplyUser = getUser(section.getLastReplyUserId()) %}
         <span class="avatar avatar-sm avatar-rounded me-1">
-            <img src="{{ getUser(section.getLastReplyUserId()).getAvatar() }}" alt="img"
-                 class="rounded-circle"  style="width: 100%; height: 100%; object-fit: cover;">
+            {% if lastReplyUser.isAvatarVideo() %}
+                <video src="{{ lastReplyUser.getAvatar() }}" class="img-fluid rounded-circle" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+            {% else %}
+                <img src="{{ lastReplyUser.getAvatar() }}" alt="img" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover;">
+            {% endif %}
         </span>
-        <span class="text-truncate">{{ getUser(section.getLastReplyUserId()).getName() }}</span>
+        <span class="text-truncate">{{ lastReplyUser.getName() }}</span>
     </div>
 </small>
 {% endif %}
