@@ -818,20 +818,36 @@ class VideoAvatarUploader {
                 return;
             }
 
+            let attempts = 0;
+            const MAX_ATTEMPTS = 12;
+            const RETRY_MS = 60;
+
             const drawFrame = () => {
                 try {
-                    // Ждем пока видео загрузится и будут доступны размеры
+                    // Если видео ещё не готово — пробуем через небольшой интервал, но не вечно
                     if (this.videoElement.readyState < 2) {
-                        reject(new Error('Video not ready'));
-                        return;
+                        attempts++;
+                        if (attempts <= MAX_ATTEMPTS) {
+                            setTimeout(drawFrame, RETRY_MS);
+                            return;
+                        } else {
+                            reject(new Error('Video not ready'));
+                            return;
+                        }
                     }
-                    
+
                     const width = this.videoElement.videoWidth;
                     const height = this.videoElement.videoHeight;
-                    
+
                     if (!width || !height) {
-                        reject(new Error('Video dimensions unavailable'));
-                        return;
+                        attempts++;
+                        if (attempts <= MAX_ATTEMPTS) {
+                            setTimeout(drawFrame, RETRY_MS);
+                            return;
+                        } else {
+                            reject(new Error('Video dimensions unavailable'));
+                            return;
+                        }
                     }
 
                     this.videoCropCanvas.width = width;
@@ -846,7 +862,7 @@ class VideoAvatarUploader {
 
             if (this.videoElement.readyState >= 2) {
                 const onSeeked = () => {
-                    // Дополнительная проверка перед отрисовкой
+                    // Небольшая пауза для стабильности перед отрисовкой кадра
                     setTimeout(() => drawFrame(), 50);
                 };
 
@@ -861,19 +877,65 @@ class VideoAvatarUploader {
                 }
             } else {
                 const onReady = () => {
-                    this.renderVideoFrame(time).then(resolve).catch(reject);
+                    // Когда загрузка начнёт происходить — повторно вызываем renderVideoFrame,
+                    // но чтобы избежать стековой рекурсии/гонок используем небольшой таймаут.
+                    setTimeout(() => {
+                        this.renderVideoFrame(time).then(resolve).catch(reject);
+                    }, 20);
                 };
                 this.videoElement.addEventListener('loadeddata', onReady, { once: true });
+                this.videoElement.addEventListener('canplay', onReady, { once: true });
             }
         });
     }
-
     renderCurrentFrame() {
         const time = this.startValue;
         this.renderVideoFrame(time).then(() => {
             if (this.cropper) {
                 try {
+                    // Try to preserve image-space crop data (more stable when canvas/image
+                    // dimensions change). Use getData(true) which returns values in the
+                    // natural image coordinate space, then restore via setData after replace.
+                    let imgData = null;
+                    try {
+                        imgData = this.cropper.getData(true);
+                    } catch (e) {
+                        imgData = null;
+                    }
+
                     this.cropper.replace(this.videoCropCanvas.toDataURL('image/png'));
+
+                    if (imgData) {
+                        // Give Cropper a short moment to initialize the new image before restoring
+                        setTimeout(() => {
+                            try {
+                                // Attempt to set data in image coordinates. If the new image's
+                                // natural size matches the old one (typical for video frames)
+                                // this will restore exact crop position/size.
+                                this.cropper.setData(imgData);
+                            } catch (err) {
+                                // Fallback: if setData fails (size mismatch or other), try
+                                // to restore crop box relatively to canvas as a best-effort.
+                                try {
+                                    const canvasData = this.cropper.getCanvasData();
+                                    const cropBox = imgData && canvasData ? {
+                                        left: Math.round((imgData.x || 0) / (this.videoElement.videoWidth || 1) * (canvasData.width || 1)) + (canvasData.left || 0),
+                                        top: Math.round((imgData.y || 0) / (this.videoElement.videoHeight || 1) * (canvasData.height || 1)) + (canvasData.top || 0),
+                                        width: Math.round((imgData.width || 0) / (this.videoElement.videoWidth || 1) * (canvasData.width || 1)),
+                                        height: Math.round((imgData.height || 0) / (this.videoElement.videoHeight || 1) * (canvasData.height || 1)),
+                                    } : null;
+                                    if (cropBox) {
+                                        // Ensure fits
+                                        if (cropBox.left + cropBox.width > canvasData.width) cropBox.left = Math.max(0, canvasData.width - cropBox.width);
+                                        if (cropBox.top + cropBox.height > canvasData.height) cropBox.top = Math.max(0, canvasData.height - cropBox.height);
+                                        this.cropper.setCropBoxData(cropBox);
+                                    }
+                                } catch (innerErr) {
+                                    // ignore
+                                }
+                            }
+                        }, 60);
+                    }
                 } catch (err) {
                     console.warn('Cropper replace failed:', err);
                 }
