@@ -302,6 +302,7 @@ class VideoAvatarUploader {
         this.currentEndTime = 0;
         this._previewReadyHandler = null;
         this._previewTimeUpdateHandler = null;
+    this.isUploading = false;
         
         // Состояние слайдера
         this.isDragging = false;
@@ -321,6 +322,16 @@ class VideoAvatarUploader {
 
         if (this.videoModalElement) {
             this.videoModalElement.addEventListener('hidden.bs.modal', () => this.reset());
+            // Prevent closing while upload is in progress
+            this.videoModalElement.addEventListener('hide.bs.modal', (e) => {
+                if (this.isUploading) {
+                    // cancel hide
+                    e.preventDefault();
+                    // optional feedback
+                    this.showError(window.avatarVideoPhrases?.uploading || 'Uploading in progress');
+                }
+            });
+
             this.videoModalElement.addEventListener('shown.bs.modal', () => {
                 setTimeout(() => {
                     try {
@@ -1163,6 +1174,7 @@ class VideoAvatarUploader {
     }
 
     setUploadingState(isUploading) {
+        this.isUploading = !!isUploading;
         if (!this.uploadButton.length) {
             return;
         }
