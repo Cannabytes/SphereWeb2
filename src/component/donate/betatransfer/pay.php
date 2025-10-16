@@ -182,8 +182,7 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
             board::error("betatransfer token is empty");
         }
         $sign = $_POST['sign'] ?? null;
-        $amount = (float)$_POST['amount'] ?? null;
-        $orderAmount = $_POST['orderAmount'] ?? 0; //Сумма без комиссии
+        $amount = (float)$_POST['orderAmount'] ?? null;
         $orderId = $_POST['orderId'] ?? null;
         $currency = $_POST['currency'] ?? "UAH";
         if ($sign && $amount && $orderId && $this->callbackSignIsValid($sign, $amount, $orderId))
@@ -193,7 +192,7 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
             donate::control_uuid($sign, get_called_class());
             $amount = donate::currency($amount, $currency);
 
-            self::telegramNotice(user::getUserId($userId), $_POST['amount'], $currency, $amount, get_called_class());
+            self::telegramNotice(user::getUserId($userId), $_POST['orderAmount'], $currency, $amount, get_called_class());
             user::getUserId($userId)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
             donate::addUserBonus($userId, $amount);
             die('OK');
