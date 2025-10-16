@@ -362,9 +362,10 @@ class lang
                 $phrase,
                 json_encode($values)
             );
-            $logFile =  fileSys::dir_list('lang_errors.log');
-            if (!is_dir(dirname($logFile))) {
-                mkdir(dirname($logFile), 0755, true);
+            $logFile = __DIR__ . '/errors.txt';
+            $logDir = dirname($logFile);
+            if (!is_dir($logDir)) {
+                mkdir($logDir, 0755, true);
             }
             error_log($logMsg . PHP_EOL, 3, $logFile);
             $result = $phrase;
