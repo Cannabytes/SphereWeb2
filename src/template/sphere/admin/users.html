@@ -61,11 +61,11 @@
                       <td>
                         <div class="d-flex align-items-center">
                         
-   {% if getUser().isAvatarVideo() %}
-                                            <video src="{{ getUser().getAvatar() }}" class="avatar bradius avatar-xl me-3" autoplay loop muted playsinline></video>
-                                        {% else %}
-                                            <img src="{{ getUser().getAvatar() }}" alt="Current Avatar" class="img-fluid rounded" style="max-width: 180px;">
-                                        {% endif %}
+                           {% if getUser(user.id).isAvatarVideo() %}
+                              <video src="{{ getUser(user.id).getAvatar() }}" class="avatar avatar-md flex-shrink-0 me-2 cover-image" autoplay loop muted playsinline></video>
+                           {% else %}
+                              <img src="{{ getUser(user.id).getAvatar() }}" alt="Current Avatar" class="avatar avatar-md flex-shrink-0 me-2 cover-image" >
+                           {% endif %}
                          
                           <div class="min-w-0">
                             <a href="/admin/user/info/{{ user.id }}" class="text-default fw-semibold text-truncate d-block">{{ user.email }}</a>
