@@ -1,0 +1,21 @@
+<?php
+return [
+    'betatransfer_donate' => 'BetaTransfer Donate',
+    'betatransfer_donate_description' => 'Payment plugin through BetaTransfer with multiple payment methods',
+    'betatransfer_select_method' => 'Select payment method',
+    'betatransfer_enter_amount' => 'Enter amount',
+    'betatransfer_min_amount' => 'Minimum amount',
+    'betatransfer_max_amount' => 'Maximum amount',
+    'betatransfer_proceed_payment' => 'Proceed to payment',
+    'betatransfer_back_to_methods' => 'Back to payment methods',
+    'betatransfer_api_keys' => 'API Settings',
+    'betatransfer_payment_methods' => 'Payment Methods',
+    'betatransfer_ukraine_methods' => 'Ukraine - Payment Methods',
+    'betatransfer_russia_methods' => 'Russia - Payment Methods',
+    'betatransfer_europe_methods' => 'Europe - Payment Methods',
+    'betatransfer_card_qr' => 'Visa/Mastercard QR',
+    'betatransfer_card_uah' => 'Visa/Mastercard UAH',
+    'betatransfer_card_rub' => 'Visa/Mastercard RUB',
+    'betatransfer_sbp' => 'SBP (Fast Payment System)',
+    'betatransfer_openbanking' => 'Openbanking',
+];

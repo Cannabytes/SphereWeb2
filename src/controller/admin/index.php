@@ -23,7 +23,6 @@ class index
         $sphereAPIError = null;
 
         $info = server::send(type::SERVER_FULL_INFO)->show(false)->getResponse();
-
         if (isset($info['error']) or $info === null) {
             $sphereAPIError = true;
             $info['servers'] = [];
@@ -36,7 +35,6 @@ class index
                     $id = $server['id'];
                     \Ofey\Logan22\model\server\server::loadStatusServer($server);
                     $getServer = \Ofey\Logan22\model\server\server::isServer($id, $server);
-
                     if ($getServer == null) {
                         $name = $server['info']['name'] ?? "NoName #{$id}";
                         $serverNew = new serverModel($server, []);

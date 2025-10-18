@@ -1764,6 +1764,7 @@ Email: %%email%l%
     'game_accounts_per_day' => '<strong class="me-1">20 реєстрацій</strong> - ігрових облікових записів на день',
     'connectable_servers_count' => '<strong class="me-1">2 сервери</strong> - к-сть підключених серверів',
     'game_updater_program' => '<strong class="me-1">Sphere-Launcher</strong> - програма для оновлення гри',
+    'game_updater_program2' => '<strong class="me-1">Sphere-Launcher 2</strong> - <a href="/admin/plugin/sphereLauncher2">GUI програма для оновлення гри, з величезним спектром можливостей, надшвидка</a>',
     'items_raffle_feature' => '<strong class="me-1">Рулетка Удачі</strong> - можливість додати розіграш предметів',
     'tracking_increasing_items_count' => 'Відстеження зростаючої к-сті предметів',
     'automatic_switching' => 'Перемикання автоматично',
@@ -2241,7 +2242,8 @@ Email: %%email%l%
     'clan_recruitment' => 'Набір до клану',
     'flame' => 'Флейм',
     'plugin_requires_server' => 'Для роботи цього плагіна потрібен підключений сервер',
-
+    'betatransfer_payment_name' => 'Beta Transfer',
+    'betatransfer_payment_description' => 'Швидкий та безпечний переказ',
 
 ];
 

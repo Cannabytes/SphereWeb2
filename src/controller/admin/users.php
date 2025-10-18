@@ -69,28 +69,10 @@ class users
             [$offset, $perPage]
         );
 
-        $userIds = array_column($users, 'id');
-        $fingerprintCounts = [];
-        if (!empty($userIds)) {
-            $placeholders = implode(',', array_fill(0, count($userIds), '?'));
-            $fingerRows = sql::getRows(
-                "SELECT user_id, COUNT(DISTINCT fingerprint) AS cnt FROM user_auth_log WHERE fingerprint IS NOT NULL AND fingerprint<>'' AND user_id IN ($placeholders) GROUP BY user_id",
-                $userIds
-            );
-            foreach ($fingerRows as $fingerRow) {
-                $fingerprintCounts[(int)$fingerRow['user_id']] = (int)$fingerRow['cnt'];
-            }
-        }
-
         foreach ($users as &$user) {
             $user['avatar'] = $user['avatar'] ?: 'none.jpeg';
             $user['date_create_human'] = $user['date_create'] ? date('d.m.Y H:i', strtotime((string)$user['date_create'])) : '-';
             $user['last_activity_human'] = $user['last_activity'] ? date('d.m.Y H:i', strtotime((string)$user['last_activity'])) : '-';
-
-            $uid = (int)$user['id'];
-            $count = $fingerprintCounts[$uid] ?? 0;
-            $user['fingerprint_count'] = $count;
-            $user['has_multiaccount'] = $count > 1;
         }
         unset($user);
 
@@ -227,138 +209,12 @@ class users
             $filtered = (int)\Ofey\Logan22\model\db\sql::getValue("SELECT COUNT(*) FROM users u $whereSQL", $params);
         }
 
-        $requestedGroupId = isset($_POST['group_id']) ? (int)$_POST['group_id'] : null;
+        $sql = "SELECT u.id, u.email, u.name, u.donate_point, u.avatar, u.date_create, u.last_activity FROM users u $whereSQL ORDER BY $orderCol $orderDir LIMIT $start, $length";
+        $rows = sql::getRows($sql, $params);
 
-        // If client filters by a multiaccount group, we need a dedicated where that selects all members of that group.
-        // To achieve this we must compute global groups (light in-memory cache for ~few seconds).
-        static $multiCache = null; // ['time'=>int,'userGroup'=>[],'groupColor'=>[]]
-        $nowTs = time();
-        $cacheTTL = 10; // seconds
-        $needGroups = ($requestedGroupId !== null);
-        if ($needGroups && ($multiCache === null || ($nowTs - $multiCache['time']) > $cacheTTL)) {
-            // Load all fingerprints mapping (IDs and fingerprints only) – optimized narrow query.
-            $all = sql::getRows("SELECT DISTINCT user_id, fingerprint FROM user_auth_log WHERE fingerprint IS NOT NULL AND fingerprint<>''");
-            $fingerToUsersGlobal = [];
-            foreach ($all as $row) {
-                $fingerToUsersGlobal[$row['fingerprint']][] = (int)$row['user_id'];
-            }
-            $userGroupGlobal = [];
-            $groupColorGlobal = [];
-            $palette = [
-                'rgba(13,110,253,0.2)',
-                'rgba(25,135,84,0.2)',
-                'rgba(255,193,7,0.2)',
-                'rgba(220,53,69,0.2)',
-                'rgba(13,202,240,0.2)',
-                'rgba(108,117,125,0.2)',
-                'rgba(33,37,41,0.2)',
-                'rgba(111,66,193,0.2)',
-                'rgba(214,51,132,0.2)',
-                'rgba(253,126,20,0.2)',
-                'rgba(32,201,151,0.2)'
-            ];
-            $gCounterAll = 1;
-            foreach ($fingerToUsersGlobal as $fp => $uids) {
-                if (count($uids) < 2) continue;
-                $assigned = null;
-                foreach ($uids as $id) {
-                    if (isset($userGroupGlobal[$id])) {
-                        $assigned = $userGroupGlobal[$id];
-                        break;
-                    }
-                }
-                if (!$assigned) $assigned = $gCounterAll++;
-                $color = $palette[($assigned - 1) % count($palette)];
-                foreach ($uids as $id) {
-                    $userGroupGlobal[$id] = $assigned;
-                    $groupColorGlobal[$assigned] = $color;
-                }
-            }
-            $multiCache = ['time' => $nowTs, 'userGroup' => $userGroupGlobal, 'groupColor' => $groupColorGlobal];
-        }
-
-        if ($requestedGroupId !== null && $multiCache) {
-            // Build list of user ids belonging to requested group
-            $idsInGroup = array_keys(array_filter($multiCache['userGroup'], fn($g) => $g == $requestedGroupId));
-            if (!$idsInGroup) {
-                echo json_encode(['draw' => $draw, 'recordsTotal' => $total, 'recordsFiltered' => 0, 'data' => []]);
-                return;
-            }
-            $ph2 = implode(',', array_fill(0, count($idsInGroup), '?'));
-            $extraWhere = ($whereSQL ? $whereSQL . ' AND ' : 'WHERE ') . ' u.id IN (' . $ph2 . ')';
-            $sql = "SELECT u.id, u.email, u.name, u.donate_point, u.avatar, u.date_create, u.last_activity FROM users u $extraWhere ORDER BY $orderCol $orderDir LIMIT $start, $length";
-            $rows = sql::getRows($sql, array_merge($params, $idsInGroup));
-            // Adjust filtered count just for this group (and search)
-            $countSql = "SELECT COUNT(*) FROM users u $extraWhere";
-            $filtered = (int)sql::getValue($countSql, array_merge($params, $idsInGroup));
-        } else {
-            // Default page query (without global group filtering)
-            $sql = "SELECT u.id, u.email, u.name, u.donate_point, u.avatar, u.date_create, u.last_activity FROM users u $whereSQL ORDER BY $orderCol $orderDir LIMIT $start, $length";
-            $rows = sql::getRows($sql, $params);
-        }
-
-        // Collect fingerprints only for rows shown
         $data = [];
-        $userIds = array_column($rows, 'id');
-        $fingerMap = [];
-        if ($userIds) {
-            $ph = implode(',', array_fill(0, count($userIds), '?'));
-            $fps = sql::getRows("SELECT DISTINCT user_id, fingerprint FROM user_auth_log WHERE user_id IN ($ph)", $userIds);
-            foreach ($fps as $f) {
-                if ($f['fingerprint']) $fingerMap[$f['user_id']][] = $f['fingerprint'];
-            }
-        }
-
-        // Determine group association (page-level if not using global filter, else from cache)
-        $userGroup = [];
-        $groupColor = [];
-        if ($requestedGroupId !== null && $multiCache) {
-            $userGroup = $multiCache['userGroup'];
-            $groupColor = $multiCache['groupColor'];
-        } else {
-            // page-level grouping (best effort, limited)
-            $fingerToUsers = [];
-            foreach ($fingerMap as $uid => $fps) foreach ($fps as $fp) $fingerToUsers[$fp][] = $uid;
-            $palette = [
-                'rgba(13,110,253,0.2)',
-                'rgba(25,135,84,0.2)',
-                'rgba(255,193,7,0.2)',
-                'rgba(220,53,69,0.2)',
-                'rgba(13,202,240,0.2)',
-                'rgba(108,117,125,0.2)',
-                'rgba(33,37,41,0.2)',
-                'rgba(111,66,193,0.2)',
-                'rgba(214,51,132,0.2)',
-                'rgba(253,126,20,0.2)',
-                'rgba(32,201,151,0.2)'
-            ];
-            $gCounter = 1;
-            foreach ($fingerToUsers as $fp => $uids) {
-                if (count($uids) < 2) continue;
-                $assigned = null;
-                foreach ($uids as $id) {
-                    if (isset($userGroup[$id])) {
-                        $assigned = $userGroup[$id];
-                        break;
-                    }
-                }
-                if (!$assigned) $assigned = $gCounter++;
-                $color = $palette[($assigned - 1) % count($palette)];
-                foreach ($uids as $id) {
-                    $userGroup[$id] = $assigned;
-                    $groupColor[$assigned] = $color;
-                }
-            }
-        }
-
         foreach ($rows as $r) {
             $uid = (int)$r['id'];
-            $gId = $userGroup[$uid] ?? '99999';
-            $gColor = $gId === '99999' ? null : ($groupColor[$gId] ?? null);
-            $fingerCell = '';
-            if ($gId !== '99999') {
-                $fingerCell = '<a href="#" class="text-dark fw-bold show-group-btn" data-group-id="' . $gId . '">' . htmlspecialchars(lang::get_phrase('Multiaccount')) . '</a>';
-            }
 
             $avatar = htmlspecialchars($r['avatar'] ?? '');
             $email  = htmlspecialchars($r['email'] ?? '');
@@ -380,12 +236,9 @@ class users
             $data[] = [
                 'id' => $uid,
                 'user' => $userHtml,
-                'fingerprints' => $fingerCell,
                 'created' => $dateCreate,
                 'last_active' => $lastActive,
                 'donate' => $donateHtml,
-                'group' => $gId,
-                'group_color' => $gColor,
             ];
         }
 

@@ -1764,6 +1764,7 @@ Password: %%password%%',
 	'game_accounts_per_day' => '<strong class="me-1">20 регистраций</strong> - игровых аккаунтов в день',
 	'connectable_servers_count' => '<strong class="me-1">2 сервера</strong> - кол-во подключаемых серверов',
 	'game_updater_program' => '<strong class="me-1">Sphere-Launcher</strong> - программа для обновления игры',
+	'game_updater_program2' => '<strong class="me-1">Sphere-Launcher 2</strong> - <a href="/admin/plugin/sphereLauncher2">GUI программа для обновления игры, с огромным спектром возможностей, сверх скоростная</a>',
 	'items_raffle_feature' => '<strong class="me-1">Рулетка Удачи</strong> - возможность добавить розыгрыш предметов',
 	'tracking_increasing_items_count' => 'Отслеживание возрастающего кол-ва предметов',
 	'automatic_switching' => 'Переключение автоматически',
@@ -2282,8 +2283,7 @@ Password: %%password%%',
 	'clan_recruitment' => 'Набор в клан',
 	'flame' => 'Флейм',
 	'plugin_requires_server' => 'Для работы данного плагина нужен подключенный сервер',
-
-
-
+	'betatransfer_payment_name' => 'Beta Transfer',
+	'betatransfer_payment_description' => 'Быстрый и безопасный перевод',
 
 );

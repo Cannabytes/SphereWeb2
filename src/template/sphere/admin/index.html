@@ -351,10 +351,9 @@
 
                         <ul class="list-unstyled mb-0">
                             <li class="d-flex align-items-center mb-3">
-                                                                <span class="me-2">
-                                                                    <i
-                                                                          class="{% if serverInfo.getStatus().isEnableLoginServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
-                                                                </span>
+                                <span class="me-2">
+                                     <i class="{% if serverInfo.getStatus().isEnableLoginServerMySQL() %}ri-checkbox-circle-line text-success{% else %}ri-close-circle-line text-danger{% endif %} fs-15"></i>
+                                </span>
 
 
                                 <svg role="button" data-type="login" data-server-id="{{serverInfo.getLoginId()}}"

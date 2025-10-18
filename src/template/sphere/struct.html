@@ -140,49 +140,6 @@
   </script>
   {% block js %}{% endblock %}
 
-
-  {% if getUser().isAuth() %}
-  <script src="https://cdn.jsdelivr.net/npm/@thumbmarkjs/thumbmarkjs@0.20.6/dist/thumbmark.umd.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const keysToInclude = [
-        'webgl.commonImageHash',
-        'audio.sampleHash',
-        'system.platform',
-        'locales.timezone',
-        'hardware.videocard.renderer',
-      ];
-      ThumbmarkJS.getFingerprintData()
-        .then(data => {
-          const filteredData = {};
-          keysToInclude.forEach(keyPath => {
-            const pathParts = keyPath.split('.');
-            let value = pathParts.reduce((obj, key) => obj && obj[key], data);
-            if (value !== undefined) {
-              let currentLevel = filteredData;
-              pathParts.forEach((part, index) => {
-                if (index === pathParts.length - 1) {
-                  currentLevel[part] = value;
-                } else {
-                  currentLevel[part] = currentLevel[part] || {};
-                  currentLevel = currentLevel[part];
-                }
-              });
-            }
-          });
-          $.post('/finger/check', { finger: JSON.stringify(filteredData) }, function (response) {
-            if (response === false) {
-              location.reload();
-            }
-          })
-        })
-        .catch(err => {
-          console.error("Ошибка при получении данных ThumbmarkJS:", err);
-        });
-    });
-  </script>
-  {% endif %}
-
   <!-- Load: {{pointTime}} sec. / Query count: {{get_db_count_request()}} / Sphere Api Request: {{get_sphere_api_count_request()}} -->
 </body>
 

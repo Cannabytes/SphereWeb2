@@ -216,12 +216,14 @@ class player_account
         if (!user::self()->isAuth()) {
             return 0;
         }
-        $params = [user::self()->getEmail()];
-        if ($server_id !== 0) {
-            $params[] = $server_id;
+        $email = user::self()->getEmail();
+        if ($server_id === 0) {
+            $sql = "SELECT COUNT(*) as `count` FROM player_accounts WHERE email = ?";
+            $stmt = sql::run($sql, [$email]);
+        } else {
+            $sql = "SELECT COUNT(*) as `count` FROM player_accounts WHERE email = ? AND server_id = ?";
+            $stmt = sql::run($sql, [$email, $server_id]);
         }
-        $sql = "SELECT COUNT(*) as `count` FROM player_accounts WHERE email = ? AND server_id = ?";
-        $stmt = sql::run($sql, $params);
         if (!$stmt instanceof PDOStatement) {
             return 0;
         }

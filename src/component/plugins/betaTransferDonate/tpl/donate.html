@@ -1,0 +1,408 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="card custom-card shadow-sm">
+    <div class="card-header bg-gradient">
+      <div class="d-flex align-items-center">
+        <div class="icon-wrapper me-3">
+          <i class="bi bi-credit-card-2-front fs-3 text-primary"></i>
+        </div>
+        <div>
+          <h4 class="mb-0">Пополнение баланса</h4>
+          <small class="text-muted">Через платежную систему BetaTransfer</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body p-4">
+      {% if paymentMethods is empty %}
+      <div class="alert alert-warning d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+        <div>
+          <strong>Способы оплаты недоступны</strong>
+          <p class="mb-0 small">В данный момент нет активных методов пополнения. Пожалуйста, обратитесь к администратору.</p>
+        </div>
+      </div>
+      {% else %}
+      
+      <div class="payment-methods-section mb-4" id="methodsSection">
+        
+        <div class="row g-4">
+          {% for methodKey, method in paymentMethods %}
+          <div class="col-sm-6 col-lg-4">
+            <div class="payment-method-card" data-method="{{ methodKey }}">
+              <div class="card-inner">
+                <div class="method-icon">
+                  {# Prefer csv field for icon/class, fallback to stored icon #}
+                  {% if method.csv is defined and method.csv %}
+                    <i class="{{ method.csv }} text-primary"></i>
+                  {% else %}
+                    <i class="bi {{ method.icon|default('bi-credit-card') }} text-primary"></i>
+                  {% endif %}
+                </div>
+                <h6 class="h3">{{ method.name }}</h6>
+                <div class="method-details">
+                  <span class="badge bg-light text-dark">{{ method.currency }}</span>
+                  <div class="limits mt-2">
+                    <small class="text-muted">{{ method.min }} - {{ method.max }} {{ method.currency }}</small>
+                  </div>
+                </div>
+                {# country removed - no longer used #}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="payment-form-section" id="paymentFormContainer" style="display: none;">
+        <div class="row justify-content-center">
+          <div class="col-lg-6 col-md-8">
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-primary text-white">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-currency-exchange me-2 fs-5"></i>
+                  <h5 class="mb-0" id="selectedMethodName">Введите сумму</h5>
+                </div>
+              </div>
+              <div class="card-body p-4">
+                <form id="paymentForm">
+                  <input type="hidden" id="selectedPaymentMethod" name="payment_method">
+                  
+                  <div class="mb-4">
+                    <label for="amount" class="form-label fw-semibold">
+                      <i class="bi bi-cash-stack me-1"></i>
+                      Сумма пополнения
+                    </label>
+                    <div class="input-group input-group-lg">
+                      <input type="number" 
+                             class="form-control" 
+                             id="amount" 
+                             name="amount" 
+                             placeholder="0.00" 
+                             required 
+                             step="0.01" 
+                             min="1">
+                      <span class="input-group-text fw-bold" id="currencyLabel">UAH</span>
+                    </div>
+                    <div class="form-text mt-2">
+                      <i class="bi bi-info-circle me-1"></i>
+                      Минимум: <strong><span id="minAmount">0</span> <span id="minCurrency"></span></strong> | 
+                      Максимум: <strong><span id="maxAmount">0</span> <span id="maxCurrency"></span></strong>
+                    </div>
+                  </div>
+
+                  <div class="alert alert-info border-0 d-flex align-items-start">
+                    <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+                    <small>После подтверждения вы будете перенаправлены на безопасную страницу оплаты BetaTransfer для завершения транзакции.</small>
+                  </div>
+
+                  <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                      <i class="bi bi-lock-fill me-2"></i>
+                      Перейти к оплате
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="backToMethods">
+                      <i class="bi bi-arrow-left me-2"></i>
+                      Выбрать другой способ
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+(function() {
+  'use strict';
+  
+  const paymentMethods = JSON.parse('{{ paymentMethods|json_encode|raw }}');
+  let selectedMethod = null;
+
+  // Утилита для безопасного показа уведомлений
+const noticeError = (msg, type = 'info') => {
+  if (typeof showNotice === 'function') {
+    try { 
+      showError(msg, type);
+    } catch (e) {
+      console.error('Ошибка в showError:', e);
+    }
+  }
+};
+
+
+  // Обновление формы данными выбранного метода
+  const updateFormWithMethod = (method, methodKey) => {
+    $('#selectedPaymentMethod').val(methodKey);
+    $('#selectedMethodName').text(`Пополнение через ${method.name}`);
+    $('#currencyLabel, #minCurrency, #maxCurrency').text(method.currency);
+    $('#minAmount').text(method.min);
+    $('#maxAmount').text(method.max);
+    $('#amount').attr({
+      min: method.min,
+      max: method.max,
+      placeholder: `от ${method.min} до ${method.max}`
+    });
+  };
+
+  // Плавный переход к секции
+  const scrollToSection = (selector, offset = 100) => {
+    const $target = $(selector);
+    if ($target.length) {
+      $('html, body').animate({
+        scrollTop: $target.offset().top - offset
+      }, 400);
+    }
+  };
+
+  // Выбор способа оплаты
+  $('.payment-method-card').on('click', function() {
+    const methodKey = $(this).data('method');
+    const method = paymentMethods[methodKey];
+    
+    if (!method) return;
+    
+    selectedMethod = method;
+    updateFormWithMethod(method, methodKey);
+    
+    $('.payment-method-card').removeClass('active');
+    $(this).addClass('active');
+    
+    $('#methodsSection').slideUp(300);
+    setTimeout(() => {
+      $('#paymentFormContainer').slideDown(400);
+      scrollToSection('#paymentFormContainer');
+    }, 300);
+  });
+
+  // Возврат к выбору методов
+  $('#backToMethods').on('click', function() {
+    $('#paymentFormContainer').slideUp(300);
+    setTimeout(() => {
+      $('#methodsSection').slideDown(400);
+      scrollToSection('#methodsSection');
+    }, 300);
+    
+    $('.payment-method-card').removeClass('active');
+    selectedMethod = null;
+    $('#paymentForm')[0].reset();
+  });
+
+  // Валидация и отправка формы
+  $('#paymentForm').on('submit', function(e) {
+    e.preventDefault();
+    
+    if (!selectedMethod) {
+      noticeError('Выберите способ оплаты');
+      return false;
+    }
+
+    const amount = parseFloat($('#amount').val());
+    
+    if (isNaN(amount) || amount <= 0) {
+      noticeError('Введите корректную сумму');
+      return false;
+    }
+    
+    if (amount < selectedMethod.min) {
+      noticeError(`Минимальная сумма: ${selectedMethod.min} ${selectedMethod.currency}`);
+      return false;
+    }
+
+    if (amount > selectedMethod.max) {
+      noticeError(`Максимальная сумма: ${selectedMethod.max} ${selectedMethod.currency}`);
+      return false;
+    }
+
+    const $submitBtn = $(this).find('button[type="submit"]');
+    const originalHtml = $submitBtn.html();
+    
+    $submitBtn
+      .prop('disabled', true)
+      .html('<span class="spinner-border spinner-border-sm me-2"></span>Обработка платежа...');
+
+    AjaxSend('/donate/betatransfer/create', 'POST', $(this).serialize(), false)
+      .then(response => {
+        // Проверяем разные форматы ответа
+        if (response && typeof response === 'object') {
+          if (response.success === true && response.url) {
+            // Успешный ответ с URL
+            noticeSuccess('Перенаправление на страницу оплаты...');
+            setTimeout(() => { 
+              window.location.href = response.url; 
+            }, 500);
+          } else if (response.type === 'error' && response.message) {
+            // Ошибка от board::error()
+            noticeError(response.message);
+            $submitBtn.prop('disabled', false).html(originalHtml);
+          } else if (response.message) {
+            // Общее сообщение
+            noticeError(response.message);
+            $submitBtn.prop('disabled', false).html(originalHtml);
+          } else {
+            // Неизвестный формат ответа
+            noticeError('Неизвестная ошибка при создании платежа');
+            $submitBtn.prop('disabled', false).html(originalHtml);
+          }
+        } else {
+          noticeError('Некорректный ответ от сервера');
+          $submitBtn.prop('disabled', false).html(originalHtml);
+        }
+      })
+      .catch(error => {
+        console.error('Payment error:', error);
+        const errorMsg = error && error.message ? error.message : 'Ошибка соединения с сервером';
+        noticeError(errorMsg);
+        $submitBtn.prop('disabled', false).html(originalHtml);
+      });
+    
+    return false;
+  });
+})();
+</script>
+
+<style>
+  .bg-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .icon-wrapper {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .section-header {
+    padding-bottom: 1rem;
+  }
+  
+  .payment-method-card {
+    border: 2px solid #00000021;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+  
+  .payment-method-card .card-inner {
+    padding: 1.5rem;
+    text-align: center;
+    position: relative;
+  }
+  
+  .payment-method-card .method-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease;
+  }
+  
+  .payment-method-card .method-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #2d3748;
+  }
+  
+  .payment-method-card .method-description {
+    font-size: 0.875rem;
+    color: #718096;
+    margin-bottom: 1rem;
+  }
+  
+  .payment-method-card .method-details {
+    margin-top: 1rem;
+  }
+  
+  .payment-method-card .limits {
+    font-size: 0.813rem;
+  }
+  
+  .payment-method-card .method-badge {
+    margin-top: 0.75rem;
+  }
+  
+  .payment-method-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  .payment-method-card:hover .method-icon {
+    transform: scale(1.1);
+  }
+  
+  .payment-method-card.active {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+  }
+  
+  .payment-method-card.active::before {
+    content: "\f26b";
+    font-family: "bootstrap-icons";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--bs-primary);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+  }
+  
+  .payment-form-section {
+    animation: fadeIn 0.4s ease;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  #amount:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    border-color: #86b7fe;
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+  
+  @media (max-width: 768px) {
+    .payment-method-card .card-inner {
+      padding: 1rem;
+    }
+    
+    .payment-method-card .method-icon {
+      font-size: 2.5rem;
+    }
+  }
+</style>
+{% endblock %}

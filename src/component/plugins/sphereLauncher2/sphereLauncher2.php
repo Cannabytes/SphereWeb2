@@ -126,7 +126,6 @@ class sphereLauncher2
 
         $raw_post_data = file_get_contents('php://input');
         $data = json_decode($raw_post_data, true);
-
         if (!isset($data['result_url']) || empty($data['result_url'])) {
             http_response_code(400);
             echo json_encode(['error' => 'result_url не был передан.']);

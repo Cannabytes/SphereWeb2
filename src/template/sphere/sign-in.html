@@ -189,45 +189,5 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 {% endif %}
 
-<script src="https://cdn.jsdelivr.net/npm/@thumbmarkjs/thumbmarkjs@0.20.6/dist/thumbmark.umd.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const thumbmarkInput = document.getElementById('finger');
-
-  // 1. Определяем ключи, которые нужно извлечь
-  const keysToInclude = [
-    'webgl.commonImageHash',
-    'audio.sampleHash',
-    'system.platform',
-    'locales.timezone',
-    'hardware.videocard.renderer',
-  ];
-
-  ThumbmarkJS.getFingerprintData()
-        .then(data => {
-          const filteredData = {};
-          keysToInclude.forEach(keyPath => {
-            const pathParts = keyPath.split('.');
-            let value = pathParts.reduce((obj, key) => obj && obj[key], data);
-            if (value !== undefined) {
-              let currentLevel = filteredData;
-              pathParts.forEach((part, index) => {
-                if (index === pathParts.length - 1) {
-                  currentLevel[part] = value;
-                } else {
-                  currentLevel[part] = currentLevel[part] || {};
-                  currentLevel = currentLevel[part];
-                }
-              });
-            }
-          });
-          thumbmarkInput.value = JSON.stringify(filteredData);
-        })
-        .catch(err => {
-          console.error("Ошибка при получении данных ThumbmarkJS:", err);
-  });
-});
-</script>
-
 </body>
 </html>

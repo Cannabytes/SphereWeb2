@@ -271,7 +271,7 @@ class server
                     $serverStatus->setGameIPStatusServer($cache['gameServerIP'] ?? '0.0.0.0');
                     $serverStatus->setGamePortStatusServer($cache['gameServerPort'] ?? -1);
                     $serverStatus->setLoginIPStatusServer($cache['loginServerIP'] ?? '0.0.0.0');
-                    $serverStatus->setLoginPortStatusServer($cache['loginServerPort'] ?? -1);
+                    $serverStatus->setLoginPortStatusServer($cache['loginServerPort'] ?? -1); 
                     self::$arrayStatus[$server_id] = $serverStatus;
                 }
             }

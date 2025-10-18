@@ -2741,21 +2741,6 @@ return array(
         'page' => '',
         'comment' => '',
     ),
-    203 =>
-    array(
-        'enable' => true,
-        'method' => 'POST',
-        'pattern' => '/finger/check',
-        'func' => 'component\\finger\\finger::fingerController',
-        'access' =>
-        array(
-            0 => 'user',
-            1 => 'admin',
-        ),
-        'weight' => 0,
-        'page' => '',
-        'comment' => '',
-    ),
     204 =>
     array(
         'enable' => true,

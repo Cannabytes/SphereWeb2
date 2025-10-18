@@ -13,6 +13,7 @@ use Ofey\Logan22\controller\page\error;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
+use Ofey\Logan22\model\plugin\plugin;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
@@ -34,6 +35,10 @@ class pay
             }
             $donateSysNames[] = $system;
         }
+
+        // Check if betaTransferDonate plugin is active
+        $betaTransferDonateActive = plugin::getPluginActive("betaTransferDonate") !== false;
+        tpl::addVar("betaTransferDonateActive", $betaTransferDonateActive);
 
         tpl::addVar("donate_history_pay_self", donate::donate_history_pay_self());
         tpl::addVar("title", lang::get_phrase(233));

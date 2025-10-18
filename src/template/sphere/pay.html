@@ -277,17 +277,23 @@
         {% set countryList = null %}
 
 {# Пытаемся получить страны из объекта donateSystem #}
-{% set donateCountries = attribute(donate, 'country') %}
-{% if donateCountries is iterable and donateCountries|length > 0 %}
+{% set donateCountries = attribute(donate, 'country')|default([]) %}
+{% set donateCountriesIterable = donateCountries is iterable %}
+{% if donateCountriesIterable and donateCountries|length > 0 %}
     {% set countryList = donateCountries %}
 {% else %}
     {% set ds = get_donate_paysystem(donate.name) %}
-    {% if ds and ds.getCountry() is iterable and ds.getCountry()|length > 0 %}
-        {% set countryList = ds.getCountry() %}
+    {% if ds %}
+        {% set dsCountries = ds.getCountry()|default([]) %}
+        {% set dsCountriesIterable = dsCountries is iterable %}
+        {% if dsCountriesIterable and dsCountries|length > 0 %}
+            {% set countryList = dsCountries %}
+        {% endif %}
     {% endif %}
 {% endif %}
         {# Добавляем страны в общий список #}
-        {% if countryList is iterable %}
+        {% set countryListIterable = countryList is iterable %}
+        {% if countryListIterable %}
             {% for country in countryList %}
                 {% if country not in countries %}
                     {% set countries = countries|merge([country]) %}
@@ -362,13 +368,18 @@
 						{% set ds = get_donate_paysystem(donate.name) %}
 
 						{# Пытаемся получить страны из объекта donateSystem #}
-						{% set donateCountries = attribute(donate, 'country') %}
-						{% if donateCountries is iterable and donateCountries|length > 0 %}
+						{% set donateCountries = attribute(donate, 'country')|default([]) %}
+						{% set donateCountriesIterable = donateCountries is iterable %}
+						{% if donateCountriesIterable and donateCountries|length > 0 %}
 							{% set countryList = donateCountries %}
 						{% else %}
 							{# Fallback: используем класс по умолчанию #}
-							{% if ds and ds.getCountry() is iterable and ds.getCountry()|length > 0 %}
-								{% set countryList = ds.getCountry() %}
+							{% if ds %}
+								{% set dsCountries = ds.getCountry()|default([]) %}
+								{% set dsCountriesIterable = dsCountries is iterable %}
+								{% if dsCountriesIterable and dsCountries|length > 0 %}
+									{% set countryList = dsCountries %}
+								{% endif %}
 							{% endif %}
 						{% endif %}
 
@@ -408,6 +419,27 @@
                         </div>
                     </li>
                 {% endfor %}
+
+                {# Add betaTransferDonate plugin if active #}
+                {% set showBetaTransfer = betaTransferDonateActive|default(false) %}
+                {% if showBetaTransfer %}
+                    <li class="shadow">
+                        <div class="payment-system-item" data-name="betatransfer" data-is-plugin="true">
+                            <div class="payment-system-content">
+                                <div class="payment-system-header">
+                                    <h4 class="payment-system-name">{{ phrase('betatransfer_payment_name') }}</h4>
+                                </div>
+                                <div class="payment-system-description">
+                                    {{ phrase('betatransfer_payment_description') }}
+                                </div>
+                            </div>
+                            <div class="payment-system-radio">
+                                <input type="radio" class="form-check-input" name="paysystem" id="{{country}}-betatransfer" value="betatransfer" data-is-plugin="true">
+                                <label class="form-check-label" for="{{country}}-betatransfer"></label>
+                            </div>
+                        </div>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     {% endfor %}
@@ -1306,6 +1338,15 @@
                        return;
                    }
 
+                   // Проверяем, является ли это плагином betaTransfer
+                   const isPlugin = $(this).data('is-plugin') === true || $(this).attr('data-is-plugin') === 'true';
+                   const itemName = $(this).data('name');
+                   
+                   if (isPlugin && itemName === 'betatransfer') {
+                       window.location.href = '/donate/betatransfer';
+                       return false;
+                   }
+
                    // Сбрасываем выделение других элементов
                    $('.payment-system-item').removeClass('selected');
 
@@ -1334,6 +1375,15 @@
                    const selectedPaySystem = getSelectedPaySystemValue();
 
                    if (!selectedPaySystem) {
+                       return false;
+                   }
+
+                   // Check if it's betaTransferDonate plugin
+                   const selectedRadio = $(`input[name="paysystem"]:checked`);
+                   const isPlugin = selectedRadio.data('is-plugin') === true || selectedRadio.attr('data-is-plugin') === 'true';
+                   
+                   if (isPlugin && selectedPaySystem === 'betatransfer') {
+                       window.location.href = '/donate/betatransfer';
                        return false;
                    }
 

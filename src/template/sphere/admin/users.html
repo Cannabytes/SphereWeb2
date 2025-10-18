@@ -200,6 +200,15 @@
   .avatar.cover-image {
     background-size: cover;
   }
+
+  /* video avatar styling to match image avatars */
+  .avatar-video {
+    width: 48px; /* same as avatar avatar-md / avatar-sm sizing context */
+    height: 48px;
+    object-fit: cover;
+    border-radius: var(--bs-border-radius);
+    display: inline-block;
+  }
 </style>
 {% endblock %}
 
@@ -245,15 +254,27 @@
 
           const items = response.data.map(function (user) {
             const avatar = user.avatar ? user.avatar : 'none.jpeg';
-            const avatarUrl = `/uploads/avatar/${encodeURIComponent(avatar)}`;
+            // avatar may contain query params like user_1.webm?c=6db1 - normalize for detection
+            const avatarPath = avatar.split('?')[0] || avatar;
+            const isWebm = /\.webm$/i.test(avatarPath);
+            // Preserve query string while encoding only the path portion so ? isn't percent-encoded
+            const avatarParts = avatar.split('?');
+            const avatarPathOnly = avatarParts[0] || avatar;
+            const avatarQuery = avatarParts.length > 1 ? '?' + avatarParts.slice(1).join('?') : '';
+            const avatarUrl = `/uploads/avatar/${encodeURIComponent(avatarPathOnly)}${avatarQuery}`;
             const email = escapeHtml(user.email || '');
             const name = user.name ? `<div class="text-muted small text-truncate">${escapeHtml(user.name)}</div>` : '';
             const lastActive = user.last_activity ? `<small class="text-muted">${escapeHtml(user.last_activity)}</small>` : '';
             const donatePoint = typeof user.donate_point !== 'undefined' ? user.donate_point : 0;
+
+            const avatarHtml = isWebm
+              ? `<video class="avatar avatar-sm flex-shrink-0 me-2 avatar-video" src="${avatarUrl}" autoplay loop muted playsinline></video>`
+              : `<div class="avatar avatar-sm flex-shrink-0 me-2 cover-image" style="background:url('${avatarUrl}') center center;"></div>`;
+
             return `
               <a href="/admin/user/info/${user.id}" class="list-group-item list-group-item-action d-flex align-items-center">
                 <div class="d-flex align-items-center">
-                  <div class="avatar avatar-sm flex-shrink-0 me-2 cover-image" style="background:url('${avatarUrl}') center center;"></div>
+                  ${avatarHtml}
                   <div class="min-w-0">
                     <div class="fw-semibold text-truncate">${email}</div>
                     ${name}

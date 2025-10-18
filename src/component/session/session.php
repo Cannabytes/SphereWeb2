@@ -191,6 +191,9 @@ class session
             $ipAddress = self::getIpAddress();
             $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
+            // Сanitize user agent to avoid invalid UTF-8 bytes causing SQL errors
+            $userAgent = self::sanitizeForDatabase($userAgent);
+
             sql::run("
                 INSERT INTO `sessions` 
                 (`session_id`, `ip_address`, `user_agent`, `last_activity`, `data`) 
@@ -670,5 +673,42 @@ class session
         }
 
         return $data;
+    }
+
+    /**
+     * Sanitize a string for safe database insertion by removing invalid UTF-8 sequences
+     * and replacing non-printable/control characters (except common whitespace).
+     *
+     * @param string $str
+     * @return string
+     */
+    private static function sanitizeForDatabase(string $str): string
+    {
+        if ($str === '') {
+            return '';
+        }
+
+        // Attempt to convert from Windows-1252/ISO-8859-1 to UTF-8 if string is not valid UTF-8
+        if (!mb_check_encoding($str, 'UTF-8')) {
+            // Try to detect common encodings and convert to UTF-8
+            $enc = mb_detect_encoding($str, ['UTF-8', 'CP1252', 'ISO-8859-1', 'ASCII'], true);
+            if ($enc && $enc !== 'UTF-8') {
+                $str = mb_convert_encoding($str, 'UTF-8', $enc);
+            } else {
+                // Fallback: force UTF-8 by ignoring invalid bytes
+                $str = mb_convert_encoding($str, 'UTF-8', 'CP1252');
+            }
+        }
+
+        // Remove invalid UTF-8 sequences that still may remain
+        $str = iconv('UTF-8', 'UTF-8//IGNORE', $str) ?: '';
+
+        // Remove control characters except newlines, carriage returns and tabs
+        $str = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $str);
+
+        // Trim excessive whitespace
+        $str = trim($str);
+
+        return $str;
     }
 }

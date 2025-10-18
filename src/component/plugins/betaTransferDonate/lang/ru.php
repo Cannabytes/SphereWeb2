@@ -1,0 +1,21 @@
+<?php
+return [
+    'betatransfer_donate' => 'BetaTransfer Донат',
+    'betatransfer_donate_description' => 'Плагин оплаты через BetaTransfer с множеством способов оплаты',
+    'betatransfer_select_method' => 'Выберите способ оплаты',
+    'betatransfer_enter_amount' => 'Введите сумму',
+    'betatransfer_min_amount' => 'Минимальная сумма',
+    'betatransfer_max_amount' => 'Максимальная сумма',
+    'betatransfer_proceed_payment' => 'Перейти к оплате',
+    'betatransfer_back_to_methods' => 'Назад к способам оплаты',
+    'betatransfer_api_keys' => 'Настройки API',
+    'betatransfer_payment_methods' => 'Способы оплаты',
+    'betatransfer_ukraine_methods' => 'Украина - Способы оплаты',
+    'betatransfer_russia_methods' => 'Россия - Способы оплаты',
+    'betatransfer_europe_methods' => 'Европа - Способы оплаты',
+    'betatransfer_card_qr' => 'Visa/Mastercard QR',
+    'betatransfer_card_uah' => 'Visa/Mastercard UAH',
+    'betatransfer_card_rub' => 'Visa/Mastercard RUB',
+    'betatransfer_sbp' => 'СБП (Система Быстрых Платежей)',
+    'betatransfer_openbanking' => 'Openbanking',
+];

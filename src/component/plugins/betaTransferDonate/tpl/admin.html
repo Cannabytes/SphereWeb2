@@ -1,0 +1,265 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="card custom-card">
+    <div class="card-header justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <a href="/admin/extensions/paid" class="avatar border text-muted me-2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+            <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+          </svg>
+        </a>
+        <div>
+          <div class="h5 mb-0">BetaTransfer Donate</div>
+          <div class="text-muted small">Настройки плагина</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="custom-toggle-switch d-flex align-items-center">
+          <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}" type="checkbox" {% if getPluginActive(pluginName) %}checked=""{% endif %}>
+          <label for="enablePlugin" class="label-success ms-2"></label>
+          <span class="ms-3 text-muted small">{{ phrase('Activating the plugin') }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      {% if not getPluginActive(pluginName) %}
+      <div class="alert alert-warning" role="alert">
+        Плагин отключён — поля будут недоступны для редактирования пока плагин выключен.
+      </div>
+      {% endif %}
+
+  <form id="betaTransferSettingsForm" method="post" action="/admin/plugin/betatransfer/save" data-plugin-active="{% if getPluginActive(pluginName) %}1{% else %}0{% endif %}">
+        <div class="row">
+          <div class="col-12 col-lg-6">
+              <div class="card mb-3 shadow-sm">
+                <div class="card-header">
+                  <strong>API Keys</strong>
+                </div>
+                <div class="card-body">
+                  <div class="row g-2 align-items-end">
+                    <div class="col-12 col-md-6">
+                      <label class="form-label">Public API Key</label>
+                      <input type="text" class="form-control" name="public_api_key" value="{{ settings.public_api_key|default('') }}" placeholder="Токен (public)">
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="form-label">Secret API Key</label>
+                      <input type="text" class="form-control" name="secret_api_key" value="{{ settings.secret_api_key|default('') }}" placeholder="Секретный ключ">
+                    </div>
+                  </div>
+                  <div class="form-text mt-2">Токен используется при создании платежей (публичный). Секретный ключ используется для подписи запросов и проверки вебхуков (секретный). Сохраняйте секретный ключ в безопасности.</div>
+                </div>
+              </div>
+            </div>
+
+          <div class="col-12 col-lg-6">
+            <div class="card mb-3 shadow-sm h-100">
+              <div class="card-header">
+                <strong>Примечание</strong>
+              </div>
+              <div class="card-body">
+                <p class="small text-muted mb-0">Ниже создайте строки для каждого способа оплаты. Поле <strong>paymentSystem</strong> служит идентификатором метода — если вы редактируете уже существующий метод, его внутренний идентификатор будет сохранён автоматически. Если идентификатор отсутствует, он будет сгенерирован автоматически.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-3 shadow-sm">
+          <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <div>
+              <strong class="mb-0">
+                <i class="bi bi-credit-card me-2"></i>
+                Способы оплаты
+              </strong>
+              <small class="text-muted d-block mt-1">Настройка доступных методов пополнения</small>
+            </div>
+            <button id="addPaymentMethod" type="button" class="btn btn-success">
+              <i class="bi bi-plus-circle"></i> Добавить метод
+            </button>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="ps-4">Название (name)</th>
+                    <th style="width:180px">Payment System</th>
+                    <th style="width:100px">Валюта</th>
+                    <th style="width:120px">Минимум</th>
+                    <th style="width:120px">Максимум</th>
+                    <th style="width:160px">CSV/Icon</th>
+                    <th style="width:100px" class="text-center">Действия</th>
+                  </tr>
+                </thead>
+                <tbody id="paymentRows">
+                  {% for key, method in settings.payment_methods %}
+                  <tr class="payment-row" data-index="{{ loop.index0 }}">
+                    <input type="hidden" name="payment[{{ loop.index0 }}][orig_key]" value="{{ key }}">
+                    <td class="ps-4">
+                      <input type="text" 
+                             class="form-control" 
+                             name="payment[{{ loop.index0 }}][name]" 
+                             value="{{ method.name|default('') }}" 
+                             placeholder="Название для пользователей">
+                    </td>
+                    <td>
+                      <input type="text" 
+                             class="form-control" 
+                             name="payment[{{ loop.index0 }}][paymentSystem]" 
+                             value="{{ method.paymentSystem|default('') }}" 
+                             placeholder="Card1">
+                    </td>
+                    <td>
+                      <input type="text" 
+                             class="form-control" 
+                             name="payment[{{ loop.index0 }}][currency]" 
+                             value="{{ method.currency|default('UAH') }}" 
+                             placeholder="UAH">
+                    </td>
+                    <td>
+                      <input type="number" 
+                             class="form-control" 
+                             name="payment[{{ loop.index0 }}][min]" 
+                             value="{{ method.min|default(0) }}" 
+                             step="0.01" 
+                             min="0">
+                    </td>
+                    <td>
+                      <input type="number" 
+                             class="form-control" 
+                             name="payment[{{ loop.index0 }}][max]" 
+                             value="{{ method.max|default(0) }}" 
+                             step="0.01" 
+                             min="0">
+                    </td>
+                    <td>
+                      <input type="text" 
+                             class="form-control" 
+                             name="payment[{{ loop.index0 }}][csv]" 
+                             value="{{ method.csv|default('') }}" 
+                             placeholder="icon-class или CSV">
+                    </td>
+                    <td class="text-center">
+                      <button type="button" 
+                              class="btn btn-sm btn-outline-danger remove-method" 
+                              title="Удалить метод">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <div class="p-3 bg-light border-top">
+              <small class="text-muted">
+                <i class="bi bi-info-circle me-1"></i>
+                После добавления или изменения методов не забудьте сохранить настройки.
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-end mt-2">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save"></i> Сохранить настройки
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(function() {
+  var pluginActive = $('#betaTransferSettingsForm').attr('data-plugin-active');
+  if (pluginActive === '0') {
+    $('#betaTransferSettingsForm :input').prop('disabled', true);
+  }
+
+  // toggle plugin activation
+  $('#enablePlugin').on('change', function() {
+    var setting = $(this).attr('id');
+    var value = $(this).is(':checked');
+    AjaxSend('/admin/plugin/save/activator', 'POST', { pluginName: '{{ pluginName }}', setting: setting, value: value }, true).then(function() { window.location.reload(); });
+  });
+
+  function reindex(){
+    $('#paymentRows .payment-row').each(function(i){
+      $(this).attr('data-index', i);
+      $(this).find('[name]').each(function(){
+        var name = $(this).attr('name'); if (!name) return;
+        var newName = name.replace(/payment\[\d+\]/, 'payment['+i+']');
+        $(this).attr('name', newName);
+      });
+    });
+  }
+
+  $('#addPaymentMethod').on('click', function(){
+    var idx = $('#paymentRows .payment-row').length;
+    var $row = $(
+      '<tr class="payment-row" data-index="'+idx+'">'+
+        '<td class="ps-4">'+
+          '<input type="text" class="form-control" name="payment['+idx+'][name]" value="" placeholder="Название для пользователей">'+
+        '</td>'+
+        '<td>'+
+          '<input type="text" class="form-control" name="payment['+idx+'][paymentSystem]" value="" placeholder="Card1">'+
+        '</td>'+
+        '<td>'+
+          '<input type="text" class="form-control" name="payment['+idx+'][currency]" value="UAH" placeholder="UAH">'+
+        '</td>'+
+        '<td>'+
+          '<input type="number" class="form-control" name="payment['+idx+'][min]" value="0" step="0.01" min="0">'+
+        '</td>'+
+        '<td>'+
+          '<input type="number" class="form-control" name="payment['+idx+'][max]" value="0" step="0.01" min="0">'+
+        '</td>'+
+        '<td>'+
+          '<input type="text" class="form-control" name="payment['+idx+'][csv]" value="" placeholder="icon-class или CSV">'+
+        '</td>'+
+        '<td class="text-center">'+
+          '<button type="button" class="btn btn-sm btn-outline-danger remove-method" title="Удалить метод">'+
+            '<i class="bi bi-trash"></i>'+
+          '</button>'+
+        '</td>'+
+      '</tr>'
+    );
+    $('#paymentRows').append($row);
+    $row.hide().fadeIn(300);
+    reindex();
+  });
+
+  $(document).on('click', '.remove-method', function(){
+    $(this).closest('.payment-row').remove(); reindex();
+  });
+
+  reindex();
+
+  function safeShowNotice(msg, type) {
+    if (typeof showNotice === 'function') {
+      try { showNotice(msg, type); } catch (e) { console.warn('showNotice call failed', e); }
+    } else {
+      // fallback: small alert and console
+      if (type === 'success') {
+        console.log('SUCCESS: ' + msg);
+      } else {
+        console.warn('NOTICE: ' + msg);
+      }
+      try { alert(msg); } catch (e) { /* ignore */ }
+    }
+  }
+
+  $('#betaTransferSettingsForm').on('submit', function(e){
+    e.preventDefault(); reindex();
+    var postData = $(this).serialize();
+    AjaxSend('/admin/plugin/betatransfer/save', 'POST', postData)
+  });
+});
+</script>
+{% endblock %}

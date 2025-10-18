@@ -65,8 +65,6 @@ class userModel
 
     private bool $isFoundUser = false;
 
-    // Предзагруженные отпечатки (fingerprints) для пользователя. Если заполнены, повторный запрос в БД не выполняется.
-    private ?array $fingerprints = null;
 
     public function __construct(?int $userId = null)
     {
@@ -1611,26 +1609,4 @@ class userModel
         redirect::location($_SERVER['HTTP_REFERER'] ?? "/main");
     }
 
-    public function getFingerprints(): array
-    {
-        // Если уже предзагружены — просто возвращаем
-        if ($this->fingerprints !== null) {
-            return $this->fingerprints;
-        }
-        // Ленивая загрузка (старое поведение) — будет вызвана только если не было массовой предзагрузки
-        $rows = sql::getRows(
-            "SELECT DISTINCT `fingerprint` FROM `user_auth_log` WHERE `user_id` = ?",
-            [$this->getId()]
-        );
-        $this->fingerprints = array_column($rows, 'fingerprint');
-        return $this->fingerprints;
-    }
-
-    /**
-     * Устанавливает (кэширует) отпечатки пользователя без дополнительного SQL запроса.
-     */
-    public function setFingerprints(array $fingerprints): void
-    {
-        $this->fingerprints = $fingerprints;
-    }
 }

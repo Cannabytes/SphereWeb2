@@ -1744,6 +1744,7 @@ Password: %%password%%',
 	'game_accounts_per_day' => '<strong class="me-1">20 registrations</strong> - game accounts per day',
 	'connectable_servers_count' => '<strong class="me-1">2 servers</strong> - number of connectable servers',
 	'game_updater_program' => '<strong class="me-1">Sphere-Launcher</strong> - game update program',
+	'game_updater_program2' => '<strong class="me-1">Sphere-Launcher 2</strong> - <a href="/admin/plugin/sphereLauncher2">GUI program for updating games, with a huge range of features, super fast</a>',	
 	'items_raffle_feature' => '<strong class="me-1">Luck Roulette</strong> - ability to add item raffles',
 	'tracking_increasing_items_count' => 'Tracking the increasing number of items',
 	'automatic_switching' => 'Automatic switching',
@@ -2257,6 +2258,8 @@ Password: %%password%%',
 	'clan_recruitment' => 'Clan recruitment',
 	'flame' => 'Flame',
 	'plugin_requires_server' => 'This plugin requires a connected server',
+	'betatransfer_payment_name' => 'Beta Transfer',
+	'betatransfer_payment_description' => 'Fast and secure transfer',
 
 ];
 
