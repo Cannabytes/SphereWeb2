@@ -2441,8 +2441,16 @@
             AjaxSend('/admin/config/save', 'POST', formData, false);
         });
 
-        $('.add-time').click(function () {
-            var accordionBody = $(this).closest('.accordion-body');
+        // Use delegated handler so dynamically added .add-time buttons work
+        $(document).on('click', '.add-time', function () {
+            // button is placed inside a .col-md-12 which is sibling to .accordion-body inside .accordion-collapse
+            var $accordionCollapse = $(this).closest('.accordion-collapse');
+            var $rowContainer = $accordionCollapse.find('.row-container').first();
+
+            // fallback: if structure differs, try to locate row-container from closest accordion-body
+            if ($rowContainer.length === 0) {
+                $rowContainer = $(this).closest('.accordion-body').find('.row-container');
+            }
 
             var newRow = `
         <div class="row onlinesettingdata">
@@ -2450,7 +2458,7 @@
                 <input class="form-control time-format-2" placeholder="hh:mm">
             </div>
             <div class="col-xl-2">
-                ${phrase('multiply_online_by')}:
+                {{ phrase('multiply_online_by')|e('js') }}:
             </div>
             <div class="col-xl-2">
                 <input min="1" step="0.1" type="number" class="form-control" placeholder="1">
@@ -2462,16 +2470,21 @@
             </div>
         </div>`;
 
-            // Добавляем новую строку в текущий accordion-body
-            accordionBody.find('.row-container').append(newRow);
+            // Append the new row and initialize Cleave on the newly created input
+            var $new = $(newRow);
+            $rowContainer.append($new);
 
-            // Применяем Cleave.js к новому полю времени
-            accordionBody.find('.row:last-child .time-format-2').each(function () {
-                new Cleave(this, {
-                    time: true,
-                    timePattern: ['h', 'm'],
-                });
-            });
+            var timeInput = $new.find('.time-format-2')[0];
+            if (timeInput) {
+                try {
+                    new Cleave(timeInput, {
+                        time: true,
+                        timePattern: ['h', 'm'],
+                    });
+                } catch (e) {
+                    console.error('Cleave init failed', e);
+                }
+            }
         });
 
 

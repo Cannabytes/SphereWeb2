@@ -298,7 +298,7 @@ function updateWarehouseItemsList(response) {
         const emptyWarehouseHTML = `
             <div class="text-center p-4">
                 <i class="ri-inbox-line text-muted display-4"></i>
-                <p class="mt-2 text-muted">${phrase('no_items_send_char')}</p>
+                <p class="mt-2 text-muted">${safePhrase('no_items_send_char')}</p>
             </div>
         `;
 
