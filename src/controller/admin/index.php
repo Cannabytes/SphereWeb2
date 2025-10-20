@@ -33,7 +33,7 @@ class index
                 $restart = false;
                 foreach ($info['servers'] as $server) {
                     $id = $server['id'];
-                    \Ofey\Logan22\model\server\server::loadStatusServer($server);
+                    \Ofey\Logan22\model\server\server::loadStatusServer($server, true);
                     $getServer = \Ofey\Logan22\model\server\server::isServer($id, $server);
                     if ($getServer == null) {
                         $name = $server['info']['name'] ?? "NoName #{$id}";

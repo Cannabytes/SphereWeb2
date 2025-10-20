@@ -430,11 +430,40 @@
                                             <div class="col-md-6">
                                                 <!-- Существующие поля для SVG иконки -->
                                                 <div class="mb-3">
-                                                    <label for="categoryIcon" class="form-label">
-                                                        {{phrase('svg_icon')}}
-                                                        <small class="text-muted">{{phrase('html_or_svg_code')}}</small>
-                                                    </label>
-                                                    <textarea class="form-control" id="categoryIcon" rows="5" placeholder="{{phrase('insert_svg_icon_code')}}"></textarea>
+                                                    <label class="form-label">{{phrase('icon_source')}}</label>
+
+                                                    <!-- Nav tabs -->
+                                                    <ul class="nav nav-tabs" id="iconSourceTabs" role="tablist">
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link active" id="tab-svg" data-bs-toggle="tab" data-bs-target="#tabContentSvg" type="button" role="tab" aria-controls="tabContentSvg" aria-selected="true">SVG / HTML</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link" id="tab-img" data-bs-toggle="tab" data-bs-target="#tabContentImg" type="button" role="tab" aria-controls="tabContentImg" aria-selected="false">Image</button>
+                                                        </li>
+                                                    </ul>
+
+                                                    <div class="tab-content border border-top-0 p-3" id="iconSourceTabsContent">
+                                                        <div class="tab-pane fade show active" id="tabContentSvg" role="tabpanel" aria-labelledby="tab-svg">
+                                                            <small class="text-muted">{{phrase('html_or_svg_code')}}</small>
+                                                            <textarea class="form-control mt-2" id="categoryIcon" rows="5" placeholder="{{phrase('insert_svg_icon_code')}}"></textarea>
+                                                        </div>
+
+                                                        <div class="tab-pane fade" id="tabContentImg" role="tabpanel" aria-labelledby="tab-img">
+                                                            <div class="mb-2">
+                                                                <input type="file" id="categoryIconFile" accept="image/*" class="form-control form-control-sm" />
+                                                            </div>
+                                                            <div class="mb-2">
+                                                                <div id="iconDropZone" class="border rounded p-3 text-center" style="min-height:90px;cursor:pointer">
+                                                                    <div id="iconDropText" class="text-muted">{{phrase('drag_drop_or_click_to_upload')}}</div>
+                                                                    <img id="iconFilePreviewImg" src="" alt="" style="max-height:80px;display:none;margin:auto;" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="small text-muted">{{phrase('uploaded_image_will_be_used_as_icon')}}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Hidden input to store final icon (SVG code or uploaded image link) -->
+                                                    <input type="hidden" id="categoryIconLink" name="category_icon_link" value="">
                                                 </div>
                                                 <!-- Предпросмотр иконки -->
                                                 <div class="mb-3">
@@ -471,16 +500,34 @@
                                     // Устанавливаем значения
                                     modal.find('.btn-primary').attr('data-category-id', categoryId);
                                     modal.find('#renameCategoryName').val(categoryName)
-                                        .attr('class', `form-control text-${titleColor}`); // Устанавливаем цвет {{phrase('text')}}а
-                                    modal.find('#categoryIcon').val(categoryIcon);
+                                        .attr('class', `form-control text-${titleColor}`); // Устанавливаем цвет текста
+                                    modal.find('#categoryIcon').val('');
+                                    modal.find('#categoryIconLink').val('');
                                     modal.find('#editSelectedTitleColor').val(titleColor);
 
                                     // Выделяем текущий цвет
                                     modal.find('.color-option-edit').removeClass('selected');
                                     modal.find(`.color-option-edit[data-color="${titleColor}"]`).addClass('selected');
 
-                                    // Обновляем предпросмотр иконки
-                                    updateIconPreview(categoryIcon);
+                                    // Если пришел icon, пробуем определить, это ссылка или SVG
+                                    if (categoryIcon) {
+                                        if (String(categoryIcon).startsWith('/uploads/') || String(categoryIcon).startsWith('http')) {
+                                            // Image link
+                                            modal.find('#categoryIconLink').val(categoryIcon);
+                                            // переключаем вкладку на Image
+                                            $('#tab-img').tab('show');
+                                            $('#iconPreview').html('<img src="'+categoryIcon+'" style="max-height:80px;" />');
+                                        } else {
+                                            // SVG content
+                                            modal.find('#categoryIcon').val(categoryIcon);
+                                            $('#tab-svg').tab('show');
+                                            // Обновляем предпросмотр
+                                            updateIconPreview(categoryIcon);
+                                        }
+                                    } else {
+                                        $('#tab-svg').tab('show');
+                                        $('#iconPreview').html("<small class='text-muted'>{{phrase('preview_will_appear_here')}}</small>");
+                                    }
                                 });
 
                                 // Обработка выбора цвета в окне редактирования
@@ -497,8 +544,10 @@
                                     input.attr('class', `form-control text-${color}`);
                                 });
 
-                                // Предпросмотр иконки при вводе
+                                // Предпросмотр иконки при вводе SVG
                                 $('#categoryIcon').on('input', function() {
+                                    // Clear any uploaded image link
+                                    $('#categoryIconLink').val('');
                                     updateIconPreview($(this).val());
                                 });
 
@@ -510,7 +559,7 @@
                                     preview.empty();
 
                                     // Проверка на пустой ввод
-                                    if (!svgCode.trim()) {
+                                    if (!String(svgCode || '').trim()) {
                                         preview.html("<small class='text-muted'>{{phrase('preview_will_appear_here')}}</small>");
                                         return;
                                     }
@@ -534,16 +583,123 @@
                                     }
                                 }
 
-                                // При открытии модального окна переименования
-                                $(document).on('click', '[data-bs-target="#renameModal"]', function(e) {
-                                    e.preventDefault();
-                                    const categoryId = $(this).data('category-id');
-                                    const categoryName = $(this).data('category-name');
+                                // --- Image upload handlers ---
+                                const dropZone = $('#iconDropZone');
+                                const fileInput = $('#categoryIconFile');
+                                const dropText = $('#iconDropText');
 
-                                    const modal = $('#renameModal');
-                                    modal.find('.btn-primary').attr('data-category-id', categoryId);
-                                    modal.find('#renameCategoryName').val(categoryName);
+                                function resetDropText() {
+                                    dropText.text("{{phrase('drag_drop_or_click_to_upload')}}");
+                                }
+
+                                // Click zone to open file selector
+                                dropZone.on('click', function() {
+                                    fileInput.trigger('click');
                                 });
+
+                                // File selected
+                                fileInput.on('change', function(e) {
+                                    const file = this.files && this.files[0];
+                                    if (!file) return;
+                                    uploadImageFile(file);
+                                });
+
+                                // Drag & drop
+                                dropZone.on('dragover', function(e) { e.preventDefault(); e.stopPropagation(); $(this).addClass('border-primary'); });
+                                dropZone.on('dragleave drop', function(e) { e.preventDefault(); e.stopPropagation(); $(this).removeClass('border-primary'); });
+                                dropZone.on('drop', function(e) {
+                                    e.preventDefault(); e.stopPropagation();
+                                    const dt = e.originalEvent.dataTransfer;
+                                    if (!dt || !dt.files || dt.files.length === 0) return;
+                                    const file = dt.files[0];
+                                    uploadImageFile(file);
+                                });
+
+                                function uploadImageFile(file) {
+                                    const maxSize = 5 * 1024 * 1024; // 5MB
+                                    if (file.size > maxSize) {
+                                        alert("{{phrase('file_too_large_max_5mb')}}");
+                                        return;
+                                    }
+
+                                    const fd = new FormData();
+                                    // append using 'filepond' key to match server expectations
+                                    fd.append('filepond', file);
+
+                                    dropText.text("{{phrase('uploading')}}" + '...');
+
+                                    $.ajax({
+                                        url: '/forum/upload/image',
+                                        type: 'POST',
+                                        data: fd,
+                                        processData: false,
+                                        contentType: false,
+                                        success: function(response) {
+                                            // Debug: log raw response
+                                            console.debug('upload response raw:', response);
+
+                                            // If server returned a JSON string, try to parse it
+                                            if (typeof response === 'string') {
+                                                try {
+                                                    response = JSON.parse(response);
+                                                } catch (e) {
+                                                    console.warn('Could not parse upload response as JSON', e, response);
+                                                }
+                                            }
+
+                                            // Server returns { success: true, file: { url: '/uploads/forum/..' } }
+                                            let url = null;
+                                            try {
+                                                const fileObj = response && response.file ? response.file : null;
+                                                const candidates = [
+                                                    fileObj && fileObj.url,
+                                                    fileObj && fileObj.thumbnail,
+                                                    response && response.url,
+                                                    response && response.path,
+                                                    response && response.location,
+                                                    response && response.link
+                                                ];
+                                                for (let i = 0; i < candidates.length; i++) {
+                                                    const c = candidates[i];
+                                                    if (typeof c === 'string' && c.trim().length > 0) {
+                                                        url = c.trim();
+                                                        break;
+                                                    }
+                                                }
+
+                                                if (!url && fileObj && typeof fileObj === 'object') {
+                                                    for (const k in fileObj) {
+                                                        if (Object.prototype.hasOwnProperty.call(fileObj, k)) {
+                                                            const v = fileObj[k];
+                                                            if (typeof v === 'string' && v.trim().length > 0) {
+                                                                url = v.trim();
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            } catch (e) {
+                                                console.error('Error parsing upload response', e, response);
+                                            }
+
+                                            if (!url) {
+                                                console.warn('No URL found in upload response:', response);
+                                                alert("{{phrase('upload_failed')}}");
+                                                resetDropText();
+                                                return;
+                                            }
+
+                                            $('#categoryIconLink').val(url);
+                                            const safeUrl = String(url).replace(/"/g, '&quot;');
+                                            $('#iconPreview').html('<img src="'+safeUrl+'" style="max-height:80px;"/>');
+                                            dropText.hide();
+                                        },
+                                        error: function() {
+                                            alert("{{phrase('upload_failed')}}");
+                                            resetDropText();
+                                        }
+                                    });
+                                }
 
                                 // Обновляем обработчик сохранения
                                 $(document).on('click', '#saveRenameCategory', function(e) {
@@ -551,20 +707,31 @@
 
                                     const categoryId = $(this).data('category-id');
                                     const newName = $('#renameCategoryName').val().trim();
-                                    const newIcon = $('#categoryIcon').val().trim();
                                     const titleColor = $('#editSelectedTitleColor').val(); // Добавляем цвет
 
-                                    // Базовая валидация
                                     if (newName === '') {
                                         noticeError('Название не может быть пустым');
                                         return;
+                                    }
+
+                                    // Determine which icon to send: SVG (textarea) or uploaded image link
+                                    const activeTabId = $('#iconSourceTabs .nav-link.active').attr('id');
+                                    let iconToSend = '';
+                                    if (activeTabId === 'tab-img') {
+                                        iconToSend = $('#categoryIconLink').val().trim();
+                                        if (!iconToSend) {
+                                            noticeError("{{phrase('please_upload_image_or_enter_svg')}}");
+                                            return;
+                                        }
+                                    } else {
+                                        iconToSend = $('#categoryIcon').val().trim();
                                     }
 
                                     // Отправляем запрос на сервер
                                     AjaxSend('/forum/category/rename', 'POST', {
                                         categoryId: categoryId,
                                         newName: newName,
-                                        icon: newIcon,
+                                        icon: iconToSend,
                                         titleColor: titleColor  // Добавляем цвет в запрос
                                     }, false);
                                 });
@@ -835,8 +1002,13 @@
                                         {% endif %}
 
                                         {% if section.getIconSvg() %}
+                                        {% set __icon_value = section.getIconSvg() %}
                                         <div class="avatar avatar-sm">
-                                            {{ section.getIconSvg()|raw }}
+                                            {% if __icon_value is not empty and __icon_value|slice(-5) == '.webp' %}
+                                                <img src="{{ __icon_value }}" alt="{{ section.getName() }}" style="max-height:32px;" />
+                                            {% else %}
+                                                {{ __icon_value|raw }}
+                                            {% endif %}
                                         </div>
                                         {% else %}
                                         <div class="avatar avatar-sm">

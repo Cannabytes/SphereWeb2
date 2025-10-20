@@ -4,6 +4,7 @@ namespace Ofey\Logan22\model\server;
 
 use DateInterval;
 use DateTime;
+use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
@@ -32,9 +33,21 @@ class serverStatus
 
     public function save(): void
     {
-        sql::sql("DELETE FROM `server_cache` WHERE type='status' AND `server_id`=?", [
-            $this->getServerId(),
-        ]);
+        $serverId = $this->getServerId();
+        $cacheDir = fileSys::get_dir('uploads/cache/server/' . $serverId);
+        
+        // Удаляем старые файлы кэша (больше 60 сек)
+        if (is_dir($cacheDir)) {
+            $files = glob($cacheDir . '/*.json');
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+        } else {
+            mkdir($cacheDir, 0755, true);
+        }
+        
         $data = [
             'online' => $this->online,
             'isEnable' => $this->isEnable(),
@@ -48,13 +61,10 @@ class serverStatus
             'loginServerIP' => $this->getLoginIPStatusServer(),
             'loginServerPort' => $this->getLoginPortStatusServer(),
         ];
-        $jsonData = json_encode($data);
-        sql::sql("INSERT INTO `server_cache` ( `server_id`, `type`, `data`, `date_create`) VALUES (?, ?, ?, ?)", [
-            $this->getServerId(),
-            'status',
-            $jsonData,
-            time::mysql(),
-        ]);
+        
+        $unixTime = time();
+        $jsonFile = $cacheDir . '/' . $unixTime . '.json';
+        file_put_contents($jsonFile, json_encode($data));
     }
 
     public function getServerId(): int
@@ -97,40 +107,56 @@ class serverStatus
 
     public function getOnline(): int
     {
-        $online = $this->online;
-        if (config::load()->onlineCheating()->isEnabled()) {
-            $cheatingDetails = config::load()->onlineCheating()->getCheatingDetails();
-            $currentTime = new DateTime();
-            foreach ($cheatingDetails as $key => $details) {
-                foreach ($details as $index => $detail) {
-                    if ($detail->getTime() == "" or $detail->getMultiplier() == "") {
-                        continue;
-                    }
-                    $startTime = DateTime::createFromFormat('H:i', $detail->getTime());
-                    $startTime->setDate($currentTime->format('Y'), $currentTime->format('m'), $currentTime->format('d'));
-                    
-                    $nextIndex = $index + 1;
-                    if ($nextIndex < count($details)) {
-                        $endTime = DateTime::createFromFormat('H:i', $details[$nextIndex]->getTime());
-                        $endTime->setDate($currentTime->format('Y'), $currentTime->format('m'), $currentTime->format('d'));
-                    } else {
-                        $endTime = (clone $startTime)->add(new DateInterval('P1D'))->setTime(0, 0, 0);
-                    }
-                    if ($currentTime >= $startTime && $currentTime < $endTime) {
-                        $online *= (float)$detail->getMultiplier();
-                        break 2;
+        return (int)(config::load()->other()->getOnlineMul() * $this->online);
+    }
+
+    public function setOnline(int $online, bool $isCache = false ): void
+    {
+        $onlineCheating = config::load()->onlineCheating()->isEnabled();
+        $minOnline = config::load()->onlineCheating()->getMinOnlineShow();
+        $maxOnline = config::load()->onlineCheating()->getMaxOnlineShow();
+
+        if ($isCache) {
+            $this->online = $online;
+            if ($onlineCheating && $online == 0) {
+                $online = mt_rand($minOnline, $maxOnline);
+            }
+        } else {
+            if ($onlineCheating && $online == 0) {
+                $online = mt_rand($minOnline, $maxOnline);
+            }else{
+                    if (config::load()->onlineCheating()->isEnabled()) {
+                        $cheatingDetails = config::load()->onlineCheating()->getCheatingDetails();
+                        $currentTime = new DateTime();
+                        foreach ($cheatingDetails as $key => $details) {
+                            foreach ($details as $index => $detail) {
+                                if ($detail->getTime() == "" or $detail->getMultiplier() == "") {
+                                    continue;
+                                }
+                                $startTime = DateTime::createFromFormat('H:i', $detail->getTime());
+                                $startTime->setDate($currentTime->format('Y'), $currentTime->format('m'), $currentTime->format('d'));
+                                
+                                $nextIndex = $index + 1;
+                                if ($nextIndex < count($details)) {
+                                    $endTime = DateTime::createFromFormat('H:i', $details[$nextIndex]->getTime());
+                                    $endTime->setDate($currentTime->format('Y'), $currentTime->format('m'), $currentTime->format('d'));
+                                } else {
+                                    $endTime = (clone $startTime)->add(new DateInterval('P1D'))->setTime(0, 0, 0);
+                                }
+                                if ($currentTime >= $startTime && $currentTime < $endTime) {
+                                    $online *= (float)$detail->getMultiplier();
+                                    break 2;
+                                }
+                            }
+                        }
                     }
                 }
-            }
         }
+
         if(!$this->gameServer and $online >= 1){
             $this->gameServer = true;
         }
-        return (int)(config::load()->other()->getOnlineMul() * $online);
-    }
 
-    public function setOnline(int $online): void
-    {
         $this->online = $online;
     }
 

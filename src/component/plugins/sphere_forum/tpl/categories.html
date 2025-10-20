@@ -21,10 +21,20 @@
 
                         {% if getUser().isAdmin() %}
                         <span class="drag-handle me-2"><i class="ri-drag-move-fill"></i></span>
+                        {% if category.getIconSvg() %}
+                        <div class="avatar avatar-sm me-2">
+                            {% set __icon_value = category.getIconSvg() %}
+                            {% if __icon_value is not empty and __icon_value|slice(-5) == '.webp' %}
+                                <img src="{{ __icon_value }}" alt="{{ category.getName() }}" style="max-height:32px;" />
+                            {% else %}
+                                {{ __icon_value|raw }}
+                            {% endif %}
+                        </div>
+                        {% endif %}
                         <div class="dropdown-toggle" data-bs-toggle="dropdown" style="text-transform: none;">
                             <span class="text-{{ category.getTitleColor() }}">{{ category.getName() }}</span>
                         </div>
-                        <ul class="dropdown-menu" style="">
+                        <ul class="dropdown-menu">
 
                             <li>
                                 <a data-category-id="{{ category.getId() }}"
@@ -75,8 +85,13 @@
                                     {% endif %}
 
                                     {% if section.getIconSvg() %}
+                                    {% set __icon_value = section.getIconSvg() %}
                                     <div class="avatar avatar-sm">
-                                        {{ section.getIconSvg()|raw }}
+                                        {% if __icon_value is not empty and __icon_value|slice(-5) == '.webp' %}
+                                            <img src="{{ __icon_value }}" alt="{{ section.getName() }}" style="max-height:32px;" />
+                                        {% else %}
+                                            {{ __icon_value|raw }}
+                                        {% endif %}
                                     </div>
                                     {% else %}
                                     <div class="avatar avatar-sm">
@@ -289,6 +304,47 @@
                                 <input type="text" class="form-control" id="newCategoryDesc" placeholder="">
                             </div>
 
+                            <div class="col-xl-12 mt-2">
+                                <label class="form-label">{{phrase('icon_svg_html')}}</label>
+                                <ul class="nav nav-tabs mb-2" id="createCategoryIconTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="createCategoryIconTabSvgBtn" data-bs-toggle="tab" data-bs-target="#createCategoryIconTabSvgPane" type="button" role="tab" aria-controls="createCategoryIconTabSvgPane" aria-selected="true">{{phrase('svg_html')}}</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="createCategoryIconTabImageBtn" data-bs-toggle="tab" data-bs-target="#createCategoryIconTabImagePane" type="button" role="tab" aria-controls="createCategoryIconTabImagePane" aria-selected="false">{{phrase('image')}}</button>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content" id="createCategoryIconTabContent">
+                                    <div class="tab-pane fade show active" id="createCategoryIconTabSvgPane" role="tabpanel" aria-labelledby="createCategoryIconTabSvgBtn">
+                                        <textarea class="form-control" id="createCategoryIconSection" placeholder=""></textarea>
+                                    </div>
+                                    <div class="tab-pane fade" id="createCategoryIconTabImagePane" role="tabpanel" aria-labelledby="createCategoryIconTabImageBtn">
+                                        <div class="mt-2">
+                                            <input type="file" id="createCategoryIconFile" accept="image/*" style="display:none">
+                                            <div id="createCategoryIconDropZone" class="border p-3 text-center" style="cursor: pointer; background-color: rgba(0,0,0,0.02); border-radius: 4px;">
+                                                <div class="upload-hint">
+                                                    <small class="text-muted">{{phrase('drag_drop_or_click_to_upload')}}</small>
+                                                    <div><small class="text-muted">{{phrase('max_5mb')}}</small></div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2">
+                                                <button type="button" id="createCategoryChooseFile" class="btn btn-sm btn-outline-primary">{{phrase('choose_image')|default('Choose Image')}}</button>
+                                                <span id="createCategoryFileName" class="ms-2 text-muted small"></span>
+                                            </div>
+                                            <input type="hidden" id="createCategoryIconLink" value="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-2">
+                                    <label class="form-label">{{phrase('preview')}}:</label>
+                                    <div id="createCategoryIconPreview" class="border p-2 text-center">
+                                        <small class="text-muted">{{phrase('preview_will_appear_here')}}</small>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -302,11 +358,98 @@
             $('#createNewCategory').on('click', function () {
                 let name = $('#newCategoryName').val();
                 let description = $('#newCategoryDesc').val();
+                let icon = '';
+
+                let activePane = $('#createCategoryIconTabs .nav-link.active');
+                if (activePane.attr('id') === 'createCategoryIconTabImageBtn') {
+                    icon = $('#createCategoryIconLink').val();
+                } else {
+                    icon = $('#createCategoryIconSection').val();
+                }
 
                 AjaxSend("/forum/category/create", "POST", {
                     name: name,
                     description: description,
+                    icon: icon,
                 });
+            });
+
+            // Drag and drop for category icon image
+            $('#createCategoryIconDropZone').on('dragover', function(e) {
+                e.preventDefault();
+                $(this).css('background-color', 'rgba(0,0,0,0.08)');
+            });
+
+            $('#createCategoryIconDropZone').on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).css('background-color', 'rgba(0,0,0,0.02)');
+            });
+
+            $('#createCategoryIconDropZone').on('drop', function(e) {
+                e.preventDefault();
+                $(this).css('background-color', 'rgba(0,0,0,0.02)');
+                if (e.originalEvent.dataTransfer.files.length) {
+                    let file = e.originalEvent.dataTransfer.files[0];
+                    uploadImageFile(file, function(imageUrl) {
+                        $('#createCategoryIconLink').val(imageUrl);
+                        updateIconPreviewGeneric(imageUrl, '#createCategoryIconPreview');
+                    });
+                }
+            });
+
+            $('#createCategoryIconDropZone').on('click', function(e) {
+                e.stopPropagation();
+                $('#createCategoryIconFile').trigger('click');
+            });
+
+            $('#createCategoryIconFile').on('change', function() {
+                if (this.files.length) {
+                    let file = this.files[0];
+                    uploadImageFile(file, function(imageUrl) {
+                        $('#createCategoryIconLink').val(imageUrl);
+                        $('#createCategoryFileName').text(file.name);
+                        updateIconPreviewGeneric(imageUrl, '#createCategoryIconPreview');
+                    });
+                }
+            });
+
+            $('#createCategoryChooseFile').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $('#createCategoryIconFile').trigger('click');
+            });
+
+            // Tab switching for category icon
+            $('#createCategoryIconTabSvgBtn').on('click', function() {
+                setTimeout(function() {
+                    let svgValue = $('#createCategoryIconSection').val();
+                    updateIconPreviewGeneric(svgValue, '#createCategoryIconPreview');
+                }, 100);
+            });
+
+            $('#createCategoryIconTabImageBtn').on('click', function() {
+                setTimeout(function() {
+                    let imageUrl = $('#createCategoryIconLink').val();
+                    updateIconPreviewGeneric(imageUrl, '#createCategoryIconPreview');
+                }, 100);
+            });
+
+            // Live textarea input for SVG preview
+            $('#createCategoryIconSection').on('input', function() {
+                let activePane = $('#createCategoryIconTabs .nav-link.active');
+                if (activePane.attr('id') === 'createCategoryIconTabSvgBtn') {
+                    updateIconPreviewGeneric($(this).val(), '#createCategoryIconPreview');
+                }
+            });
+
+            // Reset on modal close
+            $('#create-category').on('hidden.bs.modal', function() {
+                $('#createCategoryIconSection').val('');
+                $('#createCategoryIconLink').val('');
+                $('#createCategoryFileName').text('');
+                $('#createCategoryIconPreview').html('<small class="text-muted">{{phrase("preview_will_appear_here")}}</small>');
+                $('#createCategoryIconTabSvgBtn').addClass('active').siblings('.nav-link').removeClass('active');
+                $('#createCategoryIconTabSvgPane').addClass('show active').siblings('.tab-pane').removeClass('show active');
             });
         </script>
 
@@ -420,8 +563,38 @@
                             </div>
 
                             <div class="col-xl-12 mt-2">
-                                <label for="createIconSection" class="form-label">{{phrase('icon_svg_html')}}</label>
-                                <textarea class="form-control" id="createIconSection" placeholder=""></textarea>
+                                <label class="form-label">{{phrase('icon_svg_html')}}</label>
+                                <ul class="nav nav-tabs mb-2" id="createIconTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="createIconTabSvgBtn" data-bs-toggle="tab" data-bs-target="#createIconTabSvg" type="button" role="tab" aria-controls="createIconTabSvg" aria-selected="true">{{phrase('svg_html')}}</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="createIconTabImageBtn" data-bs-toggle="tab" data-bs-target="#createIconTabImage" type="button" role="tab" aria-controls="createIconTabImage" aria-selected="false">{{phrase('image')}}</button>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="createIconTabSvg" role="tabpanel" aria-labelledby="createIconTabSvgBtn">
+                                        <textarea class="form-control" id="createIconSection" placeholder=""></textarea>
+                                    </div>
+                                    <div class="tab-pane fade" id="createIconTabImage" role="tabpanel" aria-labelledby="createIconTabImageBtn">
+                                        <div class="mt-2">
+                                            <input type="file" id="createIconFile" accept="image/*" style="display:none">
+                                            <div id="createIconDropZone" class="border p-3 text-center" style="cursor: pointer; background-color: rgba(0,0,0,0.02); border-radius: 4px;">
+                                                <div class="upload-hint">
+                                                    <small class="text-muted">{{phrase('drag_drop_or_click_to_upload')}}</small>
+                                                    <div><small class="text-muted">{{phrase('max_5mb')}}</small></div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2">
+                                                <button type="button" id="createChooseFile" class="btn btn-sm btn-outline-primary">{{phrase('choose_image')|default('Choose Image')}}</button>
+                                                <span id="createFileName" class="ms-2 text-muted small"></span>
+                                            </div>
+                                            <input type="hidden" id="createIconLink" value="">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="mt-2">
                                     <label class="form-label">{{phrase('preview')}}:</label>
                                     <div id="createIconPreview" class="border p-2 text-center">
@@ -1099,17 +1272,35 @@
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="editLinkSectionIcon" class="form-label">
-                                {{phrase('svg_icon')}}
-                                <small class="text-muted">{{phrase('html_or_svg_code')}}</small>
-                            </label>
-                            <textarea
-                                    class="form-control"
-                                    id="editLinkSectionIcon"
-                                    rows="5"
-                                    placeholder="{{phrase('insert_svg_icon_code')}}"
-                            ></textarea>
+                            <label class="form-label">{{phrase('icon_svg_html')}}</label>
+                            <ul class="nav nav-tabs mb-2" id="editIconTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="editIconTabSvgBtn" data-tab="svg" data-bs-toggle="tab" type="button" role="tab" aria-controls="editIconTabSvg" aria-selected="true">{{phrase('svg_html')}}</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="editIconTabImageBtn" data-tab="image" data-bs-toggle="tab" type="button" role="tab" aria-controls="editIconTabImage" aria-selected="false">{{phrase('image')}}</button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="editIconTabSvg" role="tabpanel" aria-labelledby="editIconTabSvgBtn">
+                                    <textarea class="form-control" id="editLinkSectionIcon" rows="5" placeholder="{{phrase('insert_svg_icon_code')}}"></textarea>
+                                </div>
+                                <div class="tab-pane fade" id="editIconTabImage" role="tabpanel" aria-labelledby="editIconTabImageBtn">
+                                    <div class="mt-2">
+                                        <input type="file" id="editLinkSectionFile" accept="image/*" style="display:none">
+                                        <div id="editIconDropZone" class="border p-3 text-center" style="cursor: pointer; background-color: rgba(0,0,0,0.02); border-radius: 4px;">
+                                            <div class="upload-hint">
+                                                <small class="text-muted">{{phrase('drag_drop_or_click_to_upload')}}</small>
+                                                <div><small class="text-muted">{{phrase('max_5mb')}}</small></div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="editLinkSectionIconLink" value="">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">{{phrase('preview')}}:</label>
                             <div id="iconPreview" class="border p-2 text-center">
@@ -1153,8 +1344,16 @@
             // Заполняем поля текущими значениями
             modal.find('#editLinkSectionName').val(sectionName);
             modal.find('#editLinkSectionUrl').val(sectionLink);
-            modal.find('#editLinkSectionIcon').val(sectionIcon);
-
+            
+            // If sectionIcon looks like an image path, activate Image tab and set hidden link, otherwise activate SVG tab and set textarea
+            const isImage = typeof sectionIcon === 'string' && /\.(webp|png|jpe?g|gif)(\?|$)/i.test(sectionIcon);
+            if (isImage) {
+                $('#editLinkSectionIconLink').val(sectionIcon);
+                $('#editIconTabImageBtn').trigger('click');
+            } else {
+                $('#editLinkSectionIcon').val(sectionIcon);
+                $('#editIconTabSvgBtn').trigger('click');
+            }
             updateSvgPreview(sectionIcon, '#iconPreview');
         });
 
@@ -1167,7 +1366,15 @@
             const sectionId = $(this).data('section-id');
             const newName = $('#editLinkSectionName').val().trim();
             const newLink = $('#editLinkSectionUrl').val().trim();
-            const newIcon = $('#editLinkSectionIcon').val().trim();
+            
+            // Choose icon based on active tab
+            const activeEditTab = $('#editIconTabs .nav-link.active').data('tab');
+            let newIcon = '';
+            if (activeEditTab === 'image') {
+                newIcon = $('#editLinkSectionIconLink').val() || '';
+            } else {
+                newIcon = ($('#editLinkSectionIcon').val() || '').trim();
+            }
 
             // Базовая валидация
             if (newName === '') {
@@ -1186,6 +1393,165 @@
                 link: newLink,
                 icon: newIcon
             }, false);
+        });
+
+        // Upload helpers - shared functions
+        function findFirstUrlInResponse(resp) {
+            try {
+                if (typeof resp === 'string') resp = JSON.parse(resp);
+            } catch (e) {
+                // keep original
+            }
+            if (!resp) return null;
+            if (resp.file && typeof resp.file === 'object') {
+                for (const k of ['url', 'thumbnail', 'link', 'src', 'path']) {
+                    if (resp.file[k] && typeof resp.file[k] === 'string') return resp.file[k];
+                }
+            }
+            for (const k of ['url', 'link', 'path', 'file']) if (resp[k] && typeof resp[k] === 'string') return resp[k];
+            return null;
+        }
+
+        function updateIconPreviewGeneric(value, previewSelector) {
+            const preview = $(previewSelector);
+            preview.empty();
+            if (!value || !value.toString().trim()) {
+                preview.html("<small class='text-muted'>{{phrase('preview_will_appear_here')}}</small>");
+                return;
+            }
+            const s = value.toString().trim();
+            if (/\.(webp|png|jpe?g|gif)(\?|$)/i.test(s) || /^https?:\/\//i.test(s) ) {
+                const img = $('<img>').attr('src', s).addClass('img-fluid').css({'max-height':'64px'});
+                preview.append(img);
+                return;
+            }
+            try {
+                const temp = $('<div>').html(s);
+                const svg = temp.find('svg');
+                if (svg.length > 0) {
+                    svg.addClass('img-fluid');
+                    preview.html(svg);
+                    return;
+                }
+            } catch (err) {
+                // noop
+            }
+            preview.text(s);
+        }
+
+        function uploadImageFile(file, onComplete) {
+            if (!file) return onComplete && onComplete(null);
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                noticeError("{{phrase('file_too_large_max_5mb')}}");
+                return onComplete && onComplete(null);
+            }
+
+            const fd = new FormData();
+            fd.append('filepond', file);
+            fd.append('file', file);
+
+            $.ajax({
+                url: '/forum/upload/image',
+                type: 'POST',
+                data: fd,
+                contentType: false,
+                processData: false,
+                success: function(resp) {
+                    const url = findFirstUrlInResponse(resp);
+                    if (url) return onComplete && onComplete(url);
+                    noticeError("{{phrase('upload_failed')}}");
+                    return onComplete && onComplete(null);
+                },
+                error: function() {
+                    noticeError("{{phrase('upload_failed')}}");
+                    return onComplete && onComplete(null);
+                }
+            });
+        }
+
+        // Create section - drag/drop and file input
+        $('#createIconDropZone').on('click', function(e) { 
+            e.stopPropagation();
+            $('#createIconFile').trigger('click'); 
+        });
+        $('#createChooseFile').on('click', function(e) { 
+            e.preventDefault();
+            e.stopPropagation();
+            $('#createIconFile').trigger('click'); 
+        });
+        $('#createIconFile').on('change', function(){ const f = this.files && this.files[0]; if (f) handleCreateIconFile(f); });
+        $('#createIconDropZone').on('dragover', function(e){ e.preventDefault(); $(this).addClass('drag-over'); });
+        $('#createIconDropZone').on('dragleave', function(e){ e.preventDefault(); $(this).removeClass('drag-over'); });
+        $('#createIconDropZone').on('drop', function(e){ e.preventDefault(); $(this).removeClass('drag-over'); const f = e.originalEvent.dataTransfer.files[0]; if (f) { handleCreateIconFile(f); } });
+
+        function handleCreateIconFile(file) {
+            uploadImageFile(file, function(url){
+                if (url) {
+                    $('#createIconLink').val(url);
+                    $('#createIconTabImageBtn').trigger('click');
+                    updateIconPreviewGeneric(url, '#createIconPreview');
+                    $('#createIconSection').val('');
+                    $('#createFileName').text(file.name);
+                }
+            });
+        }
+
+        // Edit link - drag/drop and file input
+        $('#editIconDropZone').on('click', function(e) { 
+            e.stopPropagation();
+            $('#editLinkSectionFile').trigger('click'); 
+        });
+        $('#editLinkSectionFile').on('change', function(){ const f = this.files && this.files[0]; if (f) handleEditIconFile(f); });
+        $('#editIconDropZone').on('dragover', function(e){ e.preventDefault(); $(this).addClass('drag-over'); });
+        $('#editIconDropZone').on('dragleave', function(e){ e.preventDefault(); $(this).removeClass('drag-over'); });
+        $('#editIconDropZone').on('drop', function(e){ e.preventDefault(); $(this).removeClass('drag-over'); const f = e.originalEvent.dataTransfer.files[0]; if (f) { handleEditIconFile(f); } });
+
+        function handleEditIconFile(file) {
+            uploadImageFile(file, function(url){
+                if (url) {
+                    $('#editLinkSectionIconLink').val(url);
+                    $('#editIconTabImageBtn').trigger('click');
+                    updateIconPreviewGeneric(url, '#iconPreview');
+                    $('#editLinkSectionIcon').val('');
+                }
+            });
+        }
+
+        // Tab handlers - update preview
+        $('#createIconTabs .nav-link').on('click', function(){
+            const tab = $(this).data('tab');
+            if (tab === 'image') {
+                const url = $('#createIconLink').val();
+                updateIconPreviewGeneric(url || '', '#createIconPreview');
+            } else {
+                updateIconPreviewGeneric($('#createIconSection').val() || '', '#createIconPreview');
+            }
+        });
+
+        $('#editIconTabs .nav-link').on('click', function(){
+            const tab = $(this).data('tab');
+            if (tab === 'image') {
+                const url = $('#editLinkSectionIconLink').val();
+                updateIconPreviewGeneric(url || '', '#iconPreview');
+            } else {
+                updateIconPreviewGeneric($('#editLinkSectionIcon').val() || '', '#iconPreview');
+            }
+        });
+
+        // Live preview updates
+        $('#createIconSection').on('input', function(){ 
+            if ($('#createIconTabSvgBtn').hasClass('active')) {
+                updateIconPreviewGeneric($(this).val(), '#createIconPreview');
+            }
+            $('#createIconLink').val('');
+        });
+        
+        $('#editLinkSectionIcon').on('input', function(){ 
+            if ($('#editIconTabSvgBtn').hasClass('active')) {
+                updateIconPreviewGeneric($(this).val(), '#iconPreview');
+            }
+            $('#editLinkSectionIconLink').val('');
         });
 
         // Функция проверки URL
@@ -1250,7 +1616,18 @@
             let titleColor = $('#selectedTitleColor').val();
 
             let parent = $('#parent').val();
-            let icon = $('#createIconSection').val();
+            
+            // Choose icon based on active tab: if Image tab active prefer uploaded link, otherwise SVG textarea
+            let activeCreateBtn = $('#createIconTabs .nav-link.active');
+            let icon = '';
+            if (activeCreateBtn.attr('id') === 'createIconTabImageBtn') {
+                icon = $('#createIconLink').val() || '';
+                console.log('Image tab active, icon:', icon);
+            } else {
+                icon = $('#createIconSection').val() || '';
+                console.log('SVG tab active, icon:', icon);
+            }
+            
             let link = $('#createLinkSection').val();
 
             let isHidden = $('#isHidden').is(':checked');
@@ -1309,6 +1686,9 @@
             $('#createNameSection').val('');
             $('#createDescSection').val('');
             $('#createIconSection').val('');
+            $('#createIconLink').val('');
+            $('#createFileName').text('');
+            $('#createIconPreview').html('<small class="text-muted">{{phrase("preview_will_appear_here")}}</small>');
             $('#createLinkSection').val('');
             // Сброс чекбоксов на дефолтные значения
             $('#isHidden').prop('checked', false);
@@ -1330,6 +1710,9 @@
 
             $('#maxPostLength').val('20000');
             $('#hideLastTopic').prop('checked', false);
+            
+            // Reset tabs to SVG
+            $('#createIconTabSvgBtn').trigger('click');
 
         });
 

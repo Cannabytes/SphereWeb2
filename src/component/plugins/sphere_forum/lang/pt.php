@@ -1,3 +1,14 @@
+    'drag_drop_or_click_to_upload' => 'Arraste e solte ou clique para enviar',
+    'uploaded_image_will_be_used_as_icon' => 'A imagem enviada será usada como ícone',
+    'or_upload_image' => 'Ou envie uma imagem',
+    'svg_html' => 'SVG / HTML',
+    'image' => 'Imagem',
+    'uploading' => 'Enviando',
+    'file_too_large_max_5mb' => 'O arquivo é muito grande. Tamanho máximo 5MB',
+    'max_5mb' => 'Máximo 5 MB',
+    'choose_image' => 'Escolher imagem',
+    'upload_failed' => 'Falha no envio',
+    'please_upload_image_or_enter_svg' => 'Por favor envie uma imagem ou insira código SVG',
 <?php
 
 return [
@@ -16,6 +27,7 @@ return [
     'title_color' => 'Cor do título',
     'text' => 'Texto',
     'icon_svg_html' => 'Ícone (svg ou html)',
+    'icon_source' => 'Fonte do ícone',
     'preview' => 'Pré-visualização',
     'preview_will_appear_here' => 'A pré-visualização aparecerá aqui',
     'click_redirect_link' => '(irá redirecionar para o link especificado ao clicar)',

@@ -1,3 +1,14 @@
+    'drag_drop_or_click_to_upload' => 'Σύρετε και αποθέστε ή κάντε κλικ για μεταφόρτωση',
+    'uploaded_image_will_be_used_as_icon' => 'Η μεταφορτωμένη εικόνα θα χρησιμοποιηθεί ως εικονίδιο',
+    'or_upload_image' => 'Ή ανεβάστε μια εικόνα',
+    'svg_html' => 'SVG / HTML',
+    'image' => 'Εικόνα',
+    'uploading' => 'Μεταφόρτωση',
+    'file_too_large_max_5mb' => 'Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος 5MB',
+    'max_5mb' => 'Μέγιστο 5 MB',
+    'choose_image' => 'Επιλέξτε εικόνα',
+    'upload_failed' => 'Η μεταφόρτωση απέτυχε',
+    'please_upload_image_or_enter_svg' => 'Παρακαλώ ανεβάστε μια εικόνα ή εισάγετε κώδικα SVG',
 <?php
 
 return [
@@ -16,6 +27,7 @@ return [
     'title_color' => 'Χρώμα τίτλου',
     'text' => 'Κείμενο',
     'icon_svg_html' => 'Εικονίδιο (svg ή html)',
+    'icon_source' => 'Πηγή εικονιδίου',
     'preview' => 'Προεπισκόπηση',
     'preview_will_appear_here' => 'Η προεπισκόπηση θα εμφανιστεί εδώ',
     'click_redirect_link' => '(το κλικ θα μεταφέρει στον καθορισμένο σύνδεσμο)',

@@ -972,12 +972,12 @@ class forum
 
             $name = $_POST['name'];
             $description = $_POST['description'] ?? "";
+            $icon = $_POST['icon'] ?? "";
             
-            // XSS защита: очищаем название и описание
             $name = XssSecurity::clean($name);
             $description = XssSecurity::clean($description);
 
-            $this->insertCategory($name, $description);
+            $this->insertCategory($name, $description, $icon);
 
             board::reload();
             board::success("Категория создана");
@@ -1000,12 +1000,12 @@ class forum
         }
     }
 
-    private function insertCategory(string $name, string $description): void
+    private function insertCategory(string $name, string $description, string $icon): void
     {
         try {
             sql::run(
-                "INSERT INTO `forum_categories` SET `name` = ?, `description` = ?, `parent_id` = ?, `created_at` = ?, `updated_at` = ?, `is_close` = ?",
-                [$name, $description, null, time::mysql(), time::mysql(), 0]
+                "INSERT INTO `forum_categories` SET `name` = ?, `description` = ?, `icon_svg` = ?, `parent_id` = ?, `created_at` = ?, `updated_at` = ?, `is_close` = ?",
+                [$name, $description, $icon, null, time::mysql(), time::mysql(), 0]
             );
         }catch (Exception $e) {
             board::error($e->getMessage());
@@ -1367,11 +1367,9 @@ class forum
             $parent = $_POST['parent'] ?? null;
             $icon = $_POST['icon'] ?? null;
             $link = $_POST['link'] ?? null;
-            
-            // XSS защита: очищаем пользовательские данные
+
             $name = XssSecurity::clean($name);
             $description = XssSecurity::clean($description);
-            $icon = XssSecurity::clean($icon);
             $link = XssSecurity::cleanUrl($link);
 
             // Валидация и приведение типов для числовых параметров
@@ -2501,13 +2499,20 @@ class forum
             if (!user::self()->isAuth()) {
                 throw new Exception("Необходимо авторизоваться");
             }
+            $manager = ImageManager::gd();
 
-            // Проверяем наличие загруженного файла
-            if (!isset($_FILES['filepond'])) {
+            // Поддержим несколько возможных ключей (filepond, image) или первый файл в $_FILES
+            if (isset($_FILES['filepond'])) {
+                $files = $_FILES['filepond'];
+            } elseif (isset($_FILES['image'])) {
+                $files = $_FILES['image'];
+            } elseif (!empty($_FILES)) {
+                // Возьмём первый элемент в $_FILES
+                $first = reset($_FILES);
+                $files = $first;
+            } else {
                 throw new Exception("Файл не был получен");
             }
-
-            $manager = ImageManager::gd();
 
             // Проверка лимита загрузок для обычных пользователей
             if (!user::self()->isAdmin()) {
@@ -2526,9 +2531,7 @@ class forum
                 }
             }
 
-            $files = $_FILES['filepond'];
             $fileCount = is_array($files['tmp_name']) ? count($files['tmp_name']) : 1;
-
             if ($fileCount > 6) {
                 throw new Exception('Одновременно можно загрузить не более 6 изображений');
             }
@@ -2539,9 +2542,12 @@ class forum
                 mkdir($uploadDir, 0755, true);
             }
 
-            // Обработка файла
+            // Обработка первого файла
             $tmpName = is_array($files['tmp_name']) ? $files['tmp_name'][0] : $files['tmp_name'];
             $error = is_array($files['error']) ? $files['error'][0] : $files['error'];
+            $originalName = is_array($files['name']) ? $files['name'][0] : $files['name'];
+            $originalSize = is_array($files['size']) ? $files['size'][0] : $files['size'];
+            $originalType = is_array($files['type']) ? $files['type'][0] : $files['type'];
 
             if ($error !== UPLOAD_ERR_OK) {
                 throw new Exception("Ошибка при загрузке файла");
@@ -2550,31 +2556,29 @@ class forum
             // Читаем изображение
             $image = $manager->read($tmpName);
 
-            // Получаем исходные размеры
-            $originalWidth = $image->width();
-            $originalHeight = $image->height();
+            // Создаем вебп-иконку 32x32
+            $icon = $image->scale(width: 32, height: 32);
 
-            // Генерируем уникальное имя
-            $filename = mt_rand(1, PHP_INT_MAX) . '.png';
+            // Генерируем уникальное имя webp
+            $filename = mt_rand(1, PHP_INT_MAX) . '.webp';
+            $fullPath = $uploadDir . $filename;
 
-            // Сохраняем оригинальное изображение
-            if (!$image->save($uploadDir . $filename)) {
-                throw new Exception("Ошибка при сохранении изображения");
+            // Попытка сохранить как webp с качеством 80
+            $savedMime = 'image/webp';
+            try {
+                // Попытка сохранить прямо через Image::save (format webp)
+                $icon->save($fullPath, 80, 'webp');
+                $savedMime = 'image/webp';
+            } catch (\Throwable $e) {
+                // Фаллбек: сохраняем как PNG
+                $filename = pathinfo($filename, PATHINFO_FILENAME) . '.png';
+                $fullPath = $uploadDir . $filename;
+                $icon->save($fullPath, 90, 'png');
+                $savedMime = 'image/png';
             }
 
-            // Создаем миниатюру
-            $thumbImage = $image;
-            if ($originalHeight > 300) {
-                $thumbImage = $image->scale(height: 300);
-            }
-            if ($originalWidth > 300) {
-                $thumbImage = $image->scale(width: 300);
-            }
-
-            $thumb = pathinfo($filename, PATHINFO_FILENAME) . '_thumb.png';
-            if (!$thumbImage->save($uploadDir . $thumb)) {
-                throw new Exception("Ошибка при сохранении миниатюры");
-            }
+            // Обновим размер
+            $savedSize = filesize($fullPath);
 
             // Записываем информацию в базу
             sql::run(
@@ -2590,23 +2594,23 @@ class forum
                     0,
                     user::self()->getId(),
                     $filename,
-                    $files['name'],
-                    $files['size'],
-                    $files['type'],
+                    $originalName,
+                    $savedSize,
+                    $savedMime,
                     time::mysql()
                 ]
             );
 
             $attachmentId = sql::lastInsertId();
 
-            // Возвращаем результат в формате для FilePond
+            // Возвращаем результат
             echo json_encode([
                 'success' => true,
                 'file' => [
                     'id' => $attachmentId,
                     'url' => '/uploads/forum/' . $filename,
-                    'thumbnail' => '/uploads/forum/' . $thumb,
-                    'name' => $files['name']
+                    'thumbnail' => '/uploads/forum/' . $filename,
+                    'name' => $originalName
                 ]
             ]);
             exit;
@@ -2705,7 +2709,6 @@ class forum
             
             // XSS защита: очищаем пользовательские данные
             $name = XssSecurity::clean($name);
-            $icon = XssSecurity::clean($icon);
             $link = XssSecurity::cleanUrl($link);
 
             // Проверяем корректность URL
