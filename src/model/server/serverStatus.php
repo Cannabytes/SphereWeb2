@@ -98,7 +98,6 @@ class serverStatus
     public function getOnline(): int
     {
         $online = $this->online;
-
         if (config::load()->onlineCheating()->isEnabled()) {
             $cheatingDetails = config::load()->onlineCheating()->getCheatingDetails();
             $currentTime = new DateTime();
@@ -108,11 +107,14 @@ class serverStatus
                         continue;
                     }
                     $startTime = DateTime::createFromFormat('H:i', $detail->getTime());
+                    $startTime->setDate($currentTime->format('Y'), $currentTime->format('m'), $currentTime->format('d'));
+                    
                     $nextIndex = $index + 1;
                     if ($nextIndex < count($details)) {
                         $endTime = DateTime::createFromFormat('H:i', $details[$nextIndex]->getTime());
+                        $endTime->setDate($currentTime->format('Y'), $currentTime->format('m'), $currentTime->format('d'));
                     } else {
-                        $endTime = (clone $startTime)->add(new DateInterval('PT30M'));
+                        $endTime = (clone $startTime)->add(new DateInterval('P1D'))->setTime(0, 0, 0);
                     }
                     if ($currentTime >= $startTime && $currentTime < $endTime) {
                         $online *= (float)$detail->getMultiplier();
