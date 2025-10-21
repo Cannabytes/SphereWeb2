@@ -91,14 +91,13 @@ class tpl
     private static ?array $pageCache = null;
     
     public static function templatePath($file = ""): string
-    {
+    { 
         if ($file !== "") {
             return rtrim(self::$templatePath, '/') . '/' . ltrim($file, '/');
         }
         return self::$templatePath;
     }
 
-    // Compute a stable cache file path for page cache
     private static function buildPageCachePath(array $keyParts, string $namespace = 'page', bool $includeUser = false, bool $includeServer = true): string
     {
         try {
@@ -2499,7 +2498,6 @@ class tpl
                 }
             }
         } catch (Exception $e) {
-            // В случае ошибки возвращаем базовый список функций Twig
             $functions = [
                 'block',
                 'constant',
@@ -2522,15 +2520,7 @@ class tpl
         return $functions;
     }
 
-    /**
-     * Рендерит простую страницу ошибки с дополнительным контекстом
-     *
-     * @param Exception $originalException Оригинальное исключение
-     * @param string $tplName Имя шаблона
-     * @param Exception|null $renderException Исключение рендеринга
-     * @param array $contextInfo Дополнительная информация о контексте
-     * @return void
-     */
+
     private static function renderFallbackErrorPage(Exception $originalException, $tplName, ?Exception $renderException = null, array $contextInfo = [])
     {
         $html = '<!DOCTYPE html>
@@ -2560,7 +2550,6 @@ class tpl
             <p><strong>Строка:</strong> ' . $originalException->getLine() . '</p>
             <p><strong>Шаблон:</strong> ' . htmlspecialchars($tplName) . '</p>';
 
-        // Добавляем информацию о контексте, если она есть
         if (!empty($contextInfo)) {
             $html .= '<h2>Дополнительная информация:</h2><div>';
 
@@ -2609,14 +2598,6 @@ class tpl
     }
 
 
-    /**
-     * Улучшенная функция извлечения внешних ресурсов с правильной обработкой тегов
-     *
-     * @param string $css CSS блок шаблона
-     * @param string $js JS блок шаблона
-     * @param string $templatePath Путь к шаблону
-     * @return array Массив с external_css и external_js
-     */
     private static function extractExternalResources($css, $js, $templatePath): array
     {
         $resources = [
@@ -2624,19 +2605,15 @@ class tpl
             'external_js' => []
         ];
 
-        // Извлекаем CSS файлы из блока css
         if ($css) {
-            // Поиск link тегов с различным порядком атрибутов
             preg_match_all('/<link[^>]*(?:rel\s*=\s*["\']stylesheet["\'][^>]*href\s*=\s*["\']([^"\']+)["\']|href\s*=\s*["\']([^"\']+)["\'][^>]*rel\s*=\s*["\']stylesheet["\'])[^>]*\/?>/i', $css, $cssMatches);
 
-            // Объединяем результаты из обеих групп захвата
             $cssUrls = array_merge(
-                array_filter($cssMatches[1]), // rel первый
-                array_filter($cssMatches[2])  // href первый
+                array_filter($cssMatches[1]), 
+                array_filter($cssMatches[2]) 
             );
 
             foreach ($cssUrls as $cssUrl) {
-                // Обрабатываем относительные пути
                 if (!preg_match('/^https?:\/\//', $cssUrl) && !preg_match('/^\//', $cssUrl)) {
                     $cssUrl = rtrim($templatePath, '/') . '/' . ltrim($cssUrl, '/');
                 }
@@ -2644,13 +2621,9 @@ class tpl
             }
         }
 
-        // Извлекаем JS файлы из блока js
         if ($js) {
-            // Ищем только теги script с атрибутом src (внешние скрипты)
             preg_match_all('/<script[^>]*src\s*=\s*["\']([^"\']+)["\'][^>]*><\/script>/i', $js, $jsMatches);
-
             foreach ($jsMatches[1] as $jsUrl) {
-                // Обрабатываем относительные пути
                 if (!preg_match('/^https?:\/\//', $jsUrl) && !preg_match('/^\//', $jsUrl)) {
                     $jsUrl = rtrim($templatePath, '/') . '/' . ltrim($jsUrl, '/');
                 }
@@ -2661,24 +2634,14 @@ class tpl
         return $resources;
     }
 
-    /**
-     * Исправленная функция удаления внешних ресурсов с извлечением содержимого инлайновых скриптов
-     *
-     * @param string $css CSS блок
-     * @param string $js JS блок
-     * @return array Очищенные css и js (только содержимое, без тегов)
-     */
     private static function cleanExternalResources($css, $js): array
     {
         $cleanCss = '';
         $cleanJs = '';
 
-        // Обработка CSS блока
         if ($css) {
-            // Удаляем все теги <link> с rel="stylesheet"
             $cleanCss = preg_replace('/<link[^>]*(?:rel\s*=\s*["\']stylesheet["\'][^>]*href\s*=\s*["\'][^"\']+["\']|href\s*=\s*["\'][^"\']+["\'][^>]*rel\s*=\s*["\']stylesheet["\'])[^>]*\/?>/i', '', $css);
 
-            // Извлекаем содержимое тегов <style>, если они есть
             preg_match_all('/<style[^>]*>(.*?)<\/style>/is', $cleanCss, $styleMatches);
             $cleanCss = '';
             foreach ($styleMatches[1] as $styleContent) {
@@ -2688,12 +2651,8 @@ class tpl
             $cleanCss = trim($cleanCss);
         }
 
-        // Обработка JS блока
         if ($js) {
-            // Сначала удаляем все внешние скрипты (с src)
             $tempJs = preg_replace('/<script[^>]*src\s*=\s*["\'][^"\']+["\'][^>]*><\/script>/i', '', $js);
-
-            // Извлекаем содержимое инлайновых скриптов (без src)
             preg_match_all('/<script(?![^>]*src\s*=)[^>]*>(.*?)<\/script>/is', $tempJs, $scriptMatches);
             $cleanJs = '';
             foreach ($scriptMatches[1] as $scriptContent) {
@@ -2706,10 +2665,6 @@ class tpl
         return ['css' => $cleanCss, 'js' => $cleanJs];
     }
 
-    /**
-     * Быстрая диагностика проблемы
-     * Замените временно функцию display() на эту версию, чтобы увидеть что происходит
-     */
     public static function display($tplName)
     {
         if (self::$templatePath !== self::$fallbackTemplatePath) {
@@ -2759,7 +2714,6 @@ class tpl
                     self::$allTplVars['page_inline_js'] = $cleaned['js'];
                     self::$allTplVars['page_title'] = $title;
 
-                    // ОТЛАДКА: показываем что попало в переменные (только для read.html)
                     if ($tplName === 'read.html') {
                         echo "<!-- DEBUG INFO -->";
                         echo "<!-- CSS Block Length: " . strlen($css) . " -->";
@@ -2776,20 +2730,16 @@ class tpl
                     }
                 }
 
-                // Content-only cache handling
                 if (self::$pageCache && !self::$ajaxLoad) {
-                    // If HIT: use cached content
                     if (!empty(self::$pageCache['hit']) && isset(self::$pageCache['cachedContent'])) {
                         $cachedContent = (string)self::$pageCache['cachedContent'];
                         self::$allTplVars['__cached_content'] = $cachedContent;
                                                 $wrapper = "{% extends 'struct.html' %}\n" .
                                                                      "{% block content %}{{ __cached_content|raw }}{% endblock %}\n" .
-                                                                     // CSS block: render external links then wrap inline CSS with <style>
                                                                      "{% block css %}" .
                                                                          "{% if page_external_css is defined %}{% for href in page_external_css %}<link rel=\"stylesheet\" href=\"{{ href }}\">{% endfor %}{% endif %}" .
                                                                          "{% if page_inline_css is defined and page_inline_css %}<style>{{ page_inline_css|raw }}</style>{% endif %}" .
                                                                      "{% endblock %}\n" .
-                                                                     // JS block: render external scripts then wrap inline JS with <script>
                                                                      "{% block js %}" .
                                                                          "{% if page_external_js is defined %}{% for src in page_external_js %}<script src=\"{{ src }}\"></script>{% endfor %}{% endif %}" .
                                                                          "{% if page_inline_js is defined and page_inline_js %}<script>{{ page_inline_js|raw }}</script>{% endif %}" .
@@ -2797,15 +2747,13 @@ class tpl
                                                                      "{% block title %}{% if page_title is defined %}{{ page_title|raw }}{% endif %}{% endblock %}";
                         $tpl2 = $twig->createTemplate($wrapper);
                         header('X-Page-Cache: HIT');
-                        // Heuristic: if cached content seems already minified (few line breaks)
                         $isMin = (substr_count($cachedContent, "\n") < 5) ? '1' : '0';
                         header('X-HTML-Minified: ' . $isMin);
                         $tpl2->display(self::$allTplVars);
-                        self::$pageCache = null; // reset
+                        self::$pageCache = null; 
                         exit();
                     }
 
-                    // MISS: render content block, save it, then render wrapper
                     $contentHtml = $template->hasBlock('content') ? $template->renderBlock('content', self::$allTplVars) : '';
                     $minified = self::minifyHtml($contentHtml);
                     if ($minified !== '') {
@@ -2836,11 +2784,10 @@ class tpl
                     $tpl2 = $twig->createTemplate($wrapper);
                     header('X-Page-Cache: MISS-SAVED');
                     $tpl2->display(self::$allTplVars);
-                    self::$pageCache = null; // reset
+                    self::$pageCache = null; 
                     exit();
                 }
 
-                // Используем display() вместо render() для потокового вывода, чтобы не собирать огромную строку в памяти
                 $template->display(self::$allTplVars);
                 exit();
             }
@@ -2861,8 +2808,7 @@ class tpl
 
     public static function displayPlugin($tplName): void
     {
-        $parts = explode('/', trim($tplName, '/')); // Убираем ведущий и завершающий слэши, затем разбиваем строку
-
+        $parts = explode('/', trim($tplName, '/'));
         if (isset($parts[0]) && $parts[0] !== '') {
             $pluginDirName = $parts[0];
         } else {
