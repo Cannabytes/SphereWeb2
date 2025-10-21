@@ -424,9 +424,25 @@ class lang
     public function load_template_lang_packet($tpl)
     {
         $lang_name = $this->lang_user_default();
+
+        // Проверка наличия файла
+        if (!is_string($tpl) || !file_exists($tpl)) {
+            error_log("load_template_lang_packet: template file not found: " . (string)$tpl);
+            return;
+        }
+
+        // Подключаем файл в контролируемом виде и ожидаем массив
         $langs_array = require $tpl;
-        if (array_key_exists($lang_name, $langs_array)) {
-            $this->phrasesData = array_merge($this->phrasesData, $langs_array[$lang_name]);
+        if (!is_array($langs_array)) {
+            error_log("load_template_lang_packet: template file did not return an array: " . $tpl);
+            return;
+        }
+
+        // Если есть пакет для текущего языка - объединяем.
+        // Используем array_replace_recursive чтобы при совпадении ключей
+        // значения из шаблона перезаписывали существующие (включая вложенные массивы).
+        if (array_key_exists($lang_name, $langs_array) && is_array($langs_array[$lang_name])) {
+            $this->phrasesData = array_replace_recursive($this->phrasesData, $langs_array[$lang_name]);
         }
     }
 
