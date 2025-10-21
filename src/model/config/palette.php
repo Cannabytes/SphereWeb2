@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /** UPDATE **/
 
 namespace Ofey\Logan22\model\config;
@@ -23,23 +25,25 @@ class palette
     public string $style = ""; 
     public string $styleFile = "styles.css"; 
 
-    public function __construct($setting)
+    /**
+     * @param array<string,mixed> $setting
+     */
+    public function __construct(array $setting = [])
     {
-            $this->navLayout = $setting['nav-layout'] ?? "vertical";
-            $this->themeMode = $setting['theme-mode'] ?? "light";
-            $this->headerStyles = $setting['header-styles'] ?? "light";
-            $this->menuStyles = $setting['menu-styles'] ?? "light";
-            $this->headerPosition = $setting['header-position'] ?? "fixed";
-            $this->menuPosition = $setting['menu-position'] ?? "fixed";
-            $this->navStyle = $setting['nav-style'] ?? 'detached-close';
-            $this->bgImg = $setting['bg-img'] ?? null;
-            $this->verticalStyle = $setting['vertical-style'] ?? 'detached';
-            $this->toggled = $setting['toggled'] ?? "detached-close";
-            $this->pageStyle = $setting['page-style'] ?? "regular";
-            $this->width = $setting['width'] ?? "fullwidth";
-            $this->style = $setting['style'] ?? "";
-            $this->styleFile = $setting['styleFile'] ?? "styles.css";
-            
+        $this->navLayout = $setting['nav-layout'] ?? "vertical";
+        $this->themeMode = $setting['theme-mode'] ?? "light";
+        $this->headerStyles = $setting['header-styles'] ?? "light";
+        $this->menuStyles = $setting['menu-styles'] ?? "light";
+        $this->headerPosition = $setting['header-position'] ?? "fixed";
+        $this->menuPosition = $setting['menu-position'] ?? "fixed";
+        $this->navStyle = $setting['nav-style'] ?? 'detached-close';
+        $this->bgImg = $setting['bg-img'] ?? null;
+        $this->verticalStyle = $setting['vertical-style'] ?? 'detached';
+        $this->toggled = $setting['toggled'] ?? "detached-close";
+        $this->pageStyle = $setting['page-style'] ?? "regular";
+        $this->width = $setting['width'] ?? "fullwidth";
+        $this->style = $setting['style'] ?? "";
+        $this->styleFile = (!empty($setting['styleFile'])) ? (string)$setting['styleFile'] : 'styles.css';
     }
 
     public function getAll(): array
@@ -61,7 +65,11 @@ class palette
         ];
     }
 
-    public function getStyleFileConfig() {
+    /**
+     * Return the configuration array for the selected style file, or false if none found.
+     * @return array<string,mixed>|false
+     */
+    public function getStyleFileConfig(): array|false {
         $stylesPath = fileSys::localdir(tpl::templatePath("styles.php"), true);
         if(file_exists($stylesPath)){
            require $stylesPath;
@@ -80,9 +88,21 @@ class palette
         return $this->style;
     }
 
-    public function styleFile(): string
+    /**
+     * Preferred accessor for the style file name.
+     */
+    public function getStyleFile(): string
     {
         return $this->styleFile;
+    }
+
+    /**
+     * Backward-compatible alias (deprecated) kept for existing callers.
+     * @deprecated use getStyleFile()
+     */
+    public function styleFile(): string
+    {
+        return $this->getStyleFile();
     }
 
 
@@ -121,7 +141,7 @@ class palette
         return $this->menuPosition;
     }
 
-    public function getBgImg(): string
+    public function getBgImg(): ?string
     {
         return $this->bgImg;
     }
