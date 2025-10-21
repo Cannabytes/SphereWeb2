@@ -79,10 +79,7 @@ class user
         \Ofey\Logan22\model\user\user::self()->setId($_SESSION['id']);
         \Ofey\Logan22\model\user\user::self()->addLog(logTypes::LOG_REGISTRATION_USER, "LOG_REGISTRATION_USER", [$email]);
 
-        $requestFinger = $_POST['finger'] ?? "";
-        $finger = finger::createFingerHash($requestFinger);
-
-        auth::addAuthLog($_SESSION['id'], $finger);
+        auth::addAuthLog($_SESSION['id']);
 
         $mailTemplate = mail::getTemplates();
 
