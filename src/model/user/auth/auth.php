@@ -187,7 +187,7 @@ class auth
             $signature = "GOOGLE";
         }
 
-        sql::run("INSERT INTO user_auth_log (user_id, ip, country, city, browser, os, device, user_agent, date, signature) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+        sql::run("INSERT INTO user_auth_log (user_id, ip, country, city, browser, os, device, user_agent, date, signature) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
             $userId,
             $ip,
             $country,
