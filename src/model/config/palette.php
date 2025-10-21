@@ -37,8 +37,8 @@ class palette
             $this->toggled = $setting['toggled'] ?? "detached-close";
             $this->pageStyle = $setting['page-style'] ?? "regular";
             $this->width = $setting['width'] ?? "fullwidth";
-            $this->style = $setting['style'] ?? "";
-            $this->styleFile = $setting['styleFile'];
+            $this->style = $setting['style'] ?? '';
+            $this->styleFile = $setting['styleFile'] ?? '';
             if($this->styleFile == ''){
                 $this->styleFile = 'styles.css';
             }
