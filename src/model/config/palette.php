@@ -25,11 +25,9 @@ class palette
     public string $style = ""; 
     public string $styleFile = "styles.css"; 
 
-    /**
-     * @param array<string,mixed> $setting
-     */
-    public function __construct(array $setting = [])
+    public function __construct(?array $setting = null)
     {
+        $setting = $setting ?? [];
         $this->navLayout = $setting['nav-layout'] ?? "vertical";
         $this->themeMode = $setting['theme-mode'] ?? "light";
         $this->headerStyles = $setting['header-styles'] ?? "light";
