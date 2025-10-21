@@ -87,9 +87,9 @@
 </head>
 
 <body class="has-video-bg">
-  
-  {% if config().palette().getStyleFileConfig().video %}
-    {{ config().palette().getStyleFileConfig().video_to_body|raw }}
+  {% set s = config().palette().getStyleFileConfig() %}
+  {% if s is not null and s.video is defined and s.video %}
+    {{ s.video_to_body|raw }}
   {% endif %}
    
   {{ include('modals.html') }}
