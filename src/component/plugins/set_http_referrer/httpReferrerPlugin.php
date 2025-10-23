@@ -206,7 +206,6 @@ class httpReferrerPlugin
         \Ofey\Logan22\component\redirect::location("/");
     }
 
-
     static public function addUserReferer(): void
     {
         $refererName = $_SERVER['REQUEST_URI'];

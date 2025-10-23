@@ -4,11 +4,13 @@ namespace Ofey\Logan22\controller\oauth2\google;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\component\plugins\registration_reward\registration_reward;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\user;
 
 class auth
@@ -92,11 +94,35 @@ class auth
             $insert = sql::run($insertUserSQL, $insertArrays);
             $userID = sql::lastInsertId();
             if ($insert) {
-                \Ofey\Logan22\model\user\auth\auth::addAuthLog($userID, $fingerprint ?? null);
+                \Ofey\Logan22\model\user\auth\auth::addAuthLog($userID);
                 session::add('id', $userID);
                 session::add('email', $email);
                 session::add('password', "GOOGLE");
                 session::add("oauth2", true);
+
+                $user = user::getUserId($userID);
+
+                //Выдаем бонусы при регистрации
+                foreach (server::getServerAll() as $server) {
+                    if ($server->bonus()->isRegistrationBonus()) {
+                        $items = $server->bonus()->getRegistrationBonusItems();
+                        $ifIssueAllItems = $server->bonus()->isIssueAllItems();
+                        // Если выдаем все предметы
+                        if($ifIssueAllItems){
+                            foreach ($items as $item) {
+                                $user->addToWarehouse($server->getId(), $item->getId(), $item->getCount(), $item->getEnchant(), 'registration_bonus');
+                            }
+                        }else{
+                            // выбираем рандомный предмет
+                            $item = $items[array_rand($items)];
+                            $user->addToWarehouse($server->getId(), $item->getId(), $item->getCount(), $item->getEnchant(), 'registration_bonus');
+                        }
+                    }
+                }
+
+                // Выдаем подарки через плагин "Вознаграждение за регистрацию"
+                registration_reward::giveRegistrationReward($user);
+
                 redirect::location("/main");
             } else {
                 board::notice(false, lang::get_phrase(178));

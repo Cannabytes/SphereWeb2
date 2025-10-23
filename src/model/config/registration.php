@@ -59,8 +59,19 @@ class registration
         return $this->enablePrefix;
     }
 
+    private string $prefix = '';
+
+    public function clearPrefix(): void
+    {
+        $this->prefix = '';
+    }
+
     public function genPrefix(): string
     {
+        if ($this->prefix !== '') {
+            return $this->prefix;
+        }
+
         $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $prefix = '';
         [$min, $max] = match ($this->prefixCharacters) {
@@ -78,6 +89,7 @@ class registration
             $prefix .= $chars[random_int(0, $maxIndex)];
         }
         $_SESSION['account_prefix'] = $prefix;
+        $this->prefix = $prefix;
         return $prefix;
     }
 

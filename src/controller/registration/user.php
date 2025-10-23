@@ -4,7 +4,6 @@ namespace Ofey\Logan22\controller\registration;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
-use Ofey\Logan22\component\finger\finger;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\mail\mail;
 use Ofey\Logan22\component\request\request;
@@ -22,6 +21,7 @@ use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\auth\registration;
 use Ofey\Logan22\model\user\player\player_account;
 use Ofey\Logan22\template\tpl;
+use Ofey\Logan22\component\plugins\registration_reward\registration_reward;
 
 class user
 {
@@ -41,7 +41,7 @@ class user
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             board::notice(false, lang::get_phrase(213));
         }
-        $password = request::setting('password', new request_config(min: 4, max: 32, rules: "/^[a-zA-Z0-9_]+$/"));
+        $password = request::setting('password', new request_config(min: 4, max: 32, rules: "/^[a-zA-Z0-9_!@#$%^&*()\-=]+$/"));
         $account_name = isset($_POST['account']) && trim($_POST['account']) !== '' ? trim($_POST['account']) : null;
 
 
@@ -121,6 +121,10 @@ class user
                 }
             }
         }
+ 
+
+        // Выдаем подарки через плагин "Вознаграждение за регистрацию"
+        registration_reward::giveRegistrationReward(\Ofey\Logan22\model\user\user::self());
 
         if (config::load()->registration()->getEnableLoadFileRegistration() and $account_name != null) {
             $serverInfo = server::getDefault();
@@ -129,7 +133,6 @@ class user
             }
             board::response("notice_registration", ["ok" => true, "message" => lang::get_phrase(207), "isDownload" => config::load()->registration()->getEnableLoadFileRegistration(), "title" => $_SERVER['SERVER_NAME'] . " - " . $email . ".txt", "content" => $content, "redirect" => fileSys::localdir("/main"),]);
         }
-
 
         board::response("notice_registration", ["ok" => true, "message" => lang::get_phrase(207), "redirect" => fileSys::localdir("/main"),]);
     }

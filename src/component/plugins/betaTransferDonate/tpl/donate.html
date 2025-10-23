@@ -9,8 +9,8 @@
           <i class="bi bi-credit-card-2-front fs-3 text-primary"></i>
         </div>
         <div>
-          <h4 class="mb-0">Пополнение баланса</h4>
-          <small class="text-muted">Через платежную систему BetaTransfer</small>
+          <h4 class="mb-0">{{ phrase('betatransfer_topup_title') }}</h4>
+          <small class="text-muted">{{ phrase('betatransfer_via_betatransfer') }}</small>
         </div>
       </div>
     </div>
@@ -20,8 +20,8 @@
       <div class="alert alert-warning d-flex align-items-center" role="alert">
         <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
         <div>
-          <strong>Способы оплаты недоступны</strong>
-          <p class="mb-0 small">В данный момент нет активных методов пополнения. Пожалуйста, обратитесь к администратору.</p>
+          <strong>{{ phrase('betatransfer_methods_unavailable_title') }}</strong>
+          <p class="mb-0 small">{{ phrase('betatransfer_methods_unavailable_desc') }}</p>
         </div>
       </div>
       {% else %}
@@ -48,7 +48,6 @@
                     <small class="text-muted">{{ method.min }} - {{ method.max }} {{ method.currency }}</small>
                   </div>
                 </div>
-                {# country removed - no longer used #}
               </div>
             </div>
           </div>
@@ -60,10 +59,10 @@
         <div class="row justify-content-center">
           <div class="col-lg-6 col-md-8">
             <div class="card shadow-sm border-0">
-              <div class="card-header bg-primary text-white">
+                  <div class="card-header bg-primary text-white">
                 <div class="d-flex align-items-center">
                   <i class="bi bi-currency-exchange me-2 fs-5"></i>
-                  <h5 class="mb-0" id="selectedMethodName">Введите сумму</h5>
+                  <h5 class="mb-0" id="selectedMethodName">{{ phrase('betatransfer_enter_amount') }}</h5>
                 </div>
               </div>
               <div class="card-body p-4">
@@ -73,7 +72,7 @@
                   <div class="mb-4">
                     <label for="amount" class="form-label fw-semibold">
                       <i class="bi bi-cash-stack me-1"></i>
-                      Сумма пополнения
+                      {{ phrase('betatransfer_enter_amount') }}
                     </label>
                     <div class="input-group input-group-lg">
                       <input type="number" 
@@ -88,24 +87,24 @@
                     </div>
                     <div class="form-text mt-2">
                       <i class="bi bi-info-circle me-1"></i>
-                      Минимум: <strong><span id="minAmount">0</span> <span id="minCurrency"></span></strong> | 
-                      Максимум: <strong><span id="maxAmount">0</span> <span id="maxCurrency"></span></strong>
+                      {{ phrase('betatransfer_min_amount') }}: <strong><span id="minAmount">0</span> <span id="minCurrency"></span></strong> | 
+                      {{ phrase('betatransfer_max_amount') }}: <strong><span id="maxAmount">0</span> <span id="maxCurrency"></span></strong>
                     </div>
                   </div>
 
                   <div class="alert alert-info border-0 d-flex align-items-start">
                     <i class="bi bi-info-circle-fill me-2 mt-1"></i>
-                    <small>После подтверждения вы будете перенаправлены на безопасную страницу оплаты BetaTransfer для завершения транзакции.</small>
+                    <small>{{ phrase('betatransfer_after_confirm_info') }}</small>
                   </div>
 
                   <div class="d-grid gap-2 mt-4">
                     <button type="submit" class="btn btn-primary btn-lg">
                       <i class="bi bi-lock-fill me-2"></i>
-                      Перейти к оплате
+                      {{ phrase('betatransfer_proceed_payment') }}
                     </button>
                     <button type="button" class="btn btn-outline-secondary" id="backToMethods">
                       <i class="bi bi-arrow-left me-2"></i>
-                      Выбрать другой способ
+                      {{ phrase('betatransfer_back_to_methods') }}
                     </button>
                   </div>
                 </form>
@@ -131,11 +130,11 @@
 
   // Утилита для безопасного показа уведомлений
 const noticeError = (msg, type = 'info') => {
-  if (typeof showNotice === 'function') {
+    if (typeof showNotice === 'function') {
     try { 
       showError(msg, type);
     } catch (e) {
-      console.error('Ошибка в showError:', e);
+    console.error("{{ phrase('betatransfer_showerror_failed')|e('js') }}", e);
     }
   }
 };
@@ -144,14 +143,14 @@ const noticeError = (msg, type = 'info') => {
   // Обновление формы данными выбранного метода
   const updateFormWithMethod = (method, methodKey) => {
     $('#selectedPaymentMethod').val(methodKey);
-    $('#selectedMethodName').text(`Пополнение через ${method.name}`);
+    $('#selectedMethodName').text('{{ phrase("betatransfer_topup_via")|e("js") }}' + ' ' + method.name);
     $('#currencyLabel, #minCurrency, #maxCurrency').text(method.currency);
     $('#minAmount').text(method.min);
     $('#maxAmount').text(method.max);
     $('#amount').attr({
       min: method.min,
       max: method.max,
-      placeholder: `от ${method.min} до ${method.max}`
+      placeholder: ("{{ phrase('betatransfer_amount_range')|e('js') }}").replace('{min}', method.min).replace('{max}', method.max)
     });
   };
 
@@ -203,24 +202,24 @@ const noticeError = (msg, type = 'info') => {
     e.preventDefault();
     
     if (!selectedMethod) {
-      noticeError('Выберите способ оплаты');
+  noticeError("{{ phrase('betatransfer_select_method')|e('js') }}");
       return false;
     }
 
     const amount = parseFloat($('#amount').val());
     
     if (isNaN(amount) || amount <= 0) {
-      noticeError('Введите корректную сумму');
+  noticeError("{{ phrase('betatransfer_enter_amount')|e('js') }}");
       return false;
     }
     
     if (amount < selectedMethod.min) {
-      noticeError(`Минимальная сумма: ${selectedMethod.min} ${selectedMethod.currency}`);
+  noticeError(`{{ phrase('betatransfer_min_amount')|e('js') }}: ${selectedMethod.min} ${selectedMethod.currency}`);
       return false;
     }
 
     if (amount > selectedMethod.max) {
-      noticeError(`Максимальная сумма: ${selectedMethod.max} ${selectedMethod.currency}`);
+  noticeError(`{{ phrase('betatransfer_max_amount')|e('js') }}: ${selectedMethod.max} ${selectedMethod.currency}`);
       return false;
     }
 
@@ -229,15 +228,15 @@ const noticeError = (msg, type = 'info') => {
     
     $submitBtn
       .prop('disabled', true)
-      .html('<span class="spinner-border spinner-border-sm me-2"></span>Обработка платежа...');
+  .html('<span class="spinner-border spinner-border-sm me-2"></span>' + '{{ phrase("betatransfer_processing")|e("js") }}');
 
     AjaxSend('/donate/betatransfer/create', 'POST', $(this).serialize(), false)
       .then(response => {
         // Проверяем разные форматы ответа
-        if (response && typeof response === 'object') {
+            if (response && typeof response === 'object') {
           if (response.success === true && response.url) {
             // Успешный ответ с URL
-            noticeSuccess('Перенаправление на страницу оплаты...');
+            noticeSuccess('{{ phrase("betatransfer_redirecting")|e("js") }}');
             setTimeout(() => { 
               window.location.href = response.url; 
             }, 500);
@@ -251,18 +250,18 @@ const noticeError = (msg, type = 'info') => {
             $submitBtn.prop('disabled', false).html(originalHtml);
           } else {
             // Неизвестный формат ответа
-            noticeError('Неизвестная ошибка при создании платежа');
+            noticeError("{{ phrase('betatransfer_unknown_error_create_payment')|e('js') }}");
             $submitBtn.prop('disabled', false).html(originalHtml);
           }
         } else {
-          noticeError('Некорректный ответ от сервера');
+          noticeError("{{ phrase('betatransfer_invalid_server_response')|e('js') }}");
           $submitBtn.prop('disabled', false).html(originalHtml);
         }
       })
       .catch(error => {
         console.error('Payment error:', error);
-        const errorMsg = error && error.message ? error.message : 'Ошибка соединения с сервером';
-        noticeError(errorMsg);
+  const errorMsg = error && error.message ? error.message : "{{ phrase('betatransfer_connection_error')|e('js') }}";
+  noticeError(errorMsg);
         $submitBtn.prop('disabled', false).html(originalHtml);
       });
     

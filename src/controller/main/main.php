@@ -15,10 +15,6 @@ class main
 
     public static function index()
     {
-
-        tpl::addVar([
-            "prefix" => config::load()->registration()->genPrefix(),
-        ]);
         tpl::display("index.html");
     }
 }

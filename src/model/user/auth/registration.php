@@ -111,7 +111,7 @@ class registration {
                     if(isset($sphere['error'])) {
                         // Откатываем транзакцию, если аккаунт занят
                         sql::rollBack();
-                        board::response("notice", ["message" => lang::get_phrase(214), "ok" => false, "reloadCaptcha" => true]);
+                        board::response("notice", ["message" => $sphere['error'], "ok" => false, "reloadCaptcha" => true]);
                     }
                 }
 

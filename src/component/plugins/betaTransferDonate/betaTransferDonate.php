@@ -70,24 +70,17 @@ class betaTransferDonate
         if (isset($_POST['payment']) && is_array($_POST['payment'])) {
             $generatedIndex = 0;
             foreach ($_POST['payment'] as $entry) {
-                // entry may omit a key; generate one if missing
                 $paymentSystem = trim((string)($entry['paymentSystem'] ?? ''));
-                // Admin form now provides 'name' (user-facing) instead of 'description'
                 $name = trim((string)($entry['name'] ?? ''));
 
-                // prefer original key if present (when editing existing rows)
                 if (!empty($entry['orig_key'])) {
                     $key = trim((string)$entry['orig_key']);
-                    // normalize
                     $key = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $key);
                 } else {
-                    // Используем paymentSystem как ключ (БЕЗ индекса для стабильности)
                     if ($paymentSystem !== '') {
-                        // Нормализуем paymentSystem: убираем недопустимые символы
                         $key = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $paymentSystem);
                         $key = strtolower($key);
                     } else {
-                        // Fallback: если paymentSystem пустой
                         $key = 'method_' . $generatedIndex;
                     }
                 }
@@ -100,7 +93,6 @@ class betaTransferDonate
                     'min' => (int)($entry['min'] ?? 0),
                     'max' => (int)($entry['max'] ?? 0),
                     'icon' => $entry['icon'] ?? 'bi-credit-card',
-                    // new field to store custom CSV/icon class or value - used first when rendering
                     'csv' => trim((string)($entry['csv'] ?? '')),
                 ];
             }
@@ -145,8 +137,6 @@ class betaTransferDonate
         $settings = plugin::getSetting($this->getNameClass());
         $paymentMethods = $settings['payment_methods'] ?? [];
 
-        // Fallback: if settings were saved but plugin not registered/active for this server,
-        // try loading raw settings from DB directly (server-specific or global serverId=0)
         if (empty($paymentMethods)) {
             try {
                 $serverId = user::self()->getServerId() ?? 0;
@@ -161,10 +151,8 @@ class betaTransferDonate
                     }
                 }
             } catch (\Throwable $e) {
-                // ignore and continue with empty methods
             }
             
-            // Final fallback: try to find any saved settings for this plugin across servers (most recent)
             if (empty($paymentMethods)) {
                 try {
                     $query2 = \Ofey\Logan22\model\db\sql::run(
@@ -178,18 +166,15 @@ class betaTransferDonate
                         }
                     }
                 } catch (\Throwable $e) {
-                    // ignore
                 }
             }
         }
 
-        // Показываем все методы оплаты
         tpl::addVar([
             'paymentMethods' => $paymentMethods,
             'settings' => $settings,
         ]);
 
-        // Debug helpers: expose raw settings and resolved paymentMethods for page-source inspection
         tpl::addVar([
             'rawPluginSettings' => $settings,
             'resolvedPaymentMethods' => $paymentMethods,
@@ -223,12 +208,7 @@ class betaTransferDonate
 
         $paymentMethods = $settings['payment_methods'] ?? [];
         
-        // Проверяем что метод существует
         if (!isset($paymentMethods[$paymentMethod])) {
-            // Логируем для отладки
-            error_log("BetaTransfer Debug - Payment method not found: '$paymentMethod'");
-            error_log("Available methods: " . json_encode(array_keys($paymentMethods)));
-            
             board::error("Выбранный способ оплаты не найден. Метод: '$paymentMethod'. Доступные методы: " . implode(', ', array_keys($paymentMethods)));
         }
 
@@ -244,10 +224,8 @@ class betaTransferDonate
             board::error("Максимальная сумма пополнения: {$method['max']} {$currency}");
         }
 
-        // Генерируем уникальный ID заказа
         $orderId = user::self()->getId() . '_' . time() . '_' . mt_rand(1000, 9999);
 
-        // Подготовка параметров для API
         $options = [
             'amount' => round($userAmount, 2),
             'currency' => $currency,
@@ -263,17 +241,14 @@ class betaTransferDonate
             'token' => $settings['public_api_key'],
         ];
 
-        // Отправляем запрос к API
         $response = $this->request(
             rtrim(self::BASE_URL_V1, '/') . '/api/payment?' . http_build_query($queryData),
             $options
         );
 
-        // Обработка ответа от API
         if ($response['code'] == 200 && isset($response['body'])) {
             $body = $response['body'];
             
-            // Нормализация body: иногда API возвращает JSON как строку
             if (is_string($body)) {
                 $decoded = json_decode($body, true);
                 if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {

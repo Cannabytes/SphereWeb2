@@ -7,7 +7,7 @@ return [
     "PLUGIN_VERSION" => "1.0.0",
     "PLUGIN_AUTHOR" => "Ofey",
     "PLUGIN_GITHUB" => "",
-    "PLUGIN_DESCRIPTION" => "BetaTransfer payment plugin with multiple payment methods",
+    "PLUGIN_DESCRIPTION" => "betatransfer_donate_description",
     "PLUGIN_ADMIN_PAGE" => "/admin/plugin/betatransfer/donate",
     "PLUGIN_ICON" => "bi bi-credit-card",
     "PLUGIN_LINK" => "/donate/betatransfer",

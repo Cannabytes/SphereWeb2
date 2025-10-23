@@ -63,6 +63,20 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
     $route->post("/install/db/connect/test", "Ofey\Logan22\controller\install\install::db_connect");
     $route->post("/install", "Ofey\Logan22\controller\install\install::startInstall");
 }
+
+// Регистрация кастомных реферальных ссылок из config.php
+$configFile = fileSys::get_dir('src/component/plugins/referral_links/config.php');
+if (file_exists($configFile)) {
+    $customLinksConfig = include $configFile;
+    if (is_array($customLinksConfig)) {
+        foreach ($customLinksConfig as $linkPath => $linkData) {
+            $route->get("/" . $linkPath, function() use ($linkPath) {
+                (new \Ofey\Logan22\component\plugins\referral_links\ReferralLinks())->handleCustomLink($linkPath);
+            });
+        }
+    }
+}
+
 $route->set404(function () {
     http_response_code(404);
     if ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {

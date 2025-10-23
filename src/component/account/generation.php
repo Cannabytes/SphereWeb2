@@ -5792,6 +5792,7 @@ class generation
 
     public static function createPrefix(): void
     {
+        config::load()->registration()->clearPrefix();
         echo json_encode(config::load()->registration()->genPrefix());
     }
 }

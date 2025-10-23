@@ -13,9 +13,6 @@ $routes = [
     },
   ],
 
-
-
-
   [
     "method"  => "GET",
     "pattern" => "/admin/modify/item/get/{chronicle}/add",
@@ -25,7 +22,6 @@ $routes = [
         (new \Ofey\Logan22\component\plugins\itemMaster\itemMaster())->add($chronicle);
     },
   ],
-
 
   [
     "method"  => "GET",
@@ -46,7 +42,6 @@ $routes = [
         (new \Ofey\Logan22\component\plugins\itemMaster\itemMaster())->show($chronicle);
     },
   ],
-
 
   [
     "method"  => "POST",

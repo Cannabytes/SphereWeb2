@@ -29,7 +29,7 @@ $routes = [
     ],
     [
         "method"  => "POST",
-        "pattern" => "/donate/webhook/betatransfer",
+        "pattern" => "/donate/betatransfer",
         "file"    => "betaTransferDonate.php",
         "call"    => function() {
             (new betaTransferDonate())->webhook();

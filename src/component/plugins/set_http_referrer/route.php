@@ -26,7 +26,7 @@ $routes = [
     "pattern" => "/admin/statistic/http/referral/(.*)",
     "file"    => "httpReferrerPlugin.php",
     "call"    => function ($referName) {
-        (new set_http_referrer\httpReferrerPlugin())->get($referName);
+        (new set_http_referrer\httpReferrerPlugin())->get(referer_name: $referName);
     },
   ],
 

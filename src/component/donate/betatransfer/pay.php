@@ -15,6 +15,11 @@ class betatransfer extends \Ofey\Logan22\model\donate\pay_abstract {
     const BASE_URL_V1 = 'https://merchant.betatransfer.io/';
     const BASE_URL_V2 = 'https://api.betatransfer.io/';
 
+    protected static string $description = 'Устарело. Более новая версия находится в плагине <a href="/admin/plugin/betatransfer/donate">betaTransferDonate</a>';
+
+    // Платежка отключена для изменений
+    protected static bool $disableChanges = true;
+
     //Включить только для администратора
     protected static bool $forAdmin = false;
 

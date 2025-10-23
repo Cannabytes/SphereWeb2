@@ -32,7 +32,7 @@ class instance {
         './src',
         './uploads',
         './vendor',
-        './template'  // Изменено с './template/KnightDesert' на './template' для включения всей папки
+        './template'
     ];
 
     // Дополнительные пути исключения внутри включаемых папок (при необходимости)
@@ -41,6 +41,11 @@ class instance {
         'uploads/images',
         'uploads/logs',
         'data/languages/custom'
+    ];
+
+    // Файлы, которые нужно полностью исключить из скана и обновления
+    private const EXCLUDED_FILES = [
+        './src/component/plugins/referral_links/config.php',
     ];
 
     public function index(): void {
@@ -71,6 +76,11 @@ class instance {
             ];
 
             foreach ($files as $path => $hash) {
+                // Пропускаем файлы, которые явно исключены
+                if ($this->isFileExcluded($path)) {
+                    continue;
+                }
+
                 $dataFiles['files'][] = [
                     'path' => $path,
                     'hash' => $hash,
@@ -136,12 +146,57 @@ class instance {
         foreach ($files as $file) {
             $normalizedFile = $this->normalizePath($file);
 
+            // Пропускаем явно исключенные файлы
+            if ($this->isFileExcluded($normalizedFile)) {
+                continue;
+            }
+
             if ($this->isFileInIncludedPaths($normalizedFile)) {
                 $validFiles[] = $file;
             }
         }
 
         return $validFiles;
+    }
+
+    /**
+     * Проверяет, находится ли файл в списке исключённых файлов или в исключённых путях.
+     */
+    private function isFileExcluded(string $filePath): bool {
+        $normalizedPath = $this->normalizePath($filePath);
+
+        // Убираем префикс "./" для сравнения
+        if (str_starts_with($normalizedPath, './')) {
+            $normalizedPath = substr($normalizedPath, 2);
+        }
+
+        // Проверяем по конкретным файлам
+        foreach (self::EXCLUDED_FILES as $excluded) {
+            $normExcluded = $this->normalizePath($excluded);
+            if (str_starts_with($normExcluded, './')) {
+                $normExcluded = substr($normExcluded, 2);
+            }
+            if ($normalizedPath === $normExcluded) {
+                return true;
+            }
+        }
+
+        // Проверяем, если файл находится внутри исключённых путей
+        foreach (self::EXCLUDED_PATHS as $excludedPath) {
+            $normExcludedPath = $this->normalizePath($excludedPath);
+            if ($normExcludedPath === '') {
+                continue;
+            }
+            if (str_starts_with($normalizedPath, rtrim($normExcludedPath, '/') . '/')) {
+                return true;
+            }
+            // Тоже учитываем совпадение директории
+            if ($normalizedPath === $normExcludedPath) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function isFileInIncludedPaths(string $filePath): bool {
