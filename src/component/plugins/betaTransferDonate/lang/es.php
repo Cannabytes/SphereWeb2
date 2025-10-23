@@ -54,4 +54,8 @@ return [
     'betatransfer_showerror_failed' => 'Error en showError:',
     'betatransfer_topup_via' => 'Recarga vía',
     'betatransfer_amount_range' => 'de {min} a {max}',
+    'betatransfer_payment_description' => 'Descripción',
+    'betatransfer_description_label' => 'Descripción del sistema de pago',
+    'betatransfer_description_placeholder' => 'Ingrese la descripción para mostrar a los usuarios',
+    'betatransfer_description_note' => 'Esta descripción se mostrará al usuario en la página de recarga de saldo',
 ];

@@ -64,6 +64,7 @@ class betaTransferDonate
 
         $publicKey = $_POST['public_api_key'] ?? '';
         $secretKey = $_POST['secret_api_key'] ?? '';
+        $description = $_POST['description'] ?? '';
         
         // Payment methods configuration — accept dynamic payment[] from admin UI
         $paymentMethods = [];
@@ -101,6 +102,7 @@ class betaTransferDonate
         $settingsData = [
             'public_api_key' => $publicKey,
             'secret_api_key' => $secretKey,
+            'description' => $description,
             'payment_methods' => $paymentMethods,
         ];
 

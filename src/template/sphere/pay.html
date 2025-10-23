@@ -420,29 +420,23 @@
                     </li>
                 {% endfor %}
 
-                {# Add betaTransferDonate plugin if active #}
-                {% set showBetaTransfer = betaTransferDonateActive|default(false) %}
-                {% if showBetaTransfer %}
-                    <li class="shadow">
-                        <div class="payment-system-item" data-name="betatransfer" data-is-plugin="true">
-                            <div class="payment-system-content">
-                                <div class="payment-system-header">
-                                    <h4 class="payment-system-name">{{ phrase('betatransfer_payment_name') }}</h4>
-                                </div>
-                                <div class="payment-system-description">
-                                    {{ phrase('betatransfer_payment_description') }}
-                                </div>
-                            </div>
-                            <div class="payment-system-radio">
-                                <input type="radio" class="form-check-input" name="paysystem" id="{{country}}-betatransfer" value="betatransfer" data-is-plugin="true">
-                                <label class="form-check-label" for="{{country}}-betatransfer"></label>
-                            </div>
-                        </div>
-                    </li>
-                {% endif %}
+
             </ul>
         </div>
     {% endfor %}
+
+                
+                {% set showBetaTransfer = betaTransferDonateActive|default(false) %}
+                {% if showBetaTransfer %}
+                <a class="shadow mail-attachment" href="/donate/betatransfer">
+                <blockquote class="blockquote custom-blockquote info mb-0 text-center">
+                             <h4 class="fw-normal">{{ phrase('betatransfer_payment_name') }}</h4>
+                             <p class="card-text">{% if betaTransferDescription %}{{ betaTransferDescription }}{% else %}{{ phrase('betatransfer_payment_description') }}{% endif %}</p>
+                </blockquote>
+                  
+                </a>
+                {% endif %}
+    
 </div>
 
 

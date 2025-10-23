@@ -54,4 +54,9 @@ return [
     'betatransfer_showerror_failed' => 'Ошибка в showError:',
     'betatransfer_topup_via' => 'Пополнение через',
     'betatransfer_amount_range' => 'от {min} до {max}',
+    'betatransfer_payment_description' => 'Описание',
+    'betatransfer_description_label' => 'Описание платежной системы',
+    'betatransfer_description_placeholder' => 'Введите описание для отображения пользователям',
+    'betatransfer_description_note' => 'Это описание будет показано пользователю на странице пополнения баланса',
 ];
+

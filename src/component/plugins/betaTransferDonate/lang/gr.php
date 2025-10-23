@@ -54,4 +54,8 @@ return [
     'betatransfer_showerror_failed' => 'Σφάλμα στο showError:',
     'betatransfer_topup_via' => 'Επιπλέον μέσω',
     'betatransfer_amount_range' => 'από {min} έως {max}',
+    'betatransfer_payment_description' => 'Περιγραφή',
+    'betatransfer_description_label' => 'Περιγραφή του συστήματος πληρωμών',
+    'betatransfer_description_placeholder' => 'Εισαγάγετε περιγραφή για εμφάνιση στους χρήστες',
+    'betatransfer_description_note' => 'Αυτή η περιγραφή θα εμφανιστεί στο χρήστη στη σελίδα ανανέωσης υπολοίπου',
 ];

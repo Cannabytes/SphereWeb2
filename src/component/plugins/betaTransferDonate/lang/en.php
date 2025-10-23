@@ -54,4 +54,8 @@ return [
     'betatransfer_showerror_failed' => 'Error in showError:',
     'betatransfer_topup_via' => 'Top up via',
     'betatransfer_amount_range' => 'from {min} to {max}',
+    'betatransfer_payment_description' => 'Description',
+    'betatransfer_description_label' => 'Payment system description',
+    'betatransfer_description_placeholder' => 'Enter description to show to users',
+    'betatransfer_description_note' => 'This description will be shown to the user on the balance top-up page',
 ];

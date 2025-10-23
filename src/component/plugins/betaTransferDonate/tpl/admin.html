@@ -53,6 +53,17 @@
                   <div class="form-text mt-2">{{ phrase('betatransfer_api_key_note') }}</div>
                 </div>
               </div>
+
+              <div class="card mb-3 shadow-sm">
+                <div class="card-header">
+                  <strong>{{ phrase('betatransfer_payment_description') }}</strong>
+                </div>
+                <div class="card-body">
+                  <label class="form-label">{{ phrase('betatransfer_description_label') }}</label>
+                  <textarea class="form-control" name="description" rows="5" placeholder="{{ phrase('betatransfer_description_placeholder') }}">{{ settings.description|default('') }}</textarea>
+                  <div class="form-text mt-2">{{ phrase('betatransfer_description_note') }}</div>
+                </div>
+              </div>
             </div>
 
           <div class="col-12 col-lg-6">

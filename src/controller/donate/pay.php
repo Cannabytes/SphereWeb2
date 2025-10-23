@@ -40,6 +40,14 @@ class pay
         $betaTransferDonateActive = plugin::getPluginActive("betaTransferDonate") !== false;
         tpl::addVar("betaTransferDonateActive", $betaTransferDonateActive);
 
+        // Get betaTransferDonate description
+        $betaTransferDescription = '';
+        if ($betaTransferDonateActive) {
+            $settings = plugin::getSetting("betaTransferDonate");
+            $betaTransferDescription = $settings['description'] ?? '';
+        }
+        tpl::addVar("betaTransferDescription", $betaTransferDescription);
+
         tpl::addVar("donate_history_pay_self", donate::donate_history_pay_self());
         tpl::addVar("title", lang::get_phrase(233));
         tpl::addVar("pay_system_default", $donate->getPaySystemDefault());
