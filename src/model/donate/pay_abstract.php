@@ -56,7 +56,7 @@ class pay_abstract {
         return \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate()->get(get_called_class())->getInput($methodName);
     }
 
-    public static function getDescription(): ?array {
+    public static function getDescription(): array|string|null {
         return static::$description ?? null;
     }
 
