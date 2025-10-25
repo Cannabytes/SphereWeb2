@@ -85,8 +85,31 @@ class scannerSystem {
     }
 
     private function getFileCRC32(string $filePath): string|false {
+        $size = @filesize($filePath);
+        if ($size === false) {
+            $logMessage = "[" . date('Y-m-d H:i:s') . "] Failed to get size of file: $filePath\n";
+            file_put_contents('scanner_errors.log', $logMessage, FILE_APPEND);
+            return false;
+        }
+
+        $maxTextSize = 10 * 1024 * 1024; // 10 MB
+
+        if ($size > $maxTextSize) {
+            // Для больших файлов используем hash_file, чтобы избежать загрузки в память
+            $hash = @hash_file('crc32b', $filePath);
+            if ($hash === false) {
+                $logMessage = "[" . date('Y-m-d H:i:s') . "] Failed to hash large file: $filePath (size: $size bytes)\n";
+                file_put_contents('scanner_errors.log', $logMessage, FILE_APPEND);
+                return false;
+            }
+            return $hash;
+        }
+
+        // Для файлов до 10 MB читаем в память и обрабатываем
         $content = @file_get_contents($filePath);
         if ($content === false) {
+            $logMessage = "[" . date('Y-m-d H:i:s') . "] Failed to read file: $filePath\n";
+            file_put_contents('scanner_errors.log', $logMessage, FILE_APPEND);
             return false;
         }
 
@@ -229,6 +252,12 @@ class scannerSystem {
         }
 
         if ($this->isAllowedFile($file)) {
+            $size = $file->getSize();
+            if ($size > 1024 * 1024 * 1024) { // 1 GB
+                $logMessage = "[" . date('Y-m-d H:i:s') . "] Skipping large file: $path (size: $size bytes)\n";
+                file_put_contents('scanner_errors.log', $logMessage, FILE_APPEND);
+                return;
+            }
             $this->result[$path] = $this->getFileCRC32($file->getPathname());
         }
     }
