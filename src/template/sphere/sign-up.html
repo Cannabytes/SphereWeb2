@@ -653,9 +653,12 @@
     }
   </style>
 
+  {{ config().other().getAnalyticsHead()|raw }}
+
 </head>
 
 <body>
+  {{ config().other().getAnalyticsBody()|raw }}
 
   {% include 'notice_toast.html' %}
 

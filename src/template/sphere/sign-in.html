@@ -24,9 +24,12 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="{{template}}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
 
+  {{ config().other().getAnalyticsHead()|raw }}
+
 </head>
 
 <body>
+{{ config().other().getAnalyticsBody()|raw }}
 
 {% include 'notice_toast.html' %}
 
@@ -188,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
   window.get_captcha = get_captcha;
 });
 </script>
-{% endif %}
+{% endif %} 
 
 </body>
 </html>

@@ -54,6 +54,9 @@ class other
     private string $contactAdmin = "";
     private string $balanceNotice = "";
 
+    private string $analyticsHead = "";
+    private string $analyticsBody = "";
+
     private bool $autoUpdate = true;
     private bool $isShow404error = false;
     private bool $isAllowDeleteAccount = true;
@@ -86,6 +89,18 @@ class other
         $this->autoUpdate = filter_var($setting['autoUpdate'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->isShow404error = filter_var($setting['isShow404error'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->isAllowDeleteAccount = filter_var($setting['isAllowDeleteAccount'] ?? true, FILTER_VALIDATE_BOOLEAN);
+        $this->analyticsHead = $setting['analyticsHead'] ?? $this->analyticsHead;
+        $this->analyticsBody = $setting['analyticsBody'] ?? $this->analyticsBody;
+    }
+
+    public function getAnalyticsHead(): string
+    {
+        return $this->analyticsHead;
+    }
+    
+    public function getAnalyticsBody(): string
+    {
+        return $this->analyticsBody;
     }
 
     public function getLinkPrivacyPolicy(): string

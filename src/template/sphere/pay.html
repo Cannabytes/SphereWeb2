@@ -431,9 +431,8 @@
                 <a class="shadow mail-attachment" href="/donate/betatransfer">
                 <blockquote class="blockquote custom-blockquote info mb-0 text-center">
                              <h4 class="fw-normal">{{ phrase('betatransfer_payment_name') }}</h4>
-                             <p class="card-text">{% if betaTransferDescription %}{{ betaTransferDescription }}{% else %}{{ phrase('betatransfer_payment_description') }}{% endif %}</p>
+                             <p class="card-text">{% if betaTransferDescription %}{{ betaTransferDescription|raw }}{% else %}{{ phrase('betatransfer_payment_description') }}{% endif %}</p>
                 </blockquote>
-                  
                 </a>
                 {% endif %}
     

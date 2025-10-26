@@ -26,9 +26,15 @@
 	{% include "favicon.html" %}
 	{% include "config.html" %}
 	{% include "libs-in-head.html" %}
+
+	{{ config().other().getAnalyticsHead()|raw }}
+
 </head>
 
 <body class="body">
+	
+	{{ config().other().getAnalyticsBody()|raw }}
+
 	{% include "preload.html" %}
 	{% include "videobg.html" %}
 

@@ -84,9 +84,14 @@
     }
   </style>
 
+  {{ config().other().getAnalyticsHead()|raw }}
+
 </head>
 
 <body class="has-video-bg">
+
+  {{ config().other().getAnalyticsBody()|raw }}
+
   {% set s = config().palette().getStyleFileConfig() %}
   {% if s is not null and s.video is defined and s.video %}
     {{ s.video_to_body|raw }}
@@ -139,7 +144,7 @@
     });
   </script>
   {% block js %}{% endblock %}
-
+  
   <!-- Load: {{pointTime}} sec. / Query count: {{get_db_count_request()}} / Sphere Api Request: {{get_sphere_api_count_request()}} -->
 </body>
 

@@ -1220,8 +1220,31 @@
                                     </div>
                                 </li>
 
-                            </ul>
+                                <li class="list-group-item">
+                                    <div class="col-xl-12">
+                                        <p class="fs-14 mb-1 fw-semibold">Скрипты аналитики / Custom scripts</p>
+                                        <p class="fs-12 mb-0 text-muted">Добавьте сюда JS-код для вставки в &lt;head&gt; и перед закрывающим &lt;/body&gt;.</p>
+                                        <p class="fs-12 text-muted mt-2">
+                                            Примеры: Google Analytics / Google Tag Manager, Яндекс.Метрика, пиксели рекламы или другие внешние скрипты.<br>
+                                            Вставляйте полный фрагмент (включая &lt;script&gt; теги) — он будет добавлен как есть.
+                                        </p>
 
+                                        <div class="mb-3 mt-3">
+                                            <label class="form-label">Head</label>
+                                            <textarea id="analyticsHead" class="form-control" rows="6" placeholder="Код для head (например Google Tag)">{{ config().other().getAnalyticsHead()|raw }}</textarea>
+                                            <small class="text-muted">Пример: &lt;script&gt;/* Google Tag */&lt;/script&gt;</small>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Body</label>
+                                            <textarea id="analyticsBody" class="form-control" rows="6" placeholder="Код для body (например noscript или инициализация)">{{ config().other().getAnalyticsBody()|raw }}</textarea>
+                                            <small class="text-muted">Пример: &lt;noscript&gt;&lt;iframe src="..."&gt;&lt;/iframe&gt;&lt;/noscript&gt;</small>
+                                        </div>
+
+                                    </div>
+                                </li>
+
+                            </ul>
 
                             <div class="border-top border-block-start-dashed d-sm-flex justify-content-end">
                                 <span id="saveOther" class="btn btn-success-light m-1 btn-sm">{{ phrase(271) }} <i

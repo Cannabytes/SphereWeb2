@@ -1465,6 +1465,50 @@ class forum
      * @param string $content HTML-контент
      * @return array Массив путей к изображениям для удаления
      */
+    private function normalizeForumAttachmentFilename(string $path): ?string
+    {
+        if (!str_starts_with($path, '/uploads/forum/')) {
+            return null;
+        }
+
+        $filename = basename($path);
+        if ($filename === '') {
+            return null;
+        }
+
+        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        if (!in_array($extension, ['png', 'webp', 'jpg', 'jpeg', 'gif'], true)) {
+            return null;
+        }
+
+        $base = pathinfo($filename, PATHINFO_FILENAME);
+        if ($base === '') {
+            return null;
+        }
+
+        if (str_ends_with(strtolower($base), '_thumb')) {
+            $base = substr($base, 0, -6);
+        }
+
+        if ($base === '') {
+            return null;
+        }
+
+        return $base . '.' . $extension;
+    }
+
+    private function buildForumThumbnailName(string $filename): string
+    {
+        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        if ($extension === '') {
+            $extension = 'webp';
+        }
+
+        $base = pathinfo($filename, PATHINFO_FILENAME);
+
+        return $base . '_thumb.' . $extension;
+    }
+
     private function extractImagesToDelete(string $content): array {
         $filesToDelete = [];
 
@@ -1488,17 +1532,11 @@ class forum
         // Получаем все изображения
         $images = $dom->getElementsByTagName('img');
 
-        // Паттерн для поиска изображений форума
-        $pattern = '/\/uploads\/forum\/(\d+)(?:_thumb)?\.png/i';
-
         foreach ($images as $img) {
             $src = $img->getAttribute('src');
-
-            // Проверяем, что путь начинается с /uploads/forum/
-            if (str_starts_with($src, '/uploads/forum/')) {
-                if (preg_match($pattern, $src, $match)) {
-                    $filesToDelete[] = $match[1] . '.png';
-                }
+            $filename = $this->normalizeForumAttachmentFilename($src);
+            if ($filename !== null) {
+                $filesToDelete[] = $filename;
             }
         }
 
@@ -1512,14 +1550,19 @@ class forum
      * @param string $filename Имя файла
      */
     private function deleteForumFiles(string $filename): void {
-        $originalPath = fileSys::get_dir('/uploads/forum/' . $filename);
-        $thumbPath = fileSys::get_dir('/uploads/forum/' .
-            pathinfo($filename, PATHINFO_FILENAME) . '_thumb.png');
+        $filename = basename($filename);
+        if ($filename === '') {
+            return;
+        }
 
-        if (file_exists($originalPath)) {
+        $originalPath = fileSys::get_dir('/uploads/forum/' . $filename);
+        $thumbFilename = $this->buildForumThumbnailName($filename);
+        $thumbPath = fileSys::get_dir('/uploads/forum/' . $thumbFilename);
+
+        if (is_file($originalPath)) {
             unlink($originalPath);
         }
-        if (file_exists($thumbPath)) {
+        if (is_file($thumbPath)) {
             unlink($thumbPath);
         }
     }
@@ -2022,10 +2065,9 @@ class forum
 
             foreach ($images as $img) {
                 $src = $img->getAttribute('src');
-                if (str_starts_with($src, '/uploads/forum/')) {
-                    if (preg_match('/\/uploads\/forum\/(\d+)(?:_thumb)?\.png/i', $src, $match)) {
-                        $filesToDelete[] = $match[1] . '.png';
-                    }
+                $filename = $this->normalizeForumAttachmentFilename($src);
+                if ($filename !== null) {
+                    $filesToDelete[] = $filename;
                 }
             }
         }
@@ -2046,16 +2088,7 @@ class forum
 
         // Удаляем физические файлы
         foreach ($filesToDelete as $filename) {
-            $originalPath = fileSys::get_dir('/uploads/forum/' . $filename);
-            $thumbPath = fileSys::get_dir('/uploads/forum/' .
-                pathinfo($filename, PATHINFO_FILENAME) . '_thumb.png');
-
-            if (file_exists($originalPath)) {
-                unlink($originalPath);
-            }
-            if (file_exists($thumbPath)) {
-                unlink($thumbPath);
-            }
+            $this->deleteForumFiles($filename);
         }
 
         // Удаляем записи из БД, используя полные имена файлов
@@ -2499,7 +2532,6 @@ class forum
             if (!user::self()->isAuth()) {
                 throw new Exception("Необходимо авторизоваться");
             }
-            $manager = ImageManager::gd();
 
             // Поддержим несколько возможных ключей (filepond, image) или первый файл в $_FILES
             if (isset($_FILES['filepond'])) {
@@ -2539,7 +2571,9 @@ class forum
             // Создаем директорию если её нет
             $uploadDir = fileSys::get_dir('/uploads/forum/');
             if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
+                if (!mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
+                    throw new Exception('Не удалось создать каталог для загрузок');
+                }
             }
 
             // Обработка первого файла
@@ -2547,42 +2581,100 @@ class forum
             $error = is_array($files['error']) ? $files['error'][0] : $files['error'];
             $originalName = is_array($files['name']) ? $files['name'][0] : $files['name'];
             $originalSize = is_array($files['size']) ? $files['size'][0] : $files['size'];
-            $originalType = is_array($files['type']) ? $files['type'][0] : $files['type'];
 
             if ($error !== UPLOAD_ERR_OK) {
                 throw new Exception("Ошибка при загрузке файла");
             }
 
-            // Читаем изображение
-            $image = $manager->read($tmpName);
-
-            // Создаем вебп-иконку 32x32
-            $icon = $image->scale(width: 32, height: 32);
-
-            // Генерируем уникальное имя webp
-            $filename = mt_rand(1, PHP_INT_MAX) . '.webp';
-            $fullPath = $uploadDir . $filename;
-
-            // Попытка сохранить как webp с качеством 80
-            $savedMime = 'image/webp';
-            try {
-                // Попытка сохранить прямо через Image::save (format webp)
-                $icon->save($fullPath, 80, 'webp');
-                $savedMime = 'image/webp';
-            } catch (\Throwable $e) {
-                // Фаллбек: сохраняем как PNG
-                $filename = pathinfo($filename, PATHINFO_FILENAME) . '.png';
-                $fullPath = $uploadDir . $filename;
-                $icon->save($fullPath, 90, 'png');
-                $savedMime = 'image/png';
+            if ($originalSize <= 0) {
+                throw new Exception("Файл повреждён или пустой");
             }
 
-            // Обновим размер
-            $savedSize = filesize($fullPath);
+            $maxUploadSize = 5 * 1024 * 1024; // 5MB, совпадает с ограничением FilePond
+            if ($originalSize > $maxUploadSize) {
+                throw new Exception('Размер файла превышает допустимый лимит в 5MB');
+            }
 
-            // Записываем информацию в базу
-            sql::run(
-                "INSERT INTO forum_attachments SET 
+            $imageInfo = @getimagesize($tmpName);
+            if (!$imageInfo) {
+                throw new Exception('Не удалось прочитать изображение');
+            }
+
+            $allowedMimes = [
+                'image/jpeg',
+                'image/png',
+                'image/webp',
+                'image/gif'
+            ];
+
+            $detectedMime = $imageInfo['mime'] ?? '';
+            if (!in_array($detectedMime, $allowedMimes, true)) {
+                throw new Exception('Неподдерживаемый формат изображения');
+            }
+
+            $manager = ImageManager::gd();
+            $image = $manager->read($tmpName);
+
+            $width = (int) $image->width();
+            $height = (int) $image->height();
+
+            if ($width < 1 || $height < 1) {
+                throw new Exception('Некорректные размеры изображения');
+            }
+
+            $maxDimension = 8000;
+            if ($width > $maxDimension || $height > $maxDimension) {
+                throw new Exception('Изображение слишком большое по размеру');
+            }
+
+            $safeOriginalName = trim((string)$originalName);
+            $safeOriginalName = basename($safeOriginalName);
+            $safeOriginalName = preg_replace('/[\r\n\t]+/', ' ', $safeOriginalName);
+            if ($safeOriginalName === '') {
+                $safeOriginalName = 'image.webp';
+            }
+            $safeOriginalName = mb_substr($safeOriginalName, 0, 255);
+
+            $basename = (string) random_int(100000000, PHP_INT_MAX);
+            $extension = 'webp';
+            $savedMime = 'image/webp';
+            $filename = $basename . '.' . $extension;
+            $thumbnailFilename = $basename . '_thumb.' . $extension;
+
+            $originalPath = $uploadDir . $filename;
+            $thumbnailPath = $uploadDir . $thumbnailFilename;
+
+            $savedPaths = [];
+
+            try {
+                try {
+                    // Сохраняем оригинал в webp без изменения размера
+                    $image->save($originalPath, 90, $extension);
+                } catch (\Throwable $saveException) {
+                    // Падение на webp - пробуем PNG
+                    $extension = 'png';
+                    $savedMime = 'image/png';
+                    $filename = $basename . '.' . $extension;
+                    $thumbnailFilename = $basename . '_thumb.' . $extension;
+                    $originalPath = $uploadDir . $filename;
+                    $thumbnailPath = $uploadDir . $thumbnailFilename;
+
+                    $image = $manager->read($tmpName);
+                    $image->save($originalPath, 90, $extension);
+                }
+                $savedPaths[] = $originalPath;
+
+                // Создаём миниатюру, пропорционально уменьшенную до 200px по большей стороне
+                $thumbnailImage = $manager->read($tmpName)->scaleDown(width: 200, height: 200);
+                $thumbWidth = (int) $thumbnailImage->width();
+                $thumbHeight = (int) $thumbnailImage->height();
+                $thumbnailImage->save($thumbnailPath, 90, $extension);
+                $savedPaths[] = $thumbnailPath;
+
+                $savedSize = filesize($originalPath) ?: $originalSize;
+
+                sql::run(
+                    "INSERT INTO forum_attachments SET 
                 post_id = ?,
                 user_id = ?,
                 filename = ?,
@@ -2590,30 +2682,42 @@ class forum
                 file_size = ?,
                 mime_type = ?,
                 created_at = ?",
-                [
-                    0,
-                    user::self()->getId(),
-                    $filename,
-                    $originalName,
-                    $savedSize,
-                    $savedMime,
-                    time::mysql()
-                ]
-            );
+                    [
+                        0,
+                        user::self()->getId(),
+                        $filename,
+                        $safeOriginalName,
+                        $savedSize,
+                        $savedMime,
+                        time::mysql()
+                    ]
+                );
 
-            $attachmentId = sql::lastInsertId();
+                $attachmentId = sql::lastInsertId();
 
-            // Возвращаем результат
-            echo json_encode([
-                'success' => true,
-                'file' => [
-                    'id' => $attachmentId,
-                    'url' => '/uploads/forum/' . $filename,
-                    'thumbnail' => '/uploads/forum/' . $filename,
-                    'name' => $originalName
-                ]
-            ]);
-            exit;
+                echo json_encode([
+                    'success' => true,
+                    'file' => [
+                        'id' => $attachmentId,
+                        'url' => '/uploads/forum/' . $filename,
+                        'thumbnail' => '/uploads/forum/' . $thumbnailFilename,
+                        'name' => $safeOriginalName,
+                        'mime' => $savedMime,
+                        'width' => $width,
+                        'height' => $height,
+                        'thumbnailWidth' => $thumbWidth,
+                        'thumbnailHeight' => $thumbHeight
+                    ]
+                ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                exit;
+            } catch (Exception $innerException) {
+                foreach ($savedPaths as $path) {
+                    if ($path && file_exists($path)) {
+                        unlink($path);
+                    }
+                }
+                throw $innerException;
+            }
 
         } catch (Exception $e) {
             http_response_code(400);
