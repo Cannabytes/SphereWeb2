@@ -303,7 +303,8 @@
                     {% set user = getUser(post.getUserId()) %}
 
                     {# Получаем инфу о клане пользователя (если вступил) #}
-                    {% if user.getVar('clanId').val %}
+					{% set clan = null %}
+                    {% if user.getVar('clanId').val %} 
                     {% set clan = getForumClanInfo( user.getVar('clanId').val ) %}
                     {% endif %}
 
