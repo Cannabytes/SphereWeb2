@@ -46,11 +46,7 @@ $routes = [
             $connection = new XenForoConnection($config);
             $connection->connect();
 
-            // БЫСТРЫЙ РЕЖИМ (true) - в 10-15 раз быстрее, без загрузки изображений
-            // ПОЛНЫЙ РЕЖИМ (false) - медленнее, но с загрузкой изображений сразу
-            $fastMode = isset($_GET['fast_mode']) && $_GET['fast_mode'] === '1';
-            
-            $importer = new StreamingImporter($connection, $fastMode);
+            $importer = new StreamingImporter($connection);
             $importer->runStreamingImport($options);
         },
     ],

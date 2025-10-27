@@ -548,8 +548,7 @@ class BBCodeParser
      */
     private function downloadImage(string $url): ?array
     {
-        error_log("BBCodeParser: Attempting to download image: {$url}");
-        
+        return null;
         // Проверяем, не загружали ли мы уже это изображение
         if (isset($this->downloadedImages[$url])) {
             error_log("BBCodeParser: Image already downloaded (cached): {$url}");

@@ -167,8 +167,8 @@ class forum
                 redirect::location("/forum");
                 return;
             }
-
             $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
             $totalPages = $this->getTotalPages($topicId);
 
             if ($currentPage <= 0 || $currentPage > $totalPages) {

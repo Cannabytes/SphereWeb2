@@ -168,7 +168,7 @@ class StreamingImporter
                     } else {
                         $passwordHash = $this->convertXenForoPassword($xfUser['auth_data']);
                         sql::run("
-                            INSERT INTO users (email, password, name, date_create, date_active)
+                            INSERT INTO users (email, password, name, date_create, last_activity)
                             VALUES (?, ?, ?, ?, ?)
                         ", [
                             $xfUser['email'],
