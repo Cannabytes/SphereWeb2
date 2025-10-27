@@ -157,7 +157,7 @@ class serverStatus
             $this->gameServer = true;
         }
 
-        $this->online = $online;
+        $this->online = (int)$online;
     }
 
     public function isEnable(): bool
