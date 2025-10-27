@@ -53,6 +53,10 @@ const ForumUtils = (function() {
     }
 
     function processParagraphImages(paragraph) {
+        // Если параграф уже содержит теги <img>, ничего не меняем, чтобы не нарушать размещение
+        if (paragraph.querySelector('img')) {
+            return;
+        }
         // Получаем текстовое содержимое параграфа
         const content = paragraph.innerHTML;
 

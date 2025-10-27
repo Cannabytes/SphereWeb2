@@ -147,38 +147,22 @@ window.ForumEditor = (function() {
                 return;
             }
 
-            const anchors = [];
+            postGallerySequence += 1;
+            const galleryId = `gallery${postGallerySequence}`;
+
             images.forEach(img => {
                 const anchor = ensureAnchorForImage(img);
                 if (!anchor) {
                     return;
                 }
-                if (!anchors.includes(anchor)) {
-                    anchors.push(anchor);
-                }
-            });
-
-            if (!anchors.length) {
-                return;
-            }
-
-            postGallerySequence += 1;
-            const galleryId = `gallery${postGallerySequence}`;
-            const row = document.createElement('div');
-            row.className = 'row g-3 forum-gallery-row';
-            row.setAttribute('data-gallery-id', galleryId);
-
-            anchors.forEach(anchor => {
-                const img = anchor.querySelector('img');
-                const previousParent = anchor.parentElement;
 
                 mergeClasses(anchor, ['glightbox', 'forum-image']);
                 anchor.setAttribute('data-gallery', galleryId);
 
                 const originalUrl = anchor.getAttribute('data-original-url') ||
-                    (img && img.getAttribute('data-original-url')) ||
+                    img.getAttribute('data-original-url') ||
                     anchor.getAttribute('href') ||
-                    (img && img.getAttribute('src')) ||
+                    img.getAttribute('src') ||
                     '#';
 
                 if (originalUrl && originalUrl !== '#') {
@@ -186,8 +170,7 @@ window.ForumEditor = (function() {
                     anchor.setAttribute('data-original-url', originalUrl);
                 }
 
-                const preferredImageType = anchor.getAttribute('data-image-type') || (img && img.getAttribute('data-image-type')) || 'original';
-                const isThumbnail = preferredImageType === 'thumbnail';
+                const preferredImageType = anchor.getAttribute('data-image-type') || img.getAttribute('data-image-type') || 'original';
 
                 if (img) {
                     mergeClasses(img, ['img-fluid', 'rounded']);
@@ -201,21 +184,7 @@ window.ForumEditor = (function() {
                 }
 
                 anchor.setAttribute('data-image-type', preferredImageType);
-
-                const col = document.createElement('div');
-                col.className = isThumbnail
-                    ? 'col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12 mb-3 forum-gallery-col'
-                    : 'col-12 mb-3 forum-gallery-col';
-                col.appendChild(anchor);
-                row.appendChild(col);
-
-                if (previousParent && previousParent !== row && previousParent !== post) {
-                    removeNodeIfEmpty(previousParent);
-                }
             });
-
-            post.appendChild(row);
-            removeEmptyTextNodes(post);
 
             post.dataset.galleryPrepared = 'true';
         });
