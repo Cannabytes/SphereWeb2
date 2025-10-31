@@ -6,16 +6,139 @@
 
 <div class="container-fluid">
 
+    <!-- Summary Cards Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card custom-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-top">
+                        <div class="me-3">
+                            <span class="avatar avatar-md bg-primary-transparent">
+                                <i class="ti ti-eye fs-18"></i>
+                            </span>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="d-flex mb-1 align-items-top justify-content-between">
+                                <h6 class="mb-0">Всего просмотров</h6>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between">
+                                <div>
+                                    <h4 class="fw-semibold mb-0">{{ totalStats.total_views|number_format(0, '.', ' ') }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card custom-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-top">
+                        <div class="me-3">
+                            <span class="avatar avatar-md bg-success-transparent">
+                                <i class="ti ti-users fs-18"></i>
+                            </span>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="d-flex mb-1 align-items-top justify-content-between">
+                                <h6 class="mb-0">Регистраций</h6>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between">
+                                <div>
+                                    <h4 class="fw-semibold mb-0">{{ totalStats.total_users|number_format(0, '.', ' ') }}</h4>
+                                    <span class="text-muted fs-11">CR: {{ totalStats.avg_conversion }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card custom-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-top">
+                        <div class="me-3">
+                            <span class="avatar avatar-md bg-warning-transparent">
+                                <i class="ti ti-coin fs-18"></i>
+                            </span>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="d-flex mb-1 align-items-top justify-content-between">
+                                <h6 class="mb-0">Пожертвований</h6>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between">
+                                <div>
+                                    <h4 class="fw-semibold mb-0">{{ totalStats.total_donations|number_format(0, '.', ' ') }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card custom-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-top">
+                        <div class="me-3">
+                            <span class="avatar avatar-md bg-info-transparent">
+                                <i class="ti ti-source fs-18"></i>
+                            </span>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="d-flex mb-1 align-items-top justify-content-between">
+                                <h6 class="mb-0">Источников</h6>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between">
+                                <div>
+                                    <h4 class="fw-semibold mb-0">{{ totalStats.unique_sources }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time Series Chart -->
     <div class="row">
         <div class="col-xl-12">
             <div class="card custom-card">
-                <div class="card-header">
-                    <a href="/admin" class="avatar border text-muted me-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
-                    </a>
+                <div class="card-header justify-content-between">
                     <div class="card-title">
-                        {{ phrase('referral_sources') }}
+                        Динамика переходов по дням
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="me-2">
+                            <input type="text" class="form-control form-control-sm" id="dateRangeFilter" placeholder="Выберите период">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="echart-timeline" style="height: 350px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Data Table and Charts Row -->
+    <div class="row">
+        <div class="col-xl-8">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <a href="/admin" class="avatar border text-muted me-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
+                        </a>
+                        <div class="card-title mb-0">
+                            {{ phrase('referral_sources') }}
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <input type="text" class="form-control form-control-sm" id="tableDateFilter" placeholder="Фильтр по дате" style="width: 200px;">
                     </div>
                 </div>
                 <div class="card-body">
@@ -23,23 +146,52 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xl-12">
+        <div class="col-xl-4">
             <div class="card custom-card">
                 <div class="card-header">
-                    <div class="card-title">{{ phrase('transition_diagram') }}
-</div>
+                    <div class="card-title">Визуализация источников</div>
                 </div>
                 <div class="card-body">
-                    <div id="echart-pie" class="echart-charts"></div>
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" role="tab" href="#pie-tab" aria-selected="true">Круговая</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" role="tab" href="#bar-tab" aria-selected="false">Столбчатая</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" role="tab" href="#treemap-tab" aria-selected="false">Древовидная</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane show active" id="pie-tab" role="tabpanel">
+                            <div id="echart-pie" style="height: 400px;"></div>
+                        </div>
+                        <div class="tab-pane" id="bar-tab" role="tabpanel">
+                            <div id="echart-bar" style="height: 400px;"></div>
+                        </div>
+                        <div class="tab-pane" id="treemap-tab" role="tabpanel">
+                            <div id="echart-treemap" style="height: 400px;"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-
+    <!-- Top Performers -->
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">Топ источников по конверсии</div>
+                </div>
+                <div class="card-body">
+                    <div id="echart-conversion" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
 
@@ -51,154 +203,647 @@
 
 {% block css %}
 <link rel="stylesheet" href="{{template}}/assets/libs/gridjs/theme/mermaid.min.css">
-
+<link rel="stylesheet" href="{{template}}/assets/libs/flatpickr/flatpickr.min.css">
 {% endblock %}
 
 
 {% block js %}
 <script src="{{template}}/assets/libs/gridjs/gridjs.umd.js"></script>
 <script src="{{template}}/assets/libs/echarts/echarts.min.js"></script>
-
+<script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>
 
 <script>
-    new gridjs.Grid({
-            pagination: true,
-            search: true,
-            sort: true,
-            columns: [
-                {
-                    name: "Refferer",
-                    width: "250px",
-                    formatter: (cell) => gridjs.html(cell)
-                },
-                {
-                    name: "Views",
-                    width: "150px",
-                    sort: {
-                        compare: (a, b) => parseInt(a) - parseInt(b) // Сортируем как числа
-                    }
-                },
-                {
-                    name: "Registration",
-                    width: "100px",
-                    sort: {
-                        compare: (a, b) => parseInt(a) - parseInt(b) // Аналогично
-                    }
-                },
-                {
-                    name: "Donate",
-                    width: "100px",
-                    sort: {
-                        compare: (a, b) => parseFloat(a) - parseFloat(b) // Если вдруг есть дробные
-                    }
+    // Данные
+    var getReferrers = {{ getReferrers|json_encode|raw }};
+
+    var dailyStats = {{ dailyStats|raw }};
+    var dailyStatsBySources = {{ dailyStatsBySources|raw }};
+
+    // Инициализация таблицы Grid.js с расширенными колонками
+    var gridInstance = new gridjs.Grid({
+        pagination: {
+            limit: 10
+        },
+        search: true,
+        sort: true,
+        columns: [
+            {
+                name: "Источник",
+                width: "200px",
+                formatter: (cell) => gridjs.html(cell)
+            },
+            {
+                name: "Просмотры",
+                width: "100px",
+                sort: {
+                    compare: (a, b) => parseInt(a) - parseInt(b)
                 }
-            ],
-            data: [
-                {% for referrer in getReferrers %}
-            ['<a href="/admin/statistic/http/referral/{{ referrer.referer }}">{{ referrer.referer }}</a>', "{{ referrer.views }}", "{{ referrer.user_count ?? 0 }}", '{{ referrer.total_donations ?? "0" }}'],
-        {% endfor %}
-    ],
+            },
+            {
+                name: "Регистрации",
+                width: "100px",
+                sort: {
+                    compare: (a, b) => parseInt(a) - parseInt(b)
+                }
+            },
+            {
+                name: "CR %",
+                width: "80px",
+                sort: {
+                    compare: (a, b) => parseFloat(a) - parseFloat(b)
+                },
+                formatter: (cell) => gridjs.html(`<span class="badge bg-${parseFloat(cell) > 5 ? 'success' : parseFloat(cell) > 2 ? 'warning' : 'secondary'}">${cell}%</span>`)
+            },
+            {
+                name: "Донаты",
+                width: "100px",
+                sort: {
+                    compare: (a, b) => parseFloat(a) - parseFloat(b)
+                }
+            },
+            {
+                name: "Ср. донат",
+                width: "100px",
+                sort: {
+                    compare: (a, b) => parseFloat(a) - parseFloat(b)
+                }
+            }
+        ],
+        data: getReferrers.map(ref => [
+            `<a href="/admin/statistic/http/referral/${ref.referer}">${ref.referer}</a>`,
+            ref.views,
+            ref.user_count,
+            ref.conversion_rate,
+            ref.total_donations.toFixed(2),
+            ref.avg_donation.toFixed(2)
+        ]),
     }).render(document.getElementById("grid-sorting"));
 
-
-    var dom = document.getElementById('echart-pie');
-    var myChart = echarts.init(dom, null, {
-        renderer: 'canvas',
-        useDirtyRect: false
-    });
-    var app = {};
-    var option;
-
-    // Пример данных — замени на реальные вызовы getReferrers
-    var getReferrers = [
-        {% for referrer in getReferrers %}
-    {
-        referer: "{{referrer.referer}}",
-            views: {{referrer.views ?? 0}},
-        total_donations: {{referrer.total_donations ?? 0}},
-        user_count: {{referrer.user_count ?? 0}}
-    },
-    {% endfor %}
+    // График временной линии (Timeline Chart) - многолинейный
+    var timelineChart = echarts.init(document.getElementById('echart-timeline'));
+    
+    // Получаем все уникальные даты
+    var allDates = Object.keys(dailyStats).sort();
+    
+    // Цвета для источников
+    var sourceColors = [
+        "#6c5ffc", "#05c3fb", "#f7b731", "#e82646", "#49b6f5",
+        "#9b59b6", "#34495e", "#95a5a6", "#16a085", "#e74c3c"
     ];
+    
+    // Создаем серии для каждого источника
+    var series = [];
+    var legendData = [];
+    var sourceIndex = 0;
+    
+    for (var sourceName in dailyStatsBySources) {
+        if (dailyStatsBySources.hasOwnProperty(sourceName)) {
+            var sourceData = dailyStatsBySources[sourceName];
+            
+            // Создаем массив данных для всех дат
+            var seriesData = allDates.map(date => sourceData[date] || 0);
+            
+            // Добавляем серию
+            series.push({
+                name: sourceName,
+                type: 'line',
+                smooth: true,
+                data: seriesData,
+                lineStyle: {
+                    color: sourceColors[sourceIndex % sourceColors.length],
+                    width: 2
+                },
+                itemStyle: {
+                    color: sourceColors[sourceIndex % sourceColors.length]
+                },
+                emphasis: {
+                    focus: 'series'
+                }
+            });
+            
+            legendData.push(sourceName);
+            sourceIndex++;
+        }
+    }
 
-    // Получаем топ-10 рефереров
+    var timelineOption = {
+        title: {
+            text: '',
+            textStyle: { color: '#777' }
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                label: {
+                    backgroundColor: '#6a7985'
+                }
+            }
+        },
+        legend: {
+            data: legendData,
+            textStyle: { color: '#777' },
+            type: 'scroll',
+            bottom: 0
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '15%',
+            top: '5%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: allDates,
+            axisLabel: {
+                rotate: 45,
+                color: '#777'
+            }
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: { color: '#777' }
+        },
+        series: series
+    };
+
+    timelineChart.setOption(timelineOption);
+
+    // Подготовка данных для всех диаграмм
     var topReferrers = getReferrers.slice(0, 15);
-    // Считаем общее количество для "Прочее"
-    var otherData = getReferrers.slice(10);
+    var otherData = getReferrers.slice(15);
     var otherCount = otherData.reduce((sum, ref) => sum + ref.views, 0);
     var otherDonations = otherData.reduce((sum, ref) => sum + ref.total_donations, 0);
     var otherUserCount = otherData.reduce((sum, ref) => sum + ref.user_count, 0);
 
-    // Формируем данные для графика
-    var data = topReferrers.map(referrer => ({
+    var pieData = topReferrers.map(referrer => ({
         value: referrer.views ?? 0,
-        name: referrer.referer.length > 20 ? referrer.referer.substring(0, 20) + '...' : referrer.referer,
+        name: referrer.referer,
+        fullName: referrer.referer,
         total_donations: referrer.total_donations ?? 0,
         user_count: referrer.user_count ?? 0
     }));
 
-    // Добавляем "Прочее", если есть остаток
     if (otherCount > 0) {
-        data.push({
+        pieData.push({
             value: otherCount,
-            name: 'Other',
+            name: 'Другие',
+            fullName: 'Другие источники',
             total_donations: otherDonations,
             user_count: otherUserCount
         });
     }
 
-    option = {
+    // 1. Круговая диаграмма (Pie Chart) - БЕЗ легенды слева
+    var pieChart = echarts.init(document.getElementById('echart-pie'));
+    var pieOption = {
         tooltip: {
             trigger: 'item',
             formatter: function (params) {
-                // Используем параметры из data для отображения
-                return `
-                <strong>${params.seriesName}</strong><br/>
-                ${params.name}: ${params.value} (${params.percent}%)<br/>
-                Donations: ${params.data.total_donations ?? 0}<br/>
-                Users: ${params.data.user_count ?? 0}
-            `;
-            }
-        },
-        legend: {
-            orient: 'vertical',
-            left: 'left',
-            textStyle: {
-                color: '#777'
+                return `<strong>${params.data.fullName}</strong><br/>
+                    Просмотры: ${params.value} (${params.percent}%)<br/>
+                    Донаты: ${params.data.total_donations ?? 0}<br/>
+                    Пользователи: ${params.data.user_count ?? 0}`;
             }
         },
         series: [
             {
-                name: 'Info',
+                name: 'Источники',
                 type: 'pie',
-                radius: '100%',
-                data: data,
+                radius: ['30%', '70%'],
+                center: ['50%', '50%'],
+                avoidLabelOverlap: true,
+                itemStyle: {
+                    borderRadius: 10,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                },
+                label: {
+                    show: true,
+                    formatter: function(params) {
+                        if (params.percent > 3) {
+                            return params.data.name.length > 12 
+                                ? params.data.name.substring(0, 12) + '...' 
+                                : params.data.name;
+                        }
+                        return '';
+                    },
+                    color: '#333',
+                    fontSize: 11
+                },
                 emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: 14,
+                        fontWeight: 'bold'
+                    },
                     itemStyle: {
                         shadowBlur: 10,
                         shadowOffsetX: 0,
                         shadowColor: 'rgba(0, 0, 0, 0.5)'
                     }
-                }
+                },
+                labelLine: {
+                    show: true,
+                    length: 10,
+                    length2: 10
+                },
+                data: pieData
             }
         ],
         color: [
             "#6c5ffc", "#05c3fb", "#f7b731", "#e82646", "#49b6f5",
             "#9b59b6", "#34495e", "#95a5a6", "#16a085", "#e74c3c",
-            "#2ecc71", "#f39c12", "#8e44ad", "#d35400", "#7f8c8d",
-            "#29b535", "#c0392b", "#f1c40f", "#c2bc36", "#868337"
+            "#2ecc71", "#f39c12", "#8e44ad", "#d35400", "#7f8c8d", "#95a5a6"
+        ]
+    };
+    pieChart.setOption(pieOption);
+
+    // 2. Горизонтальная столбчатая диаграмма (Bar Chart)
+    var barChart = echarts.init(document.getElementById('echart-bar'));
+    var barData = topReferrers.map(ref => ({
+        name: ref.referer,
+        value: ref.views,
+        donations: ref.total_donations,
+        users: ref.user_count
+    }));
+    
+    if (otherCount > 0) {
+        barData.push({
+            name: 'Другие',
+            value: otherCount,
+            donations: otherDonations,
+            users: otherUserCount
+        });
+    }
+
+    var barOption = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
+            formatter: function(params) {
+                var param = params[0];
+                return `<strong>${param.name}</strong><br/>
+                    Просмотры: ${param.value}<br/>
+                    Донаты: ${param.data.donations}<br/>
+                    Пользователи: ${param.data.users}`;
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            top: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            axisLabel: { color: '#777' }
+        },
+        yAxis: {
+            type: 'category',
+            data: barData.map(item => item.name.length > 20 ? item.name.substring(0, 20) + '...' : item.name).reverse(),
+            axisLabel: { 
+                color: '#777',
+                fontSize: 11
+            }
+        },
+        series: [
+            {
+                type: 'bar',
+                data: barData.reverse(),
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                        { offset: 0, color: '#6c5ffc' },
+                        { offset: 1, color: '#05c3fb' }
+                    ]),
+                    borderRadius: [0, 5, 5, 0]
+                },
+                label: {
+                    show: true,
+                    position: 'right',
+                    formatter: '{c}',
+                    color: '#777',
+                    fontSize: 10
+                }
+            }
+        ]
+    };
+    barChart.setOption(barOption);
+
+    // 3. Древовидная диаграмма (Treemap)
+    var treemapChart = echarts.init(document.getElementById('echart-treemap'));
+    var treemapData = topReferrers.map(referrer => ({
+        name: referrer.referer,
+        value: referrer.views,
+        donations: referrer.total_donations,
+        users: referrer.user_count
+    }));
+
+    if (otherCount > 0) {
+        treemapData.push({
+            name: 'Другие',
+            value: otherCount,
+            donations: otherDonations,
+            users: otherUserCount
+        });
+    }
+
+    var treemapOption = {
+        tooltip: {
+            formatter: function(params) {
+                return `<strong>${params.name}</strong><br/>
+                    Просмотры: ${params.value}<br/>
+                    Донаты: ${params.data.donations ?? 0}<br/>
+                    Пользователи: ${params.data.users ?? 0}`;
+            }
+        },
+        series: [
+            {
+                type: 'treemap',
+                data: treemapData,
+                width: '100%',
+                height: '100%',
+                roam: false,
+                nodeClick: false,
+                breadcrumb: { show: false },
+                label: {
+                    show: true,
+                    formatter: function(params) {
+                        return params.name + '\n' + params.value;
+                    },
+                    fontSize: 12
+                },
+                upperLabel: {
+                    show: false
+                },
+                itemStyle: {
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    gapWidth: 2
+                },
+                levels: [
+                    {
+                        itemStyle: {
+                            borderWidth: 0,
+                            gapWidth: 5
+                        }
+                    },
+                    {
+                        itemStyle: {
+                            borderWidth: 2,
+                            gapWidth: 1
+                        },
+                        colorSaturation: [0.35, 0.5]
+                    }
+                ]
+            }
+        ],
+        color: [
+            "#6c5ffc", "#05c3fb", "#f7b731", "#e82646", "#49b6f5",
+            "#9b59b6", "#34495e", "#95a5a6", "#16a085", "#e74c3c",
+            "#2ecc71", "#f39c12", "#8e44ad", "#d35400", "#7f8c8d", "#95a5a6"
+        ]
+    };
+    treemapChart.setOption(treemapOption);
+
+    // График конверсии (Conversion Chart)
+    var conversionChart = echarts.init(document.getElementById('echart-conversion'));
+    var topByConversion = getReferrers
+        .filter(ref => ref.user_count > 0)
+        .sort((a, b) => b.conversion_rate - a.conversion_rate)
+        .slice(0, 10);
+
+    var conversionOption = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            axisLabel: {
+                formatter: '{value}%',
+                color: '#777'
+            }
+        },
+        yAxis: {
+            type: 'category',
+            data: topByConversion.map(ref => ref.referer),
+            axisLabel: { color: '#777' }
+        },
+        series: [
+            {
+                name: 'Конверсия',
+                type: 'bar',
+                data: topByConversion.map(ref => ref.conversion_rate),
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                        { offset: 0, color: '#6c5ffc' },
+                        { offset: 1, color: '#05c3fb' }
+                    ]),
+                    borderRadius: [0, 5, 5, 0]
+                },
+                label: {
+                    show: true,
+                    position: 'right',
+                    formatter: '{c}%',
+                    color: '#777'
+                }
+            }
         ]
     };
 
-    // Устанавливаем опцию
-    if (option && typeof option === 'object') {
-        myChart.setOption(option);
-    }
+    conversionChart.setOption(conversionOption);
 
-    // Делаем график адаптивным
-    window.addEventListener('resize', myChart.resize);
+    // Адаптивность графиков
+    window.addEventListener('resize', function() {
+        timelineChart.resize();
+        pieChart.resize();
+        barChart.resize();
+        treemapChart.resize();
+        conversionChart.resize();
+    });
+
+    // Обработчики переключения табов для корректного отображения графиков
+    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(function(tab) {
+        tab.addEventListener('shown.bs.tab', function(e) {
+            if (e.target.getAttribute('href') === '#pie-tab') {
+                pieChart.resize();
+            } else if (e.target.getAttribute('href') === '#bar-tab') {
+                barChart.resize();
+            } else if (e.target.getAttribute('href') === '#treemap-tab') {
+                treemapChart.resize();
+            }
+        });
+    });
+
+    // Фильтр по датам для графика временной линии
+    flatpickr("#dateRangeFilter", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        onChange: function(selectedDates, dateStr, instance) {
+            if (selectedDates.length === 2) {
+                let startDate = selectedDates[0].toISOString().split('T')[0];
+                let endDate = selectedDates[1].toISOString().split('T')[0];
+                
+                // Фильтруем даты
+                var filteredDates = allDates.filter(date => date >= startDate && date <= endDate);
+                
+                // Фильтруем серии
+                var filteredSeries = [];
+                var sourceIndex = 0;
+                
+                for (var sourceName in dailyStatsBySources) {
+                    if (dailyStatsBySources.hasOwnProperty(sourceName)) {
+                        var sourceData = dailyStatsBySources[sourceName];
+                        var seriesData = filteredDates.map(date => sourceData[date] || 0);
+                        
+                        filteredSeries.push({
+                            name: sourceName,
+                            type: 'line',
+                            smooth: true,
+                            data: seriesData,
+                            lineStyle: {
+                                color: sourceColors[sourceIndex % sourceColors.length],
+                                width: 2
+                            },
+                            itemStyle: {
+                                color: sourceColors[sourceIndex % sourceColors.length]
+                            },
+                            emphasis: {
+                                focus: 'series'
+                            }
+                        });
+                        
+                        sourceIndex++;
+                    }
+                }
+                
+                timelineChart.setOption({
+                    xAxis: { data: filteredDates },
+                    series: filteredSeries
+                });
+            }
+        }
+    });
+
+    // Фильтр по датам для таблицы источников
+    flatpickr("#tableDateFilter", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        onChange: function(selectedDates, dateStr, instance) {
+            if (selectedDates.length === 2) {
+                let startDate = selectedDates[0].toISOString().split('T')[0];
+                let endDate = selectedDates[1].toISOString().split('T')[0];
+                
+                // Фильтруем источники по датам
+                var filteredReferrers = getReferrers.map(ref => {
+                    // Если нет daily_data, используем все данные источника
+                    if (!ref.daily_data || typeof ref.daily_data !== 'object' || Object.keys(ref.daily_data).length === 0) {
+                        return {
+                            referer: ref.referer,
+                            views: ref.views,
+                            user_count: ref.user_count,
+                            conversion_rate: ref.conversion_rate,
+                            total_donations: ref.total_donations,
+                            avg_donation: ref.avg_donation
+                        };
+                    }
+                    
+                    var filteredViews = 0;
+                    for (var date in ref.daily_data) {
+                        if (date >= startDate && date <= endDate) {
+                            filteredViews += ref.daily_data[date];
+                        }
+                    }
+                    
+                    if (filteredViews === 0) return null;
+                    
+                    return {
+                        referer: ref.referer,
+                        views: filteredViews,
+                        user_count: ref.user_count,
+                        conversion_rate: filteredViews > 0 ? ((ref.user_count / filteredViews) * 100).toFixed(2) : 0,
+                        total_donations: ref.total_donations,
+                        avg_donation: ref.avg_donation
+                    };
+                }).filter(item => item !== null);
+                
+                // Создаем новый контейнер
+                var gridContainer = document.getElementById("grid-sorting");
+                var newContainer = document.createElement('div');
+                newContainer.id = 'grid-sorting';
+                gridContainer.parentNode.replaceChild(newContainer, gridContainer);
+                
+                // Создаем новую таблицу с отфильтрованными данными
+                gridInstance = new gridjs.Grid({
+                    pagination: { limit: 10 },
+                    search: true,
+                    sort: true,
+                    columns: [
+                        { name: "Источник", width: "200px", formatter: (cell) => gridjs.html(cell) },
+                        { name: "Просмотры", width: "100px", sort: { compare: (a, b) => parseInt(a) - parseInt(b) } },
+                        { name: "Регистрации", width: "100px", sort: { compare: (a, b) => parseInt(a) - parseInt(b) } },
+                        { name: "CR %", width: "80px", sort: { compare: (a, b) => parseFloat(a) - parseFloat(b) }, 
+                          formatter: (cell) => gridjs.html(`<span class="badge bg-${parseFloat(cell) > 5 ? 'success' : parseFloat(cell) > 2 ? 'warning' : 'secondary'}">${cell}%</span>`) },
+                        { name: "Донаты", width: "100px", sort: { compare: (a, b) => parseFloat(a) - parseFloat(b) } },
+                        { name: "Ср. донат", width: "100px", sort: { compare: (a, b) => parseFloat(a) - parseFloat(b) } }
+                    ],
+                    data: filteredReferrers.map(ref => [
+                        `<a href="/admin/statistic/http/referral/${ref.referer}">${ref.referer}</a>`,
+                        ref.views,
+                        ref.user_count,
+                        ref.conversion_rate,
+                        ref.total_donations.toFixed(2),
+                        ref.avg_donation.toFixed(2)
+                    ])
+                }).render(newContainer);
+            }
+        },
+        onClose: function(selectedDates, dateStr, instance) {
+            // При очистке фильтра возвращаем исходную таблицу
+            if (selectedDates.length === 0) {
+                // Создаем новый контейнер
+                var gridContainer = document.getElementById("grid-sorting");
+                var newContainer = document.createElement('div');
+                newContainer.id = 'grid-sorting';
+                gridContainer.parentNode.replaceChild(newContainer, gridContainer);
+                
+                // Создаем таблицу с полными данными
+                gridInstance = new gridjs.Grid({
+                    pagination: { limit: 10 },
+                    search: true,
+                    sort: true,
+                    columns: [
+                        { name: "Источник", width: "200px", formatter: (cell) => gridjs.html(cell) },
+                        { name: "Просмотры", width: "100px", sort: { compare: (a, b) => parseInt(a) - parseInt(b) } },
+                        { name: "Регистрации", width: "100px", sort: { compare: (a, b) => parseInt(a) - parseInt(b) } },
+                        { name: "CR %", width: "80px", sort: { compare: (a, b) => parseFloat(a) - parseFloat(b) },
+                          formatter: (cell) => gridjs.html(`<span class="badge bg-${parseFloat(cell) > 5 ? 'success' : parseFloat(cell) > 2 ? 'warning' : 'secondary'}">${cell}%</span>`) },
+                        { name: "Донаты", width: "100px", sort: { compare: (a, b) => parseFloat(a) - parseFloat(b) } },
+                        { name: "Ср. донат", width: "100px", sort: { compare: (a, b) => parseFloat(a) - parseFloat(b) } }
+                    ],
+                    data: getReferrers.map(ref => [
+                        `<a href="/admin/statistic/http/referral/${ref.referer}">${ref.referer}</a>`,
+                        ref.views,
+                        ref.user_count,
+                        ref.conversion_rate,
+                        ref.total_donations.toFixed(2),
+                        ref.avg_donation.toFixed(2)
+                    ])
+                }).render(newContainer);
+            }
+        }
+    });
 
 </script>
-
 
 {% endblock %}

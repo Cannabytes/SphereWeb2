@@ -1,53 +1,131 @@
 {% extends 'struct.html' %}
 
-{% block title %}qwe{% endblock %}
+{% block title %}Детальная статистика источника{% endblock %}
 
 {% block content %}
 
     <div class="container-fluid">
 
-
+        <!-- Header with Summary -->
         <div class="row">
-
             <div class="col-xl-12">
                 <div class="card custom-card">
                     <div class="card-body">
                         <div class="team-header">
                             <div class="d-flex flex-wrap align-items-center justify-content-between">
+                                <a href="/admin/statistic/http/referral"><i class="ri-arrow-left-circle-line fs-24"></i></a>
 
-                                <a href="/admin/statistic/http/referral"><i class="ri-arrow-left-circle-line"></i></a>
-
-                                <div class="h5 fw-semibold mb-sm-0">Переходов: {{views}} / Регистраций: {{users|length}} / Пожертвований:
-                                    {{countAllDonate}}</div>
+                                <div class="h5 fw-semibold mb-sm-0">
+                                    <span class="badge bg-primary me-2">{{refererName}}</span>
+                                </div>
 
                                 <div class="d-flex align-items-center">
                                     <div class="input-group">
                                         <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                        <input type="text" class="form-control" id="daterange" placeholder="Date">
+                                        <input type="text" class="form-control" id="daterange" placeholder="Выберите период">
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="col-xl-12">
-
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
                 <div class="card custom-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-top">
+                            <div class="me-3">
+                                <span class="avatar avatar-md bg-primary-transparent">
+                                    <i class="ti ti-eye fs-18"></i>
+                                </span>
+                            </div>
+                            <div class="flex-fill">
+                                <h6 class="mb-1 text-muted">Переходов</h6>
+                                <h3 class="fw-semibold mb-0">{{views|number_format(0, '.', ' ')}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-top">
+                            <div class="me-3">
+                                <span class="avatar avatar-md bg-success-transparent">
+                                    <i class="ti ti-user-check fs-18"></i>
+                                </span>
+                            </div>
+                            <div class="flex-fill">
+                                <h6 class="mb-1 text-muted">Регистраций</h6>
+                                <h3 class="fw-semibold mb-0">{{users|length}}</h3>
+                                {% set conversionRate = views > 0 ? ((users|length / views) * 100)|number_format(2) : 0 %}
+                                <span class="text-muted fs-11">CR: {{conversionRate}}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-top">
+                            <div class="me-3">
+                                <span class="avatar avatar-md bg-warning-transparent">
+                                    <i class="ti ti-coin fs-18"></i>
+                                </span>
+                            </div>
+                            <div class="flex-fill">
+                                <h6 class="mb-1 text-muted">Пожертвований</h6>
+                                <h3 class="fw-semibold mb-0">{{countAllDonate|number_format(0, '.', ' ')}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-top">
+                            <div class="me-3">
+                                <span class="avatar avatar-md bg-info-transparent">
+                                    <i class="ti ti-chart-line fs-18"></i>
+                                </span>
+                            </div>
+                            <div class="flex-fill">
+                                <h6 class="mb-1 text-muted">Средний донат</h6>
+                                {% set avgDonate = users|length > 0 ? (countAllDonate / users|length)|number_format(2) : 0 %}
+                                <h3 class="fw-semibold mb-0">{{avgDonate}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Users Table -->
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Зарегистрированные пользователи
+                        </div>
+                    </div>
                     <div class="card-body">
                         <table id="responsiveDataTable" class="table table-bordered text-nowrap w-100">
                             <thead>
                             <tr>
-                                <th>User</th>
-                                <th>Data Create</th>
-                                <th>Donates</th>
+                                <th>Пользователь</th>
+                                <th>Дата регистрации</th>
+                                <th>Донаты</th>
                             </tr>
                             </thead>
                             <tbody>
-
                             {% for user in users %}
                             {% set userInfo = getUser(user.user_id) %}
                             <tr>
@@ -57,19 +135,23 @@
                                     {% else %}
                                         <img class="avatar avatar-md" src="{{userInfo.getAvatar()}}">
                                     {% endif %}
-                                    <a href="/admin/user/info/{{userInfo.getId()}}">{{ userInfo.getEmail() }}</a></td>
+                                    <a href="/admin/user/info/{{userInfo.getId()}}">{{ userInfo.getEmail() }}</a>
+                                </td>
                                 <td>{{ user.date_create }}</td>
-                                <td>{{ userInfo.getHistoryDonate(true) }}</td>
+                                <td>
+                                    {% set userDonate = userInfo.getHistoryDonate(true) %}
+                                    <span class="badge bg-{{ userDonate > 0 ? 'success' : 'secondary' }}">
+                                        {{ userDonate }}
+                                    </span>
+                                </td>
                             </tr>
                             {% endfor %}
-
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
 {% endblock %}
@@ -79,9 +161,7 @@
 
 
 {% block css %}
-
 <link rel="stylesheet" href="{{template}}/assets/libs/flatpickr/flatpickr.min.css">
-
 {% endblock %}
 
 

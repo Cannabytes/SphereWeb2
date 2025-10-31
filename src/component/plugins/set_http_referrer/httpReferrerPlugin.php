@@ -17,7 +17,18 @@ class httpReferrerPlugin
         $row = sql::getRow("SELECT `data` FROM server_cache WHERE `type` = 'HTTP_REFERER_VIEWS';");
 
         if (!$row || empty($row["data"])) {
-            tpl::addVar(["getReferrers" => []]);
+            tpl::addVar([
+                "getReferrers" => [],
+                "dailyStats" => json_encode([]),
+                "dailyStatsBySources" => json_encode([]),
+                "dateRange" => [],
+                "totalStats" => [
+                    'total_views' => 0,
+                    'total_users' => 0,
+                    'total_donations' => 0,
+                    'unique_sources' => 0,
+                ]
+            ]);
             tpl::displayPlugin("/set_http_referrer/tpl/httpreferrer.html");
             return;
         }
@@ -25,13 +36,25 @@ class httpReferrerPlugin
         $rawReferrers = json_decode($row["data"], true);
 
         if (json_last_error() !== JSON_ERROR_NONE || !is_array($rawReferrers)) {
-            // Ошибка декодирования JSON или данные не являются массивом
-            tpl::addVar(["getReferrers" => []]);
+            tpl::addVar([
+                "getReferrers" => [],
+                "dailyStats" => json_encode([]),
+                "dailyStatsBySources" => json_encode([]),
+                "dateRange" => [],
+                "totalStats" => [
+                    'total_views' => 0,
+                    'total_users' => 0,
+                    'total_donations' => 0,
+                    'unique_sources' => 0,
+                ]
+            ]);
             tpl::displayPlugin("/set_http_referrer/tpl/httpreferrer.html");
             return;
         }
 
         $processedReferrerDetails = [];
+        $dailyStatsGlobal = []; // Глобальная статистика по дням
+        $dateRange = [];
 
         // 1. Обрабатываем каждую запись реферера, получаем данные из SQL
         foreach ($rawReferrers as $rawReferrerEntry) {
@@ -56,6 +79,17 @@ class httpReferrerPlugin
 
             $currentCount = is_array($rawReferrerEntry['count']) ? count($rawReferrerEntry['count']) : (int)$rawReferrerEntry['count'];
 
+            // Собираем статистику по дням для каждого реферера
+            if (is_array($rawReferrerEntry['count'])) {
+                foreach ($rawReferrerEntry['count'] as $date => $count) {
+                    if (!isset($dailyStatsGlobal[$date])) {
+                        $dailyStatsGlobal[$date] = 0;
+                    }
+                    $dailyStatsGlobal[$date] += $count;
+                    $dateRange[] = $date;
+                }
+            }
+
             $sqlData = sql::getRows(
                 "SELECT (SELECT COUNT(DISTINCT user_id) FROM user_variables WHERE var = 'HTTP_REFERER' AND val = ?) AS total_users,
                     SUM(dhp.point) AS total_points FROM donate_history_pay dhp
@@ -71,6 +105,7 @@ class httpReferrerPlugin
                 'count'           => $currentCount,
                 'user_count'      => $sqlData[0]['total_users'] ?? 0,
                 'total_donations' => $sqlData[0]['total_points'] ?? 0,
+                'daily_data'      => is_array($rawReferrerEntry['count']) ? $rawReferrerEntry['count'] : [],
             ];
         }
 
@@ -79,16 +114,25 @@ class httpReferrerPlugin
             $domain = $detail['domain'];
             if (!isset($aggregatedDataByDomain[$domain])) {
                 $aggregatedDataByDomain[$domain] = [
-                    'referer'         => $domain, // В качестве "реферера" теперь выступает домен
+                    'referer'         => $domain,
                     'count'           => 0,
                     'user_count'      => 0,
                     'total_donations' => 0,
-                    'views'           => 0, // Инициализируем просмотры
+                    'views'           => 0,
+                    'daily_data'      => [],
                 ];
             }
             $aggregatedDataByDomain[$domain]['count']           += $detail['count'];
             $aggregatedDataByDomain[$domain]['user_count']      += $detail['user_count'];
             $aggregatedDataByDomain[$domain]['total_donations'] += $detail['total_donations'];
+
+            // Объединяем daily_data
+            foreach ($detail['daily_data'] as $date => $count) {
+                if (!isset($aggregatedDataByDomain[$domain]['daily_data'][$date])) {
+                    $aggregatedDataByDomain[$domain]['daily_data'][$date] = 0;
+                }
+                $aggregatedDataByDomain[$domain]['daily_data'][$date] += $count;
+            }
         }
 
         $rawViews = $this->getView();
@@ -129,16 +173,66 @@ class httpReferrerPlugin
             }
         }
 
+        // Вычисляем дополнительные метрики
+        $totalViews = 0;
+        $totalUsers = 0;
+        $totalDonations = 0;
+
         foreach ($aggregatedDataByDomain as $domain => &$data) {
             if (isset($aggregatedViewsByDomain[$domain])) {
                 $data['views'] = $aggregatedViewsByDomain[$domain];
             }
+            
+            // Вычисляем conversion rate (регистраций / просмотров)
+            $data['conversion_rate'] = $data['views'] > 0 ? round(($data['user_count'] / $data['views']) * 100, 2) : 0;
+            
+            // Средний донат на пользователя
+            $data['avg_donation'] = $data['user_count'] > 0 ? round($data['total_donations'] / $data['user_count'], 2) : 0;
+            
+            // Считаем общую статистику
+            $totalViews += $data['views'];
+            $totalUsers += $data['user_count'];
+            $totalDonations += $data['total_donations'];
         }
         unset($data);
+
+        // Сортируем по просмотрам
+        usort($aggregatedDataByDomain, function($a, $b) {
+            return $b['views'] - $a['views'];
+        });
+
         $finalReferrers = array_values($aggregatedDataByDomain);
+
+        // Подготовка данных для графика по дням
+        ksort($dailyStatsGlobal);
+        $dateRange = array_unique($dateRange);
+        sort($dateRange);
+
+        // Подготовка данных по источникам для графика (топ-10)
+        $dailyStatsBySources = [];
+        $topSources = array_slice($finalReferrers, 0, 10);
+        
+        foreach ($topSources as $source) {
+            $dailyStatsBySources[$source['referer']] = [];
+            if (isset($source['daily_data']) && is_array($source['daily_data'])) {
+                foreach ($source['daily_data'] as $date => $count) {
+                    $dailyStatsBySources[$source['referer']][$date] = $count;
+                }
+            }
+        }
 
         tpl::addVar([
             "getReferrers" => $finalReferrers,
+            "dailyStats" => json_encode($dailyStatsGlobal),
+            "dailyStatsBySources" => json_encode($dailyStatsBySources),
+            "dateRange" => $dateRange,
+            "totalStats" => [
+                'total_views' => $totalViews,
+                'total_users' => $totalUsers,
+                'total_donations' => $totalDonations,
+                'unique_sources' => count($aggregatedDataByDomain),
+                'avg_conversion' => $totalViews > 0 ? round(($totalUsers / $totalViews) * 100, 2) : 0,
+            ]
         ]);
         tpl::displayPlugin("/set_http_referrer/tpl/httpreferrer.html");
     }
