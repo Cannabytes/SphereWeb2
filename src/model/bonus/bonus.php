@@ -133,14 +133,17 @@ class bonus
         try {
             sql::beginTransaction();
 
-            // Получаем бонусные коды из БД
-            $bonusCodes = sql::getRows("SELECT * FROM bonus_code WHERE code = ?", [$code]);
+            // Нормализуем код к нижнему регистру для проверки
+            $normalizedCode = mb_strtolower($code);
+
+            // Получаем бонусные коды из БД (сравнение без учета регистра)
+            $bonusCodes = sql::getRows("SELECT * FROM bonus_code WHERE LOWER(code) = ?", [$normalizedCode]);
             if (empty($bonusCodes)) {
                 throw new Exception(lang::get_phrase("code_not_found"));
             }
 
             // Проверяем возможность использования кода
-            self::validateCode($code, $bonusCodes);
+            self::validateCode($normalizedCode, $bonusCodes);
 
             $bonusNames = "";
             $bonusNamesTxt = "";
@@ -155,11 +158,11 @@ class bonus
                 $bonusNames .= $result['htmlDisplay'];
                 $bonusNamesTxt .= $result['textDisplay'];
 
-                // Логируем использование бонуса
+                // Логируем использование бонуса (сохраняем нормализованный код)
                 user::self()->addLog(
                     logTypes::LOG_BONUS_CODE,
                     'LOG_BONUS_CODE',
-                    [$code, $result['name'], $bonus['count']]
+                    [$normalizedCode, $result['name'], $bonus['count']]
                 );
 
                 // Если код одноразовый, добавляем его в список на удаление
@@ -192,11 +195,11 @@ class bonus
     /**
      * Проверяет возможность использования бонусного кода
      *
-     * @param string $code Проверяемый код
+     * @param string $normalizedCode Нормализованный код (в нижнем регистре)
      * @param array $bonusCodes Массив бонусных кодов
      * @throws Exception Если код не может быть использован
      */
-    private static function validateCode(string $code, array $bonusCodes): void
+    private static function validateCode(string $normalizedCode, array $bonusCodes): void
     {
         $currentTime = time();
         $currentServerId = user::self()->getServerId();
@@ -222,7 +225,8 @@ class bonus
             if (!$isDisposable) {
                 foreach ($logs as $log) {
                     $variables = $log['variables'] ?? [];
-                    if (!empty($variables) && $variables[0] == $code) {
+                    // Сравниваем коды без учета регистра
+                    if (!empty($variables) && mb_strtolower($variables[0]) == $normalizedCode) {
                         throw new Exception(lang::get_phrase("code_already_used"));
                     }
                 }
