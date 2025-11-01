@@ -118,7 +118,7 @@
                     {% set postUser = getUser(post.user_id) %}
                     <span class="avatar avatar-md {% if postUser.isOnline() %}online{% endif %} me-2 avatar-rounded mail-msg-avatar">
                     {% if postUser.isAvatarVideo() %}
-                        <video src="{{ postUser.getAvatar() }}" class="img-fluid rounded-circle" autoplay loop muted playsinline style="width:48px; height:48px; object-fit:cover;"></video>
+                        <video src="{{ postUser.getAvatar() }}" class="rounded-circle" autoplay loop muted playsinline style="width:48px; height:48px; object-fit:cover;"></video>
                     {% else %}
                         <img src="{{ postUser.getAvatar() }}" alt="">
                     {% endif %}
@@ -468,6 +468,65 @@
         let postId = $(this).attr('data-post-id');
         AjaxSend("/support/admin/delete/post", "POST", {postId: postId});
     })
+</script>
+
+<script>
+    // Парсер ссылок - преобразует текстовые URL в кликабельные ссылки
+    (function () {
+        'use strict';
+
+        function linkifyText(text) {
+            // Регулярное выражение для поиска URL
+            const urlPattern = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+            const wwwPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+            const emailPattern = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
+
+            // Заменяем URL на ссылки
+            text = text.replace(urlPattern, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+            
+            // Заменяем www. на ссылки
+            text = text.replace(wwwPattern, '$1<a href="http://$2" target="_blank" rel="noopener noreferrer">$2</a>');
+            
+            // Заменяем email на ссылки
+            text = text.replace(emailPattern, '<a href="mailto:$1">$1</a>');
+
+            return text;
+        }
+
+        function processNode(node) {
+            // Пропускаем узлы, которые уже являются ссылками
+            if (node.nodeName === 'A') {
+                return;
+            }
+
+            // Обрабатываем текстовые узлы
+            if (node.nodeType === Node.TEXT_NODE) {
+                const originalText = node.nodeValue;
+                const linkedText = linkifyText(originalText);
+                
+                // Если текст изменился, заменяем узел
+                if (linkedText !== originalText) {
+                    const wrapper = document.createElement('span');
+                    wrapper.innerHTML = linkedText;
+                    node.parentNode.replaceChild(wrapper, node);
+                }
+            } else if (node.nodeType === Node.ELEMENT_NODE && node.childNodes.length > 0) {
+                // Рекурсивно обрабатываем дочерние узлы
+                Array.from(node.childNodes).forEach(child => processNode(child));
+            }
+        }
+
+        // Применяем парсер ко всем сообщениям
+        function linkifyMessages() {
+            const messageContents = document.querySelectorAll('.main-mail-content');
+            messageContents.forEach(content => {
+                processNode(content);
+            });
+        }
+
+        // Запускаем после загрузки страницы
+        window.addEventListener('load', linkifyMessages);
+    })();
 </script>
 
 
