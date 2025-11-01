@@ -89,7 +89,13 @@ class XssSecurity
             $content
         );
 
+        // Защищаем код от strip_tags()
+        [$content, $codeBlocks] = self::protectCodeBlocks($content);
+
         $content = strip_tags($content, self::ALLOWED_TAGS);
+        
+        // Возвращаем блоки кода обратно
+        $content = self::restoreCodeBlocks($content, $codeBlocks);
         $content = self::removeDangerousAttributes($content);
         $content = self::blockDangerousProtocols($content);
         $content = self::removeDangerousTags($content);
@@ -104,6 +110,96 @@ class XssSecurity
         return $content;
     }
 
+
+    /**
+     * Защищает блоки кода от повреждения функцией strip_tags()
+     * 
+     * Проблема: strip_tags() воспринимает операторы сравнения (<, <=, >=, >>) 
+     * в коде как HTML-теги и обрезает контент
+     * 
+     * Решение:
+     * 1. Заменяем операторы на временные плейсхолдеры
+     * 2. Экранируем < и > внутри <pre> и <code>
+     * 3. Сохраняем блоки кода как плейсхолдеры
+     * 
+     * @param string $content HTML-контент
+     * @return array [обработанный контент, массив сохраненных блоков]
+     */
+    private static function protectCodeBlocks(string $content): array
+    {
+        // Шаг 1: Заменяем операторы сравнения на плейсхолдеры
+        // Это защищает их от strip_tags(), который видит <= как начало тега
+        $operatorReplacements = [
+            '<=' => '___LTE___',
+            '>=' => '___GTE___',
+            '<<' => '___SHL___',
+            '>>' => '___SHR___',
+            '&lt;=' => '___LTE_ESC___',
+            '&gt;=' => '___GTE_ESC___',
+            '&lt;&lt;' => '___SHL_ESC___',
+            '&gt;&gt;' => '___SHR_ESC___',
+        ];
+        $content = strtr($content, $operatorReplacements);
+        
+        // Шаг 2: Находим все блоки <pre> и <code>, экранируем их содержимое
+        $codeBlocks = [];
+        $placeholder = '___CODEBLOCK_PLACEHOLDER_';
+        $counter = 0;
+        
+        $content = preg_replace_callback(
+            '/<(pre|code)(?:\s[^>]*)?>[\s\S]*?<\/\1>/i',
+            function($matches) use (&$codeBlocks, &$counter, $placeholder) {
+                $fullMatch = $matches[0];
+                $tagName = $matches[1];
+                
+                if (preg_match('/<' . $tagName . '([^>]*)>([\s\S]*?)<\/' . $tagName . '>/i', $fullMatch, $parts)) {
+                    $openTag = '<' . $tagName . $parts[1] . '>';
+                    $innerContent = $parts[2];
+                    $closeTag = '</' . $tagName . '>';
+                    
+                    // Экранируем < и > внутри блоков кода
+                    $innerContent = str_replace(['<', '>'], ['&lt;', '&gt;'], $innerContent);
+                    
+                    $key = $placeholder . $counter . '___';
+                    $codeBlocks[$key] = $openTag . $innerContent . $closeTag;
+                    $counter++;
+                    return $key;
+                }
+                
+                return $fullMatch;
+            },
+            $content
+        );
+        
+        return [$content, $codeBlocks];
+    }
+
+    /**
+     * Восстанавливает блоки кода после обработки strip_tags()
+     * 
+     * @param string $content Обработанный контент
+     * @param array $codeBlocks Массив сохраненных блоков кода
+     * @return string Контент с восстановленными блоками кода
+     */
+    private static function restoreCodeBlocks(string $content, array $codeBlocks): string
+    {
+        // Возвращаем блоки кода на место
+        $content = strtr($content, $codeBlocks);
+        
+        // Возвращаем операторы сравнения в экранированном виде
+        $operatorReverse = [
+            '___LTE___' => '&lt;=',
+            '___GTE___' => '&gt;=',
+            '___SHL___' => '&lt;&lt;',
+            '___SHR___' => '&gt;&gt;',
+            '___LTE_ESC___' => '&lt;=',
+            '___GTE_ESC___' => '&gt;=',
+            '___SHL_ESC___' => '&lt;&lt;',
+            '___SHR_ESC___' => '&gt;&gt;',
+        ];
+        
+        return strtr($content, $operatorReverse);
+    }
 
     /**
      * Удаляет все атрибуты, стили и классы, которые не разрешены.
