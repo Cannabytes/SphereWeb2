@@ -1301,7 +1301,7 @@ class forum
 
             //Проверка что пост принадлежит пользователю
             if($post->getUserId() != user::self()->getId()) {
-                if (ForumModerator::isUserModerator(user::self()->getId(), $thread->getCategoryId()) == false or user::self()->isAdmin()) {
+                if (!ForumModerator::isUserModerator(user::self()->getId(), $thread->getCategoryId()) && !user::self()->isAdmin()) {
                     throw new Exception("Нельзя редактировать чужие сообщения");
                 }
             }
