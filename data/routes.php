@@ -2740,4 +2740,18 @@ return array(
         'page' => '',
         'comment' => 'Ajax search users by email',
     ),
+    211 =>
+    array(
+        'enable' => 1,
+        'method' => 'GET',
+        'pattern' => '/auth/telegram/([a-zA-Z0-9]+)',
+        'func' => 'controller\\oauth2\\telegram\\telegram::auth',
+        'access' =>
+        array(
+            0 => 'guest',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => 'Telegram auth by token',
+    ),
 );

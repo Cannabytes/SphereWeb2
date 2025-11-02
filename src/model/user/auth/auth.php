@@ -155,7 +155,7 @@ class auth
         );
     }
 
-    public static function addAuthLog(int $userId = 0): void
+    public static function addAuthLog(int $userId = 0, string $signature = "GOOGLE"): void
     {
 
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
@@ -180,11 +180,6 @@ class auth
                 $country = $geo_data['country'] ?? null;
                 $city = $geo_data['city'] ?? null;
             }
-        }
-
-        $signature = null;
-        if ($signature == null) {
-            $signature = "GOOGLE";
         }
 
         sql::run("INSERT INTO user_auth_log (user_id, ip, country, city, browser, os, device, user_agent, date, signature) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [

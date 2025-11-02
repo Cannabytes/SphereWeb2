@@ -1899,6 +1899,7 @@ Password: %%password%%',
     "LOG_DONATE_BONUS_SUCCESS" => "Ο χρήστης έλαβε μπόνους για τη δωρεά +%f",
     "logolink" => "Σύνδεσμος κατά το κλικ στο λογότυπο",
     'oauth2_google_enter' => 'Σύνδεση με το Google',
+    'oauth2_telegram_enter' => 'Σύνδεση με το Telegram',
 
     'balance_bonus' => 'Υπόλοιπο Μπόνους',
     'referral_list' => 'Λίστα των Παραπομπών σας',

@@ -5,6 +5,7 @@ namespace Ofey\Logan22\component\cron;
 use Exception;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\controller\oauth2\telegram\telegram;
 use PDO;
 use PDOException;
 
@@ -39,10 +40,11 @@ class arrival
             'update_databases' => self::updateDB(),
             'clear_errors' => self::clearErrors(),
             'referrals_bonus_check' => self::referrals_bonus_check(),
+            'create_telegram_token' => telegram::authenticateByToken(self::$request['user_data']),
             default => error_log("Unknown command: $command"),
         };
     }
-
+ 
     //Обновления курса валют
     private static function update_rates()
     {

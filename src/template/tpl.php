@@ -561,6 +561,10 @@ class tpl
             return json_decode($json, true);
         }));
 
+        $twig->addFilter(new TwigFilter('base64_encode', function ($string) {
+            return base64_encode($string);
+        }));
+
         $twig->addFunction(new TwigFunction('template', function ($var = null) {
             return str_replace([
                 "//",

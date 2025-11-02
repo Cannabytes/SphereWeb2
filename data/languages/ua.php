@@ -1943,6 +1943,7 @@ Email: %%email%l%
     "LOG_DONATE_BONUS_SUCCESS" => "Користувач отримав бонус за пожертву +%f",
     "logolink" => "Посилання при натисканні на логотип",
     'oauth2_google_enter' => 'Увійти через Google',
+    'oauth2_telegram_enter' => 'Увійти через Telegram',
 
     'balance_bonus' => 'Бонусний Баланс',
     'referral_list' => 'Список ваших рефералів',

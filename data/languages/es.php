@@ -1921,6 +1921,7 @@ Contraseña: %%password%%',
     "LOG_DONATE_BONUS_SUCCESS" => "El usuario recibió una bonificación por la donación +%f",
     "logolink" => "Enlace al hacer clic en el logotipo",
     'oauth2_google_enter' => 'Iniciar sesión con Google',
+    'oauth2_telegram_enter' => 'Iniciar sesión con Telegram',
 
     'balance_bonus' => 'Saldo de Bonificación',
     'referral_list' => 'Lista de sus Referidos',

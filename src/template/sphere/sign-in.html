@@ -100,8 +100,14 @@
               <span><i class="ri-google-fill"></i></span>
             </div>
 
+            
+
             <a id="google-login-link" class="btn btn-teal-gradient btn-wave waves-effect waves-light label-btn" href="https://accounts.google.com/o/oauth2/v2/auth?client_id=1063214487839-nsaf8toejvelcbj3mq5a7pss7loc69k1.apps.googleusercontent.com&redirect_uri=https://sphereweb.net/google/auth.php&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent&state={{HTTP_HOST()}}">
               <i class="ri-google-fill label-btn-icon me-1"></i> {{ phrase('oauth2_google_enter') }}
+            </a>
+
+            <a id="telegram-login-link" class="btn btn-info-gradient btn-wave waves-effect waves-light label-btn" href="https://t.me/sphere_auth_bot?start=auth_{{ HTTP_HOST() | base64_encode }}">
+              <i class="ri-telegram-fill label-btn-icon me-1"></i> {{ phrase('oauth2_telegram_enter') }}
             </a>
 
             </div>
@@ -109,7 +115,7 @@
 
           <div class="text-center">
             {% for lang in getAllowLang(false) %}
-            <a class="align-items-center" href="{{action('user_lang', [lang.lang])}}">
+            <a class="align-items-center" href="{{action('user_lang', [lang.lang])}}"> 
                     <span class="avatar avatar-xs lh-1 me-0">
                       <img src="/uploads/images/flags/{{lang.lang}}.png" alt="img">
                     </span>
