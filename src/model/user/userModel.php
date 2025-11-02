@@ -989,13 +989,16 @@ class userModel
             return $this->accounts;
         }
 
-        // Инициализируем хранилище времени обновления аккаунтов, если оно еще не существует
-        if (!isset($_SESSION['account_update_times'][$this->getServerId()])) {
-            $_SESSION['account_update_times'][$this->getServerId()] = [];
-        }
+        // Определяем, это запрос к своему профилю или к чужому
+        $isSelfRequest = isset($_SESSION['id']) && $_SESSION['id'] == $this->getId();
+        
+        // Разные интервалы обновления
+        $updateInterval = $isSelfRequest ? 7 : 600; // 7 секунд для себя, 10 минут для других
 
         $currentTime = time();
-        $updateInterval = 7; // Интервал обновления в секундах
+
+        // Получаем сохраненное время последнего обновления из user_variables
+        $accountUpdateTimes = $this->getAccountUpdateTimes();
 
         // Загружаем данные из базы данных
         $accounts = sql::getRows(
@@ -1005,17 +1008,28 @@ class userModel
             [$this->getEmail(), $this->getServerId()]
         );
 
-        // Если нужно принудительное обновление или нет данных в базе
-        $needFullUpdate = $need_reload || empty($accounts);
+        // Проверяем время последней проверки (для случаев когда аккаунтов вообще нет)
+        $lastCheckTime = $accountUpdateTimes[$this->getServerId()]['_last_check'] ?? 0;
+        $needCheckAgain = ($currentTime - $lastCheckTime) >= $updateInterval;
+        
+        // Если нужно принудительное обновление или (нет данных в базе И прошло достаточно времени)
+        $needFullUpdate = $need_reload || (empty($accounts) && $needCheckAgain);
 
         // Если не требуется полное обновление, проверим каждый аккаунт индивидуально
         if (!$needFullUpdate) {
+            // Если БД пустая и ещё рано проверять снова
+            if (empty($accounts)) {
+                $this->accounts = [];
+                return [];
+            }
+            
+            // Есть аккаунты в БД, проверяем каждый
             $accountsToUpdate = [];
             $this->accounts = [];
 
             foreach ($accounts as $player) {
                 $login = $player['login'];
-                $lastUpdateTime = $_SESSION['account_update_times'][$this->getServerId()][$login] ?? 0;
+                $lastUpdateTime = $accountUpdateTimes[$this->getServerId()][$login] ?? 0;
 
                 // Проверяем, нужно ли обновлять этот конкретный аккаунт
                 $needUpdate = ($currentTime - $lastUpdateTime) >= $updateInterval;
@@ -1060,12 +1074,24 @@ class userModel
                 // 'accounts' => $accountsToUpdate, // Потребуется доработка API
             ])->show(false)->getResponse();
 
+            // Создаем запись о времени обновления для этого сервера, если её нет
+            if (!isset($accountUpdateTimes[$this->getServerId()])) {
+                $accountUpdateTimes[$this->getServerId()] = [];
+            }
+
             if (isset($sphere['error']) || !$sphere) {
                 $this->accounts = [];
+                
+                // Сохраняем время обновления даже при ошибке (чтобы не спамить запросами)
+                $accountUpdateTimes[$this->getServerId()]['_last_check'] = $currentTime;
+                $this->saveAccountUpdateTimes($accountUpdateTimes);
+                
                 return [];
             }
 
             $this->accounts = [];
+            $hasAccounts = false;
+            
             foreach ($sphere as $player) {
                 if (empty($player['login'])) {
                     continue;
@@ -1079,8 +1105,17 @@ class userModel
                 $this->accounts[] = $account;
 
                 // Обновляем время для этого конкретного аккаунта
-                $_SESSION['account_update_times'][$this->getServerId()][$player['login']] = $currentTime;
+                $accountUpdateTimes[$this->getServerId()][$player['login']] = $currentTime;
+                $hasAccounts = true;
             }
+
+            // Если аккаунтов нет, сохраняем время последней проверки
+            if (!$hasAccounts) {
+                $accountUpdateTimes[$this->getServerId()]['_last_check'] = $currentTime;
+            }
+
+            // Сохраняем обновленное время ВСЕГДА
+            $this->saveAccountUpdateTimes($accountUpdateTimes);
 
             // Сохраняем аккаунты в базу данных
             $this->saveAccounts();
@@ -1191,6 +1226,42 @@ class userModel
         return $this;
     }
 
+    /**
+     * Получает сохраненные времена обновления аккаунтов из user_variables
+     * 
+     * @return array
+     */
+    private function getAccountUpdateTimes(): array
+    {
+        $result = $this->getVar('account_update_times', 0);
+        
+        // Если результат пустой или false/null, возвращаем пустой массив
+        if (empty($result) || !is_array($result) || !isset($result['val'])) {
+            return [];
+        }
+        
+        // Декодируем JSON
+        $decoded = json_decode($result['val'], true);
+        
+        // Проверяем что декодирование прошло успешно
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
+            return [];
+        }
+        
+        return $decoded;
+    }
+
+    /**
+     * Сохраняет времена обновления аккаунтов в user_variables
+     * 
+     * @param array $accountUpdateTimes
+     * @return void
+     */
+    private function saveAccountUpdateTimes(array $accountUpdateTimes): void
+    {
+        $this->addVar('account_update_times', json_encode($accountUpdateTimes), 0);
+    }
+
     function saveAccounts()
     {
         // Удаляем старые записи для текущего сервера и email
@@ -1212,15 +1283,6 @@ class userModel
                 $currentTime,
                 (int)$account->isPasswordHide(),
             ]);
-
-            // Обновляем время последнего обновления для этого аккаунта в сессии
-            if (!isset($_SESSION['account_update_times'])) {
-                $_SESSION['account_update_times'] = [];
-            }
-            if (!isset($_SESSION['account_update_times'][$this->getServerId()])) {
-                $_SESSION['account_update_times'][$this->getServerId()] = [];
-            }
-            $_SESSION['account_update_times'][$this->getServerId()][$account->getAccount()] = time();
         }
     }
 
