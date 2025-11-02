@@ -83,6 +83,8 @@ class request
 
     private static function isEmail($name, $value): void
     {
+        if (strpos($value, 'TG:') === 0)
+            return;
         if (!self::request()->isEmail())
             return;
         if (self::request()->isURL())

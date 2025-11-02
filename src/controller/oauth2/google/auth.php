@@ -12,16 +12,21 @@ use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\user;
+use Ofey\Logan22\controller\config\config;
+
 
 class auth
 {
 
     public static function callback()
     {
+        if (!config::load()->other()->isOAuth()){
+            die('oauth disabled');
+        }
+        
         $tokenData = $_GET;
         $unique_id = $tokenData['unique_id'];
         $host = $tokenData['host'];
-        $fingerprint = $tokenData['fp'] ?? null;
         $getterUrl = "{$host}/google/getter.php";
         $postData = [
             'unique_id' => $unique_id

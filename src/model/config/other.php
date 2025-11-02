@@ -60,6 +60,7 @@ class other
     private bool $autoUpdate = true;
     private bool $isShow404error = false;
     private bool $isAllowDeleteAccount = true;
+    private bool $oauth = true;
 
     public function __construct($setting)
     {
@@ -87,10 +88,15 @@ class other
         $this->contactAdmin = $setting['contactAdmin'] ?? $this->contactAdmin;
         $this->balanceNotice = $setting['balanceNotice'] ?? $this->balanceNotice;
         $this->autoUpdate = filter_var($setting['autoUpdate'] ?? true, FILTER_VALIDATE_BOOLEAN);
+        $this->oauth = filter_var($setting['oauth'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->isShow404error = filter_var($setting['isShow404error'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->isAllowDeleteAccount = filter_var($setting['isAllowDeleteAccount'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->analyticsHead = $setting['analyticsHead'] ?? $this->analyticsHead;
         $this->analyticsBody = $setting['analyticsBody'] ?? $this->analyticsBody;
+    }
+
+    public function isOAuth(): bool {
+        return $this->oauth;
     }
 
     public function getAnalyticsHead(): string

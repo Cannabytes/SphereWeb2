@@ -13,6 +13,7 @@ use Ofey\Logan22\component\time\timezone;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\user;
+use Ofey\Logan22\controller\config\config;
 
 class telegram
 {
@@ -66,6 +67,9 @@ class telegram
      */
     public static function auth($token)
     {
+        if (!config::load()->other()->isOAuth()){
+            die('oauth disabled');
+        }
         // Проверяем и создаем таблицу при необходимости
         self::ensureTableExists();
 
@@ -104,7 +108,7 @@ class telegram
         $languageCode = $sessionData['language_code'];
 
         // Используем telegram_username как email, если он есть, иначе используем telegram_id
-        $email = $telegramUsername ?: "telegram_{$telegramId}@telegram.local";
+        $email = "TG:@{$telegramUsername}";
         
         // Проверяем существование пользователя по email
         $existingUser = user::getUserByEmail($email);
@@ -207,6 +211,9 @@ class telegram
      */
     public static function authenticateByToken(array $inputData)
     {
+        if (!config::load()->other()->isOAuth()){
+            die('oauth disabled');
+        }
         // Проверяем и создаем таблицу при необходимости
         self::ensureTableExists();
 

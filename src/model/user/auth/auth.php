@@ -102,6 +102,9 @@ class auth
         if ($user_info['password'] == "GOOGLE") {
             board::error("Войдите через Google");
         }
+        if ($user_info["password"] == "TELEGRAM") {
+            board::error("Войдите через Telegram");
+        }
         
         // Проверяем пароль
         $passwordVerified = false;

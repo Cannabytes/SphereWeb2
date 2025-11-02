@@ -919,6 +919,24 @@
                                     </div>
                                 </li>
 
+                                
+
+                                <li class="list-group-item">
+                                    <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                                        <div>
+                                            <p class="fs-14 mb-1 fw-semibold">Включение модуля OAuth</p>
+                                            <p class="fs-12 mb-0 text-muted">Включение модуля OAuth даст возможность пользователям регистрироваться и авторизовываться через дополнительные сервисы такие как google, telegram.</p>
+                                        </div>
+                                        <div>
+                                            <div class="custom-toggle-switch float-sm-end">
+                                                <input id="oauth" name="oauth" type="checkbox" {% if
+                                                    config().other().isOAuth() %}checked="" {% endif %}>
+                                                <label for="oauth" class="label-success mb-1"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
                                 <li class="list-group-item">
                                     <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                                         <div>
