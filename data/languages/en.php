@@ -2261,6 +2261,15 @@ Password: %%password%%',
 	'plugin_requires_server' => 'This plugin requires a connected server',
 	'betatransfer_payment_name' => 'Beta Transfer',
 	'betatransfer_payment_description' => 'Fast and secure transfer',
+	'l2wow_project_continues' => 'The project does not stop, it develops and expands.',
+	'l2wow_parallel_project' => 'Now a parallel project of announcers for your websites and your server rating is being launched.',
+	'l2wow_can_use_now' => 'You can already start using it for your website and server.',
+	'l2wow_admin_panel' => 'It has a powerful and convenient admin panel with analytics.',
+	'l2wow_voting_system' => 'Voting and reward system for players.',
+	'l2wow_add_server' => 'Add your server to the Sphere announcer - L2WoW.com',
+	'l2wow_announcer_rating' => 'Announcer and Rating',
+	'launcher_looking_best' => 'Looking for the best launcher?',
+	'launcher_sphere_description' => 'Your Sphere Launcher is not just an update tool, but a powerful, efficient and reliable instrument, created using modern technologies for the most comfortable game download.',
 
 ];
 

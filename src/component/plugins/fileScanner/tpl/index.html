@@ -260,6 +260,17 @@
             $('#total-files').text(totalFiles);
             $('#update-required').text(totalUpdatesRequired);
 
+            // Показываем информацию о фильтрации, если она есть
+            if (response.filter_info) {
+                const totalFiltered = response.filter_info.changed_filtered + response.filter_info.missing_filtered;
+                if (totalFiltered > 0) {
+                    showNotification(
+                        `Отфильтровано исключённых файлов: ${totalFiltered} (изменённых: ${response.filter_info.changed_filtered}, отсутствующих: ${response.filter_info.missing_filtered})`,
+                        'info'
+                    );
+                }
+            }
+
             if (totalUpdatesRequired === 0) {
                 $('#no-files-message').fadeIn();
                 $('#files-table-block').hide();

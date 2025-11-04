@@ -89,6 +89,45 @@ class instance {
 
             server::setTimeout(30);
             $response = server::send(type::FILE_SCANNER, $dataFiles)->show()->getResponse();
+            
+            // Для отладки: логируем количество файлов до фильтрации
+            $changedBeforeFilter = isset($response['changed_files']) ? count($response['changed_files']) : 0;
+            $missingBeforeFilter = isset($response['missing_files']) ? count($response['missing_files']) : 0;
+            
+            // Дополнительная фильтрация ответа от сервера
+            // Удаляем исключённые файлы из списков changed_files и missing_files
+            if (isset($response['changed_files']) && is_array($response['changed_files'])) {
+                $filteredChanged = [];
+                foreach ($response['changed_files'] as $file) {
+                    $filePath = is_array($file) ? ($file['path'] ?? '') : $file;
+                    if (!$this->isFileExcluded($filePath)) {
+                        $filteredChanged[] = $file;
+                    }
+                }
+                $response['changed_files'] = $filteredChanged;
+            }
+            
+            if (isset($response['missing_files']) && is_array($response['missing_files'])) {
+                $filteredMissing = [];
+                foreach ($response['missing_files'] as $file) {
+                    $filePath = is_array($file) ? ($file['path'] ?? '') : $file;
+                    if (!$this->isFileExcluded($filePath)) {
+                        $filteredMissing[] = $file;
+                    }
+                }
+                $response['missing_files'] = $filteredMissing;
+            }
+            
+            // Добавляем информацию о фильтрации в ответ
+            $changedAfterFilter = isset($response['changed_files']) ? count($response['changed_files']) : 0;
+            $missingAfterFilter = isset($response['missing_files']) ? count($response['missing_files']) : 0;
+            
+            $response['filter_info'] = [
+                'changed_filtered' => $changedBeforeFilter - $changedAfterFilter,
+                'missing_filtered' => $missingBeforeFilter - $missingAfterFilter,
+                'excluded_files_count' => count(self::EXCLUDED_FILES)
+            ];
+            
             echo json_encode($response);
 
         } catch (\Exception $e) {
@@ -112,9 +151,15 @@ class instance {
 
             // Проверяем, что все файлы находятся в разрешенных путях
             $validFiles = $this->validateFilePaths($files);
-            if (count($validFiles) !== count($files)) {
-                $invalidFiles = array_diff($files, $validFiles);
-                throw new \Exception('Обнаружены файлы вне разрешенных путей: ' . implode(', ', $invalidFiles));
+            
+            // Если после фильтрации не осталось файлов для обновления
+            if (empty($validFiles)) {
+                echo json_encode([
+                    'success' => true,
+                    'results' => [],
+                    'message' => 'Нет файлов для обновления (все файлы исключены или находятся вне разрешенных путей)'
+                ]);
+                return;
             }
 
             $results = [];
@@ -163,19 +208,15 @@ class instance {
      * Проверяет, находится ли файл в списке исключённых файлов или в исключённых путях.
      */
     private function isFileExcluded(string $filePath): bool {
+        // Нормализуем путь и убираем все возможные префиксы
         $normalizedPath = $this->normalizePath($filePath);
-
-        // Убираем префикс "./" для сравнения
-        if (str_starts_with($normalizedPath, './')) {
-            $normalizedPath = substr($normalizedPath, 2);
-        }
-
+        $normalizedPath = ltrim($normalizedPath, './');
+        
         // Проверяем по конкретным файлам
         foreach (self::EXCLUDED_FILES as $excluded) {
             $normExcluded = $this->normalizePath($excluded);
-            if (str_starts_with($normExcluded, './')) {
-                $normExcluded = substr($normExcluded, 2);
-            }
+            $normExcluded = ltrim($normExcluded, './');
+            
             if ($normalizedPath === $normExcluded) {
                 return true;
             }
@@ -184,12 +225,17 @@ class instance {
         // Проверяем, если файл находится внутри исключённых путей
         foreach (self::EXCLUDED_PATHS as $excludedPath) {
             $normExcludedPath = $this->normalizePath($excludedPath);
+            $normExcludedPath = ltrim($normExcludedPath, './');
+            
             if ($normExcludedPath === '') {
                 continue;
             }
-            if (str_starts_with($normalizedPath, rtrim($normExcludedPath, '/') . '/')) {
+            
+            // Проверяем, начинается ли путь файла с исключённого пути
+            if (str_starts_with($normalizedPath, $normExcludedPath . '/')) {
                 return true;
             }
+            
             // Тоже учитываем совпадение директории
             if ($normalizedPath === $normExcludedPath) {
                 return true;
