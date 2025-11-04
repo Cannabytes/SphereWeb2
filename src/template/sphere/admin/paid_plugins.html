@@ -17,39 +17,31 @@
       </div>
       <div class="card-body">
 
-        <div class="table-responsive">
-          <table class="table  table-bordered">
-            <thead>
-            <tr>
-              <th style="width: 10%" scope="col">{{ phrase(27) }}</th>
-              <th scope="col">{{ phrase(0) }}</th>
-              <th scope="col">{{ phrase(72) }}</th>
-            </tr>
-            </thead>
-            <tbody>
-
-            {% for plugin in show_plugins() %}
-            <tr>
-              <td><a href="{{plugin.PLUGIN_ADMIN_PAGE}}" class="btn btn-sm btn-light">{{phrase(plugin.PLUGIN_PHRASE_ID)}}</a></td>
-              <td>
-                 {{phrase(plugin.PLUGIN_DESCRIPTION)}}
-              </td>
-              <td>
-
-                    {% if plugin.PLUGIN_COST == -1 %}
-                      {{phrase('other')}}
-                    {% else %}
-                      {% if plugin.PLUGIN_COST ?? 0 %}${{plugin.PLUGIN_COST}}/{{ phrase('month') }}{% else %}{{ phrase('free') }}{% endif %}
-                    {% endif %}
-
-              </td>
-
-            </tr>
-            {% endfor %}
-
-            </tbody>
-          </table>
+        <div class="row">
+          {% for plugin in show_plugins() %}
+          <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+            <div class="card custom-card shadow-none border">
+              <div class="card-body p-4">
+                <div class="text-center">
+                  <span class="avatar avatar-xl avatar-rounded">
+                    <i class="bi bi-puzzle-fill fs-40 text-primary"></i>
+                  </span>
+                  <div class="mt-2">
+                    <p class="mb-0 fw-semibold">{{phrase(plugin.PLUGIN_PHRASE_ID)}}</p>
+                    <p class="mb-0 text-muted fs-12 mt-2">{{phrase(plugin.PLUGIN_DESCRIPTION)}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer text-center">
+                <div class="btn-list">
+                  <a href="{{plugin.PLUGIN_ADMIN_PAGE}}" class="btn btn-sm btn-light btn-wave">{{ phrase('open') }}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
         </div>
+
       </div>
     </div>
   </div>
