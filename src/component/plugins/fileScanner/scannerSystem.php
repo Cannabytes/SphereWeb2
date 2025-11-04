@@ -17,6 +17,9 @@ class scannerSystem {
     private array $includedPaths = [];
     private int $bufferSize = 32 * 1024;
     private bool $useIncludedPaths = false;
+    private $progressCallback = null;
+    private int $processedFiles = 0;
+    private int $totalFiles = 0;
 
     public function __construct(array|string|null $extensions = null, array|string|null $excludePaths = null, array|string|null $includePaths = null) {
         if (is_array($extensions) && count($extensions) > 0) {
@@ -198,7 +201,7 @@ class scannerSystem {
         return $originalHash;
     }
 
-    public function scan(string $directory): array {
+    public function scan(string $directory, bool $countFirst = false): array {
         $directory = $this->normalizePath($directory);
 
         if (!is_dir($directory)) {
@@ -206,6 +209,11 @@ class scannerSystem {
         }
 
         $this->result = [];
+        $this->processedFiles = 0;
+
+        if ($countFirst) {
+            $this->totalFiles = $this->countTotalFiles($directory);
+        }
 
         if ($this->useIncludedPaths) {
             $this->scanIncludedPaths($directory);
@@ -259,6 +267,11 @@ class scannerSystem {
                 return;
             }
             $this->result[$path] = $this->getFileCRC32($file->getPathname());
+            $this->processedFiles++;
+            
+            if ($this->progressCallback !== null) {
+                call_user_func($this->progressCallback, $this->processedFiles, $this->totalFiles);
+            }
         }
     }
 
@@ -289,6 +302,11 @@ class scannerSystem {
 
                 if ($this->isAllowedFile($file)) {
                     $this->result[$path] = $this->getFileCRC32($file->getPathname());
+                    $this->processedFiles++;
+                    
+                    if ($this->progressCallback !== null) {
+                        call_user_func($this->progressCallback, $this->processedFiles, $this->totalFiles);
+                    }
                 }
             }
         } catch (Exception $e) {
@@ -389,6 +407,11 @@ class scannerSystem {
         return $this;
     }
 
+    public function setProgressCallback(callable $callback): self {
+        $this->progressCallback = $callback;
+        return $this;
+    }
+
     public function getResult(): array {
         return $this->result;
     }
@@ -399,5 +422,76 @@ class scannerSystem {
 
     public function isUsingIncludedPaths(): bool {
         return $this->useIncludedPaths;
+    }
+
+    public function countTotalFiles(string $directory): int {
+        $count = 0;
+        $directory = $this->normalizePath($directory);
+
+        if (!is_dir($directory)) {
+            return 0;
+        }
+
+        if ($this->useIncludedPaths) {
+            foreach ($this->includedPaths as $includedPath) {
+                if ($directory === '.') {
+                    $fullPath = $this->removePathPrefix($includedPath);
+                } else {
+                    $fullPath = rtrim($directory, '/') . '/' . $this->removePathPrefix($includedPath);
+                }
+
+                if ($includedPath === '.') {
+                    $fullPath = $directory;
+                }
+
+                if (is_file($fullPath)) {
+                    $file = new SplFileInfo($fullPath);
+                    if ($this->isAllowedFile($file) && !$this->isExcludedPath($this->normalizePath($fullPath))) {
+                        $count++;
+                    }
+                } elseif (is_dir($fullPath)) {
+                    $count += $this->countFilesInDirectory($fullPath);
+                }
+            }
+        } else {
+            $count = $this->countFilesInDirectory($directory);
+        }
+
+        return $count;
+    }
+
+    private function countFilesInDirectory(string $directory): int {
+        $count = 0;
+        try {
+            $flags = FilesystemIterator::SKIP_DOTS | FilesystemIterator::FOLLOW_SYMLINKS;
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($directory, $flags),
+                RecursiveIteratorIterator::SELF_FIRST
+            );
+
+            foreach ($iterator as $file) {
+                if (!$file->isFile()) {
+                    continue;
+                }
+
+                $path = $this->normalizePath($file->getPathname());
+
+                if ($this->useIncludedPaths && !$this->isIncludedPath($path)) {
+                    continue;
+                }
+
+                if ($this->isExcludedPath($path)) {
+                    continue;
+                }
+
+                if ($this->isAllowedFile($file)) {
+                    $count++;
+                }
+            }
+        } catch (Exception $e) {
+            // Игнорируем ошибки при подсчете
+        }
+
+        return $count;
     }
 }

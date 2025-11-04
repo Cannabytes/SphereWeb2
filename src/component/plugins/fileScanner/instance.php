@@ -1,8 +1,8 @@
 <?php
 
-// Второй файл instance.php
 namespace Ofey\Logan22\component\plugins\fileScanner;
 
+use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\template\tpl;
@@ -48,14 +48,85 @@ class instance {
         './src/component/plugins/referral_links/config.php',
     ];
 
+    private function getProgressFilePath(): string {
+        $uploadDir = './uploads';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        return $uploadDir . '/scan_progress_' . session_id() . '.json';
+    }
+
+    private function saveProgress(array $progress): void {
+        $filePath = $this->getProgressFilePath();
+        $fp = fopen($filePath, 'c');
+        if ($fp) {
+            if (flock($fp, LOCK_EX)) {
+                ftruncate($fp, 0);
+                fwrite($fp, json_encode($progress, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                fflush($fp);
+                flock($fp, LOCK_UN);
+            }
+            fclose($fp);
+        }
+    }
+
+    private function getProgress(): ?array {
+        $filePath = $this->getProgressFilePath();
+        if (!file_exists($filePath)) {
+            return null;
+        }
+        
+        $fp = fopen($filePath, 'r');
+        if (!$fp) {
+            return null;
+        }
+        
+        $content = '';
+        if (flock($fp, LOCK_SH)) {
+            $content = stream_get_contents($fp);
+            flock($fp, LOCK_UN);
+        }
+        fclose($fp);
+        
+        if (empty($content)) {
+            return null;
+        }
+        
+        $data = json_decode($content, true);
+        return is_array($data) ? $data : null;
+    }
+
+    private function clearProgress(): void {
+        $filePath = $this->getProgressFilePath();
+        if (file_exists($filePath)) {
+            @unlink($filePath);
+        }
+    }
+
     public function index(): void {
         tpl::displayPlugin("/fileScanner/tpl/index.html");
     }
 
+    public function getProgressStatus(): void {
+        header('Content-Type: application/json');
+        $progress = $this->getProgress();
+        if ($progress === null) {
+            echo json_encode([
+                'status' => 'not_started',
+                'progress' => 0
+            ]);
+        } else {
+            echo json_encode($progress);
+        }
+    }
+
     public function scan(): void {
         header('Content-Type: application/json');
-        ini_set('max_execution_time', 300);
+        ini_set('max_execution_time', 600);
         ini_set('memory_limit', '1G');
+        
+        // Очищаем предыдущий прогресс
+        $this->clearProgress();
 
         try {
             $scanner = new scannerSystem(
@@ -65,8 +136,36 @@ class instance {
             );
             $scanner->setBufferSize(64 * 1024);
 
-            $files = $scanner->scan("./");
+            // Устанавливаем callback для отслеживания прогресса
+            $scanner->setProgressCallback(function($processed, $total) {
+                $percent = $total > 0 ? round(($processed / $total) * 100, 2) : 0;
+                $this->saveProgress([
+                    'status' => 'scanning',
+                    'processed' => $processed,
+                    'total' => $total,
+                    'progress' => $percent
+                ]);
+            });
+
+            // Сохраняем начальное состояние
+            $this->saveProgress([
+                'status' => 'counting',
+                'processed' => 0,
+                'total' => 0,
+                'progress' => 0
+            ]);
+
+            // Сканируем с подсчетом общего количества файлов
+            $files = $scanner->scan("./", true);
             $totalFiles = count($files);
+
+            // Обновляем прогресс - подготовка данных
+            $this->saveProgress([
+                'status' => 'preparing',
+                'processed' => $totalFiles,
+                'total' => $totalFiles,
+                'progress' => 100
+            ]);
 
             $dataFiles = [
                 'success' => true,
@@ -86,6 +185,14 @@ class instance {
                     'hash' => $hash,
                 ];
             }
+
+            // Обновляем прогресс - отправка на сервер
+            $this->saveProgress([
+                'status' => 'sending',
+                'processed' => $totalFiles,
+                'total' => $totalFiles,
+                'progress' => 100
+            ]);
 
             server::setTimeout(30);
             $response = server::send(type::FILE_SCANNER, $dataFiles)->show()->getResponse();
@@ -128,14 +235,31 @@ class instance {
                 'excluded_files_count' => count(self::EXCLUDED_FILES)
             ];
             
+            // Сохраняем финальное состояние
+            $this->saveProgress([
+                'status' => 'completed',
+                'processed' => $totalFiles,
+                'total' => $totalFiles,
+                'progress' => 100,
+                'result' => $response
+            ]);
+            
             echo json_encode($response);
 
         } catch (\Exception $e) {
-            echo json_encode([
+            $error = [
                 'success' => false,
                 'error' => $e->getMessage(),
                 'scanned_paths' => self::INCLUDED_PATHS
+            ];
+            
+            // Сохраняем ошибку в прогресс
+            $this->saveProgress([
+                'status' => 'error',
+                'error' => $e->getMessage()
             ]);
+            
+            echo json_encode($error);
         }
     }
 
@@ -146,7 +270,7 @@ class instance {
         try {
             $files = $_POST['files'] ?? [];
             if (empty($files)) {
-                throw new \Exception('Список файлов пуст');
+                throw new \Exception(lang::get_phrase('files_list_empty'));
             }
 
             // Проверяем, что все файлы находятся в разрешенных путях
@@ -157,7 +281,7 @@ class instance {
                 echo json_encode([
                     'success' => true,
                     'results' => [],
-                    'message' => 'Нет файлов для обновления (все файлы исключены или находятся вне разрешенных путей)'
+                    'message' => lang::get_phrase('no_files_to_update')
                 ]);
                 return;
             }
@@ -306,7 +430,7 @@ class instance {
             if (!@mkdir($dir, 0755, true)) {
                 return [
                     'success' => false,
-                    'message' => "Не удалось создать директорию: $dir. Проверьте права доступа."
+                    'message' => lang::get_phrase('directory_create_error') . ": $dir. " . lang::get_phrase('check_permissions') . "."
                 ];
             }
         }
@@ -316,13 +440,13 @@ class instance {
             if (!is_writable($localPath)) {
                 return [
                     'success' => false,
-                    'message' => "Нет прав на запись в файл: $localPath. Текущие права: " . substr(sprintf('%o', fileperms($localPath)), -4)
+                    'message' => lang::get_phrase('no_write_permission_file') . ": $localPath. " . lang::get_phrase('current_permissions') . ": " . substr(sprintf('%o', fileperms($localPath)), -4)
                 ];
             }
         } elseif (!is_writable($dir)) {
             return [
                 'success' => false,
-                'message' => "Нет прав на запись в директорию: $dir. Текущие права: " . substr(sprintf('%o', fileperms($dir)), -4)
+                'message' => lang::get_phrase('no_write_permission_dir') . ": $dir. " . lang::get_phrase('current_permissions') . ": " . substr(sprintf('%o', fileperms($dir)), -4)
             ];
         }
 
@@ -343,10 +467,10 @@ class instance {
 
         if ($content === false) {
             $error = error_get_last();
-            $errorMessage = $error ? $error['message'] : 'Неизвестная ошибка';
+            $errorMessage = $error ? $error['message'] : lang::get_phrase('unknown_error_php');
             return [
                 'success' => false,
-                'message' => "Ошибка загрузки файла: $errorMessage"
+                'message' => lang::get_phrase('file_download_error') . ": $errorMessage"
             ];
         }
 
@@ -357,7 +481,7 @@ class instance {
             if ($diskFreeSpace !== false && $diskFreeSpace < strlen($content)) {
                 return [
                     'success' => false,
-                    'message' => "Недостаточно места на диске для записи файла"
+                    'message' => lang::get_phrase('not_enough_disk_space')
                 ];
             }
 
@@ -370,12 +494,12 @@ class instance {
             // Записываем содержимое файла
             $writeResult = @file_put_contents($localPath, $content, LOCK_EX);
             if ($writeResult === false) {
-                throw new \Exception("Не удалось записать данные в файл: " . (error_get_last()['message'] ?? 'неизвестная ошибка'));
+                throw new \Exception(lang::get_phrase('file_write_error') . ": " . (error_get_last()['message'] ?? lang::get_phrase('unknown_error_php')));
             }
 
             // Проверяем, что файл действительно был записан
             if (!file_exists($localPath) || filesize($localPath) !== strlen($content)) {
-                throw new \Exception("Ошибка верификации записанного файла");
+                throw new \Exception(lang::get_phrase('file_verification_error'));
             }
 
             // Удаляем резервную копию после успешного обновления
@@ -385,7 +509,7 @@ class instance {
 
             return [
                 'success' => true,
-                'message' => 'Файл успешно обновлён'
+                'message' => lang::get_phrase('file_updated_success')
             ];
 
         } catch (\Exception $e) {

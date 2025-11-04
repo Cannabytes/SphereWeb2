@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Обновление системы{% endblock %}
+{% block title %}{{ phrase('system_update') }}{% endblock %}
 
 {% block content %}
 <style>
@@ -48,7 +48,7 @@
                                 <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
                             </svg>
                         </a>
-                        Обновление системы
+                        {{ phrase('system_update') }}
                     </div>
                 </div>
 
@@ -61,7 +61,7 @@
                             <div class="alert alert-info" role="alert">
                                 <div class="d-flex align-items-center">
                                     <i class="ri-information-line me-2 fs-16"></i>
-                                    <div>Вы можете проверить все файлы проекта, на предмет отсутствия или если они были изменены</div>
+                                    <div>{{ phrase('notification_info') }}</div>
                                 </div>
                             </div>
                         </div>
@@ -79,7 +79,7 @@
                                             </span>
                                         </div>
                                         <div>
-                                            <h6 class="mb-1">Всего файлов</h6>
+                                            <h6 class="mb-1">{{ phrase('total_files') }}</h6>
                                             <span class="text-muted" id="total-files">0</span>
                                         </div>
                                     </div>
@@ -97,7 +97,7 @@
                                             </span>
                                         </div>
                                         <div>
-                                            <h6 class="mb-1">Требуют обновления</h6>
+                                            <h6 class="mb-1">{{ phrase('update_required') }}</h6>
                                             <span class="text-muted" id="update-required">0</span>
                                         </div>
                                     </div>
@@ -110,7 +110,7 @@
                     <div class="row mb-4" id="scan-button-block">
                         <div class="col-xl-12 text-center">
                             <button id="startScan" class="btn btn-primary btn-lg pulse-animation">
-                                <i class="ri-search-line me-2"></i>Начать сканирование файлов
+                                <i class="ri-search-line me-2"></i>{{ phrase('start_scan') }}
                             </button>
                         </div>
                     </div>
@@ -118,14 +118,45 @@
                     <!-- Анимация сканирования -->
                     <div id="scanning-animation" style="display: none;">
                         <div class="scan-loader"></div>
-                        <div class="scanning-text">Сканирование файлов...</div>
+                        <div class="scanning-text">{{ phrase('scanning_files') }}</div>
+                        
+                        <!-- Прогресс бар -->
+                        <div class="container mt-4">
+                            <div class="row justify-content-center">
+                                <div class="col-md-8">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-center mb-3" id="scan-status-text">{{ phrase('preparing_scan') }}</h6>
+                                            
+                                            <div class="progress mb-3" style="height: 30px;">
+                                                <div id="scan-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+                                                     role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                    0%
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="d-flex justify-content-between text-muted">
+                                                <span>
+                                                    <i class="ri-file-list-3-line me-1"></i>
+                                                    {{ phrase('scanned') }}: <strong id="scan-processed">0</strong>
+                                                </span>
+                                                <span>
+                                                    <i class="ri-folder-line me-1"></i>
+                                                    {{ phrase('total_files') }}: <strong id="scan-total">0</strong>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Сообщение об отсутствии файлов для обновления -->
                     <div id="no-files-message" class="alert alert-success" style="display: none;">
                         <div class="d-flex align-items-center">
                             <i class="ri-checkbox-circle-line me-2 fs-16"></i>
-                            <div>Все файлы системы актуальны. Обновление не требуется.</div>
+                            <div>{{ phrase('all_files_actual') }}</div>
                         </div>
                     </div>
 
@@ -136,11 +167,11 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="selectAll" checked>
                                     <label class="form-check-label" for="selectAll">
-                                        Выбрать все файлы
+                                        {{ phrase('select_all_files') }}
                                     </label>
                                 </div>
                                 <button id="startUpdate" class="btn btn-success" disabled>
-                                    <i class="ri-download-cloud-2-line me-2"></i>Начать обновление
+                                    <i class="ri-download-cloud-2-line me-2"></i>{{ phrase('start_update') }}
                                 </button>
                             </div>
 
@@ -149,8 +180,8 @@
                                     <thead>
                                     <tr>
                                         <th style="width: 40px;"></th>
-                                        <th>Файл</th>
-                                        <th style="width: 120px;">Статус</th>
+                                        <th>{{ phrase('file') }}</th>
+                                        <th style="width: 120px;">{{ phrase('status') }}</th>
                                     </tr>
                                     </thead>
                                     <tbody id="filesList">
@@ -174,6 +205,28 @@
         const $selectAll = $('#selectAll');
         const $filesList = $('#filesList');
         const $notifications = $('#notifications');
+        
+        // Translations
+        const lang = {
+            'preparing_scan': '{{ phrase("preparing_scan") }}',
+            'counting_files': '{{ phrase("counting_files") }}',
+            'scanning_files': '{{ phrase("scanning_files") }}',
+            'preparing_data': '{{ phrase("preparing_data") }}',
+            'sending_to_server': '{{ phrase("sending_to_server") }}',
+            'scan_completed': '{{ phrase("scan_completed") }}',
+            'scan_error': '{{ phrase("scan_error") }}',
+            'requires_update': '{{ phrase("requires_update") }}',
+            'missing': '{{ phrase("missing") }}',
+            'updated': '{{ phrase("updated") }}',
+            'error': '{{ phrase("error") }}',
+            'update_completed': '{{ phrase("update_completed") }}',
+            'update_error': '{{ phrase("update_error") }}',
+            'no_files_selected': '{{ phrase("no_files_selected") }}',
+            'scan_error_occurred': '{{ phrase("scan_error_occurred") }}',
+            'unknown_error': '{{ phrase("unknown_error") }}',
+            'result_not_found': '{{ phrase("result_not_found") }}',
+            'scan_start_error': '{{ phrase("scan_start_error") }}'
+        };
 
         function showNotification(message, type = 'success') {
             const alertClass = `alert-${type}`;
@@ -192,6 +245,10 @@
             $startUpdate.prop('disabled', checkedFiles === 0);
         }
 
+        let progressInterval = null;
+        let scanningStarted = false;
+        let lastValidProgress = null;
+
         // Обработчик начала сканирования
         $('#startScan').click(function() {
             $('#scan-button-block').hide();
@@ -199,6 +256,22 @@
             $('#no-files-message').hide();
             $('#files-table-block').hide();
             $notifications.empty();
+            
+            // Сбрасываем последний валидный прогресс
+            lastValidProgress = null;
+            
+            // Сбрасываем стили прогресс-бара
+            $('#scan-progress-bar')
+                .removeClass('bg-danger')
+                .addClass('bg-primary progress-bar-animated')
+                .css('width', '0%')
+                .attr('aria-valuenow', 0)
+                .text('0%');
+            
+            // Сбрасываем счетчики
+            $('#scan-processed').text('0');
+            $('#scan-total').text('0');
+            $('#scan-status-text').text(lang.preparing_scan);
 
             setTimeout(() => {
                 $('#stats-block').fadeIn();
@@ -214,38 +287,150 @@
             updateStartButtonState();
         });
 
+        function updateProgressUI(progress) {
+            // Защита от undefined/null значений
+            const percent = (progress && typeof progress.progress === 'number') ? progress.progress : 0;
+            const processed = (progress && typeof progress.processed === 'number') ? progress.processed : 0;
+            const total = (progress && typeof progress.total === 'number') ? progress.total : 0;
+            const status = (progress && progress.status) ? progress.status : 'unknown';
+
+            // Обновляем прогресс бар
+            $('#scan-progress-bar')
+                .css('width', percent + '%')
+                .attr('aria-valuenow', percent)
+                .text(percent.toFixed(1) + '%');
+
+            // Обновляем счётчики
+            $('#scan-processed').text(processed.toLocaleString());
+            $('#scan-total').text(total.toLocaleString());
+
+            // Обновляем текст статуса
+            let statusText = '';
+            switch(status) {
+                case 'counting':
+                    statusText = lang.counting_files;
+                    break;
+                case 'scanning':
+                    statusText = lang.scanning_files;
+                    break;
+                case 'preparing':
+                    statusText = lang.preparing_data;
+                    break;
+                case 'sending':
+                    statusText = lang.sending_to_server;
+                    break;
+                case 'completed':
+                    statusText = lang.scan_completed;
+                    $('#scan-progress-bar').removeClass('progress-bar-animated');
+                    break;
+                case 'error':
+                    statusText = lang.scan_error;
+                    $('#scan-progress-bar')
+                        .removeClass('bg-primary progress-bar-animated')
+                        .addClass('bg-danger');
+                    break;
+                default:
+                    statusText = lang.scanning_files;
+            }
+            $('#scan-status-text').text(statusText);
+        }
+
+        function checkProgress() {
+            $.ajax({
+                url: '/admin/filescanner/progress',
+                method: 'GET',
+                dataType: 'json',
+                success: function(progress) {
+                    // Проверяем валидность данных прогресса
+                    // Игнорируем если получили нулевые значения, а до этого были нормальные
+                    if (lastValidProgress !== null && 
+                        progress.processed === 0 && 
+                        progress.total === 0 && 
+                        progress.status !== 'completed' && 
+                        progress.status !== 'error' &&
+                        progress.status !== 'counting') {
+                        // Пропускаем это обновление, используем предыдущие валидные данные
+                        return;
+                    }
+                    
+                    if (progress.status === 'completed') {
+                        // Сканирование завершено
+                        clearInterval(progressInterval);
+                        lastValidProgress = progress;
+                        updateProgressUI(progress);
+                        
+                        setTimeout(() => {
+                            $('#scanning-animation').fadeOut(() => {
+                                if (progress.result) {
+                                    displayFiles(progress.result);
+                                    setTimeout(updateStartButtonState, 500);
+                                } else {
+                                    showNotification(lang.result_not_found, 'warning');
+                                    $('#scan-button-block').show();
+                                }
+                            });
+                        }, 1000);
+                    } else if (progress.status === 'error') {
+                        // Ошибка сканирования
+                        clearInterval(progressInterval);
+                        lastValidProgress = progress;
+                        updateProgressUI(progress);
+                        
+                        setTimeout(() => {
+                            showNotification(lang.scan_error_occurred + ': ' + (progress.error || lang.unknown_error), 'danger');
+                            $('#scanning-animation').fadeOut(() => {
+                                $('#scan-button-block').show();
+                            });
+                        }, 1000);
+                    } else {
+                        // Обновляем прогресс только если данные валидны
+                        if (progress.status && (progress.total > 0 || progress.status === 'counting')) {
+                            lastValidProgress = progress;
+                            updateProgressUI(progress);
+                        } else if (lastValidProgress !== null) {
+                            // Используем последние валидные данные
+                            updateProgressUI(lastValidProgress);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ошибка получения прогресса:', error);
+                }
+            });
+        }
+
         function startScanning() {
+            scanningStarted = false;
+            
+            // Запускаем сканирование
             $.ajax({
                 url: '/admin/filescanner/scan',
                 method: 'POST',
                 dataType: 'json',
-                timeout: 60000,
+                timeout: 0, // Убираем таймаут, так как теперь отслеживаем прогресс
                 success: function(response) {
-                    if (response.changed_files !== undefined) {
-                        setTimeout(() => {
-                            $('#scanning-animation').fadeOut(() => {
-                                displayFiles(response);
-                                // Явно вызываем обновление состояния кнопки
-                                setTimeout(updateStartButtonState, 500);
-                            });
-                        }, 1500);
-                    } else {
-                        showNotification('Некорректный ответ от сервера', 'danger');
-                        $('#scanning-animation').hide();
-                        $('#scan-button-block').show();
+                    // Этот обработчик может и не вызваться, если мы получим результат через прогресс
+                    if (!scanningStarted) {
+                        return; // Игнорируем, если уже обработали через прогресс
                     }
                 },
                 error: function(xhr, status, error) {
-                    // Проверяем тип ошибки
-                    if (status === 'timeout') {
-                        showNotification('Превышено время ожидания ответа от сервера', 'danger');
-                    } else {
-                        showNotification('Произошла ошибка при сканировании: ' + error, 'danger');
+                    if (scanningStarted) {
+                        return; // Игнорируем, если уже начали отслеживать прогресс
                     }
+                    
+                    clearInterval(progressInterval);
+                    showNotification(lang.scan_start_error + ': ' + error, 'danger');
                     $('#scanning-animation').hide();
                     $('#scan-button-block').show();
                 }
             });
+
+            // Начинаем проверять прогресс каждую секунду
+            setTimeout(() => {
+                scanningStarted = true;
+                progressInterval = setInterval(checkProgress, 1000);
+            }, 500);
         }
 
         function displayFiles(response) {
@@ -259,17 +444,6 @@
 
             $('#total-files').text(totalFiles);
             $('#update-required').text(totalUpdatesRequired);
-
-            // Показываем информацию о фильтрации, если она есть
-            if (response.filter_info) {
-                const totalFiltered = response.filter_info.changed_filtered + response.filter_info.missing_filtered;
-                if (totalFiltered > 0) {
-                    showNotification(
-                        `Отфильтровано исключённых файлов: ${totalFiltered} (изменённых: ${response.filter_info.changed_filtered}, отсутствующих: ${response.filter_info.missing_filtered})`,
-                        'info'
-                    );
-                }
-            }
 
             if (totalUpdatesRequired === 0) {
                 $('#no-files-message').fadeIn();
@@ -292,13 +466,13 @@
                             <i class="ri-file-code-line me-2 text-warning"></i>
                             ${file.path}
                         </div>
-                    </td>
-                    <td>
-                        <span class="badge bg-warning-transparent">
-                            Требует обновления
-                        </span>
-                    </td>
-                </tr>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning-transparent">
+                                            ${lang.requires_update}
+                                        </span>
+                                    </td>
+                                </tr>
             `).appendTo($filesList);
 
                     row.animate({ opacity: 1 }, 300);
@@ -322,7 +496,7 @@
                     </td>
                     <td>
                         <span class="badge bg-danger-transparent">
-                            Отсутствует
+                            ${lang.missing}
                         </span>
                     </td>
                 </tr>
@@ -353,7 +527,7 @@
             });
 
             if (selectedFiles.length === 0) {
-                showNotification('Не выбрано ни одного файла для обновления', 'warning');
+                showNotification(lang.no_files_selected, 'warning');
                 return;
             }
 
@@ -373,7 +547,7 @@
                             if (result.status) {
                                 statusCell.html(`
                                     <span class="badge bg-success-transparent">
-                                        Обновлено
+                                        ${lang.updated}
                                     </span>
                                 `);
                             } else {
@@ -382,15 +556,15 @@
 
                                 statusCell.html(`
                                     <span class="badge bg-danger-transparent">
-                                        Ошибка: ${errorMessage}
+                                        ${lang.error}: ${errorMessage}
                                     </span>
                                 `);
                             }
                         });
 
-                        showNotification('Обновление файлов успешно завершено');
+                        showNotification(lang.update_completed);
                     } else {
-                        const errorMessage = response.error || 'Произошла ошибка при обновлении файлов';
+                        const errorMessage = response.error || lang.update_error;
                         showNotification(errorMessage +
                             (response.trace ? '<br><small class="text-muted">Подробности в консоли браузера</small>' : ''),
                             'danger'
@@ -401,7 +575,7 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    showNotification('Произошла ошибка при обновлении: ' + error, 'danger');
+                    showNotification(lang.update_error + ': ' + error, 'danger');
                 },
                 complete: function() {
                     updateStartButtonState();

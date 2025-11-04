@@ -22,7 +22,15 @@ $routes = [
             (new fileScannerAlias())->scan();
         },
     ],
-
+    [
+        "method"  => "GET",
+        "pattern" => "/admin/filescanner/progress",
+        "file"    => "filescanner.php",
+        "call"    => function() {
+            validation::user_protection("admin");
+            (new fileScannerAlias())->getProgressStatus();
+        },
+    ],
     [
         "method"  => "POST",
         "pattern" => "/admin/filescanner/update",
