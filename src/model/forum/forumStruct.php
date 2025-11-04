@@ -335,6 +335,8 @@ class forumStruct {
                                        thread.title AS title,
                                        post.message AS message,
                                        user.username,
+                                       user.user_id,
+                                       user.avatar_date,
                                        user.gravatar,
                                        thread.last_post_date,
                                        CONCAT('forums/threads/', thread.thread_id) AS thread_url

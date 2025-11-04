@@ -88,22 +88,22 @@ class forum {
     }
 
     private static function link_xenforo($forum): string {
-        $thread_id = $forum['thread_id'];
-        $post_id = $forum['post_id'];
+        $thread_id = $forum['thread_id'] ?? '';
+        $post_id = $forum['post_id'] ?? '';
         $url = forum::get()->getUrl();
         return sprintf("%s/index.php?threads/%s/#post-%s", $url, $thread_id, $post_id);
     }
 
     private static function link_ipb($forum): string {
-        $id = $forum['id'];
-        $title = $forum['title_seo'];
+        $id = $forum['id'] ?? '';
+        $title = $forum['title_seo'] ?? '';
         return sprintf("%s/index.php?/topic/%s-%s/", self::get_url(), $id, $title);
     }
 
     private static function link_sphere($forum): string {
-        $section_id = $forum['section_id'];
-        $topic_id = $forum['topic_id'];
-        $id = $forum['last_post_user_id'];
+        $section_id = $forum['section_id'] ?? '';
+        $topic_id = $forum['topic_id'] ?? '';
+        $id = $forum['last_post_user_id'] ?? '';
         return sprintf("%s/threads/%s/%s#%s", "/forum", $section_id, $topic_id, $id);
     }
 
