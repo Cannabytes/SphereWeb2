@@ -2270,6 +2270,7 @@ Password: %%password%%',
 	'l2wow_announcer_rating' => 'Announcer and Rating',
 	'launcher_looking_best' => 'Looking for the best launcher?',
 	'launcher_sphere_description' => 'Your Sphere Launcher is not just an update tool, but a powerful, efficient and reliable instrument, created using modern technologies for the most comfortable game download.',
+	'sphere_plugins' => 'Sphere Plugins',
 
 ];
 

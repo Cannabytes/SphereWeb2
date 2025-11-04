@@ -2205,5 +2205,6 @@ Password: %%password%%',
     'l2wow_announcer_rating' => 'Αναγγελέας και Κατάταξη',
     'launcher_looking_best' => 'Ψάχνετε για το καλύτερο launcher;',
     'launcher_sphere_description' => 'Το Sphere Launcher σας δεν είναι απλά ένα εργαλείο ενημέρωσης, αλλά ένα ισχυρό, αποτελεσματικό και αξιόπιστο εργαλείο, δημιουργημένο με τη χρήση σύγχρονων τεχνολογιών για την πιο άνετη λήψη παιχνιδιού.',
+    'sphere_plugins' => 'Πρόσθετα Sphere',
 
 ];

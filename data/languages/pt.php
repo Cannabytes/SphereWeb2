@@ -2221,5 +2221,6 @@ Password: %%password%%',
     'l2wow_announcer_rating' => 'Anunciante e Classificação',
     'launcher_looking_best' => 'Procurando o melhor launcher?',
     'launcher_sphere_description' => 'Seu Sphere Launcher não é apenas uma ferramenta de atualização, mas um instrumento poderoso, eficiente e confiável, criado usando tecnologias modernas para o download de jogo mais confortável.',
+    'sphere_plugins' => 'Plugins do Sphere',
 
 ];

@@ -2227,5 +2227,6 @@ Contraseña: %%password%%',
     'l2wow_announcer_rating' => 'Anunciante y Clasificación',
     'launcher_looking_best' => '¿Buscas el mejor launcher?',
     'launcher_sphere_description' => 'Su Sphere Launcher no es solo una herramienta de actualización, sino un instrumento poderoso, eficiente y confiable, creado con tecnologías modernas para la descarga de juegos más cómoda.',
+    'sphere_plugins' => 'Plugins de Sphere',
 
 ];
