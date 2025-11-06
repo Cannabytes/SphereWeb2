@@ -856,7 +856,7 @@ class options
         $data = json_decode($post, true);
         foreach ($data['donateSystems'] as $i => $system) {
             $sysData = reset($system);
-            if (!$sysData['inputs']) {
+            if (empty($sysData['inputs'])) {
                 unset($data['donateSystems'][$i]);
             }
         }

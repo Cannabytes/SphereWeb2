@@ -1,0 +1,341 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card custom-card shadow-lg rounded">
+        <div class="card-header justify-content-between">
+            <div class="card-title">
+                <a href="/admin/extensions/paid" class="avatar border text-muted me-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                    </svg>
+                </a>
+                {{ phrase('anons_l2wow_com') }}
+            </div>
+            <div class="prism-toggle">
+                <div class="custom-toggle-switch d-flex align-items-center">
+                    <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}" type="checkbox" {% if pluginActive %}checked{% endif %}>
+                    <label for="enablePlugin" class="label-success"></label>
+                    <span class="ms-3">{{phrase('Activating the plugin')}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            {% if pluginActive == false %}
+            <div class="alert alert-danger" role="alert">
+                {{phrase('plugin_is_disabled_need_active')|raw}}
+            </div>
+            {% endif %}
+
+            <div class="row">
+                <!-- Основные настройки -->
+                <div class="col-xl-12 col-lg-12 col-sm-12 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-star-fill me-2"></i>{{ phrase('anons_l2wow_settings') }}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+
+                            <!-- Выбор сервера -->
+                            <div class="mb-4">
+                                <label for="l2wowServerSelect" class="form-label"><strong>{{ phrase('select_server') }}</strong></label>
+                                <select class="form-select" id="l2wowServerSelect" required>
+                                    <option value="">{{ phrase('select_server') }}</option>
+                                    {% for server in servers %}
+                                        <option value="{{ server.getId() }}">{{ server.getName() }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Область настроек уровней -->
+                            <div id="l2wowServerConfigNotice" class="alert alert-warning" role="alert">
+                                <i class="bi bi-info-circle"></i> Выберите сервер выше, чтобы настроить награды за голосования
+                            </div>
+
+                            <div id="l2wowServerConfig" style="display: none;">
+                                
+                                <!-- Webhook Key -->
+                                <div class="mb-4">
+                                    <label for="l2wowWebhookKey" class="form-label">
+                                        <strong><i class="bi bi-key-fill"></i> Webhook Key (Ключ безопасности)</strong>
+                                    </label>
+                                    <input type="text" class="form-control" id="l2wowWebhookKey" placeholder="Введите webhook_key из настроек L2WOW.COM">
+                                    <small class="text-muted">Этот ключ должен совпадать с webhook_key который указан в настройках вашего сервера на L2WOW.COM</small>
+                                </div>
+                                
+                                <!-- Webhook URL для сервера -->
+                                <div class="alert alert-info mb-4" role="alert">
+                                    <h6 class="alert-heading"><i class="bi bi-link-45deg"></i> Webhook URL для этого сервера:</h6>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="l2wowWebhookUrl" readonly>
+                                        <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard(document.getElementById('l2wowWebhookUrl').value)">
+                                            <i class="bi bi-clipboard"></i> Копировать
+                                        </button>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">Используйте этот URL в настройках L2WOW.COM</small>
+                                </div>
+                                <hr class="my-4">
+                                
+                                <h5 class="mb-3">
+                                    <i class="bi bi-gift"></i> Настройка наград за голосования
+                                </h5>
+                                <p class="text-muted mb-4">
+                                    Настройте награды для каждого количества голосов (от 1 до 5).<br>
+                                    Пользователь получит награду в зависимости от того, сколько голосов он отдал за ваш сервер.
+                                </p>
+                                
+                                <!-- Вкладки для голосов -->
+                                <ul class="nav nav-tabs mb-3" id="l2wowVoteTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="vote-1-tab" data-bs-toggle="tab" data-bs-target="#vote-1" type="button" role="tab">
+                                            <i class="bi bi-star-fill"></i> За 1 голос
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="vote-2-tab" data-bs-toggle="tab" data-bs-target="#vote-2" type="button" role="tab">
+                                            <i class="bi bi-star-fill"></i> За 2 голоса
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="vote-3-tab" data-bs-toggle="tab" data-bs-target="#vote-3" type="button" role="tab">
+                                            <i class="bi bi-star-fill"></i> За 3 голоса
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="vote-4-tab" data-bs-toggle="tab" data-bs-target="#vote-4" type="button" role="tab">
+                                            <i class="bi bi-star-fill"></i> За 4 голоса
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="vote-5-tab" data-bs-toggle="tab" data-bs-target="#vote-5" type="button" role="tab">
+                                            <i class="bi bi-star-fill"></i> За 5 голосов
+                                        </button>
+                                    </li>
+                                </ul>
+
+                                <!-- Содержимое вкладок -->
+                                <div class="tab-content" id="l2wowVoteTabContent">
+                                    <div class="tab-pane fade show active" id="vote-1" role="tabpanel" data-vote-count="1">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="text-primary mb-3"><i class="bi bi-gift"></i> Награды за 1 голос:</h6>
+                                                <div class="items-container-1 mb-3"></div>
+                                                <button type="button" class="btn btn-sm btn-outline-primary add-item-btn" data-vote-count="1">
+                                                    <i class="bi bi-plus-circle"></i> Добавить предмет
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tab-pane fade" id="vote-2" role="tabpanel" data-vote-count="2">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="text-primary mb-3"><i class="bi bi-gift"></i> Награды за 2 голоса:</h6>
+                                                <div class="items-container-2 mb-3"></div>
+                                                <button type="button" class="btn btn-sm btn-outline-primary add-item-btn" data-vote-count="2">
+                                                    <i class="bi bi-plus-circle"></i> Добавить предмет
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tab-pane fade" id="vote-3" role="tabpanel" data-vote-count="3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="text-primary mb-3"><i class="bi bi-gift"></i> Награды за 3 голоса:</h6>
+                                                <div class="items-container-3 mb-3"></div>
+                                                <button type="button" class="btn btn-sm btn-outline-primary add-item-btn" data-vote-count="3">
+                                                    <i class="bi bi-plus-circle"></i> Добавить предмет
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tab-pane fade" id="vote-4" role="tabpanel" data-vote-count="4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="text-primary mb-3"><i class="bi bi-gift"></i> Награды за 4 голоса:</h6>
+                                                <div class="items-container-4 mb-3"></div>
+                                                <button type="button" class="btn btn-sm btn-outline-primary add-item-btn" data-vote-count="4">
+                                                    <i class="bi bi-plus-circle"></i> Добавить предмет
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tab-pane fade" id="vote-5" role="tabpanel" data-vote-count="5">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="text-primary mb-3"><i class="bi bi-gift"></i> Награды за 5 голосов:</h6>
+                                                <div class="items-container-5 mb-3"></div>
+                                                <button type="button" class="btn btn-sm btn-outline-primary add-item-btn" data-vote-count="5">
+                                                    <i class="bi bi-plus-circle"></i> Добавить предмет
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <button type="button" class="btn btn-success btn-lg w-100" id="l2wowSaveBtn">
+                                        <i class="bi bi-save"></i> Сохранить все настройки
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Template для предмета -->
+<template id="itemTemplate">
+    <div class="row mb-2 item-row p-3 bg-light border rounded">
+        <div class="col-md-3">
+            <label class="form-label small fw-bold"><i class="bi bi-hash"></i> ID предмета</label>
+            <input type="number" class="form-control form-control-sm item-id-input" min="1" placeholder="Например: 57" required>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small fw-bold"><i class="bi bi-123"></i> Количество</label>
+            <input type="number" class="form-control form-control-sm item-count-input" min="1" value="1" required>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small fw-bold"><i class="bi bi-star"></i> Заточка</label>
+            <input type="number" class="form-control form-control-sm item-enchant-input" min="0" value="0">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small fw-bold">Информация</label>
+            <div class="item-info-display p-2 bg-white border rounded small">
+                <span class="text-muted">Введите ID предмета</span>
+            </div>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="button" class="btn btn-sm btn-danger delete-item-btn w-100">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </div>
+</template>
+
+<style>
+.item-row {
+    transition: all 0.2s ease;
+}
+
+.item-row:hover {
+    background-color: #e9ecef !important;
+}
+
+.item-info-display {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.item-info-display img {
+    object-fit: contain;
+}
+
+.items-container-1:empty:after,
+.items-container-2:empty:after,
+.items-container-3:empty:after,
+.items-container-4:empty:after,
+.items-container-5:empty:after {
+    content: "Нажмите 'Добавить предмет' чтобы добавить награду для этого количества голосов";
+    display: block;
+    padding: 20px;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.875rem;
+    border: 2px dashed #dee2e6;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+}
+
+.nav-tabs .nav-link {
+    color: #6c757d;
+}
+
+.nav-tabs .nav-link.active {
+    color: #4361ee;
+    font-weight: bold;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #4361ee;
+}
+</style>
+
+<script>
+// Передаем данные настроек серверов в JavaScript
+window.serverSettingsData = {{ serverSettings|json_encode|raw }};
+window.pluginName = "{{ pluginName }}";
+window.pluginActive = {{ pluginActive ? 'true' : 'false' }};
+console.log('Данные серверов из PHP:', window.serverSettingsData);
+</script>
+
+<script src="/src/component/plugins/anons_l2wow_com/tpl/js/setting.js?v=1.3"></script>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        alert('Скопировано в буфер обмена!');
+    }).catch(function(err) {
+        console.error('Ошибка копирования:', err);
+        alert('Не удалось скопировать');
+    });
+}
+
+// Обработчик включения/выключения плагина
+document.addEventListener('DOMContentLoaded', function() {
+    const enablePluginCheckbox = document.getElementById('enablePlugin');
+    if (enablePluginCheckbox) {
+        enablePluginCheckbox.addEventListener('change', function() {
+            const isChecked = this.checked;
+            const pluginName = window.pluginName || 'anons_l2wow_com';
+            
+            console.log('Изменение статуса плагина:', isChecked);
+            
+            // Отправляем как form-data, а не JSON
+            const formData = new FormData();
+            formData.append('pluginName', pluginName);
+            formData.append('setting', 'enablePlugin');
+            formData.append('value', isChecked);
+            formData.append('serverId', 0);
+            
+            fetch('/admin/plugin/save/activator', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log('Ответ сервера:', result);
+                if (result.ok || result.success) {
+                } else {
+                    alert('Ошибка: ' + (result.message || 'Не удалось изменить статус плагина'));
+                    // Возвращаем checkbox в предыдущее состояние
+                    enablePluginCheckbox.checked = !isChecked;
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при изменении статуса плагина');
+                // Возвращаем checkbox в предыдущее состояние
+                enablePluginCheckbox.checked = !isChecked;
+            });
+        });
+    }
+});
+</script>
+
+{% endblock %}
+

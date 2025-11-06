@@ -40,8 +40,8 @@ class serverStatus
         if (is_dir($cacheDir)) {
             $files = glob($cacheDir . '/*.json');
             foreach ($files as $file) {
-                if (is_file($file)) {
-                    unlink($file);
+                if (is_file($file) && file_exists($file)) {
+                    @unlink($file);
                 }
             }
         } else {

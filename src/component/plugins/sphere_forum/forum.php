@@ -1365,8 +1365,8 @@ class forum
             $name = $_POST['name'] ?? board::error("Не указано название");
             $description = $_POST['description'] ?? "";
             $parent = $_POST['parent'] ?? null;
-            $icon = $_POST['icon'] ?? null;
-            $link = $_POST['link'] ?? null;
+            $icon = $_POST['icon'] ?? "";
+            $link = $_POST['link'] ?? "";
 
             $name = XssSecurity::clean($name);
             $description = XssSecurity::clean($description);
@@ -1711,7 +1711,7 @@ class forum
             $categoryId = $_POST['categoryId'] ?? board::error("Не указана категория");
             $newName = $_POST['newName'] ?? board::error("Не указано название");
             $newDescription = $_POST['newDescription'] ?? ""; // Добавляем получение описания
-            $newIcon = $_POST['icon'] ?? null; // Добавляем получение иконки
+            $newIcon = $_POST['icon'] ?? ""; // Добавляем получение иконки
             $titleColor = $_POST['titleColor'] ?? 'dark'; // Добавляем получение цвета
             
             // XSS защита: очищаем название, описание и иконку
@@ -2809,7 +2809,7 @@ class forum
             $sectionId = $_POST['sectionId'] ?? board::error("Не указан раздел");
             $name = $_POST['name'] ?? board::error("Не указано название");
             $link = $_POST['link'] ?? board::error("Не указана ссылка");
-            $icon = $_POST['icon'] ?? null;
+            $icon = $_POST['icon'] ?? "";
             
             // XSS защита: очищаем пользовательские данные
             $name = XssSecurity::clean($name);
