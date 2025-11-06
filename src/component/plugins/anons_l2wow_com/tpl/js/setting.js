@@ -310,36 +310,11 @@ function saveSettings() {
         },
         body: JSON.stringify(data)
     })
-    .then(response => {
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
-        return response.text();
-    })
-    .then(text => {
-        console.log('Raw response:', text);
-        try {
-            return JSON.parse(text);
-        } catch (e) {
-            console.error('Ошибка парсинга JSON:', e);
-            console.error('Ответ сервера:', text);
-            throw new Error('Сервер вернул не JSON: ' + text.substring(0, 200));
-        }
-    })
-    .then(result => {
-        console.log('Ответ сервера:', result);
-        if (result.ok || result.success) {
-            // Обновляем локальные данные
-            if (!serverSettings[serverId]) {
-                serverSettings[serverId] = {};
-            }
-            serverSettings[serverId].webhookKey = webhookKey;
-            serverSettings[serverId].voteLevels = voteLevels;
-        } else {
-            alert('Ошибка: ' + (result.message || 'Не удалось сохранить настройки'));
-        }
+    .then(response => response.json())
+    .then(data => {
+        responseAnalysis(data);
     })
     .catch(error => {
-        console.error('Ошибка:', error);
-        alert('Произошла ошибка при сохранении');
+        console.error('Ошибка сохранения настроек:', error);
     });
 }
