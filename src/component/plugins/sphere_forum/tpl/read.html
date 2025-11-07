@@ -595,6 +595,30 @@
                     {% endfor %}
 
                     {% if getUser().isAuth() %}
+                    
+                    {# Проверка на бан пользователя #}
+                    {% set userBan = getUserBan(getUser().getId()) %}
+                    {% if userBan %}
+                    <div class="alert alert-danger">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-ban fs-1 me-3"></i>
+                            <div>
+                                <h5 class="mb-1">{{phrase('you_are_banned_from_posting')}}</h5>
+                                <p class="mb-1">
+                                    {% if userBan.banned_until %}
+                                        <strong>{{phrase('ban_active_until')}}:</strong> {{ userBan.banned_until|date('d.m.Y H:i') }}
+                                    {% else %}
+                                        <strong>{{phrase('permanent_ban_label')}}</strong>
+                                    {% endif %}
+                                </p>
+                                {% if userBan.reason %}
+                                    <p class="mb-0"><strong>{{phrase('ban_reason')}}:</strong> {{ userBan.reason }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    
                     {% if thread.isClosed() %}
                     <div class="alert alert-warning text-center">
                         <h6 class="mb-0">{{phrase('topic_closed')}}</h6>
@@ -704,6 +728,7 @@
                     </div>
 
                     {% endif %}
+                    {% endif %} {# Закрытие проверки на бан #}
 
 
                 </div>

@@ -970,7 +970,7 @@ CREATE TABLE `forum_moderator_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `moderator_id` int(11) NOT NULL,
   `action` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `target_type` enum('thread','post','moderator') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `target_type` enum('thread','post','moderator','user') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `target_id` int(11) NOT NULL,
   `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -994,6 +994,24 @@ CREATE TABLE `forum_moderators` (
   `created_by` int(11) NOT NULL COMMENT 'ID админа, который назначил модератора',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `unique_user_category`(`user_id` ASC, `category_id` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+
+-- Создание таблицы forum_user_bans
+CREATE TABLE `forum_user_bans` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL COMMENT 'ID забаненного пользователя',
+  `banned_by` int(11) NOT NULL COMMENT 'ID модератора/админа который забанил',
+  `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Причина бана',
+  `banned_at` timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'Дата и время бана',
+  `banned_until` timestamp NULL DEFAULT NULL COMMENT 'До какого времени бан (NULL = перманентный)',
+  `is_active` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Активен ли бан (0 = снят досрочно)',
+  `unbanned_at` timestamp NULL DEFAULT NULL COMMENT 'Когда был снят бан',
+  `unbanned_by` int(11) NULL DEFAULT NULL COMMENT 'Кто снял бан',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `user_id_idx`(`user_id` ASC) USING BTREE,
+  INDEX `banned_by_idx`(`banned_by` ASC) USING BTREE,
+  INDEX `is_active_idx`(`is_active` ASC) USING BTREE,
+  INDEX `banned_until_idx`(`banned_until` ASC) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- Создание таблицы forum_notifications

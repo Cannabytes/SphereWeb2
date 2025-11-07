@@ -9,7 +9,8 @@ use Ofey\Logan22\component\plugins\sphere_forum\struct\{forum_category,
     forum_post,
     forum_thread,
     ForumModerator,
-    ForumUserSettings
+    ForumUserSettings,
+    ForumBan
 };
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\request\XssSecurity;
@@ -372,6 +373,21 @@ class forum
             $antiFlood->checkFlood();
             $this->validateMessageInput();
 
+            // Проверяем, не забанен ли пользователь
+            $ban = ForumBan::isUserBanned(user::self()->getId());
+            if ($ban) {
+                $banMessage = "Вам запрещено писать сообщения";
+                if ($ban['banned_until']) {
+                    $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
+                } else {
+                    $banMessage .= " (перманентный бан)";
+                }
+                if ($ban['reason']) {
+                    $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
+                }
+                throw new Exception($banMessage);
+            }
+
             $topicId = (int)$_POST['topicId'];
             $message = isset($_POST['message']) ? $_POST['message'] : '';
             
@@ -649,6 +665,21 @@ class forum
             $antiFlood->checkFlood();
 
             $this->validateTopicInput();
+
+            // Проверяем, не забанен ли пользователь
+            $ban = ForumBan::isUserBanned(user::self()->getId());
+            if ($ban) {
+                $banMessage = "Вам запрещено создавать темы";
+                if ($ban['banned_until']) {
+                    $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
+                } else {
+                    $banMessage .= " (перманентный бан)";
+                }
+                if ($ban['reason']) {
+                    $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
+                }
+                throw new Exception($banMessage);
+            }
 
             $categoryId = (int)$_POST['categoryId'];
             $title = trim($_POST['title']);
@@ -2438,6 +2469,21 @@ class forum
                 throw new Exception("Необходимо авторизоваться");
             }
 
+            // Проверяем, не забанен ли пользователь
+            $ban = ForumBan::isUserBanned(user::self()->getId());
+            if ($ban) {
+                $banMessage = "Вам запрещено ставить лайки";
+                if ($ban['banned_until']) {
+                    $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
+                } else {
+                    $banMessage .= " (перманентный бан)";
+                }
+                if ($ban['reason']) {
+                    $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
+                }
+                throw new Exception($banMessage);
+            }
+
             $postId = $_POST['postId'] ?? board::error("Не указан пост");
             $likeImage = $_POST['likeImage'] ?? board::error("Не указано изображение лайка");
             $message = $_POST['message'] ?? "";
@@ -3485,5 +3531,420 @@ class forum
         }
     }
 
+    /**
+     * Проверяет наличие таблиц для системы банов и создает их при необходимости
+     */
+    private function checkAndCreateBanTables(): void {
+        try {
+            // Проверяем существование таблицы forum_user_bans
+            $tableExists = sql::getRow("SHOW TABLES LIKE 'forum_user_bans'");
+            
+            if (!$tableExists) {
+                // Создаем таблицу forum_user_bans
+                sql::run("
+                    CREATE TABLE IF NOT EXISTS `forum_user_bans` (
+                      `id` int(11) NOT NULL AUTO_INCREMENT,
+                      `user_id` int(11) NOT NULL COMMENT 'ID забаненного пользователя',
+                      `banned_by` int(11) NOT NULL COMMENT 'ID модератора/админа который забанил',
+                      `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Причина бана',
+                      `banned_at` timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'Дата и время бана',
+                      `banned_until` timestamp NULL DEFAULT NULL COMMENT 'До какого времени бан (NULL = перманентный)',
+                      `is_active` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Активен ли бан (0 = снят досрочно)',
+                      `unbanned_at` timestamp NULL DEFAULT NULL COMMENT 'Когда был снят бан',
+                      `unbanned_by` int(11) NULL DEFAULT NULL COMMENT 'Кто снял бан',
+                      PRIMARY KEY (`id`) USING BTREE,
+                      INDEX `user_id_idx`(`user_id` ASC) USING BTREE,
+                      INDEX `banned_by_idx`(`banned_by` ASC) USING BTREE,
+                      INDEX `is_active_idx`(`is_active` ASC) USING BTREE,
+                      INDEX `banned_until_idx`(`banned_until` ASC) USING BTREE
+                    ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic
+                ");
+                
+                // Обновляем enum в forum_moderator_log для поддержки логирования банов
+                try {
+                    sql::run("
+                        ALTER TABLE `forum_moderator_log` 
+                        MODIFY COLUMN `target_type` enum('thread','post','moderator','user') 
+                        CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+                    ");
+                } catch (Exception $e) {
+                    // Если таблица или колонка уже обновлена, игнорируем ошибку
+                }
+                
+                board::success("Система банов успешно установлена!");
+            }
+        } catch (Exception $e) {
+            board::error("Ошибка при проверке/создании таблиц: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Отображает панель управления банами для админов и модераторов
+     */
+    public function showBansPanel(): void {
+        if (!user::self()->isAuth()) {
+            redirect::location("/");
+        }
+
+        // Проверяем права доступа - админ или модератор
+        $isAdmin = user::self()->isAdmin();
+        $isModerator = ForumModerator::isUserModerator(user::self()->getId());
+
+        if (!$isAdmin && !$isModerator) {
+            board::error("У вас нет прав доступа к этой странице");
+            redirect::location("/forum");
+        }
+
+        // Проверяем наличие таблицы forum_user_bans и создаем при необходимости
+        $this->checkAndCreateBanTables();
+
+        // Получаем параметры для фильтрации
+        $showOnlyActive = isset($_GET['active']) ? filter_var($_GET['active'], FILTER_VALIDATE_BOOLEAN) : true;
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $perPage = 20;
+        $offset = ($page - 1) * $perPage;
+
+        // Получаем список банов
+        $bans = ForumBan::getAllBans($showOnlyActive, $perPage, $offset);
+
+        // Получаем общее количество банов для пагинации
+        $totalBansQuery = "SELECT COUNT(*) FROM forum_user_bans";
+        if ($showOnlyActive) {
+            $totalBansQuery .= " WHERE is_active = 1 AND (banned_until IS NULL OR banned_until > NOW())";
+        }
+        $totalBans = (int)sql::getValue($totalBansQuery);
+        $totalPages = ceil($totalBans / $perPage);
+
+        tpl::addVar([
+            'bans' => $bans,
+            'showOnlyActive' => $showOnlyActive,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'isAdmin' => $isAdmin,
+            'isModerator' => $isModerator,
+        ]);
+
+        tpl::displayPlugin("sphere_forum/tpl/bans_panel.html");
+    }
+
+    /**
+     * Создает новый бан для пользователя
+     */
+    public function createBan(): void {
+        try {
+            if (!user::self()->isAuth()) {
+                throw new Exception("Необходимо авторизоваться");
+            }
+
+            // Проверяем права доступа
+            $isAdmin = user::self()->isAdmin();
+            $isModerator = ForumModerator::isUserModerator(user::self()->getId());
+
+            if (!$isAdmin && !$isModerator) {
+                throw new Exception("У вас нет прав для бана пользователей");
+            }
+
+            // Получаем данные из POST
+            $userId = filter_var($_POST['user_id'] ?? 0, FILTER_VALIDATE_INT);
+            $reason = XssSecurity::clean($_POST['reason'] ?? '');
+            $duration = $_POST['duration'] ?? 'permanent'; // permanent, 1hour, 1day, 1week, 1month, custom
+            $customDate = $_POST['custom_date'] ?? null;
+
+            if (!$userId) {
+                throw new Exception("Не указан пользователь для бана");
+            }
+
+            // Нельзя забанить самого себя
+            if ($userId === user::self()->getId()) {
+                throw new Exception("Вы не можете забанить самого себя");
+            }
+
+            // Нельзя забанить админа (только админ может забанить админа)
+            $targetUser = user::getUserId($userId);
+            if ($targetUser->isAdmin() && !$isAdmin) {
+                throw new Exception("Модераторы не могут банить администраторов");
+            }
+
+            // Вычисляем дату окончания бана
+            $bannedUntil = null;
+            switch ($duration) {
+                case '1hour':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+1 hour'));
+                    break;
+                case '1day':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+1 day'));
+                    break;
+                case '1week':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+1 week'));
+                    break;
+                case '1month':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+1 month'));
+                    break;
+                case '3months':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+3 months'));
+                    break;
+                case '6months':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+6 months'));
+                    break;
+                case '1year':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+1 year'));
+                    break;
+                case 'custom':
+                    if ($customDate) {
+                        $bannedUntil = date('Y-m-d H:i:s', strtotime($customDate));
+                        if (!$bannedUntil) {
+                            throw new Exception("Неверный формат даты");
+                        }
+                    }
+                    break;
+                case 'permanent':
+                default:
+                    $bannedUntil = null;
+                    break;
+            }
+
+            // Создаем бан
+            $banId = ForumBan::createBan(
+                $userId,
+                user::self()->getId(),
+                $reason ?: null,
+                $bannedUntil
+            );
+
+            // Логируем действие модератора
+            ForumModerator::logAction(
+                user::self()->getId(),
+                'ban_user',
+                'user',
+                $userId,
+                $reason
+            );
+
+            board::reload();
+            board::success("Пользователь успешно забанен");
+
+        } catch (Exception $e) {
+            board::error($e->getMessage());
+        }
+    }
+
+    /**
+     * Обновляет информацию о бане
+     */
+    public function updateBan(): void {
+        try {
+            if (!user::self()->isAuth()) {
+                throw new Exception("Необходимо авторизоваться");
+            }
+
+            // Проверяем права доступа
+            $isAdmin = user::self()->isAdmin();
+            $isModerator = ForumModerator::isUserModerator(user::self()->getId());
+
+            if (!$isAdmin && !$isModerator) {
+                throw new Exception("У вас нет прав для управления банами");
+            }
+
+            $banId = filter_var($_POST['ban_id'] ?? 0, FILTER_VALIDATE_INT);
+            $reason = XssSecurity::clean($_POST['reason'] ?? '');
+            $duration = $_POST['duration'] ?? 'permanent';
+            $customDate = $_POST['custom_date'] ?? null;
+
+            if (!$banId) {
+                throw new Exception("Не указан ID бана");
+            }
+
+            // Вычисляем новую дату окончания бана
+            $bannedUntil = null;
+            switch ($duration) {
+                case '1hour':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+1 hour'));
+                    break;
+                case '1day':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+1 day'));
+                    break;
+                case '1week':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+1 week'));
+                    break;
+                case '1month':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+1 month'));
+                    break;
+                case '3months':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+3 months'));
+                    break;
+                case '6months':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+6 months'));
+                    break;
+                case '1year':
+                    $bannedUntil = date('Y-m-d H:i:s', strtotime('+1 year'));
+                    break;
+                case 'custom':
+                    if ($customDate) {
+                        $bannedUntil = date('Y-m-d H:i:s', strtotime($customDate));
+                    }
+                    break;
+                case 'permanent':
+                default:
+                    $bannedUntil = null;
+                    break;
+            }
+
+            // Обновляем бан
+            ForumBan::updateBan($banId, $reason ?: null, $bannedUntil);
+
+            board::reload();
+            board::success("Информация о бане обновлена");
+
+        } catch (Exception $e) {
+            board::error($e->getMessage());
+        }
+    }
+
+    /**
+     * Снимает бан с пользователя
+     */
+    public function removeBan(): void {
+        try {
+            if (!user::self()->isAuth()) {
+                throw new Exception("Необходимо авторизоваться");
+            }
+
+            // Проверяем права доступа
+            $isAdmin = user::self()->isAdmin();
+            $isModerator = ForumModerator::isUserModerator(user::self()->getId());
+
+            if (!$isAdmin && !$isModerator) {
+                throw new Exception("У вас нет прав для управления банами");
+            }
+
+            $banId = filter_var($_POST['ban_id'] ?? 0, FILTER_VALIDATE_INT);
+
+            if (!$banId) {
+                throw new Exception("Не указан ID бана");
+            }
+
+            // Получаем информацию о бане для логирования
+            $ban = ForumBan::getBanById($banId);
+            if (!$ban) {
+                throw new Exception("Бан не найден");
+            }
+
+            // Снимаем бан
+            ForumBan::removeBan($banId, user::self()->getId());
+
+            // Логируем действие
+            ForumModerator::logAction(
+                user::self()->getId(),
+                'unban_user',
+                'user',
+                $ban->getUserId(),
+                'Бан снят досрочно'
+            );
+
+            board::reload();
+            board::success("Бан успешно снят");
+
+        } catch (Exception $e) {
+            board::error($e->getMessage());
+        }
+    }
+
+    /**
+     * Получает историю банов пользователя
+     */
+    public function getBanHistory(int $userId): void {
+        try {
+            if (!user::self()->isAuth()) {
+                throw new Exception("Необходимо авторизоваться");
+            }
+
+            // Проверяем права доступа
+            $isAdmin = user::self()->isAdmin();
+            $isModerator = ForumModerator::isUserModerator(user::self()->getId());
+
+            if (!$isAdmin && !$isModerator) {
+                throw new Exception("У вас нет прав для просмотра истории банов");
+            }
+
+            $history = ForumBan::getUserBanHistory($userId);
+            $targetUser = user::getUserId($userId);
+
+            tpl::addVar([
+                'history' => $history,
+                'targetUser' => $targetUser,
+            ]);
+
+            tpl::displayPlugin("sphere_forum/tpl/ban_history.html");
+
+        } catch (Exception $e) {
+            board::error($e->getMessage());
+            redirect::location("/forum/user-blocks");
+        }
+    }
+
+    /**
+     * Поиск пользователей для системы банов (AJAX)
+     */
+    public function searchUsers(): void {
+        header('Content-Type: application/json');
+        
+        try {
+            if (!user::self()->isAuth()) {
+                echo json_encode(['success' => false, 'message' => 'Необходимо авторизоваться']);
+                return;
+            }
+
+            // Проверяем права доступа
+            $isAdmin = user::self()->isAdmin();
+            $isModerator = ForumModerator::isUserModerator(user::self()->getId());
+
+            if (!$isAdmin && !$isModerator) {
+                echo json_encode(['success' => false, 'message' => 'Нет прав доступа']);
+                return;
+            }
+
+            $searchQuery = $_POST['query'] ?? '';
+            $searchQuery = trim($searchQuery);
+
+            if (strlen($searchQuery) < 2) {
+                echo json_encode(['success' => true, 'users' => []]);
+                return;
+            }
+
+            // Ищем пользователей по имени или email
+            $users = sql::getRows(
+                "SELECT id, name, email, avatar, date_create 
+                 FROM users 
+                 WHERE (name LIKE ? OR email LIKE ?) 
+                 AND id != ?
+                 ORDER BY name ASC 
+                 LIMIT 20",
+                ['%' . $searchQuery . '%', '%' . $searchQuery . '%', user::self()->getId()]
+            );
+
+            $result = [];
+            foreach ($users as $userData) {
+                // Проверяем, забанен ли пользователь
+                $ban = ForumBan::isUserBanned($userData['id']);
+                
+                // Формируем правильный путь к аватарке (как в методе getAvatar() класса userModel)
+                $avatarPath = '/uploads/avatar/' . ($userData['avatar'] ?? 'none.jpeg');
+                
+                $result[] = [
+                    'id' => (int)$userData['id'],
+                    'name' => $userData['name'],
+                    'email' => $userData['email'],
+                    'avatar' => $avatarPath,
+                    'date_create' => $userData['date_create'],
+                    'is_banned' => $ban !== null,
+                ];
+            }
+
+            echo json_encode(['success' => true, 'users' => $result]);
+
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 
 }

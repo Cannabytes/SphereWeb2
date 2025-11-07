@@ -8,6 +8,7 @@ use Ofey\Logan22\component\plugins\sphere_forum\struct\forum_post;
 use Ofey\Logan22\component\plugins\sphere_forum\struct\forum_thread;
 use Ofey\Logan22\component\plugins\sphere_forum\struct\ForumClan;
 use Ofey\Logan22\component\plugins\sphere_forum\struct\ForumModerator;
+use Ofey\Logan22\component\plugins\sphere_forum\struct\ForumBan;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\user;
 
@@ -566,5 +567,51 @@ class custom_twig
         return $this->clans = $clan->getClanList();
     }
 
+    /**
+     * Проверяет, забанен ли пользователь
+     * 
+     * @param int $userId ID пользователя
+     * @return bool
+     */
+    public function isUserBanned(int $userId): bool {
+        $ban = ForumBan::isUserBanned($userId);
+        return $ban !== null;
+    }
+
+    /**
+     * Получает информацию о текущем бане пользователя
+     * 
+     * @param int $userId ID пользователя
+     * @return array|null Информация о бане или null
+     */
+    public function getUserBan(int $userId): ?array {
+        return ForumBan::isUserBanned($userId);
+    }
+
+    /**
+     * Форматирует сообщение о бане для отображения пользователю
+     * 
+     * @param int $userId ID пользователя
+     * @return string|null Сообщение о бане или null
+     */
+    public function getBanMessage(int $userId): ?string {
+        $ban = ForumBan::isUserBanned($userId);
+        if (!$ban) {
+            return null;
+        }
+
+        $message = "Вам запрещено писать сообщения на форуме";
+        if ($ban['banned_until']) {
+            $message .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
+        } else {
+            $message .= " (перманентный бан)";
+        }
+        
+        if ($ban['reason']) {
+            $message .= ".<br><strong>Причина:</strong> " . htmlspecialchars($ban['reason']);
+        }
+        
+        return $message;
+    }
 
 }

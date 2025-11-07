@@ -661,4 +661,54 @@ $routes = [
         }
     ],
 
+    // Управление банами (используем user-block вместо ban для обхода AdBlocker)
+    [
+        "method" => "GET",
+        "pattern" => "/forum/user-blocks",
+        "file" => "forum.php",
+        "call" => function () {
+            (new sphere_forum\forum())->showBansPanel();
+        },
+    ],
+    [
+        "method" => "POST",
+        "pattern" => "/forum/user-block/create",
+        "file" => "forum.php",
+        "call" => function () {
+            (new sphere_forum\forum())->createBan();
+        },
+    ],
+    [
+        "method" => "POST",
+        "pattern" => "/forum/user-block/update",
+        "file" => "forum.php",
+        "call" => function () {
+            (new sphere_forum\forum())->updateBan();
+        },
+    ],
+    [
+        "method" => "POST",
+        "pattern" => "/forum/user-block/remove",
+        "file" => "forum.php",
+        "call" => function () {
+            (new sphere_forum\forum())->removeBan();
+        },
+    ],
+    [
+        "method" => "GET",
+        "pattern" => "/forum/user-block/history/{userId}",
+        "file" => "forum.php",
+        "call" => function ($userId) {
+            (new sphere_forum\forum())->getBanHistory((int)$userId);
+        },
+    ],
+    [
+        "method" => "POST",
+        "pattern" => "/forum/user/search",
+        "file" => "forum.php",
+        "call" => function () {
+            (new sphere_forum\forum())->searchUsers();
+        },
+    ],
+
 ];

@@ -1,0 +1,585 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{phrase('ban_management')}} - {{phrase('sphere_forum')}}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="card-title mb-2">
+                            <i class="bi bi-ban"></i> {{phrase('ban_management')}}
+                        </h4>
+                        <p class="text-muted mb-0">{{phrase('ban_users_blocking')}}</p>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#createBanModal">
+                            <i class="bi bi-plus-circle"></i> {{phrase('ban_user')}}
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Вкладки фильтрации -->
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link {% if showOnlyActive %}active{% endif %}" 
+                               href="/forum/user-blocks?active=true">
+                                <i class="bi bi-exclamation-circle"></i> {{phrase('active_bans')}}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if not showOnlyActive %}active{% endif %}" 
+                               href="/forum/user-blocks?active=false">
+                                <i class="bi bi-archive"></i> {{phrase('all_history')}}
+                            </a>
+                        </li>
+                    </ul>
+                    {% if bans is empty %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> 
+                            {% if showOnlyActive %}
+                                {{phrase('no_active_bans')}}
+                            {% else %}
+                                {{phrase('no_bans_history')}}
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>{{phrase('user')}}</th>
+                                        <th>{{phrase('banned_by')}}</th>
+                                        <th>{{phrase('ban_reason')}}</th>
+                                        <th>{{phrase('ban_date')}}</th>
+                                        <th>{{phrase('ban_expires')}}</th>
+                                        <th>{{phrase('status')}}</th>
+                                        <th>{{phrase('actions')}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ban in bans %}
+                                    <tr class="{% if not ban.isActive() %}table-secondary{% elseif ban.isPermanent() %}table-danger{% endif %}">
+                                        <td>{{ ban.getId() }}</td>
+                                        <td>
+                                            <a href="/cabinet/user/{{ ban.getUserId() }}" target="_blank">
+                                                {{ ban.getUserName() ?? 'User #' ~ ban.getUserId() }}
+                                            </a>
+                                        </td>
+                                        <td>{{ ban.getBannedByName() ?? phrase('unknown') }}</td>
+                                        <td>
+                                            {% if ban.getReason() %}
+                                                <small>{{ ban.getReason()|slice(0, 50) }}{% if ban.getReason()|length > 50 %}...{% endif %}</small>
+                                            {% else %}
+                                                <span class="text-muted">{{phrase('not_specified')}}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ ban.getBannedAt()|date('d.m.Y H:i') }}</td>
+                                        <td>
+                                            {% if ban.isPermanent() %}
+                                                <span class="badge bg-danger">{{phrase('permanent')}}</span>
+                                            {% else %}
+                                                {{ ban.getBannedUntil()|date('d.m.Y H:i') }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if not ban.isActive() %}
+                                                <span class="badge bg-secondary">
+                                                    <i class="bi bi-check-circle"></i> {{phrase('ban_removed')}}
+                                                </span>
+                                            {% elseif ban.isExpired() %}
+                                                <span class="badge bg-warning">
+                                                    <i class="bi bi-clock-history"></i> {{phrase('ban_expired')}}
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-danger">
+                                                    <i class="bi bi-ban"></i> {{phrase('ban_active')}}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                {% if ban.isActive() and not ban.isExpired() %}
+                                                    <button type="button" 
+                                                            class="btn btn-warning btn-edit-ban" 
+                                                            data-ban-id="{{ ban.getId() }}"
+                                                            data-reason="{{ ban.getReason() }}"
+                                                            data-banned-until="{{ ban.getBannedUntil() }}"
+                                                            data-is-permanent="{{ ban.isPermanent() ? '1' : '0' }}"
+                                                            title="{{phrase('edit')}}">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button type="button" 
+                                                            class="btn btn-success btn-remove-ban" 
+                                                            data-ban-id="{{ ban.getId() }}"
+                                                            data-user-name="{{ ban.getUserName() }}"
+                                                            title="{{phrase('remove_ban')}}">
+                                                        <i class="bi bi-check-circle"></i>
+                                                    </button>
+                                                {% endif %}
+                                                <a href="/forum/user-block/history/{{ ban.getUserId() }}" 
+                                                   class="btn btn-info"
+                                                   title="{{phrase('ban_history')}}">
+                                                    <i class="bi bi-clock-history"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Пагинация -->
+                        {% if totalPages > 1 %}
+                        <nav aria-label="Навигация по страницам">
+                            <ul class="pagination justify-content-center">
+                                {% for page in 1..totalPages %}
+                                    <li class="page-item {% if page == currentPage %}active{% endif %}">
+                                        <a class="page-link" href="/forum/user-blocks?active={{ showOnlyActive ? 'true' : 'false' }}&page={{ page }}">
+                                            {{ page }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно создания бана -->
+<div class="modal fade" id="createBanModal" tabindex="-1" aria-labelledby="createBanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="createBanForm" method="POST" action="/forum/user-block/create">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createBanModalLabel">
+                        <i class="bi bi-ban"></i> {{phrase('ban_user')}}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{phrase('close')}}"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="user_search" class="form-label">{{phrase('search_user')}} *</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="user_search" 
+                               placeholder="{{phrase('enter_username_or_email')}}"
+                               autocomplete="off">
+                        <input type="hidden" id="user_id" name="user_id" required>
+                        <small class="form-text text-muted">{{phrase('start_typing_to_search')}}</small>
+                        
+                        <!-- Контейнер для результатов поиска -->
+                        <div id="user_search_results" class="user-search-results" style="display: none;"></div>
+                        
+                        <!-- Выбранный пользователь -->
+                        <div id="selected_user" class="selected-user mt-2" style="display: none;">
+                            <div class="d-flex align-items-center p-2 border rounded">
+                                <img id="selected_user_avatar" class="rounded-circle me-2" width="40" height="40" alt="">
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold" id="selected_user_name"></div>
+                                    <small class="text-muted" id="selected_user_email"></small>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger" id="clear_user_selection">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="duration" class="form-label">{{phrase('ban_duration')}} *</label>
+                        <select class="form-select" id="duration" name="duration" required>
+                            <option value="1hour">{{phrase('1hour')}}</option>
+                            <option value="1day">{{phrase('1day')}}</option>
+                            <option value="1week" selected>{{phrase('1week')}}</option>
+                            <option value="1month">{{phrase('1month')}}</option>
+                            <option value="3months">{{phrase('3months')}}</option>
+                            <option value="6months">{{phrase('6months')}}</option>
+                            <option value="1year">{{phrase('1year')}}</option>
+                            <option value="permanent">{{phrase('permanent')}}</option>
+                            <option value="custom">{{phrase('custom_date')}}</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="customDateBlock" style="display: none;">
+                        <label for="custom_date" class="form-label">{{phrase('ban_end_date')}}</label>
+                        <input type="datetime-local" class="form-control" id="custom_date" name="custom_date">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">{{phrase('ban_reason')}}</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" 
+                                  placeholder="{{phrase('ban_reason_description')}}"></textarea>
+                        <small class="form-text text-muted">{{phrase('ban_reason_visible_to_user')}}</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{phrase('cancel')}}</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-ban"></i> {{phrase('ban_action')}}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно редактирования бана -->
+<div class="modal fade" id="editBanModal" tabindex="-1" aria-labelledby="editBanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editBanForm" method="POST" action="/forum/user-block/update">
+                <input type="hidden" id="edit_ban_id" name="ban_id">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editBanModalLabel">
+                        <i class="bi bi-pencil"></i> {{phrase('edit_ban')}}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{phrase('close')}}"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_duration" class="form-label">{{phrase('ban_duration')}} *</label>
+                        <select class="form-select" id="edit_duration" name="duration" required>
+                            <option value="1hour">{{phrase('1hour')}}</option>
+                            <option value="1day">{{phrase('1day')}}</option>
+                            <option value="1week">{{phrase('1week')}}</option>
+                            <option value="1month">{{phrase('1month')}}</option>
+                            <option value="3months">{{phrase('3months')}}</option>
+                            <option value="6months">{{phrase('6months')}}</option>
+                            <option value="1year">{{phrase('1year')}}</option>
+                            <option value="permanent">{{phrase('permanent')}}</option>
+                            <option value="custom">{{phrase('custom_date')}}</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="editCustomDateBlock" style="display: none;">
+                        <label for="edit_custom_date" class="form-label">{{phrase('ban_end_date')}}</label>
+                        <input type="datetime-local" class="form-control" id="edit_custom_date" name="custom_date">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit_reason" class="form-label">{{phrase('ban_reason')}}</label>
+                        <textarea class="form-control" id="edit_reason" name="reason" rows="3" 
+                                  placeholder="{{phrase('ban_reason_description')}}"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{phrase('cancel')}}</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> {{phrase('save')}}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // === Поиск пользователей ===
+    let searchTimeout;
+    const userSearchInput = document.getElementById('user_search');
+    const userSearchResults = document.getElementById('user_search_results');
+    const selectedUserDiv = document.getElementById('selected_user');
+    const userIdInput = document.getElementById('user_id');
+
+    // Поиск пользователей при вводе
+    userSearchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+
+        // Очищаем предыдущий таймаут
+        clearTimeout(searchTimeout);
+
+        if (query.length < 2) {
+            userSearchResults.style.display = 'none';
+            return;
+        }
+
+        // Показываем индикатор загрузки
+        userSearchResults.innerHTML = '<div class="user-search-loading"><i class="bi bi-hourglass-split"></i> {{phrase("searching")}}</div>';
+        userSearchResults.style.display = 'block';
+
+        // Делаем запрос с задержкой (debounce)
+        searchTimeout = setTimeout(() => {
+            fetch('/forum/user/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'query=' + encodeURIComponent(query)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.users.length > 0) {
+                    // Отображаем результаты
+                    let html = '';
+                    data.users.forEach(user => {
+                        const bannedClass = user.is_banned ? 'banned' : '';
+                        const bannedBadge = user.is_banned ? '<span class="badge bg-danger user-badge">{{phrase("already_banned")}}</span>' : '';
+                        
+                        html += `
+                            <div class="user-search-item ${bannedClass}" data-user-id="${user.id}" data-user-name="${user.name}" data-user-email="${user.email}" data-user-avatar="${user.avatar}">
+                                <img src="${user.avatar}" class="rounded-circle" alt="${user.name}">
+                                <div class="user-info">
+                                    <div class="user-name">${user.name}</div>
+                                    <div class="user-email">${user.email}</div>
+                                </div>
+                                ${bannedBadge}
+                            </div>
+                        `;
+                    });
+                    userSearchResults.innerHTML = html;
+
+                    // Обработчики клика на результаты
+                    document.querySelectorAll('.user-search-item').forEach(item => {
+                        item.addEventListener('click', function() {
+                            selectUser(
+                                this.dataset.userId,
+                                this.dataset.userName,
+                                this.dataset.userEmail,
+                                this.dataset.userAvatar
+                            );
+                        });
+                    });
+                } else {
+                    userSearchResults.innerHTML = '<div class="user-search-no-results"><i class="bi bi-search"></i> {{phrase("no_users_found")}}</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                userSearchResults.innerHTML = '<div class="user-search-no-results text-danger"><i class="bi bi-exclamation-triangle"></i> {{phrase("search_error")}}</div>';
+            });
+        }, 500); // Задержка 500мс
+    });
+
+    // Функция выбора пользователя
+    function selectUser(userId, userName, userEmail, userAvatar) {
+        // Устанавливаем значения
+        userIdInput.value = userId;
+        userSearchInput.value = '';
+        
+        // Показываем выбранного пользователя
+        document.getElementById('selected_user_avatar').src = userAvatar;
+        document.getElementById('selected_user_name').textContent = userName;
+        document.getElementById('selected_user_email').textContent = userEmail;
+        selectedUserDiv.style.display = 'block';
+        
+        // Скрываем результаты поиска
+        userSearchResults.style.display = 'none';
+        
+        // Скрываем поле поиска
+        userSearchInput.style.display = 'none';
+    }
+
+    // Очистка выбора пользователя
+    document.getElementById('clear_user_selection').addEventListener('click', function() {
+        userIdInput.value = '';
+        selectedUserDiv.style.display = 'none';
+        userSearchInput.style.display = 'block';
+        userSearchInput.focus();
+    });
+
+    // Скрытие результатов при клике вне области поиска
+    document.addEventListener('click', function(e) {
+        if (!userSearchInput.contains(e.target) && !userSearchResults.contains(e.target)) {
+            userSearchResults.style.display = 'none';
+        }
+    });
+
+    // Очистка при открытии модального окна
+    document.getElementById('createBanModal').addEventListener('show.bs.modal', function() {
+        userIdInput.value = '';
+        userSearchInput.value = '';
+        userSearchInput.style.display = 'block';
+        selectedUserDiv.style.display = 'none';
+        userSearchResults.style.display = 'none';
+    });
+
+    // Показываем/скрываем поле пользовательской даты при создании бана
+    document.getElementById('duration').addEventListener('change', function() {
+        const customBlock = document.getElementById('customDateBlock');
+        if (this.value === 'custom') {
+            customBlock.style.display = 'block';
+        } else {
+            customBlock.style.display = 'none';
+        }
+    });
+
+    // Показываем/скрываем поле пользовательской даты при редактировании бана
+    document.getElementById('edit_duration').addEventListener('change', function() {
+        const customBlock = document.getElementById('editCustomDateBlock');
+        if (this.value === 'custom') {
+            customBlock.style.display = 'block';
+        } else {
+            customBlock.style.display = 'none';
+        }
+    });
+
+    // Обработка кнопки редактирования бана
+    document.querySelectorAll('.btn-edit-ban').forEach(button => {
+        button.addEventListener('click', function() {
+            const banId = this.dataset.banId;
+            const reason = this.dataset.reason;
+            const bannedUntil = this.dataset.bannedUntil;
+            const isPermanent = this.dataset.isPermanent === '1';
+
+            document.getElementById('edit_ban_id').value = banId;
+            document.getElementById('edit_reason').value = reason || '';
+            
+            if (isPermanent) {
+                document.getElementById('edit_duration').value = 'permanent';
+            } else if (bannedUntil) {
+                document.getElementById('edit_duration').value = 'custom';
+                document.getElementById('edit_custom_date').value = bannedUntil.replace(' ', 'T');
+                document.getElementById('editCustomDateBlock').style.display = 'block';
+            }
+
+            const editModal = new bootstrap.Modal(document.getElementById('editBanModal'));
+            editModal.show();
+        });
+    });
+
+    // Обработка кнопки снятия бана
+    document.querySelectorAll('.btn-remove-ban').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const banId = this.dataset.banId;
+            const userName = this.dataset.userName;
+
+            if (confirm(`{{phrase("confirm_remove_ban_from")}} ${userName}?`)) {
+                // Используем AjaxSend для единообразия с другими частями форума
+                AjaxSend('/forum/user-block/remove', 'POST', {
+                    ban_id: banId
+                }, true).then(function(response) {
+                    if (response.ok) {
+                        window.location.reload();
+                    }
+                }).catch(function(error) {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.table-responsive {
+    overflow-x: auto;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.badge {
+    font-size: 0.85rem;
+}
+
+.table tbody tr.table-secondary {
+    opacity: 0.7;
+}
+
+/* Стили для поиска пользователей */
+.user-search-results {
+    position: absolute;
+    z-index: 1050;
+    width: calc(100% - 30px);
+    max-height: 300px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    margin-top: 0.25rem;
+}
+
+.user-search-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.user-search-item:last-child {
+    border-bottom: none;
+}
+
+.user-search-item:hover {
+    background-color: #f8f9fa;
+}
+
+.user-search-item.banned {
+    background-color: #fff3cd;
+    border-left: 3px solid #dc3545;
+}
+
+.user-search-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    margin-right: 0.75rem;
+}
+
+.user-search-item .user-info {
+    flex-grow: 1;
+}
+
+.user-search-item .user-name {
+    font-weight: 600;
+    color: #212529;
+}
+
+.user-search-item .user-email {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.user-search-item .user-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.user-search-no-results {
+    padding: 1rem;
+    text-align: center;
+    color: #6c757d;
+}
+
+.user-search-loading {
+    padding: 1rem;
+    text-align: center;
+    color: #6c757d;
+}
+
+.selected-user {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}
+
