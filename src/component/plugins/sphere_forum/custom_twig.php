@@ -578,6 +578,49 @@ class custom_twig
     }
 
     /**
+     * Получает настройки форума
+     * 
+     * @return array
+     */
+    public function getForumSettings(): array
+    {
+        return forum::getForumSettingsStatic();
+    }
+
+    /**
+     * Проверяет, включены ли опросы
+     * 
+     * @return bool
+     */
+    public function arePollsEnabled(): bool
+    {
+        $settings = $this->getForumSettings();
+        return $settings['enable_polls'] ?? true;
+    }
+
+    /**
+     * Проверяет, включен ли BBCode
+     * 
+     * @return bool
+     */
+    public function isBBCodeEnabled(): bool
+    {
+        $settings = $this->getForumSettings();
+        return $settings['enable_bbcode'] ?? true;
+    }
+
+    /**
+     * Проверяет, включены ли вложения
+     * 
+     * @return bool
+     */
+    public function areAttachmentsEnabled(): bool
+    {
+        $settings = $this->getForumSettings();
+        return $settings['enable_attachments'] ?? true;
+    }
+
+    /**
      * Проверяет, забанен ли пользователь
      * 
      * @param int $userId ID пользователя

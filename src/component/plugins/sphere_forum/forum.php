@@ -125,16 +125,52 @@ class forum
      */
     public static function areClanEnabled(): bool
     {
+        $settings = self::getForumSettingsStatic();
+        return $settings['enable_clans'] ?? true;
+    }
+
+    /**
+     * Статический метод для получения настроек форума
+     */
+    public static function getForumSettingsStatic(): array
+    {
         $settings = sql::getRow(
             "SELECT setting FROM settings WHERE `key` = '__FORUM_SETTINGS__' LIMIT 1"
         );
         
         if ($settings && !empty($settings['setting'])) {
             $decoded = json_decode($settings['setting'], true);
-            return $decoded['enable_clans'] ?? true;
+            if ($decoded) {
+                return $decoded;
+            }
         }
         
-        return true; // По умолчанию включены
+        // Возвращаем настройки по умолчанию
+        return [
+            'posts_per_page' => 10,
+            'topics_per_page' => 20,
+            'enable_bbcode' => true,
+            'enable_smiles' => true,
+            'enable_polls' => true,
+            'enable_attachments' => true,
+            'max_attachment_size' => 5,
+            'enable_clans' => true,
+            'post_max_per_minute' => 10,
+            'post_max_per_hour' => 180,
+            'post_min_interval' => 5,
+            'post_cooldown' => 300,
+            'thread_max_per_minute' => 3,
+            'thread_max_per_hour' => 10,
+            'thread_min_interval' => 60,
+            'thread_cooldown' => 600,
+            'enable_auto_moderation' => false,
+            'enable_post_edit' => true,
+            'post_edit_time_limit' => 3600,
+            'enable_post_delete' => true,
+            'allow_guest_view' => true,
+            'require_approval_new_topics' => false,
+            'require_approval_new_posts' => false,
+        ];
     }
 
     /**

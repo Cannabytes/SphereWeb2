@@ -446,7 +446,7 @@
 
                                 <div class="post mb-3" >{{post.getContent()|raw}}</div>
 
-                                {% if thread.getPoll() and post.getId() == firstPostId %}
+                                {% if arePollsEnabled() and thread.getPoll() and post.getId() == firstPostId %}
                                 <div class="card border ">
                                     <div class="card-header">
                                         <h5>{{ thread.getPoll().getQuestion() }}</h5>
