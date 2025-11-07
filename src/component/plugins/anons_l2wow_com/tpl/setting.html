@@ -277,7 +277,6 @@
 window.serverSettingsData = {{ serverSettings|json_encode|raw }};
 window.pluginName = "{{ pluginName }}";
 window.pluginActive = {{ pluginActive ? 'true' : 'false' }};
-console.log('Данные серверов из PHP:', window.serverSettingsData);
 </script>
 
 <script src="/src/component/plugins/anons_l2wow_com/tpl/js/setting.js?v=1.5"></script>

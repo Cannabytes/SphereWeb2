@@ -366,8 +366,9 @@
                       <label for="email" class="form-label fw-semibold">{{ phrase('email') }} <span class="text-danger">*</span></label>
                       <div class="input-group">
                         <span class="input-group-text bg-light"><i class="ri-mail-line"></i></span>
-                        <input id="email" type="email" class="form-control" name="email" value="{{userInfo.getEmail()}}" required>
+                        <input id="email" type="text" class="form-control" name="email" value="{{userInfo.getEmail()}}" required pattern="^(TG:@[A-Za-z0-9_]+|[^@\s]+@[^@\s]+\.[^@\s]+)$" title="Введите email или Telegram логин формата TG:@username">
                       </div>
+                      <div class="form-text">Допустимы адреса e-mail или Telegram логин вида <code>TG:@username</code>.</div>
                     </div>
 
                     <div class="col-md-6 mb-3">
@@ -890,6 +891,26 @@ $(document).ready(function() {
   // Очистка состояния валидации при изменении значения
   $('input, select').on('change', function() {
     $(this).removeClass('is-invalid');
+  });
+
+  const telegramEmailPattern = /^TG:@[A-Za-z0-9_]+$/;
+  const classicEmailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+  $('#userEditForm').on('submit', function(e) {
+    const emailField = $('#email');
+    const value = emailField.val().trim();
+
+    if (!telegramEmailPattern.test(value) && !classicEmailPattern.test(value)) {
+      e.preventDefault();
+      emailField.addClass('is-invalid');
+      if (typeof noticeError === 'function') {
+        noticeError('Введите корректный e-mail или Telegram логин вида TG:@username');
+      }
+      return false;
+    }
+
+    emailField.removeClass('is-invalid');
+    return true;
   });
 
   // Balance modal logic (profile page)

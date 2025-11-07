@@ -333,7 +333,12 @@ class users
         $group = $_POST["group"] ?? "user";
 
         //Проверка Email на валидацию
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $isTelegramLogin = strncmp($email, 'TG:', 3) === 0;
+        if ($isTelegramLogin) {
+            if (!preg_match('/^TG:@[A-Za-z0-9_]{1,}$/', $email)) {
+                board::error("Invalid telegram login format");
+            }
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             board::error("Invalid email");
         }
 
