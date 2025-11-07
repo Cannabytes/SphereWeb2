@@ -246,7 +246,7 @@
 
     <div class="col-xl-3">
 
-        {% if getUser().isAdmin() %}
+        {% if getUser().isAdmin() or isModerator(getUser().getId()) %}
 
         <div class="card custom-card">
             <div class="card-header">
@@ -255,6 +255,8 @@
 
             <div class="card-body">
                 <ul class="list-group followers-list">
+
+                    {% if getUser().isAdmin() %}
                     <li class="list-group-item">
                         <div class="d-grid gap-2 col-9 mx-auto">
                             <button data-bs-toggle="modal" data-bs-target="#create-category"
@@ -274,12 +276,22 @@
                             </a>
                         </div>
                     </li>
+
+                    
+                    <li class="list-group-item">
+                        <div class="d-grid gap-2 col-9 mx-auto">
+                            <a href="/admin/sphere/forum/settings" class="btn btn-light btn-wave btn-sm waves-effect waves-light">{{phrase('settings')}}
+                            </a>
+                        </div>
+                    </li>
+
+                    {% endif %}
                     
                     {% if getUser().isAdmin() or isModerator(getUser().getId()) %}
                     <li class="list-group-item">
                         <div class="d-grid gap-2 col-9 mx-auto">
                             <a href="/forum/user-blocks" class="btn btn-danger btn-wave btn-sm waves-effect waves-light">
-                                <i class="bi bi-ban"></i> Управление банами
+                                <i class="bi bi-ban"></i> {{ phrase('ban_management') }}
                             </a>
                         </div>
                     </li>
@@ -827,6 +839,7 @@
         {% endif %}
 
         {# Кланы форума #}
+        {% if areClansEnabled() %}
         <div class="card custom-card">
             <div class="card-header">
                 <div class="card-title"><a href="/forum/clans">{{phrase(49)}}</a></div>
@@ -856,6 +869,7 @@
             </div>
 
         </div>
+        {% endif %}
 
 
 

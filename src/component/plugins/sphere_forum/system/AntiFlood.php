@@ -11,21 +11,10 @@ class AntiFlood {
     public const TYPE_POST = 'post';
     public const TYPE_THREAD = 'thread';
 
-    // Настройки для сообщений
-    private const POST_MAX_PER_MINUTE = 10;
-    private const POST_MAX_PER_HOUR = 60*3;
-    private const POST_MIN_INTERVAL = 5;
-    private const POST_COOLDOWN = 60*5;
-
-    // Настройки для создания тем
-    private const THREAD_MAX_PER_MINUTE = 3;
-    private const THREAD_MAX_PER_HOUR = 10;
-    private const THREAD_MIN_INTERVAL = 60;
-    private const THREAD_COOLDOWN = 60*10;
-
     private int $userId;
     private string $activityType;
     private ?array $activity = null;
+    private ?array $forumSettings = null;
 
     public function __construct(string $activityType) {
         if (!user::self()->isAuth()) {
@@ -73,20 +62,63 @@ class AntiFlood {
         $this->activity = $activity;
     }
 
+    /**
+     * Получает настройки форума из базы данных
+     */
+    private function getForumSettings(): array {
+        if ($this->forumSettings !== null) {
+            return $this->forumSettings;
+        }
+
+        $settings = sql::getRow(
+            "SELECT setting FROM settings WHERE `key` = '__FORUM_SETTINGS__' LIMIT 1"
+        );
+
+        if ($settings && !empty($settings['setting'])) {
+            $decoded = json_decode($settings['setting'], true);
+            $this->forumSettings = $decoded ?: $this->getDefaultSettings();
+        } else {
+            $this->forumSettings = $this->getDefaultSettings();
+        }
+
+        return $this->forumSettings;
+    }
+
+    /**
+     * Возвращает настройки по умолчанию для антифлуда
+     */
+    private function getDefaultSettings(): array {
+        return [
+            'post_max_per_minute' => 10,
+            'post_max_per_hour' => 180,
+            'post_min_interval' => 5,
+            'post_cooldown' => 300,
+            'thread_max_per_minute' => 3,
+            'thread_max_per_hour' => 10,
+            'thread_min_interval' => 60,
+            'thread_cooldown' => 600,
+        ];
+    }
+
+    /**
+     * Получает настройки антифлуда в зависимости от типа активности
+     */
     private function getSettings(): array {
+        $forumSettings = $this->getForumSettings();
+        
         return $this->activityType === self::TYPE_POST ?
             [
-                'max_per_minute' => self::POST_MAX_PER_MINUTE,
-                'max_per_hour' => self::POST_MAX_PER_HOUR,
-                'min_interval' => self::POST_MIN_INTERVAL,
-                'cooldown' => self::POST_COOLDOWN,
+                'max_per_minute' => $forumSettings['post_max_per_minute'] ?? 10,
+                'max_per_hour' => $forumSettings['post_max_per_hour'] ?? 180,
+                'min_interval' => $forumSettings['post_min_interval'] ?? 5,
+                'cooldown' => $forumSettings['post_cooldown'] ?? 300,
                 'name' => 'сообщений'
             ] :
             [
-                'max_per_minute' => self::THREAD_MAX_PER_MINUTE,
-                'max_per_hour' => self::THREAD_MAX_PER_HOUR,
-                'min_interval' => self::THREAD_MIN_INTERVAL,
-                'cooldown' => self::THREAD_COOLDOWN,
+                'max_per_minute' => $forumSettings['thread_max_per_minute'] ?? 3,
+                'max_per_hour' => $forumSettings['thread_max_per_hour'] ?? 10,
+                'min_interval' => $forumSettings['thread_min_interval'] ?? 60,
+                'cooldown' => $forumSettings['thread_cooldown'] ?? 600,
                 'name' => 'тем'
             ];
     }

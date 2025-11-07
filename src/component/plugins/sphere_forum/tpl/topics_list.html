@@ -966,7 +966,7 @@
                         {% if canCreateTopics %}
                         {# Если пользователь не авторизован, то ссылка будет вести на авторизацию #}
                         {% if getUser().isAuth() %}
-                        {% if category.canCreateTopics() or getUser().isAdmin() %}
+                        {% if (category.canCreateTopics() or getUser().isAdmin()) and (getUser().isAdmin() or not isUserBanned(getUser().getId())) %}
                         <a href="/forum/{{transliterateToEn(sectionName)}}.{{sectionId}}/create" type="button" class="btn btn-success btn-sm">
                             <i class="ri-add-line"></i> {{phrase('create_topic')}}
                         </a>

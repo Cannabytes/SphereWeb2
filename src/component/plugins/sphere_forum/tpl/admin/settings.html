@@ -1,0 +1,327 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card custom-card">
+        <div class="card-header justify-content-between">
+            <div class="card-title d-flex align-items-center">
+                <a href="/admin/sphere/forum" class="border text-muted me-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                    </svg>
+                </a>
+                <i class="bi bi-gear me-2"></i> {{phrase('forum_settings')}}
+            </div>
+        </div>
+
+        <div class="card-body">
+            {% if getPluginActive('sphere_forum') == false %}
+            <div class="alert alert-danger" role="alert">
+                {{phrase('plugin_disabled_message')|raw}}
+            </div>
+            {% endif %}
+
+            <form id="forumSettingsForm" method="POST" action="/admin/sphere/forum/settings/save">
+                
+                <!-- Основные настройки -->
+                <div class="mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="bi bi-sliders me-2"></i>{{phrase('general_settings')}}
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="posts_per_page" class="form-label">{{phrase('posts_per_page')}}</label>
+                            <input type="number" class="form-control" id="posts_per_page" name="posts_per_page" 
+                                   value="{{ forumSettings.posts_per_page }}" min="5" max="100" required>
+                            <div class="form-text">{{phrase('posts_per_page_help')}}</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="topics_per_page" class="form-label">{{phrase('topics_per_page')}}</label>
+                            <input type="number" class="form-control" id="topics_per_page" name="topics_per_page" 
+                                   value="{{ forumSettings.topics_per_page }}" min="5" max="100" required>
+                            <div class="form-text">{{phrase('topics_per_page_help')}}</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enable_bbcode" name="enable_bbcode" 
+                                       {% if forumSettings.enable_bbcode %}checked{% endif %}>
+                                <label class="form-check-label" for="enable_bbcode">
+                                    {{phrase('enable_bbcode')}}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enable_smiles" name="enable_smiles" 
+                                       {% if forumSettings.enable_smiles %}checked{% endif %}>
+                                <label class="form-check-label" for="enable_smiles">
+                                    {{phrase('enable_smiles')}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enable_polls" name="enable_polls" 
+                                       {% if forumSettings.enable_polls %}checked{% endif %}>
+                                <label class="form-check-label" for="enable_polls">
+                                    {{phrase('enable_polls')}}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enable_attachments" name="enable_attachments" 
+                                       {% if forumSettings.enable_attachments %}checked{% endif %}>
+                                <label class="form-check-label" for="enable_attachments">
+                                    {{phrase('enable_attachments')}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enable_clans" name="enable_clans" 
+                                       {% if forumSettings.enable_clans %}checked{% endif %}>
+                                <label class="form-check-label" for="enable_clans">
+                                    {{phrase('enable_clans')}}
+                                </label>
+                            </div>
+                            <div class="form-text">{{phrase('enable_clans_help')}}</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="max_attachment_size" class="form-label">{{phrase('max_attachment_size')}} (MB)</label>
+                            <input type="number" class="form-control" id="max_attachment_size" name="max_attachment_size" 
+                                   value="{{ forumSettings.max_attachment_size }}" min="1" max="100" required>
+                            <div class="form-text">{{phrase('max_attachment_size_help')}}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Настройки антифлуда для сообщений -->
+                <div class="mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="bi bi-shield-check me-2"></i>{{phrase('antiflood_posts_settings')}}
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="post_max_per_minute" class="form-label">{{phrase('max_posts_per_minute')}}</label>
+                            <input type="number" class="form-control" id="post_max_per_minute" name="post_max_per_minute" 
+                                   value="{{ forumSettings.post_max_per_minute }}" min="1" max="100" required>
+                            <div class="form-text">{{phrase('max_posts_per_minute_help')}}</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="post_max_per_hour" class="form-label">{{phrase('max_posts_per_hour')}}</label>
+                            <input type="number" class="form-control" id="post_max_per_hour" name="post_max_per_hour" 
+                                   value="{{ forumSettings.post_max_per_hour }}" min="1" max="1000" required>
+                            <div class="form-text">{{phrase('max_posts_per_hour_help')}}</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="post_min_interval" class="form-label">{{phrase('min_post_interval')}} (сек)</label>
+                            <input type="number" class="form-control" id="post_min_interval" name="post_min_interval" 
+                                   value="{{ forumSettings.post_min_interval }}" min="0" max="300" required>
+                            <div class="form-text">{{phrase('min_post_interval_help')}}</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="post_cooldown" class="form-label">{{phrase('post_cooldown')}} (сек)</label>
+                            <input type="number" class="form-control" id="post_cooldown" name="post_cooldown" 
+                                   value="{{ forumSettings.post_cooldown }}" min="0" max="3600" required>
+                            <div class="form-text">{{phrase('post_cooldown_help')}}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Настройки антифлуда для тем -->
+                <div class="mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="bi bi-shield-exclamation me-2"></i>{{phrase('antiflood_threads_settings')}}
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="thread_max_per_minute" class="form-label">{{phrase('max_threads_per_minute')}}</label>
+                            <input type="number" class="form-control" id="thread_max_per_minute" name="thread_max_per_minute" 
+                                   value="{{ forumSettings.thread_max_per_minute }}" min="1" max="50" required>
+                            <div class="form-text">{{phrase('max_threads_per_minute_help')}}</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="thread_max_per_hour" class="form-label">{{phrase('max_threads_per_hour')}}</label>
+                            <input type="number" class="form-control" id="thread_max_per_hour" name="thread_max_per_hour" 
+                                   value="{{ forumSettings.thread_max_per_hour }}" min="1" max="500" required>
+                            <div class="form-text">{{phrase('max_threads_per_hour_help')}}</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="thread_min_interval" class="form-label">{{phrase('min_thread_interval')}} (сек)</label>
+                            <input type="number" class="form-control" id="thread_min_interval" name="thread_min_interval" 
+                                   value="{{ forumSettings.thread_min_interval }}" min="0" max="600" required>
+                            <div class="form-text">{{phrase('min_thread_interval_help')}}</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="thread_cooldown" class="form-label">{{phrase('thread_cooldown')}} (сек)</label>
+                            <input type="number" class="form-control" id="thread_cooldown" name="thread_cooldown" 
+                                   value="{{ forumSettings.thread_cooldown }}" min="0" max="3600" required>
+                            <div class="form-text">{{phrase('thread_cooldown_help')}}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Настройки модерации -->
+                <div class="mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="bi bi-person-badge me-2"></i>{{phrase('moderation_settings')}}
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enable_auto_moderation" name="enable_auto_moderation" 
+                                       {% if forumSettings.enable_auto_moderation %}checked{% endif %}>
+                                <label class="form-check-label" for="enable_auto_moderation">
+                                    {{phrase('enable_auto_moderation')}}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enable_post_edit" name="enable_post_edit" 
+                                       {% if forumSettings.enable_post_edit %}checked{% endif %}>
+                                <label class="form-check-label" for="enable_post_edit">
+                                    {{phrase('enable_post_edit')}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="post_edit_time_limit" class="form-label">{{phrase('post_edit_time_limit')}} (сек)</label>
+                            <input type="number" class="form-control" id="post_edit_time_limit" name="post_edit_time_limit" 
+                                   value="{{ forumSettings.post_edit_time_limit }}" min="0" max="86400" required>
+                            <div class="form-text">{{phrase('post_edit_time_limit_help')}}</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch mt-4">
+                                <input class="form-check-input" type="checkbox" id="enable_post_delete" name="enable_post_delete" 
+                                       {% if forumSettings.enable_post_delete %}checked{% endif %}>
+                                <label class="form-check-label" for="enable_post_delete">
+                                    {{phrase('enable_post_delete')}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Настройки прав -->
+                <div class="mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="bi bi-key me-2"></i>{{phrase('permissions_settings')}}
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="allow_guest_view" name="allow_guest_view" 
+                                       {% if forumSettings.allow_guest_view %}checked{% endif %}>
+                                <label class="form-check-label" for="allow_guest_view">
+                                    {{phrase('allow_guest_view')}}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="require_approval_new_topics" name="require_approval_new_topics" 
+                                       {% if forumSettings.require_approval_new_topics %}checked{% endif %}>
+                                <label class="form-check-label" for="require_approval_new_topics">
+                                    {{phrase('require_approval_new_topics')}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="require_approval_new_posts" name="require_approval_new_posts" 
+                                       {% if forumSettings.require_approval_new_posts %}checked{% endif %}>
+                                <label class="form-check-label" for="require_approval_new_posts">
+                                    {{phrase('require_approval_new_posts')}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer text-end">
+                    <a href="/admin/sphere/forum" class="btn btn-secondary me-2">
+                        <i class="bi bi-arrow-left me-1"></i>{{phrase('back')}}
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>{{phrase('save_settings')}}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function() {
+        $('#forumSettingsForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = $(this).serialize();
+            
+            $.ajax({
+                url: '/admin/sphere/forum/settings/save',
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    show_message('success', '{{phrase("settings_saved_successfully")}}');
+                },
+                error: function(xhr, status, error) {
+                    show_message('error', '{{phrase("error_saving_settings")}}');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+

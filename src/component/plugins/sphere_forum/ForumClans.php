@@ -19,8 +19,21 @@ class ForumClans
     private $clans = [];
     private $clanName = [];
 
+    /**
+     * Проверяет, включена ли функция кланов
+     */
+    private function checkClansEnabled(): void
+    {
+        if (!forum::areClanEnabled()) {
+            board::error("Функция кланов отключена администратором");
+            redirect::location("/forum");
+        }
+    }
+
     public function create(): void
     {
+        $this->checkClansEnabled();
+        
         try {
             if(user::self()->isGuest()){
                 redirect::location("/forum");
@@ -224,6 +237,7 @@ class ForumClans
 
     public function view($clanName)
     {
+        $this->checkClansEnabled();
         $clanName = trim($clanName);
         $clan = $this->getClanInfoByName($clanName);
         if(!$clan){
@@ -244,6 +258,7 @@ class ForumClans
 
     public function createClanIndex(): void
     {
+        $this->checkClansEnabled();
         if(user::self()->isGuest()){
             redirect::location("/forum");
         }
@@ -268,6 +283,7 @@ class ForumClans
 
     public function updateClan()
     {
+        $this->checkClansEnabled();
         try {
             $data = $_POST;
 
@@ -316,6 +332,7 @@ class ForumClans
 
     public function joinClan($clanId)
     {
+        $this->checkClansEnabled();
         $clan = $this->getClanInfoById($clanId);
         if (!$clan) {
             board::error("Клан не найден");
@@ -350,6 +367,7 @@ class ForumClans
 
     public function handleRequest($requestId, $accept): bool
     {
+        $this->checkClansEnabled();
         $request = sql::getRow(
             "SELECT * FROM forum_clan_requests WHERE id = ?",
             [$requestId]
@@ -410,6 +428,7 @@ class ForumClans
     }
 
     public function leaveClan($clanId) {
+        $this->checkClansEnabled();
         if (!$this->isMember($clanId)) {
             board::error("Вы не состоите в этом клане");
         }
@@ -429,6 +448,7 @@ class ForumClans
     }
 
     public function createClanPost() {
+        $this->checkClansEnabled();
         try {
             if (!user::self()->isAuth()) {
                 throw new \Exception('Необходима авторизация');
@@ -481,6 +501,7 @@ class ForumClans
     }
 
     public function updateClanPost() {
+        $this->checkClansEnabled();
         try {
             if (!user::self()->isAuth()) {
                 throw new \Exception('Необходима авторизация');
@@ -523,6 +544,7 @@ class ForumClans
     }
 
     public function deleteClanPost() {
+        $this->checkClansEnabled();
         try {
             if (!user::self()->isAuth()) {
                 throw new \Exception('Необходима авторизация');
@@ -593,6 +615,7 @@ class ForumClans
     }
 
     public function deleteClan() {
+        $this->checkClansEnabled();
         try {
             $clanId = $_POST['clan_id'] ?? null;
             if (!$clanId) {
@@ -630,6 +653,7 @@ class ForumClans
     }
 
     public function showAllClans() {
+        $this->checkClansEnabled();
         $clans = sql::getRows(
             "SELECT c.*, 
             u.name as owner_name,
@@ -650,6 +674,7 @@ class ForumClans
     }
 
     public function adminClansList() {
+        $this->checkClansEnabled();
         if (!user::self()->isAdmin()) {
             redirect::location("/forum");
             return;
@@ -671,6 +696,7 @@ class ForumClans
     }
 
     public function adminEditClan($clanId) {
+        $this->checkClansEnabled();
         if (!user::self()->isAdmin()) {
             redirect::location("/forum");
             return;

@@ -568,6 +568,16 @@ class custom_twig
     }
 
     /**
+     * Проверяет, включена ли функция кланов
+     * 
+     * @return bool
+     */
+    public function areClansEnabled(): bool
+    {
+        return forum::areClanEnabled();
+    }
+
+    /**
      * Проверяет, забанен ли пользователь
      * 
      * @param int $userId ID пользователя

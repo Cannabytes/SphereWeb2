@@ -266,6 +266,24 @@ $routes = [
     ],
 
     [
+        "method" => "GET",
+        "pattern" => "/admin/sphere/forum/settings",
+        "file" => "sphere_forum.php",
+        "call" => function () {
+            (new sphere_forum\sphere_forum())->settings();
+        }
+    ],
+
+    [
+        "method" => "POST",
+        "pattern" => "/admin/sphere/forum/settings/save",
+        "file" => "sphere_forum.php",
+        "call" => function () {
+            (new sphere_forum\sphere_forum())->saveSettings();
+        }
+    ],
+
+    [
         "method" => "POST",
         "pattern" => "/forum/thread/toggle-pin",
         "file" => "forum.php",

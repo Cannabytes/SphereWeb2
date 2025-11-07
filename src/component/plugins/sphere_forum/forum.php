@@ -36,9 +36,8 @@ use ReflectionClass;
  */
 class forum
 {
-    private const POSTS_PER_PAGE = 10; // Количество постов на странице
-
     private ?string $nameClass = null;
+    private ?array $forumSettings = null;
 
     private function getNameClass(): string
     {
@@ -56,6 +55,86 @@ class forum
         }
         tpl::addVar("template_plugin", "sphere_forum");
         tpl::addVar("pluginActive", (bool)plugin::getPluginActive("sphere_forum") ?? false);
+    }
+
+    /**
+     * Получает настройки форума из базы данных
+     */
+    private function getForumSettings(): array
+    {
+        if ($this->forumSettings !== null) {
+            return $this->forumSettings;
+        }
+
+        $settings = sql::getRow(
+            "SELECT setting FROM settings WHERE `key` = '__FORUM_SETTINGS__' LIMIT 1"
+        );
+
+        if ($settings && !empty($settings['setting'])) {
+            $decoded = json_decode($settings['setting'], true);
+            $this->forumSettings = $decoded ?: $this->getDefaultSettings();
+        } else {
+            $this->forumSettings = $this->getDefaultSettings();
+        }
+
+        return $this->forumSettings;
+    }
+
+    /**
+     * Возвращает настройки по умолчанию
+     */
+    private function getDefaultSettings(): array
+    {
+        return [
+            'posts_per_page' => 10,
+            'topics_per_page' => 20,
+            'enable_bbcode' => true,
+            'enable_smiles' => true,
+            'enable_polls' => true,
+            'enable_attachments' => true,
+            'max_attachment_size' => 5,
+            'post_max_per_minute' => 10,
+            'post_max_per_hour' => 180,
+            'post_min_interval' => 5,
+            'post_cooldown' => 300,
+            'thread_max_per_minute' => 3,
+            'thread_max_per_hour' => 10,
+            'thread_min_interval' => 60,
+            'thread_cooldown' => 600,
+            'enable_auto_moderation' => false,
+            'enable_post_edit' => true,
+            'post_edit_time_limit' => 3600,
+            'enable_post_delete' => true,
+            'allow_guest_view' => true,
+            'require_approval_new_topics' => false,
+            'require_approval_new_posts' => false,
+        ];
+    }
+
+    /**
+     * Получает значение настройки posts_per_page
+     */
+    private function getPostsPerPage(): int
+    {
+        $settings = $this->getForumSettings();
+        return $settings['posts_per_page'] ?? 10;
+    }
+
+    /**
+     * Проверяет, включены ли кланы
+     */
+    public static function areClanEnabled(): bool
+    {
+        $settings = sql::getRow(
+            "SELECT setting FROM settings WHERE `key` = '__FORUM_SETTINGS__' LIMIT 1"
+        );
+        
+        if ($settings && !empty($settings['setting'])) {
+            $decoded = json_decode($settings['setting'], true);
+            return $decoded['enable_clans'] ?? true;
+        }
+        
+        return true; // По умолчанию включены
     }
 
     /**
@@ -330,7 +409,7 @@ class forum
 
     private function getPostsByThread(int $threadId, int $page = 1): array
     {
-        $offset = ($page - 1) * self::POSTS_PER_PAGE;
+        $offset = ($page - 1) * $this->getPostsPerPage();
 
         // Получаем посты с учетом пагинации
         $posts = sql::getRows(
@@ -338,7 +417,7 @@ class forum
         WHERE `thread_id` = ? 
         ORDER BY `id` ASC 
         LIMIT ? OFFSET ?",
-            [$threadId, self::POSTS_PER_PAGE, $offset]
+            [$threadId, $this->getPostsPerPage(), $offset]
         );
 
         // Обрабатываем содержимое постов через XSS-фильтр на чтении
@@ -358,7 +437,7 @@ class forum
             [$threadId]
         );
 
-        return ceil($totalPosts / self::POSTS_PER_PAGE);
+        return ceil($totalPosts / $this->getPostsPerPage());
     }
 
     /**
@@ -373,19 +452,21 @@ class forum
             $antiFlood->checkFlood();
             $this->validateMessageInput();
 
-            // Проверяем, не забанен ли пользователь
-            $ban = ForumBan::isUserBanned(user::self()->getId());
-            if ($ban) {
-                $banMessage = "Вам запрещено писать сообщения";
-                if ($ban['banned_until']) {
-                    $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
-                } else {
-                    $banMessage .= " (перманентный бан)";
+            // Проверяем, не забанен ли пользователь (администраторы не блокируются)
+            if (!user::self()->isAdmin()) {
+                $ban = ForumBan::isUserBanned(user::self()->getId());
+                if ($ban) {
+                    $banMessage = "Вам запрещено писать сообщения";
+                    if ($ban['banned_until']) {
+                        $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
+                    } else {
+                        $banMessage .= " (перманентный бан)";
+                    }
+                    if ($ban['reason']) {
+                        $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
+                    }
+                    throw new Exception($banMessage);
                 }
-                if ($ban['reason']) {
-                    $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
-                }
-                throw new Exception($banMessage);
             }
 
             $topicId = (int)$_POST['topicId'];
@@ -440,7 +521,7 @@ class forum
                     "SELECT COUNT(*) FROM forum_posts WHERE thread_id = ?",
                     [$topicId]
                 );
-                $postsPerPage = self::POSTS_PER_PAGE;
+                $postsPerPage = $this->getPostsPerPage();
                 $lastPage = ceil($totalPosts / $postsPerPage);
                 sql::commit();
                 $thread = $this->getThreadById($topicId);
@@ -648,6 +729,23 @@ class forum
                 throw new Exception("Необходимо авторизоваться");
             }
 
+            // Проверяем, не забанен ли пользователь (администраторы не блокируются)
+            if (!user::self()->isAdmin()) {
+                $ban = ForumBan::isUserBanned(user::self()->getId());
+                if ($ban) {
+                    $banMessage = "Вам запрещено создавать темы";
+                    if ($ban['banned_until']) {
+                        $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
+                    } else {
+                        $banMessage .= " (перманентный бан)";
+                    }
+                    if ($ban['reason']) {
+                        $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
+                    }
+                    throw new Exception($banMessage);
+                }
+            }
+
             tpl::addVar([
                 "categoryTitle" => $sectionName,
                 "categoryId" => $categoryId,
@@ -666,19 +764,21 @@ class forum
 
             $this->validateTopicInput();
 
-            // Проверяем, не забанен ли пользователь
-            $ban = ForumBan::isUserBanned(user::self()->getId());
-            if ($ban) {
-                $banMessage = "Вам запрещено создавать темы";
-                if ($ban['banned_until']) {
-                    $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
-                } else {
-                    $banMessage .= " (перманентный бан)";
+            // Проверяем, не забанен ли пользователь (администраторы не блокируются)
+            if (!user::self()->isAdmin()) {
+                $ban = ForumBan::isUserBanned(user::self()->getId());
+                if ($ban) {
+                    $banMessage = "Вам запрещено создавать темы";
+                    if ($ban['banned_until']) {
+                        $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
+                    } else {
+                        $banMessage .= " (перманентный бан)";
+                    }
+                    if ($ban['reason']) {
+                        $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
+                    }
+                    throw new Exception($banMessage);
                 }
-                if ($ban['reason']) {
-                    $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
-                }
-                throw new Exception($banMessage);
             }
 
             $categoryId = (int)$_POST['categoryId'];
@@ -2469,19 +2569,21 @@ class forum
                 throw new Exception("Необходимо авторизоваться");
             }
 
-            // Проверяем, не забанен ли пользователь
-            $ban = ForumBan::isUserBanned(user::self()->getId());
-            if ($ban) {
-                $banMessage = "Вам запрещено ставить лайки";
-                if ($ban['banned_until']) {
-                    $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
-                } else {
-                    $banMessage .= " (перманентный бан)";
+            // Проверяем, не забанен ли пользователь (администраторы не блокируются)
+            if (!user::self()->isAdmin()) {
+                $ban = ForumBan::isUserBanned(user::self()->getId());
+                if ($ban) {
+                    $banMessage = "Вам запрещено ставить лайки";
+                    if ($ban['banned_until']) {
+                        $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
+                    } else {
+                        $banMessage .= " (перманентный бан)";
+                    }
+                    if ($ban['reason']) {
+                        $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
+                    }
+                    throw new Exception($banMessage);
                 }
-                if ($ban['reason']) {
-                    $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
-                }
-                throw new Exception($banMessage);
             }
 
             $postId = $_POST['postId'] ?? board::error("Не указан пост");

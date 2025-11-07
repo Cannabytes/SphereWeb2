@@ -29,7 +29,23 @@
                 {{phrase('plugin_description_sphere_forum')|raw}}
             </div>
 
+            <!-- Кнопка управления настройками форума -->
+            <div class="mb-4">
+                <h5 class="mb-3">{{phrase('forum_management')}}</h5>
+                <a href="/admin/sphere/forum/settings" class="btn btn-primary">
+                    <i class="bi bi-gear me-2"></i>{{phrase('forum_settings')}}
+                </a>
+                <a href="/forum/moderators" class="btn btn-secondary ms-2">
+                    <i class="bi bi-person-badge me-2"></i>{{phrase('moderators')}}
+                </a>
+                <a href="/forum/user-blocks" class="btn btn-secondary ms-2">
+                    <i class="bi bi-shield-exclamation me-2"></i>{{phrase('user_blocks')}}
+                </a>
+            </div>
 
+            <hr class="my-4">
+
+            <h5 class="mb-3">{{phrase('display_settings')}}</h5>
             <div class="form-check">
                 <input data-type="bool" class="form-check-input pluginSetting" type="checkbox" value="" id="showMainPage" {% if setting.showMainPage %}checked=""{% endif %}>
                 <label class="form-check-label" for="showMainPage">

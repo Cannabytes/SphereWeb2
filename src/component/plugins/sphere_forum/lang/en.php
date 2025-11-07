@@ -377,4 +377,62 @@ return [
     'close' => 'Close',
     'user' => 'User',
     'unknown' => 'Unknown',
+    
+    // Forum settings page
+    'forum_settings' => 'Forum Settings',
+    'general_settings' => 'General Settings',
+    'posts_per_page' => 'Posts per page',
+    'posts_per_page_help' => 'Determines how many posts will be displayed on one page of a topic',
+    'topics_per_page' => 'Topics per page',
+    'topics_per_page_help' => 'Determines how many topics will be displayed on one page of a category',
+    'enable_bbcode' => 'Enable BBCode',
+    'enable_smiles' => 'Enable smileys',
+    'enable_polls' => 'Enable polls',
+    'enable_attachments' => 'Enable attachments',
+    'enable_clans' => 'Enable clans',
+    'enable_clans_help' => 'Enables/disables clan functionality on the forum. When disabled, the create clan button and all clan sections will be unavailable',
+    'max_attachment_size' => 'Maximum attachment size',
+    'max_attachment_size_help' => 'Maximum attachment file size in megabytes',
+    
+    // Anti-flood
+    'antiflood_posts_settings' => 'Anti-flood settings for posts',
+    'antiflood_threads_settings' => 'Anti-flood settings for topics',
+    'max_posts_per_minute' => 'Max posts per minute',
+    'max_posts_per_minute_help' => 'Maximum number of posts a user can send per minute',
+    'max_posts_per_hour' => 'Max posts per hour',
+    'max_posts_per_hour_help' => 'Maximum number of posts a user can send per hour',
+    'min_post_interval' => 'Minimum interval between posts',
+    'min_post_interval_help' => 'Minimum time in seconds between sending posts',
+    'post_cooldown' => 'Post flood cooldown time',
+    'post_cooldown_help' => 'Time in seconds the user will be blocked for exceeding the post limit',
+    'max_threads_per_minute' => 'Max topics per minute',
+    'max_threads_per_minute_help' => 'Maximum number of topics a user can create per minute',
+    'max_threads_per_hour' => 'Max topics per hour',
+    'max_threads_per_hour_help' => 'Maximum number of topics a user can create per hour',
+    'min_thread_interval' => 'Minimum interval between topics',
+    'min_thread_interval_help' => 'Minimum time in seconds between creating topics',
+    'thread_cooldown' => 'Topic flood cooldown time',
+    'thread_cooldown_help' => 'Time in seconds the user will be blocked for exceeding the topic creation limit',
+    
+    // Moderation
+    'moderation_settings' => 'Moderation Settings',
+    'enable_auto_moderation' => 'Enable auto-moderation',
+    'enable_post_edit' => 'Allow post editing',
+    'post_edit_time_limit' => 'Post edit time limit',
+    'post_edit_time_limit_help' => 'Time in seconds during which a user can edit their post',
+    'enable_post_delete' => 'Allow post deletion',
+    
+    // Permissions
+    'permissions_settings' => 'Permissions Settings',
+    'allow_guest_view' => 'Allow guest viewing',
+    'require_approval_new_topics' => 'Require approval for new topics',
+    'require_approval_new_posts' => 'Require approval for new posts',
+    
+    // Messages
+    'settings_saved_successfully' => 'Settings saved successfully',
+    'error_saving_settings' => 'Error saving settings',
+    'save_settings' => 'Save Settings',
+    'back' => 'Back',
+    'display_settings' => 'Display Settings',
+    'user_blocks' => 'User Blocks',
 ];

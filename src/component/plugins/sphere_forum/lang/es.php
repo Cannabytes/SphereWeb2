@@ -373,4 +373,62 @@ return [
     'close' => 'Cerrar',
     'user' => 'Usuario',
     'unknown' => 'Desconocido',
+    
+    // Página de configuración del foro
+    'forum_settings' => 'Configuración del foro',
+    'general_settings' => 'Configuración general',
+    'posts_per_page' => 'Publicaciones por página',
+    'posts_per_page_help' => 'Determina cuántas publicaciones se mostrarán en una página de un tema',
+    'topics_per_page' => 'Temas por página',
+    'topics_per_page_help' => 'Determina cuántos temas se mostrarán en una página de una categoría',
+    'enable_bbcode' => 'Habilitar BBCode',
+    'enable_smiles' => 'Habilitar emoticonos',
+    'enable_polls' => 'Habilitar encuestas',
+    'enable_attachments' => 'Habilitar archivos adjuntos',
+    'enable_clans' => 'Habilitar clanes',
+    'enable_clans_help' => 'Activa/desactiva la funcionalidad de clanes en el foro. Cuando está desactivado, el botón de crear clan y todas las secciones de clanes no estarán disponibles',
+    'max_attachment_size' => 'Tamaño máximo de archivo adjunto',
+    'max_attachment_size_help' => 'Tamaño máximo del archivo adjunto en megabytes',
+    
+    // Anti-flood
+    'antiflood_posts_settings' => 'Configuración anti-flood para publicaciones',
+    'antiflood_threads_settings' => 'Configuración anti-flood para temas',
+    'max_posts_per_minute' => 'Máximo de publicaciones por minuto',
+    'max_posts_per_minute_help' => 'Número máximo de publicaciones que un usuario puede enviar por minuto',
+    'max_posts_per_hour' => 'Máximo de publicaciones por hora',
+    'max_posts_per_hour_help' => 'Número máximo de publicaciones que un usuario puede enviar por hora',
+    'min_post_interval' => 'Intervalo mínimo entre publicaciones',
+    'min_post_interval_help' => 'Tiempo mínimo en segundos entre el envío de publicaciones',
+    'post_cooldown' => 'Tiempo de bloqueo por flood de publicaciones',
+    'post_cooldown_help' => 'Tiempo en segundos que el usuario será bloqueado por exceder el límite de publicaciones',
+    'max_threads_per_minute' => 'Máximo de temas por minuto',
+    'max_threads_per_minute_help' => 'Número máximo de temas que un usuario puede crear por minuto',
+    'max_threads_per_hour' => 'Máximo de temas por hora',
+    'max_threads_per_hour_help' => 'Número máximo de temas que un usuario puede crear por hora',
+    'min_thread_interval' => 'Intervalo mínimo entre temas',
+    'min_thread_interval_help' => 'Tiempo mínimo en segundos entre la creación de temas',
+    'thread_cooldown' => 'Tiempo de bloqueo por flood de temas',
+    'thread_cooldown_help' => 'Tiempo en segundos que el usuario será bloqueado por exceder el límite de creación de temas',
+    
+    // Moderación
+    'moderation_settings' => 'Configuración de moderación',
+    'enable_auto_moderation' => 'Habilitar auto-moderación',
+    'enable_post_edit' => 'Permitir edición de publicaciones',
+    'post_edit_time_limit' => 'Límite de tiempo para editar publicaciones',
+    'post_edit_time_limit_help' => 'Tiempo en segundos durante el cual un usuario puede editar su publicación',
+    'enable_post_delete' => 'Permitir eliminación de publicaciones',
+    
+    // Permisos
+    'permissions_settings' => 'Configuración de permisos',
+    'allow_guest_view' => 'Permitir visualización a invitados',
+    'require_approval_new_topics' => 'Requerir aprobación para nuevos temas',
+    'require_approval_new_posts' => 'Requerir aprobación para nuevas publicaciones',
+    
+    // Mensajes
+    'settings_saved_successfully' => 'Configuración guardada correctamente',
+    'error_saving_settings' => 'Error al guardar la configuración',
+    'save_settings' => 'Guardar configuración',
+    'back' => 'Atrás',
+    'display_settings' => 'Configuración de visualización',
+    'user_blocks' => 'Bloqueos de usuarios',
 ];
