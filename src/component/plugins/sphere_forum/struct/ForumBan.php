@@ -43,13 +43,61 @@ class ForumBan implements \JsonSerializable {
     }
 
     /**
+     * Проверяет наличие таблицы forum_user_bans и создает её при необходимости
+     * 
+     * @return void
+     */
+    private static function ensureTableExists(): void {
+        static $tableChecked = false;
+        
+        if ($tableChecked) {
+            return; // Таблица уже проверена в этом запросе
+        }
+        
+        try {
+            // Проверяем существование таблицы forum_user_bans
+            $tableExists = sql::getRow("SHOW TABLES LIKE 'forum_user_bans'");
+            
+            if (!$tableExists) {
+                // Создаем таблицу forum_user_bans
+                sql::run("
+                    CREATE TABLE IF NOT EXISTS `forum_user_bans` (
+                      `id` int(11) NOT NULL AUTO_INCREMENT,
+                      `user_id` int(11) NOT NULL COMMENT 'ID забаненного пользователя',
+                      `banned_by` int(11) NOT NULL COMMENT 'ID модератора/админа который забанил',
+                      `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Причина бана',
+                      `banned_at` timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'Дата и время бана',
+                      `banned_until` timestamp NULL DEFAULT NULL COMMENT 'До какого времени бан (NULL = перманентный)',
+                      `is_active` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Активен ли бан (0 = снят досрочно)',
+                      `unbanned_at` timestamp NULL DEFAULT NULL COMMENT 'Когда был снят бан',
+                      `unbanned_by` int(11) NULL DEFAULT NULL COMMENT 'Кто снял бан',
+                      PRIMARY KEY (`id`) USING BTREE,
+                      INDEX `user_id_idx`(`user_id` ASC) USING BTREE,
+                      INDEX `banned_by_idx`(`banned_by` ASC) USING BTREE,
+                      INDEX `is_active_idx`(`is_active` ASC) USING BTREE,
+                      INDEX `banned_until_idx`(`banned_until` ASC) USING BTREE
+                    ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic
+                ");
+            }
+            
+            $tableChecked = true;
+        } catch (\Exception $e) {
+            // Игнорируем ошибки при проверке/создании таблицы
+            // Если таблица не существует, методы вернут null или пустой массив
+        }
+    }
+
+    /**
      * Проверяет, забанен ли пользователь в данный момент
      * 
      * @param int $userId ID пользователя
      * @return array|null Информация о бане или null если пользователь не забанен
      */
     public static function isUserBanned(int $userId): ?array {
-        $ban = sql::getRow(
+        self::ensureTableExists();
+        
+        try {
+            $ban = sql::getRow(
             "SELECT b.*, 
                     u.name as user_name,
                     moderator.name as banned_by_name
@@ -61,10 +109,14 @@ class ForumBan implements \JsonSerializable {
              AND (b.banned_until IS NULL OR b.banned_until > NOW())
              ORDER BY b.banned_at DESC
              LIMIT 1",
-            [$userId]
-        );
+                [$userId]
+            );
 
-        return $ban ?: null;
+            return $ban ?: null;
+        } catch (\Exception $e) {
+            // Если таблица не существует или произошла ошибка, возвращаем null
+            return null;
+        }
     }
 
     /**
@@ -77,20 +129,26 @@ class ForumBan implements \JsonSerializable {
      * @return int ID созданного бана
      */
     public static function createBan(int $userId, int $bannedBy, ?string $reason = null, ?string $bannedUntil = null): int {
-        // Деактивируем все предыдущие активные баны
-        sql::run(
-            "UPDATE forum_user_bans SET is_active = 0 WHERE user_id = ? AND is_active = 1",
-            [$userId]
-        );
+        self::ensureTableExists();
+        
+        try {
+            // Деактивируем все предыдущие активные баны
+            sql::run(
+                "UPDATE forum_user_bans SET is_active = 0 WHERE user_id = ? AND is_active = 1",
+                [$userId]
+            );
 
-        // Создаем новый бан
-        sql::run(
-            "INSERT INTO forum_user_bans (user_id, banned_by, reason, banned_until, is_active) 
-             VALUES (?, ?, ?, ?, 1)",
-            [$userId, $bannedBy, $reason, $bannedUntil]
-        );
+            // Создаем новый бан
+            sql::run(
+                "INSERT INTO forum_user_bans (user_id, banned_by, reason, banned_until, is_active) 
+                 VALUES (?, ?, ?, ?, 1)",
+                [$userId, $bannedBy, $reason, $bannedUntil]
+            );
 
-        return sql::lastInsertId();
+            return sql::lastInsertId();
+        } catch (\Exception $e) {
+            throw new \Exception("Не удалось создать бан: " . $e->getMessage());
+        }
     }
 
     /**
@@ -101,14 +159,20 @@ class ForumBan implements \JsonSerializable {
      * @return bool
      */
     public static function removeBan(int $banId, int $unbannedBy): bool {
-        $result = sql::run(
+        self::ensureTableExists();
+        
+        try {
+            $result = sql::run(
             "UPDATE forum_user_bans 
              SET is_active = 0, unbanned_at = NOW(), unbanned_by = ? 
              WHERE id = ?",
-            [$unbannedBy, $banId]
-        );
+                [$unbannedBy, $banId]
+            );
 
-        return $result->rowCount() > 0;
+            return $result->rowCount() > 0;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -119,14 +183,20 @@ class ForumBan implements \JsonSerializable {
      * @return bool
      */
     public static function removeUserBans(int $userId, int $unbannedBy): bool {
-        $result = sql::run(
+        self::ensureTableExists();
+        
+        try {
+            $result = sql::run(
             "UPDATE forum_user_bans 
              SET is_active = 0, unbanned_at = NOW(), unbanned_by = ? 
              WHERE user_id = ? AND is_active = 1",
-            [$unbannedBy, $userId]
-        );
+                [$unbannedBy, $userId]
+            );
 
-        return $result->rowCount() > 0;
+            return $result->rowCount() > 0;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -138,7 +208,10 @@ class ForumBan implements \JsonSerializable {
      * @return array
      */
     public static function getAllBans(bool $onlyActive = false, int $limit = 50, int $offset = 0): array {
-        $sql = "SELECT b.*, 
+        self::ensureTableExists();
+        
+        try {
+            $sql = "SELECT b.*, 
                        u.name as user_name,
                        u.avatar as user_avatar,
                        moderator.name as banned_by_name,
@@ -147,16 +220,19 @@ class ForumBan implements \JsonSerializable {
                 LEFT JOIN users u ON b.user_id = u.id
                 LEFT JOIN users moderator ON b.banned_by = moderator.id
                 LEFT JOIN users unbanner ON b.unbanned_by = unbanner.id";
-        
-        if ($onlyActive) {
-            $sql .= " WHERE b.is_active = 1 AND (b.banned_until IS NULL OR b.banned_until > NOW())";
+            
+            if ($onlyActive) {
+                $sql .= " WHERE b.is_active = 1 AND (b.banned_until IS NULL OR b.banned_until > NOW())";
+            }
+            
+            $sql .= " ORDER BY b.banned_at DESC LIMIT ? OFFSET ?";
+            
+            $bans = sql::getRows($sql, [$limit, $offset]);
+            
+            return array_map(fn($ban) => new self($ban), $bans);
+        } catch (\Exception $e) {
+            return [];
         }
-        
-        $sql .= " ORDER BY b.banned_at DESC LIMIT ? OFFSET ?";
-        
-        $bans = sql::getRows($sql, [$limit, $offset]);
-        
-        return array_map(fn($ban) => new self($ban), $bans);
     }
 
     /**
@@ -166,7 +242,10 @@ class ForumBan implements \JsonSerializable {
      * @return array
      */
     public static function getUserBanHistory(int $userId): array {
-        $bans = sql::getRows(
+        self::ensureTableExists();
+        
+        try {
+            $bans = sql::getRows(
             "SELECT b.*, 
                     moderator.name as banned_by_name,
                     unbanner.name as unbanned_by_name
@@ -175,10 +254,13 @@ class ForumBan implements \JsonSerializable {
              LEFT JOIN users unbanner ON b.unbanned_by = unbanner.id
              WHERE b.user_id = ?
              ORDER BY b.banned_at DESC",
-            [$userId]
-        );
+                [$userId]
+            );
 
-        return array_map(fn($ban) => new self($ban), $bans);
+            return array_map(fn($ban) => new self($ban), $bans);
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -188,7 +270,10 @@ class ForumBan implements \JsonSerializable {
      * @return ForumBan|null
      */
     public static function getBanById(int $banId): ?ForumBan {
-        $ban = sql::getRow(
+        self::ensureTableExists();
+        
+        try {
+            $ban = sql::getRow(
             "SELECT b.*, 
                     u.name as user_name,
                     moderator.name as banned_by_name,
@@ -198,10 +283,13 @@ class ForumBan implements \JsonSerializable {
              LEFT JOIN users moderator ON b.banned_by = moderator.id
              LEFT JOIN users unbanner ON b.unbanned_by = unbanner.id
              WHERE b.id = ?",
-            [$banId]
-        );
+                [$banId]
+            );
 
-        return $ban ? new self($ban) : null;
+            return $ban ? new self($ban) : null;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -213,14 +301,20 @@ class ForumBan implements \JsonSerializable {
      * @return bool
      */
     public static function updateBan(int $banId, ?string $reason = null, ?string $bannedUntil = null): bool {
-        $result = sql::run(
+        self::ensureTableExists();
+        
+        try {
+            $result = sql::run(
             "UPDATE forum_user_bans 
              SET reason = ?, banned_until = ? 
              WHERE id = ?",
-            [$reason, $bannedUntil, $banId]
-        );
+                [$reason, $bannedUntil, $banId]
+            );
 
-        return $result->rowCount() > 0;
+            return $result->rowCount() > 0;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -230,15 +324,21 @@ class ForumBan implements \JsonSerializable {
      * @return int Количество снятых банов
      */
     public static function expireBans(): int {
-        $result = sql::run(
+        self::ensureTableExists();
+        
+        try {
+            $result = sql::run(
             "UPDATE forum_user_bans 
              SET is_active = 0 
              WHERE is_active = 1 
              AND banned_until IS NOT NULL 
              AND banned_until <= NOW()"
-        );
+            );
 
-        return $result->rowCount();
+            return $result->rowCount();
+        } catch (\Exception $e) {
+            return 0;
+        }
     }
 
     /**
