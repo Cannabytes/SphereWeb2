@@ -10,8 +10,6 @@
   <meta name="Author" content="SphereWeb">
   <meta name="keywords" content="">
 
-  {{ csrf_meta() }}
-
   {{ config().logo().favicon() }}
 
   <script src="{{template}}/assets/js/authentication-main.js"></script>
@@ -77,7 +75,6 @@
                 <div class="h-captcha text-center" data-sitekey="0c545d06-4fe6-45d4-b704-7b809af8db9c"></div>
               {% endif %}
 
-              {{ csrf_field() }}
               <input type="hidden" name="finger" id="finger">
 
               <div class="col-xl-12 d-grid mt-2">
@@ -142,9 +139,6 @@
 <script src="{{template}}/assets/libs/@popperjs/core/umd/popper.min.js"></script>
 <script src="{{template}}/assets/js/Toasts.js"></script>
 <script src="{{template}}/assets/js/general.js?v=1.0.2"></script>
-
-<!-- CSRF Protection Script -->
-<script src="{{template}}/assets/js/csrf.js"></script>
 
 
 {% if config().captcha().isEnabled() %}

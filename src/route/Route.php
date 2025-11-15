@@ -13,7 +13,6 @@
 namespace Ofey\Logan22\route;
 
 use Bramus\Router\Router;
-use Ofey\Logan22\component\csrf\csrf;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\model\plugin\plugin;
 use Ofey\Logan22\template\tpl;
@@ -21,19 +20,6 @@ use Ofey\Logan22\template\tpl;
 class Route extends Router {
 
     private static array $pluginRegister;
-    
-    // Паттерны маршрутов, исключенных из CSRF проверки
-    private static array $csrfExemptPatterns = [
-        '/donate/(.+)/webhook',  // Webhook'и платежных систем (устаревший паттерн)
-        '/donate/webhook/(.+)',  // Актуальный порядок сегментов
-        '/api/(.+)',              // API endpoints (если есть внешние интеграции)
-        '/response/request',      // Серверные уведомления от Sphere API
-        '/admin/plugin/chests/get/all',
-        '/admin/plugin/chests/update/order',
-        '/admin/plugin/chests/get',
-        '/admin/plugin/chests/delete',
-        '/admin/plugin/registration_reward/setting/save',
-    ];
 
     //Возваращет
     static public function get_plugin_type($pluginName) {
@@ -51,52 +37,37 @@ class Route extends Router {
         $dir = fileSys::get_dir("src/component/donate/");
         $payments = fileSys::file_list($dir);
         foreach ($payments as $payment) {
-            $routeFile = $dir . $payment . "/route.php";
-            if (!file_exists($routeFile)) {
-                continue;
-            }
-
-            $routes = [];
-            include $routeFile;
-            if (empty($routes) || !is_array($routes)) {
-                continue;
-            }
-
-            foreach ($routes as $route) {
-                if (!isset($route['pattern'], $route['call'])) {
-                    continue;
-                }
-
-                if (isset($route['file'])) {
-                    $handlerFile = $dir . $payment . "/" . $route['file'];
-                    if (file_exists($handlerFile)) {
-                        include_once $handlerFile;
+            if (file_exists($dir . $payment . "/route.php") or file_exists($dir . $payment . "/pay.php")) {
+                include_once $dir . $payment . "/route.php";
+                foreach ($routes as $route) {
+                    include_once $dir . $payment . "/" . $route['file'];
+                    $method = "POST";
+                    if ($route['method'] == "GET") {
+                        $method = "GET";
                     }
+                    $this->$method($route['pattern'], function () use ($route) {
+                        $route['call']();
+                    });
                 }
-
-                $method = strtoupper($route['method'] ?? 'POST');
-
-                // Автоматически добавляем исключения из CSRF:
-                // 1) если явно указано csrf_exempt => true
-                // 2) если маршрут визуально выглядит как webhook/endpoints для внешних сервисов
-                if (($route['csrf_exempt'] ?? false) === true
-                    || str_contains($route['pattern'], '/webhook/')
-                    || str_contains($route['pattern'], '/callback/')
-                ) {
-                    self::addCsrfExemption($route['pattern']);
-                }
-                $callable = $route['call'];
-
-                $register = match ($method) {
-                    'GET' => 'get',
-                    'ALL' => 'all',
-                    default => 'post',
-                };
-
-                $this->$register($route['pattern'], function (...$var) use ($callable) {
-                    $callable(...$var);
-                });
             }
+        }
+
+        $pluginCustom = fileSys::dir_list("custom/plugins/");
+        $pluginsDir = fileSys::dir_list("src/component/plugins/");
+        $dir = fileSys::get_dir("src/component/plugins/");
+        foreach($pluginsDir AS $i => $plugin){
+            if (in_array($plugin, $pluginCustom)) {
+                if (isset($pluginsDir[$i])) {
+                    unset($pluginsDir[$i]);
+                }
+                continue;
+            }
+            self::$pluginRegister['component'][] = $plugin;
+            $data = $this->addPluginReg($dir, $plugin, $routes);
+            if($data==null){
+                continue;
+            }
+            [$route, $method] = $data;
         }
 
         $dir = fileSys::get_dir("custom/plugins/");
@@ -137,48 +108,6 @@ class Route extends Router {
         parent::get($pattern, $fn);
         self::$pattern = $pattern;
         return $this;
-    }
-    
-    public function post($pattern, $fn) {
-        // Оборачиваем функцию для проверки CSRF
-        $wrappedFn = function(...$args) use ($fn, $pattern) {
-            // Проверяем, не находится ли маршрут в списке исключений
-            if (!$this->isExemptFromCsrf($pattern)) {
-                csrf::verifyOrFail();
-            }
-            
-            // Выполняем оригинальную функцию
-            if (is_string($fn)) {
-                return call_user_func($fn, ...$args);
-            } else {
-                return $fn(...$args);
-            }
-        };
-        
-        parent::post($pattern, $wrappedFn);
-        self::$pattern = $pattern;
-        return $this;
-    }
-    
-    /**
-     * Проверка, исключен ли маршрут из CSRF проверки
-     */
-    private function isExemptFromCsrf(string $pattern): bool {
-        foreach (self::$csrfExemptPatterns as $exemptPattern) {
-            // Преобразуем паттерн в regex
-            $regex = '#^' . str_replace(['\(', '\)', '\+'], ['(', ')', '+'], preg_quote($exemptPattern, '#')) . '$#';
-            if (preg_match($regex, $pattern)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * Добавить маршрут в список исключений из CSRF проверки
-     */
-    public static function addCsrfExemption(string $pattern): void {
-        self::$csrfExemptPatterns[] = $pattern;
     }
 
 

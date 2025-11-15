@@ -13,8 +13,6 @@
   <meta name="Description" content="User Registration">
   <meta name="Author" content="Logan22 SphereWeb">
 
-  {{ csrf_meta() }}
-
   {{ config().logo().favicon() }}
 
   <script src="{{template}}/assets/js/authentication-main.js"></script>
@@ -757,7 +755,6 @@
                 <div class="h-captcha text-center" data-sitekey="0c545d06-4fe6-45d4-b704-7b809af8db9c"></div>
                 {% endif %}
 
-                {{ csrf_field() }}
                 <input type="hidden" name="finger" id="finger">
                 <div id="referralinput" class="col-xl-12 mb-2 {% if referral_name is empty %}d-none{% endif %}">
                   <label for="referral" class="form-label text-default">{{ phrase('username') }}</label>
@@ -1443,9 +1440,6 @@
 
     });
   </script>
-
-  <!-- CSRF Protection Script -->
-  <script src="{{template}}/assets/js/csrf.js"></script>
 
 </body>
 

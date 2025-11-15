@@ -9,7 +9,6 @@
 namespace Ofey\Logan22\component\session;
 
 use Ofey\Logan22\component\alert\board;
-use Ofey\Logan22\component\csrf\csrf;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\user;
@@ -70,9 +69,6 @@ class session
 
         // Запускаем сборщик мусора с вероятностью 1%
         self::runGarbageCollectorWithProbability();
-
-        // Генерируем CSRF токен
-        csrf::generateToken();
 
         // Регистрируем функцию автосохранения при завершении скрипта
         register_shutdown_function([self::class, 'autoSaveSession']);

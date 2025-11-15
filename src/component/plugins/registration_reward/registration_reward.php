@@ -244,9 +244,6 @@ class registration_reward
     public function setting()
     {
         validation::user_protection("admin");
-
-        // Гарантируем генерацию CSRF токена
-        \Ofey\Logan22\component\csrf\csrf::generateToken();
         
         $servers = server::getServerAll();
         $serverSettings = [];
@@ -283,9 +280,7 @@ class registration_reward
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
         if (strpos($contentType, 'application/json') !== false) {
             $input = json_decode(file_get_contents('php://input'), true);
-            \Ofey\Logan22\component\csrf\csrf::verifyJsonTokenOrFail($input ?? []);
         } else {
-            \Ofey\Logan22\component\csrf\csrf::verifyOrFail();
             $input = $_POST;
         }
 
@@ -336,16 +331,15 @@ class registration_reward
         }
 
         // Проверка вероятности
-        $warningMessage = null;
         if ($totalChance > 100) {
             board::error(lang::get_phrase("error_chance_exceeds", number_format($totalChance, 2)));
         }
 
         if ($totalChance < 100 && !empty($processedItems)) {
-            board::error(lang::get_phrase(
-                "warning_chance_less_than_100",
-                number_format($totalChance, 2)
-            ));
+            board::alert([
+                'warning' => true,
+                'message' => lang::get_phrase("warning_chance_less_than_100", number_format($totalChance, 2)),
+            ]);
         }
 
         // Сохранение на сервере
