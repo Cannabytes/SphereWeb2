@@ -24,7 +24,8 @@ class Route extends Router {
     
     // Паттерны маршрутов, исключенных из CSRF проверки
     private static array $csrfExemptPatterns = [
-        '/donate/(.+)/webhook',  // Webhook'и платежных систем
+        '/donate/(.+)/webhook',  // Webhook'и платежных систем (устаревший паттерн)
+        '/donate/webhook/(.+)',  // Актуальный порядок сегментов
         '/api/(.+)',              // API endpoints (если есть внешние интеграции)
         '/response/request',      // Серверные уведомления от Sphere API
         '/admin/plugin/chests/get/all',
@@ -50,37 +51,52 @@ class Route extends Router {
         $dir = fileSys::get_dir("src/component/donate/");
         $payments = fileSys::file_list($dir);
         foreach ($payments as $payment) {
-            if (file_exists($dir . $payment . "/route.php") or file_exists($dir . $payment . "/pay.php")) {
-                include_once $dir . $payment . "/route.php";
-                foreach ($routes as $route) {
-                    include_once $dir . $payment . "/" . $route['file'];
-                    $method = "POST";
-                    if ($route['method'] == "GET") {
-                        $method = "GET";
-                    }
-                    $this->$method($route['pattern'], function () use ($route) {
-                        $route['call']();
-                    });
-                }
+            $routeFile = $dir . $payment . "/route.php";
+            if (!file_exists($routeFile)) {
+                continue;
             }
-        }
 
-        $pluginCustom = fileSys::dir_list("custom/plugins/");
-        $pluginsDir = fileSys::dir_list("src/component/plugins/");
-        $dir = fileSys::get_dir("src/component/plugins/");
-        foreach($pluginsDir AS $i => $plugin){
-            if (in_array($plugin, $pluginCustom)) {
-                if (isset($pluginsDir[$i])) {
-                    unset($pluginsDir[$i]);
+            $routes = [];
+            include $routeFile;
+            if (empty($routes) || !is_array($routes)) {
+                continue;
+            }
+
+            foreach ($routes as $route) {
+                if (!isset($route['pattern'], $route['call'])) {
+                    continue;
                 }
-                continue;
+
+                if (isset($route['file'])) {
+                    $handlerFile = $dir . $payment . "/" . $route['file'];
+                    if (file_exists($handlerFile)) {
+                        include_once $handlerFile;
+                    }
+                }
+
+                $method = strtoupper($route['method'] ?? 'POST');
+
+                // Автоматически добавляем исключения из CSRF:
+                // 1) если явно указано csrf_exempt => true
+                // 2) если маршрут визуально выглядит как webhook/endpoints для внешних сервисов
+                if (($route['csrf_exempt'] ?? false) === true
+                    || str_contains($route['pattern'], '/webhook/')
+                    || str_contains($route['pattern'], '/callback/')
+                ) {
+                    self::addCsrfExemption($route['pattern']);
+                }
+                $callable = $route['call'];
+
+                $register = match ($method) {
+                    'GET' => 'get',
+                    'ALL' => 'all',
+                    default => 'post',
+                };
+
+                $this->$register($route['pattern'], function (...$var) use ($callable) {
+                    $callable(...$var);
+                });
             }
-            self::$pluginRegister['component'][] = $plugin;
-            $data = $this->addPluginReg($dir, $plugin, $routes);
-            if($data==null){
-                continue;
-            }
-            [$route, $method] = $data;
         }
 
         $dir = fileSys::get_dir("custom/plugins/");
