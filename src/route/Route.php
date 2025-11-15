@@ -13,6 +13,7 @@
 namespace Ofey\Logan22\route;
 
 use Bramus\Router\Router;
+use Ofey\Logan22\component\csrf\csrf;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\model\plugin\plugin;
 use Ofey\Logan22\template\tpl;
@@ -20,6 +21,17 @@ use Ofey\Logan22\template\tpl;
 class Route extends Router {
 
     private static array $pluginRegister;
+    
+    // Паттерны маршрутов, исключенных из CSRF проверки
+    private static array $csrfExemptPatterns = [
+        '/donate/(.+)/webhook',  // Webhook'и платежных систем
+        '/api/(.+)',              // API endpoints (если есть внешние интеграции)
+        '/admin/plugin/chests/get/all',
+        '/admin/plugin/chests/update/order',
+        '/admin/plugin/chests/get',
+        '/admin/plugin/chests/delete',
+        '/admin/plugin/registration_reward/setting/save',
+    ];
 
     //Возваращет
     static public function get_plugin_type($pluginName) {
@@ -108,6 +120,48 @@ class Route extends Router {
         parent::get($pattern, $fn);
         self::$pattern = $pattern;
         return $this;
+    }
+    
+    public function post($pattern, $fn) {
+        // Оборачиваем функцию для проверки CSRF
+        $wrappedFn = function(...$args) use ($fn, $pattern) {
+            // Проверяем, не находится ли маршрут в списке исключений
+            if (!$this->isExemptFromCsrf($pattern)) {
+                csrf::verifyOrFail();
+            }
+            
+            // Выполняем оригинальную функцию
+            if (is_string($fn)) {
+                return call_user_func($fn, ...$args);
+            } else {
+                return $fn(...$args);
+            }
+        };
+        
+        parent::post($pattern, $wrappedFn);
+        self::$pattern = $pattern;
+        return $this;
+    }
+    
+    /**
+     * Проверка, исключен ли маршрут из CSRF проверки
+     */
+    private function isExemptFromCsrf(string $pattern): bool {
+        foreach (self::$csrfExemptPatterns as $exemptPattern) {
+            // Преобразуем паттерн в regex
+            $regex = '#^' . str_replace(['\(', '\)', '\+'], ['(', ')', '+'], preg_quote($exemptPattern, '#')) . '$#';
+            if (preg_match($regex, $pattern)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Добавить маршрут в список исключений из CSRF проверки
+     */
+    public static function addCsrfExemption(string $pattern): void {
+        self::$csrfExemptPatterns[] = $pattern;
     }
 
 

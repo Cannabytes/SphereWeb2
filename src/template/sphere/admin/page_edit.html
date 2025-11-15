@@ -273,10 +273,22 @@
       formData.append('file', input.files[0]);
     }
 
+    // Явно добавляем CSRF токен в FormData
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (csrfToken) {
+      formData.append('_csrf_token', csrfToken);
+      console.log('Добавлен CSRF токен в FormData:', csrfToken);
+    } else {
+      console.error('CSRF токен не найден в meta теге!');
+    }
+
     sendData(formData);
   });
 
   function sendData(formData) {
+    console.log('Отправка данных на сервер для редактирования...');
+    console.log('CSRF токен из meta:', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'));
+
     $.ajax({
       url: '/admin/pages/edit',
       type: 'POST',
@@ -284,10 +296,13 @@
       processData: false,
       contentType: false,
       success: function (response) {
+        console.log('Успешный ответ:', response);
         ResponseNotice(response);
       },
       error: function (xhr, status, error) {
         console.error('Ошибка при отправке данных:', error);
+        console.error('Статус:', xhr.status);
+        console.error('Ответ:', xhr.responseText);
       }
     });
   }

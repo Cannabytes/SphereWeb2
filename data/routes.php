@@ -2613,6 +2613,20 @@ return array(
         'page' => '',
         'comment' => '',
     ),
+    'items_send_time' =>
+    array(
+        'enable' => true,
+        'method' => 'POST',
+        'pattern' => '/admin/server/items-send-time/save',
+        'func' => 'controller\\admin\\options::saveItemsSendTime',
+        'access' =>
+        array(
+            0 => 'admin',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => '',
+    ),
     200 =>
     array(
         'enable' => true,

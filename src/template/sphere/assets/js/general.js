@@ -29,10 +29,31 @@ $('.copy').on('click', function() {
 });
 
 function AjaxSend(url, method, data, isReturn = false, timeout = 5, funcName = null) {
+    // Автоматически добавляем CSRF токен для POST запросов
+    const httpMethod = (method || 'GET').toUpperCase();
+    if (httpMethod === 'POST' || httpMethod === 'PUT' || httpMethod === 'DELETE' || httpMethod === 'PATCH') {
+        const csrfToken = window.CSRF && typeof window.CSRF.getToken === 'function' ? window.CSRF.getToken() : null;
+        if (csrfToken) {
+            if (data instanceof FormData) {
+                data.append(window.CSRF.getTokenName(), csrfToken);
+            } else if (typeof data === 'string') {
+                const separator = data.length > 0 ? '&' : '';
+                data += separator + encodeURIComponent(window.CSRF.getTokenName()) + '=' + encodeURIComponent(csrfToken);
+            } else if (typeof data === 'object' && data !== null) {
+                data[window.CSRF.getTokenName()] = csrfToken;
+            } else {
+                // Если формат неизвестен, конвертируем в объект
+                data = {
+                    [window.CSRF.getTokenName()]: csrfToken
+                };
+            }
+        }
+    }
+
     return new Promise(function(resolve, reject) {
         $.ajax({
             url: url,
-            type: method,
+            type: httpMethod,
             data: data,
             timeout: timeout * 1000,
             dataType: 'json',
@@ -406,6 +427,9 @@ function showEmptyWarehouse() {
 }
 
 function responseAnalysis(response, form) {
+    if (response && response.csrf_token && window.CSRF && typeof window.CSRF.updateToken === 'function') {
+        window.CSRF.updateToken(response.csrf_token);
+    }
     //Если существует переменная count_sphere_coin то обновляем счетчик class .count_sphere_coin
     let sphereCoin;
     if (response.sphereCoin !== undefined) {
@@ -488,6 +512,9 @@ function responseAnalysis(response, form) {
 }
 
 function ResponseNotice(response) {
+    if (response && response.csrf_token && window.CSRF && typeof window.CSRF.updateToken === 'function') {
+        window.CSRF.updateToken(response.csrf_token);
+    }
     if(response.type!=="notice"){
         return false;
     }

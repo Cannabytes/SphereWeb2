@@ -36,6 +36,11 @@
                                  <i class="ri-archive-line me-1"></i>{{phrase('registration_reward')}}
                                 </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="items-send-time-tab" data-bs-toggle="tab" data-bs-target="#items-send-time-panel" type="button" role="tab" aria-controls="items-send-time-panel" aria-selected="false">
+                                 <i class="ri-time-line me-1"></i>{{phrase('items_send_title')}}
+                                </button>
+                        </li>
                     </ul>
 
                     <div class="tab-content" id="serverFunctionsContent">
@@ -47,6 +52,9 @@
                         </div>
                         <div class="tab-pane fade " id="registration-items-panel" role="tabpanel" aria-labelledby="registration-items-tab">
                             {% include 'admin/func/registration_bonus.html' %}
+                        </div>
+                        <div class="tab-pane fade " id="items-send-time-panel" role="tabpanel" aria-labelledby="items-send-time-tab">
+                            {% include 'admin/func/items_send_time.html' %}
                         </div>
                     </div>
 
@@ -79,6 +87,7 @@
 {% endblock %}
 
 {% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/flatpickr/flatpickr.min.css">
 <style>
     /* Стили для карточек */
     .custom-card {
@@ -117,5 +126,5 @@
 {% endblock %}
 
 {% block js %}
-
+<script src="{{template}}/assets/libs/flatpickr/flatpickr.min.js"></script>
 {% endblock %}

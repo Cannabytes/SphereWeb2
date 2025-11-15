@@ -1,5 +1,9 @@
 {% if startpacks() is not empty %}
 
+{% set currentServer = getServer() %}
+{% set canSendItemsNow = currentServer.canSendItemsNow() %}
+{% set itemsSendLockMessage = currentServer.getItemsSendLockMessage() %}
+
 {% block css %}
 <style>
 
@@ -463,7 +467,30 @@
 
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
             <div class="tab-content tab-content-custom">
-              <div class="tab-pane show active" id="StartpackSendItemsToPlayer" role="tabpanel">
+              <div class="tab-pane show active" id="StartpackSendItemsToPlayer" role="tabpanel"
+                   data-can-send="{{ canSendItemsNow ? 'true' : 'false' }}"
+                   data-lock-message="{{ itemsSendLockMessage|e('html_attr') }}">
+
+                {% if not canSendItemsNow %}
+                <div class="d-flex p-3 border border-warning rounded-3 mb-3 items-send-lock">
+                  <div class="d-sm-flex align-items-start flex-grow-1">
+                    <div class="me-3">
+                      <svg class="bg-warning-transparent alt-notify" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="42" height="42">
+                        <path fill="#ffce6d" d="M18,13.18463V10c0-3.31372-2.68628-6-6-6s-6,2.68628-6,6v3.18463C4.83832,13.59863,4.00146,14.69641,4,16v2c0,0.00037,0,0.00073,0,0.00116C4.00031,18.5531,4.44806,19.00031,5,19h14c0.00037,0,0.00073,0,0.00116,0C19.5531,18.99969,20.00031,18.55194,20,18v-2C19.99854,14.69641,19.16168,13.59863,18,13.18463z"></path>
+                        <path fill="#ffae0c" d="M8.14233 19c.4472 1.72119 1.99689 2.99817 3.85767 3 1.86078-.00183 3.41046-1.27881 3.85767-3H8.14233zM12 4c.34149 0 .67413.03516 1 .08997V3c0-.55231-.44769-1-1-1s-1 .44769-1 1v1.08997C11.32587 4.03516 11.65851 4 12 4z"></path>
+                      </svg>
+                    </div>
+                    <div class="mt-0 text-start">
+                      <span class="fs-14 fw-semibold d-flex align-items-center gap-2">
+                        {{ phrase('items_send_title')|default('Отправка на персонажа недоступна') }}
+                      </span>
+                      <p class="fs-13 text-muted mb-0">
+                        {{ itemsSendLockMessage }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
 
                 {{phrase(77)}}
                 <select {% if getUser().getCountPlayers() == 0 %}disabled{% endif %}
@@ -494,7 +521,8 @@
                   <div class="price-value StartPackCostBuy">0</div>
                 </div>
 
-                <button {% if getUser().getCountPlayers() == 0 %}disabled{% endif %} data-object-id="0" id="Startpackpurchase" type="button"
+                <button {% if getUser().getCountPlayers() == 0 or not canSendItemsNow %}disabled{% endif %}
+                        data-object-id="0" id="Startpackpurchase" type="button"
                         class="btn btn-buy">
                   <i class="fas fa-check-circle me-2"></i>{{phrase('buy_send_to_char')}}
                 </button>

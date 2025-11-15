@@ -96,10 +96,18 @@ $(document).ready(function() {
 
 // Загрузка всех кейсов с сервера
     function loadCases() {
-        $.ajax({
-            type: 'POST',
-            url: '/admin/plugin/chests/get/all',
-            dataType: 'json',
+        // Получаем CSRF токен
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+        console.log('Manual CSRF token for loadCases:', csrfToken);
+
+            $.ajax({
+                type: 'POST',
+                url: '/admin/plugin/chests/get/all',
+                data: {
+                    _csrf_token: csrfToken
+                },
+                csrf: false, // Отключаем автоматическое добавление CSRF
+                dataType: 'json',
             success: function(response) {
                 if (response.ok) {
                     // Проверяем тип данных cases в ответе

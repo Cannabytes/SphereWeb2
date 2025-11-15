@@ -298,6 +298,10 @@ $(document).ready(function() {
             allowClearRewards: allowClearRewards
         };
 
+        // Add CSRF token
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        data._csrf_token = csrfToken;
+
         // Send as JSON with proper headers
         $.ajax({
             url: '/admin/plugin/registration_reward/setting/save',
@@ -305,6 +309,7 @@ $(document).ready(function() {
             data: JSON.stringify(data),
             contentType: 'application/json',
             dataType: 'json',
+            csrf: false, // Отключаем автоматическое добавление CSRF
             success: function(response) {
                 responseAnalysis(response);
             },

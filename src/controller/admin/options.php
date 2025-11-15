@@ -8,6 +8,7 @@
 namespace Ofey\Logan22\controller\admin;
 
 use DateTime;
+use DateTimeZone;
 use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\chronicle\client;
@@ -1191,6 +1192,96 @@ class options
         $server->bonus()->setRegistrationBonusItems($_POST['enabled'], $_POST['issueAllItems'], $_POST['bonus_items']);
         $server->save();
         board::notice(true, "Настройки сохранены");
+    }
+
+    public static function saveItemsSendTime(): void
+    {
+        $serverId = (int)($_POST['server_id'] ?? 0);
+        $enabled = filter_var($_POST['enabled'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $availableFromRaw = trim($_POST['available_from'] ?? '');
+
+        $server = \Ofey\Logan22\model\server\server::getServer($serverId);
+        if (!$serverId || !$server) {
+            board::notice(false, "Сервер не найден");
+        }
+
+        if (!$enabled) {
+            $server->setItemsSendAvailableFrom(null);
+            $server->save();
+            board::alert([
+                'type' => 'notice',
+                'ok' => true,
+                'message' => "Ограничение на отправку предметов отключено",
+                'items_send' => null,
+            ]);
+        }
+
+        if ($availableFromRaw === '') {
+            board::notice(false, "Укажите дату и время, с которых разрешена отправка");
+        }
+
+        $serverTimezoneName = $server->getTimezone() ?: date_default_timezone_get() ?: 'UTC';
+        $timezone = new DateTimeZone($serverTimezoneName);
+
+        $dateTime = self::parseItemsSendDate($availableFromRaw, $timezone);
+        if (!$dateTime) {
+            board::notice(false, "Некорректный формат даты и времени");
+        }
+
+        $formattedDate = $dateTime->format(DATE_ATOM);
+
+        try {
+            $server->setItemsSendAvailableFrom($formattedDate);
+            $server->save();
+        } catch (Exception $exception) {
+            board::notice(false, "Не удалось сохранить настройку: " . $exception->getMessage());
+        }
+
+        board::alert([
+            'type' => 'notice',
+            'ok' => true,
+            'message' => sprintf("Настройки сохранены: %s (%s)", $dateTime->format('d:m:Y H:i'), $serverTimezoneName),
+            'items_send' => self::buildItemsSendPayload($dateTime, $timezone),
+        ]);
+    }
+
+    private static function parseItemsSendDate(string $rawDate, DateTimeZone $timezone): ?DateTime
+    {
+        $normalized = trim($rawDate);
+        if ($normalized === '') {
+            return null;
+        }
+        $normalized = str_replace('T', ' ', $normalized);
+        $normalized = str_replace('.', '/', $normalized);
+        $normalized = preg_replace('/\s+/', ' ', $normalized);
+
+        $formats = [
+            'Y-m-d H:i',
+            'Y-m-d H:i:s',
+            'd:m:Y H:i',
+            'd:m:Y H:i:s',
+            'd/m/Y H:i',
+            'd/m/Y H:i:s',
+        ];
+
+        foreach ($formats as $format) {
+            $dateTime = DateTime::createFromFormat($format, $normalized, $timezone);
+            if ($dateTime instanceof DateTime) {
+                return $dateTime;
+            }
+        }
+
+        return null;
+    }
+
+    private static function buildItemsSendPayload(DateTime $dateTime, DateTimeZone $timezone): array
+    {
+        return [
+            'value' => $dateTime->format('Y-m-d H:i:s'),
+            'iso' => $dateTime->format(DATE_ATOM),
+            'human' => $dateTime->format('d:m:Y H:i'),
+            'timezone' => $timezone->getName(),
+        ];
     }
 
 }

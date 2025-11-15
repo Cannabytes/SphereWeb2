@@ -18,6 +18,8 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="{{ config().other().getAllTitlePage() }}">
 
+  {{ csrf_meta() }}
+
   {{ config().logo().favicon() }}
 
   {% block head %}{% endblock %}
@@ -143,6 +145,10 @@
       }
     });
   </script>
+  
+  <!-- CSRF Protection Script -->
+  <script src="{{template}}/assets/js/csrf.js?v=1.0.0.5"></script>
+  
   {% block js %}{% endblock %}
   
   <!-- Load: {{pointTime}} sec. / Query count: {{get_db_count_request()}} / Sphere Api Request: {{get_sphere_api_count_request()}} -->

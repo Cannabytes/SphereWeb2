@@ -11,6 +11,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\model\user\auth\auth;
 use Ofey\Logan22\model\user\user;
+use Ofey\Logan22\component\csrf\csrf;
 
 class validation {
 

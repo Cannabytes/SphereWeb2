@@ -7,6 +7,7 @@
 
 namespace Ofey\Logan22\component\alert;
 
+use Ofey\Logan22\component\csrf\csrf;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\model\user\user;
 
@@ -52,6 +53,9 @@ class board
             if (self::$addWarehouseInfo) {
                 $data['warehouse'] = user::self()->getWarehouseToArray();
             }
+            // Добавляем новый CSRF токен в ответ
+            $data['csrf_token'] = csrf::getToken();
+            
             self::alert($data, $flags);
         }
         if ( ! $next) {
@@ -73,6 +77,10 @@ class board
         }
         if (user::self()->isAuth()) {
             $arr['sphereCoin'] = user::self()->getDonate();
+        }
+        // Добавляем CSRF токен в каждый ответ
+        if (!isset($arr['csrf_token'])) {
+            $arr['csrf_token'] = csrf::getToken();
         }
         if($flags == 0) {
             $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
@@ -129,6 +137,9 @@ class board
         if (self::$redirectUrl) {
             $arr['redirect'] = self::$redirectUrl;
         }
+        // Добавляем CSRF токен
+        $arr['csrf_token'] = csrf::getToken();
+        
         echo json_encode($arr, JSON_UNESCAPED_UNICODE);
         if ( ! $next) {
             exit;

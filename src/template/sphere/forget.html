@@ -13,6 +13,8 @@
     <meta name="Author" content="Spruko Technologies Private Limited">
     <meta name="keywords" content="admin dashboard,dashboard design htmlbootstrap admin template,html admin panel,admin dashboard html,admin panel html template,bootstrap dashboard,html admin template,html dashboard,html admin dashboard template,bootstrap dashboard template,dashboard html template,bootstrap admin panel,dashboard admin bootstrap,bootstrap admin dashboard">
 
+    {{ csrf_meta() }}
+
     <!-- Favicon -->
     {{ config().logo().favicon() }}
 
@@ -71,6 +73,8 @@
                 <script async defer src="https://js.hcaptcha.com/1/api.js?hl={{getUser().getLang()}}"></script>
                 <div class="h-captcha text-center" data-sitekey="0c545d06-4fe6-45d4-b704-7b809af8db9c"></div>
               {% endif %}
+
+              {{ csrf_field() }}
 
                             <div class="col-xl-12 d-grid mt-2">
                                 <button id="forget" class="btn btn-lg btn-primary">{{ phrase(364) }}</button>
@@ -176,6 +180,9 @@
 {% endif %}
 
 {% endif %}
+
+<!-- CSRF Protection Script -->
+<script src="{{template}}/assets/js/csrf.js"></script>
 
 </body>
 

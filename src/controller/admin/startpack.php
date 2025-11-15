@@ -7,6 +7,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
@@ -41,6 +42,11 @@ class startpack
 
         if (user::self()->getServerId() != $serverId) {
             board::error('Error server id');
+        }
+
+        $server = server::getServer($serverId);
+        if ($server && !$server->canSendItemsNow()) {
+            board::notice(false, $server->getItemsSendLockMessage());
         }
 
         $db = sql::instance();

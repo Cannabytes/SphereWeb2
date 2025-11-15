@@ -228,6 +228,16 @@ class race_class {
         242 => 'Divine Templar',
         243 => 'Divine Templar',
 
+        255 => 'Warg',
+        256 => 'Warg',
+        257 => 'Warg',
+        258 => 'Warg',
+        259 => 'Warg',
+        264 => 'Kamael Crow',
+        265 => 'Hagure',
+        266 => 'Ashigaru',
+        267 => 'Samurai',
+        268 => 'Crow',
 
     ];
 
@@ -306,6 +316,13 @@ class race_class {
         214 => 'Death Berserker',
         215 => 'Death Knight',
         216 => 'Sigel Death Knight',
+
+        255 => 'Warg',
+        256 => 'Warg',
+        257 => 'Warg',
+        258 => 'Warg',
+        259 => 'Warg',
+
     ];
     static private array $elven_id      = [
         18  => 'Elven Fighter',
@@ -452,7 +469,11 @@ class race_class {
         193 => 'Soul Finder',
         194 => 'Soul Breaker',
         195 => 'Soul Hound',
-
+        264 => 'Kamael Crow',
+        265 => 'Hagure',
+        266 => 'Ashigaru',
+        267 => 'Samurai',
+        268 => 'Crow',
     ];
     static private array $ertheia_id    = [
         182 => 'Ertheia Fighter',

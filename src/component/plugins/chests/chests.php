@@ -37,6 +37,7 @@ class chests
     public function setting()
     {
         validation::user_protection("admin");
+
         $box_names = include "box_names.php";
         tpl::addVar([
             "box_names" => $box_names,
@@ -59,6 +60,7 @@ class chests
      */
     public function getAllCases()
     {
+        \Ofey\Logan22\component\csrf\csrf::verifyOrFail();
         validation::user_protection(["admin"]);
         $cases = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getCache("chests");
         if (empty($cases)) {
@@ -142,6 +144,7 @@ class chests
      */
     public function updateCasesOrder()
     {
+        \Ofey\Logan22\component\csrf\csrf::verifyOrFail();
         validation::user_protection(["admin"]);
 
         // Проверяем наличие данных
@@ -189,6 +192,7 @@ class chests
      */
     public function getCase()
     {
+        \Ofey\Logan22\component\csrf\csrf::verifyOrFail();
         validation::user_protection(["admin"]);
         $id = $_POST['id'] ?? null;
 
@@ -233,6 +237,7 @@ class chests
      */
     public function deleteCase()
     {
+        \Ofey\Logan22\component\csrf\csrf::verifyOrFail();
         validation::user_protection(["admin"]);
 
         $id = $_POST['id'] ?? null;
@@ -276,6 +281,7 @@ class chests
      */
     public function save()
     {
+        \Ofey\Logan22\component\csrf\csrf::verifyOrFail();
         validation::user_protection(["admin"]);
         $name = $_POST['name'] ?? '';
         $originalName = $_POST['original_name'] ?? $name;

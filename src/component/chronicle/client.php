@@ -333,6 +333,15 @@ class client
                 'protocol' => [474],
                 'name'     => "Shield of The Kingdom",
             ],
+            [
+                'protocol' => [520],
+                'name' => "Wolf",
+            ],
+            [
+                'protocol' => [541],
+                'name' => "Samurai Crow",
+            ],
+
 
         ];
     }

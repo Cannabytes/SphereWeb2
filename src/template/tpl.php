@@ -12,6 +12,7 @@ use Ofey\Logan22\component\captcha\google;
 use Ofey\Logan22\component\chronicle\client;
 use Ofey\Logan22\component\chronicle\race_class;
 use Ofey\Logan22\component\country\country;
+use Ofey\Logan22\component\csrf\csrf;
 use Ofey\Logan22\component\estate\castle;
 use Ofey\Logan22\component\estate\clanhall;
 use Ofey\Logan22\component\estate\fort;
@@ -726,6 +727,19 @@ class tpl
 
         $twig->addFunction(new TwigFunction('google_secret_key', function () {
             return google::get_client_key();
+        }));
+
+        // CSRF Protection Functions
+        $twig->addFunction(new TwigFunction('csrf_token', function () {
+            return csrf::getToken();
+        }));
+
+        $twig->addFunction(new TwigFunction('csrf_field', function () {
+            return new Markup(csrf::getTokenInput(), 'UTF-8');
+        }));
+
+        $twig->addFunction(new TwigFunction('csrf_meta', function () {
+            return new Markup(csrf::getMetaTag(), 'UTF-8');
         }));
 
         $twig->addFunction(new TwigFunction('get_shop_items', function () {

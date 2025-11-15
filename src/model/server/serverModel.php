@@ -2,10 +2,13 @@
 
 namespace Ofey\Logan22\model\server;
 
+use DateTime;
+use DateTimeZone;
 use Exception;
 use InvalidArgumentException;
 use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\time\time;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\config\donate;
 use Ofey\Logan22\model\config\referral;
 use Ofey\Logan22\model\db\sql;
@@ -44,6 +47,7 @@ class serverModel
     private ?bool $default = null;
     private ?string $knowledgeBase = null;
     private ?int $maxOnline = 200;
+    private ?string $itemsSendAvailableFrom = null;
     //Позиция сервера при сортировки
     private ?int $position = 0;
 
@@ -58,6 +62,7 @@ class serverModel
     private ?referral $referral = null;
 
     private ?serverStackable $stackableItem = null;
+    private const MACHINE_TIMEZONE = 'UTC';
 
     public function __construct(array $server, array $server_data = [], ?int $pageId = null)
     {
@@ -87,6 +92,7 @@ class serverModel
         $this->resetHWID = filter_var($server['resetHWID'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->resetItemsToWarehouse = filter_var($server['resetItemsToWarehouse'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->showOnlineInStatusServer = filter_var($server['showOnlineInStatusServer'] ?? true, FILTER_VALIDATE_BOOLEAN);
+        $this->itemsSendAvailableFrom = $server['itemsSendAvailableFrom'] ?? null;
         if ($server_data) {
             foreach ($server_data as $data) {
                 $this->server_data[] = new serverDataModel($data);
@@ -284,6 +290,7 @@ class serverModel
             'stackableItem' => $this->stackableItem()->toArray(),
             'bonus' => $this->bonus()->toArray(),
             'maxOnline' => $this->maxOnline,
+            'itemsSendAvailableFrom' => $this->itemsSendAvailableFrom,
         ];
         sql::run(
             "INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)
@@ -317,6 +324,7 @@ class serverModel
             'chat_game_enabled' => $this->getChatGameEnabled(),
             'launcher_enabled' => $this->getLauncherEnabled(),
             'timezone' => $this->getTimezone(),
+            'itemsSendAvailableFrom' => $this->itemsSendAvailableFrom,
         ];
     }
 
@@ -670,6 +678,29 @@ class serverModel
         return $this->timezone;
     }
 
+    public function getMachineTimezone(): string
+    {
+        $timezone = config::load()->other()->getTimezone();
+        if ($timezone) {
+            return $timezone;
+        }
+        return self::MACHINE_TIMEZONE;
+    }
+
+    public function getMachineNowIso(): string
+    {
+        $tz = new DateTimeZone($this->getMachineTimezone());
+        $dt = new DateTime('now', $tz);
+        return $dt->format(DateTime::ATOM);
+    }
+
+    public function getMachineNowHuman(string $format = 'd/m/Y H:i:s'): string
+    {
+        $tz = new DateTimeZone($this->getMachineTimezone());
+        $dt = new DateTime('now', $tz);
+        return $dt->format($format);
+    }
+
     /**
      * @param string $timezone
      *
@@ -694,7 +725,7 @@ class serverModel
     ): null|array|serverDataModel
     {
         if ($key == null) {
-            return $this->server_data;
+        return $this->server_data;
         }
         if (empty($this->server_data)) {
             return null;
@@ -713,6 +744,164 @@ class serverModel
     ): void
     {
         $this->server_data = $server_data;
+    }
+
+    public function getItemsSendAvailableFrom(): ?string
+    {
+        if ($this->itemsSendAvailableFrom) {
+            return $this->itemsSendAvailableFrom;
+        }
+        $dateTime = $this->getItemsSendDateTime();
+        if ($dateTime === null) {
+            return null;
+        }
+        $iso = $dateTime->format(DateTime::ATOM);
+        // Cache converted legacy value for future saves
+        $this->itemsSendAvailableFrom = $iso;
+        return $iso;
+    }
+
+    public function setItemsSendAvailableFrom(?string $iso8601): void
+    {
+        $this->itemsSendAvailableFrom = $iso8601;
+    }
+
+    public function canSendItemsNow(): bool
+    {
+        $value = $this->getItemsSendAvailableFrom();
+        if ($value === null) {
+            return true;
+        }
+        $timestamp = strtotime($value);
+        if ($timestamp === false) {
+            return true;
+        }
+        return time() >= $timestamp;
+    }
+
+    public function getItemsSendLockMessage(): string
+    {
+        $message = "Отправка предметов временно недоступна. Попробуйте позже.";
+        $availableFrom = $this->getItemsSendAvailableFrom();
+        if ($availableFrom) {
+            try {
+                $timezone = $this->getMachineTimezone();
+                $dt = new DateTime($availableFrom);
+                $dt->setTimezone(new DateTimeZone($timezone));
+                $remaining = self::formatRemainingTime($dt);
+                $formatted = $dt->format('d:m:Y H:i');
+                return "Отправка предметов будет доступна {$remaining} ({$formatted} {$timezone})";
+            } catch (Exception) {
+                // ignore, return default
+            }
+        }
+        return $message;
+    }
+
+    private function getItemsSendDateTime(): ?DateTime
+    {
+        $timezoneName = $this->getMachineTimezone();
+        $serverTz = new DateTimeZone($timezoneName);
+
+        if (!empty($this->itemsSendAvailableFrom)) {
+            try {
+                return new DateTime($this->itemsSendAvailableFrom);
+            } catch (Exception) {
+                try {
+                    return new DateTime($this->itemsSendAvailableFrom, $serverTz);
+                } catch (Exception) {
+                    // fallback to legacy below
+                }
+            }
+        }
+
+        $value = $this->getServerData('items_send_available_from');
+        if (!$value) {
+            return null;
+        }
+        $raw = trim((string)$value->getVal());
+        if ($raw === '') {
+            return null;
+        }
+
+        // Try ISO formats first
+        $dateTime = DateTime::createFromFormat(DateTime::ATOM, $raw);
+        if ($dateTime instanceof DateTime) {
+            return $dateTime;
+        }
+
+        if (defined('DATE_RFC3339_EXTENDED')) {
+            $dateTime = DateTime::createFromFormat(DATE_RFC3339_EXTENDED, $raw);
+            if ($dateTime instanceof DateTime) {
+                return $dateTime;
+            }
+        }
+
+        // Legacy formats without timezone
+        $legacyFormats = [
+            'Y-m-d H:i:s',
+            'Y-m-d H:i',
+        ];
+
+        foreach ($legacyFormats as $format) {
+            $legacy = DateTime::createFromFormat($format, $raw, $serverTz);
+            if ($legacy instanceof DateTime) {
+                return $legacy;
+            }
+        }
+
+        try {
+            return new DateTime($raw, $serverTz);
+        } catch (Exception) {
+            return null;
+        }
+    }
+
+    private static function formatRemainingTime(DateTime $availableFrom): string
+    {
+        $now = new DateTime('now', $availableFrom->getTimezone());
+        if ($availableFrom <= $now) {
+            return "в ближайшее время";
+        }
+
+        $diff = $now->diff($availableFrom);
+        $parts = [];
+
+        if ($diff->d > 0) {
+            $parts[] = $diff->d . ' ' . self::declension($diff->d, ['день', 'дня', 'дней']);
+        }
+        if ($diff->h > 0) {
+            $parts[] = $diff->h . ' ' . self::declension($diff->h, ['час', 'часа', 'часов']);
+        }
+        if ($diff->i > 0) {
+            $parts[] = $diff->i . ' ' . self::declension($diff->i, ['минута', 'минуты', 'минут']);
+        }
+        if ($diff->s > 0 && empty($parts)) {
+            $parts[] = $diff->s . ' ' . self::declension($diff->s, ['секунда', 'секунды', 'секунд']);
+        }
+
+        if (empty($parts)) {
+            return "в ближайшее время";
+        }
+
+        return 'через ' . implode(' и ', array_slice($parts, 0, 2));
+    }
+
+    private static function declension(int $number, array $forms): string
+    {
+        $n = abs($number) % 100;
+        $n1 = $n % 10;
+
+        if ($n > 10 && $n < 20) {
+            return $forms[2];
+        }
+        if ($n1 > 1 && $n1 < 5) {
+            return $forms[1];
+        }
+        if ($n1 == 1) {
+            return $forms[0];
+        }
+        return $forms[2];
     }
 
     public function getTokenAdmin(): string

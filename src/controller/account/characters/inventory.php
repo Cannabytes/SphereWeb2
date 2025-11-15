@@ -2,6 +2,8 @@
 
 namespace Ofey\Logan22\controller\account\characters;
 
+use DateTime;
+use DateTimeZone;
 use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
@@ -13,6 +15,7 @@ use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\item\item;
 use Ofey\Logan22\model\log\logTypes;
 use Ofey\Logan22\model\user\user;
+use Ofey\Logan22\model\server\server as ServerRepository;
 
 class inventory
 {
@@ -187,6 +190,15 @@ class inventory
         $account = $_POST['account'] ?? board::error(lang::get_phrase('no_account_provided'));
         $player = $_POST['player'] ?? board::error(lang::get_phrase('no_player_name_provided'));
 
+        $server = ServerRepository::getServer(user::self()->getServerId());
+        if (!$server) {
+            board::error("Сервер не найден");
+        }
+
+        if (!$server->canSendItemsNow()) {
+            board::notice(false, $server->getItemsSendLockMessage());
+        }
+
         $userId = user::self()->getId();
         $cooldownKey = 'warehouse_to_game_' . $userId;
         $currentTime = time();
@@ -335,6 +347,15 @@ class inventory
         if (!config::load()->enabled()->isEnableSendBalanceGame()) {
             board::error("Disabled");
             return;
+        }
+
+        $server = ServerRepository::getServer(user::self()->getServerId());
+        if (!$server) {
+            board::error("Сервер не найден");
+        }
+
+        if (!$server->canSendItemsNow()) {
+            board::notice(false, $server->getItemsSendLockMessage());
         }
 
         $requiredParams = [
@@ -494,4 +515,5 @@ class inventory
             sql::run("SELECT RELEASE_LOCK(?)", [$lockKey]);
         }
     }
+
 }

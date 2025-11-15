@@ -1,0 +1,441 @@
+{% set server = getServer(serverId) %}
+{% set storedItemsSendValue = server.getItemsSendAvailableFrom() %}
+{% set serverTimezone = server.getMachineTimezone() %}
+{% set storedDate = storedItemsSendValue ? storedItemsSendValue|date('d/m/Y', serverTimezone) : '' %}
+{% set storedTime = storedItemsSendValue ? storedItemsSendValue|date('H:i', serverTimezone) : '' %}
+{% set storedIso = storedItemsSendValue ? storedItemsSendValue|date('Y-m-d\\TH:i:s\\Z', serverTimezone) : '' %}
+{% set serverNowIso = server.getMachineNowIso() %}
+{% set serverNowHuman = server.getMachineNowHuman() %}
+
+<div id="itemsSendTimeRoot"
+     class="row"
+     data-server-timezone="{{ serverTimezone }}"
+     data-server-now="{{ serverNowIso }}"
+     data-stored-iso="{{ storedIso }}"
+     data-server-id="{{ serverId }}"
+     data-save-url="/admin/server/items-send-time/save">
+    <div class="col-xl-12">
+        <div class="alert alert-secondary mb-4 d-flex align-items-start shadow-sm">
+            <i class="ri-time-line fs-3 me-3 text-primary"></i>
+            <div>
+                <h5 class="mb-1">{{ phrase('items_send_title') }}</h5>
+                <p class="mb-0">
+                    {{ phrase('items_send_description') }}
+                </p>
+            </div>
+        </div>
+
+        <div class="card custom-card shadow-none border">
+            <div class="card-body">
+                <div class="form-check form-switch form-check-lg mb-4">
+                    <input class="form-check-input" type="checkbox" id="enableItemsSendTime" {% if storedItemsSendValue %}checked{% endif %}>
+                    <label class="form-check-label fw-semibold" for="enableItemsSendTime">
+                        {{ phrase('items_send_toggle') }}
+                    </label>
+                    <small class="text-muted d-block mt-2">
+                        {{ phrase('items_send_toggle_hint') }}
+                    </small>
+                </div>
+
+                <div id="itemsSendTimeSettings" class="{% if not storedItemsSendValue %}d-none{% endif %}">
+                    <div class="row gy-3 align-items-end">
+                        <div class="col-lg-4">
+                            <label for="itemsSendDate" class="form-label fw-medium">{{ phrase('items_send_date_label') }} ({{ serverTimezone }})</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="itemsSendDate"
+                                value="{{ storedDate }}"
+                                data-initial-date="{{ storedDate }}"
+                                placeholder="15/11/2025">
+                            <small class="text-muted">{{ phrase('items_send_date_hint') }}</small>
+                        </div>
+                        <div class="col-lg-3">
+                            <label for="itemsSendTime" class="form-label fw-medium">{{ phrase('items_send_time_label') }}</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="itemsSendTime"
+                                value="{{ storedTime }}"
+                                data-initial-time="{{ storedTime }}"
+                                placeholder="12:00">
+                            <small class="text-muted">{{ phrase('items_send_time_hint') }}</small>
+                        </div>
+                        <div class="col-lg-5">
+                            <label class="form-label fw-medium">{{ phrase('items_send_quick_select') }}</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-quick-offset="60">{{ phrase('items_send_quick_1h') }}</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-quick-offset="180">{{ phrase('items_send_quick_3h') }}</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-quick-offset="720">{{ phrase('items_send_quick_12h') }}</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-quick-offset="1440">{{ phrase('items_send_quick_1d') }}</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-quick-offset="2880">{{ phrase('items_send_quick_2d') }}</button>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                {{ phrase('items_send_quick_hint') }} ({{ serverTimezone }})
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="p-3 rounded border bg-light">
+                                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+                                    <div class="fw-semibold text-muted">
+                                        {{ phrase('items_send_current_time') }} ({{ serverTimezone }})
+                                        <span class="d-block text-muted fs-12">{{ phrase('items_send_timezone_hint') }}</span>
+                                    </div>
+                                    <div id="itemsSendServerClock" class="fs-5 fw-semibold">
+                                        {% if serverNowIso %}
+                                            {{ serverNowHuman }} ({{ serverTimezone }})
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <small class="text-muted d-block mt-1">
+                                    {{ phrase('items_send_reference_note') }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4 gy-3">
+                        <div class="col-lg-7">
+                            <div class="p-3 rounded border bg-light h-100">
+                                <div class="fw-semibold text-muted mb-1">{{ phrase('items_send_tips_title') }}</div>
+                                <ul class="mb-0 ps-3">
+                                    <li>{{ phrase('items_send_tip_no_past') }}</li>
+                                    <li>{{ phrase('items_send_tip_disable') }}</li>
+                                    <li>{{ phrase('items_send_tip_apply') }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="items-send-summary border rounded p-3 h-100">
+                                <span class="text-muted small d-block mb-1">{{ phrase('items_send_current_threshold') }}</span>
+                                <div id="itemsSendSummary" class="fs-5 fw-semibold">
+                                    {% if storedItemsSendValue %}
+                                        {{ storedItemsSendValue|date('d:m:Y H:i', serverTimezone) }} ({{ serverTimezone }})
+                                    {% else %}
+                                        {{ phrase('items_send_threshold_unset') }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-4 gap-3">
+                    <div class="text-muted small">
+                        {{ phrase('items_send_notice_apply') }}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary" id="resetItemsSendTime">
+                            <i class="ri-refresh-line me-1"></i>{{ phrase('items_send_reset_button') }}
+                        </button>
+                        <button type="button" class="btn btn-success" id="saveItemsSendTime">
+                            <i class="ri-save-line me-1"></i>{{ phrase('save_settings') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        const $root = $('#itemsSendTimeRoot');
+        const serverTimezone = $root.data('serverTimezone') || 'UTC';
+        const serverNowIso = $root.data('serverNow') || null;
+        const apiUrl = $root.data('saveUrl');
+        const serverId = $root.data('serverId');
+
+        const $enableToggle = $('#enableItemsSendTime');
+        const $settingsBlock = $('#itemsSendTimeSettings');
+        const $dateInput = $('#itemsSendDate');
+        const $timeInput = $('#itemsSendTime');
+        const $summary = $('#itemsSendSummary');
+        const $saveBtn = $('#saveItemsSendTime');
+        const $resetBtn = $('#resetItemsSendTime');
+        const $serverClock = $('#itemsSendServerClock');
+        const serverClockBase = serverNowIso ? new Date(serverNowIso) : null;
+        const clientClockBase = Date.now();
+        const initialTimeValue = $timeInput.attr('data-initial-time') || '';
+        const initialDateValue = $dateInput.attr('data-initial-date') || '';
+        let timePickerInstance = null;
+        let datePickerInstance = null;
+
+        function setSummary(text) {
+            $summary.text(text);
+        }
+
+        function formatDateHuman(dateStr) {
+            if (!dateStr) {
+                return '';
+            }
+            if (dateStr.includes(':')) {
+                const tokens = dateStr.split(':');
+                if (tokens.length >= 3) {
+                    return `${tokens[0]}:${tokens[1]}:${tokens[2]}`;
+                }
+            }
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        function updateSummaryText() {
+            if (!$enableToggle.is(':checked')) {
+                setSummary("{{ phrase('items_send_threshold_unset') }}");
+                return;
+            }
+            const date = $dateInput.val();
+            const time = $timeInput.val();
+            if (!date || !time) {
+                setSummary("{{ phrase('items_send_enter_datetime') }}");
+                return;
+            }
+            setSummary(`${formatDateHuman(date)} ${time} (${serverTimezone})`);
+        }
+
+        function toggleSettingsBlock() {
+            if ($enableToggle.is(':checked')) {
+                $settingsBlock.removeClass('d-none').hide().slideDown(200);
+            } else {
+                $settingsBlock.slideUp(200, function () {
+                    $(this).addClass('d-none');
+                });
+            }
+            updateSummaryText();
+        }
+
+        function getDatePartsInServerTZ(dateObj) {
+            try {
+                const formatter = new Intl.DateTimeFormat('en-GB', {
+                    timeZone: serverTimezone,
+                    hourCycle: 'h23',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+                const parts = formatter.formatToParts(dateObj);
+                const map = {};
+                parts.forEach(part => {
+                    map[part.type] = part.value;
+                });
+                return {
+                    date: `${map.day}/${map.month}/${map.year}`,
+                    time: `${map.hour}:${map.minute}`
+                };
+            } catch (error) {
+                console.warn('Ошибка преобразования даты', error);
+                return null;
+            }
+        }
+
+        function applyQuickOffset(minutes) {
+            const base = getServerNowDate();
+            if (!base) {
+                noticeError("{{ phrase('items_send_server_time_error') }}");
+                return;
+            }
+            const target = new Date(base.getTime() + minutes * 60000);
+            const parts = getDatePartsInServerTZ(target);
+            if (!parts) {
+                return;
+            }
+            if (!$enableToggle.is(':checked')) {
+                $enableToggle.prop('checked', true);
+                $settingsBlock.removeClass('d-none');
+            }
+            if (datePickerInstance) {
+                datePickerInstance.setDate(parts.date, true, 'd/m/Y');
+            } else {
+                $dateInput.val(parts.date);
+            }
+            if (timePickerInstance) {
+                timePickerInstance.setDate(parts.time, true, 'H:i');
+            } else {
+                $timeInput.val(parts.time);
+            }
+            updateSummaryText();
+        }
+
+        $('[data-quick-offset]').on('click', function() {
+            const offset = parseInt($(this).data('quick-offset'), 10);
+            if (!Number.isFinite(offset)) {
+                return;
+            }
+            applyQuickOffset(offset);
+        });
+
+        $enableToggle.on('change', toggleSettingsBlock);
+        $dateInput.on('input change', updateSummaryText);
+        $timeInput.on('input change', updateSummaryText);
+
+        $resetBtn.on('click', function() {
+            $enableToggle.prop('checked', false);
+            if (datePickerInstance) {
+                datePickerInstance.clear();
+            } else {
+                $dateInput.val('');
+            }
+            if (timePickerInstance) {
+                timePickerInstance.clear();
+            } else {
+                $timeInput.val('');
+            }
+            toggleSettingsBlock();
+        });
+
+        if (window.flatpickr && $timeInput.length) {
+            timePickerInstance = flatpickr('#itemsSendTime', {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: 'H:i',
+                time_24hr: true,
+                minuteIncrement: 1,
+                allowInput: true,
+                defaultDate: initialTimeValue || null,
+                onChange: function(selectedDates, dateStr) {
+                    if (dateStr) {
+                        $timeInput.val(dateStr);
+                    }
+                    updateSummaryText();
+                },
+                onClose: function(selectedDates, dateStr) {
+                    if (!selectedDates.length && !dateStr) {
+                        $timeInput.val('');
+                    }
+                    updateSummaryText();
+                }
+            });
+        }
+
+        if (window.flatpickr && $dateInput.length) {
+            datePickerInstance = flatpickr('#itemsSendDate', {
+                dateFormat: 'd/m/Y',
+                allowInput: true,
+                defaultDate: initialDateValue || null,
+                onChange: function(selectedDates, dateStr) {
+                    if (dateStr) {
+                        $dateInput.val(dateStr);
+                    }
+                    updateSummaryText();
+                },
+                onClose: function(selectedDates, dateStr) {
+                    if (!selectedDates.length && !dateStr) {
+                        $dateInput.val('');
+                    }
+                    updateSummaryText();
+                }
+            });
+        }
+
+        $saveBtn.on('click', function() {
+            const enabled = $enableToggle.is(':checked');
+            const payload = {
+                server_id: serverId,
+                enabled: enabled
+            };
+
+            if (enabled) {
+                const date = $dateInput.val();
+                const time = $timeInput.val();
+                if (!date || !time) {
+                noticeError("{{ phrase('items_send_fill_datetime') }}");
+                    return;
+                }
+                payload.available_from = `${date} ${time}`;
+            }
+
+            $saveBtn.prop('disabled', true);
+
+            AjaxSend(apiUrl, 'POST', payload, true)
+                .then(function(response) {
+                    if (response && response.ok) {
+                    noticeSuccess(response.message || "{{ phrase('items_send_save_success') }}");
+                        if (response.items_send && response.items_send.human) {
+                            setSummary(`${response.items_send.human} (${response.items_send.timezone})`);
+                        } else {
+                            setSummary('Порог не задан (ограничение выключено)');
+                        }
+                    } else {
+                        const message = response && response.message ? response.message : 'Не удалось сохранить настройки';
+                        noticeError(message);
+                    }
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    noticeError("{{ phrase('items_send_save_error') }}");
+                })
+                .finally(function() {
+                    $saveBtn.prop('disabled', false);
+                });
+        });
+
+        function getServerNowDate() {
+            if (!serverClockBase) {
+                return null;
+            }
+            const elapsed = Date.now() - clientClockBase;
+            return new Date(serverClockBase.getTime() + elapsed);
+        }
+
+        function formatServerClock(dateObj) {
+            try {
+                return new Intl.DateTimeFormat('ru-RU', {
+                    timeZone: serverTimezone,
+                    hourCycle: 'h23',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                }).format(dateObj);
+            } catch (error) {
+                console.warn('Ошибка форматирования серверного времени', error);
+                return null;
+            }
+        }
+
+        function startServerClock() {
+            if (!serverClockBase || !$serverClock.length) {
+                return;
+            }
+            const update = () => {
+                const now = getServerNowDate();
+                if (!now) {
+                    return;
+                }
+                const formatted = formatServerClock(now);
+                if (formatted) {
+                    $serverClock.text(`${formatted} (${serverTimezone})`);
+                }
+            };
+            update();
+            setInterval(update, 1000);
+        }
+
+        // Инициализация
+        if (!$enableToggle.is(':checked')) {
+            $settingsBlock.addClass('d-none');
+        }
+        updateSummaryText();
+        startServerClock();
+    });
+</script>
+
+<style>
+    .items-send-summary {
+        background: radial-gradient(circle at top left, rgba(71, 118, 230, 0.08), transparent);
+    }
+</style>
+

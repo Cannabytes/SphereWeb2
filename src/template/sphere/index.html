@@ -691,6 +691,17 @@
   });
 
   $(document).on('click', '#Startpackpurchase', function () {
+    const $startpackTab = $('#StartpackSendItemsToPlayer');
+    const canSendItemsNow = $startpackTab.data('canSend') !== false;
+    if (!canSendItemsNow) {
+      const lockMessage = $startpackTab.data('lockMessage') || 'Отправка предметов временно недоступна. Попробуйте позже.';
+      if (typeof noticeError === 'function') {
+        noticeError(lockMessage);
+      } else {
+        alert(lockMessage);
+      }
+      return;
+    }
     var startpackId = $(this).attr('data-startpack-id');
     var selectedOption = $('#StartpackPlayer option:selected');
     var account = selectedOption.attr('data-account');
