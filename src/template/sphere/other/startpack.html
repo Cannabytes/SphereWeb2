@@ -377,7 +377,9 @@
              aria-labelledby="pricing-monthly" tabindex="0">
           <div class="row g-4 p-3">
             {% for data in startpacks() %}
-            <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-12 animated-item" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+            {% set animationDelay = (loop.index0 * 0.1)|number_format(1, '.', '') %}
+            <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-12 animated-item"
+                 data-animation-delay="{{ animationDelay }}">
               <div class="startpack-card">
                 <div class="p-4 h-100 d-flex flex-column">
                   <h6 class="startpack-name">{{ data.name }}</h6>
@@ -415,8 +417,8 @@
                   <div class="d-grid mt-auto">
                     <button class="btn btn-purchase btn-wave waves-effect waves-light btn-open-shop"
                             data-startpack-id="{{ data.id }}"
-                            type="button" data-bs-target="#openShopStartpack"
-                            data-bs-toggle="modal">
+                            type="button"
+                            data-modal-target="#openShopStartpack">
                       <i class="fas fa-shopping-cart me-2"></i>{{phrase('buy_for')}} <span class="price-on-button">{{ data.cost }}</span>
                     </button>
                   </div>
@@ -521,7 +523,7 @@
                   <div class="price-value StartPackCostBuy">0</div>
                 </div>
 
-                <button {% if getUser().getCountPlayers() == 0 or not canSendItemsNow %}disabled{% endif %}
+                <button {% if getUser().getCountPlayers() == 0 or not canSendItemsNow or getUser().isAuth() == false %}disabled{% endif %}
                         data-object-id="0" id="Startpackpurchase" type="button"
                         class="btn btn-buy">
                   <i class="fas fa-check-circle me-2"></i>{{phrase('buy_send_to_char')}}
@@ -545,7 +547,8 @@
                   <div class="price-value StartPackCostBuy">0</div>
                 </div>
 
-                <button data-object-id="0" id="StartpackWarehouse" type="button"
+                <button {% if getUser().isAuth() == false %}disabled{% endif %}
+                        data-object-id="0" id="StartpackWarehouse" type="button"
                         class="btn btn-buy">
                   <i class="fas fa-check-circle me-2"></i>{{phrase('buy_send_to_wh')}}
                 </button>
@@ -569,6 +572,49 @@
 
 <script>
 $(document).ready(function() {
+  const isUserAuthorized = "{{ getUser().isAuth() ? '1' : '0' }}" === "1";
+  const authWarningTitle = 'Регистрация';
+  const authWarningMessage = 'Необходимо зарегистрироваться или войти в аккаунт, чтобы приобрести стартпак.';
+  const defaultStartpackModalSelector = '#openShopStartpack';
+
+  function showAuthWarning() {
+    if (window.Notifications && typeof window.Notifications.warning === 'function') {
+      window.Notifications.warning(authWarningTitle, authWarningMessage);
+    } else {
+      alert(authWarningMessage);
+    }
+  }
+
+  function showStartpackModal(targetSelector) {
+    const selector = targetSelector || defaultStartpackModalSelector;
+    const modalElement = document.querySelector(selector);
+
+    if (!modalElement || typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+      return null;
+    }
+
+    let modalInstance = bootstrap.Modal.getInstance(modalElement);
+    if (!modalInstance) {
+      modalInstance = new bootstrap.Modal(modalElement);
+    }
+    modalInstance.show();
+    return modalInstance;
+  }
+
+  function hideStartpackModal(targetSelector) {
+    const selector = targetSelector || defaultStartpackModalSelector;
+    const modalElement = document.querySelector(selector);
+
+    if (!modalElement || typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+      return;
+    }
+
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    if (modalInstance) {
+      modalInstance.hide();
+    }
+  }
+
   $('.startpack-card').on('mouseenter', function() {
     $(this).find('.item-list').addClass('hovered');
   }).on('mouseleave', function() {
@@ -586,18 +632,32 @@ $(document).ready(function() {
   // Анимация появления элементов
   $('.animated-item').each(function(index) {
     const $this = $(this);
+    const delay = $this.data('animation-delay');
+    if (typeof delay !== 'undefined') {
+      this.style.animationDelay = delay + 's';
+    }
     setTimeout(function() {
       $this.css('opacity', '1');
     }, index * 100);
   });
 
   // Обработка открытия модального окна
-  $('.btn-open-shop').on('click', function() {
+  $('.btn-open-shop').on('click', function(e) {
+    if (!isUserAuthorized) {
+      e.preventDefault();
+      e.stopPropagation();
+      showAuthWarning();
+      return false;
+    }
+
     const startpackId = $(this).data('startpack-id');
     const $itemList = $('#item_list_startpack_' + startpackId);
+    const modalSelector = $(this).data('modal-target') || defaultStartpackModalSelector;
 
     // Показываем индикатор загрузки
     $('#itemListSellStartpack').html('<div class="d-flex justify-content-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+
+    showStartpackModal(modalSelector);
 
     // Подготавливаем данные, но не вставляем их сразу
     setTimeout(function() {
@@ -678,7 +738,13 @@ $(document).ready(function() {
   });
 
   // Анимация нажатия кнопок
-  $('.btn-buy').on('click', function() {
+  $('.btn-buy').on('click', function(e) {
+    if (!isUserAuthorized) {
+      e.preventDefault();
+      showAuthWarning();
+      return false;
+    }
+
     const $btn = $(this);
     $btn.addClass('disabled').html('<i class="fas fa-spinner fa-spin me-2"></i>{{phrase(425)}}...');
 
@@ -692,7 +758,7 @@ $(document).ready(function() {
               '<i class="fas fa-check-circle me-2"></i>{{phrase("buy_send_to_char")}}' :
               '<i class="fas fa-check-circle me-2"></i>{{phrase("buy_send_to_wh")}}');
         $btn.removeClass('btn-success');
-        $('#openShopStartpack').modal('hide');
+            hideStartpackModal();
       }, 1500);
     }, 1000);
   });

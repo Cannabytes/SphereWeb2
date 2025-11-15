@@ -26,6 +26,7 @@ class Route extends Router {
     private static array $csrfExemptPatterns = [
         '/donate/(.+)/webhook',  // Webhook'и платежных систем
         '/api/(.+)',              // API endpoints (если есть внешние интеграции)
+        '/response/request',      // Серверные уведомления от Sphere API
         '/admin/plugin/chests/get/all',
         '/admin/plugin/chests/update/order',
         '/admin/plugin/chests/get',
