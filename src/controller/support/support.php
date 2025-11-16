@@ -886,6 +886,11 @@ class support
             foreach ($messages as &$message) {
                 $userInfo = \Ofey\Logan22\model\user\user::getUserId($message['user_id']);
                 $message['user_name'] = $userInfo->getName();
+                $message['user_avatar'] = $userInfo->getAvatar();
+                $message['user_is_online'] = $userInfo->isOnline();
+                $message['user_is_avatar_video'] = $userInfo->isAvatarVideo();
+                $message['user_email'] = $userInfo->getEmail();
+                $message['user_id'] = $userInfo->getId();
                 
                 if (is_string($message['message'])) {
                     $message['message'] = XssSecurity::clean($message['message']);

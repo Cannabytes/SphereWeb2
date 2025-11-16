@@ -112,7 +112,7 @@
 
             <div class="mail-info-body p-4" id="mail-info-body">
                 {% for i, post in posts %}
-                <div>
+                <div data-message-id="{{post.id}}">
                     <div class="d-flex align-items-center">
                         <div class="me-1">
                     {% set postUser = getUser(post.user_id) %}
@@ -268,6 +268,7 @@
 
         var myElement13 = document.getElementById('mail-info-body');
         var simpleBarInstance = new SimpleBar(myElement13, {autoHide: true});
+        window.simpleBarInstance = simpleBarInstance; // Сохраняем для использования в других скриптах
 
         function scrollToLastMessage() {
             const scrollElement = simpleBarInstance.getScrollElement();
@@ -302,6 +303,7 @@
             },
             theme: 'snow'
         });
+        window.quill = quill; // Сохраняем для использования в других скриптах
 
         // Отслеживаем drop событий
         const editor = document.querySelector('#reply .ql-editor');
@@ -345,33 +347,8 @@
             }
         });
 
-        $('#toReply').on('click', function () {
-            let screens = [];
-
-            let editorContent = quill.root.innerHTML;
-
-            $('#screens .glightbox').each(function () {
-                let href = $(this).attr('href');
-                if (href) {
-                    let filename = href.split('/').pop();
-                    screens.push(filename);
-                }
-            });
-
-            // Если массив скриншотов пуст, тогда проверяем содержимое сообщений
-            if (screens.length === 0) {
-                if ($.trim(editorContent) === '<p><br></p>') {
-                    alert('{{ phrase(502) }}');
-                    return;
-                }
-            }
-            AjaxSend("/support/reply/request", "POST", {
-                message: editorContent,
-                id: "{{id}}",
-                screens: screens,
-            }, false);
-
-        });
+        // Обработчик отправки сообщения будет переопределен в скрипте автообновления
+        // Временно оставляем пустым, чтобы избежать конфликтов
 
 
     })();
@@ -529,5 +506,474 @@
     })();
 </script>
 
+<script>
+    (function () {
+        'use strict';
+
+        const threadId = {{ id|default(0) }};
+        const currentUserId = {{ currentUserId|default(0) }};
+        const isUserModerator = {{ isUserModerator ? 'true' : 'false' }};
+        const isAdmin = {{ getUser().isAdmin() ? 'true' : 'false' }};
+        const mailInfoBody = document.getElementById('mail-info-body');
+        let simpleBarInstance = null;
+        let messagesContainer = null; // Контейнер для сообщений внутри SimpleBar
+        let lastMessageId = 0;
+        let isPolling = true;
+        let pollingInterval = null;
+        const POLLING_INTERVAL = 2500; // 2.5 секунды
+        
+        // Уведомления о новых сообщениях
+        const originalTitle = document.title;
+        let unreadMessagesCount = 0;
+        let isTabActive = !document.hidden;
+        // Путь к звуковому файлу (можно использовать mp3 или mp4)
+        // Если нужен mp4, замените путь на соответствующий файл
+        const soundPath = '/custom/plugins/wheel/tpl/sounds/click.mp3';
+        const notificationSound = new Audio(soundPath);
+        notificationSound.volume = 0.5; // Устанавливаем громкость
+
+        // Используем существующий SimpleBar instance
+        if (window.simpleBarInstance) {
+            simpleBarInstance = window.simpleBarInstance;
+        }
+        
+        // Функция для получения правильного контейнера сообщений
+        function getMessagesContainer() {
+            if (messagesContainer) {
+                return messagesContainer;
+            }
+            
+            // Пытаемся найти .simplebar-content внутри mail-info-body
+            const simplebarContent = mailInfoBody.querySelector('.simplebar-content');
+            if (simplebarContent) {
+                messagesContainer = simplebarContent;
+                return messagesContainer;
+            }
+            
+            // Если не нашли, используем сам mail-info-body (на случай если SimpleBar еще не инициализирован)
+            messagesContainer = mailInfoBody;
+            return messagesContainer;
+        }
+
+        // Функция для форматирования даты
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            // Парсим дату в формате MySQL DATETIME (YYYY-MM-DD HH:MM:SS)
+            const date = new Date(dateString.replace(' ', 'T'));
+            if (isNaN(date.getTime())) {
+                // Если не удалось распарсить, возвращаем исходную строку
+                return dateString;
+            }
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${hours}:${minutes} ${day}.${month}.${year}`;
+        }
+
+        // Функция для парсинга скриншотов
+        function parseScreens(screens) {
+            if (!screens || screens === 'null' || screens === '[]' || screens === '') return [];
+            try {
+                if (typeof screens === 'string') {
+                    const parsed = JSON.parse(screens);
+                    return Array.isArray(parsed) ? parsed : [];
+                }
+                return Array.isArray(screens) ? screens : [];
+            } catch (e) {
+                console.warn('Ошибка парсинга скриншотов:', e);
+                return [];
+            }
+        }
+
+        // Функция для создания HTML скриншотов
+        function createScreensHTML(screens) {
+            if (!screens || screens.length === 0) return '';
+            
+            let html = '<div class="row g-2">';
+            screens.forEach(screen => {
+                const imgPath = screen.split('.');
+                const thumbPath = imgPath.length > 1 ? `${imgPath[0]}_thumb.${imgPath[1]}` : screen;
+                html += `
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <a href="${screen}" class="glightbox" data-gallery="gallery_${screen.replace(/[^a-zA-Z0-9]/g, '_')}">
+                            <img src="${thumbPath}" class="img-fluid rounded" alt="image">
+                        </a>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            return html;
+        }
+
+        // Функция для создания HTML сообщения
+        function createMessageHTML(message, messageIndex) {
+            const screens = parseScreens(message.screens);
+            const screensHTML = createScreensHTML(screens);
+            const isOnline = message.user_is_online ? 'online' : '';
+            const avatarHTML = message.user_is_avatar_video 
+                ? `<video src="${message.user_avatar}" class="rounded-circle" autoplay loop muted playsinline style="width:48px; height:48px; object-fit:cover;"></video>`
+                : `<img src="${message.user_avatar}" alt="">`;
+            
+            const userNameLink = isAdmin 
+                ? `<a href="/admin/user/info/${message.user_id}">${message.user_name}</a>`
+                : message.user_name;
+            
+            const emailHTML = (isAdmin || isUserModerator) 
+                ? `<span class="text-muted fs-12"><a href="/admin/user/info/${message.user_id}">${message.user_email}</a></span>`
+                : '';
+            
+            const deleteButton = (isAdmin || isUserModerator) && messageIndex > 0
+                ? `<div role="button" class="mail-date float-end text-muted fw-normal fs-11 ms-3 deletePost" data-post-id="${message.id}">Удалить</div>`
+                : '';
+
+            return `
+                <div data-message-id="${message.id}">
+                    <div class="d-flex align-items-center">
+                        <div class="me-1">
+                            <span class="avatar avatar-md ${isOnline} me-2 avatar-rounded mail-msg-avatar">
+                                ${avatarHTML}
+                            </span>
+                        </div>
+                        <div class="flex-fill">
+                            ${deleteButton}
+                            <div class="mail-date float-end text-muted fw-normal fs-11">
+                                <span class="me-2 d-inline-flex align-items-center"></span>${formatDate(message.date_create)}
+                            </div>
+                            <h6 class="mb-0 fw-semibold">${userNameLink}</h6>
+                            ${emailHTML}
+                        </div>
+                    </div>
+                    <div class="main-mail-content my-1">
+                        ${message.message}
+                        ${screensHTML}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Функция для добавления новых сообщений
+        function addNewMessages(messages) {
+            if (!messages || messages.length === 0) return;
+
+            const wasAtBottom = isScrolledToBottom();
+            const fragment = document.createDocumentFragment();
+            const tempDiv = document.createElement('div');
+            let newMessagesFromOthers = 0;
+            const container = getMessagesContainer();
+
+            messages.forEach((message, index) => {
+                if (message.id > lastMessageId) {
+                    tempDiv.innerHTML = createMessageHTML(message, container.children.length + index);
+                    const messageElement = tempDiv.firstElementChild;
+                    fragment.appendChild(messageElement);
+                    lastMessageId = Math.max(lastMessageId, message.id);
+                    
+                    // Проверяем, является ли сообщение от другого пользователя
+                    if (message.user_id && message.user_id != currentUserId) {
+                        newMessagesFromOthers++;
+                    }
+                }
+            });
+
+            if (fragment.children.length > 0) {
+                // Добавляем сообщения в правильный контейнер
+                container.appendChild(fragment);
+                
+                // Применяем парсер ссылок к новым сообщениям
+                const newMessageContents = fragment.querySelectorAll('.main-mail-content');
+                newMessageContents.forEach(content => {
+                    linkifyText(content);
+                });
+
+                // Инициализируем Glightbox для новых изображений
+                if (typeof GLightbox !== 'undefined') {
+                    const lightbox = GLightbox({
+                        selector: '.glightbox',
+                        touchNavigation: true,
+                        loop: true
+                    });
+                }
+
+                // Прокручиваем вниз если пользователь был внизу или если это новые сообщения
+                if (wasAtBottom || fragment.children.length > 0) {
+                    setTimeout(() => scrollToBottom(), 100);
+                }
+
+                // Обновляем обработчики удаления для новых сообщений
+                updateDeleteHandlers();
+                
+                // Обрабатываем уведомления о новых сообщениях (только от других пользователей)
+                if (newMessagesFromOthers > 0) {
+                    handleNewMessagesNotification(newMessagesFromOthers);
+                }
+            }
+        }
+
+        // Функция для парсинга ссылок в тексте
+        function linkifyText(element) {
+            const urlPattern = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+            const wwwPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+            const emailPattern = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
+
+            function processNode(node) {
+                if (node.nodeName === 'A') return;
+                
+                if (node.nodeType === Node.TEXT_NODE) {
+                    const originalText = node.nodeValue;
+                    let linkedText = originalText.replace(urlPattern, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+                    linkedText = linkedText.replace(wwwPattern, '$1<a href="http://$2" target="_blank" rel="noopener noreferrer">$2</a>');
+                    linkedText = linkedText.replace(emailPattern, '<a href="mailto:$1">$1</a>');
+                    
+                    if (linkedText !== originalText) {
+                        const wrapper = document.createElement('span');
+                        wrapper.innerHTML = linkedText;
+                        node.parentNode.replaceChild(wrapper, node);
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE && node.childNodes.length > 0) {
+                    Array.from(node.childNodes).forEach(child => processNode(child));
+                }
+            }
+
+            processNode(element);
+        }
+
+        // Функция для проверки, находится ли пользователь внизу чата
+        function isScrolledToBottom() {
+            if (!simpleBarInstance) return true;
+            const scrollElement = simpleBarInstance.getScrollElement();
+            const threshold = 100; // 100px от низа
+            return scrollElement.scrollHeight - scrollElement.scrollTop - scrollElement.clientHeight < threshold;
+        }
+
+        // Функция для прокрутки вниз
+        function scrollToBottom() {
+            if (!simpleBarInstance) return;
+            const scrollElement = simpleBarInstance.getScrollElement();
+            scrollElement.scrollTop = scrollElement.scrollHeight;
+        }
+
+        // Функция для обновления обработчиков удаления
+        function updateDeleteHandlers() {
+            document.querySelectorAll('.deletePost').forEach(button => {
+                if (!button.hasAttribute('data-handler-attached')) {
+                    button.setAttribute('data-handler-attached', 'true');
+                    button.addEventListener('click', function() {
+                        const postId = this.getAttribute('data-post-id');
+                        AjaxSend("/support/admin/delete/post", "POST", {postId: postId});
+                    });
+                }
+            });
+        }
+
+        // Функция для загрузки новых сообщений
+        async function fetchNewMessages() {
+            if (!isPolling) return;
+
+            try {
+                const response = await AjaxSend("/support/message/get/last", "POST", {
+                    threadId: threadId,
+                    startFromId: lastMessageId
+                }, true);
+
+                if (response && !response.error && Array.isArray(response) && response.length > 0) {
+                    addNewMessages(response);
+                }
+            } catch (error) {
+                // Тихая обработка ошибок - не показываем пользователю
+                if (error && error.error !== 'Not allowed to view messages') {
+                    console.error('Ошибка при загрузке сообщений:', error);
+                }
+            }
+        }
+
+        // Инициализация: получаем последний ID сообщения из существующих сообщений
+        function initializeLastMessageId() {
+            const container = getMessagesContainer();
+            const messages = container.querySelectorAll('[data-message-id]');
+            messages.forEach(msg => {
+                const id = parseInt(msg.getAttribute('data-message-id'));
+                if (!isNaN(id) && id > lastMessageId) {
+                    lastMessageId = id;
+                }
+            });
+        }
+
+        // Проверяем и добавляем data-message-id к существующим сообщениям (на случай если их нет)
+        function addMessageIds() {
+            const container = getMessagesContainer();
+            // Используем children вместо querySelectorAll для прямых дочерних элементов
+            const messageDivs = Array.from(container.children);
+            messageDivs.forEach((div) => {
+                if (!div.hasAttribute('data-message-id')) {
+                    // Пытаемся найти ID из кнопки удаления
+                    const deleteBtn = div.querySelector('.deletePost');
+                    if (deleteBtn) {
+                        const postId = deleteBtn.getAttribute('data-post-id');
+                        if (postId) {
+                            div.setAttribute('data-message-id', postId);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Запуск автообновления
+        function startPolling() {
+            if (pollingInterval) return;
+            pollingInterval = setInterval(fetchNewMessages, POLLING_INTERVAL);
+        }
+
+        // Остановка автообновления
+        function stopPolling() {
+            isPolling = false;
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        // Функция для обработки уведомлений о новых сообщениях
+        function handleNewMessagesNotification(newMessagesCount) {
+            if (newMessagesCount === 0) return;
+            
+            // Если вкладка неактивна, увеличиваем счетчик и обновляем заголовок
+            if (!isTabActive) {
+                unreadMessagesCount += newMessagesCount;
+                updatePageTitle();
+                
+                // Воспроизводим звук
+                playNotificationSound();
+            }
+        }
+        
+        // Функция для обновления заголовка страницы
+        function updatePageTitle() {
+            if (unreadMessagesCount > 0) {
+                document.title = `+${unreadMessagesCount} сообщений - ${originalTitle}`;
+            } else {
+                document.title = originalTitle;
+            }
+        }
+        
+        // Функция для воспроизведения звука уведомления
+        function playNotificationSound() {
+            if (notificationSound) {
+                notificationSound.play().catch(error => {
+                    // Игнорируем ошибки воспроизведения (например, если пользователь не взаимодействовал со страницей)
+                    console.log('Не удалось воспроизвести звук:', error);
+                });
+            }
+        }
+        
+        // Отслеживание изменения видимости вкладки
+        document.addEventListener('visibilitychange', function() {
+            const wasActive = isTabActive;
+            isTabActive = !document.hidden;
+            
+            // Если вкладка стала активной, сбрасываем счетчик
+            if (isTabActive && !wasActive && unreadMessagesCount > 0) {
+                unreadMessagesCount = 0;
+                updatePageTitle();
+            }
+        });
+        
+        // Инициализация при загрузке страницы
+        window.addEventListener('load', function() {
+            // Ждем немного, чтобы SimpleBar успел инициализироваться
+            setTimeout(function() {
+                // Обновляем контейнер сообщений после инициализации SimpleBar
+                messagesContainer = null;
+                getMessagesContainer();
+                
+                addMessageIds();
+                initializeLastMessageId();
+                updateDeleteHandlers();
+                startPolling();
+            }, 100);
+        });
+
+        // Останавливаем polling при уходе со страницы
+        window.addEventListener('beforeunload', stopPolling);
+
+        // Обновляем обработчик отправки сообщения для автообновления
+        // Ждем загрузки страницы, чтобы убедиться, что quill инициализирован
+        function setupReplyHandler() {
+            $('#toReply').off('click').on('click', function () {
+                // Получаем quill из глобальной области
+                const quillEditor = window.quill;
+                if (!quillEditor) {
+                    console.error('Quill editor не найден');
+                    return;
+                }
+                
+                let screens = [];
+                let editorContent = quillEditor.root.innerHTML;
+
+                $('#screens .glightbox').each(function () {
+                    let href = $(this).attr('href');
+                    if (href) {
+                        let filename = href.split('/').pop();
+                        screens.push(filename);
+                    }
+                });
+
+                if (screens.length === 0) {
+                    if ($.trim(editorContent) === '<p><br></p>') {
+                        alert('{{ phrase(502)|e('js') }}');
+                        return;
+                    }
+                }
+
+                AjaxSend("/support/reply/request", "POST", {
+                    message: editorContent,
+                    id: threadId,
+                    screens: screens,
+                }, true).then(function(response) {
+                    // Проверяем успешность ответа
+                    if (response && response.ok !== false) {
+                        // Показываем уведомление об успехе, если есть сообщение
+                        if (response.message) {
+                            if (response.ok) {
+                                // noticeSuccess(response.message);
+                            } else {
+                                noticeError(response.message);
+                            }
+                        }
+                        
+                        // Очищаем редактор
+                        if (quillEditor) {
+                            quillEditor.root.innerHTML = '<p><br></p>';
+                        }
+                        $('#screens').empty();
+                        
+                        // Обновляем сообщения через небольшую задержку
+                        // Игнорируем response.reload, так как мы обновляем чат вручную
+                        setTimeout(fetchNewMessages, 500);
+                    } else if (response && response.ok === false) {
+                        // Показываем ошибку
+                        if (response.message) {
+                            noticeError(response.message);
+                        }
+                    }
+                }).catch(function(error) {
+                    console.error('Ошибка при отправке сообщения:', error);
+                    if (error && error.message) {
+                        noticeError(error.message);
+                    }
+                });
+            });
+        }
+        
+        // Устанавливаем обработчик после загрузки страницы
+        if (document.readyState === 'loading') {
+            window.addEventListener('load', setupReplyHandler);
+        } else {
+            setupReplyHandler();
+        }
+
+    })();
+</script>
 
 {% endblock %}
