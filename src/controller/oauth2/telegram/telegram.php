@@ -107,6 +107,10 @@ class telegram
         $lastName = $sessionData['last_name'];
         $languageCode = $sessionData['language_code'];
 
+        if ($telegramUsername == null) {
+            $telegramUsername = "{$telegramId}";
+        }
+
         // Используем telegram_username как email, если он есть, иначе используем telegram_id
         $email = "TG:@{$telegramUsername}";
         
@@ -128,16 +132,15 @@ class telegram
             return;
         }
 
-        // Создаем нового пользователя
+        
         $get_timezone_ip = timezone::get_timezone_ip($_SERVER['REMOTE_ADDR']);
         
         // Формируем имя пользователя
-        $userName = $telegramUsername ?: ($firstName ?: "user-" . substr(md5(uniqid()), mt_rand(2, 3), mt_rand(4, 5)));
+        $userName = $firstName ?: ($firstName ?: "user-" . substr(md5(uniqid()), mt_rand(2, 3), mt_rand(4, 5)));
         
-        // Проверяем уникальность имени
-        if (user::getUserByName($userName)) {
-            $userName = "user-" . substr(md5(uniqid()), mt_rand(2, 3), mt_rand(4, 5));
-        }
+        // Сократить имя пользователя
+        $userName = mb_substr($userName, 0, 22);
+
 
         if ($get_timezone_ip != null) {
             $insertUserSQL = "INSERT INTO `users` (`email`, `password`, `name`, `ip`, `timezone`, `country`, `city`, `last_activity`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
