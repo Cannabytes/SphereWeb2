@@ -111,6 +111,8 @@ class telegram
             $telegramUsername = "{$telegramId}";
         }
 
+        
+
         // Используем telegram_username как email, если он есть, иначе используем telegram_id
         $email = "TG:@{$telegramUsername}";
         
@@ -132,11 +134,16 @@ class telegram
             return;
         }
 
-        
+
         $get_timezone_ip = timezone::get_timezone_ip($_SERVER['REMOTE_ADDR']);
         
         // Формируем имя пользователя
-        $userName = $firstName ?: ($firstName ?: "user-" . substr(md5(uniqid()), mt_rand(2, 3), mt_rand(4, 5)));
+        // Если first_name состоит из одного символа — генерируем новое значение
+        if (!empty($firstName) && mb_strlen($firstName) === 1) {
+            $firstName = "user-" . substr(md5(uniqid()), mt_rand(2, 3), mt_rand(4, 5));
+        }
+
+        $userName = $firstName;
         
         // Сократить имя пользователя
         $userName = mb_substr($userName, 0, 22);
