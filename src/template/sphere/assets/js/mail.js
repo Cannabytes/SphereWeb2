@@ -2,13 +2,19 @@
   "use strict";
 
   var myElement11 = document.getElementById("mail-main-nav");
-  new SimpleBar(myElement11, { autoHide: true });
+  if (myElement11) {
+    new SimpleBar(myElement11, { autoHide: true });
+  }
 
   var myElement12 = document.getElementById("mail-messages");
-  new SimpleBar(myElement12, { autoHide: true });
+  if (myElement12) {
+    new SimpleBar(myElement12, { autoHide: true });
+  }
 
   var myElement14 = document.getElementById("mail-recepients");
-  new SimpleBar(myElement14, { autoHide: true });
+  if (myElement14) {
+    new SimpleBar(myElement14, { autoHide: true });
+  }
 
   /* mail editor */
   var toolbarOptions = [

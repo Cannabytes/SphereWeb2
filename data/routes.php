@@ -2768,4 +2768,34 @@ return array(
         'page' => '',
         'comment' => 'Telegram auth by token',
     ),
+    212 =>
+    array(
+        'enable' => true,
+        'method' => 'POST',
+        'pattern' => '/support/admin/create/dialog',
+        'func' => 'controller\\support\\support::createDialogByAdmin',
+        'access' =>
+        array(
+            0 => 'admin',
+            1 => 'user',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => 'Create support dialog by admin with user',
+    ),
+    213 =>
+    array(
+        'enable' => true,
+        'method' => 'POST',
+        'pattern' => '/support/admin/mass/send',
+        'func' => 'controller\\support\\support::massSendMessages',
+        'access' =>
+        array(
+            0 => 'admin',
+            1 => 'user',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => 'Mass send messages to selected users',
+    ),
 );

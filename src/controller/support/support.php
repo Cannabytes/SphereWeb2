@@ -5,6 +5,7 @@ namespace Ofey\Logan22\controller\support;
 use Exception;
 use Intervention\Image\ImageManager;
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\component\request\url;
 use Ofey\Logan22\component\request\XssSecurity;
@@ -666,6 +667,206 @@ class support
         } else {
             board::error("У Вас нет прав на выполнение этого действия");
         }
+    }
+
+    /**
+     * Создание диалога админом/модератором с пользователем
+     * @url /support/admin/create/dialog
+     */
+    public static function createDialogByAdmin(): void
+    {
+        self::isEnable();
+        
+        // Проверяем права доступа
+        if (!user::self()->isAdmin() && !self::isUserModerator()) {
+            board::error(lang::get_phrase("You don't have permission to perform this action"));
+        }
+        
+        $targetUserId = (int)($_POST['user_id'] ?? 0);
+        if ($targetUserId <= 0) {
+            board::error(lang::get_phrase("User ID not specified"));
+        }
+        
+        // Проверяем, существует ли пользователь
+        $targetUser = sql::getRow("SELECT id, email, name FROM users WHERE id = ?", [$targetUserId]);
+        if (!$targetUser) {
+            board::error(lang::get_phrase("User not found"));
+        }
+        
+        // Проверяем, не существует ли уже открытый диалог с этим пользователем
+        $existingThread = sql::getRow(
+            "SELECT id FROM support_thread WHERE owner_id = ? AND is_close = 0 ORDER BY date_update DESC LIMIT 1",
+            [$targetUserId]
+        );
+        
+        // Если есть открытый диалог, возвращаем его ID
+        if ($existingThread) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'ok' => true,
+                'thread_id' => $existingThread['id'],
+                'message' => lang::get_phrase("Existing dialog opened")
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        
+        // Получаем выбранную категорию или используем первую доступную
+        $sectionId = (int)($_POST['section_id'] ?? 0);
+        $sections = self::sections();
+        
+        if ($sectionId <= 0 || !isset($sections[$sectionId])) {
+            // Если категория не указана или не существует, используем первую доступную
+            if (!empty($sections)) {
+                $firstSection = reset($sections);
+                $sectionId = $firstSection['id'];
+            } else {
+                $sectionId = 1; // Fallback на значение по умолчанию
+            }
+        }
+        
+        // Создаем новый диалог
+        $adminId = user::self()->getId();
+        $currentTime = time::mysql();
+        
+        sql::run("INSERT INTO `support_thread` (`last_message_id`, `thread_id`, `owner_id`, `last_user_id`, `private`, `date_update`, `date_create`) VALUES (?, ?, ?, ?, ?, ?, ?)", [
+            0,
+            $sectionId,
+            $targetUserId, // Владелец диалога - выбранный пользователь
+            $adminId, // Последний отправитель - админ
+            1, // Приватный диалог
+            $currentTime,
+            $currentTime,
+        ]);
+        $support_thread_id = sql::lastInsertId();
+        
+        // Не создаем приветственное сообщение - админ сам напишет первое сообщение
+        self::incMessage($sectionId);
+        
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'ok' => true,
+            'thread_id' => $support_thread_id,
+            'message' => lang::get_phrase("Dialog created successfully")
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    /**
+     * Массовая отправка сообщений выбранным пользователям
+     * @url /support/admin/mass/send
+     */
+    public static function massSendMessages(): void
+    {
+        self::isEnable();
+        
+        // Проверяем права доступа
+        if (!user::self()->isAdmin() && !self::isUserModerator()) {
+            board::error(lang::get_phrase("You don't have permission to perform this action"));
+        }
+        
+        $userIds = $_POST['user_ids'] ?? [];
+        if (!is_array($userIds) || empty($userIds)) {
+            board::error(lang::get_phrase("No users specified for sending"));
+        }
+        
+        $sectionId = (int)($_POST['section_id'] ?? 0);
+        $sections = self::sections();
+        
+        if ($sectionId <= 0 || !isset($sections[$sectionId])) {
+            if (!empty($sections)) {
+                $firstSection = reset($sections);
+                $sectionId = $firstSection['id'];
+            } else {
+                $sectionId = 1;
+            }
+        }
+        
+        $message = self::postMessage();
+        if ($message == "") {
+            board::error("Нельзя отправить пустое сообщение");
+        }
+        
+        $adminId = user::self()->getId();
+        $currentTime = time::mysql();
+        $sentCount = 0;
+        $errors = [];
+        
+        foreach ($userIds as $userId) {
+            $targetUserId = (int)$userId;
+            if ($targetUserId <= 0) {
+                continue;
+            }
+            
+            // Проверяем, существует ли пользователь
+            $targetUser = sql::getRow("SELECT id FROM users WHERE id = ?", [$targetUserId]);
+            if (!$targetUser) {
+                $errors[] = lang::get_phrase("User with ID %s not found", $targetUserId);
+                continue;
+            }
+            
+            // Проверяем, не существует ли уже открытый диалог
+            $existingThread = sql::getRow(
+                "SELECT id FROM support_thread WHERE owner_id = ? AND is_close = 0 ORDER BY date_update DESC LIMIT 1",
+                [$targetUserId]
+            );
+            
+            $threadId = null;
+            if ($existingThread) {
+                // Используем существующий диалог
+                $threadId = $existingThread['id'];
+            } else {
+                // Создаем новый диалог
+                sql::run("INSERT INTO `support_thread` (`last_message_id`, `thread_id`, `owner_id`, `last_user_id`, `private`, `date_update`, `date_create`) VALUES (?, ?, ?, ?, ?, ?, ?)", [
+                    0,
+                    $sectionId,
+                    $targetUserId,
+                    $adminId,
+                    1,
+                    $currentTime,
+                    $currentTime,
+                ]);
+                $threadId = sql::lastInsertId();
+            }
+            
+            // Отправляем сообщение
+            try {
+                sql::run("INSERT INTO `support_message` (`thread_id`, `user_id`, `message`, `screens`, `date_update`, `date_create`) VALUES (?, ?, ?, ?, ?, ?)", [
+                    $threadId,
+                    $adminId,
+                    $message,
+                    PDO::PARAM_NULL,
+                    $currentTime,
+                    $currentTime,
+                ]);
+                $support_message_id = sql::lastInsertId();
+                
+                sql::run("UPDATE `support_thread` SET `last_message_id` = ?, `last_user_id` = ?, `date_update` = ? WHERE `id` = ?", [
+                    $support_message_id,
+                    $adminId,
+                    $currentTime,
+                    $threadId
+                ]);
+                
+                // Увеличиваем счетчик только для новых диалогов
+                if (!$existingThread) {
+                    self::incMessage($sectionId);
+                }
+                
+                $sentCount++;
+            } catch (Exception $e) {
+                $errors[] = lang::get_phrase("Error sending to user ID %s", $targetUserId) . ": " . $e->getMessage();
+            }
+        }
+        
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'ok' => true,
+            'sent' => $sentCount,
+            'total' => count($userIds),
+            'errors' => $errors,
+            'message' => lang::get_phrase("Sent %s of %s messages", $sentCount, count($userIds))
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
     }
 
     static public function fileLoad()

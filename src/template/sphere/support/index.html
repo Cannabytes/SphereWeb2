@@ -26,6 +26,12 @@
                     class="btn btn-primary btn-sm d-flex align-items-center justify-content-center">
                     <i class="ri-add-circle-line fs-16 align-middle me-1"></i>{{ phrase('Ask a question') }}
                 </a>
+                {% if getUser().isAdmin() or isUserModerator %}
+                <button type="button" class="btn btn-success btn-sm d-flex align-items-center justify-content-center mt-2"
+                    data-bs-toggle="modal" data-bs-target="#writeToUserModal">
+                    <i class="ri-message-3-line fs-16 align-middle me-1"></i>{{ phrase('Write') }}
+                </button>
+                {% endif %}
                 {% if not getUser().isAdmin() and not isUserModerator and threads|length == 0 %}
                 <div class="mt-2 text-center">
                     <small class="text-muted">{{ phrase('Create your first support request') }}</small>
@@ -294,6 +300,133 @@
         </div>
         {% endif %}
 
+        {% if getUser().isAdmin() or isUserModerator %}
+        <!-- Модальное окно для выбора пользователя -->
+        <div class="modal fade" id="writeToUserModal" tabindex="-1" aria-labelledby="writeToUserModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="writeToUserModalLabel">
+                            <i class="ri-message-3-line me-2"></i>{{ phrase('Write to user') }}
+                        </h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="supportSectionSelect" class="form-label">{{ phrase('Support category') }} <sup class="text-danger">*</sup></label>
+                            <select class="form-control" id="supportSectionSelect" required>
+                                {% for section in sections %}
+                                <option value="{{section.id}}" {% if loop.first %}selected{% endif %}>{{phrase(section.thread_name)}}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">{{ phrase('Select category for request') }}</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="userSearchInput" class="form-label">{{ phrase('Search user') }}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="ri-search-line"></i>
+                                </span>
+                                <input type="text" class="form-control" id="userSearchInput" 
+                                    placeholder="{{ phrase('Enter name, email or user ID') }}..." autocomplete="off">
+                            </div>
+                            <small class="text-muted">{{ phrase('Start typing to search users') }}</small>
+                        </div>
+
+                        <div class="mb-2 d-flex justify-content-between align-items-center">
+                            <div>
+                                <span id="selectedUsersCount" class="badge bg-primary">{{ phrase('Selected') }}: 0</span>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="selectAllUsers">
+                                    <i class="ri-checkbox-multiple-line me-1"></i>{{ phrase('Select all') }}
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="deselectAllUsers">
+                                    <i class="ri-checkbox-blank-line me-1"></i>{{ phrase('Deselect all') }}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="usersListContainer" class="border rounded" style="max-height: 500px; overflow-y: auto;">
+                            <div id="usersList" class="list-group list-group-flush"></div>
+                            <div id="usersListLoading" class="text-center p-4">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">{{ phrase('Loading') }}...</span>
+                                </div>
+                                <p class="text-muted mt-2 mb-0">{{ phrase('Loading users') }}...</p>
+                            </div>
+                            <div id="usersListEmpty" class="text-center p-4 text-muted" style="display: none;">
+                                <i class="ri-user-unfollow-line fs-48 mb-3 d-block"></i>
+                                <p class="mb-0">{{ phrase('Users not found') }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Пагинация -->
+                        <div id="usersPagination" class="mt-3 d-flex justify-content-center align-items-center" style="display: none !important;">
+                            <nav aria-label="{{ phrase('Page navigation') }}">
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item" id="paginationPrev">
+                                        <a class="page-link" href="#" aria-label="{{ phrase('Previous') }}">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <span class="page-link" id="paginationInfo">{{ phrase('Page') }} 1 {{ phrase('of') }} 1</span>
+                                    </li>
+                                    <li class="page-item" id="paginationNext">
+                                        <a class="page-link" href="#" aria-label="{{ phrase('Next') }}">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" id="sendToSelectedUsers" disabled>
+                            <i class="ri-send-plane-line me-1"></i>{{ phrase('Send to selected') }} (<span id="selectedCountFooter">0</span>)
+                        </button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ phrase('cancel') }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Модальное окно для ввода сообщения при массовой отправке -->
+        <div class="modal fade" id="massMessageModal" tabindex="-1" aria-labelledby="massMessageModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="massMessageModalLabel">
+                            <i class="ri-mail-send-line me-2"></i>{{ phrase('Mass message sending') }}
+                        </h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            <i class="ri-information-line me-2"></i>
+                            {{ phrase('Message will be sent to') }} <strong id="massMessageUsersCount">0</strong> {{ phrase('selected users') }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="massMessageEditor" class="form-label">{{ phrase('Message') }} <sup class="text-danger">*</sup></label>
+                            <div id="massMessageEditor"></div>
+                            <small class="text-muted">{{ phrase('Enter message text that will be sent to all selected users') }}</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ phrase('cancel') }}</button>
+                        <button type="button" class="btn btn-success" id="confirmMassSend">
+                            <i class="ri-send-plane-line me-1"></i>{{ phrase('Send') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <div class="total-mails mt-5 mt-lg-0">
             <div class="p-1 d-flex align-items-center border-bottom">
                 <div class="mail-option-read d-md-flex d-block">
@@ -435,10 +568,17 @@
 {% endblock %}
 
 {% block css %}
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.snow.css">
 <style>
     .main-mail-star {
         display: block;
         margin-bottom: 5px;
+    }
+    .user-checkbox {
+        cursor: pointer;
+    }
+    .user-item:hover {
+        background-color: #f8f9fa;
     }
 </style>
 {% endblock %}
@@ -446,5 +586,471 @@
 {% block js %}
 
 <script src="{{template}}/assets/js/mail.js"></script>
+<script src="{{template}}/assets/libs/quill/quill.min.js"></script>
+
+{% if getUser().isAdmin() or isUserModerator %}
+<script>
+(function() {
+    'use strict';
+    
+    // Translations
+    const lang = {
+        selected: "{{ phrase('Selected')|e('js') }}",
+        loading: "{{ phrase('Loading')|e('js') }}",
+        loading_users: "{{ phrase('Loading users')|e('js') }}",
+        users_not_found: "{{ phrase('Users not found')|e('js') }}",
+        page: "{{ phrase('Page')|e('js') }}",
+        of: "{{ phrase('of')|e('js') }}",
+        total: "{{ phrase('total')|e('js') }}",
+        enter_min_chars: "{{ phrase('Enter minimum')|e('js') }}",
+        characters: "{{ phrase('characters')|e('js') }}",
+        error_loading_users: "{{ phrase('Error loading users')|e('js') }}",
+        please_select_category: "{{ phrase('Please select category')|e('js') }}",
+        select_at_least_one_user: "{{ phrase('Select at least one user')|e('js') }}",
+        creating_dialog: "{{ phrase('Creating dialog')|e('js') }}",
+        error_no_thread_id: "{{ phrase('Error: thread ID not received')|e('js') }}",
+        error_creating_dialog: "{{ phrase('Error creating dialog')|e('js') }}",
+        message_sent_successfully: "{{ phrase('Messages sent successfully')|e('js') }}",
+        to: "{{ phrase('to')|e('js') }}",
+        users: "{{ phrase('users')|e('js') }}",
+        error_sending_messages: "{{ phrase('Error sending messages')|e('js') }}",
+        enter_message_text: "{{ phrase('Enter message text')|e('js') }}",
+        editor_init_error: "{{ phrase('Editor initialization error')|e('js') }}",
+        no_users_selected: "{{ phrase('No users selected')|e('js') }}",
+        sending: "{{ phrase('Sending')|e('js') }}",
+        send: "{{ phrase('Send')|e('js') }}"
+    };
+    
+    let searchTimeout = null;
+    const MIN_SEARCH_LENGTH = 2;
+    const SEARCH_DELAY = 300; // Задержка перед поиском в мс
+    const USERS_PER_PAGE = 300; // Количество пользователей на странице
+    
+    let currentPage = 1;
+    let currentQuery = '';
+    let totalPages = 1;
+    let totalUsers = 0;
+    
+    const $modal = $('#writeToUserModal');
+    const $searchInput = $('#userSearchInput');
+    const $usersList = $('#usersList');
+    const $usersListLoading = $('#usersListLoading');
+    const $usersListEmpty = $('#usersListEmpty');
+    const $usersPagination = $('#usersPagination');
+    const $paginationPrev = $('#paginationPrev');
+    const $paginationNext = $('#paginationNext');
+    const $paginationInfo = $('#paginationInfo');
+    const $selectedUsersCount = $('#selectedUsersCount');
+    const $selectedCountFooter = $('#selectedCountFooter');
+    const $selectAllUsers = $('#selectAllUsers');
+    const $deselectAllUsers = $('#deselectAllUsers');
+    const $sendToSelectedUsers = $('#sendToSelectedUsers');
+    const $massMessageModal = $('#massMessageModal');
+    const $massMessageUsersCount = $('#massMessageUsersCount');
+    const $confirmMassSend = $('#confirmMassSend');
+    
+    let massMessageQuill = null;
+    
+    // Инициализация Quill editor для массового сообщения
+    function initMassMessageEditor() {
+        if (massMessageQuill) {
+            return;
+        }
+        
+        const toolbarOptions = [
+            ['bold', 'italic', 'underline', 'strike'],
+            [{'list': 'ordered'}, {'list': 'bullet'}],
+            ['clean']
+        ];
+        
+        massMessageQuill = new Quill('#massMessageEditor', {
+            modules: {
+                toolbar: toolbarOptions
+            },
+            theme: 'snow'
+        });
+    }
+    
+    // Загрузка пользователей при открытии модального окна
+    $modal.on('show.bs.modal', function() {
+        $searchInput.val('');
+        currentPage = 1;
+        currentQuery = '';
+        loadUsers(1, '');
+        updateSelectedCount();
+    });
+    
+    // Сброс состояния при закрытии модального окна
+    $modal.on('hidden.bs.modal', function() {
+        $searchInput.val('');
+        currentPage = 1;
+        currentQuery = '';
+        $usersList.empty();
+        $usersPagination.hide();
+        $('.user-checkbox').prop('checked', false);
+        updateSelectedCount();
+    });
+    
+    // Обработка поиска с задержкой
+    $searchInput.on('input', function() {
+        const query = $(this).val().trim();
+        
+        // Очищаем предыдущий таймер
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+        }
+        
+        currentQuery = query;
+        currentPage = 1;
+        
+        if (query.length === 0) {
+            // Если поиск пустой, загружаем всех пользователей
+            loadUsers(1, '');
+            return;
+        }
+        
+        if (query.length < MIN_SEARCH_LENGTH) {
+            showEmpty('Введите минимум ' + MIN_SEARCH_LENGTH + ' символа');
+            $usersPagination.hide();
+            return;
+        }
+        
+        // Устанавливаем новый таймер
+        searchTimeout = setTimeout(function() {
+            loadUsers(1, query);
+        }, SEARCH_DELAY);
+    });
+    
+    // Обработчики пагинации
+    $paginationPrev.find('a').on('click', function(e) {
+        e.preventDefault();
+        if (currentPage > 1) {
+            loadUsers(currentPage - 1, currentQuery);
+        }
+    });
+    
+    $paginationNext.find('a').on('click', function(e) {
+        e.preventDefault();
+        if (currentPage < totalPages) {
+            loadUsers(currentPage + 1, currentQuery);
+        }
+    });
+    
+    // Функция загрузки пользователей
+    function loadUsers(page, query) {
+        showLoading();
+        currentPage = page;
+        
+        AjaxSend('/admin/users/search-lite', 'POST', {
+            q: query || '',
+            page: page,
+            limit: USERS_PER_PAGE
+        }, true).then(function(response) {
+            if (response && response.ok) {
+                totalUsers = response.total || 0;
+                totalPages = response.perPage ? Math.ceil(totalUsers / response.perPage) : 1;
+                
+                if (response.data && response.data.length > 0) {
+                    displayUsers(response.data);
+                    updatePagination();
+                } else {
+                    showEmpty();
+                    $usersPagination.hide();
+                }
+            } else {
+                showEmpty(lang.error_loading_users);
+                $usersPagination.hide();
+            }
+        }).catch(function(error) {
+            console.error('Ошибка при загрузке пользователей:', error);
+            showEmpty(lang.error_loading_users);
+            $usersPagination.hide();
+        });
+    }
+    
+    // Функция обновления пагинации
+    function updatePagination() {
+        if (totalPages <= 1) {
+            $usersPagination.hide();
+            return;
+        }
+        
+        $usersPagination.show();
+        $paginationInfo.text(lang.page + ' ' + currentPage + ' ' + lang.of + ' ' + totalPages + ' (' + lang.total + ': ' + totalUsers + ')');
+        
+        // Обновляем состояние кнопок
+        if (currentPage <= 1) {
+            $paginationPrev.addClass('disabled');
+            $paginationPrev.find('a').attr('tabindex', '-1').attr('aria-disabled', 'true');
+        } else {
+            $paginationPrev.removeClass('disabled');
+            $paginationPrev.find('a').removeAttr('tabindex').removeAttr('aria-disabled');
+        }
+        
+        if (currentPage >= totalPages) {
+            $paginationNext.addClass('disabled');
+            $paginationNext.find('a').attr('tabindex', '-1').attr('aria-disabled', 'true');
+        } else {
+            $paginationNext.removeClass('disabled');
+            $paginationNext.find('a').removeAttr('tabindex').removeAttr('aria-disabled');
+        }
+    }
+    
+    // Функция отображения списка пользователей
+    function displayUsers(users) {
+        $usersList.empty();
+        
+        users.forEach(function(user) {
+            const avatar = user.avatar || 'none.jpeg';
+            // Обработка аватара с учетом query параметров (например, user_1.webm?c=6db1)
+            const avatarPath = avatar.split('?')[0] || avatar;
+            const avatarParts = avatar.split('?');
+            const avatarPathOnly = avatarParts[0] || avatar;
+            const avatarQuery = avatarParts.length > 1 ? '?' + avatarParts.slice(1).join('?') : '';
+            const avatarUrl = `/uploads/avatar/${encodeURIComponent(avatarPathOnly)}${avatarQuery}`;
+            
+            // Проверяем, является ли аватар видео (только .webm, как в isAvatarVideo())
+            const isVideo = /\.webm$/i.test(avatarPath);
+            
+            let avatarHtml = '';
+            if (isVideo) {
+                avatarHtml = `<video src="${avatarUrl}" class="rounded-circle" autoplay loop muted playsinline style="width:40px; height:40px; object-fit:cover;"></video>`;
+            } else {
+                avatarHtml = `<img src="${avatarUrl}" alt="${escapeHtml(user.name)}" class="rounded-circle" style="width:40px; height:40px; object-fit:cover;">`;
+            }
+            
+            const userItem = $(`
+                <div class="list-group-item user-item" data-user-id="${user.id}">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <input type="checkbox" class="form-check-input user-checkbox" 
+                                id="userCheckbox_${user.id}" value="${user.id}">
+                        </div>
+                        <div class="me-3">
+                            <span class="avatar avatar-md">${avatarHtml}</span>
+                        </div>
+                        <div class="flex-fill" style="cursor: pointer;">
+                            <h6 class="mb-0">${escapeHtml(user.name)}</h6>
+                            <small class="text-muted">${escapeHtml(user.email)}</small>
+                        </div>
+                        <div class="ms-2">
+                            <button type="button" class="btn btn-sm btn-outline-primary btn-single-send" 
+                                data-user-id="${user.id}" data-user-name="${escapeHtml(user.name)}" 
+                                data-user-email="${escapeHtml(user.email)}">
+                                <i class="ri-send-plane-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `);
+            
+            // Обработчик чекбокса
+            userItem.find('.user-checkbox').on('change', function() {
+                updateSelectedCount();
+            });
+            
+            // Обработчик клика на область пользователя (для выбора чекбокса)
+            userItem.find('.flex-fill').on('click', function(e) {
+                e.preventDefault();
+                const checkbox = userItem.find('.user-checkbox');
+                checkbox.prop('checked', !checkbox.prop('checked')).trigger('change');
+            });
+            
+            // Обработчик одиночной отправки
+            userItem.find('.btn-single-send').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const userId = $(this).data('user-id');
+                const userName = $(this).data('user-name');
+                const userEmail = $(this).data('user-email');
+                const sectionId = $('#supportSectionSelect').val();
+                if (!sectionId) {
+                    noticeError(lang.please_select_category);
+                    return;
+                }
+                createDialog(userId, userName, userEmail, sectionId);
+            });
+            
+            $usersList.append(userItem);
+        });
+        
+        $usersListLoading.hide();
+        $usersListEmpty.hide();
+        $usersList.show();
+    }
+    
+    // Функция создания диалога
+    function createDialog(userId, userName, userEmail, sectionId) {
+        // Показываем индикатор загрузки
+        const $selectedItem = $usersList.find(`[data-user-id="${userId}"]`);
+        $selectedItem.addClass('active').html(
+            '<div class="d-flex align-items-center justify-content-center p-2">' +
+                '<div class="spinner-border spinner-border-sm text-primary me-2" role="status">' +
+                    '<span class="visually-hidden">' + lang.loading + '...</span>' +
+                '</div>' +
+                '<span>' + lang.creating_dialog + '...</span>' +
+            '</div>'
+        );
+        
+        AjaxSend('/support/admin/create/dialog', 'POST', {
+            user_id: userId,
+            section_id: sectionId
+        }, true).then(function(response) {
+            if (response && response.ok) {
+                if (response.thread_id) {
+                    // Перенаправляем на страницу диалога
+                    window.location.href = '/support/read/' + response.thread_id;
+                } else {
+                    noticeError(lang.error_no_thread_id);
+                    $modal.modal('hide');
+                }
+            } else {
+                const message = response && response.message ? response.message : lang.error_creating_dialog;
+                noticeError(message);
+                $selectedItem.removeClass('active');
+                loadUsers(currentPage, currentQuery);
+            }
+        }).catch(function(error) {
+            console.error('Ошибка при создании диалога:', error);
+            const message = error && error.message ? error.message : lang.error_creating_dialog;
+            noticeError(message);
+            $selectedItem.removeClass('active');
+            loadUsers(currentPage, currentQuery);
+        });
+    }
+    
+    // Функции для управления отображением состояний
+    function showLoading() {
+        $usersListLoading.show();
+        $usersListEmpty.hide();
+        $usersList.hide();
+    }
+    
+    function showEmpty(message) {
+        $usersListLoading.hide();
+        $usersListEmpty.show();
+        $usersList.hide();
+        if (message) {
+            $usersListEmpty.find('p').text(message);
+        } else {
+            $usersListEmpty.find('p').text(lang.users_not_found);
+        }
+    }
+    
+    // Функция обновления счетчика выбранных пользователей
+    function updateSelectedCount() {
+        const selectedCount = $('.user-checkbox:checked').length;
+        $selectedUsersCount.text(lang.selected + ': ' + selectedCount);
+        $selectedCountFooter.text(selectedCount);
+        $sendToSelectedUsers.prop('disabled', selectedCount === 0);
+    }
+    
+    // Обработчик "Выбрать все"
+    $selectAllUsers.on('click', function() {
+        $('.user-checkbox').prop('checked', true).trigger('change');
+    });
+    
+    // Обработчик "Снять выделение"
+    $deselectAllUsers.on('click', function() {
+        $('.user-checkbox').prop('checked', false).trigger('change');
+    });
+    
+    // Обработчик кнопки "Отправить выбранным"
+    $sendToSelectedUsers.on('click', function() {
+        const selectedUsers = $('.user-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+        
+        if (selectedUsers.length === 0) {
+            noticeError(lang.select_at_least_one_user);
+            return;
+        }
+        
+        const sectionId = $('#supportSectionSelect').val();
+        if (!sectionId) {
+            noticeError(lang.please_select_category);
+            return;
+        }
+        
+        $massMessageUsersCount.text(selectedUsers.length);
+        initMassMessageEditor();
+        if (massMessageQuill) {
+            massMessageQuill.root.innerHTML = '<p><br></p>';
+        }
+        $massMessageModal.modal('show');
+        
+        // Сохраняем выбранных пользователей и категорию для отправки
+        $massMessageModal.data('userIds', selectedUsers);
+        $massMessageModal.data('sectionId', sectionId);
+    });
+    
+    // Обработчик подтверждения массовой отправки
+    $confirmMassSend.on('click', function() {
+        const userIds = $massMessageModal.data('userIds') || [];
+        const sectionId = $massMessageModal.data('sectionId');
+        
+        if (userIds.length === 0) {
+            noticeError(lang.no_users_selected);
+            return;
+        }
+        
+        if (!massMessageQuill) {
+            noticeError(lang.editor_init_error);
+            return;
+        }
+        
+        const message = massMessageQuill.root.innerHTML.trim();
+        if (message === '' || message === '<p><br></p>') {
+            noticeError(lang.enter_message_text);
+            return;
+        }
+        
+        // Блокируем кнопку
+        const $btn = $(this);
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>' + lang.sending + '...');
+        
+        sendMassMessages(userIds, sectionId, message).then(function(response) {
+            if (response && response.ok) {
+                const sentCount = response.sent || userIds.length;
+                noticeSuccess(lang.message_sent_successfully + ' ' + sentCount + ' ' + lang.users);
+                $massMessageModal.modal('hide');
+                $modal.modal('hide');
+                // Обновляем список пользователей
+                loadUsers(currentPage, currentQuery);
+            } else {
+                const msg = response && response.message ? response.message : lang.error_sending_messages;
+                noticeError(msg);
+            }
+        }).catch(function(error) {
+            console.error('Ошибка при массовой отправке:', error);
+            noticeError(lang.error_sending_messages);
+        }).finally(function() {
+            $btn.prop('disabled', false).html('<i class="ri-send-plane-line me-1"></i>' + lang.send);
+        });
+    });
+    
+    // Функция массовой отправки сообщений
+    function sendMassMessages(userIds, sectionId, message) {
+        return AjaxSend('/support/admin/mass/send', 'POST', {
+            user_ids: userIds,
+            section_id: sectionId,
+            message: message
+        }, true);
+    }
+    
+    // Функция для экранирования HTML
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+})();
+</script>
+{% endif %}
 
 {% endblock %}
