@@ -122,65 +122,34 @@ class support
         return self::$sections;
     }
 
-    private static ?int $noReadCountThreads = null;
+    private static array $noReadCountThreads = [];
     public static function getThreadsNoReadCount(): int
     {
-        if (self::$noReadCountThreads != null) {
-            return self::$noReadCountThreads;
+        $currentUserId = user::self()->getId();
+        if (isset(self::$noReadCountThreads[$currentUserId])) {
+            return self::$noReadCountThreads[$currentUserId];
         }
         // Проверяем, является ли пользователь администратором
         $isAdmin = user::self()->isAdmin() || self::isUserModerator();
+        $readMap = self::getReadMap($currentUserId);
 
         if ($isAdmin) {
             // Для администратора: все непрочитанные чаты
-            $threads = sql::getRows("SELECT id FROM support_thread");
-
-            // Получаем идентификаторы прочитанных тем для админа
-            $threadsRead = sql::getRows("SELECT topic_id FROM `support_read_topics` WHERE user_id = ?", [
-                user::self()->getId(),
-            ]);
-
-            // Преобразуем в простой массив идентификаторов прочитанных тем
-            $readIds = array_column($threadsRead, 'topic_id');
-
-            // Счетчик непрочитанных тем для админа
-            $unreadCount = 0;
-
-            // Подсчитываем количество непрочитанных тем
-            foreach ($threads as $thread) {
-                if (!in_array($thread['id'], $readIds)) {
-                    $unreadCount++;
-                }
-            }
-
-            return self::$noReadCountThreads = $unreadCount;
+            $threads = sql::getRows("SELECT id, date_update FROM support_thread");
         } else {
             // Для обычного пользователя: только его чаты
-            $userId = user::self()->getId();
-
-            // Получаем только темы пользователя
-            $threads = sql::getRows("SELECT id FROM support_thread WHERE owner_id = ?", [$userId]);
-
-            // Получаем идентификаторы прочитанных тем для пользователя
-            $threadsRead = sql::getRows("SELECT topic_id FROM `support_read_topics` WHERE user_id = ?", [
-                $userId,
-            ]);
-
-            // Преобразуем в простой массив идентификаторов прочитанных тем
-            $readIds = array_column($threadsRead, 'topic_id');
-
-            // Счетчик непрочитанных тем для пользователя
-            $unreadCount = 0;
-
-            // Подсчитываем количество непрочитанных тем
-            foreach ($threads as $thread) {
-                if (!in_array($thread['id'], $readIds)) {
-                    $unreadCount++;
-                }
-            }
-
-            return self::$noReadCountThreads = $unreadCount;
+            $threads = sql::getRows("SELECT id, date_update FROM support_thread WHERE owner_id = ?", [$currentUserId]);
         }
+
+        $unreadCount = 0;
+        foreach ($threads as $thread) {
+            $threadUpdateTs = self::toTimestamp($thread['date_update'] ?? null);
+            if (!self::isThreadReadByUser($thread['id'], $threadUpdateTs, $readMap)) {
+                $unreadCount++;
+            }
+        }
+
+        return self::$noReadCountThreads[$currentUserId] = $unreadCount;
     }
 
     private static function getThreads($id = null): array
@@ -272,14 +241,11 @@ class support
             }
         }
 
-        $threadsRead = sql::getRows("SELECT topic_id FROM `support_read_topics` WHERE user_id = ?", [
-            user::self()->getId(),
-        ]);
-
-        $readIds = array_column($threadsRead, 'topic_id');
+        $readMap = self::getReadMap(user::self()->getId());
 
         foreach ($threads as &$thread) {
-            $thread['is_read'] = in_array($thread['id'], $readIds);
+            $threadUpdateTs = self::toTimestamp($thread['date_update'] ?? null);
+            $thread['is_read'] = self::isThreadReadByUser($thread['id'], $threadUpdateTs, $readMap);
         }
 
         return $threads;
@@ -495,6 +461,9 @@ class support
             time::mysql(),
             $support_thread_id
         ]);
+
+        self::clearUnreadCache();
+        self::markThreadAsRead($support_thread_id, \Ofey\Logan22\model\user\user::self()->getId());
 
         if (!self::isUserModerator() and config::load()->notice()->isTechnicalSupport()) {
             $link = "/support/read/" . $support_thread_id;
@@ -852,6 +821,9 @@ class support
                     self::incMessage($sectionId);
                 }
                 
+                self::clearUnreadCache();
+                self::markThreadAsRead($threadId, $adminId);
+
                 $sentCount++;
             } catch (Exception $e) {
                 $errors[] = lang::get_phrase("Error sending to user ID %s", $targetUserId) . ": " . $e->getMessage();
@@ -1006,11 +978,7 @@ class support
         self::isEnable();
 
         if (!user::self()->isGuest()) {
-            sql::run("DELETE FROM `support_read_topics` WHERE `topic_id` = ?;", [$id]);
-            sql::run("INSERT IGNORE INTO `support_read_topics` (`user_id`, `topic_id`, `read_at`) VALUES (?, ?, CURRENT_TIMESTAMP);", [
-                user::self()->getId(),
-                $id
-            ]);
+            self::markThreadAsRead($id, user::self()->getId());
         }
 
         $support_thread = sql::getRow('SELECT `owner_id`, `private`, `is_close` FROM `support_thread` WHERE id = ?', [$id]);
@@ -1124,11 +1092,68 @@ class support
         board::success("Перемещено");
     }
 
+    private static function markThreadAsRead(int $threadId, int $userId): void
+    {
+        $readAt = time::mysql();
+        $updated = sql::run("UPDATE `support_read_topics` SET `read_at` = ? WHERE `user_id` = ? AND `topic_id` = ?", [
+            $readAt,
+            $userId,
+            $threadId,
+        ]);
+
+        if (!($updated instanceof \PDOStatement) || $updated->rowCount() === 0) {
+            sql::run("INSERT INTO `support_read_topics` (`user_id`, `topic_id`, `read_at`) VALUES (?, ?, ?)", [
+                $userId,
+                $threadId,
+                $readAt,
+            ]);
+        }
+
+        self::clearUnreadCache($userId);
+    }
+
     private static function decMessage($support_thread_id): void
     {
         sql::run("UPDATE `support_thread_name` SET `thread_count` = thread_count-1 WHERE `id` = ?;", [
             $support_thread_id,
         ]);
+    }
+
+    private static function getReadMap(int $userId): array
+    {
+        $rows = sql::getRows("SELECT topic_id, read_at FROM `support_read_topics` WHERE user_id = ?", [$userId]);
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int) $row['topic_id']] = self::toTimestamp($row['read_at'] ?? null);
+        }
+        return $map;
+    }
+
+    private static function toTimestamp(?string $dateTime): int
+    {
+        if (!$dateTime) {
+            return 0;
+        }
+        $ts = strtotime($dateTime);
+        return $ts === false ? 0 : $ts;
+    }
+
+    private static function isThreadReadByUser(int $threadId, int $threadUpdateTs, array $readMap): bool
+    {
+        $readTs = $readMap[$threadId] ?? null;
+        if ($threadUpdateTs === 0) {
+            return $readTs !== null;
+        }
+        return $readTs !== null && $readTs >= $threadUpdateTs;
+    }
+
+    private static function clearUnreadCache(?int $userId = null): void
+    {
+        if ($userId === null) {
+            self::$noReadCountThreads = [];
+            return;
+        }
+        unset(self::$noReadCountThreads[$userId]);
     }
 
 }

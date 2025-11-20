@@ -8,14 +8,19 @@
 namespace Ofey\Logan22\component\time;
 
 use DateTime;
+use DateTimeZone;
 use Exception;
 use Ofey\Logan22\component\fileSys\fileSys;
+use Ofey\Logan22\controller\config\config;
 
 class time {
 
+    private static ?DateTimeZone $serverTimezone = null;
+
     //Время формата datetime
     public static function mysql(): string {
-        return date('Y-m-d H:i:s');
+        $date = new DateTime('now', self::getServerTimezone());
+        return $date->format('Y-m-d H:i:s');
     }
 
     /**
@@ -121,5 +126,34 @@ class time {
             $result .= $seconds . ' сек.';
         }
         return trim($result == '' ? 'только что' : $result . ' назад');
+    }
+
+    private static function getServerTimezone(): DateTimeZone
+    {
+        if (self::$serverTimezone instanceof DateTimeZone) {
+            return self::$serverTimezone;
+        }
+
+        $timezoneName = null;
+
+        try {
+            if (file_exists(fileSys::get_dir('/data/db.php'))) {
+                $timezoneName = config::load()->other()->getTimezone();
+            }
+        } catch (\Throwable $e) {
+            $timezoneName = null;
+        }
+
+        if (!$timezoneName) {
+            $timezoneName = date_default_timezone_get() ?: 'UTC';
+        }
+
+        try {
+            self::$serverTimezone = new DateTimeZone($timezoneName);
+        } catch (Exception $e) {
+            self::$serverTimezone = new DateTimeZone('UTC');
+        }
+
+        return self::$serverTimezone;
     }
 }
