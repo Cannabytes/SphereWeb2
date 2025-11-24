@@ -70,6 +70,7 @@ class telegram
         if (!config::load()->other()->isOAuth()){
             die('oauth disabled');
         }
+
         // Проверяем и создаем таблицу при необходимости
         self::ensureTableExists();
 
@@ -87,14 +88,14 @@ class telegram
         );
 
         if (!$sessionData) {
-            board::notice(false, "Токен не найден или истек срок действия");
+            die("Токен не найден или истек срок действия");exit;
+            // board::notice(false, "Токен не найден или истек срок действия");
         }
 
         // Проверяем, что токен не истек (120 секунд)
         $createdAt = strtotime($sessionData['created_at']);
         $currentTime = time();
         $timeDiff = $currentTime - $createdAt;
-
         if ($timeDiff > 120) {
             // Удаляем истекшую сессию
             sql::run("DELETE FROM `telegram_auth_sessions` WHERE `token` = ?", [$token]);
@@ -275,26 +276,24 @@ class telegram
         }
 
         // Вычисляем время истечения (120 секунд от текущего момента)
-        $expiresAt = date('Y-m-d H:i:s', time() + 120);
-        $createdAt = time::mysql();
-
-        // Сохраняем данные в таблицу telegram_auth_sessions
         $insertSQL = "INSERT INTO `telegram_auth_sessions` 
-            (`token`, `telegram_id`, `telegram_username`, `first_name`, `last_name`, `language_code`, `expires_at`, `created_at`, `updated_at`) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+        (`token`, `telegram_id`, `telegram_username`, `first_name`, `last_name`, `language_code`, `expires_at`, `created_at`, `updated_at`) 
+        VALUES (
+            ?, ?, ?, ?, ?, ?, 
+            DATE_ADD(NOW(), INTERVAL 120 SECOND),
+            NOW(),
+            NOW()
+        )";
+    
         $insert = sql::run($insertSQL, [
             $token,
             $telegramId,
             $telegramUsername,
             $firstName,
             $lastName,
-            $languageCode,
-            $expiresAt,
-            $createdAt,
-            $createdAt
+            $languageCode
         ]);
-
+    
         if ($insert) {
             // Используем telegram_username как email, если он есть, иначе используем telegram_id
             $email = $telegramUsername ?: "telegram_{$telegramId}@telegram.local";
