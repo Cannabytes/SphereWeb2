@@ -976,10 +976,8 @@ class support
     static function read($id = null): void
     {
         self::isEnable();
-
-        if (!user::self()->isGuest()) {
-            self::markThreadAsRead($id, user::self()->getId());
-        }
+        
+        self::markThreadAsRead($id, user::self()->getId());
 
         $support_thread = sql::getRow('SELECT `owner_id`, `private`, `is_close` FROM `support_thread` WHERE id = ?', [$id]);
         if (!$support_thread) {

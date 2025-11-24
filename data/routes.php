@@ -2149,7 +2149,8 @@ return array(
         'func' => 'controller\\support\\support::read',
         'access' =>
         array(
-            0 => 'any',
+            0 => 'admin',
+            1 => 'user',    
         ),
         'weight' => 0,
         'page' => '',
@@ -2208,7 +2209,8 @@ return array(
         'func' => 'controller\\support\\support::showThread',
         'access' =>
         array(
-            0 => 'any',
+            0 => 'admin',
+            1 => 'user',    
         ),
         'weight' => 0,
         'page' => '',
