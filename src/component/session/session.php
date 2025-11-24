@@ -61,7 +61,7 @@ class session
 
         if(!user::self()->isAdmin()){
             // Проверяем защиту от флуда
-//            self::checkFloodProtection();
+            // self::checkFloodProtection();
         }
 
         // Обработка HTTP_REFERER для статистики

@@ -11,9 +11,7 @@ use Ofey\Logan22\template\tpl;
 
 if (file_exists(fileSys::get_dir('/data/db.php'))) {
     session::init();
-
     \Ofey\Logan22\controller\config\dsys::initPaySysClass();
-
     config::load();
     plugin::loading();
     $route  = new Ofey\Logan22\route\Route();

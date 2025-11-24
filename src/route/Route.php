@@ -83,7 +83,7 @@ class Route extends Router {
     }
 
     public function __construct() {
-        $this->__addingPlugin();
+        $this->__addingPlugin(); 
         //Загрузка из шаблона указанных файлов
         if ($pages = tpl::template_design_route()) {
             foreach ($pages as $page => $template) {
