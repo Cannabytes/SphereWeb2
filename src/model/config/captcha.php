@@ -123,7 +123,6 @@ class captcha
                         $errorMessage = "Проверка капчи не пройдена";
                     }
                 }
-                error_log("Ошибка проверки Cloudflare Turnstile: " . json_encode($result));
                 board::notice(false, $errorMessage);
             }
         } else {
@@ -154,7 +153,6 @@ class captcha
                     }
                 }
 
-                error_log("Ошибка проверки Cloudflare Turnstile: " . json_encode($result));
                 board::notice(false, $errorMessage);
             }
         }
@@ -304,7 +302,6 @@ class captcha
         // Обработка ошибок соединения
         if ($response === false) {
             // Запись в журнал ошибок
-            error_log("Ошибка соединения с сервером проверки капчи: " . $curlError);
 
             return [
                 'success' => false,
@@ -366,7 +363,6 @@ class captcha
         $curlError = curl_error($ch);
         curl_close($ch);
         if ($response === false) {
-            error_log("Ошибка соединения с сервером проверки капчи: " . $curlError);
             return [
                 'success' => false,
                 'error' => 'Ошибка соединения с сервером проверки капчи',

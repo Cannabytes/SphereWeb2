@@ -93,7 +93,6 @@ class Route extends Router {
                 });
             }
         }
-
     }
 
     private static array $aliases = [];
