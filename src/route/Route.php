@@ -19,7 +19,8 @@ use Ofey\Logan22\template\tpl;
 
 class Route extends Router {
 
-    private static array $pluginRegister;
+    // Initialize as empty array to avoid foreach() on null
+    private static array $pluginRegister = [];
 
     //Возваращет
     static public function get_plugin_type($pluginName) {

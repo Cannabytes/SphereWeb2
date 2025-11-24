@@ -445,7 +445,16 @@ class chests
                     'price' => $price,
                 ]);
             } else {
-                $items = $caseServer['items'];
+                // Ensure items is an array to avoid foreach() argument must be of type array|object, null given
+                $items = $caseServer['items'] ?? [];
+                if (!is_array($items)) {
+                    $items = [];
+                }
+
+                // If there are no items, fail early
+                if (empty($items)) {
+                    throw new \Exception("Предметы не найдены для открытия кейса");
+                }
 
                 $canAffordPurchase = user::self()->canAffordPurchase($price * $case_count_open);
                 if (!$canAffordPurchase) {

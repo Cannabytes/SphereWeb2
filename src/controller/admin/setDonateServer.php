@@ -20,6 +20,11 @@ class setDonateServer
         $donateSysName = self::AllDonateSystem();
         $server = \Ofey\Logan22\model\server\server::getServer($id);
         $paySet = $server->getDonateConfig()->getDonateSystems();
+        // ensure variables are initialized to avoid warnings when there are no donate systems
+        $sortValues = [];
+        if (!is_array($paySet)) {
+            $paySet = [];
+        }
         foreach ($paySet as $paySystem) {
             $sortValues[$paySystem->getName()] = $paySystem->getSortValue();
         }
