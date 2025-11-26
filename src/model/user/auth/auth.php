@@ -184,6 +184,14 @@ class auth
                 $city = $geo_data['city'] ?? null;
             }
         }
+        
+        //TODO: в будущем удалить
+        $check = sql::run("SHOW COLUMNS FROM `user_auth_log` LIKE 'id'")->fetch();
+        if (!$check) {
+            sql::run("ALTER TABLE `user_auth_log` ADD `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;");
+        } elseif (isset($check['Extra']) && strpos($check['Extra'], 'auto_increment') === false) {
+            sql::run("ALTER TABLE `user_auth_log` MODIFY `id` INT(11) NOT NULL AUTO_INCREMENT;");
+        }
 
         sql::run("INSERT INTO user_auth_log (user_id, ip, country, city, browser, os, device, user_agent, date, signature) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
             $userId,

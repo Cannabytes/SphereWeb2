@@ -529,7 +529,7 @@ CREATE TABLE `statistic_online`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `user_auth_log`;
 CREATE TABLE `user_auth_log`  (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `ip` varchar(60) DEFAULT NULL,
   `country` varchar(60) DEFAULT NULL,
