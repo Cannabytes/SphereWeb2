@@ -1199,6 +1199,7 @@ class options
         $serverId = (int)($_POST['server_id'] ?? 0);
         $enabled = filter_var($_POST['enabled'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $availableFromRaw = trim($_POST['available_from'] ?? '');
+        $showTime = filter_var($_POST['show_time'] ?? true, FILTER_VALIDATE_BOOLEAN);
 
         $server = \Ofey\Logan22\model\server\server::getServer($serverId);
         if (!$serverId || !$server) {
@@ -1207,6 +1208,7 @@ class options
 
         if (!$enabled) {
             $server->setItemsSendAvailableFrom(null);
+            $server->setItemsSendShowTime(true);
             $server->save();
             board::alert([
                 'type' => 'notice',
@@ -1232,6 +1234,7 @@ class options
 
         try {
             $server->setItemsSendAvailableFrom($formattedDate);
+            $server->setItemsSendShowTime($showTime);
             $server->save();
         } catch (Exception $exception) {
             board::notice(false, "Не удалось сохранить настройку: " . $exception->getMessage());
@@ -1282,6 +1285,32 @@ class options
             'human' => $dateTime->format('d:m:Y H:i'),
             'timezone' => $timezone->getName(),
         ];
+    }
+
+    public static function saveItemsSendShowTime(): void
+    {
+        $serverId = (int)($_POST['server_id'] ?? 0);
+        $showTime = filter_var($_POST['show_time'] ?? true, FILTER_VALIDATE_BOOLEAN);
+
+        $server = \Ofey\Logan22\model\server\server::getServer($serverId);
+        if (!$serverId || !$server) {
+            board::notice(false, "Сервер не найден");
+        }
+
+        try {
+            $server->setItemsSendShowTime($showTime);
+            $server->save();
+        } catch (Exception $exception) {
+            board::notice(false, "Не удалось сохранить настройку: " . $exception->getMessage());
+        }
+
+        board::alert([
+            'type' => 'notice',
+            'ok' => true,
+            'message' => $showTime 
+                ? "Время отправки будет показываться пользователям" 
+                : "Время отправки скрыто от пользователей",
+        ]);
     }
 
 }

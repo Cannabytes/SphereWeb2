@@ -1,0 +1,103 @@
+{% set server = getServer(serverId) %}
+{% set storedShowTime = server.isItemsSendShowTime() %}
+
+<div id="itemsSendHideTimeRoot"
+     class="row"
+     data-server-id="{{ serverId }}"
+     data-save-url="/admin/server/items-send-show-time/save">
+    <div class="col-xl-12">
+        <div class="alert alert-secondary mb-4 d-flex align-items-start shadow-sm">
+            <i class="ri-eye-off-line fs-3 me-3 text-primary"></i>
+            <div>
+                <h5 class="mb-1">{{ phrase('items_send_show_time_title')|default('Настройка отображения времени отправки') }}</h5>
+                <p class="mb-0">
+                    {{ phrase('items_send_show_time_description')|default('Настройте, будет ли пользователям показываться точное время, с которого можно отправлять предметы в игру.') }}
+                </p>
+            </div>
+        </div>
+
+        <div class="card custom-card shadow-none border">
+            <div class="card-body">
+                <div class="form-check form-switch form-check-lg mb-4">
+                    <input class="form-check-input" type="checkbox" id="showItemsSendTimeToggle" {% if storedShowTime %}checked{% endif %}>
+                    <label class="form-check-label fw-semibold" for="showItemsSendTimeToggle">
+                        {{ phrase('items_send_show_time_label')|default('Показывать с какого времени можно отправлять в игру?') }}
+                    </label>
+                    <small class="text-muted d-block mt-2">
+                        {{ phrase('items_send_show_time_hint')|default('Если выключено, на складе вместо времени будет показано сообщение "На данный момент нельзя отправлять предметы в игру."') }}
+                    </small>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-lg-6">
+                        <div class="p-3 rounded border bg-light h-100">
+                            <div class="fw-semibold text-muted mb-2">{{ phrase('items_send_show_time_when_enabled')|default('Когда включено:') }}</div>
+                            <p class="mb-0 text-success">
+                                <i class="ri-check-line me-1"></i>
+                                {{ phrase('items_send_show_time_enabled_text')|default('Пользователи видят: "Отправка предметов будет доступна через 3 дня и 50 минут (29:11:2025 22:00 Europe/Kyiv)"') }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="p-3 rounded border bg-light h-100">
+                            <div class="fw-semibold text-muted mb-2">{{ phrase('items_send_show_time_when_disabled')|default('Когда выключено:') }}</div>
+                            <p class="mb-0 text-warning">
+                                <i class="ri-close-line me-1"></i>
+                                {{ phrase('items_send_show_time_disabled_text')|default('Пользователи видят: "На данный момент нельзя отправлять предметы в игру."') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-4 gap-3">
+                    <div class="text-muted small">
+                        {{ phrase('items_send_show_time_notice')|default('После сохранения настройка сразу вступает в силу.') }}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-success" id="saveShowItemsSendTime">
+                            <i class="ri-save-line me-1"></i>{{ phrase('save_settings') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        const $root = $('#itemsSendHideTimeRoot');
+        const apiUrl = $root.data('saveUrl');
+        const serverId = $root.data('serverId');
+
+        const $showTimeToggle = $('#showItemsSendTimeToggle');
+        const $saveBtn = $('#saveShowItemsSendTime');
+
+        $saveBtn.on('click', function() {
+            const showTime = $showTimeToggle.is(':checked');
+            const payload = {
+                server_id: serverId,
+                show_time: showTime
+            };
+
+            $saveBtn.prop('disabled', true);
+
+            AjaxSend(apiUrl, 'POST', payload, true)
+                .then(function(response) {
+                    if (response && response.ok) {
+                        noticeSuccess(response.message || "{{ phrase('items_send_save_success')|default('Настройки сохранены') }}");
+                    } else {
+                        const message = response && response.message ? response.message : 'Не удалось сохранить настройки';
+                        noticeError(message);
+                    }
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    noticeError("{{ phrase('items_send_save_error')|default('Произошла ошибка при сохранении настроек') }}");
+                })
+                .finally(function() {
+                    $saveBtn.prop('disabled', false);
+                });
+        });
+    });
+</script>

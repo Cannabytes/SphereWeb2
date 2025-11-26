@@ -445,14 +445,14 @@
         <div>
           <ul class="nav nav-tabs justify-content-end tab-nav-custom mb-0" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#StartpackSendItemsToPlayer" aria-selected="true">
+              <a class="nav-link {{ canSendItemsNow ? 'active' : '' }}" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#StartpackSendItemsToPlayer" aria-selected="{{ canSendItemsNow ? 'true' : 'false' }}">
                 <i class="fas fa-user me-1"></i>{{phrase('send_to_char')}}
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="tab" role="tab" aria-current="page"
-                 href="#StartpackSendItemsToWarhouse" aria-selected="true">
+              <a class="nav-link {{ not canSendItemsNow ? 'active' : '' }}" data-bs-toggle="tab" role="tab" aria-current="page"
+                 href="#StartpackSendItemsToWarhouse" aria-selected="{{ not canSendItemsNow ? 'true' : 'false' }}">
                 <i class="fas fa-warehouse me-1"></i>{{phrase('send_to_wh')}}
               </a>
             </li>
@@ -469,7 +469,7 @@
 
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
             <div class="tab-content tab-content-custom">
-              <div class="tab-pane show active" id="StartpackSendItemsToPlayer" role="tabpanel"
+              <div class="tab-pane {{ canSendItemsNow ? 'show active' : '' }}" id="StartpackSendItemsToPlayer" role="tabpanel"
                    data-can-send="{{ canSendItemsNow ? 'true' : 'false' }}"
                    data-lock-message="{{ itemsSendLockMessage|e('html_attr') }}">
 
@@ -538,7 +538,7 @@
                 {% endif %}
               </div>
 
-              <div class="tab-pane" id="StartpackSendItemsToWarhouse" role="tabpanel">
+              <div class="tab-pane {{ not canSendItemsNow ? 'show active' : '' }}" id="StartpackSendItemsToWarhouse" role="tabpanel">
 
                 <div class="price-display">
                   <div class="price-label">

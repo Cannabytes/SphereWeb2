@@ -48,6 +48,7 @@ class serverModel
     private ?string $knowledgeBase = null;
     private ?int $maxOnline = 200;
     private ?string $itemsSendAvailableFrom = null;
+    private ?bool $itemsSendShowTime = true;
     //Позиция сервера при сортировки
     private ?int $position = 0;
 
@@ -93,6 +94,7 @@ class serverModel
         $this->resetItemsToWarehouse = filter_var($server['resetItemsToWarehouse'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->showOnlineInStatusServer = filter_var($server['showOnlineInStatusServer'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->itemsSendAvailableFrom = $server['itemsSendAvailableFrom'] ?? null;
+        $this->itemsSendShowTime = filter_var($server['itemsSendShowTime'] ?? true, FILTER_VALIDATE_BOOLEAN);
         if ($server_data) {
             foreach ($server_data as $data) {
                 $this->server_data[] = new serverDataModel($data);
@@ -291,6 +293,7 @@ class serverModel
             'bonus' => $this->bonus()->toArray(),
             'maxOnline' => $this->maxOnline,
             'itemsSendAvailableFrom' => $this->itemsSendAvailableFrom,
+            'itemsSendShowTime' => $this->itemsSendShowTime,
         ];
         sql::run(
             "INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)
@@ -766,6 +769,16 @@ class serverModel
         $this->itemsSendAvailableFrom = $iso8601;
     }
 
+    public function isItemsSendShowTime(): bool
+    {
+        return $this->itemsSendShowTime ?? true;
+    }
+
+    public function setItemsSendShowTime(bool $showTime): void
+    {
+        $this->itemsSendShowTime = $showTime;
+    }
+
     public function canSendItemsNow(): bool
     {
         $value = $this->getItemsSendAvailableFrom();
@@ -781,19 +794,24 @@ class serverModel
 
     public function getItemsSendLockMessage(): string
     {
-        $message = "Отправка предметов временно недоступна. Попробуйте позже.";
+        $message = "На данный момент нельзя отправлять предметы в игру.";
         $availableFrom = $this->getItemsSendAvailableFrom();
         if ($availableFrom) {
-            try {
-                $timezone = $this->getMachineTimezone();
-                $dt = new DateTime($availableFrom);
-                $dt->setTimezone(new DateTimeZone($timezone));
-                $remaining = self::formatRemainingTime($dt);
-                $formatted = $dt->format('d:m:Y H:i');
-                return "Отправка предметов будет доступна {$remaining} ({$formatted} {$timezone})";
-            } catch (Exception) {
-                // ignore, return default
+            // Если установлена опция показывать время - показываем полное сообщение с датой
+            if ($this->isItemsSendShowTime()) {
+                try {
+                    $timezone = $this->getMachineTimezone();
+                    $dt = new DateTime($availableFrom);
+                    $dt->setTimezone(new DateTimeZone($timezone));
+                    $remaining = self::formatRemainingTime($dt);
+                    $formatted = $dt->format('d:m:Y H:i');
+                    return "Отправка предметов будет доступна {$remaining} ({$formatted} {$timezone})";
+                } catch (Exception) {
+                    // ignore, return default
+                }
             }
+            // Если showTime = false, возвращаем простое сообщение
+            return $message;
         }
         return $message;
     }

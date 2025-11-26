@@ -1,5 +1,6 @@
 {% set server = getServer(serverId) %}
 {% set storedItemsSendValue = server.getItemsSendAvailableFrom() %}
+{% set storedShowTime = server.isItemsSendShowTime() %}
 {% set serverTimezone = server.getMachineTimezone() %}
 {% set storedDate = storedItemsSendValue ? storedItemsSendValue|date('d/m/Y', serverTimezone) : '' %}
 {% set storedTime = storedItemsSendValue ? storedItemsSendValue|date('H:i', serverTimezone) : '' %}
@@ -123,6 +124,20 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="showItemsSendTime" {% if storedShowTime %}checked{% endif %}>
+                                <label class="form-check-label fw-semibold" for="showItemsSendTime">
+                                    {{ phrase('items_send_show_time_label')|default('Показывать с какого времени можно отправлять в игру?') }}
+                                </label>
+                                <small class="text-muted d-block mt-2">
+                                    {{ phrase('items_send_show_time_hint')|default('Если выключено, на складе вместо времени будет показано сообщение "На данный момент нельзя отправлять предметы в игру."') }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-4 gap-3">
@@ -155,6 +170,7 @@
         const $settingsBlock = $('#itemsSendTimeSettings');
         const $dateInput = $('#itemsSendDate');
         const $timeInput = $('#itemsSendTime');
+        const $showTimeToggle = $('#showItemsSendTime');
         const $summary = $('#itemsSendSummary');
         const $saveBtn = $('#saveItemsSendTime');
         const $resetBtn = $('#resetItemsSendTime');
@@ -281,6 +297,7 @@
 
         $resetBtn.on('click', function() {
             $enableToggle.prop('checked', false);
+            $showTimeToggle.prop('checked', true);
             if (datePickerInstance) {
                 datePickerInstance.clear();
             } else {
@@ -340,9 +357,11 @@
 
         $saveBtn.on('click', function() {
             const enabled = $enableToggle.is(':checked');
+            const showTime = $showTimeToggle.is(':checked');
             const payload = {
                 server_id: serverId,
-                enabled: enabled
+                enabled: enabled,
+                show_time: showTime
             };
 
             if (enabled) {
