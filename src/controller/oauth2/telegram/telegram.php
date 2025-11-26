@@ -92,16 +92,6 @@ class telegram
             // board::notice(false, "Токен не найден или истек срок действия");
         }
 
-        // Проверяем, что токен не истек (120 секунд)
-        $createdAt = strtotime($sessionData['created_at']);
-        $currentTime = time();
-        $timeDiff = $currentTime - $createdAt;
-        if ($timeDiff > 120) {
-            // Удаляем истекшую сессию
-            sql::run("DELETE FROM `telegram_auth_sessions` WHERE `token` = ?", [$token]);
-            board::notice(false, "Время действия токена истекло");
-        }
-
         $telegramId = $sessionData['telegram_id'];
         $telegramUsername = $sessionData['telegram_username'];
         $firstName = $sessionData['first_name'];
