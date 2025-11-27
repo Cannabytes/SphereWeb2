@@ -41,11 +41,6 @@
                                  <i class="ri-time-line me-1"></i>{{phrase('items_send_title')}}
                                 </button>
                         </li>
-                        <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="items-send-hide-time-tab" data-bs-toggle="tab" data-bs-target="#items-send-hide-time-panel" type="button" role="tab" aria-controls="items-send-hide-time-panel" aria-selected="false">
-                                 <i class="ri-eye-off-line me-1"></i>{{phrase('items_send_show_time_label')|default('Показ времени отправки')}}
-                                </button>
-                        </li>
                     </ul>
 
                     <div class="tab-content" id="serverFunctionsContent">
@@ -60,9 +55,6 @@
                         </div>
                         <div class="tab-pane fade " id="items-send-time-panel" role="tabpanel" aria-labelledby="items-send-time-tab">
                             {% include 'admin/func/items_send_time.html' %}
-                        </div>
-                        <div class="tab-pane fade " id="items-send-hide-time-panel" role="tabpanel" aria-labelledby="items-send-hide-time-tab">
-                            {% include 'admin/func/items_send_hide_time.html' %}
                         </div>
                     </div>
 

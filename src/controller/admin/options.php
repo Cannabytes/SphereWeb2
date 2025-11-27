@@ -1287,30 +1287,4 @@ class options
         ];
     }
 
-    public static function saveItemsSendShowTime(): void
-    {
-        $serverId = (int)($_POST['server_id'] ?? 0);
-        $showTime = filter_var($_POST['show_time'] ?? true, FILTER_VALIDATE_BOOLEAN);
-
-        $server = \Ofey\Logan22\model\server\server::getServer($serverId);
-        if (!$serverId || !$server) {
-            board::notice(false, "Сервер не найден");
-        }
-
-        try {
-            $server->setItemsSendShowTime($showTime);
-            $server->save();
-        } catch (Exception $exception) {
-            board::notice(false, "Не удалось сохранить настройку: " . $exception->getMessage());
-        }
-
-        board::alert([
-            'type' => 'notice',
-            'ok' => true,
-            'message' => $showTime 
-                ? "Время отправки будет показываться пользователям" 
-                : "Время отправки скрыто от пользователей",
-        ]);
-    }
-
 }

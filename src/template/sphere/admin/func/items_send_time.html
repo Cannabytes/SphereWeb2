@@ -26,9 +26,18 @@
             </div>
         </div>
 
-        <div class="card custom-card shadow-none border">
-            <div class="card-body">
-                <div class="form-check form-switch form-check-lg mb-4">
+                        <div class="card custom-card shadow-none border">
+                        <div class="card-body">
+                                <div class="alert alert-secondary mb-4 d-flex align-items-start shadow-sm">
+                                    <i class="ri-eye-line fs-3 me-3 text-primary"></i>
+                                    <div>
+                                        <h5 class="mb-1">{{ phrase('items_send_show_time_title')|default('Настройка отображения времени отправки') }}</h5>
+                                        <p class="mb-0">
+                                                {{ phrase('items_send_show_time_description')|default('Настройте, будет ли пользователям показываться точное время, с которого можно отправлять предметы в игру.') }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch form-check-lg mb-4">
                     <input class="form-check-input" type="checkbox" id="enableItemsSendTime" {% if storedItemsSendValue %}checked{% endif %}>
                     <label class="form-check-label fw-semibold" for="enableItemsSendTime">
                         {{ phrase('items_send_toggle') }}
@@ -88,36 +97,9 @@
                                     <div id="itemsSendServerClock" class="fs-5 fw-semibold">
                                         {% if serverNowIso %}
                                             {{ serverNowHuman }} ({{ serverTimezone }})
-                                        {% else %}
-                                            —
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <small class="text-muted d-block mt-1">
-                                    {{ phrase('items_send_reference_note') }}
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4 gy-3">
-                        <div class="col-lg-7">
-                            <div class="p-3 rounded border bg-light h-100">
-                                <div class="fw-semibold text-muted mb-1">{{ phrase('items_send_tips_title') }}</div>
-                                <ul class="mb-0 ps-3">
-                                    <li>{{ phrase('items_send_tip_no_past') }}</li>
-                                    <li>{{ phrase('items_send_tip_disable') }}</li>
-                                    <li>{{ phrase('items_send_tip_apply') }}</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-lg-5">
-                            <div class="items-send-summary border rounded p-3 h-100">
-                                <span class="text-muted small d-block mb-1">{{ phrase('items_send_current_threshold') }}</span>
-                                <div id="itemsSendSummary" class="fs-5 fw-semibold">
-                                    {% if storedItemsSendValue %}
-                                        {{ storedItemsSendValue|date('d:m:Y H:i', serverTimezone) }} ({{ serverTimezone }})
-                                    {% else %}
+                                        </div>
+ 
+                                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-4 gap-3">
                                         {{ phrase('items_send_threshold_unset') }}
                                     {% endif %}
                                 </div>
@@ -140,6 +122,32 @@
                     </div>
                 </div>
 
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <div class="alert alert-info" role="alert">
+                                                    <div class="d-flex flex-column gap-3">
+                                                        <div>
+                                                            <div class="fw-semibold text-dark mb-1">
+                                                                {{ phrase('items_send_show_time_when_enabled')|default('Когда включено:') }}
+                                                            </div>
+                                                            <p class="mb-0 text-success text-wrap">
+                                                                <i class="ri-check-line me-1"></i>
+                                                                {{ phrase('items_send_show_time_enabled_text')|default('Пользователи видят: "Отправка предметов будет доступна через 3 дня и 50 минут (29.11.2025 22:00 Europe/Kyiv)"') }}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-semibold text-dark mb-1">
+                                                                {{ phrase('items_send_show_time_when_disabled')|default('Когда выключено:') }}
+                                                            </div>
+                                                            <p class="mb-0 text-warning text-wrap">
+                                                                <i class="ri-close-line me-1"></i>
+                                                                {{ phrase('items_send_show_time_disabled_text')|default('Пользователи видят: "На данный момент нельзя отправлять предметы в игру."') }}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-4 gap-3">
                     <div class="text-muted small">
                         {{ phrase('items_send_notice_apply') }}
