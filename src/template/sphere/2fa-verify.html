@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light"
+      data-menu-styles="light" data-toggled="close">
+<head>
+  <meta charset="UTF-8">
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{{ phrase('2fa_verify_title') }}</title>
+  <meta name="Description" content="Two-Factor Authentication">
+  <meta name="Author" content="SphereWeb">
+  <meta name="keywords" content="">
+
+  {{ config().logo().favicon() }}
+
+  <script src="{{template}}/assets/js/authentication-main.js"></script>
+
+  <link id="style" href="{{template}}/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <link href="{{template}}/assets/css/{{ config().palette().styleFile() }}?v=0.0.0.3" rel="stylesheet">
+
+  <link href="{{template}}/assets/css/icons.min.css" rel="stylesheet">
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="{{template}}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  {{ config().other().getAnalyticsHead()|raw }}
+
+  <style>
+    .verification-code-input {
+      letter-spacing: 1em;
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 15px;
+    }
+    .verification-code-input::placeholder {
+      letter-spacing: 0.3em;
+      font-size: 1.5rem;
+      color: #ccc;
+    }
+    .pulse-animation {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .shake-animation {
+      animation: shake 0.5s;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+  </style>
+</head>
+
+<body>
+{{ config().other().getAnalyticsBody()|raw }}
+
+{% include 'notice_toast.html' %}
+
+<div {% if config().background().login() is not null %}
+     style="background-image: url('{{config().background().login()}}'); background-size: cover; background-repeat: no-repeat; background-position: center center;"
+     {% else %}class="autentication-bg" {% endif %}>
+
+  <div class="container-lg">
+    <div class="row justify-content-center authentication authentication-basic align-items-center h-100">
+      <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12">
+        <div class="my-4 d-flex justify-content-center">
+          <a href="/main">
+            <img src="{{config().logo().getLogo()}}" alt="logo">
+          </a>
+        </div>
+        <div class="card custom-card shadow-lg">
+          <div class="card-body p-4">
+            {# Иконка безопасности #}
+            <div class="text-center mb-4">
+              <div class="avatar avatar-xxl bg-primary-transparent mb-3 pulse-animation">
+                <i class="ri-shield-keyhole-line fs-1"></i>
+              </div>
+              <h4 class="fw-semibold mb-2">{{ phrase('2fa_verify_title') }}</h4>
+              <p class="text-muted">{{ phrase('2fa_verify_description') }}</p>
+            </div>
+
+            {# Форма ввода кода #}
+            <form id="twoFaVerifyForm" action="/auth/2fa/verify" method="POST">
+              <input type="hidden" name="token" value="{{ twofa_token }}">
+              
+              <div class="mb-4">
+                <label for="code" class="form-label text-center d-block fw-semibold">
+                  <i class="ri-smartphone-line me-1"></i>{{ phrase('2fa_enter_code') }}
+                </label>
+                <input type="text" 
+                       class="form-control form-control-lg verification-code-input" 
+                       id="code" 
+                       name="code" 
+                       maxlength="6" 
+                       pattern="[0-9]{6}" 
+                       placeholder="000000" 
+                       autocomplete="off" 
+                       inputmode="numeric"
+                       autofocus
+                       required>
+                <div class="form-text text-center mt-2">
+                  <i class="ri-time-line me-1"></i>{{ phrase('2fa_code_hint') }}
+                </div>
+              </div>
+
+              <div class="d-grid gap-2">
+                <button type="submit" id="verifyBtn" class="btn btn-lg btn-primary">
+                  <i class="ri-shield-check-line me-1"></i> {{ phrase('2fa_verify_button') }}
+                </button>
+              </div>
+            </form>
+
+            {# Информационный блок #}
+            <div class="mt-4 p-3 bg-light rounded">
+              <div class="d-flex align-items-start">
+                <i class="ri-information-line text-info fs-4 me-2 mt-1"></i>
+                <div>
+                  <h6 class="fw-semibold mb-1">{{ phrase('2fa_help_title') }}</h6>
+                  <p class="fs-12 text-muted mb-0">{{ phrase('2fa_help_text') }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center mt-4">
+              <a href="/login" class="text-muted fs-12">
+                <i class="ri-arrow-left-line me-1"></i>{{ phrase('back_to_login') }}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {# Выбор языка #}
+        <div class="text-center mt-3">
+          {% for lang in getAllowLang(false) %}
+          <a class="align-items-center" href="{{action('user_lang', [lang.lang])}}">
+            <span class="avatar avatar-xs lh-1 me-0">
+              <img src="/uploads/images/flags/{{lang.lang}}.png" alt="img">
+            </span>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{template}}/assets/libs/@popperjs/core/umd/popper.min.js"></script>
+<script src="{{template}}/assets/js/Toasts.js"></script>
+<script src="{{template}}/assets/js/general.js?v=1.0.2"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const codeInput = document.getElementById('code');
+  const form = document.getElementById('twoFaVerifyForm');
+  const verifyBtn = document.getElementById('verifyBtn');
+  
+  // Автоматическая фокусировка и форматирование ввода
+  codeInput.addEventListener('input', function(e) {
+    // Оставляем только цифры
+    this.value = this.value.replace(/[^0-9]/g, '');
+    
+    // Автоматическая отправка при вводе 6 цифр
+    if (this.value.length === 6) {
+      verifyBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{{ phrase("2fa_verifying") }}';
+      verifyBtn.disabled = true;
+      form.submit();
+    }
+  });
+
+  // Предотвращение вставки нецифровых символов
+  codeInput.addEventListener('paste', function(e) {
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData('text');
+    const numbersOnly = pasteData.replace(/[^0-9]/g, '').substring(0, 6);
+    this.value = numbersOnly;
+    
+    if (numbersOnly.length === 6) {
+      verifyBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{{ phrase("2fa_verifying") }}';
+      verifyBtn.disabled = true;
+      form.submit();
+    }
+  });
+
+  // Анимация ошибки если есть
+  {% if error %}
+  codeInput.classList.add('shake-animation', 'is-invalid');
+  setTimeout(() => {
+    codeInput.classList.remove('shake-animation');
+  }, 500);
+  {% endif %}
+
+  // Обработка отправки формы
+  form.addEventListener('submit', function(e) {
+    if (codeInput.value.length !== 6) {
+      e.preventDefault();
+      codeInput.classList.add('shake-animation', 'is-invalid');
+      setTimeout(() => {
+        codeInput.classList.remove('shake-animation');
+      }, 500);
+      return false;
+    }
+    
+    verifyBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{{ phrase("2fa_verifying") }}';
+    verifyBtn.disabled = true;
+  });
+});
+</script>
+
+</body>
+</html>

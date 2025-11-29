@@ -43,6 +43,35 @@
             <input name="new_password" type="password" class="form-control" id="new_u_password" autocomplete="new-password">
           </div>
 
+          {# Двухфакторная аутентификация - только для обычной авторизации #}
+          {% if getUser().getPassword() != "GOOGLE" and getUser().getPassword() != "TELEGRAM" %}
+          <i class="border-top d-block my-3"></i>
+          <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="d-flex align-items-center">
+                <i class="ri-shield-keyhole-line fs-4 me-2 text-primary"></i>
+                <div>
+                  <label class="form-label mb-0 fw-semibold">{{ phrase('2fa_title') }}</label>
+                  <p class="text-muted fs-12 mb-0">{{ phrase('2fa_description') }}</p>
+                </div>
+              </div>
+              <div>
+                {% if getUser().isTwoFaEnabled() %}
+                <span class="badge bg-success-transparent">{{ phrase('2fa_enabled') }}</span>
+                {% else %}
+                <span class="badge bg-danger-transparent">{{ phrase('2fa_disabled') }}</span>
+                {% endif %}
+              </div>
+            </div>
+            
+            <button type="button" class="btn btn-sm {% if getUser().isTwoFaEnabled() %}btn-outline-danger{% else %}btn-outline-primary{% endif %}" 
+                    id="open2faModalBtn">
+              <i class="ri-settings-3-line me-1"></i>
+              {% if getUser().isTwoFaEnabled() %}{{ phrase('2fa_manage') }}{% else %}{{ phrase('2fa_setup') }}{% endif %}
+            </button>
+          </div>
+          {% endif %}
+
         </div>
       </div>
 
@@ -57,6 +86,314 @@
     </form>
   </div>
 </div>
+
+{# Модальное окно настройки 2FA #}
+{% if getUser().isAuth() and getUser().getPassword() != "GOOGLE" and getUser().getPassword() != "TELEGRAM" %}
+<div class="modal fade" id="twoFaModal" tabindex="-1" aria-labelledby="twoFaModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-bottom">
+        <div class="d-flex align-items-center">
+          <div class="avatar avatar-sm bg-primary-transparent me-2">
+            <i class="ri-shield-keyhole-line fs-5"></i>
+          </div>
+          <h6 class="modal-title mb-0" id="twoFaModalLabel">{{ phrase('2fa_title') }}</h6>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% if getUser().isTwoFaEnabled() %}
+        {# 2FA уже включена - показываем опцию отключения #}
+        <div class="text-center mb-4">
+          <div class="avatar avatar-xl bg-success-transparent mb-3">
+            <i class="ri-shield-check-line fs-1"></i>
+          </div>
+          <h5 class="text-success">{{ phrase('2fa_active') }}</h5>
+          <p class="text-muted">{{ phrase('2fa_active_description') }}</p>
+        </div>
+        
+        <div class="alert alert-warning border border-warning">
+          <div class="d-flex">
+            <i class="ri-alert-line fs-5 me-2"></i>
+            <div>
+              <strong>{{ phrase('warning') }}</strong>
+              <p class="mb-0 fs-12">{{ phrase('2fa_disable_warning') }}</p>
+            </div>
+          </div>
+        </div>
+
+        <form id="disable2faForm">
+          <div class="mb-3">
+            <label for="disable2faCode" class="form-label fw-semibold">{{ phrase('2fa_enter_code') }}</label>
+            <input type="text" class="form-control form-control-lg text-center fw-bold letter-spacing-3" 
+                   id="disable2faCode" name="code" maxlength="6" pattern="[0-9]{6}" 
+                   placeholder="000000" autocomplete="off" inputmode="numeric">
+            <div class="form-text">{{ phrase('2fa_code_hint') }}</div>
+          </div>
+          <button type="submit" class="btn btn-danger w-100">
+            <i class="ri-shield-cross-line me-1"></i> {{ phrase('2fa_disable') }}
+          </button>
+        </form>
+        {% else %}
+        {# 2FA не включена - показываем процесс настройки #}
+        <div id="twoFaSetupStep1">
+          <div class="text-center mb-4">
+            <p class="text-muted">{{ phrase('2fa_setup_intro') }}</p>
+          </div>
+          
+          <div class="mb-4">
+            <h6 class="fw-semibold mb-3"><span class="badge bg-primary me-2">1</span>{{ phrase('2fa_step1_title') }}</h6>
+            <div class="d-flex gap-2 flex-wrap justify-content-center mb-3">
+              <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" 
+                 target="_blank" class="btn btn-sm btn-outline-secondary">
+                <i class="ri-google-play-fill me-1"></i> Google Authenticator
+              </a>
+              <a href="https://apps.apple.com/app/google-authenticator/id388497605" 
+                 target="_blank" class="btn btn-sm btn-outline-secondary">
+                <i class="ri-apple-fill me-1"></i> App Store
+              </a>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="fw-semibold mb-3"><span class="badge bg-primary me-2">2</span>{{ phrase('2fa_step2_title') }}</h6>
+            <div class="text-center">
+              <div id="twoFaQrCode" class="mb-3 d-flex justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                <span class="text-muted fs-12">{{ phrase('2fa_secret_key') }}:</span>
+                <code id="twoFaSecretDisplay" class="bg-light px-2 py-1 rounded user-select-all fw-bold"></code>
+                <button type="button" class="btn btn-sm btn-icon btn-outline-secondary" onclick="copyTwoFaSecret()" title="{{ phrase('copy') }}">
+                  <i class="ri-file-copy-line"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <h6 class="fw-semibold mb-3"><span class="badge bg-primary me-2">3</span>{{ phrase('2fa_step3_title') }}</h6>
+            <form id="enable2faForm" method="post" action="javascript:void(0);">
+              <input type="hidden" id="twoFaSecret" name="secret" value="">
+              <div class="mb-3">
+                <input type="text" class="form-control form-control-lg text-center fw-bold letter-spacing-3" 
+                       id="enable2faCode" name="code" maxlength="6" pattern="[0-9]{6}" 
+                       placeholder="000000" autocomplete="off" inputmode="numeric" required>
+                <div class="form-text text-center">{{ phrase('2fa_code_hint') }}</div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="ri-shield-check-line me-1"></i> {{ phrase('2fa_enable') }}
+              </button>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.letter-spacing-3 {
+  letter-spacing: 0.5em;
+}
+#twoFaQrCode img {
+  border-radius: 8px;
+  border: 3px solid #e9ecef;
+  padding: 10px;
+  background: #fff;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const twoFaModal = document.getElementById('twoFaModal');
+  const settingsModal = document.getElementById('settings');
+  const open2faBtn = document.getElementById('open2faModalBtn');
+  
+  if (!twoFaModal) return;
+  
+  let twoFaModalInstance = null;
+  let skipReturnToSettings = false;
+  
+  // Переключение между модальными окнами settings -> twoFaModal
+  if (open2faBtn && settingsModal) {
+    open2faBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      skipReturnToSettings = false;
+      
+      // Получаем экземпляр модала настроек
+      const settingsModalInstance = bootstrap.Modal.getInstance(settingsModal);
+      
+      // Скрываем модал настроек
+      if (settingsModalInstance) {
+        settingsModal.addEventListener('hidden.bs.modal', function onHidden() {
+          settingsModal.removeEventListener('hidden.bs.modal', onHidden);
+          
+          // Открываем модал 2FA
+          twoFaModalInstance = new bootstrap.Modal(twoFaModal, {
+            backdrop: true,
+            keyboard: true
+          });
+          twoFaModalInstance.show();
+        }, { once: true });
+        
+        settingsModalInstance.hide();
+      }
+    });
+  }
+  
+  // Возврат к модальному окну настроек при закрытии 2FA модала
+  twoFaModal.addEventListener('hidden.bs.modal', function() {
+    if (!skipReturnToSettings) {
+      // Возвращаемся к модалу настроек
+      const settingsModalInstance = new bootstrap.Modal(settingsModal);
+      settingsModalInstance.show();
+    }
+  });
+  
+  // Загрузка QR кода при открытии модального окна
+  twoFaModal.addEventListener('show.bs.modal', function() {
+    {% if not getUser().isTwoFaEnabled() %}
+    fetch('/api/2fa/setup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.ok) {
+        document.getElementById('twoFaQrCode').innerHTML = 
+          '<img src="' + data.qrCode + '" alt="QR Code" width="200" height="200">';
+        document.getElementById('twoFaSecretDisplay').textContent = data.secret;
+        document.getElementById('twoFaSecret').value = data.secret;
+      } else {
+        document.getElementById('twoFaQrCode').innerHTML = 
+          '<div class="alert alert-danger">' + (data.message || 'Error loading QR code') + '</div>';
+      }
+    })
+    .catch(error => {
+      document.getElementById('twoFaQrCode').innerHTML = 
+        '<div class="alert alert-danger">Error loading QR code</div>';
+    });
+    {% endif %}
+  });
+
+  // Функция для отправки 2FA кода
+  function submit2faEnable(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const form = document.getElementById('enable2faForm');
+    if (!form) return false;
+    
+    const formData = new FormData(form);
+    
+    console.log('Submitting 2FA enable:', Object.fromEntries(formData));
+    
+    fetch('/api/2fa/enable', {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: formData
+    })
+    .then(response => {
+      console.log('Response status:', response.status);
+      return response.text();
+    })
+    .then(text => {
+      console.log('Response text:', text);
+      try {
+        const data = JSON.parse(text);
+        if (data.ok) {
+          skipReturnToSettings = true;
+          showToast('success', data.message || '{{ phrase("2fa_enabled_success") }}');
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          showToast('error', data.message || '{{ phrase("2fa_invalid_code") }}');
+        }
+      } catch (err) {
+        console.error('JSON parse error:', err);
+        showToast('error', 'Server error');
+      }
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
+      showToast('error', '{{ phrase("error") }}: ' + error.message);
+    });
+    
+    return false;
+  }
+
+  // Привязываем обработчик к форме
+  const enable2faForm = document.getElementById('enable2faForm');
+  if (enable2faForm) {
+    enable2faForm.onsubmit = submit2faEnable;
+    console.log('2FA form handler attached');
+  } else {
+    console.log('2FA form not found, will attach on modal show');
+    // Привязываем при показе модала
+    twoFaModal.addEventListener('shown.bs.modal', function() {
+      const form = document.getElementById('enable2faForm');
+      if (form && !form.onsubmit) {
+        form.onsubmit = submit2faEnable;
+        console.log('2FA form handler attached on modal show');
+      }
+    });
+  }
+
+  // Отключение 2FA
+  const disable2faForm = document.getElementById('disable2faForm');
+  if (disable2faForm) {
+    disable2faForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      
+      fetch('/api/2fa/disable', {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.ok) {
+          skipReturnToSettings = true;
+          showToast('success', data.message || '{{ phrase("2fa_disabled_success") }}');
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          showToast('error', data.message || '{{ phrase("2fa_invalid_code") }}');
+        }
+      })
+      .catch(error => {
+        showToast('error', '{{ phrase("error") }}');
+      });
+    });
+  }
+});
+
+function copyTwoFaSecret() {
+  const secret = document.getElementById('twoFaSecretDisplay').textContent;
+  navigator.clipboard.writeText(secret).then(() => {
+    showToast('success', '{{ phrase("copied") }}');
+  });
+}
+
+function showToast(type, message) {
+  if (typeof Toasts !== 'undefined') {
+    Toasts.create(type, message);
+  } else {
+    alert(message);
+  }
+}
+</script>
+{% endif %}
 
 {# Отправка коинов в игру, на персонажа #}
 {% if config().enabled().isEnableSendBalanceGame() %}

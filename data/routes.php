@@ -2814,4 +2814,78 @@ return array(
         'page' => '',
         'comment' => 'Change domain in SphereAPI',
     ),
+    // Two-Factor Authentication Routes
+    215 =>
+    array(
+        'enable' => true,
+        'method' => 'GET',
+        'pattern' => '/auth/2fa',
+        'func' => 'controller\\user\\auth\\twofaController::showVerifyPage',
+        'access' =>
+        array(
+            0 => 'any',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => '2FA verification page',
+    ),
+    216 =>
+    array(
+        'enable' => true,
+        'method' => 'POST',
+        'pattern' => '/auth/2fa/verify',
+        'func' => 'controller\\user\\auth\\twofaController::verify',
+        'access' =>
+        array(
+            0 => 'any',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => '2FA code verification',
+    ),
+    217 =>
+    array(
+        'enable' => true,
+        'method' => 'POST',
+        'pattern' => '/api/2fa/setup',
+        'func' => 'controller\\user\\auth\\twofaController::setup',
+        'access' =>
+        array(
+            0 => 'user',
+            1 => 'admin',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => '2FA setup - generate secret and QR code',
+    ),
+    218 =>
+    array(
+        'enable' => true,
+        'method' => 'POST',
+        'pattern' => '/api/2fa/enable',
+        'func' => 'controller\\user\\auth\\twofaController::enable',
+        'access' =>
+        array(
+            0 => 'user',
+            1 => 'admin',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => '2FA enable',
+    ),
+    219 =>
+    array(
+        'enable' => true,
+        'method' => 'POST',
+        'pattern' => '/api/2fa/disable',
+        'func' => 'controller\\user\\auth\\twofaController::disable',
+        'access' =>
+        array(
+            0 => 'user',
+            1 => 'admin',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => '2FA disable',
+    ),
 );

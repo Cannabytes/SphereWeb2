@@ -64,6 +64,8 @@ class userModel
     private ?DateTime $lastActivity = null;
 
     private bool $isFoundUser = false;
+    
+    private ?bool $twoFaEnabled = null;
 
 
     public function __construct(?int $userId = null)
@@ -1178,6 +1180,31 @@ class userModel
     public function setIsAuth(bool $isAuth): void
     {
         $this->isAuth = $isAuth;
+    }
+    
+    /**
+     * Проверяет, включена ли двухфакторная аутентификация у пользователя
+     * 
+     * @return bool
+     */
+    public function isTwoFaEnabled(): bool
+    {
+        if ($this->twoFaEnabled !== null) {
+            return $this->twoFaEnabled;
+        }
+        
+        if (!$this->isAuth || $this->id === 0) {
+            return false;
+        }
+        
+        // Получаем значение из user_variables
+        $result = sql::getRow(
+            "SELECT `val` FROM `user_variables` WHERE `user_id` = ? AND `var` = 'two_fa_enabled' AND (`server_id` IS NULL OR `server_id` = 0)",
+            [$this->id]
+        );
+        
+        $this->twoFaEnabled = $result && $result['val'] === '1';
+        return $this->twoFaEnabled;
     }
 
     /**

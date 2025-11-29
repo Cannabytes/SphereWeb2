@@ -145,6 +145,17 @@ class auth
             // Обновляем географические данные (timezone, country, city) если необходимо
             self::updateUserGeoDataIfNeeded($user_info['id'], $currentIP);
             
+            // Проверяем, включена ли 2FA у пользователя
+            if (self::is2FAEnabled($user_info['id'])) {
+                // 2FA включена - перенаправляем на страницу ввода кода
+                \Ofey\Logan22\controller\user\auth\twofaController::createPending2FA(
+                    $user_info['id'],
+                    $email,
+                    $password
+                );
+                return;
+            }
+            
             self::addAuthLog($user_info['id']);
             session::add('id', (int) $user_info['id']);
             session::add('email', $email);
@@ -392,6 +403,23 @@ class auth
             }
         }
         return 'unknown';
+    }
+
+    /**
+     * Проверяет, включена ли 2FA у пользователя
+     * 
+     * @param int $userId ID пользователя
+     * @return bool
+     */
+    public static function is2FAEnabled(int $userId): bool
+    {
+        // Проверяем в таблице user_variables
+        $result = sql::getRow(
+            "SELECT `val` FROM `user_variables` WHERE `user_id` = ? AND `var` = 'two_fa_enabled' AND (`server_id` IS NULL OR `server_id` = 0)",
+            [$userId]
+        );
+        
+        return $result && $result['val'] === '1';
     }
 
     public static function logout()
