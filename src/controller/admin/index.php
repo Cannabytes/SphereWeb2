@@ -73,6 +73,7 @@ class index
                 "forumInfo" => $info['forumInfo'],
                 "serverTime" => $info['serverTime'],
                 "SSL" => $info['SSL'],
+                "sphereDomain" => $info['domain'] ?? null,
             ]);
         }
 

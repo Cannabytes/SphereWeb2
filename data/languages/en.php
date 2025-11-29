@@ -2362,6 +2362,17 @@ Password: %%password%%',
 	'Editor initialization error' => 'Editor initialization error',
 	'No users selected' => 'No users selected',
 	'Sending' => 'Sending',
+	'domain_mismatch' => 'Domain Mismatch',
+	'domain_mismatch_description' => 'The site was registered for domain <strong>%s</strong>, but you are currently using <strong>%s</strong>. To work correctly, you need to save the current domain.',
+	'domain_registered' => 'Registered domain',
+	'domain_current' => 'Current domain',
+	'save_new_domain' => 'Save new domain',
+	'domain_not_specified' => 'Domain not specified',
+	'domain_changed_successfully' => 'Domain changed successfully',
+	'domain_changed_success_detailed' => 'Domain successfully changed from <strong>%s</strong> to <strong>%s</strong>',
+	'domain_change_request_sent' => 'Domain change request sent',
+	'saving' => 'Saving...',
+	'failed_to_create_verification_file' => 'Failed to create verification file',
 
 ];
 

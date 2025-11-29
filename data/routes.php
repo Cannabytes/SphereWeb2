@@ -2800,4 +2800,18 @@ return array(
         'page' => '',
         'comment' => 'Mass send messages to selected users',
     ),
+    214 =>
+    array(
+        'enable' => true,
+        'method' => 'POST',
+        'pattern' => '/admin/domain/change',
+        'func' => 'controller\\sphereapi\\sphereapi::changeDomain',
+        'access' =>
+        array(
+            0 => 'admin',
+        ),
+        'weight' => 0,
+        'page' => '',
+        'comment' => 'Change domain in SphereAPI',
+    ),
 );

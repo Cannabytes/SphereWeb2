@@ -2345,6 +2345,17 @@ Email: %%email%l%
     'Editor initialization error' => 'Помилка ініціалізації редактора',
     'No users selected' => 'Не вибрано користувачів',
     'Sending' => 'Відправка',
+    'domain_mismatch' => 'Невідповідність домену',
+    'domain_mismatch_description' => 'Сайт був зареєстрований на домен <strong>%s</strong>, а зараз у Вас <strong>%s</strong>. Для коректної роботи необхідно зберегти актуальний домен.',
+    'domain_registered' => 'Зареєстрований домен',
+    'domain_current' => 'Поточний домен',
+    'save_new_domain' => 'Зберегти новий домен',
+    'domain_not_specified' => 'Домен не вказано',
+    'domain_changed_successfully' => 'Домен успішно змінено',
+    'domain_changed_success_detailed' => 'Домен успішно змінено з <strong>%s</strong> на <strong>%s</strong>',
+    'domain_change_request_sent' => 'Запит на зміну домену відправлено',
+    'saving' => 'Збереження...',
+    'failed_to_create_verification_file' => 'Не вдалося створити файл верифікації',
 
 ];
 

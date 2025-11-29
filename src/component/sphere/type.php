@@ -115,6 +115,7 @@ enum type
     case NOTICE_NPC_IMG;
     case WIKI_DB_LIST;
     case WIKI_DB_DOWNLOAD;
+    case DOMAIN_CHANGE;
 
     public static function url(type $type): string
     {
@@ -191,6 +192,7 @@ enum type
             self::NOTICE_NPC_IMG => '/api/npc/moderation/upload',
             self::WIKI_DB_LIST => '/api/wiki/files',
             self::WIKI_DB_DOWNLOAD => '/api/wiki/download',
+            self::DOMAIN_CHANGE => '/api/server/domain/change',
             default => null,
         };
     }
