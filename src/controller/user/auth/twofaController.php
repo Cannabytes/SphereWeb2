@@ -1,8 +1,4 @@
 <?php
-/**
- * Two-Factor Authentication Controller
- * Handles 2FA setup, enable, disable, and verification
- */
 
 namespace Ofey\Logan22\controller\user\auth;
 
