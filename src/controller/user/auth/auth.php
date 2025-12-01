@@ -42,5 +42,9 @@ class auth {
         tpl::display("userModel/forget/email.html");
     }
 
+    public static function returnToMain() {
+        header('Location: /main');
+        die();
+    }
 
 }
