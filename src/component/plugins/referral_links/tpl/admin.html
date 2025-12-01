@@ -20,16 +20,16 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="/admin/plugin/referral_links/add" id="addLinkForm">
+                    <form method="POST" action="/admin/plugin/referral_links/add" id="addLinkForm" onsubmit="return referralAddSubmit(this);">
                         <div class="mb-3">
                             <label for="linkPath" class="form-label">
                                 {{ phrase('referral_link_path') }}
                             </label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light" id="hostDisplay">{{ HTTP_HOST() }}/</span>
-                                <input type="text" class="form-control" id="linkPath" name="link_path" 
-                                       placeholder="tiktok, telegram, youtube" 
-                                       required maxlength="50" pattern="[a-zA-Z0-9_\-]+">
+                                    <span class="input-group-text bg-light" id="hostDisplay">{{ HTTP_HOST() }}/</span>
+                                    <input type="text" class="form-control" id="linkPath" name="link_path" 
+                                        placeholder="tiktok, telegram, youtube или promo?utm_source=etc" 
+                                        required maxlength="150" pattern="[a-zA-Z0-9_\\-\\/\\?=&%+.]+">
                             </div>
                             <small class="form-text text-muted">
                                 Полная ссылка: <strong id="fullUrlPreview">{{ HTTP_HOST() }}/</strong>
@@ -41,10 +41,10 @@
                                 {{ phrase('referral_redirect_url') }}
                             </label>
                             <input type="text" class="form-control" id="redirectUrl" name="redirect_url" 
-                                   placeholder="https://example.com или /main" 
+                                   placeholder="https://example.com или /promo?utm_source=telegram" 
                                    required>
                             <small class="form-text text-muted">
-                                Полный URL (https://example.com) или короткая ссылка (/main, /signup). Слеш будет добавлен автоматически если нужен.
+                                Полный URL (https://example.com) или короткая ссылка (/main, /promo?utm_source=telegram). Поддерживает UTM параметры.
                             </small>
                         </div>
 
@@ -139,7 +139,7 @@
                                                     <i class="bi bi-pencil"></i>
                                                 </button>
                                                 <form method="POST" action="/admin/plugin/referral_links/delete" 
-                                                      style="display:inline;" onsubmit="return confirm('Вы уверены?');">
+                                                    style="display:inline;" onsubmit="return referralDeleteSubmit(this);">
                                                     <input type="hidden" name="link_path" value="{{ link.link_path }}">
                                                     <button type="submit" class="btn btn-sm btn-danger">
                                                         <i class="bi bi-trash"></i>
@@ -156,7 +156,7 @@
                                                         <h5 class="modal-title">{{ phrase('referral_edit') }}</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                     </div>
-                                                    <form method="POST" action="/admin/plugin/referral_links/update">
+                                                    <form method="POST" action="/admin/plugin/referral_links/update" onsubmit="return referralUpdateSubmit(this);">
                                                         <div class="modal-body">
                                                             <input type="hidden" name="old_link_path" value="{{ link.link_path }}">
 
@@ -167,7 +167,8 @@
                                                                 <input type="text" class="form-control edit-link-path" 
                                                                        id="editLinkPath{{ loop.index }}" 
                                                                        name="link_path" value="{{ link.link_path }}" required 
-                                                                       pattern="[a-zA-Z0-9_\-]+">
+                                                                       placeholder="tiktok, telegram, youtube или promo?utm_source=etc" 
+                                                                       maxlength="150" pattern="[a-zA-Z0-9_\\-\\/\\?=&%+.]+">
                                                             </div>
 
                                                             <div class="mb-3">
@@ -248,8 +249,9 @@
 
     // Функция для нормализации ссылки пути (без слеша в начале)
     function normalizePathName(value) {
-        // Приводим в нижний регистр и оставляем только допустимые символы
-        return value.toLowerCase().replace(/[^a-z0-9_\-]/g, '');
+        // Приводим в нижний регистр и оставляем только допустимые символы.
+        // Разрешаем слеши и параметры (?=,&,%,+,.) чтобы можно было указывать /promo?utm_source=...
+        return value.toLowerCase().replace(/[^a-z0-9_\-\/\?=&%+\.]/g, '');
     }
 
     // Функция копирования в буфер обмена
@@ -326,6 +328,103 @@
             }
         }
     });
+
+    // Отправка формы обновления через fetch с FormData — чтобы избежать пустого тела POST
+    function delayedReload(ms = 400) {
+        // Небольшая задержка перед перезагрузкой, чтобы дать серверу завершить запись
+        setTimeout(function() {
+            window.location.reload();
+        }, ms);
+    }
+
+    function referralUpdateSubmit(form) {
+        try {
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(resp => resp.text())
+            .then(text => {
+                let data;
+                try { data = JSON.parse(text); } catch (e) { data = { ok: false, message: text }; }
+                if (data.ok) {
+                    // при успехе обновляем страницу с небольшой задержкой
+                    delayedReload();
+                } else {
+                    alert(data.message || 'Error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Network error');
+            });
+        } catch (e) {
+            console.error(e);
+        }
+
+        return false; // предотвращаем стандартную отправку
+    }
+
+    // Отправка формы добавления через fetch с FormData — чтобы обеспечить корректное тело и перезагрузку кеша
+    function referralAddSubmit(form) {
+        try {
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(resp => resp.text())
+            .then(text => {
+                let data;
+                try { data = JSON.parse(text); } catch (e) { data = { ok: false, message: text }; }
+                if (data.ok) {
+                    delayedReload();
+                } else {
+                    alert(data.message || 'Error');
+                }
+            })
+            .catch(err => { console.error(err); alert('Network error'); });
+        } catch (e) { console.error(e); }
+
+        return false;
+    }
+
+    // Отправка формы удаления через fetch с FormData — подтверждение и перезагрузка кеша
+    function referralDeleteSubmit(form) {
+        if (!confirm('Вы уверены?')) return false;
+        try {
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(resp => resp.text())
+            .then(text => {
+                let data;
+                try { data = JSON.parse(text); } catch (e) { data = { ok: false, message: text }; }
+                if (data.ok) {
+                    delayedReload();
+                } else {
+                    alert(data.message || 'Error');
+                }
+            })
+            .catch(err => { console.error(err); alert('Network error'); });
+        } catch (e) { console.error(e); }
+
+        return false;
+    }
 </script>
 
 {% endblock %}

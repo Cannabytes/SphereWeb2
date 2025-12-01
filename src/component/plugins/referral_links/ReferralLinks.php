@@ -95,13 +95,14 @@ class ReferralLinks
     }
 
     /**
-     * Валидация URL (поддерживает как полные URL, так и относительные пути)
+     * Валидация URL (поддерживает как полные URL, так и относительные пути с query параметрами)
      */
     private function validateUrl(string $url): bool
     {
         // Относительный путь (начинается с /)
         if (strpos($url, '/') === 0) {
-            return preg_match('/^\/[a-zA-Z0-9_\-\/]*$/', $url) > 0;
+            // Разрешаем буквы, цифры, _, -, /, ?, =, &, %, +, . для поддержки query параметров (utm_source и т.д.)
+            return preg_match('/^\/[a-zA-Z0-9_\-\/\?=&%+\.]*$/', $url) > 0;
         }
 
         // Полный URL
@@ -130,11 +131,13 @@ class ReferralLinks
             return;
         }
 
-        // Очистка пути от слешей
+        // Очистка пути от слешей (удаляем только ведущие и завершающие слеши)
         $linkPath = trim($linkPath, '/');
 
         // Проверка что ссылка не содержит недопустимые символы
-        if (!preg_match('/^[a-zA-Z0-9_\-]+$/', $linkPath)) {
+        // Разрешаем буквы, цифры, _, -, /, ?, =, &, %, +, . чтобы можно было использовать
+        // конструкции типа "promo?utm_source=telegram" или "folder/promo" в качестве пути.
+        if (!preg_match('/^[a-zA-Z0-9_\-\/\?=&%+\.]+$/', $linkPath)) {
             board::error(lang::get_phrase("referral_invalid_path_format"));
             return;
         }
@@ -151,6 +154,20 @@ class ReferralLinks
         // Проверка на дубликаты
         if (isset($config[$linkPath])) {
             board::error(lang::get_phrase("referral_link_already_exists"));
+            return;
+        }
+
+        // Защита от бесконечного цикла: redirect_url не должен указывать на сам короткий путь
+        $publicRelative = '/' . ltrim($linkPath, '/');
+        // Извлекаем path+query из redirectUrl для корректного сравнения
+        $redirectPathQuery = $redirectUrl;
+        if (stripos($redirectUrl, 'http') === 0) {
+            $parts = parse_url($redirectUrl);
+            $redirectPathQuery = ($parts['path'] ?? '') . (isset($parts['query']) ? '?' . $parts['query'] : '');
+        }
+
+        if ($redirectPathQuery === $publicRelative) {
+            board::error(lang::get_phrase("referral_redirect_loop"));
             return;
         }
 
@@ -172,14 +189,33 @@ class ReferralLinks
     public function updateLink(): void
     {
         validation::user_protection("admin");
+        // Если запрос пришёл полностью пустой (нет $_POST и нет сырого тела), игнорируем его.
+        $rawInput = @file_get_contents('php://input');
+        if (empty($_POST) && ($rawInput === false || $rawInput === '')) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => true, 'message' => 'empty request ignored']);
+            return;
+        }
+        
+
 
         $oldLinkPath = trim($_POST['old_link_path'] ?? "");
         $linkPath = trim($_POST['link_path'] ?? "");
         $redirectUrl = trim($_POST['redirect_url'] ?? "");
         $linkDescription = trim($_POST['description'] ?? "");
 
-        if (empty($oldLinkPath) || empty($linkPath) || empty($redirectUrl)) {
-            board::error(lang::get_phrase("referral_invalid_data"));
+        // Если по какой-то причине скрытое поле старого пути не передано, используем текущий путь
+        if (empty($oldLinkPath)) {
+            $oldLinkPath = $linkPath;
+        }
+
+        if (empty($linkPath)) {
+            board::error(lang::get_phrase("referral_link_path_empty"));
+            return;
+        }
+
+        if (empty($redirectUrl)) {
+            board::error(lang::get_phrase("referral_redirect_url_empty"));
             return;
         }
 
@@ -205,6 +241,19 @@ class ReferralLinks
         // Проверка на дубликаты (если путь изменился)
         if ($oldLinkPath !== $linkPath && isset($config[$linkPath])) {
             board::error(lang::get_phrase("referral_link_already_exists"));
+            return;
+        }
+
+        // Защита от бесконечного цикла: redirect_url не должен указывать на сам короткий путь
+        $publicRelative = '/' . ltrim($linkPath, '/');
+        $redirectPathQuery = $redirectUrl;
+        if (stripos($redirectUrl, 'http') === 0) {
+            $parts = parse_url($redirectUrl);
+            $redirectPathQuery = ($parts['path'] ?? '') . (isset($parts['query']) ? '?' . $parts['query'] : '');
+        }
+
+        if ($redirectPathQuery === $publicRelative) {
+            board::error(lang::get_phrase("referral_redirect_loop"));
             return;
         }
 
@@ -266,14 +315,25 @@ class ReferralLinks
     {
         // Получаем конфигурацию
         $config = $this->loadConfig();
-        // Проверяем существует ли ссылка
-        if (!isset($config[$linkPath])) {
+        // Попытаемся использовать полную строку запроса (path + query), если она сохранена как ключ
+        // Например админ мог сохранить "promo?utm_source=telegram" как `link_path`.
+        $requested = ltrim($_SERVER['REQUEST_URI'] ?? '', '/');
+        // Убираем возможный якорь
+        if (($p = strpos($requested, '#')) !== false) {
+            $requested = substr($requested, 0, $p);
+        }
+
+        // Сначала пробуем точное совпадение полного запроса (без ведущего слеша)
+        if (isset($config[$requested])) {
+            $link = $config[$requested];
+        } elseif (isset($config[$linkPath])) {
+            // Затем пробуем ключ, переданный роутером
+            $link = $config[$linkPath];
+        } else {
             // Ссылка не найдена
             redirect::location("/main");
             return;
         }
-
-        $link = $config[$linkPath];
         $redirectUrl = $link['redirect_url'] ?? null;
 
         if (!$redirectUrl) {
