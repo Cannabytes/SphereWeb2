@@ -30,7 +30,8 @@ class account
 
         $loginChars = mb_strlen($login);
         if ($prefixEnable) {
-            $loginChars += mb_strlen($_SESSION['account_prefix']);
+            $prefix = isset($_SESSION['account_prefix']) ? (string)$_SESSION['account_prefix'] : "";
+            $loginChars += mb_strlen($prefix);
         }
 
         if (config::load()->registration()->getMinimumNumberOfCharactersRegistrationAccount() > $loginChars) {

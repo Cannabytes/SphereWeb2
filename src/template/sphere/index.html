@@ -168,7 +168,7 @@
 
                       {% if prefixEnabled and prefixType == 'prefix' %}
                       <button class="btn btn-light account_prefix" type="button">
-                        <span class="prefix-text">{{ prefix }}</span>
+                        <span class="prefix-text">{{config().registration().genPrefix()}}</span>
                       </button>
                       {% endif %}
 
@@ -179,7 +179,7 @@
 
                       {% if prefixEnabled and prefixType == 'suffix' %}
                       <button class="btn btn-light account_prefix" type="button">
-                        <span class="prefix-text">{{ prefix }}</span>
+                        <span class="prefix-text">{{config().registration().genPrefix()}}</span>
                       </button>
                       {% endif %}
                     </div>
