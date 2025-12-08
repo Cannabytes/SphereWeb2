@@ -1,0 +1,656 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{ phrase('custom_routers_title') }}{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+  <div class="modal fade" id="modal-edit-route-custom" tabindex="-1" aria-labelledby="modal-edit-route-custom" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <form action="/admin/route/custom/edit" method="post" class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="edit_staticBackdropLabel">{{ phrase('route_edit_title') }}
+          </h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row gy-3">
+
+            <div class="col-xl-6">
+              <label for="edit_pattern_custom" class="form-label">{{ phrase('route_pattern') }}</label>
+              <input type="text" class="form-control" id="edit_pattern_custom" name="pattern" placeholder="pattern">
+            </div>
+
+            <div class="col-xl-6">
+              <label for="edit_typeRoute_custom" class="form-label">{{ phrase('route_type') }}</label>
+              <select class="form-control" id="edit_typeRoute_custom" name="typeRoute">
+                <option value=""></option>
+                <option value="method">{{ phrase('route_type_method') }}</option>
+                <option value="file">{{ phrase('route_type_file') }}</option>
+                <option value="link">{{ phrase('route_type_link') }}</option>
+                <option value="debug">{{ phrase('route_type_debug') }}</option>
+              </select>
+            </div>
+
+            <div class="col-xl-12">
+              <div id="edit_typeRouteFile_custom">
+                <label for="file" class="form-label">{{ phrase('route_type_file') }}</label>
+                <input type="text" class="form-control" id="edit_file_custom" name="file" placeholder="file">
+              </div>
+
+              <div id="edit_typeRouteLink_custom">
+                <label for="edit_link_custom" class="form-label">{{ phrase('route_link_url') }}</label>
+                <input type="text" class="form-control" id="edit_link_custom" name="file" placeholder="https://example.com">
+              </div>
+
+              <div id="edit_typeRouteMethod_custom">
+                <div class="border-bottom border-block-end-dashed">
+                  <div class="d-flex flex-wrap align-items-center">
+                    <div class="input-group">
+                      <div class="input-group-text"><i data-dir=""
+                                                       class="ri-refresh-line fw-semibold align-middle me-1 edit_getdir_custom"></i>
+                        {{ phrase('route_namespace') }}
+                      </div>
+                      <input name="namespace" type="text" class="form-control" id="edit_dirpath_custom"
+                             placeholder="">
+                    </div>
+                  </div>
+
+                  <div id="edit_dirMethodList_custom"></div>
+
+                </div>
+              </div>
+
+            </div>
+
+            <div class="col-xl-4">
+              <label for="edit_access_custom" class="form-label">{{ phrase('route_access') }}</label>
+              <select class="form-control" name="access[]" id="edit_access_custom" multiple>
+                <option value="user">{{ phrase('route_access_user') }}</option>
+                <option value="admin">{{ phrase('route_access_admin') }}</option>
+                <option value="guest">{{ phrase('route_access_guest') }}</option>
+                <option value="any">{{ phrase('route_access_any') }}</option>
+              </select>
+            </div>
+
+
+            <div class="col-xl-4">
+              <label for="edit_method_custom" class="form-label">{{ phrase('route_method') }}</label>
+              <select class="form-control" name="method" id="edit_method_custom">
+                <option value="GET">{{ phrase('route_method_get') }}</option>
+                <option value="POST">{{ phrase('route_method_post') }}</option>
+                <option value="ANY">{{ phrase('route_method_any') }}</option>
+              </select>
+            </div>
+
+            <div class="col-xl-4">
+              <label for="weight_custom" class="form-label">{{ phrase('route_weight') }}</label>
+              <input value="0" step="1" type="number" class="form-control" name="weight" id="edit_weight_custom"
+                     placeholder="weight">
+            </div>
+
+            <div class="col-xl-12">
+              <label for="comment_custom" class="form-label">{{ phrase('route_comment') }}</label>
+              <input type="text" class="form-control" name="comment" id="edit_comment_custom" placeholder="comment">
+            </div>
+          </div>
+        </div>
+        <input type="hidden" value="" id="edit_objectId_custom" name="objectId">
+        <input type="hidden" value="" id="edit_oldPattern_custom" name="oldPattern">
+        <input type="hidden" value="" id="edit_oldMethod_custom" name="oldMethod">
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ phrase('close') }}</button>
+          <button type="submit" data-bs-dismiss="modal" class="btn btn-success">{{ phrase('create') }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header justify-content-between">
+          <div class="card-title">
+            <a href="/admin" class="avatar border text-muted me-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
+            </a>
+            {{ phrase('routers') }} - {{ phrase('custom_routers') }}
+          </div>
+          <div class="d-flex">
+            <button data-bs-toggle="modal" data-bs-target="#modal-new-address-custom"
+                    class="btn btn-sm btn-primary btn-wave waves-light"><i
+              class="ri-add-line fw-semibold align-middle me-1"></i> {{phrase('create_router')}}
+            </button>
+
+            <div class="modal fade" id="modal-new-address-custom" tabindex="-1" aria-labelledby="modal-new-address-custom"
+                 aria-hidden="true">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                <form action="/admin/route/custom/add" method="post" class="modal-content">
+                  <div class="modal-header">
+                    <h6 class="modal-title" id="staticBackdropLabel">{{phrase('create_router')}} - {{ phrase('custom_routers') }}
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row gy-3">
+
+                      <div class="col-xl-6">
+                        <label for="pattern_custom" class="form-label">{{ phrase('route_pattern') }}</label>
+                        <input type="text" class="form-control" id="pattern_custom" name="pattern"
+                               placeholder="pattern">
+                      </div>
+
+                      <div class="col-xl-6">
+                        <label for="typeRoute_custom" class="form-label">{{ phrase('route_type') }}</label>
+                        <select class="form-control" data-trigger id="typeRoute_custom"
+                                name="typeRoute">
+                          <option value=""></option>
+                          <option value="method">{{ phrase('route_type_method') }}</option>
+                          <option value="file">{{ phrase('route_type_file') }}</option>
+                          <option value="link">{{ phrase('route_type_link') }}</option>
+                          <option value="debug">{{ phrase('route_type_debug') }}</option>
+                        </select>
+                      </div>
+
+                      <div class="col-xl-12">
+                        <div id="typeRouteFile_custom">
+                          <label for="file_custom" class="form-label">{{ phrase('route_type_file') }}</label>
+                          <input type="text" class="form-control" id="file_custom" name="file"
+                                 placeholder="file">
+                        </div>
+
+                        <div id="typeRouteLink_custom">
+                          <label for="link_custom" class="form-label">{{ phrase('route_link_url') }}</label>
+                          <input type="text" class="form-control" id="link_custom" name="file"
+                                 placeholder="https://example.com">
+                        </div>
+
+                        <div id="typeRouteMethod_custom">
+                          <div class="border-bottom border-block-end-dashed">
+                            <div class="d-flex flex-wrap align-items-center">
+                              <div class="input-group">
+                                <div class="input-group-text"><i data-dir=""
+                                                                 class="ri-refresh-line fw-semibold align-middle me-1 getdir_custom"></i>
+                                  {{ phrase('route_namespace') }}
+                                </div>
+                                <input name="namespace" type="text" class="form-control"
+                                       id="dirpath_custom" placeholder="">
+                              </div>
+                            </div>
+
+                            <div id="dirMethodList_custom"></div>
+
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <div class="col-xl-4">
+                        <label for="access_custom" class="form-label">{{ phrase('route_access') }}</label>
+                        <select class="form-control" name="access[]" id="access_custom" multiple>
+                          <option value="user">{{ phrase('route_access_user') }}</option>
+                          <option value="admin">{{ phrase('route_access_admin') }}</option>
+                          <option value="guest">{{ phrase('route_access_guest') }}</option>
+                          <option value="any">{{ phrase('route_access_any') }}</option>
+                        </select>
+                      </div>
+
+
+                      <div class="col-xl-4">
+                        <label for="method_custom" class="form-label">{{ phrase('route_method') }}</label>
+                        <select class="form-control" data-trigger name="method" id="method_custom">
+                          <option value="GET">{{ phrase('route_method_get') }}</option>
+                          <option value="POST">{{ phrase('route_method_post') }}</option>
+                          <option value="ANY">{{ phrase('route_method_any') }}</option>
+                        </select>
+                      </div>
+
+                      <div class="col-xl-4">
+                        <label for="weight_custom" class="form-label">{{ phrase('route_weight') }}</label>
+                        <input value="0" step="1" type="number" class="form-control"
+                               name="weight" id="weight_custom" placeholder="weight">
+                      </div>
+
+                      <div class="col-xl-12">
+                        <label for="comment_custom" class="form-label">{{ phrase('route_comment') }}</label>
+                        <input type="text" class="form-control" name="comment" id="comment_custom"
+                               placeholder="comment">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ phrase('close') }}
+                    </button>
+                    <button type="submit" id="submitAddRouteCustom" class="btn btn-success">{{ phrase('create') }}</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="card-body" style="overflow-x: auto;">
+          <table id="routeCustomTable" class="table table-sm table-bordered" style="width: 100%; table-layout: auto;">
+            <thead>
+            <tr>
+              <th style="width: 60px;">{{ phrase('route_table_method') }}</th>
+              <th style="width: 25%; min-width: 200px;">{{ phrase('route_table_pattern') }}</th>
+              <th>{{ phrase('route_table_func') }}</th>
+              <th style="width: 120px;">{{ phrase('route_table_access') }}</th>
+              <th style="width: 70px;"></th>
+              <th>{{ phrase('route_table_comment') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for route in routers %}
+            <tr>
+              <td>
+                <input {% if route.enable %}checked="" {% endif %} class="form-check-input statusRoute_custom"
+                       type="checkbox" value="{{route.id}}"
+                       data-method="{{route.method}}"
+                       data-pattern="{{route.pattern}}"
+                >
+                {{route.method}}
+              </td>
+              <td style="max-width: 300px;">
+                <span class="pattern-cell" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{route.pattern}}">
+                  {{route.pattern}}
+                </span>
+              </td>
+              <td>{% if route.func is empty %}
+                <span class="badge bg-primary-transparent">{{ route.page }}</span>
+                {% elseif route.func == "debug" %}
+                <span class="badge bg-danger-transparent">{{ phrase('route_type_debug') }}</span>
+                {% else %}
+                {{ route.func }}
+                {% endif %}
+              </td>
+              <td data-access="{% for access in (route.access) %}{{access}}|{% endfor %}">
+                {% for access in (route.access) %}
+                <span class="badge bg-{% if access == 'admin' %}danger
+                                {% elseif access == 'user' %}primary
+                                {% elseif access == 'any' %}success
+                                {% else %}warning
+                                {% endif %}-transparent">{{access}}</span>
+                {% endfor %}
+              </td>
+              <td>
+                <button data-object-id="{{route.id}}" data-weight="{{route.weight}}" data-bs-toggle="modal"
+                        data-bs-target="#modal-edit-route-custom"
+                        class="btn btn-primary-light btn-icon btn-sm edit_route_custom"
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit"><i
+                  class="ri-edit-fill"></i></button>
+                <button data-method="{{route.method}}"
+                        data-pattern="{{route.pattern}}"
+                        class="btn btn-danger-light btn-icon btn-sm delete_route_custom"
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete"><i
+                  class="ri-delete-bin-fill"></i></button>
+              </td>
+              <td>{{route.comment}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap.min.css">
+
+<style>
+  #routeCustomTable {
+    margin-bottom: 0;
+  }
+
+  #routeCustomTable tbody td {
+    padding: 0.5rem;
+    vertical-align: middle;
+  }
+
+  /* Pattern column styling */
+  #routeCustomTable tbody td:nth-child(2) {
+    word-break: break-all;
+    max-width: 300px;
+    overflow: hidden;
+  }
+
+  .pattern-cell {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  /* Method column */
+  #routeCustomTable tbody td:nth-child(1) {
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  /* Access badges column */
+  #routeCustomTable tbody td:nth-child(4) {
+    white-space: normal;
+  }
+
+  /* Action buttons column */
+  #routeCustomTable tbody td:nth-child(5) {
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  /* Comment column */
+  #routeCustomTable tbody td:last-child {
+    word-break: break-word;
+    white-space: normal;
+  }
+</style>
+
+<!-- Choices JS -->
+<script src="{{template}}/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+<link rel="stylesheet" href="{{template}}/assets/libs/choices.js/public/assets/styles/choices.min.css">
+
+{% endblock %}
+
+
+{% block js %}
+
+
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+<!-- Internal Datatables JS -->
+
+<!-- Prism JS -->
+<script src="{{template}}/assets/libs/prismjs/prism.js"></script>
+<script src="{{template}}/assets/js/prism-custom.js"></script>
+
+
+<script>
+  $(document).ready(function () {
+    $('#edit_typeRouteFile_custom').hide();
+    $('#edit_typeRouteLink_custom').hide();
+    $('#edit_typeRouteMethod_custom').hide();
+
+    $('#typeRouteFile_custom').hide();
+    $('#typeRouteLink_custom').hide();
+    $('#typeRouteMethod_custom').hide();
+
+    $('#routeCustomTable').DataTable({
+      responsive: false,
+      autoWidth: false,
+      language: {
+        searchPlaceholder: '{{ phrase("route_table_search") }}',
+        sSearch: '',
+        lengthMenu: '{{ phrase("route_table_show") }}',
+        paginate: {
+          first: "{{phrase('first')}}",
+          last: "{{phrase('last')}}",
+          next: "{{phrase('next')}}",
+          previous: "{{phrase('previous')}}",
+        },
+      },
+      'lengthMenu': [[50, 100, 200, 500, 1000], [50, 100, 200, 500, 1000]],
+      'pageLength': 100,
+    });
+
+    // Инициализация tooltips для обрезанных паттернов
+    const initTooltips = function() {
+      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+    };
+
+    initTooltips();
+    $('#routeCustomTable').on('draw.dt', initTooltips);
+
+  });
+
+  $('#typeRoute_custom').on('change', function () {
+    $('#typeRouteFile_custom').hide();
+    $('#typeRouteLink_custom').hide();
+    $('#typeRouteMethod_custom').hide();
+    let getType = $(this).val();
+    switch (getType) {
+      case 'file':
+        $('#typeRouteFile_custom').show();
+        break;
+      case 'link':
+        $('#typeRouteLink_custom').show();
+        break;
+      case 'method':
+        AjaxSend('/admin/route/custom/get/file', 'POST', { dir: '' }, true).then(function (response) {
+          console.log(response);
+          $('#dirMethodList_custom').empty(); // Очищаем содержимое перед вставкой
+          $.each(response, function (index, dir) {
+            $('#dirMethodList_custom').append('<span data-dir="' + dir + '" class="badge bg-light text-muted m-1 getdir_custom">' + dir + '</span>');
+          });
+        });
+        $('#typeRouteMethod_custom').show();
+        break;
+      case 'debug':
+        $('#typeRouteFile_custom').hidden();
+        $('#typeRouteLink_custom').hidden();
+        $('#typeRouteMethod_custom').hidden();
+        break;
+    }
+  });
+
+  $('#edit_typeRoute_custom').on('change', function () {
+    $('#edit_typeRouteFile_custom').hide();
+    $('#edit_typeRouteLink_custom').hide();
+    $('#edit_typeRouteMethod_custom').hide();
+    let getType = $(this).val();
+    switch (getType) {
+      case 'file':
+        $('#edit_typeRouteFile_custom').show();
+        break;
+      case 'link':
+        $('#edit_typeRouteLink_custom').show();
+        break;
+      case 'method':
+        AjaxSend('/admin/route/custom/get/file', 'POST', { dir: '' }, true).then(function (response) {
+          console.log(response);
+          $('#edit_dirMethodList_custom').empty(); // Очищаем содержимое перед вставкой
+          $.each(response, function (index, dir) {
+            $('#edit_dirMethodList_custom').append('<span data-dir="' + dir + '" class="badge bg-light text-muted m-1 edit_getdir_custom">' + dir + '</span>');
+          });
+        });
+        $('#edit_typeRouteMethod_custom').show();
+        break;
+      case 'debug':
+        $('#edit_typeRouteFile_custom').hidden();
+        $('#edit_typeRouteLink_custom').hidden();
+        $('#edit_typeRouteMethod_custom').hidden();
+        break;
+    }
+  });
+
+  $(document).on('click', '.getdir_custom', function () {
+    let dir = $(this).data('dir');
+    AjaxSend('/admin/route/custom/get/file', 'POST', { dir: dir }, true).then(function (response) {
+      $('#dirMethodList_custom').empty();
+      if (response && response.hasOwnProperty('namespace')) {
+        $('#dirpath_custom').val(response.namespace);
+        if (response.hasOwnProperty('methods')) {
+          $.each(response.methods, function (index, methodName) {
+            $('#dirMethodList_custom').append('<span data-namespace="' + response.namespace + '\\' + response.className + '::' + methodName + '" class="badge bg-warning text-muted m-1 namespaceapply_custom">' + methodName + '</span>');
+          });
+        }
+      } else {
+        $.each(response, function (index, item) {
+          $('#dirMethodList_custom').append('<span data-dir="' + item + '" class="badge bg-light text-muted m-1 getdir_custom">' + item + '</span>');
+        });
+      }
+    });
+  });
+
+  $(document).on('click', '.edit_getdir_custom', function () {
+    let dir = $(this).data('dir');
+    AjaxSend('/admin/route/custom/get/file', 'POST', { dir: dir }, true).then(function (response) {
+      $('#edit_dirMethodList_custom').empty();
+      if (response && response.hasOwnProperty('namespace')) {
+        $('#edit_dirpath_custom').val(response.namespace);
+        if (response.hasOwnProperty('methods')) {
+          $.each(response.methods, function (index, methodName) {
+            $('#edit_dirMethodList_custom').append('<span data-namespace="' + response.namespace + '\\' + response.className + '::' + methodName + '" class="badge bg-warning text-muted m-1 edit_namespaceapply_custom">' + methodName + '</span>');
+          });
+        }
+      } else {
+        $.each(response, function (index, item) {
+          $('#edit_dirMethodList_custom').append('<span data-dir="' + item + '" class="badge bg-light text-muted m-1 edit_getdir_custom">' + item + '</span>');
+        });
+      }
+    });
+  });
+
+  $(document).on('click', '.edit_namespaceapply_custom', function () {
+    $('#edit_dirMethodList_custom').empty();
+    let namespace = $(this).data('namespace');
+    $('#edit_dirpath_custom').val(namespace);
+  });
+
+  $(document).on('click', '.namespaceapply_custom', function () {
+    $('#dirMethodList_custom').empty();
+    let namespace = $(this).data('namespace');
+    $('#dirpath_custom').val(namespace);
+  });
+
+  $(document).on('click', '.statusRoute_custom', function () {
+    let method = $(this).data('method');
+    let pattern = $(this).data('pattern');
+    let isChecked = $(this).prop('checked') ? 1 : 0;
+    AjaxSend('/admin/route/custom/update/enable', 'POST', {  method: method, pattern: pattern, isChecked: isChecked });
+  });
+
+  $(document).on('click', '.delete_route_custom', function () {
+    if (confirm('{{ phrase("route_confirm_delete") }}')) {
+      let method = $(this).data('method');
+      let pattern = $(this).data('pattern');
+      AjaxSend('/admin/route/custom/delete', 'POST', { method: method, pattern: pattern });
+      location.reload();
+    }
+  });
+
+  let choices_custom = new Choices('#edit_access_custom', {
+    allowHTML: true,
+    removeItemButton: true,
+  });
+
+  $(document).on('click', '.edit_route_custom', function () {
+    let objectId = $(this).data('object-id');
+    $('#edit_objectId_custom').val(objectId);
+    let weight = $(this).data('weight');
+    $('#edit_weight_custom').val(weight);
+
+    let $tr = $(this).closest('tr');
+    let method = $tr.find('td:nth-child(1)').text().trim();
+    let pattern = $tr.find('td:nth-child(2)').text().trim();
+    let func = $tr.find('td:nth-child(3)').text().trim();
+    let access = $tr.find('td:nth-child(4)').data('access');
+    let comment = $tr.find('td:nth-child(6)').text().trim();
+    
+    // Сохраняем СТАРЫЕ значения для идентификации маршрута при сохранении
+    $('#edit_oldPattern_custom').val(pattern);
+    $('#edit_oldMethod_custom').val(method);
+    
+    $('#edit_method_custom').val(method);
+
+    if (func.endsWith('.html')) {
+      $('#edit_typeRoute_custom').val('file');
+      $('#edit_file_custom').val(func);
+    } else if (func === 'debug') {
+      $('#edit_typeRoute_custom').val('debug');
+    } else {
+      $('#edit_typeRoute_custom').val('method');
+      $('#edit_dirpath_custom').val(func);
+    }
+    $('#edit_typeRoute_custom').trigger('change');
+
+    let accessArray = access.split('|');
+    accessArray = accessArray.filter(function (e) {
+      return e;
+    });
+
+    $('#edit_access_custom option').prop('selected', false);
+    $.each(accessArray, function (index, value) {
+      $('#edit_access_custom option[value="' + value + '"]').prop('selected', true);
+    });
+    $('#edit_access_custom').trigger('change');
+    let selectedValues = choices_custom.getValue(true);
+    selectedValues.forEach(function (value) {
+      choices_custom.removeActiveItemsByValue(value.value);
+    });
+    choices_custom.setChoiceByValue(accessArray);
+
+    $('#edit_pattern_custom').val(pattern);
+    $('#edit_access_custom').val(access);
+    $('#edit_comment_custom').val(comment);
+
+  });
+
+
+</script>
+
+<script>
+  // Обработчик формы добавления маршрута с валидацией паттерна
+  $('form[action="/admin/route/custom/add"]').on('submit', function (e) {
+    e.preventDefault();
+
+    let pattern = $('#pattern_custom').val().trim();
+    let method = $('#method_custom').val().trim();
+
+    if (!pattern || !method) {
+      noticeError('{{ phrase("route_error_filled_required") }}');
+      return;
+    }
+
+    // Проверяем, не существует ли уже такой паттерн в кастомных маршрутах
+    AjaxSend('/admin/route/custom/check/pattern', 'POST', {pattern: pattern, method: method}, true)
+      .then(function (response) {
+        if (response.customExists) {
+          noticeError('{{ phrase("route_error_pattern_exists") }}');
+          return;
+        }
+
+        // Если во встроенных маршрутах существует — показываем предупреждение, но разрешаем добавить
+        if (response.builtInExists) {
+          let warningMessage = '{{ phrase("route_warning_pattern_builtin") }}'.replace('{{pattern}}', pattern).replace('{{method}}', method);
+          if (!confirm(warningMessage)) {
+            return;
+          }
+        }
+
+        // Если всё проверено — отправляем форму
+        let formData = new FormData($('form[action="/admin/route/custom/add"]')[0]);
+
+        AjaxSend('/admin/route/custom/add', 'POST', Object.fromEntries(formData), true)
+          .then(function (response) {
+            if (response.redirect) {
+              window.location.href = response.redirect;
+            }
+          });
+      });
+  });
+
+  const access_custom = new Choices(
+    '#access_custom',
+    {
+      allowHTML: true,
+      removeItemButton: true,
+    },
+  );
+
+
+</script>
+
+{% endblock %}

@@ -239,7 +239,7 @@
                 >
                 {{route.method}}
               </td>
-              <td>{{route.pattern}}</td>
+              <td><code class="pattern-display" title="{{route.pattern}}">{{route.pattern}}</code></td>
               <td>{% if route.func is empty %}
                 <span class="badge bg-primary-transparent">{{ route.page }}</span>
                 {% elseif route.func == "debug" %}
@@ -258,7 +258,7 @@
                 {% endfor %}
               </td>
               <td>
-                <button data-object-id="{{route.id}}" data-weight="{{route.weight}}" data-bs-toggle="modal"
+                <button data-object-id="{{route.id}}" data-weight="{{route.weight}}" data-method="{{route.method}}" data-pattern="{{route.pattern}}" data-bs-toggle="modal"
                         data-bs-target="#modal-edit-route"
                         class="btn btn-primary-light btn-icon btn-sm edit_route"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Print"><i
@@ -309,6 +309,14 @@
 
     $('#typeRouteFile').hide();
     $('#typeRouteMethod').hide();
+
+    // Обрезка длинных паттернов на 40 символов
+    $('.pattern-display').each(function () {
+      const fullPattern = $(this).attr('title');
+      if (fullPattern && fullPattern.length > 40) {
+        $(this).text(fullPattern.substring(0, 40) + '...');
+      }
+    });
 
     $('#routeTable').DataTable({
       responsive: true,
@@ -447,13 +455,15 @@
     let weight = $(this).data('weight');
     $('#edit_weight').val(weight);
 
-    let $tr = $(this).closest('tr');
-    let method = $tr.find('td:nth-child(1)').text().trim();
-    let pattern = $tr.find('td:nth-child(2)').text().trim();
-    let func = $tr.find('td:nth-child(3)').text().trim();
-    let access = $tr.find('td:nth-child(4)').data('access');
-    let comment = $tr.find('td:nth-child(6)').text().trim();
+    // Получаем полный паттерн из data-атрибута кнопки, а не из обрезанного текста в таблице
+    let method = $(this).data('method');
+    let pattern = $(this).data('pattern');
+    let access = $(this).closest('tr').find('td:nth-child(4)').data('access');
+    let func = $(this).closest('tr').find('td:nth-child(3)').text().trim();
+    let comment = $(this).closest('tr').find('td:nth-child(6)').text().trim();
+    
     $('#edit_method').val(method);
+    $('#edit_pattern').val(pattern); // Полный паттерн из data-атрибута
 
     if (func.endsWith('.html')) {
       $('#edit_typeRoute').val('file');

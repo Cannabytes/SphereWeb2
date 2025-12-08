@@ -2930,4 +2930,103 @@ return array (
     'page' => '',
     'comment' => 'Users list sorted by parameter with pagination',
   ),
+  223 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/route/custom',
+    'func' => 'controller\\route\\custom_route::all',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Custom routes manager',
+  ),
+  224 => 
+  array (
+    'enable' => 1,
+    'method' => 'POST',
+    'pattern' => '/admin/route/custom/add',
+    'func' => 'controller\\route\\custom_route::add',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => NULL,
+    'comment' => 'Add custom route',
+  ),
+  225 => 
+  array (
+    'enable' => 1,
+    'method' => 'POST',
+    'pattern' => '/admin/route/custom/get/file',
+    'func' => 'controller\\route\\custom_route::getDirFiles',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => NULL,
+    'comment' => 'Get files for custom route',
+  ),
+  226 => 
+  array (
+    'enable' => 1,
+    'method' => 'POST',
+    'pattern' => '/admin/route/custom/update/enable',
+    'func' => 'controller\\route\\custom_route::update_enable',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => NULL,
+    'comment' => 'Toggle custom route enable/disable',
+  ),
+  227 => 
+  array (
+    'enable' => 1,
+    'method' => 'POST',
+    'pattern' => '/admin/route/custom/edit',
+    'func' => 'controller\\route\\custom_route::edit',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 1,
+    'page' => '',
+    'comment' => 'Edit custom route data',
+  ),
+  228 => 
+  array (
+    'enable' => 1,
+    'method' => 'POST',
+    'pattern' => '/admin/route/custom/delete',
+    'func' => 'controller\\route\\custom_route::delete',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => NULL,
+    'comment' => 'Delete custom route',
+  ),
+  229 => 
+  array (
+    'enable' => 1,
+    'method' => 'POST',
+    'pattern' => '/admin/route/custom/check/pattern',
+    'func' => 'controller\\route\\custom_route::checkPatternExists',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => NULL,
+    'comment' => 'Check if pattern already exists',
+  ),
 );
+

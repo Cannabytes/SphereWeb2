@@ -5,6 +5,7 @@ use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\route\route;
+use Ofey\Logan22\controller\route\custom_route;
 use Ofey\Logan22\model\plugin\plugin;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
@@ -49,6 +50,38 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
                 $func = function (...$data) {
                     var_dump($_REQUEST, $data);
                     exit;
+                };
+            } else {
+                $func = 'Ofey\\Logan22\\' . $func;
+            }
+            $route->$method($pattern, $func);
+        }
+
+        // Загрузка кастомных роутеров администратора сайта
+        $customRoutes = custom_route::getRoutes($userAccessLevel);
+        foreach ($customRoutes as $dbRoute) {
+            if (custom_route::getDisabledRoutes($dbRoute['pattern'])) {
+                continue;
+            }
+            $access  = $dbRoute['access'];
+            $method  = $dbRoute['method'];
+            $pattern = $dbRoute['pattern'];
+            $func    = $dbRoute['func'];
+            if ( ! $func) {
+                $func = function (...$data) use ($dbRoute) {
+                    foreach ($data as $key => $value) {
+                        tpl::addVar("get_" . $key, $value);
+                    }
+                    tpl::display($dbRoute['page']);
+                };
+            } elseif ($func == 'debug') {
+                $func = function (...$data) {
+                    var_dump($_REQUEST, $data);
+                    exit;
+                };
+            } elseif ($func == 'link') {
+                $func = function (...$data) use ($dbRoute) {
+                    \Ofey\Logan22\component\redirect::location($dbRoute['page']);
                 };
             } else {
                 $func = 'Ofey\\Logan22\\' . $func;
