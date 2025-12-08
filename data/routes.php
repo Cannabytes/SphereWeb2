@@ -2902,4 +2902,32 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  221 => 
+  array (
+    'enable' => 1,
+    'method' => 'GET',
+    'pattern' => '/admin/users/(donate|donate_asc|name|name_asc|name_desc|email|email_asc|email_desc|date|date_asc|date_desc|activity|activity_asc|activity_desc|id|id_asc|id_desc)',
+    'func' => 'controller\\admin\\users::showAll',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Users list sorted by parameter',
+  ),
+  222 => 
+  array (
+    'enable' => 1,
+    'method' => 'GET',
+    'pattern' => '/admin/users/(donate|donate_asc|name|name_asc|name_desc|email|email_asc|email_desc|date|date_asc|date_desc|activity|activity_asc|activity_desc|id|id_asc|id_desc)/page/(\\d+)',
+    'func' => 'controller\\admin\\users::showAll',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Users list sorted by parameter with pagination',
+  ),
 );

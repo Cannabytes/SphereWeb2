@@ -46,11 +46,11 @@
             <table class="table table-hover table-bordered text-nowrap align-middle mb-0">
               <thead>
                 <tr>
-                  <th class="text-center" style="width: 5%;">ID</th>
-                  <th style="width: 35%;">{{ phrase('user') }}</th>
-                  <th style="width: 15%;">{{ phrase(114) }}</th>
-                  <th style="width: 15%;">{{ phrase('Date of entry') }}</th>
-                  <th class="text-center" style="width: 15%;">{{ phrase('donate_coin') }}</th>
+                  <th class="text-center" style="width: 5%;"><a href="{% if pagination.current_sort == 'id' %}/admin/users/id_desc{% else %}/admin/users/id{% endif %}" class="text-decoration-none text-reset">ID{% if pagination.current_sort == 'id' %} ▼{% elseif pagination.current_sort == 'id_desc' %} ▲{% endif %}</a></th>
+                  <th style="width: 35%;"><a href="{% if pagination.current_sort == 'name' %}/admin/users/name_desc{% else %}/admin/users/name{% endif %}" class="text-decoration-none text-reset">{{ phrase('user') }}{% if pagination.current_sort == 'name' %} ▼{% elseif pagination.current_sort == 'name_desc' %} ▲{% endif %}</a></th>
+                  <th style="width: 15%;"><a href="{% if pagination.current_sort == 'activity' %}/admin/users/activity_asc{% else %}/admin/users/activity{% endif %}" class="text-decoration-none text-reset">{{ phrase(114) }}{% if pagination.current_sort == 'activity' %} ▼{% elseif pagination.current_sort == 'activity_asc' %} ▲{% endif %}</a></th>
+                  <th style="width: 15%;"><a href="{% if pagination.current_sort == 'date_desc' %}/admin/users/date{% else %}/admin/users/date_desc{% endif %}" class="text-decoration-none text-reset">{{ phrase('Date of entry') }}{% if pagination.current_sort == 'date_desc' %} ▼{% elseif pagination.current_sort == 'date' %} ▲{% endif %}</a></th>
+                  <th class="text-center" style="width: 15%;"><a href="{% if pagination.current_sort == 'donate' %}/admin/users/donate_asc{% else %}/admin/users/donate{% endif %}" class="text-decoration-none text-reset">{{ phrase('donate_coin') }}{% if pagination.current_sort == 'donate' %} ▼{% elseif pagination.current_sort == 'donate_asc' %} ▲{% endif %}</a></th>
                 </tr>
               </thead>
               <tbody>

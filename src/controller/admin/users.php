@@ -39,14 +39,20 @@ class users
         tpl::display("/admin/user_profile.html");
     }
 
-    public static function showAll($pageParam = null): void
+    public static function showAll($sortParam = null, $pageParam = null): void
     {
         validation::user_protection("admin");
 
         $perPage = 100;
         $page = 1;
 
-        if ($pageParam !== null && is_numeric($pageParam)) {
+        // Если оба параметра переданы как строки, разбираемся с ними
+        if ($sortParam !== null && is_numeric($sortParam)) {
+            // Если первый параметр - число, это страница (старый формат)
+            $page = (int)$sortParam;
+            $sortParam = null;
+        } elseif ($pageParam !== null && is_numeric($pageParam)) {
+            // Если передана страница во втором параметре
             $page = (int)$pageParam;
         } elseif (isset($_GET['page']) && is_numeric($_GET['page'])) {
             $page = (int)$_GET['page'];
@@ -55,6 +61,9 @@ class users
         if ($page < 1) {
             $page = 1;
         }
+
+        // Определяем порядок сортировки на основе параметра
+        $orderSQL = self::getOrderBySQL($sortParam);
 
         $totalUsers = (int)sql::getValue("SELECT COUNT(*) FROM users");
         $totalPages = max(1, (int)ceil($totalUsers / $perPage));
@@ -65,7 +74,7 @@ class users
         $offset = ($page - 1) * $perPage;
 
         $users = sql::getRows(
-            "SELECT id, email, name, donate_point, avatar, date_create, last_activity, access_level FROM users ORDER BY date_create DESC, id DESC LIMIT ?, ?",
+            "SELECT id, email, name, donate_point, avatar, date_create, last_activity, access_level FROM users $orderSQL LIMIT ?, ?",
             [$offset, $perPage]
         );
 
@@ -85,6 +94,11 @@ class users
         $startPage = max(1, $endPage - $windowSize + 1);
         $pages = range($startPage, $endPage);
 
+        $basePath = '/admin/users';
+        if ($sortParam !== null) {
+            $basePath = '/admin/users/' . $sortParam;
+        }
+
         $pagination = [
             'current' => $page,
             'total' => $totalPages,
@@ -97,7 +111,8 @@ class users
             'prev_page' => $page > 1 ? $page - 1 : null,
             'next_page' => $page < $totalPages ? $page + 1 : null,
             'pages' => $pages,
-            'base_path' => '/admin/users',
+            'base_path' => $basePath,
+            'current_sort' => $sortParam,
         ];
 
         tpl::addVar([
@@ -106,6 +121,39 @@ class users
         ]);
 
         tpl::display("/admin/users.html");
+    }
+
+    /**
+     * Генерирует SQL ORDER BY в зависимости от параметра сортировки
+     */
+    private static function getOrderBySQL($sortParam): string
+    {
+        $allowedSorts = [
+            'donate' => 'ORDER BY donate_point DESC, id DESC',
+            'donate_asc' => 'ORDER BY donate_point ASC, id DESC',
+            'name' => 'ORDER BY name ASC, id DESC',
+            'name_asc' => 'ORDER BY name ASC, id DESC',
+            'name_desc' => 'ORDER BY name DESC, id DESC',
+            'email' => 'ORDER BY email ASC, id DESC',
+            'email_asc' => 'ORDER BY email ASC, id DESC',
+            'email_desc' => 'ORDER BY email DESC, id DESC',
+            'date' => 'ORDER BY date_create ASC, id DESC',
+            'date_asc' => 'ORDER BY date_create ASC, id DESC',
+            'date_desc' => 'ORDER BY date_create DESC, id DESC',
+            'activity' => 'ORDER BY last_activity DESC, id DESC',
+            'activity_asc' => 'ORDER BY last_activity ASC, id DESC',
+            'activity_desc' => 'ORDER BY last_activity DESC, id DESC',
+            'id' => 'ORDER BY id ASC',
+            'id_asc' => 'ORDER BY id ASC',
+            'id_desc' => 'ORDER BY id DESC',
+        ];
+
+        if ($sortParam !== null && isset($allowedSorts[$sortParam])) {
+            return $allowedSorts[$sortParam];
+        }
+
+        // По умолчанию сортировка по дате создания (новые пользователи сверху)
+        return 'ORDER BY date_create DESC, id DESC';
     }
 
     public static function searchByEmail(): void
