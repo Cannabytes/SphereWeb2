@@ -62,6 +62,11 @@ class enot extends \Ofey\Logan22\model\donate\pay_abstract
         $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
         $shop_id      = self::getConfigValue('shop_id');
         $email        = user::self()->getEmail();
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $email = 'nouseremail@sphereweb.com';
+        }
+
         $secret_word  = self::getConfigValue('secret_key');
         $currency     = "RUB";
         $order_id     = uniqid();
