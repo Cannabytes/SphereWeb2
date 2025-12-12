@@ -1,4 +1,3 @@
-{# load startpacks into variable for safer checks/rendering #}
 {% set sp = startpacks() %}
 {% set currentServer = getServer() %}
 {% set canSendItemsNow = currentServer.canSendItemsNow() %}
@@ -389,7 +388,6 @@
 
 {% endblock %}
 
-{# startpack settings (may be stored as JSON under server_data key) #}
 {% set sd = getServer().getServerData('startpack_settings') %}
 {% set startpack_settings_raw = sd ? (sd.val|default('')) : '' %}
 {% set startpack_settings = startpack_settings_raw ? (startpack_settings_raw|json_decode) : {} %}
@@ -509,6 +507,7 @@
               </div>
             </div>
             {% endfor %}
+            {% endif %}
           </div>
         </div>
       </div>
