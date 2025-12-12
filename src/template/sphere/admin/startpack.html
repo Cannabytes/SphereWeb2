@@ -4,6 +4,17 @@
 
 {% block content %}
 <div class="container-fluid">
+  {# Load startpack settings for this server if present #}
+  {% set sd = getServer().getServerData('startpack_settings') %}
+  {% set startpack_settings_raw = sd ? (sd.val|default('')) : '' %}
+  {% set startpack_settings = startpack_settings_raw ? (startpack_settings_raw|json_decode) : {} %}
+  {% set pack_limit_seconds_val =
+    startpack_settings.startpack_limit_seconds is defined ? (startpack_settings.startpack_limit_seconds + 0)
+    : (startpack_settings.startpack_buy_cooldown is defined ? (startpack_settings.startpack_buy_cooldown + 0)
+    : (startpack_settings.pack_limit_seconds is defined ? (startpack_settings.pack_limit_seconds + 0) : 0)) %}
+  {% set discount_from_val = startpack_settings.startpack_discount_from is defined and startpack_settings.startpack_discount_from ? (startpack_settings.startpack_discount_from|replace({' ':'T'})|slice(0,16)) : '' %}
+  {% set discount_to_val = startpack_settings.startpack_discount_to is defined and startpack_settings.startpack_discount_to ? (startpack_settings.startpack_discount_to|replace({' ':'T'})|slice(0,16)) : '' %}
+  {% set discount_percent_val = startpack_settings.startpack_discount_percent is defined ? (startpack_settings.startpack_discount_percent + 0) : 0 %}
   <div class="row">
     <div class="col-md-12 col-lg-12 col-xl-12">
       <ul class="nav nav-tabs mb-3" id="startpackTabs">
@@ -132,24 +143,25 @@
             <div class="row g-3 align-items-center">
               <div class="col-md-8">
                 <label for="pack_limit_preset" class="form-label">{{ phrase('how_often_buy_packs') }}</label>
+                {% set presets = [0,60,300,3600,10800,21600,43200,86400,604800] %}
                 <select id="pack_limit_preset" class="form-select">
-                  <option value="0">{{ phrase('no_limits') }}</option>
-                  <option value="60">{{ phrase('every_60_seconds') }}</option>
-                  <option value="300">{{ phrase('every_5_minutes') }}</option>
-                  <option value="3600">{{ phrase('every_hour') }}</option>
-                  <option value="10800">{{ phrase('every_3_hours') }}</option>
-                  <option value="21600">{{ phrase('every_6_hours') }}</option>
-                  <option value="43200">{{ phrase('every_12_hours') }}</option>
-                  <option value="86400">{{ phrase('every_24_hours') }}</option>
-                  <option value="604800">{{ phrase('every_week') }}</option>
-                  <option value="custom">{{ phrase('custom_seconds') }}</option>
+                  <option value="0" {% if pack_limit_seconds_val == 0 %}selected{% endif %}>{{ phrase('no_limits') }}</option>
+                  <option value="60" {% if pack_limit_seconds_val == 60 %}selected{% endif %}>{{ phrase('every_60_seconds') }}</option>
+                  <option value="300" {% if pack_limit_seconds_val == 300 %}selected{% endif %}>{{ phrase('every_5_minutes') }}</option>
+                  <option value="3600" {% if pack_limit_seconds_val == 3600 %}selected{% endif %}>{{ phrase('every_hour') }}</option>
+                  <option value="10800" {% if pack_limit_seconds_val == 10800 %}selected{% endif %}>{{ phrase('every_3_hours') }}</option>
+                  <option value="21600" {% if pack_limit_seconds_val == 21600 %}selected{% endif %}>{{ phrase('every_6_hours') }}</option>
+                  <option value="43200" {% if pack_limit_seconds_val == 43200 %}selected{% endif %}>{{ phrase('every_12_hours') }}</option>
+                  <option value="86400" {% if pack_limit_seconds_val == 86400 %}selected{% endif %}>{{ phrase('every_24_hours') }}</option>
+                  <option value="604800" {% if pack_limit_seconds_val == 604800 %}selected{% endif %}>{{ phrase('every_week') }}</option>
+                  <option value="custom" {% if pack_limit_seconds_val not in presets %}selected{% endif %}>{{ phrase('custom_seconds') }}</option>
                 </select>
                 <div class="form-text">{{ phrase('choose_preset_or_custom') }}</div>
               </div>
 
               <div class="col-md-4">
                 <label for="pack_limit_seconds" class="form-label">{{ phrase('value_seconds') }}</label>
-                <input type="number" min="0" id="pack_limit_seconds" class="form-control" value="0" placeholder="0">
+                <input type="number" min="0" id="pack_limit_seconds" class="form-control" value="{{ pack_limit_seconds_val }}" placeholder="0">
                 <div class="form-text">{{ phrase('zero_no_limits') }}</div>
               </div>
             </div>
@@ -157,20 +169,20 @@
               <div class="row g-3 align-items-center">
                 <div class="col-md-4">
                   <label for="discount_from" class="form-label">{{ phrase('discount_from') }}</label>
-                  <input id="discount_from" type="datetime-local" class="form-control">
+                  <input id="discount_from" type="datetime-local" class="form-control" value="{{ discount_from_val }}">
                   <div class="form-text">{{ phrase('discount_from_desc') }}</div>
                 </div>
 
                 <div class="col-md-4">
                   <label for="discount_to" class="form-label">{{ phrase('discount_to') }}</label>
-                  <input id="discount_to" type="datetime-local" class="form-control">
+                  <input id="discount_to" type="datetime-local" class="form-control" value="{{ discount_to_val }}">
                   <div class="form-text">{{ phrase('discount_to_desc') }}</div>
                 </div>
 
                 <div class="col-md-4">
                   <label for="discount_percent" class="form-label">{{ phrase('discount_percent_label') }}</label>
                   <div class="input-group">
-                    <input id="discount_percent" type="number" min="0" max="100" step="1" value="0" class="form-control">
+                    <input id="discount_percent" type="number" min="0" max="100" step="1" value="{{ discount_percent_val }}" class="form-control">
                     <span class="input-group-text">%</span>
                   </div>
                   <div class="form-text">{{ phrase('discount_percent_desc') }}</div>

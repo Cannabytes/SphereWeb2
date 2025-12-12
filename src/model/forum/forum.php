@@ -11,6 +11,8 @@ use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\component\lang\lang;
+
 
 class forum {
 
@@ -49,7 +51,7 @@ class forum {
         if(sql::$error){
             board::error("Ошибка сохранения в БД: " . sql::$error);
         }
-        board::success("Настройки сохранены");
+        board::success(lang::get_phrase(581));
     }
 
     private static string $engine = '';

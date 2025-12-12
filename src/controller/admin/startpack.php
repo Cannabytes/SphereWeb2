@@ -327,7 +327,7 @@ class startpack
             board::error('Error updating server model: ' . $e->getMessage());
         }
 
-        board::success('Настройки сохранены');
+        board::success(lang::get_phrase(581));
     }
 
     private static function computeTotalPriceFromSettings(int $serverId, int $originalPrice): int
