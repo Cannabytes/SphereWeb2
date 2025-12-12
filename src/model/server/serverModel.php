@@ -742,11 +742,11 @@ class serverModel
         return null;
     }
 
-    public function setServerData(
-        array $server_data
-    ): void
+    public function setServerData(string $key, array $server_data): void
     {
-        $this->server_data = $server_data;
+        $server_data = json_encode($server_data, JSON_UNESCAPED_UNICODE);
+        sql::run("DELETE FROM `server_data` WHERE `key` = ? AND `server_id` = ?;", [$key, self::getId()]);
+        sql::run("INSERT INTO `server_data` (`key`, `val`, `server_id`) VALUES (?, ?, ?);", [$key, $server_data, self::getId()]);
     }
 
     public function getItemsSendAvailableFrom(): ?string
@@ -759,7 +759,6 @@ class serverModel
             return null;
         }
         $iso = $dateTime->format(DateTime::ATOM);
-        // Cache converted legacy value for future saves
         $this->itemsSendAvailableFrom = $iso;
         return $iso;
     }

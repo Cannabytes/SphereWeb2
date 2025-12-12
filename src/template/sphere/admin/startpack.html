@@ -6,8 +6,12 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-12 col-lg-12 col-xl-12">
+      <ul class="nav nav-tabs mb-3" id="startpackTabs">
+        <li class="nav-item"><a class="nav-link active" href="#" data-target="#packs_container">{{ phrase('packs') }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="#settings_container">{{ phrase('settings') }}</a></li>
+      </ul>
       <div class="row">
-        <div class="col-xl-12 ">
+        <div class="col-xl-12 tab-toggle" id="packs_container">
           <div class="card custom-card ">
             <div class="card-header justify-content-between ">
               <div class="card-title fw-semibold">
@@ -69,7 +73,7 @@
 
                 <div class="col-xl-2">
                   <div class="input-group">
-                    <div class="input-group-text">Заточка</div>
+                    <div class="input-group-text">{{ phrase('enchant') }}</div>
                     <input value="0" min="0" id="enchant" step="1" type="number" class="form-control" placeholder="0">
                   </div>
                 </div>
@@ -116,6 +120,76 @@
 
 
   <div class="row">
+    <div class="col-xl-12 tab-toggle d-none" id="settings_container">
+      <div class="card custom-card mb-3">
+          <div class="card-header justify-content-between">
+          <div class="card-title fw-semibold">{{ phrase('settings') }}</div>
+          <div class="text-muted">{{ phrase('settings_apply_notice', getServer().getName()) }}</div>
+        </div>
+        <div class="card-body">
+
+          <form id="startpack_settings_form">
+            <div class="row g-3 align-items-center">
+              <div class="col-md-8">
+                <label for="pack_limit_preset" class="form-label">{{ phrase('how_often_buy_packs') }}</label>
+                <select id="pack_limit_preset" class="form-select">
+                  <option value="0">{{ phrase('no_limits') }}</option>
+                  <option value="60">{{ phrase('every_60_seconds') }}</option>
+                  <option value="300">{{ phrase('every_5_minutes') }}</option>
+                  <option value="3600">{{ phrase('every_hour') }}</option>
+                  <option value="10800">{{ phrase('every_3_hours') }}</option>
+                  <option value="21600">{{ phrase('every_6_hours') }}</option>
+                  <option value="43200">{{ phrase('every_12_hours') }}</option>
+                  <option value="86400">{{ phrase('every_24_hours') }}</option>
+                  <option value="604800">{{ phrase('every_week') }}</option>
+                  <option value="custom">{{ phrase('custom_seconds') }}</option>
+                </select>
+                <div class="form-text">{{ phrase('choose_preset_or_custom') }}</div>
+              </div>
+
+              <div class="col-md-4">
+                <label for="pack_limit_seconds" class="form-label">{{ phrase('value_seconds') }}</label>
+                <input type="number" min="0" id="pack_limit_seconds" class="form-control" value="0" placeholder="0">
+                <div class="form-text">{{ phrase('zero_no_limits') }}</div>
+              </div>
+            </div>
+              <hr />
+              <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                  <label for="discount_from" class="form-label">{{ phrase('discount_from') }}</label>
+                  <input id="discount_from" type="datetime-local" class="form-control">
+                  <div class="form-text">{{ phrase('discount_from_desc') }}</div>
+                </div>
+
+                <div class="col-md-4">
+                  <label for="discount_to" class="form-label">{{ phrase('discount_to') }}</label>
+                  <input id="discount_to" type="datetime-local" class="form-control">
+                  <div class="form-text">{{ phrase('discount_to_desc') }}</div>
+                </div>
+
+                <div class="col-md-4">
+                  <label for="discount_percent" class="form-label">{{ phrase('discount_percent_label') }}</label>
+                  <div class="input-group">
+                    <input id="discount_percent" type="number" min="0" max="100" step="1" value="0" class="form-control">
+                    <span class="input-group-text">%</span>
+                  </div>
+                  <div class="form-text">{{ phrase('discount_percent_desc') }}</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <button id="save_startpack_settings" type="button" class="btn btn-primary">{{ phrase('save_settings') }}</button>
+              </div>
+              
+
+               <div class="mb-3">
+                <div class="text-muted">{{ phrase('server_time_notice', time) }}</div>
+              </div>
+
+            </form>
+        </div>
+      </div>
+    </div>
 
     {% for data in startpacks %}
 
@@ -157,13 +231,13 @@
             </table>
           </div>
 
-<button class="btn btn-primary label-btn label-end mt-1 me-2 editPack" data-object-id="{{data.id}}">
-  Изменить пак
+  <button class="btn btn-primary label-btn label-end mt-1 me-2 editPack" data-object-id="{{data.id}}">
+  {{ phrase('edit_pack') }}
   <i class="ri-edit-line label-btn-icon ms-2 rounded-pill"></i>
 </button>
 
           <button class="btn btn-danger label-btn label-end mt-1 removePack" data-object-id="{{data.id}}">
-            Удалить пак
+            {{ phrase('delete_pack') }}
             <i class="ri-delete-bin-line label-btn-icon ms-2 rounded-pill"></i>
           </button>
 
@@ -183,7 +257,7 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editPackModalLabel">Редактирование пака</h5>
+        <h5 class="modal-title" id="editPackModalLabel">{{ phrase('editing_pack') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -213,22 +287,22 @@
             </div>
           </div>
           <div class="col-xl-2">
-            <div class="input-group">
+              <div class="input-group">
               <div class="input-group-text">ID</div>
               <input value="0" min="0" id="edit_itemId" type="number" class="form-control" placeholder="4037">
             </div>
           </div>
 
           <div class="col-xl-2">
-            <div class="input-group">
+              <div class="input-group">
               <div class="input-group-text">Count</div>
               <input value="1" min="0" id="edit_count" type="number" class="form-control" placeholder="1">
             </div>
           </div>
 
           <div class="col-xl-2">
-            <div class="input-group">
-              <div class="input-group-text">Заточка</div>
+              <div class="input-group">
+              <div class="input-group-text">{{ phrase('enchant') }}</div>
               <input value="0" min="0" id="edit_enchant" step="1" type="number" class="form-control" placeholder="0">
             </div>
           </div>
@@ -255,8 +329,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-        <button type="button" class="btn btn-success" id="saveEditedPack">Сохранить изменения</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase('close') }}</button>
+        <button type="button" class="btn btn-success" id="saveEditedPack">{{ phrase('save_changes') }}</button>
       </div>
     </div>
   </div>
@@ -375,7 +449,7 @@
     var imgSrc = $('#edit_AddImgSrc').attr('src');
 
     if (count === '0' || edit_isIssetItem === false) {
-      noticeError('Необходимо выбрать предмет и указать количество');
+      noticeError("{{ phrase('select_item_and_quantity') }}");
       return;
     }
 
@@ -495,12 +569,12 @@
     }).get();
 
     if (name === '' || cost === '') {
-      noticeError('Необходимо заполнить поля названия и стоимости');
+      noticeError("{{ phrase('fill_name_and_cost') }}");
       return;
     }
 
     if (items.length === 0) {
-      noticeError('Необходимо добавить хотя бы один предмет');
+      noticeError("{{ phrase('add_at_least_one_item') }}");
       return;
     }
 
@@ -554,7 +628,7 @@
       var cost = $('#startpack_cost').val();
 
       if (name === '' || cost === '') {
-        noticeError('Необходимо заполнить поля');
+        noticeError("{{ phrase('fill_fields') }}");
         return;
       }
 
@@ -603,14 +677,9 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="card-footer">Общая стоимость: ${totalCost} SphereCoin</div>
+                                        <div class="card-footer">{{ phrase('total_cost') }}: ${totalCost} {{ phrase('donate_coin') }}</div>
                                     </div>
                                   </div>`;
-
-          // Добавление новой таблицы в DOM
-          $('#products_list').append(newTableHtml);
-          $('#product_sheet tbody').empty();
-        }
       });
     });
 
@@ -757,5 +826,71 @@
     };
   }
 
+</script>
+
+<script>
+  // Tabs toggle for Packs / Settings (simple show/hide)
+  (function(){
+    $('#startpackTabs a').on('click', function(e){
+      e.preventDefault();
+      $('#startpackTabs .nav-link').removeClass('active');
+      $(this).addClass('active');
+      var target = $(this).data('target');
+      $('.tab-toggle').addClass('d-none');
+      $(target).removeClass('d-none');
+    });
+  })();
+  
+  // Pack limit preset -> seconds handling
+  (function(){
+    function applyPreset(val){
+      var $sec = $('#pack_limit_seconds');
+      if(val === 'custom'){
+        $sec.prop('disabled', false);
+      } else {
+        $sec.val(val);
+        $sec.prop('disabled', true);
+      }
+    }
+
+    $(document).on('change', '#pack_limit_preset', function(){
+      applyPreset($(this).val());
+    });
+
+    // initialize on load
+    $(function(){
+      applyPreset($('#pack_limit_preset').val());
+    });
+  })();
+
+  // Discount percent clamp and basic validation
+  (function(){
+    $(document).on('input', '#discount_percent', function(){
+      var v = parseInt($(this).val() || 0, 10);
+      if(isNaN(v)) v = 0;
+      if(v < 0) v = 0;
+      if(v > 100) v = 100;
+      $(this).val(v);
+    });
+  })();
+
+  // Save settings via AJAX
+  (function(){
+    $(document).on('click', '#save_startpack_settings', function(){
+      var packLimitSeconds = $('#pack_limit_seconds').val() || 0;
+      var discountFrom = $('#discount_from').val() || '';
+      var discountTo = $('#discount_to').val() || '';
+      var discountPercent = $('#discount_percent').val() || 0;
+
+      AjaxSend('/admin/shop/startpack/save', 'POST', {
+        pack_limit_seconds: packLimitSeconds,
+        discount_from: discountFrom,
+        discount_to: discountTo,
+        discount_percent: discountPercent
+      }, true).then(function(res){
+        ResponseNotice(res);
+      });
+    });
+  })();
 </script>
 {% endblock %}

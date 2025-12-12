@@ -7,9 +7,12 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
+use Ofey\Logan22\model\log\logTypes;
+
 
 class startpack
 {
@@ -48,6 +51,10 @@ class startpack
         if ($server && !$server->canSendItemsNow()) {
             board::notice(false, $server->getItemsSendLockMessage());
         }
+
+        // Применяем настройки стартапа (кулдаун и скидки)
+        $originalPrice = (int)$row['cost'];
+        $totalPrice = self::computeTotalPriceFromSettings((int)$serverId, $originalPrice);
 
         $db = sql::instance();
         if (!$db) {
@@ -140,21 +147,28 @@ class startpack
         }
     }
 
+ 
     static public function purchaseWarehouse()
     {
+ 
         $startpackId = $_POST['startpackId'] ?? board::error('Не указан id набора');
         $row = sql::getRow('SELECT * FROM `startpacks` WHERE `id` = ?', [$startpackId]);
         if (!$row) {
             board::error(lang::get_phrase(152));
         }
 
-        $totalPrice = $row['cost'];
+        $originalPrice = (int)$row['cost'];
+        $totalPrice = $originalPrice;
         $startPackName = $row['name'];
         $serverId = (int)$row['server_id'];
 
         if (user::self()->getServerId() != $serverId) {
             board::error('Error server id');
         }
+
+        // Применяем настройки стартапа (кулдаун и скидки)
+        $totalPrice = self::computeTotalPriceFromSettings($serverId, $originalPrice);
+
 
         $canAffordPurchase = user::self()->canAffordPurchase($totalPrice);
         if (!$canAffordPurchase) {
@@ -169,6 +183,8 @@ class startpack
         if(!$items){
             board::error("Ошибка парсинга items");
         }
+
+        user::self()->addLog(logTypes::LOG_BUY_START_PACK, "LOG_USER_BUY_STARTPACK", [$startPackName]);
 
         foreach ($items as $item) {
             user::self()->addToWarehouse($serverId, (int)$item['itemId'], (int)$item['count'], (int)$item['enchant'], 'starter_pack');
@@ -261,6 +277,120 @@ class startpack
         } else {
             board::error('Ошибка обновления набора или данные не изменились');
         }
+    }
+
+    /**
+     * Сохранение настроек стартапа в таблицу server_data
+     */
+    static public function save_settings(): void
+    {
+        $serverId = user::self()->getServerId();
+        if (!$serverId) {
+            board::error('Server not found');
+        }
+
+        $packLimit = isset($_POST['pack_limit_seconds']) ? (int)$_POST['pack_limit_seconds'] : 0;
+        $discountFrom = isset($_POST['discount_from']) ? trim($_POST['discount_from']) : '';
+        $discountTo = isset($_POST['discount_to']) ? trim($_POST['discount_to']) : '';
+        $discountPercent = isset($_POST['discount_percent']) ? (int)$_POST['discount_percent'] : 0;
+
+        if ($discountPercent < 0 || $discountPercent > 100) {
+            board::error('Процент скидки должен быть от 0 до 100');
+        }
+
+        $normalizeDate = function ($val) {
+            $val = trim((string)$val);
+            if ($val === '') {
+                return '';
+            }
+            $val = str_replace('T', ' ', $val);
+            if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/', $val)) {
+                $val .= ':00';
+            }
+            return $val;
+        };
+
+        $discountFrom = $normalizeDate($discountFrom);
+        $discountTo = $normalizeDate($discountTo);
+        $data = [
+            'startpack_limit_seconds' => (string)$packLimit,
+            'startpack_discount_from' => $discountFrom,
+            'startpack_discount_to' => $discountTo,
+            'startpack_discount_percent' => (string)$discountPercent,
+        ];
+        try {
+            $serverModel = server::getServer($serverId);
+            if ($serverModel) {
+                $serverModel->setServerData('startpack_settings', $data);
+            }
+        } catch (Exception $e) {
+            board::error('Error updating server model: ' . $e->getMessage());
+        }
+
+        board::success('Настройки сохранены');
+    }
+
+    private static function computeTotalPriceFromSettings(int $serverId, int $originalPrice): int
+    {
+        $totalPrice = $originalPrice;
+
+        $serverModel = server::getServer($serverId);
+        if (!$serverModel) {
+            return $totalPrice;
+        }
+
+        $startpack_settings = $serverModel->getServerData('startpack_settings');
+        if ($startpack_settings === null) {
+            return $totalPrice;
+        }
+
+        $settings = json_decode($startpack_settings->getVal());
+        $cooldownSeconds = (int)($settings->startpack_limit_seconds ?? 0);
+
+        $nowTime = (new \DateTime('now', \Ofey\Logan22\component\time\time::getServerTimezone()))->format('Y-m-d H:i:s');
+
+        if ($cooldownSeconds > 0) {
+            $log = userlog::get_last_log(user::self()->getId(), logTypes::LOG_BUY_START_PACK, 1);
+            if ($log) {
+                $timeBuyStartPack = $log['time'];
+                $seconds = time::diff($nowTime, $timeBuyStartPack);
+                if ($seconds < $cooldownSeconds) {
+                    $waitStr = time::timeHasPassed($cooldownSeconds - $seconds, true);
+                    board::error(lang::get_phrase('startpack_cooldown', $waitStr));
+                }
+            }
+        }
+
+        // Discounts
+        $discountFromRaw = $settings->startpack_discount_from ?? '';
+        $discountToRaw = $settings->startpack_discount_to ?? '';
+        $discountPercent = isset($settings->startpack_discount_percent) ? (int)$settings->startpack_discount_percent : 0;
+
+        $nowTs = strtotime($nowTime);
+        if ($nowTs === false) {
+            $nowTs = time();
+        }
+        $fromTs = ($discountFromRaw !== '') ? strtotime((string)$discountFromRaw) : false;
+        $toTs = ($discountToRaw !== '') ? strtotime((string)$discountToRaw) : false;
+        $discountActive = false;
+        if ($fromTs !== false && $toTs !== false) {
+            if ($nowTs >= $fromTs && $nowTs <= $toTs) {
+                $discountActive = true;
+            }
+        } elseif ($fromTs !== false) {
+            if ($nowTs >= $fromTs) {
+                $discountActive = true;
+            }
+        } elseif ($toTs !== false) {
+            if ($nowTs <= $toTs) {
+                $discountActive = true;
+            }
+        }
+        if ($discountActive && $discountPercent > 0) {
+            $totalPrice = (int)round($originalPrice * (100 - $discountPercent) / 100);
+        }
+
+        return $totalPrice;
     }
 
 }

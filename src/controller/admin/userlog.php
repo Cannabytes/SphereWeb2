@@ -8,6 +8,7 @@ use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\statistic\statistic as statistic_model;
 use Ofey\Logan22\template\tpl;
+use Ofey\Logan22\model\log\logTypes;
 
 class userlog {
 
@@ -192,6 +193,14 @@ class userlog {
             $log['time'] = statistic_model::timeHasPassed(time() - strtotime($log['time']), true);
         }
         echo json_encode($logs_all);
+    }
+
+    public static function get_last_log($user_id, logTypes $type, int $limit = 1) {
+        if ($limit == 1) {
+            return sql::getRow("SELECT * FROM logs_all WHERE user_id = ? AND type = ? ORDER BY id DESC LIMIT 1", [$user_id, $type->value]);
+        } else {
+            return sql::getRows("SELECT * FROM logs_all WHERE user_id = ? AND type = ? ORDER BY id DESC LIMIT ?", [$user_id, $type->value, $limit]);
+        }
     }
 
 }

@@ -128,7 +128,7 @@ class time {
         return trim($result == '' ? 'только что' : $result . ' назад');
     }
 
-    private static function getServerTimezone(): DateTimeZone
+    public static function getServerTimezone(): DateTimeZone
     {
         if (self::$serverTimezone instanceof DateTimeZone) {
             return self::$serverTimezone;
@@ -156,4 +156,39 @@ class time {
 
         return self::$serverTimezone;
     }
+
+    public static function timeHasPassed($seconds, $reduce = false): string
+    {
+        $days = floor($seconds / 86400);
+        $seconds %= 86400;
+        $hours = floor($seconds / 3600);
+        $seconds %= 3600;
+        $minutes = floor($seconds / 60);
+        $seconds %= 60;
+
+        $result = '';
+        if ($days > 0) {
+            $d = \Ofey\Logan22\component\lang\lang::get_phrase('d');
+            $daysStr = \Ofey\Logan22\component\lang\lang::get_phrase('days');
+            $result .= $days . ($reduce ? " {$d}. " : " {$daysStr}, ");
+        }
+        if ($hours > 0) {
+            $h = \Ofey\Logan22\component\lang\lang::get_phrase('h');
+            $hoursStr = \Ofey\Logan22\component\lang\lang::get_phrase('hours');
+            $result .= $hours . ($reduce ? " {$h}. " : " {$hoursStr}, ");
+        }
+        if ($minutes > 0) {
+            $m = \Ofey\Logan22\component\lang\lang::get_phrase('m');
+            $minutesStr = \Ofey\Logan22\component\lang\lang::get_phrase('minutes');
+            $result .= $minutes . ($reduce ? " {$m}. " : " {$minutesStr}, ");
+        }
+
+        $s = \Ofey\Logan22\component\lang\lang::get_phrase('s');
+        $secondsStr = \Ofey\Logan22\component\lang\lang::get_phrase('seconds');
+        $result .= $seconds . ($reduce ? " {$s}. " : " {$secondsStr}");
+
+        return $result;
+    }
+
+
 }

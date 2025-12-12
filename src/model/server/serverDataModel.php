@@ -18,10 +18,7 @@ class serverDataModel
     }
     private function parseValue($value)
     {
-        // Преобразуем строку в булев тип если это 'true' или 'false'
         $boolValue = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-
-        // Если преобразование прошло успешно, возвращаем булево значение, иначе возвращаем исходную строку
         return $boolValue !== null ? $boolValue : $value;
     }
 

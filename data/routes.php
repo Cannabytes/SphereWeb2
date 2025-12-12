@@ -3028,5 +3028,19 @@ return array (
     'page' => NULL,
     'comment' => 'Check if pattern already exists',
   ),
+  230 => 
+  array (
+    'enable' => 1,
+    'method' => 'POST',
+    'pattern' => '/admin/shop/startpack/save',
+    'func' => 'controller\\admin\\startpack::save_settings',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
 );
 

@@ -1011,14 +1011,10 @@ class tpl
         $twig->addFunction(new TwigFunction('format_number_fr', function ($num, $separator = ".") {
             echo number_format($num, 0, ',', $separator);
         }));
-
-        $twig->addFunction(new TwigFunction('ProhloVremya', function ($mysqlTimeFormat, $reduce = false) {
-            return statistic_model::timeHasPassed(time() - strtotime($mysqlTimeFormat), $reduce);
-        }));
-
+ 
         //Время (в секундах) в часы. минуты, сек.
         $twig->addFunction(new TwigFunction('timeHasPassed', function ($num, $reduce = false) {
-            return statistic_model::timeHasPassed($num, $reduce);
+            return time::timeHasPassed($num, $reduce);
         }));
 
         $twig->addFunction(new TwigFunction('formatSeconds', function ($secs = 0) {
@@ -2717,6 +2713,24 @@ class tpl
                     self::$allTplVars['page_inline_css'] = $cleaned['css'];
                     self::$allTplVars['page_inline_js'] = $cleaned['js'];
                     self::$allTplVars['page_title'] = $title;
+                    self::$allTplVars['time'] = (new \DateTime('now', \Ofey\Logan22\component\time\time::getServerTimezone()))->format('Y-m-d H:i:s');
+                    
+                    $jsonFile = fileSys::get_dir('uploads/cache/license.json');
+
+                    $license = null;
+                    if (file_exists($jsonFile)) {
+                        $contents = @file_get_contents($jsonFile);
+                        if ($contents !== false) {
+                            try {
+                                $data = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
+                                $license = array_key_exists('license', $data) ? $data['license'] : $data;
+                            } catch (\JsonException $e) {
+                                $license = false;
+                            }
+                        }
+                    }
+
+                    self::$allTplVars['license'] = $license;
 
                     if ($tplName === 'read.html') {
                         echo "<!-- DEBUG INFO -->";

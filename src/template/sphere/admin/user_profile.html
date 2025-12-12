@@ -274,7 +274,7 @@
                 {% for i, log in logs %}
                 <div class="timeline-item">
                   <div class="timeline-left">
-                    <div class="timeline-date text-muted">{{ProhloVremya(log.time, true)}}</div>
+                    <div class="timeline-date text-muted">{{timeHasPassed(log.time, true)}}</div>
                   </div>
                   <div class="timeline-center">
                     <div class="timeline-marker bg-primary"></div>
@@ -311,7 +311,7 @@
                 {% for i, history in donate_history_pay %}
                 <div class="timeline-item">
                   <div class="timeline-left">
-                    <div class="timeline-date text-muted">{{ProhloVremya(history.date, true)}}</div>
+                    <div class="timeline-date text-muted">{{timeHasPassed(history.date, true)}}</div>
                   </div>
                   <div class="timeline-center">
                     <div class="timeline-marker bg-success"></div>

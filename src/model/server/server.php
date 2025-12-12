@@ -71,7 +71,7 @@ class server
     /**
      * @param $id
      *
-     * @return serverModel[]|null
+     * @return serverModel|null
      * @throws Exception
      *
      * Функция возвращаем всю инфу о сервере
@@ -254,9 +254,16 @@ class server
                     }
                 }
             }
-            
+            $needsUpdate = true;
             if ($needsUpdate) {
                 $serverStatusAll = \Ofey\Logan22\component\sphere\server::send(type::GET_STATUS_SERVER_ALL, [])->getResponse();
+                if(isset($serverStatusAll['license'])){
+                        $jsonFile = fileSys::get_dir('uploads/cache/license.json');
+                        $data = [
+                            'license' => $serverStatusAll['license'],
+                        ];
+                        file_put_contents($jsonFile, json_encode($data));
+                }
                 if (isset($serverStatusAll['status'])) {
                     $serverStatusAll = $serverStatusAll['status'];
                     foreach ($serverStatusAll as $server_id => $status) {

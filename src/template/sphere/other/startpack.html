@@ -1,5 +1,5 @@
-{% if startpacks() is not empty %}
-
+{# load startpacks into variable for safer checks/rendering #}
+{% set sp = startpacks() %}
 {% set currentServer = getServer() %}
 {% set canSendItemsNow = currentServer.canSendItemsNow() %}
 {% set itemsSendLockMessage = currentServer.getItemsSendLockMessage() %}
@@ -68,7 +68,7 @@
   /* Стиль для цены на кнопке */
   .price-on-button {
     display: inline-flex;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(189, 2, 2, 0.2);
     padding: 2px 8px;
     border-radius: 12px;
     margin-left: 5px;
@@ -77,8 +77,28 @@
   }
 
   .btn-purchase:hover .price-on-button {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(206, 0, 0, 0.3);
     transform: scale(1.05);
+  }
+
+  .price-original {
+    opacity: 0.35;
+    font-size: 0.95rem;
+    color: #ff0000;
+  }
+
+  .price-discounted {
+    color: #fbff22;
+    font-size: 1.75rem;
+  }
+
+  .discount-badge {
+    background: linear-gradient(90deg, #ffed27 0%, #849f2a 100%);
+    color: #fff;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
   }
 
   @keyframes pulseOnce {
@@ -369,17 +389,69 @@
 
 {% endblock %}
 
+{# startpack settings (may be stored as JSON under server_data key) #}
+{% set sd = getServer().getServerData('startpack_settings') %}
+{% set startpack_settings_raw = sd ? (sd.val|default('')) : '' %}
+{% set startpack_settings = startpack_settings_raw ? (startpack_settings_raw|json_decode) : {} %}
+{% set discount_from = startpack_settings.startpack_discount_from|default('') %}
+{% set discount_to = startpack_settings.startpack_discount_to|default('') %}
+{% set discount_percent = (startpack_settings.startpack_discount_percent|default(0)) + 0 %}
+
+{% set now_ts = "now"|date('U') %}
+{% set from_ts = discount_from ? discount_from|date('U') : 0 %}
+{% set to_ts = discount_to ? discount_to|date('U') : 0 %}
+{% set discount_active = (from_ts and to_ts and now_ts >= from_ts and now_ts <= to_ts) %}
+
+
+{# Show cooldown message if last startpack purchase was within configured cooldown #}
+{% set lastStartpackLog = getUser().getLogLast("LOG_BUY_START_PACK") %}
+{% set lastBuyTs = (lastStartpackLog is not empty and lastStartpackLog.time) ? (lastStartpackLog.time|date('U')) : 0 %}
+
+{% set startpack_cooldown = startpack_settings.startpack_buy_cooldown|default(60) %}
+{% set since = now_ts - lastBuyTs %}
+{# If startpack settings are empty — allow buying (no cooldown). Otherwise respect cooldown. #}
+{% if startpack_settings is empty %}
+  {% set can_buy = true %}
+{% else %}
+  {% set can_buy = (lastBuyTs == 0) or (since >= startpack_cooldown) %}
+{% endif %}
+
+
+
 <div class="">
+
   <div class="card custom-card overflow-hidden">
+    {% if discount_active and discount_percent > 0 and to_ts > now_ts %}
+    {% set remaining = to_ts - now_ts %}
+    <div class="mb-0">
+      <div class="discount-banner alert alert-gradient d-flex align-items-center justify-content-between" data-discount-ends="{{ to_ts }}" data-discount-remaining="{{ remaining }}" data-days-label="{{ phrase('time_days_short') }}">
+        <div>
+          <strong class="me-2">{{ phrase('discount_active_until', discount_percent, discount_to|date('H:i d.m.Y')) }}</strong>
+          <small class="text-muted">{{ phrase('discount_active_until', discount_percent, discount_to|date('H:i d.m.Y')) }}</small>
+            {% if lastBuyTs > 0 and since < startpack_cooldown %}
+              <div class="text-muted">{{ phrase('startpack_recently_bought', timeHasPassed(startpack_cooldown - since, true)) }}</div>
+            {% endif %}
+        </div>
+        <div class="fw-bold text-end">
+          <div class="small text-muted">{{ phrase(312) }}</div>
+          <div id="discount_timer" class="fs-5">--:--:--</div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+
+
     <div class="card-body p-0">
       <div class="tab-content" id="myTabContent">
         <div class="tab-pane p-0 active show" id="pricing-monthly-pane" role="tabpanel"
              aria-labelledby="pricing-monthly" tabindex="0">
           <div class="row g-4 p-3">
-            {% for data in startpacks() %}
-            {% set animationDelay = (loop.index0 * 0.1)|number_format(1, '.', '') %}
-            <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-12 animated-item"
-                 data-animation-delay="{{ animationDelay }}">
+              {% if sp is not empty %}
+              {% for data in sp %}
+              {% set animationDelay = (loop.index0 * 0.1)|number_format(1, '.', '') %}
+              <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-12 animated-item"
+                data-animation-delay="{{ animationDelay }}">
               <div class="startpack-card">
                 <div class="p-4 h-100 d-flex flex-column">
                   <h6 class="startpack-name">{{ data.name }}</h6>
@@ -415,17 +487,33 @@
                     {% endif %}
                   </ul>
                   <div class="d-grid mt-auto">
-                    <button class="btn btn-purchase btn-wave waves-effect waves-light btn-open-shop"
-                            data-startpack-id="{{ data.id }}"
-                            type="button"
-                            data-modal-target="#openShopStartpack">
-                      <i class="fas fa-shopping-cart me-2"></i>{{phrase('buy_for')}} <span class="price-on-button">{{ data.cost }}</span>
+                    {% set discounted_price = (discount_active and discount_percent > 0) ? ((data.cost * (100 - discount_percent) / 100)|round(0, 'common')) : '' %}
+                        <button class="btn btn-purchase btn-wave waves-effect waves-light btn-open-shop"
+                          data-startpack-id="{{ data.id }}"
+                          type="button"
+                          data-modal-target="#openShopStartpack"
+                          data-price="{{ format_number_fr(data.cost) }}"
+                          data-discounted="{{ discounted_price ? format_number_fr(discounted_price) : '' }}"
+                          {% if not can_buy %}disabled aria-disabled="true" title="{{ phrase('startpack_recently_bought', timeHasPassed(startpack_cooldown - since, true)) }}"{% endif %}>
+                      <i class="fas fa-shopping-cart me-2"></i>{{phrase('buy_for')}}
+                      {% if discounted_price %}
+                        <span class="price-original text-decoration-line-through">{{ format_number_fr(data.cost) }}</span>
+                        <span class="price-discounted fw-bold">{{ format_number_fr(discounted_price) }}</span>
+                        {# discount percentage badge removed from button per request #}
+                      {% else %}
+                        <span class="price-on-button">{{ format_number_fr(data.cost) }}</span>
+                      {% endif %}
                     </button>
                   </div>
                 </div>
               </div>
             </div>
             {% endfor %}
+            {% else %}
+            <div class="col-12">
+              <div class="alert alert-info">Стартовые паки не найдены.</div>
+            </div>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -433,6 +521,7 @@
   </div>
 </div>
 
+{% if can_buy %}
 <!-- Модальное окно покупки пакета -->
 <div class="modal modal-lg fade modal-custom" id="openShopStartpack" tabindex="-1" aria-labelledby="openShopStartpackLabel"
      aria-hidden="true">
@@ -565,13 +654,15 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
+        </div>
+        </div>
+        </div>
+        </div>
+      {% endif %}
 
-<script>
-$(document).ready(function() {
+      {% if can_buy %}
+      <script>
+      $(document).ready(function() {
   const isUserAuthorized = "{{ getUser().isAuth() ? '1' : '0' }}" === "1";
   const authWarningTitle = 'Регистрация';
   const authWarningMessage = 'Необходимо зарегистрироваться или войти в аккаунт, чтобы приобрести стартпак.';
@@ -696,9 +787,16 @@ $(document).ready(function() {
         itemsHTML = '<div class="text-center text-muted py-3">Нет предметов в пакете</div>';
       }
 
-      // Устанавливаем цену
-      const price = $('.price-on-button', $itemList.closest('.startpack-card')).text();
-      $('.StartPackCostBuy').text(price);
+      // Устанавливаем цену (поддержка скидки)
+      const $card = $itemList.closest('.startpack-card');
+      const $btn = $card.find('.btn-open-shop');
+      const origPrice = $btn.data('price') || $btn.attr('data-price') || $('.price-on-button', $card).text();
+      const discPrice = $btn.data('discounted') || $btn.attr('data-discounted') || '';
+      if (discPrice && discPrice !== '') {
+        $('.StartPackCostBuy').html('<span class="fw-bold text-success">' + discPrice + '</span>');
+      } else {
+        $('.StartPackCostBuy').text(origPrice);
+      }
 
       // Сохраняем ID пакета для кнопок покупки
       $('#Startpackpurchase, #StartpackWarehouse').attr('data-object-id', startpackId);
@@ -787,3 +885,41 @@ $(document).ready(function() {
 });
 </script>
 {% endif %}
+
+<script>
+  (function(){
+    var banner = document.querySelector('.discount-banner');
+    if (!banner) return;
+
+    var ends = banner.getAttribute('data-discount-ends');
+    var endsAt = ends ? parseInt(ends, 10) * 1000 : null;
+    var remaining = banner.getAttribute('data-discount-remaining');
+    if (!endsAt && remaining) {
+      endsAt = Date.now() + (parseInt(remaining,10) * 1000);
+    }
+    if (!endsAt) return;
+
+    var timerEl = document.getElementById('discount_timer');
+    function fmt(n){ return String(n).padStart(2,'0'); }
+    function update(){
+      var ms = endsAt - Date.now();
+      if (ms <= 0) {
+        banner.style.transition = 'opacity 0.4s';
+        banner.style.opacity = '0';
+        setTimeout(function(){ banner.remove(); }, 450);
+        clearInterval(interval);
+        return;
+      }
+      var s = Math.floor(ms/1000);
+      var days = Math.floor(s/86400);
+      s -= days * 86400;
+      var hours = Math.floor(s/3600); s -= hours*3600;
+      var minutes = Math.floor(s/60); var seconds = s - minutes*60;
+      var daysLabel = banner.getAttribute('data-days-label') || 'd';
+      var text = (days>0 ? (days + daysLabel + ' ') : '') + fmt(hours) + ':' + fmt(minutes) + ':' + fmt(seconds);
+      if (timerEl) timerEl.textContent = text;
+    }
+    update();
+    var interval = setInterval(update, 1000);
+  })();
+</script>

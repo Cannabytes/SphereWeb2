@@ -1371,6 +1371,44 @@ class userModel
         return $results;
     }
 
+    public function getLogLast(logTypes|string $type): ?array
+    {
+        // If a string was provided, try to resolve it to a logTypes enum
+        if (is_string($type)) {
+            $name = $type;
+            $resolved = null;
+            foreach (logTypes::cases() as $case) {
+                if ($case->name === $name || (string)$case->value === $name) {
+                    $resolved = $case;
+                    break;
+                }
+            }
+            if ($resolved === null) {
+                throw new \InvalidArgumentException('Unknown log type: ' . $name);
+            }
+            $type = $resolved;
+        }
+
+        $query = "SELECT `id`, `user_id`, `time`, `type`, `phrase`, `variables`, `server_id`, `request`, `method`, `action`, `file`, `line` 
+              FROM `logs_all`
+              WHERE `user_id` = ? AND type = ?
+              ORDER BY `time` DESC
+              LIMIT 1";
+
+        $result = sql::run($query, [
+            $this->getId(),
+            $type->value,
+        ])->fetch();
+
+        if ($result) {
+            $result['variables'] = json_decode($result['variables'], true);
+            $result['request'] = json_decode($result['request'], true);
+            return $result;
+        }
+
+        return null;
+    }
+
 
     /**
      * Добавить предмето пользователю в склад
