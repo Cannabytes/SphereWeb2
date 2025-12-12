@@ -1,3 +1,5 @@
+{% if startpacks() is not empty %}
+
 {% set sp = startpacks() %}
 {% set currentServer = getServer() %}
 {% set canSendItemsNow = currentServer.canSendItemsNow() %}
@@ -917,3 +919,5 @@
     var interval = setInterval(update, 1000);
   })();
 </script>
+
+{% endif %}

@@ -625,7 +625,6 @@
   })
 
 
-  $(document).ready(function () {
     $('#AddToProductsPack').click(function () {
       var items = $('#product_sheet tbody tr').map(function () {
         return {
@@ -692,10 +691,11 @@
                                         <div class="card-footer">{{ phrase('total_cost') }}: ${totalCost} {{ phrase('donate_coin') }}</div>
                                     </div>
                                   </div>`;
-      });
-    });
+      }
 
+    });
   });
+
 
   $('#addItemToTable').click(function () {
     var name = $('#startpack_name').text();
