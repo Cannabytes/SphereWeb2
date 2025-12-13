@@ -2730,7 +2730,7 @@ class tpl
                         }
                     }
 
-                    self::$allTplVars['license'] = $license;
+                    self::$allTplVars['licenseCheck'] = $license;
 
                     if ($tplName === 'read.html') {
                         echo "<!-- DEBUG INFO -->";
