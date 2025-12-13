@@ -23,20 +23,13 @@
 
           Язык который требуется добавить
           <select class="form-select" id="country" name="country">
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
             <option value="es">Español</option>
             <option value="pt">Português</option>
-            <option value="fr">Français</option>
-            <option value="zh">中文</option>
             <option value="ua">Українська</option>
-            <option value="tr">Türkçe</option>
-            <option value="de">Deutsch</option>
-            <option value="it">Italiano</option>
-            <option value="pl">Polski</option>
-            <option value="ge">საქართველო</option>
-            <option value="kr">한국어</option>
             <option value="gr">Greek</option>
           </select>
-
 
           <button id="addNewTableLang" type="submit" class="btn btn-primary">Добавить перевод</button>
 
@@ -69,9 +62,7 @@
               <tr>
                 <th data-save="false" style="width: 1px;"></th>
                 <th data-save="false">{{phrase('key')}}</th>
-                {% for lang in all_phrase_custom().lang_list %}
-                <th data-save="true">{{lang|upper}}</th>
-                {% endfor %}
+                <th data-save="false">Translations</th>
               </tr>
 
               </thead>
@@ -99,9 +90,16 @@
                   </div>
                 </td>
                 <td>{{ key }}</td>
-                {% for lang, phrase in phrases %}
-                <td data-lang="{{lang}}">{{ phrase ?? '' }}</td>
-                {% endfor %}
+                <td>
+                  <div class="phrase-grid">
+                    {% for lang, phrase in phrases %}
+                    <div class="phrase-field" data-lang="{{lang}}">
+                      <div class="phrase-field-label">{{lang|upper}}</div>
+                      <div class="phrase-field-value" data-lang="{{lang}}">{{ phrase ?? '' }}</div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </td>
               </tr>
               {% endfor %}
 
@@ -120,6 +118,40 @@
 
 {% block css %}
 
+<style>
+  /* Сетка переводов внутри одной колонки, чтобы таблица не растягивалась по ширине */
+  .phrase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: .5rem;
+  }
+
+  .phrase-field {
+    border: 1px solid var(--bs-border-color);
+    border-radius: .375rem;
+    padding: .5rem;
+    background: var(--bs-body-bg);
+  }
+
+  .phrase-field-label {
+    font-size: .75rem;
+    font-weight: 600;
+    opacity: .8;
+    margin-bottom: .25rem;
+  }
+
+  .phrase-field-value {
+    min-height: 38px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    cursor: text;
+  }
+
+  .phrase-field textarea.form-control {
+    min-height: 70px;
+  }
+</style>
+
 {% endblock %}
 
 {% block js %}
@@ -133,45 +165,95 @@
 
   $(document).ready(function () {
 
-    $('.removePhrase').click(function() {
-      // Получаем ключ из атрибута data-key
-      var key = $(this).data('key');
+    // Список языков из бекенда (то, что уже есть в таблице при загрузке)
+    var initialLangs = {{ all_phrase_custom().lang_list|json_encode|raw }};
+    var knownLangs = new Set(Array.isArray(initialLangs) ? initialLangs : []);
 
-      // Удаляем строку таблицы, где в первом столбце содержится ключ
-      $('#phraseDataTable tr').each(function() {
-        var rowKey = $(this).find('td').eq(1).text().trim(); // Извлекаем ключ из второго столбца
-        if (rowKey === key) {
-          $(this).remove(); // Удаляем строку
-          return false; // Прерываем цикл, так как мы нашли нужную строку
-        }
-      });
+    // Убираем из select уже существующие языки
+    knownLangs.forEach(function(lang) {
+      $('#country option[value="' + lang + '"]').remove();
     });
 
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function getRowKey($row) {
+      var $keyCell = $row.find('td').eq(1);
+      var $input = $keyCell.find('input, textarea');
+      if ($input.length) {
+        return ($input.val() || '').trim();
+      }
+      return ($keyCell.text() || '').trim();
+    }
+
+    function buildPhraseField(lang, value, asTextarea) {
+      var label = String(lang).toUpperCase();
+      var safeValue = value == null ? '' : String(value);
+      if (asTextarea) {
+        return (
+          '<div class="phrase-field" data-lang="' + escapeHtml(lang) + '">' +
+            '<div class="phrase-field-label">' + escapeHtml(label) + '</div>' +
+            '<textarea class="form-control phrase-input" data-lang="' + escapeHtml(lang) + '" placeholder="' + escapeHtml(label) + '">' +
+              escapeHtml(safeValue) +
+            '</textarea>' +
+          '</div>'
+        );
+      }
+      return (
+        '<div class="phrase-field" data-lang="' + escapeHtml(lang) + '">' +
+          '<div class="phrase-field-label">' + escapeHtml(label) + '</div>' +
+          '<div class="phrase-field-value" data-lang="' + escapeHtml(lang) + '">' + escapeHtml(safeValue) + '</div>' +
+        '</div>'
+      );
+    }
+
+    function ensureFieldExists($row, lang, valueForSpecialLangName) {
+      var $grid = $row.find('.phrase-grid');
+      if (!$grid.length) return;
+      if ($grid.find('.phrase-field[data-lang="' + lang + '"]').length) return;
+
+      var key = getRowKey($row);
+      var value = '';
+      if (key === 'lang_name' && valueForSpecialLangName != null) {
+        value = valueForSpecialLangName;
+      }
+
+      var isNewRow = $row.hasClass('phrase-row-new');
+      $grid.append(buildPhraseField(lang, value, isNewRow));
+    }
+
+    // Удаление строки
+    $(document).on('click', '.removePhrase', function() {
+      $(this).closest('tr').remove();
+    });
+
+    // Добавить язык (не колонки, а поля внутри сетки)
     $('#addNewTableLang').on('click', function() {
       var newLang = $('#country').val();
       var newLangName = $('#country option:selected').text();
-      // Проверяем, не существует ли уже колонка для этого языка
-      if ($('#phraseDataTable th[data-save="true"]').filter(function() {
-        return $(this).text().trim().toUpperCase() === newLang.toUpperCase();
-      }).length > 0) {
+      if (!newLang) return;
+
+      if ($('.phrase-grid .phrase-field[data-lang="' + newLang + '"]').length > 0) {
         alert('Этот язык уже существует в таблице!');
         return;
       }
-      $('#phraseDataTable thead tr').append(
-        $('<th>').attr('data-save', 'true').text(newLang.toUpperCase())
-      );
-      $('#phraseDataTable tbody tr').each(function() {
-        var key = $(this).find('td:eq(1)').text().trim();
-        var newCell = $('<td>').attr('data-lang', newLang);
-        if (key === 'lang_name') {
-          newCell.text(newLangName);
-        }
 
-        $(this).append(newCell);
+      knownLangs.add(newLang);
+
+      $('#phraseDataTable tbody tr').each(function() {
+        ensureFieldExists($(this), newLang, newLangName);
       });
+
       $('#country option[value="' + newLang + '"]').remove();
     });
 
+    // Копирование
     $(document).on('click','.copy',  function () {
       var textToCopy = $(this).text().trim();
       navigator.clipboard.writeText(textToCopy).then(function () { }).catch(function (error) {
@@ -179,38 +261,41 @@
       });
     });
 
+    // DataTable
     $('#phraseDataTable').DataTable({
       responsive: false,
       autoWidth: true,
-      lengthChange: false,  // Отключаем возможность изменять количество отображаемых записей
+      lengthChange: false,
       pageLength: 3000,
-      searching: false
+      searching: false,
+      ordering: false
     });
 
+    // Сохранение
     $('#save_phrases').click(function () {
-      var columnIndices = {};
       var data = {};
 
-      $('#phraseDataTable thead th').each(function (index) {
-        if ($(this).data('save') === true) {
-          let lang = $(this).text().trim().toLowerCase();
-          columnIndices[index] = lang;
-        }
-      });
-
       $('#phraseDataTable tbody tr').each(function () {
-        var key = $(this).find('td').eq(1).text().trim(); // Получаем ключ из первой колонки
-        var row_data = {};
+        var $row = $(this);
+        var key = getRowKey($row);
+        if (!key) return;
 
-        $(this).find('td').each(function (index) {
-          if (columnIndices.hasOwnProperty(index)) { // Проверяем, сохраняем ли мы данные из этой колонки
-            let text = $(this).text().trim();
-            let lang = columnIndices[index];
-            row_data[lang] = text; // Сохраняем текст по языку
+        var row_data = {};
+        $row.find('.phrase-field').each(function() {
+          var lang = ($(this).data('lang') || '').toString().trim().toLowerCase();
+          if (!lang) return;
+
+          var $textarea = $(this).find('textarea.phrase-input');
+          if ($textarea.length) {
+            row_data[lang] = ($textarea.val() || '').trim();
+            return;
           }
+
+          var $value = $(this).find('.phrase-field-value');
+          row_data[lang] = ($value.text() || '').trim();
         });
 
-        if (Object.keys(row_data).length > 0) { // Если в row_data есть данные
+        if (Object.keys(row_data).length > 0) {
           data[key] = row_data;
         }
       });
@@ -219,8 +304,10 @@
       AjaxSend("/admin/phrases/custom", "POST", {phrases: jsonData}, false)
     });
 
+    // Добавить новую фразу
     $('#add_new_phrase').click(function () {
       var newRow = $('<tr>');
+      newRow.addClass('phrase-row-new');
 
       // Добавляем кнопку в первую колонку
       var dropdownCell = `
@@ -239,70 +326,72 @@
         </td>`;
       newRow.append(dropdownCell);
 
-      // Для остальных колонок добавляем textarea
-      $('#phraseDataTable thead th').each(function (index) {
-        if (index > 0) { // пропускаем первую колонку
-          var columnTitle = $(this).text();
-          newRow.append('<td><textarea class="form-control" placeholder="' + columnTitle + '"></textarea></td>');
-        }
+      // Ключ
+      newRow.append('<td><input type="text" class="form-control phrase-key-input" placeholder="{{phrase('key')}}" /></td>');
+
+      // Переводы
+      var $translationsCell = $('<td>');
+      var $grid = $('<div class="phrase-grid">');
+      Array.from(knownLangs).forEach(function(lang) {
+        $grid.append(buildPhraseField(lang, '', true));
       });
+      $translationsCell.append($grid);
+      newRow.append($translationsCell);
 
-      $('#phraseDataTable tbody').prepend(newRow); // добавление новой строки в начало тела таблицы
+      $('#phraseDataTable tbody').prepend(newRow);
 
-      // Фокусировка на textarea первой колонки
-      newRow.find('textarea:first').focus();
-
-      // Обработка ввода текста в любом textarea в строке
-      newRow.find('textarea').on('input', function() {
-        var keyValue = newRow.find('textarea:first').val().trim(); // Получаем значение из первого textarea в строке
-
-        // Обновляем текст кнопки и меню
-        var updatedText = `{{ phrase('${keyValue}') }}`;
+      newRow.find('.phrase-key-input').focus();
+      newRow.find('.phrase-key-input').on('input', function() {
+        var keyValue = ($(this).val() || '').trim();
+        var updatedText = keyValue
+          ? "{% verbatim %}{{ phrase('{% endverbatim %}" + keyValue + "{% verbatim %}') }}{% endverbatim %}"
+          : '';
         newRow.find('.dropdown-key').text(updatedText);
-        newRow.find('a').attr('aria-label', updatedText); // Обновляем текст в атрибуте aria-label
+        newRow.find('a').attr('aria-label', updatedText);
       });
     });
 
+    // Редактирование перевода по клику (для существующих строк)
+    $('#phraseDataTable').on('click', '.phrase-field-value', function (e) {
+      var $value = $(this);
+      var $field = $value.closest('.phrase-field');
 
+      if ($field.find('textarea.phrase-input').length) return;
 
-
-    // Добавляем возможность редактирования ячеек
-    $('#phraseDataTable').on('click', 'td', function () {
-      var cell = $(this);
-      var cellIndex = cell.index(); // Получаем индекс столбца текущей ячейки
-
-      // Убедимся, что ячейка не в первом столбце
-      if (cellIndex > 0) {
-        if (!cell.find('textarea').length) { // проверяем, нет ли уже textarea в ячейке
-          var content = cell.text();
-          cell.data('original-text', content); // сохраняем оригинальный текст
-          cell.html('<textarea class="form-control">' + content + '</textarea>');
-          cell.find('textarea').focus();
-        }
-      }
+      var original = $value.text();
+      $field.data('original-text', original);
+      $value.replaceWith($('<textarea class="form-control phrase-input">').val(original));
+      $field.find('textarea.phrase-input').focus();
+      e.stopPropagation();
     });
 
-    $('#phraseDataTable').on('keydown', 'td textarea', function (e) {
-      var textarea = $(this);
-      var cell = textarea.parent('td');
-      if (e.key === 'Enter') {
-        var value = textarea.val();
-        cell.text(value);
+    $('#phraseDataTable').on('keydown', 'textarea.phrase-input', function (e) {
+      var $textarea = $(this);
+      var $field = $textarea.closest('.phrase-field');
+
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        $textarea.blur();
       } else if (e.key === 'Escape') {
-        var originalText = cell.data('original-text'); // получаем оригинальный текст
-        cell.text(originalText); // восстанавливаем оригинальный текст
+        e.preventDefault();
+        var originalText = $field.data('original-text') || '';
+        $textarea.replaceWith($('<div class="phrase-field-value">').text(originalText));
       }
     });
 
-    $('#phraseDataTable').on('blur', 'td textarea', function (e) {
-      var textarea = $(this);
-      var cell = textarea.parent('td');
-      var value = textarea.val();
-      cell.text(value); // сохраняем измененное значение
+    $('#phraseDataTable').on('blur', 'textarea.phrase-input', function () {
+      var $textarea = $(this);
+      var $field = $textarea.closest('.phrase-field');
+      if ($field.closest('tr').hasClass('phrase-row-new')) {
+        return;
+      }
+
+      var value = $textarea.val();
+      $textarea.replaceWith($('<div class="phrase-field-value">').text(value));
     });
 
-    $('#phraseDataTable').on('click', 'td textarea', function (e) {
-      e.stopPropagation(); // Останавливаем всплывание события
+    $('#phraseDataTable').on('click', 'textarea.phrase-input', function (e) {
+      e.stopPropagation();
     });
   });
 
