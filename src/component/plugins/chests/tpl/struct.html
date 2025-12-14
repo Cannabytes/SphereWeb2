@@ -86,8 +86,7 @@
         {% endif %}
         {% endif %}
       </div>
-      <div class="chest-header" style='background-image: url({{ chest.background|default('
-        /src/component/plugins/chests/tpl/images/background/bg-1.png') }});'>
+      <div class="chest-header" style='background-image: url({{ chest.background|default('/src/component/plugins/chests/tpl/images/background/bg-1.png') }});'>
         <div class="chest-icon mt-4">
           <img src="/src/component/plugins/chests/tpl/images/chest/chest-{{ chest.icon }}.webp" alt="{{ id|raw }}">
         </div>
@@ -270,16 +269,16 @@
       name: "{{ id|raw }}",
       price: {{ chest.price }},
     type: "{{ chest.type }}",
-      icon: { { chest.icon } },
+      icon: {{ chest.icon }},
     items: [
       {% for item in chest.items %}
     {
-      id: { { item.id } },
+      id: {{ item.id }},
       name: "{% set itemInfo = get_item_info(item.id) %}{{ itemInfo.getItemName()|escape('js') }}{% if itemInfo.getAddName() %} {{ itemInfo.getAddName()|escape('js') }}{% endif %}",
-        icon: "{{ itemInfo.getIcon() }}",
-          count: { { item.count } },
-      enchant: { { item.enchant |default (0) } },
-      chance: { { item.chance } }
+      icon: "{% if itemInfo is defined %}{{ itemInfo.getIcon() }}{% else %}{{ '' }}{% endif %}",
+      count: {{ item.count }},
+      enchant: {{ item.enchant|default(0) }},
+      chance: {{ item.chance }}
     } {% if not loop.last %}, {% endif %}
     {% endfor %}
 ]
@@ -324,5 +323,5 @@
     });
   </script>
 
-  <link rel="stylesheet" href="/src/component/plugins/chests/tpl/css/chests.css?v={{ 'now'|date('U') }}">
-  <script src="/src/component/plugins/chests/tpl/js/chests.js?v={{ 'now'|date('U') }}"></script>
+  <link rel="stylesheet" href="/src/component/plugins/chests/tpl/css/chests.css?v=0.1">
+  <script src="/src/component/plugins/chests/tpl/js/chests.js?v=0.1"></script>

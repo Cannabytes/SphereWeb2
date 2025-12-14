@@ -122,7 +122,22 @@ document.addEventListener('DOMContentLoaded', function () {
         itemsList.innerHTML = '';
 
         // Получаем данные кейса
-        const chest = window.chestData && window.chestData[chestId];
+        let chest = window.chestData && window.chestData[chestId];
+
+        if ((!chest || !chest.items) && document.querySelector('.chests-container')) {
+            try {
+                const container = document.querySelector('.chests-container');
+                const raw = container.getAttribute('data-chests');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (!window.chestData) window.chestData = parsed;
+                    if (!chest) chest = parsed[chestId];
+                }
+            } catch (e) {
+                console.warn('Не удалось распарсить data-chests:', e);
+            }
+        }
+
         if (!chest || !chest.items || !chest.items.length) {
             itemsList.innerHTML = '<div class="alert alert-warning">Предметы не найдены</div>';
             return;
