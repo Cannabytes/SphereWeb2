@@ -47,7 +47,7 @@ class AntiFlood {
             sql::run(
                 "INSERT INTO forum_user_activity 
              (user_id, activity_type, last_action_time, actions_count, cooldown_until) 
-             VALUES (?, ?, NOW(), 1, NULL)",
+             VALUES (?, ?, NOW(), 0, NULL)",
                 [$this->userId, $this->activityType]
             );
 
@@ -150,9 +150,28 @@ class AntiFlood {
 
         // Для новых тем проверяем только интервал
         if ($this->activityType === self::TYPE_THREAD) {
+            // Если у пользователя ещё не было действий — позволяем создать первую тему сразу
+            if ((int)($this->activity['actions_count'] ?? 0) === 0) {
+                return;
+            }
+
+            // Дополнительная надёжная проверка: если у пользователя вообще нет созданных тем в БД,
+            // позволяем создать первую тему (на случай, если запись в forum_user_activity некорректна).
+            $userThreads = sql::getValue(
+                "SELECT COUNT(*) FROM forum_threads WHERE user_id = ?",
+                [$this->userId]
+            );
+            if ((int)$userThreads === 0) {
+                return;
+            }
+
             $lastActionTime = strtotime($this->activity['last_action_time']);
             $timePassed = time() - $lastActionTime;
-
+            // На некоторых серверах время БД/PHP может отличаться — не допускаем отрицательного
+            // значения elapsed, иначе блокировка срабатывает некорректно.
+            if ($timePassed < 0) {
+                $timePassed = 0;
+            }
             if ($timePassed < $settings['min_interval']) {
                 $timeToWait = $settings['min_interval'] - $timePassed;
                 throw new Exception("Пожалуйста, подождите {$timeToWait} секунд перед созданием новой темы.");

@@ -1472,9 +1472,11 @@ class forum
             }
             $category = $this->getCategoryById($thread->getCategoryId());
 
-            //Проверка что пост принадлежит пользователю
-            if($post->getUserId() != user::self()->getId()) {
-                if (ForumModerator::isUserModerator(user::self()->getId(), $thread->getCategoryId()) == false or user::self()->isAdmin()) {
+            // Проверка прав: автор, админ, или модератор категории с правом редактирования
+            if ($post->getUserId() != user::self()->getId()) {
+                $isAdmin = user::self()->isAdmin();
+                $canModeratorEdit = ForumModerator::hasPermission(user::self()->getId(), $thread->getCategoryId(), 'can_edit_posts');
+                if (!$isAdmin && !$canModeratorEdit) {
                     throw new Exception("Нельзя редактировать чужие сообщения");
                 }
             }
@@ -1484,11 +1486,20 @@ class forum
                 throw new Exception("Сообщение превышает максимально допустимую длину");
             }
 
-            // Проверяем время редактирования
+            // Проверяем время редактирования: пользователи могут редактировать свои сообщения
+            // только в течение 60 минут после создания. Админы и модераторы с правом
+            // `can_edit_posts` не ограничены этим таймаутом.
             $timePassedMinutes = (time() - strtotime($post->getCreatedAt())) / 60;
-            if (!user::self()->isAdmin() &&
-                $timePassedMinutes > $category->getEditTimeoutMinutes()) {
-                throw new Exception("Время редактирования сообщения истекло");
+            $isAdmin = user::self()->isAdmin();
+            $canModeratorEdit = ForumModerator::hasPermission(user::self()->getId(), $thread->getCategoryId(), 'can_edit_posts');
+
+            if (!$isAdmin && !$canModeratorEdit) {
+                // Только автор может редактировать своё сообщение в пределах таймаута
+                if ($post->getUserId() === user::self()->getId()) {
+                    if ($timePassedMinutes > 60) {
+                        throw new Exception("Время редактирования сообщения истекло");
+                    }
+                }
             }
 
             sql::run(
@@ -2555,10 +2566,28 @@ class forum
     public function renameThread(): void
     {
         try {
-            $this->validateAdminRights();
-
             $threadId = $_POST['threadId'] ?? board::error("Не указана тема");
             $title = $_POST['title'] ?? board::error("Не указано новое название");
+
+            $thread = $this->getThreadById($threadId);
+            if (!$thread) {
+                throw new Exception("Тема не найдена");
+            }
+
+            $isAdmin = user::self()->isAdmin();
+            $canModeratorEdit = ForumModerator::hasPermission(user::self()->getId(), $thread->getCategoryId(), 'can_edit_posts');
+
+            // Админ или модератор с правом редактирования могут переименовывать всегда.
+            // Автор темы может переименовать в течение 60 минут после создания.
+            if (!$isAdmin && !$canModeratorEdit) {
+                if ($thread->getAuthorId() !== user::self()->getId()) {
+                    throw new Exception("Недостаточно прав для выполнения операции");
+                }
+                $timePassedMinutes = (time() - strtotime($thread->getCreatedAt())) / 60;
+                if ($timePassedMinutes > 60) {
+                    throw new Exception("Время редактирования темы истекло");
+                }
+            }
 
             // XSS защита: очищаем название темы
             $title = XssSecurity::clean($title);

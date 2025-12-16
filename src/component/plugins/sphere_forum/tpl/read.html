@@ -530,14 +530,16 @@
                                             <i class="ri-reply-line"></i> {{phrase('reply')}}
                                         </button>
 
-                                        {% if getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_delete_posts') %}
+                                        {% set canEditPost = (getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_edit_posts') or (post.getUserId() == getUser().getId() and post.isEditableByTime(60))) %}
+
+                                        {% if canEditPost %}
 
                                         <a href="/forum/post/edit/{{post.getId()}}/page/{{currentPage}}"
                                            class="btn  btn-sm text-muted"><i
                                                 class="ri-edit-2-fill"></i> {{phrase('change')}}
                                         </a>
 
-                                        {% if post.getId() != firstPostId %}
+                                        {% if post.getId() != firstPostId and (getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_delete_posts')) %}
                                         <button type="button" class="btn  btn-sm text-muted deletePost"
                                                 data-post-id="{{post.getId()}}">
                                             <i class="ri-delete-bin-line"></i> {{phrase('delete')}}
