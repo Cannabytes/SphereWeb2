@@ -198,6 +198,12 @@ class forum
                 return;
             }
 
+            // Если раздел скрыт — перенаправляем обычных пользователей на /forum
+            if ($category->isHidden() && !user::self()->isAdmin() && !ForumModerator::isUserModerator(user::self()->getId(), $category->getId())) {
+                redirect::location('/forum');
+                return;
+            }
+
             // Проверяем права на создание тем
             $canCreateTopics = user::self()->isAdmin() || $category->canCreateTopics() || user::self()->isAuth();
 

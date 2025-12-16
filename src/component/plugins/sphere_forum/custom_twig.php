@@ -67,6 +67,11 @@ class custom_twig
         );
         $categories = [];
         foreach ($forum_categories as $category) {
+            $isHidden = (bool)($category['is_hidden'] ?? false);
+            // Скрытые категории видны только администраторам и модераторам
+            if ($isHidden && !user::self()->isAdmin() && !ForumModerator::isUserModerator(user::self()->getId(), $category['id'])) {
+                continue;
+            }
             $categories[] = new forum_category($category);
         }
 
