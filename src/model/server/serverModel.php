@@ -1080,7 +1080,7 @@ class serverModel
 
         $cacheContent = [
             'data' => $data,
-            'date_create' => date('Y-m-d H:i:s'),
+            'date_create' => time::mysql(),
             'timestamp' => time()
         ];
 

@@ -254,7 +254,6 @@ class server
                     }
                 }
             }
-            $needsUpdate = true;
             if ($needsUpdate) {
                 $serverStatusAll = \Ofey\Logan22\component\sphere\server::send(type::GET_STATUS_SERVER_ALL, [])->getResponse();
                 if(isset($serverStatusAll['license'])){

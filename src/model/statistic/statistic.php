@@ -216,13 +216,46 @@ class statistic
         try {
             \Ofey\Logan22\component\sphere\server::setUser(user::self());
 
+            $cache = null;
+            $server = server::getServer($server_id);
+
+            // Попытка читать существующий кэш для данного сервера
+            if ($server) {
+                try {
+                    $cache = $server->getCache(type: 'statistic', onlyData: false);
+                    if ($cache && !empty($cache['data'])) {
+                        if (!self::isCacheExpired($cache['date'])) {
+                            self::$statistic[$server_id] = $cache['data'];
+                            return self::$statistic[$server_id];
+                        }
+                    }
+                } catch (Exception $e) {
+                    error_log("Error reading statistic cache for server {$server_id}: " . $e->getMessage());
+                }
+            }
+
             $statistics = self::requestStatistics();
             if (!$statistics) {
+                // Если запрос не удался — вернём устаревший кэш если он есть
+                if ($cache && !empty($cache['data'])) {
+                    self::$statistic[$server_id] = $cache['data'];
+                    return self::$statistic[$server_id];
+                }
                 self::$statistic = false;
                 return false;
             }
 
             self::processStatisticsData($statistics);
+
+            // Гарантированно сохранить кэш для этого сервера (processStatisticsData
+            // уже вызывает сохранение, но дублируем для надёжности)
+            if ($server && isset(self::$statistic[$server_id])) {
+                try {
+                    $server->setCache('statistic', self::$statistic[$server_id]);
+                } catch (Exception $e) {
+                    error_log("Error saving statistic cache for server {$server_id}: " . $e->getMessage());
+                }
+            }
 
             return self::$statistic[$server_id] ?? false;
 
