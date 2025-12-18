@@ -10,6 +10,8 @@ use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\template\tpl;
+use Ofey\Logan22\model\user\user as user;
+use Ofey\Logan22\model\log\logTypes;
 
 class statistic
 {
@@ -24,20 +26,19 @@ class statistic
     {
         $rows = sql::getRows("SELECT `point`, `message`, `pay_system`, `sphere`, `date` FROM `donate_history_pay` ORDER BY `id` DESC");
 
-        $statsPay = []; // daily
+        $statsPay = [];
         $monthlyStatsPay = [];
         $donatePoint = 0;
         foreach ($rows as $row) {
-            if ($row['sphere'] == 1) continue; // skip sphere internal bonuses
+            if ($row['sphere'] == 1) continue;
             $p = (float)$row['point'];
             $donatePoint += $p;
-            $date = substr($row['date'], 0, 10); // YYYY-MM-DD
+            $date = substr($row['date'], 0, 10); 
             $month = date('Y-m', strtotime($row['date']));
             $statsPay[$date] = ($statsPay[$date] ?? 0) + $p;
             $monthlyStatsPay[$month] = ($monthlyStatsPay[$month] ?? 0) + $p;
         }
 
-        // Pay systems distribution
         $paySystemsRows = sql::getRows("SELECT `pay_system`, SUM(`point`) AS sum_point FROM `donate_history_pay` WHERE `sphere` = 0 GROUP BY `pay_system` ORDER BY sum_point DESC");
         $paySystemLabels = [];
         $paySystemValues = [];
@@ -45,8 +46,6 @@ class statistic
             $paySystemLabels[] = $ps['pay_system'];
             $paySystemValues[] = (float)$ps['sum_point'];
         }
-
-        // Heatmap data (day-of-week x hour)
         $heatmapRows = sql::getRows("SELECT (DAYOFWEEK(`date`)+6)%7 AS dow, HOUR(`date`) AS h, COUNT(*) c FROM donate_history_pay WHERE sphere=0 GROUP BY dow,h");
         $heatmap = [];
         foreach ($heatmapRows as $r) {
@@ -55,20 +54,14 @@ class statistic
             $heatmap[$d][$h] = (int)$r['c'];
         }
 
-        // Distinct donors count
         $donorsCount = (int)sql::getValue("SELECT COUNT(DISTINCT user_id) FROM donate_history_pay WHERE sphere=0");
-
-        // Timeline series (array of [timestamp_ms, value])
         $timelineSeries = [];
         foreach ($statsPay as $d => $v) {
             $timelineSeries[] = [strtotime($d) * 1000, $v];
         }
-        // Sort by time ascending
         usort($timelineSeries, fn($a, $b) => $a[0] <=> $b[0]);
-
-        // Monthly arrays for charts
         ksort($monthlyStatsPay);
-        $monthlyMonths = array_keys($monthlyStatsPay); // YYYY-MM
+        $monthlyMonths = array_keys($monthlyStatsPay);
         $monthlyValues = array_values($monthlyStatsPay);
 
         if (\Ofey\Logan22\model\server\server::get_count_servers() == 0) {
@@ -93,7 +86,6 @@ class statistic
         tpl::display("/admin/statistic_donate.html");
     }
 
-    // DataTables server-side endpoint for donation rows
     public static function donateData(): void
     {
         validation::user_protection("admin");
@@ -103,9 +95,9 @@ class statistic
         $length = (int)($_POST['length'] ?? 50);
         if ($length <= 0 || $length > 500) $length = 50;
         $search = trim($_POST['search']['value'] ?? '');
-        $orderColIdx = (int)($_POST['order'][0]['column'] ?? 4); // default date desc
+            $orderColIdx = (int)($_POST['order'][0]['column'] ?? 4);
         $orderDir = strtolower($_POST['order'][0]['dir'] ?? 'desc') === 'asc' ? 'ASC' : 'DESC';
-        // Columns: user, point, message, system, date
+        
         $colMap = [0 => 'd.id', 1 => 'd.point', 2 => 'd.message', 3 => 'd.pay_system', 4 => 'd.date'];
         $orderCol = $colMap[$orderColIdx] ?? 'd.date';
 
@@ -137,7 +129,7 @@ class statistic
             $email = htmlspecialchars($r['email'] ?? '');
             $country = htmlspecialchars($r['country'] ?? '');
             $point = (float)$r['point'];
-            // Calculate USD equivalent
+            
             if (\Ofey\Logan22\model\server\server::get_count_servers() == 0) {
                 $usd = $point;
             } else {
@@ -160,6 +152,93 @@ class statistic
             ];
         }
         echo json_encode(['draw' => $draw, 'recordsTotal' => $total, 'recordsFiltered' => $filtered, 'data' => $data], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    public static function donateClear(): void
+    {
+        validation::user_protection("admin");
+        header('Content-Type: application/json; charset=utf-8');
+
+        $from = trim($_POST['from'] ?? '');
+        $to = trim($_POST['to'] ?? '');
+        $preview = isset($_POST['preview']) && ($_POST['preview'] === '1' || $_POST['preview'] === 'true');
+        $confirm = trim($_POST['confirm'] ?? '');
+
+        
+        try {
+            $fromDt = \DateTime::createFromFormat('Y-m-d', $from);
+            $toDt = \DateTime::createFromFormat('Y-m-d', $to);
+            if (!$fromDt) {
+                $t = @strtotime($from);
+                if ($t === false) throw new \Exception('Invalid from date');
+                $fromDt = new \DateTime('@' . $t);
+            }
+            if (!$toDt) {
+                $t = @strtotime($to);
+                if ($t === false) throw new \Exception('Invalid to date');
+                $toDt = new \DateTime('@' . $t);
+            }
+            $fromDt->setTime(0,0,0);
+            $toDt->setTime(23,59,59);
+        } catch (\Exception $e) {
+            echo json_encode(['ok' => false, 'error' => 'Invalid date format']);
+            exit;
+        }
+
+        $fromStr = $fromDt->format('Y-m-d H:i:s');
+        $toStr = $toDt->format('Y-m-d H:i:s');
+
+        
+        $diff = $toDt->getTimestamp() - $fromDt->getTimestamp();
+        if ($diff < 0) {
+            echo json_encode(['ok' => false, 'error' => '"From" date must be before "To" date']);
+            exit;
+        }
+
+        
+        try {
+            $count = (int)sql::getValue('SELECT COUNT(*) FROM donate_history_pay WHERE `date` >= ? AND `date` <= ?', [$fromStr, $toStr]);
+        } catch (\Exception $e) {
+            echo json_encode(['ok' => false, 'error' => 'Database error']);
+            exit;
+        }
+
+        if ($preview) {
+            
+            if (isset($_POST['preview_full'])) {
+                echo json_encode(['ok' => true, 'full_count' => $count]);
+            } else {
+                echo json_encode(['ok' => true, 'count' => $count]);
+            }
+            exit;
+        }
+
+        
+        if ($confirm !== 'DELETE') {
+            echo json_encode(['ok' => false, 'error' => 'Confirmation text mismatch. Type DELETE to confirm.']);
+            exit;
+        }
+
+        $deleted = 0;
+        try {
+            sql::transaction(function() use ($fromStr, $toStr) {
+                sql::run('DELETE FROM donate_history_pay WHERE `date` >= ? AND `date` <= ?', [$fromStr, $toStr]);
+            });
+            $deleted = isset($count) ? (int)$count : 0;
+        } catch (\Exception $e) {
+            echo json_encode(['ok' => false, 'error' => 'Failed to delete records']);
+            exit;
+        }
+
+        try {
+            if (\Ofey\Logan22\model\user\user::self() !== null) {
+                \Ofey\Logan22\model\user\user::self()->addLog(logTypes::LOG_SAVE_CONFIG, 'ADMIN_CLEAR_DONATIONS', [ 'from' => $fromStr, 'to' => $toStr, 'deleted' => $deleted ]);
+            }
+        } catch (\Exception $e) {
+        }
+
+        echo json_encode(['ok' => true, 'deleted' => $deleted]);
         exit;
     }
 }

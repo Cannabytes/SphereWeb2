@@ -144,7 +144,7 @@
         </div>
     </div>
 
-    <!-- Таблица с донатами пользователей -->
+    
     <div class="row">
         <div class="col-xl-12">
             <div class="card custom-card">
@@ -166,6 +166,61 @@
                             <tbody></tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                <!-- Блок управления записями доната (перенесён вниз) -->
+                <div class="row mb-3">
+                    <div class="col-xl-12">
+                        <div class="card custom-card">
+                            <div class="card-header">
+                                <div class="card-title">{{ phrase('Manage donations') }}</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-2 align-items-center">
+                                    <div class="col-auto">
+                                        <label class="form-label">{{ phrase('From') }}</label>
+                                        <input id="donate-clear-from" type="date" class="form-control" placeholder="{{ phrase('date_format') }}" />
+                                    </div>
+                                    <div class="col-auto">
+                                        <label class="form-label">{{ phrase('To') }}</label>
+                                        <input id="donate-clear-to" type="date" class="form-control" placeholder="{{ phrase('date_format') }}" />
+                                    </div>
+                                    <div class="col-auto">
+                                        <label class="form-label d-block">&nbsp;</label>
+                                        <button id="btn-donate-preview" class="btn btn-sm btn-outline-primary">{{ phrase('Preview') }}</button>
+                                        <button id="btn-donate-clear" class="btn btn-sm btn-danger">{{ phrase('Clear') }}</button>
+                                    </div>
+                                    <div class="col-auto">
+                                        <label class="form-label d-block">&nbsp;</label>
+                                        <div id="donate-preview-count" class="text-muted"> </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confirmation modal for deleting donations -->
+    <div class="modal fade" id="donate-clear-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ phrase('Confirm deletion') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="donate-modal-body">{{ phrase('This action will delete donations in the selected date range.') }}</p>
+                    <div class="mb-2">
+                        <label class="form-label">{{ phrase('Type DELETE to confirm') }}</label>
+                        <input id="donate-confirm-input" class="form-control" placeholder="DELETE" />
+                    </div>
+                    <div class="text-muted small">{{ phrase('Note: this action is irreversible.') }}</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ phrase('Cancel') }}</button>
+                    <button id="donate-final-clear" type="button" class="btn btn-danger" disabled>{{ phrase('Delete permanently') }}</button>
                 </div>
             </div>
         </div>
@@ -399,7 +454,6 @@
     };
     var barChart = new ApexCharts(document.querySelector("#bar-basic"), optionsBarChart);
     barChart.render();
-
     // Данные для временной линии
     var dates = {{ timeline_series| json_encode | raw }};
 
@@ -816,5 +870,93 @@
         // Инициализация тултипов для улучшения UX
         $('[data-bs-toggle="tooltip"]').tooltip();
     });
+
+    // Donation clear UI handlers
+    (function () {
+        function showAlert(msg) { alert(msg); }
+
+        $('#btn-donate-preview').on('click', function (e) {
+            e.preventDefault();
+            var from = $('#donate-clear-from').val();
+            var to = $('#donate-clear-to').val();
+            if (!from || !to) { showAlert('{{ phrase("Please select both dates") }}'); return; }
+            $('#donate-preview-count').text('{{ phrase("Loading...") }}');
+            $.post('/admin/statistic/donate/clear', { from: from, to: to, preview: 1 }, function (res) {
+                if (!res) { showAlert('Error'); $('#donate-preview-count').text(''); return; }
+                if (res.too_large) {
+                    var limitedDate = res.limited_to;
+                    var limitedCount = res.limited_count;
+                    var html = '<div class="small text-warning">' + '{{ phrase("Date range exceeds") }}'.replace('%s', res.max_days) + '</div>' +
+                        '<div class="small text-muted">' + '{{ phrase("Showing first %s days") }}'.replace('%s', res.max_days) + ': <strong>' + limitedCount + '</strong></div>' +
+                        '<a href="#" id="preview-full-link" class="small ms-2">{{ phrase("Preview full") }}</a>';
+                    $('#donate-preview-count').html(html);
+                    $('#preview-full-link').on('click', function (e) {
+                        e.preventDefault();
+                        $('#donate-preview-count').text('{{ phrase("Loading...") }}');
+                        $.post('/admin/statistic/donate/clear', { from: from, to: to, preview: 1, preview_full: 1 }, function (r) {
+                            if (r && r.ok) {
+                                if (r.full_count !== undefined) {
+                                    $('#donate-preview-count').html('<div class="small text-muted">{{ phrase("Full range records") }}: <strong>' + r.full_count + '</strong></div>');
+                                } else if (r.count !== undefined) {
+                                    $('#donate-preview-count').html('<div class="small text-muted">' + r.count + ' {{ phrase("records") }}</div>');
+                                } else {
+                                    $('#donate-preview-count').text('');
+                                }
+                            } else {
+                                showAlert(r.error || 'Error');
+                                $('#donate-preview-count').text('');
+                            }
+                        }, 'json').fail(function () { showAlert('Request failed'); $('#donate-preview-count').text(''); });
+                    });
+                } else if (res.ok) {
+                    var cnt = res.count ?? res.limited_count ?? 0;
+                    $('#donate-preview-count').text(cnt + ' {{ phrase("records") }}');
+                } else {
+                    showAlert(res.error || 'Error');
+                    $('#donate-preview-count').text('');
+                }
+            }, 'json').fail(function () { showAlert('Request failed'); $('#donate-preview-count').text(''); });
+        });
+
+        $('#btn-donate-clear').on('click', function (e) {
+            e.preventDefault();
+            var from = $('#donate-clear-from').val();
+            var to = $('#donate-clear-to').val();
+            if (!from || !to) { showAlert('{{ phrase("Please select both dates") }}'); return; }
+            $('#donate-confirm-input').val('');
+            $('#donate-final-clear').prop('disabled', true).text('{{ phrase("Delete permanently") }}');
+            var previewText = $('#donate-preview-count').text();
+            if (previewText) {
+                $('#donate-modal-body').text('{{ phrase("This action will delete donations in the selected date range.") }} ' + previewText);
+            } else {
+                $('#donate-modal-body').text('{{ phrase("This action will delete donations in the selected date range.") }}');
+            }
+            var modal = new bootstrap.Modal(document.getElementById('donate-clear-modal'));
+            modal.show();
+        });
+
+        $('#donate-confirm-input').on('input', function () {
+            var ok = $(this).val().trim() === 'DELETE';
+            $('#donate-final-clear').prop('disabled', !ok);
+        });
+
+        $('#donate-final-clear').on('click', function () {
+            var from = $('#donate-clear-from').val();
+            var to = $('#donate-clear-to').val();
+            var confirm = $('#donate-confirm-input').val().trim();
+            if (confirm !== 'DELETE') { showAlert('{{ phrase("Type DELETE to confirm") }}'); return; }
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('{{ phrase("Deleting...") }}');
+            $.post('/admin/statistic/donate/clear', { from: from, to: to, preview: 0, confirm: confirm }, function (res) {
+                if (res && res.ok) {
+                    // Reload silently on success
+                    location.reload();
+                } else {
+                    showAlert(res.error || 'Error');
+                    $btn.prop('disabled', false).text('{{ phrase("Delete permanently") }}');
+                }
+            }, 'json').fail(function () { showAlert('Request failed'); $btn.prop('disabled', false).text('{{ phrase("Delete permanently") }}'); });
+        });
+    })();
 </script>
 {% endblock %}
