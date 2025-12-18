@@ -11,6 +11,22 @@ $routes = [
         (new set_http_referrer\httpReferrerPlugin())->show();
     },
   ],
+  [
+    "method"  => "GET",
+    "pattern" => "/admin/statistic/http/referral/delete",
+    "file"    => "httpReferrerPlugin.php",
+    "call"    => function () {
+        (new set_http_referrer\httpReferrerPlugin())->showDeletePage();
+    },
+  ],
+  [
+    "method"  => "POST",
+    "pattern" => "/admin/statistic/http/referral/delete/action",
+    "file"    => "httpReferrerPlugin.php",
+    "call"    => function () {
+        (new set_http_referrer\httpReferrerPlugin())->deleteByDate();
+    },
+  ],
 
   [
     "method"  => "GET",

@@ -401,51 +401,47 @@ class session
             return "";
         }
 
-        $date = date("Y-m-d");
-        $data = sql::getRow("SELECT `data` FROM server_cache WHERE `type` = 'HTTP_REFERER_VIEWS';");
-
-        if ($data) {
-            $dataJSONDecode = json_decode($data["data"], true);
-            $n = false;
-
-            foreach ($dataJSONDecode as &$val) {
-                $referer = $val['referer'];
-                if ($host == $referer) {
-                    // Проверяем наличие ключа $date и инициализируем его, если отсутствует
-                    if (!isset($val['count'][$date])) {
-                        $val['count'][$date] = 0;
-                    }
-                    $val['count'][$date]++;
-                    $n = true;
-                    break;
-                }
-            }
-
-            if (!$n) {
-                $dataJSONDecode[] = [
-                    'referer' => $host,
-                    'count' => [
-                        $date => 1,
-                    ],
-                ];
-            }
-
-            $dataJSON = json_encode($dataJSONDecode, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            sql::run("UPDATE `server_cache` SET `data` = ? WHERE `type` = 'HTTP_REFERER_VIEWS'", [$dataJSON]);
-        } else {
-            $arr = json_encode([
-                [
-                    'referer' => $host,
-                    'count' => [
-                        $date => 1,
-                    ],
-                ],
-            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            sql::run("INSERT INTO `server_cache` (`type`, `data`) VALUES ('HTTP_REFERER_VIEWS', ?)", [$arr]);
-        }
-
+        $dateKey = date('d-m-Y');
+        self::saveReferrerToFile(mb_strtolower($host), $dateKey, 1);
         return $host;
     }
+
+    /**
+     * Сохранить реферер в PHP-файл для конкретной даты.
+     * Файлы располагаются в uploads/views/{день-месяц-год}.php
+     * В файле хранится массив вида [ 'example.com' => count, ... ]
+     *
+     * @param string $host
+     * @param string $dateKey
+     * @param int $increment
+     * @return bool
+     */
+    public static function saveReferrerToFile(string $host, string $dateKey, int $increment = 1): bool
+    {
+        $dir = fileSys::get_dir('/uploads/views');
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+
+        $file = rtrim($dir, "\/") . DIRECTORY_SEPARATOR . $dateKey . '.php';
+
+        $data = [];
+        if (is_file($file)) {
+            $loaded = @include $file;
+            if (is_array($loaded)) {
+                $data = $loaded;
+            }
+        }
+
+        $data[$host] = (int)($data[$host] ?? 0) + $increment;
+
+        $content = "<?php\nreturn " . var_export($data, true) . ";\n";
+        $res = @file_put_contents($file, $content, LOCK_EX);
+
+        return $res !== false;
+    }
+
+    
 
     /**
      * Редактирование значения в сессии

@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Источник траффика{% endblock %}
+{% block title %}{{ phrase('http_referrer_title') }}{% endblock %}
 
 {% block content %}
 
@@ -108,12 +108,15 @@
         <div class="col-xl-12">
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
-                    <div class="card-title">
-                        Динамика переходов по дням
+                            <div class="card-title">
+                        {{ phrase('http_referrer_timeline_title') }}
                     </div>
                     <div class="d-flex align-items-center">
                         <div class="me-2">
                             <input type="text" class="form-control form-control-sm" id="dateRangeFilter" placeholder="Выберите период">
+                        </div>
+                        <div>
+                            <a href="/admin/statistic/http/referral/delete" class="btn btn-sm btn-outline-danger">{{ phrase('http_referrer_clear_link') }}</a>
                         </div>
                     </div>
                 </div>
@@ -137,8 +140,8 @@
                             {{ phrase('referral_sources') }}
                         </div>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <input type="text" class="form-control form-control-sm" id="tableDateFilter" placeholder="Фильтр по дате" style="width: 200px;">
+                            <div class="d-flex align-items-center">
+                        <input type="text" class="form-control form-control-sm" id="tableDateFilter" placeholder="{{ phrase('http_referrer_filter_placeholder') }}" style="width: 200px;">
                     </div>
                 </div>
                 <div class="card-body">
@@ -149,7 +152,7 @@
         <div class="col-xl-4">
             <div class="card custom-card">
                 <div class="card-header">
-                    <div class="card-title">Визуализация источников</div>
+                    <div class="card-title">{{ phrase('http_referrer_visualization') }}</div>
                 </div>
                 <div class="card-body">
                     <ul class="nav nav-tabs mb-3" role="tablist">
@@ -184,7 +187,7 @@
         <div class="col-xl-12">
             <div class="card custom-card">
                 <div class="card-header">
-                    <div class="card-title">Топ источников по конверсии</div>
+                    <div class="card-title">{{ phrase('http_referrer_top_conversion') }}</div>
                 </div>
                 <div class="card-body">
                     <div id="echart-conversion" style="height: 300px;"></div>
@@ -228,26 +231,26 @@
         sort: true,
         columns: [
             {
-                name: "Источник",
+                name: "{{ phrase('http_referrer_col_source') }}",
                 width: "200px",
                 formatter: (cell) => gridjs.html(cell)
             },
             {
-                name: "Просмотры",
+                name: "{{ phrase('http_referrer_col_views') }}",
                 width: "100px",
                 sort: {
                     compare: (a, b) => parseInt(a) - parseInt(b)
                 }
             },
             {
-                name: "Регистрации",
+                name: "{{ phrase('http_referrer_col_registrations') }}",
                 width: "100px",
                 sort: {
                     compare: (a, b) => parseInt(a) - parseInt(b)
                 }
             },
             {
-                name: "CR %",
+                name: "{{ phrase('http_referrer_col_cr') }}",
                 width: "80px",
                 sort: {
                     compare: (a, b) => parseFloat(a) - parseFloat(b)
@@ -255,14 +258,14 @@
                 formatter: (cell) => gridjs.html(`<span class="badge bg-${parseFloat(cell) > 5 ? 'success' : parseFloat(cell) > 2 ? 'warning' : 'secondary'}">${cell}%</span>`)
             },
             {
-                name: "Донаты",
+                name: "{{ phrase('http_referrer_col_donations') }}",
                 width: "100px",
                 sort: {
                     compare: (a, b) => parseFloat(a) - parseFloat(b)
                 }
             },
             {
-                name: "Ср. донат",
+                name: "{{ phrase('http_referrer_col_avg_donation') }}",
                 width: "100px",
                 sort: {
                     compare: (a, b) => parseFloat(a) - parseFloat(b)
@@ -389,8 +392,8 @@
     if (otherCount > 0) {
         pieData.push({
             value: otherCount,
-            name: 'Другие',
-            fullName: 'Другие источники',
+            name: '{{ phrase('http_referrer_label_others') }}',
+            fullName: '{{ phrase('http_referrer_label_others_full') }}',
             total_donations: otherDonations,
             user_count: otherUserCount
         });

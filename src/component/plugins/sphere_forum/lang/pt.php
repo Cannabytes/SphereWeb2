@@ -1,4 +1,7 @@
-    'drag_drop_or_click_to_upload' => 'Arraste e solte ou clique para enviar',
+  <?php
+
+return [
+  'drag_drop_or_click_to_upload' => 'Arraste e solte ou clique para enviar',
     'uploaded_image_will_be_used_as_icon' => 'A imagem enviada será usada como ícone',
     'or_upload_image' => 'Ou envie uma imagem',
     'svg_html' => 'SVG / HTML',
@@ -9,9 +12,7 @@
     'choose_image' => 'Escolher imagem',
     'upload_failed' => 'Falha no envio',
     'please_upload_image_or_enter_svg' => 'Por favor envie uma imagem ou insira código SVG',
-<?php
 
-return [
     'Sphere Forum' => 'Fórum Interno',
     'sphere_forum' => 'Fórum',
     'sphere_forum_desc' => 'Permite criar e gerenciar seções e tópicos.',

@@ -1,0 +1,107 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{ phrase('http_referrer_delete_title') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+            <div class="card custom-card">
+        <div class="card-header">
+            <div class="card-title">{{ phrase('http_referrer_card_title') }}</div>
+        </div>
+        <div class="card-body">
+            {% if deleteResult is defined and deleteResult %}
+                <div class="mb-3">
+                    {% if deleteResult.errors is defined and deleteResult.errors %}
+                        <div class="alert alert-danger">
+                            <ul>
+                                {% for e in deleteResult.errors %}
+                                    <li>{{ e }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    {% if deleteResult.deleted is defined and deleteResult.deleted %}
+                        <div class="alert alert-success">
+                            {{ phrase('http_referrer_deleted_files') }}
+                            <ul>
+                                {% for f in deleteResult.deleted %}
+                                    <li>{{ f }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <div id="ajaxDeleteResult"></div>
+
+            <form class="js-ajax-delete" action="/admin/statistic/http/referral/delete/action" method="post">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">{{ phrase('http_referrer_date_start') }}</label>
+                        <input type="date" name="date_start" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">{{ phrase('http_referrer_date_end') }}</label>
+                        <input type="date" name="date_end" class="form-control" required>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-danger">{{ phrase('http_referrer_delete_button') }}</button>
+                    </div>
+                </div>
+            </form>
+
+            {% block js %}
+            <script>
+                (function(){
+                    const MSG_EMPTY = {{ phrase('http_referrer_js_empty_response')|json_encode|raw }};
+                    const MSG_DELETED = {{ phrase('http_referrer_deleted_files')|json_encode|raw }};
+                    const MSG_NOTHING = {{ phrase('http_referrer_js_nothing_deleted')|json_encode|raw }};
+                    const MSG_REQ_ERR = {{ phrase('http_referrer_js_request_error')|json_encode|raw }};
+                    $(document).on('submit', 'form.js-ajax-delete', function (e) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+
+                        const $form = $(this);
+                        const start = $form.find('input[name="date_start"]').val();
+                        const end = $form.find('input[name="date_end"]').val();
+
+                        AjaxSend('/admin/statistic/http/referral/delete/action', 'POST', {date_start: start, date_end: end}, true)
+                            .then(function (response) {
+                                const container = $('#ajaxDeleteResult');
+                                container.empty();
+                                if (!response) {
+                                    container.append('<div class="alert alert-danger">' + MSG_EMPTY + '</div>');
+                                    return;
+                                }
+                                if (response.ok === false) {
+                                    const errs = response.errors || (response.result && response.result.errors) || [];
+                                    if (errs.length === 0 && response.message) errs.push(response.message);
+                                    let html = '<div class="alert alert-danger"><ul>' + errs.map(e => '<li>' + e + '</li>').join('') + '</ul></div>';
+                                    container.append(html);
+                                    return;
+                                }
+                                const res = response.result || response;
+                                let out = '';
+                                if (res.deleted && res.deleted.length) {
+                                    out += '<div class="alert alert-success">' + MSG_DELETED + '<ul>' + res.deleted.map(f => '<li>' + f + '</li>').join('') + '</ul></div>';
+                                }
+                                if (res.errors && res.errors.length) {
+                                    out += '<div class="alert alert-danger">Ошибки:<ul>' + res.errors.map(f => '<li>' + f + '</li>').join('') + '</ul></div>';
+                                }
+                                container.append(out || '<div class="alert alert-info">' + MSG_NOTHING + '</div>');
+                            })
+                            .catch(function (err) {
+                                $('#ajaxDeleteResult').html('<div class="alert alert-danger">' + MSG_REQ_ERR + '</div>');
+                                console.error(err);
+                            });
+                    });
+                })();
+            </script>
+            {% endblock %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -313,21 +313,15 @@ class ReferralLinks
      */
     public function handleCustomLink($linkPath): void
     {
-        // Получаем конфигурацию
         $config = $this->loadConfig();
-        // Попытаемся использовать полную строку запроса (path + query), если она сохранена как ключ
-        // Например админ мог сохранить "promo?utm_source=telegram" как `link_path`.
         $requested = ltrim($_SERVER['REQUEST_URI'] ?? '', '/');
-        // Убираем возможный якорь
         if (($p = strpos($requested, '#')) !== false) {
             $requested = substr($requested, 0, $p);
         }
 
-        // Сначала пробуем точное совпадение полного запроса (без ведущего слеша)
         if (isset($config[$requested])) {
             $link = $config[$requested];
         } elseif (isset($config[$linkPath])) {
-            // Затем пробуем ключ, переданный роутером
             $link = $config[$linkPath];
         } else {
             // Ссылка не найдена
@@ -337,7 +331,6 @@ class ReferralLinks
         $redirectUrl = $link['redirect_url'] ?? null;
 
         if (!$redirectUrl) {
-            // Неверная конфигурация
             redirect::location("/main");
             return;
         }

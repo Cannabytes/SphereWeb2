@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Детальная статистика источника{% endblock %}
+{% block title %}{{ phrase('http_referrer_users_detail_title') }}{% endblock %}
 
 {% block content %}
 
@@ -22,7 +22,7 @@
                                 <div class="d-flex align-items-center">
                                     <div class="input-group">
                                         <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                        <input type="text" class="form-control" id="daterange" placeholder="Выберите период">
+                                        <input type="text" class="form-control" id="daterange" placeholder="{{ phrase('http_referrer_select_period') }}">
                                     </div>
                                 </div>
                             </div>
@@ -44,7 +44,7 @@
                                 </span>
                             </div>
                             <div class="flex-fill">
-                                <h6 class="mb-1 text-muted">Переходов</h6>
+                                <h6 class="mb-1 text-muted">{{ phrase('http_referrer_card_views') }}</h6>
                                 <h3 class="fw-semibold mb-0">{{views|number_format(0, '.', ' ')}}</h3>
                             </div>
                         </div>
@@ -61,7 +61,7 @@
                                 </span>
                             </div>
                             <div class="flex-fill">
-                                <h6 class="mb-1 text-muted">Регистраций</h6>
+                                <h6 class="mb-1 text-muted">{{ phrase('http_referrer_card_registrations') }}</h6>
                                 <h3 class="fw-semibold mb-0">{{users|length}}</h3>
                                 {% set conversionRate = views > 0 ? ((users|length / views) * 100)|number_format(2) : 0 %}
                                 <span class="text-muted fs-11">CR: {{conversionRate}}%</span>
@@ -80,7 +80,7 @@
                                 </span>
                             </div>
                             <div class="flex-fill">
-                                <h6 class="mb-1 text-muted">Пожертвований</h6>
+                                <h6 class="mb-1 text-muted">{{ phrase('http_referrer_card_donations') }}</h6>
                                 <h3 class="fw-semibold mb-0">{{countAllDonate|number_format(0, '.', ' ')}}</h3>
                             </div>
                         </div>
@@ -97,7 +97,7 @@
                                 </span>
                             </div>
                             <div class="flex-fill">
-                                <h6 class="mb-1 text-muted">Средний донат</h6>
+                                <h6 class="mb-1 text-muted">{{ phrase('http_referrer_card_avg_donation') }}</h6>
                                 {% set avgDonate = users|length > 0 ? (countAllDonate / users|length)|number_format(2) : 0 %}
                                 <h3 class="fw-semibold mb-0">{{avgDonate}}</h3>
                             </div>
@@ -112,17 +112,17 @@
             <div class="col-xl-12">
                 <div class="card custom-card">
                     <div class="card-header">
-                        <div class="card-title">
-                            Зарегистрированные пользователи
+                                <div class="card-title">
+                            {{ phrase('http_referrer_table_user') }}
                         </div>
                     </div>
                     <div class="card-body">
                         <table id="responsiveDataTable" class="table table-bordered text-nowrap w-100">
                             <thead>
                             <tr>
-                                <th>Пользователь</th>
-                                <th>Дата регистрации</th>
-                                <th>Донаты</th>
+                                <th>{{ phrase('http_referrer_table_user') }}</th>
+                                <th>{{ phrase('http_referrer_table_date') }}</th>
+                                <th>{{ phrase('http_referrer_table_donates') }}</th>
                             </tr>
                             </thead>
                             <tbody>

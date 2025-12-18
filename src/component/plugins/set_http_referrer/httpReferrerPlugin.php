@@ -2,40 +2,76 @@
 
 namespace Ofey\Logan22\component\plugins\set_http_referrer;
 
+use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\session\session;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\template\tpl;
 
 class httpReferrerPlugin
 {
 
+    /**
+     * Миграция данных из `server_cache` (поле `HTTP_REFERER_VIEWS`) в PHP-файлы по датам.
+     * После успешной миграции поле `data` заменяется на строку 'file'.
+     *
+     * @return bool
+     */
+    public static function convertHttpRefererViewsToFiles(): bool
+    {
+        if (!file_exists(fileSys::get_dir('/data/db.php'))) {
+            return false;
+        }
+
+        $row = sql::getRow("SELECT `data` FROM server_cache WHERE `type` = 'HTTP_REFERER_VIEWS'");
+        if (!$row) {
+            return false;
+        }
+
+        // If already converted, nothing to do
+        if ($row['data'] === 'file') {
+            return true;
+        }
+
+        $decoded = json_decode($row['data'], true);
+        if (!is_array($decoded)) {
+            sql::run("UPDATE server_cache SET `data` = ? WHERE `type` = 'HTTP_REFERER_VIEWS'", ['file']);
+            return true;
+        }
+
+        foreach ($decoded as $entry) {
+            $referer = $entry['referer'] ?? null;
+            $counts = $entry['count'] ?? [];
+            if (!$referer || !is_array($counts)) {
+                continue;
+            }
+
+            foreach ($counts as $oldDate => $cnt) {
+                $ts = strtotime($oldDate);
+                $fileDate = $ts === false ? $oldDate : date('d-m-Y', $ts);
+                session::saveReferrerToFile(mb_strtolower($referer), $fileDate, (int)$cnt);
+            }
+        }
+
+        sql::run("UPDATE server_cache SET `data` = ? WHERE `type` = 'HTTP_REFERER_VIEWS'", ['file']);
+
+        return true;
+    }
+
+
     public function show(): void
     {
         validation::user_protection("admin");
 
-        $row = sql::getRow("SELECT `data` FROM server_cache WHERE `type` = 'HTTP_REFERER_VIEWS';");
+        
+        // TODO : Удалить в будущем, когда у всех все данные будут перенесены в файлы
+        self::convertHttpRefererViewsToFiles();
 
-        if (!$row || empty($row["data"])) {
-            tpl::addVar([
-                "getReferrers" => [],
-                "dailyStats" => json_encode([]),
-                "dailyStatsBySources" => json_encode([]),
-                "dateRange" => [],
-                "totalStats" => [
-                    'total_views' => 0,
-                    'total_users' => 0,
-                    'total_donations' => 0,
-                    'unique_sources' => 0,
-                ]
-            ]);
-            tpl::displayPlugin("/set_http_referrer/tpl/httpreferrer.html");
-            return;
-        }
+        $rawReferrers = $this->getView();
 
-        $rawReferrers = json_decode($row["data"], true);
-
-        if (json_last_error() !== JSON_ERROR_NONE || !is_array($rawReferrers)) {
+        if (empty($rawReferrers) || !is_array($rawReferrers)) {
             tpl::addVar([
                 "getReferrers" => [],
                 "dailyStats" => json_encode([]),
@@ -239,12 +275,45 @@ class httpReferrerPlugin
 
     public function getView()
     {
-        $data = sql::getRow("SELECT `data` FROM server_cache WHERE `type` = 'HTTP_REFERER_VIEWS';");
-        if ($data) {
-            return json_decode($data['data'], true);
+        $dir = fileSys::get_dir('/uploads/views');
+        if (!is_dir($dir)) {
+            return [];
         }
 
-        return null;
+        $files = glob(rtrim($dir, "\/\\") . DIRECTORY_SEPARATOR . '*.php');
+        if (!$files) {
+            return [];
+        }
+
+        $referers = [];
+
+        foreach ($files as $file) {
+            $dateStr = basename($file, '.php'); // expected d-m-Y
+            $dt = \DateTime::createFromFormat('d-m-Y', $dateStr);
+            if ($dt === false) {
+                // try with other separators
+                $dt = \DateTime::createFromFormat('d.m.Y', $dateStr);
+            }
+            if ($dt === false) {
+                continue;
+            }
+            $dateYmd = $dt->format('Y-m-d');
+
+            $data = @include $file;
+            if (!is_array($data)) {
+                continue;
+            }
+
+            foreach ($data as $host => $count) {
+                $host = mb_strtolower((string)$host);
+                if (!isset($referers[$host])) {
+                    $referers[$host] = ['referer' => $host, 'count' => []];
+                }
+                $referers[$host]['count'][$dateYmd] = (int)$count;
+            }
+        }
+
+        return array_values($referers);
     }
 
     public function get($referer_name, $dateStart = null, $dateEnd = null)
@@ -307,6 +376,124 @@ class httpReferrerPlugin
         session::domainViewsCounter($refererName);
         $_SESSION['HTTP_REFERER'] = $refererName;
         \Ofey\Logan22\component\redirect::location("/signup/{$refererName}");
+    }
+
+    public function showDeletePage(): void
+    {
+        validation::user_protection("admin");
+
+        $deleteResult = null;
+        if (!empty($_SESSION['http_referrer_delete_result'])) {
+            $deleteResult = json_decode($_SESSION['http_referrer_delete_result'], true);
+            unset($_SESSION['http_referrer_delete_result']);
+        }
+
+        tpl::addVar([
+            'deleteResult' => $deleteResult,
+        ]);
+        tpl::displayPlugin("/set_http_referrer/tpl/delete.html");
+    }
+
+    public function deleteByDate(): void
+    {
+        validation::user_protection("admin");
+
+        $start = $_POST['date_start'] ?? null;
+        $end = $_POST['date_end'] ?? null;
+        $result = [
+            'deleted' => [],
+            'not_found' => [],
+            'errors' => [],
+        ];
+
+        if (!$start || !$end) {
+            $msg = lang::get_phrase('http_referrer_err_dates');
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+            if ($isAjax) {
+                echo json_encode(['ok' => false, 'errors' => [$msg]], JSON_UNESCAPED_UNICODE);
+                return;
+            }
+            board::error($msg);
+            \Ofey\Logan22\component\redirect::location('/admin/statistic/http/referral/delete');
+            return;
+        }
+
+        try {
+            $dtStart = new \DateTime($start);
+            $dtEnd = new \DateTime($end);
+        } catch (\Exception $e) {
+            $msg = lang::get_phrase('http_referrer_err_date_format');
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+            if ($isAjax) {
+                echo json_encode(['ok' => false, 'errors' => [$msg]], JSON_UNESCAPED_UNICODE);
+                return;
+            }
+            board::error($msg);
+            \Ofey\Logan22\component\redirect::location('/admin/statistic/http/referral/delete');
+            return;
+        }
+
+        if ($dtStart > $dtEnd) {
+            // swap
+            $tmp = $dtStart;
+            $dtStart = $dtEnd;
+            $dtEnd = $tmp;
+        }
+
+        $dir = fileSys::get_dir('/uploads/views');
+        if (!is_dir($dir)) {
+            $msg = lang::get_phrase('http_referrer_err_dir_not_found');
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+            if ($isAjax) {
+                echo json_encode(['ok' => false, 'errors' => [$msg]], JSON_UNESCAPED_UNICODE);
+                return;
+            }
+            board::error($msg);
+            \Ofey\Logan22\component\redirect::location('/admin/statistic/http/referral/delete');
+            return;
+        }
+
+        $period = new \DatePeriod($dtStart, new \DateInterval('P1D'), $dtEnd->modify('+1 day'));
+        foreach ($period as $day) {
+            $d1 = $day->format('d-m-Y');
+            $d2 = $day->format('d.m.Y');
+            $f1 = rtrim($dir, "\/\\") . DIRECTORY_SEPARATOR . $d1 . '.php';
+            $f2 = rtrim($dir, "\/\\") . DIRECTORY_SEPARATOR . $d2 . '.php';
+
+            $foundAny = false;
+
+            if (is_file($f1)) {
+                $foundAny = true;
+                if (@unlink($f1)) {
+                    $result['deleted'][] = basename($f1);
+                } else {
+                    $result['errors'][] = "Не удалось удалить " . basename($f1);
+                }
+            }
+
+            if (is_file($f2)) {
+                $foundAny = true;
+                if (@unlink($f2)) {
+                    $result['deleted'][] = basename($f2);
+                } else {
+                    $result['errors'][] = "Не удалось удалить " . basename($f2);
+                }
+            }
+
+            if (!$foundAny) {
+                // neither format exists — report once per date
+                $result['not_found'][] = $d1 . '.php';
+            }
+        }
+
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+        if ($isAjax) {
+            echo json_encode(['ok' => true, 'result' => $result], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $_SESSION['http_referrer_delete_result'] = json_encode($result);
+        \Ofey\Logan22\component\redirect::location('/admin/statistic/http/referral/delete');
     }
 
 

@@ -1,3 +1,6 @@
+ <?php
+
+return [
     'drag_drop_or_click_to_upload' => 'Arrastra y suelta o haz clic para cargar',
     'uploaded_image_will_be_used_as_icon' => 'La imagen cargada se usará como icono',
     'or_upload_image' => 'O sube una imagen',
@@ -9,9 +12,7 @@
     'choose_image' => 'Elegir imagen',
     'upload_failed' => 'Error de carga',
     'please_upload_image_or_enter_svg' => 'Por favor sube una imagen o introduce código SVG',
-<?php
 
-return [
     'Sphere Forum' => 'Foro Interno',
     'sphere_forum' => 'Foro',
     'sphere_forum_desc' => 'Permite crear y gestionar secciones y temas.',
