@@ -1,0 +1,610 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{ phrase('backup_title') }} - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 mb-2">
+                <a href="/admin/extensions/paid"><i class="bi bi-arrow-left"></i></a>
+                <i class="bi bi-cloud-arrow-down"></i> {{ phrase('backup_title') }}
+            </h1>
+                <p class="text-muted">{{ phrase('backup_manager_description') }}</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card  h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="card-text mb-1 small">{{ phrase('backup_total_backups') }}</p>
+                            <h3 class="card-title mb-0">{{ backupCount }}</h3>
+                        </div>
+                        <i class="bi bi-files" style="font-size: 2rem; opacity: 0.7;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card  h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="card-text mb-1 small">{{ phrase('backup_database_size_info') }}</p>
+                            <h3 class="card-title mb-0">{{ databaseSize }}</h3>
+                        </div>
+                        <i class="bi bi-database" style="font-size: 2rem; opacity: 0.7;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card  h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="card-text mb-1 small">{{ phrase('backup_files_size_info') }}</p>
+                            <h3 class="card-title mb-0">{{ filesSize }}</h3>
+                        </div>
+                        <i class="bi bi-folder" style="font-size: 2rem; opacity: 0.7;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card  text-dark h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="card-text mb-1 small">{{ phrase('backup_available_space') }}</p>
+                            <h3 class="card-title mb-0" id="freeDiskSpace">-</h3>
+                        </div>
+                        <i class="bi bi-hdd" style="font-size: 2rem; opacity: 0.7;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="row">
+        <!-- Left Column: Create Backup -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-plus-circle"></i> {{ phrase('backup_create_new') }}</h5>
+                </div>
+                <div class="card-body">
+                    <form id="backupForm">
+                        <!-- Type Selection -->
+                        <div class="mb-3">
+                            <label for="backupType" class="form-label">{{ phrase('backup_msg_select_type') }}</label>
+                            <select class="form-select" id="backupType" name="type" required>
+                                <option value="">{{ phrase('backup_msg_select_type') }}</option>
+                                <option value="db">{{ phrase('backup_type_db') }}</option>
+                                <option value="site">{{ phrase('backup_type_site') }}</option>
+                                <option value="db_and_files">{{ phrase('backup_type_db_and_files') }}</option>
+                            </select>
+                            <small class="text-muted d-block mt-1" id="typeHelp"></small>
+                        </div>
+
+                        <!-- Format Selection -->
+                        <div class="mb-3">
+                            <label for="backupFormat" class="form-label">{{ phrase('backup_msg_select_format') }}</label>
+                            <select class="form-select" id="backupFormat" name="format" required>
+                                <option value="">{{ phrase('backup_msg_select_format') }}</option>
+                                {% for format, label in supportedFormats %}
+                                <option value="{{ format }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted d-block mt-1" id="formatHelp"></small>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="button" class="btn btn-primary w-100" id="createBackupBtn">
+                            <i class="bi bi-cloud-arrow-down"></i> {{ phrase('backup_btn_create') }}
+                        </button>
+                    </form>
+
+                    <!-- Progress Section -->
+                    <div id="progressSection" style="display: none; margin-top: 20px;">
+                        <div class="progress mb-3" style="height: 25px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" id="backupProgress" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                0%
+                            </div>
+                        </div>
+                        <div id="progressStatus" class="text-center mb-3">
+                            <small class="text-muted">{{ phrase('backup_msg_creating') }}</small>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary w-100" id="cancelBackupBtn" disabled>
+                            <i class="bi bi-x-circle"></i> {{ phrase('backup_btn_cancel') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Diagnostics -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="bi bi-cpu"></i> {{ phrase('backup_diagnostics') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <tbody id="diagnosticsTable">
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-3">
+                                        <div class="spinner-border spinner-border-sm" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup History -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> {{ phrase('backup_history') }}</h5>
+                    <button class="btn btn-sm btn-light" id="refreshBackupsBtn">
+                        <i class="bi bi-arrow-clockwise"></i> {{ phrase('backup_btn_refresh') }}
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 10%;">{{ phrase('backup_col_id') }}</th>
+                                    <th style="width: 15%;">{{ phrase('backup_col_type') }}</th>
+                                    <th style="width: 12%;">{{ phrase('backup_col_format') }}</th>
+                                    <th style="width: 12%;">{{ phrase('backup_col_status') }}</th>
+                                    <th style="width: 15%;">{{ phrase('backup_col_progress') }}</th>
+                                    <th style="width: 12%;">{{ phrase('backup_col_size') }}</th>
+                                    <th style="width: 15%;">{{ phrase('backup_col_created') }}</th>
+                                    <th style="width: 9%;" class="text-center">{{ phrase('backup_col_actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody id="backupsTable">
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        {{ phrase('backup_msg_no_backups') }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    .card {
+        border: none;
+        border-top: 4px solid #0d6efd;
+    }
+
+    .card.bg-primary {
+        border-top-color: #0d6efd;
+    }
+
+    .card.bg-info {
+        border-top-color: #0dcaf0;
+    }
+
+    .card.bg-success {
+        border-top-color: #198754;
+    }
+
+    .card.bg-warning {
+        border-top-color: #ffc107;
+    }
+
+    .status-badge {
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    .progress {
+        background-color: #e9ecef;
+    }
+
+    .progress-bar {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 0.35rem 0.65rem;
+        font-size: 0.85rem;
+    }
+
+    #diagnosticsTable tr:nth-child(odd) {
+        background-color: #f8f9fa;
+    }
+
+    .spinner-border-sm {
+        width: 1.5rem;
+        height: 1.5rem;
+        border-width: 0.2em;
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+// Small in-page notice helper (uses Bootstrap alert styles)
+function showNotice(message, type = 'info', ttl = 6000) {
+    try {
+        let container = document.getElementById('backup-notice-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'backup-notice-container';
+            container.style.position = 'fixed';
+            container.style.top = '1rem';
+            container.style.right = '1rem';
+            container.style.zIndex = 1050;
+            document.body.appendChild(container);
+        }
+
+        const el = document.createElement('div');
+        el.className = 'alert alert-' + (type === 'error' ? 'danger' : type) + ' alert-dismissible fade show';
+        el.role = 'alert';
+        el.style.minWidth = '220px';
+        el.innerHTML = message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+
+        container.appendChild(el);
+
+        setTimeout(() => {
+            try { el.classList.remove('show'); el.classList.add('hide'); el.remove(); } catch(e){}
+        }, ttl);
+        return el;
+    } catch (e) {
+        console.error('showNotice error', e);
+    }
+}
+
+const API_BASE = '/admin/plugin/backup/api';
+let currentTaskId = null;
+let pollInterval = null;
+
+// Type selection help text
+const typeHelps = {
+    'db': '{{ phrase('backup_help_db_only') }}',
+    'site': '{{ phrase('backup_help_files_only') }}',
+    'db_and_files': '{{ phrase('backup_help_db_files') }}'
+};
+
+// Format selection help text
+const formatHelps = {
+    'zip': '{{ phrase('backup_help_zip') }}',
+    'gzip': '{{ phrase('backup_help_gzip') }}',
+    'bzip2': '{{ phrase('backup_help_bzip2') }}'
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Load diagnostics
+    loadDiagnostics();
+    
+    // Load backups list
+    loadBackups();
+
+    // Event listeners
+    document.getElementById('backupType').addEventListener('change', function() {
+        document.getElementById('typeHelp').textContent = typeHelps[this.value] || '';
+    });
+
+    document.getElementById('backupFormat').addEventListener('change', function() {
+        document.getElementById('formatHelp').textContent = formatHelps[this.value] || '';
+    });
+
+    document.getElementById('createBackupBtn').addEventListener('click', initBackup);
+    document.getElementById('cancelBackupBtn').addEventListener('click', cancelBackup);
+    document.getElementById('refreshBackupsBtn').addEventListener('click', loadBackups);
+
+    // Refresh diagnostics every 10 seconds
+    setInterval(loadDiagnostics, 10000);
+});
+
+function loadDiagnostics() {
+    fetch(API_BASE + '/diagnostics')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.diagnostics) {
+                renderDiagnostics(data.diagnostics);
+            }
+        })
+        .catch(e => console.error('Diagnostics error:', e));
+}
+
+function renderDiagnostics(diagnostics) {
+    const table = document.getElementById('diagnosticsTable');
+    let html = '';
+
+    for (const [key, diag] of Object.entries(diagnostics)) {
+        const statusIcon = diag.status === 'ok' ? '✓' : diag.status === 'warning' ? '⚠' : '✗';
+        const statusColor = diag.status === 'ok' ? 'success' : diag.status === 'warning' ? 'warning' : 'danger';
+        
+        html += `
+            <tr>
+                <td class="align-middle">${diag.label}</td>
+                <td class="align-middle">${diag.value}</td>
+                <td class="align-middle text-end">
+                    <span class="badge bg-${statusColor}">${statusIcon} ${diag.message}</span>
+                </td>
+            </tr>
+        `;
+
+        // Update free disk space card
+        if (key === 'free_disk_space') {
+            document.getElementById('freeDiskSpace').textContent = diag.value;
+        }
+    }
+
+    table.innerHTML = html;
+}
+
+function initBackup() {
+    const type = document.getElementById('backupType').value;
+    const format = document.getElementById('backupFormat').value;
+
+    if (!type || !format) {
+        showNotice('{{ phrase('backup_error_invalid_type') }}', 'warning');
+        return;
+    }
+
+    const btn = document.getElementById('createBackupBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{{ phrase('backup_msg_creating') }}';
+
+    fetch(API_BASE + '/init', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `type=${type}&format=${format}`
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            currentTaskId = data.taskId;
+            startBackup();
+            showProgressSection();
+            } else {
+            showNotice('{{ phrase('backup_error_init') }}: ' + (data.error || ''), 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-cloud-arrow-down"></i> {{ phrase('backup_btn_create') }}';
+        }
+    })
+    .catch(e => {
+        showNotice('Error: ' + e.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-cloud-arrow-down"></i> {{ phrase('backup_btn_create') }}';
+    });
+}
+
+function startBackup() {
+    fetch(API_BASE + '/start', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `taskId=${currentTaskId}`
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            pollBackupStatus();
+            } else {
+            showNotice('{{ phrase('backup_error_start') }}: ' + (data.error || ''), 'error');
+            hideProgressSection();
+        }
+    })
+    .catch(e => {
+        showNotice('Error: ' + e.message, 'error');
+        hideProgressSection();
+    });
+}
+
+function pollBackupStatus() {
+    if (pollInterval) {
+        clearInterval(pollInterval);
+    }
+
+    pollInterval = setInterval(() => {
+        fetch(API_BASE + '/status/' + currentTaskId)
+            .then(r => r.json())
+            .then(data => {
+                if (data.success && data.task) {
+                    updateProgressBar(data.task.progress, data.task.status);
+
+                    if (data.task.status === 'completed' || data.task.status === 'failed') {
+                        clearInterval(pollInterval);
+                        hideProgressSection();
+                        loadBackups();
+
+                        if (data.task.status === 'completed') {
+                            showNotice('{{ phrase('backup_success_created') }} (' + data.task.file_path + ')', 'success');
+                        } else {
+                            showNotice('{{ phrase('backup_error_start') }}: ' + (data.task.error_message || 'Unknown error'), 'error');
+                        }
+                    }
+                }
+            })
+            .catch(e => console.error('Poll error:', e));
+    }, 1000);
+}
+
+function updateProgressBar(progress, status) {
+    const bar = document.getElementById('backupProgress');
+    bar.style.width = progress + '%';
+    bar.textContent = progress + '%';
+    bar.setAttribute('aria-valuenow', progress);
+
+    const statusText = {
+        'pending': '{{ phrase('backup_status_pending') }}',
+        'in_progress': '{{ phrase('backup_status_in_progress') }}',
+        'completed': '{{ phrase('backup_status_completed') }}',
+        'failed': '{{ phrase('backup_status_failed') }}'
+    }[status] || status;
+
+    document.getElementById('progressStatus').innerHTML = `<small class="text-muted">${statusText}</small>`;
+}
+
+function cancelBackup() {
+    if (confirm('{{ phrase('backup_msg_confirm_delete') }}')) {
+        if (pollInterval) {
+            clearInterval(pollInterval);
+        }
+        hideProgressSection();
+        loadBackups();
+    }
+}
+
+function showProgressSection() {
+    document.getElementById('progressSection').style.display = 'block';
+    document.getElementById('createBackupBtn').style.display = 'none';
+    document.getElementById('backupForm').style.opacity = '0.5';
+    document.getElementById('backupForm').style.pointerEvents = 'none';
+}
+
+function hideProgressSection() {
+    document.getElementById('progressSection').style.display = 'none';
+    document.getElementById('createBackupBtn').style.display = 'block';
+    document.getElementById('createBackupBtn').disabled = false;
+    document.getElementById('createBackupBtn').innerHTML = '<i class="bi bi-cloud-arrow-down"></i> {{ phrase('backup_btn_create') }}';
+    document.getElementById('backupForm').style.opacity = '1';
+    document.getElementById('backupForm').style.pointerEvents = 'auto';
+}
+
+function loadBackups() {
+    fetch(API_BASE + '/list')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.backups) {
+                renderBackups(data.backups);
+            }
+        })
+        .catch(e => console.error('Backups error:', e));
+}
+
+function renderBackups(backups) {
+    const table = document.getElementById('backupsTable');
+
+    if (backups.length === 0) {
+        table.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">{{ phrase('backup_msg_no_backups') }}</td></tr>';
+        return;
+    }
+
+    let html = '';
+    backups.forEach(backup => {
+        const statusBadgeClass = {
+            'completed': 'bg-success',
+            'in_progress': 'bg-info',
+            'failed': 'bg-danger',
+            'pending': 'bg-warning',
+            'cancelled': 'bg-secondary'
+        }[backup.status] || 'bg-secondary';
+
+        const createdDate = new Date(backup.created_at).toLocaleString();
+        const size = formatBytes(backup.size);
+
+        html += `
+            <tr>
+                <td>${backup.id}</td>
+                <td>
+                    <span class="badge bg-secondary">${backup.backup_type === 'db' ? '{{ phrase('backup_type_db') }}' : backup.backup_type === 'site' ? '{{ phrase('backup_type_site') }}' : '{{ phrase('backup_type_db_and_files') }}'}</span>
+                </td>
+                <td>${backup.format.toUpperCase()}</td>
+                <td>
+                    <span class="badge ${statusBadgeClass} status-badge">
+                        ${backup.status === 'completed' ? '✓' : backup.status === 'in_progress' ? '⟳' : backup.status === 'failed' ? '✗' : '◐'}
+                        ${getStatusText(backup.status)}
+                    </span>
+                </td>
+                <td>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar" style="width: ${backup.progress}%">${backup.progress}%</div>
+                    </div>
+                </td>
+                <td>${size}</td>
+                <td>${createdDate}</td>
+                <td class="text-center">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a href="/admin/plugin/backup/download/${backup.id}" class="btn btn-outline-primary" title="{{ phrase('backup_btn_download') }}">
+                            <i class="bi bi-download"></i>
+                        </a>
+                        <button class="btn btn-outline-danger" onclick="deleteBackup(${backup.id})" title="{{ phrase('backup_btn_delete') }}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    table.innerHTML = html;
+}
+
+function getStatusText(status) {
+    const texts = {
+        'completed': '{{ phrase('backup_status_completed') }}',
+        'in_progress': '{{ phrase('backup_status_in_progress') }}',
+        'failed': '{{ phrase('backup_status_failed') }}',
+        'pending': '{{ phrase('backup_status_pending') }}',
+        'cancelled': '{{ phrase('backup_status_cancelled') }}'
+    };
+    return texts[status] || status;
+}
+
+function deleteBackup(taskId) {
+    if (confirm('{{ phrase('backup_msg_confirm_delete') }}')) {
+        fetch(API_BASE + '/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `taskId=${taskId}`
+        })
+        .then(r => r.json())
+                .then(data => {
+            if (data.success) {
+                showNotice('{{ phrase('backup_success_deleted') }}', 'success');
+                loadBackups();
+            } else {
+                showNotice('Error: ' + (data.error || 'Unknown error'), 'error');
+            }
+        })
+        .catch(e => showNotice('Error: ' + e.message, 'error'));
+    }
+}
+
+function formatBytes(bytes) {
+    if (bytes === 0 || !bytes) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+</script>
+{% endblock %}
