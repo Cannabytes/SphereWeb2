@@ -76,31 +76,13 @@ class index
                 "sphereDomain" => $info['domain'] ?? null,
             ]);
         }
-
-
-        $updateLog = "uploads/update_log.php";
-        if (file_exists($updateLog)) {
-            $updateLog = require 'uploads/update_log.php';
-            $myLang = user::self()->getLang();
-            $updateLog = array_map(function ($item) use ($myLang) {
-                if (isset($item['message'][$myLang])) {
-                    $item['message'] = $item['message'][$myLang];
-                } else {
-                    $item['message'] = null;
-                }
-                return $item;
-            }, $updateLog);
-        } else {
-            $updateLog = [];
-        }
-
+ 
         tpl::addVar([
             "sphereAPIError" => $sphereAPIError,
             "title" => lang::get_phrase("admin_panel"),
             "self_last_commit" => update::getLastCommit(),
             "getLastDateUpdateCommit" => update::getLastDateUpdateCommit(),
             "getCountCommit" => update::getCountCommit(),
-            "updateLog" => $updateLog,
         ]);
         tpl::display("admin/index.html");
     }

@@ -681,16 +681,7 @@
                                                 Web-Server
                                             </button>
                                         </li>
-
-                                        <li class="nav-item rounded" role="presentation">
-                                            <button class="nav-link " id="activity-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#activity-tab-pane" type="button" role="tab"
-                                                    aria-controls="activity-tab-pane" aria-selected="true"><i
-                                                  class="bi bi-cloud-download me-1 align-middle d-inline-block fs-16"></i>
-                                                {{ phrase('History of software updates') }}
-                                            </button>
-                                        </li>
-
+ 
                                         <li class="nav-item rounded" role="presentation">
                                             <button aria-controls="license-tab-pane" aria-selected="true" class="nav-link "
                                                     data-bs-target="#license-tab-pane" data-bs-toggle="tab" id="licence-tab"
@@ -1389,54 +1380,7 @@
                                         </div>
                                     </div>
 
-
-                                    <div class="tab-pane fade p-0 border-0" id="activity-tab-pane"
-                                         role="tabpanel" aria-labelledby="followers-tab" tabindex="0">
-                                        <div class="row">
-
-                                            <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                                <div class="card custom-card shadow-none border">
-
-                                                    <div class="card-body border-bottom">
-                                                        <div class="d-md-flex">
-                                                            <a href="javascript:void(0);"
-                                                               class="d-flex me-4 mb-sm-0 mb-2">
-                                                                {{ phrase('List of recent important updates') }}
-                                                            </a>
-
-                                                            <div class="ms-auto">
-                                                                {{ phrase('Latest software update') }}:
-                                                                <span class="my-auto ms-2 text-muted fw-semibold">{{getLastDateUpdateCommit|date("H:m:s / d.m.Y")}}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <ul class="list-unstyled profile-timeline   p-0 border-0 bg-white p-4 rounded-3 ">
-
-                                                        {% for log in updateLog %}
-                                                        <li>
-                                                            <span class="fs-12 text-muted fw-semibold text-end profile-timeline-time">{{log.date}}</span>
-                                                            <div>
-                                                                    <span class="avatar avatar-sm avatar-rounded profile-timeline-avatar">
-                                                                        <img src="{{template}}/assets/images/update_icon.webp"
-                                                                             alt="">
-                                                                    </span>
-
-                                                                <p class="text-muted mb-0">
-                                                                    {{log.message|raw}}
-                                                                </p>
-
-                                                            </div>
-                                                        </li>
-                                                        {% endfor %}
-
-
-                                                    </ul>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+ 
 
                                     <div aria-labelledby="followers-tab" class="tab-pane fade p-0 border-0"
                                          id="license-tab-pane" role="tabpanel" tabindex="0">
