@@ -2479,6 +2479,17 @@ Email: %%email%l%
 	'route_table_show' => 'Показати _MENU_ записів',
 
     // Startpack cooldown message
+    'fingerprint_login_button' => 'Увійти за відбитком',
+    'finger_webAuthn_not_supported' => 'Браузер не підтримує WebAuthn / Windows Hello, увійдіть звичайним способом.',
+    'finger_platform_not_found' => 'Платформений аутентифікатор (Windows Hello/Touch ID) не знайдено на цьому пристрої.',
+    'finger_https_needed' => 'Біометрія доступна, але потрібен HTTPS або localhost для правильної роботи.',
+    'finger_platform_check_failed' => 'Не вдалося перевірити наявність платформеного аутентифікатора.',
+    'finger_webauthn_check_failed' => 'Не вдалося перевірити можливості WebAuthn.',
+    'finger_wait_biometric' => 'Очікується підтвердження біометрії пристрою...',
+    'finger_sending' => 'Надсилаємо відбиток на сервер...',
+    'finger_entering_success' => 'Готово, виконується вхід...',
+    'finger_login_failed' => 'Не вдалося увійти за відбитком.',
+
     'startpack_cooldown' => 'Ви зможете придбати наступний набір через %s',
 
 ];

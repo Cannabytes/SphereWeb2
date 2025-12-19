@@ -2469,6 +2469,17 @@ Contraseña: %%password%%',
 	'route_table_search' => 'Buscar...',
 	'route_table_show' => 'Mostrar _MENU_ registros',
 
+    'fingerprint_login_button' => 'Iniciar sesión con huella dactilar',
+    'finger_webAuthn_not_supported' => 'El navegador no soporta WebAuthn / Windows Hello, use el inicio de sesión normal.',
+    'finger_platform_not_found' => 'No se encontró un autenticador de plataforma (Windows Hello/Touch ID) en este dispositivo.',
+    'finger_https_needed' => 'La biometría está disponible, pero se requiere HTTPS o localhost para su correcto funcionamiento.',
+    'finger_platform_check_failed' => 'No se pudo comprobar la disponibilidad del autenticador de plataforma.',
+    'finger_webauthn_check_failed' => 'No se pudo comprobar las capacidades de WebAuthn.',
+    'finger_wait_biometric' => 'Esperando la confirmación biométrica del dispositivo...',
+    'finger_sending' => 'Enviando la huella al servidor...',
+    'finger_entering_success' => 'Listo, iniciando sesión...',
+    'finger_login_failed' => 'No se pudo iniciar sesión con la huella.',
+
     // Startpack cooldown message
     'startpack_cooldown' => 'Podrás comprar el siguiente paquete en %s',
 

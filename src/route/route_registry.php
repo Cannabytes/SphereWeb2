@@ -24,6 +24,7 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
         });
         $route->get("/user/change/lang/{lang}", "Ofey\Logan22\controller\config\config::setLang");
         $route->post("/auth", "Ofey\Logan22\controller\user\auth\auth::auth_request");
+            $route->post("/auth/fingerprint", "Ofey\\Logan22\\controller\\user\\auth\\auth::fingerprintAuth");
         $route->get("/(.*)", function (){
             tpl::display('disabled.html');
         });

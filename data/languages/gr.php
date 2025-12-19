@@ -2431,6 +2431,17 @@ Password: %%password%%',
 	'route_table_show' => 'Εμφάνιση _MENU_ εγγραφών',
 
     // Startpack cooldown message
+    'fingerprint_login_button' => 'Σύνδεση με δακτυλικό αποτύπωμα',
+    'finger_webAuthn_not_supported' => 'Ο περιηγητής δεν υποστηρίζει WebAuthn / Windows Hello, χρησιμοποιήστε την κανονική σύνδεση.',
+    'finger_platform_not_found' => 'Δεν βρέθηκε πλατφόρμα πιστοποίησης (Windows Hello/Touch ID) σε αυτή τη συσκευή.',
+    'finger_https_needed' => 'Η βιομετρία είναι διαθέσιμη, αλλά απαιτείται HTTPS ή localhost για σωστή λειτουργία.',
+    'finger_platform_check_failed' => 'Αποτυχία ελέγχου για πλατφορμικό αυθεντικοποιητή.',
+    'finger_webauthn_check_failed' => 'Αποτυχία ελέγχου δυνατοτήτων WebAuthn.',
+    'finger_wait_biometric' => 'Αναμονή για βιομετρική επιβεβαίωση...',
+    'finger_sending' => 'Αποστολή δακτυλικού αποτυπώματος στον διακομιστή...',
+    'finger_entering_success' => 'Έτοιμο, πραγματοποιείται σύνδεση...',
+    'finger_login_failed' => 'Απέτυχε η σύνδεση με δακτυλικό αποτύπωμα.',
+
     'startpack_cooldown' => 'Θα μπορείτε να αγοράσετε το επόμενο πακέτο σε %s',
 
 ];

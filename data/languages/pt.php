@@ -2455,6 +2455,17 @@ Password: %%password%%',
 	'route_table_show' => 'Mostrar _MENU_ registros',
 
     // Startpack cooldown message
+    'fingerprint_login_button' => 'Entrar com impressão digital',
+    'finger_webAuthn_not_supported' => 'O navegador não suporta WebAuthn / Windows Hello, use o login normal.',
+    'finger_platform_not_found' => 'Autenticador de plataforma (Windows Hello/Touch ID) não encontrado neste dispositivo.',
+    'finger_https_needed' => 'Biometria disponível, mas é necessário HTTPS ou localhost para funcionamento correto.',
+    'finger_platform_check_failed' => 'Falha ao verificar o autenticador de plataforma.',
+    'finger_webauthn_check_failed' => 'Falha ao verificar as capacidades do WebAuthn.',
+    'finger_wait_biometric' => 'Aguardando confirmação biométrica do dispositivo...',
+    'finger_sending' => 'Enviando impressão digital para o servidor...',
+    'finger_entering_success' => 'Pronto, entrando...',
+    'finger_login_failed' => 'Falha ao entrar com impressão digital.',
+
     'startpack_cooldown' => 'Você poderá adquirir o próximo pacote em %s',
 
 ];

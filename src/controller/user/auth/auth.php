@@ -25,6 +25,15 @@ class auth {
         \Ofey\Logan22\model\user\auth\auth::user_enter();
     }
 
+    /**
+     * Быстрая авторизация через платформенный биометрический ключ (Windows Hello / Touch ID и т.п.)
+     */
+    public static function fingerprintAuth(): void
+    {
+        validation::user_protection("guest");
+        \Ofey\Logan22\model\user\auth\auth::fingerprint_auth();
+    }
+
     public static function logout() {
         if(user::getUserId()->isAuth()) {
             \Ofey\Logan22\model\user\auth\auth::logout();

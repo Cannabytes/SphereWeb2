@@ -2505,6 +2505,18 @@ Password: %%password%%',
 	'route_table_show' => 'Show _MENU_ records',
 
 	// Startpack cooldown message
+	'fingerprint_login_button' => 'Sign in with fingerprint',
+	'finger_webAuthn_not_supported' => 'Browser does not support WebAuthn / Windows Hello, use normal login.',
+	'finger_platform_not_found' => 'Platform authenticator (Windows Hello/Touch ID) not found on this device.',
+	'finger_https_needed' => 'Biometrics available, but HTTPS or localhost is required for proper operation.',
+	'finger_platform_check_failed' => 'Failed to check for platform authenticator.',
+	'finger_webauthn_check_failed' => 'Failed to check WebAuthn capabilities.',
+	'finger_wait_biometric' => 'Waiting for device biometric confirmation...',
+	'finger_sending' => 'Sending fingerprint to server...',
+	'finger_entering_success' => 'Done, signing in...',
+	'finger_login_failed' => 'Failed to sign in with fingerprint.',
+
+	// Startpack cooldown message
 	'startpack_cooldown' => 'You will be able to purchase the next pack in %s',
 
 ];

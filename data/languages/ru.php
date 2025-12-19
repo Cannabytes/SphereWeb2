@@ -2528,6 +2528,18 @@ Password: %%password%%',
 	'route_table_show' => 'Показать _MENU_ записей',
 
 	// Startpack cooldown message
+	'fingerprint_login_button' => 'Войти по отпечатку',
+	'finger_webAuthn_not_supported' => 'Браузер не поддерживает WebAuthn / Windows Hello, выберите обычный вход.',
+	'finger_platform_not_found' => 'Платформенный сканер (Windows Hello/Touch ID) не обнаружен на этом устройстве.',
+	'finger_https_needed' => 'Доступна биометрия, но нужен HTTPS или localhost для корректной работы.',
+	'finger_platform_check_failed' => 'Не удалось проверить наличие платформенного аутентификатора.',
+	'finger_webauthn_check_failed' => 'Не удалось проверить WebAuthn возможности.',
+	'finger_wait_biometric' => 'Ожидаем подтверждение биометрии от устройства...',
+	'finger_sending' => 'Отправляем отпечаток на сервер...',
+	'finger_entering_success' => 'Готово, заходим...',
+	'finger_login_failed' => 'Не удалось выполнить вход по отпечатку.',
+
+	// Startpack cooldown message
 	'startpack_cooldown' => 'Вы сможете приобрести следующий набор через %s',
 
 );

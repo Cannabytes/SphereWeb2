@@ -26,6 +26,65 @@
 
   {{ config().other().getAnalyticsHead()|raw }}
 
+  <style>
+    /* Inputs overlay to ensure readability on any background */
+    .input-overlay {
+      background-color: rgba(0,0,0,0.35) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.25) inset !important;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      transition: background-color .15s ease, box-shadow .15s ease;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    }
+
+    .input-overlay::placeholder {
+      color: rgba(255,255,255,0.85) !important;
+      opacity: 1;
+    }
+
+    .input-overlay:focus {
+      background-color: rgba(0,0,0,0.45) !important;
+      outline: none !important;
+      box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.15) !important;
+    }
+
+    /* Keep transparent appearance when browser autofills inputs */
+    input.form-control.input-overlay:-webkit-autofill,
+    textarea.form-control.input-overlay:-webkit-autofill,
+    select.form-control.input-overlay:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px rgba(0,0,0,0.35) inset !important;
+      box-shadow: 0 0 0px 1000px rgba(0,0,0,0.35) inset !important;
+      background-color: rgba(0,0,0,0.35) !important;
+      -webkit-text-fill-color: #ffffff !important;
+      color: #ffffff !important;
+    }
+
+    input.form-control.input-overlay:-webkit-autofill::first-line {
+      -webkit-text-fill-color: #ffffff !important;
+      color: #ffffff !important;
+    }
+
+    /* Firefox autofill */
+    input.form-control.input-overlay:-moz-autofill,
+    textarea.form-control.input-overlay:-moz-autofill {
+      background-color: rgba(0,0,0,0.35) !important;
+      -moz-text-fill-color: #ffffff !important;
+      color: #ffffff !important;
+    }
+    
+    /* Card-level overlay to ensure all text inside is readable over any background */
+    .card.custom-card {
+      background-color: rgba(0,0,0,0.45) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255,255,255,0.06) !important;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+    }
+ 
+  </style>
+
 </head>
 
 <body>
@@ -39,29 +98,29 @@
 
   <div class="container-lg">
     <div class="row justify-content-center authentication authentication-basic align-items-center h-100">
-      <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12">
+      <div class="col-xxl-5 col-xl-5 col-lg-5 col-md-6 col-sm-8 col-12">
         <div class="my-4 d-flex justify-content-center">
           <a href="/main">
             <img src="{{config().logo().getLogo()}}" alt="logo">
           </a>
         </div>
-        <div class="card custom-card">
+        <div class="card custom-card bg-transparent shadow-lg">
           <form id="authForm" action="/auth" method="POST" class="card-body ">
-            <p class="h5 fw-semibold mb-2 text-center">{{ phrase(10) }}</p>
-            <p class="mb-4 text-muted op-7 fw-normal text-center">{{ phrase('welcome_personal_account') }}</p>
-            <div class="row gy-3">
-              <div class="col-xl-12">
-                <label for="email" class="form-label text-default">{{ phrase(9) }}</label>
-                <input required name="email" type="text" class="form-control form-control-lg" id="email"
+            <p class="h5 fw-semibold mb-1 text-center">{{ phrase(10) }}</p>
+            <p class="mb-4 fw-normal text-center">{{ phrase('welcome_personal_account') }}</p>
+            <div class="row gy-2">
+              <div class="col-md-6">
+                <label for="email" class="form-label">{{ phrase(9) }}</label>
+                  <input required name="email" type="text" class="form-control form-control-lg input-overlay" id="email"
                        placeholder="example@example.com">
               </div>
-              <div class="col-xl-12 mb-2">
-                <label for="signin-password" class="form-label text-default d-block">{{ phrase('password') }}</label>
+              <div class="col-md-6 mb-2">
+                <label for="signin-password" class="form-label">{{ phrase('password') }}</label>
                 <div class="input-group">
-                  <input required name="password" type="password" class="form-control form-control-lg"
-                         id="signin-password" placeholder="{{ phrase('password') }}">
-                  <button class="btn btn-light" type="button" onclick="createpassword('signin-password',this)"
-                          id="button-addon2"><i class="ri-eye-off-line align-middle"></i></button>
+                      <input required name="password" type="password" class="form-control form-control-lg input-overlay"
+                        id="signin-password" placeholder="{{ phrase('password') }}">
+                  <button class="btn" type="button" onclick="createpassword('signin-password',this)"
+                          id="button-addon2"><i class="ri-eye-off-line align-middle text-muted"></i></button>
                 </div>
               </div>
 
@@ -77,10 +136,11 @@
 
               <input type="hidden" name="finger" id="finger">
 
-              <div class="col-xl-12 d-grid mt-2">
-                <button type="submit" aria-label="button" class="btn btn-lg btn-success enter">{{ phrase('enter') }}
+              <div class="col-xl-12 text-center mt-2">
+                <button type="submit" aria-label="button" class="btn btn-lg btn-success enter px-5">{{ phrase('enter') }}
                 </button>
               </div>
+ 
             </div>
 
             <div class="text-center my-1 authentication-barrier">
@@ -88,11 +148,11 @@
             </div>
 
             <div class="btn-list text-center">
-              <a href="/signup" aria-label="button" class="btn  btn-primary-transparent">
+              <a href="/signup" aria-label="button" class="btn btn-sm btn-dark shadow-lg">
                 {{ phrase('menu_registration') }}
               </a>
 
-              <a href="/forget" class="btn  btn-primary-transparent">
+              <a href="/forget" class="btn btn-sm btn-dark shadow-lg">
                 {{ phrase(67) }}
               </a>
 
@@ -111,6 +171,12 @@
             <a id="telegram-login-link" class="btn btn-info-gradient btn-wave waves-effect waves-light label-btn" href="https://t.me/sphere_auth_bot?start=auth_{{ HTTP_HOST() | base64_encode }}">
               <i class="ri-telegram-fill label-btn-icon me-1"></i> {{ phrase('oauth2_telegram_enter') }}
             </a>
+
+            <button type="button" aria-label="fingerprint-login" class="btn btn-info-gradient btn-wave waves-effect waves-light label-btn" id="finger-login-btn">
+              <i class="ri-fingerprint-line label-btn-icon me-1"></i> {{ phrase('fingerprint_login_button') }}
+            </button>
+            <div id="finger-status" class="text-center small mt-2 text-muted"></div>
+         
             {% endif %}
 
 
@@ -139,6 +205,187 @@
 <script src="{{template}}/assets/libs/@popperjs/core/umd/popper.min.js"></script>
 <script src="{{template}}/assets/js/Toasts.js"></script>
 <script src="{{template}}/assets/js/general.js?v=1.0.2"></script>
+
+<script>
+// Быстрый вход через платформенный биометрический ключ (Windows Hello / Touch ID / Face ID)
+(function() {
+  const fingerBtn = document.getElementById('finger-login-btn');
+  const fingerStatus = document.getElementById('finger-status');
+  const fingerField = document.getElementById('finger');
+
+  // Если кнопки нет (другой шаблон) — выходим тихо
+  if (!fingerBtn || !fingerStatus || !fingerField) {
+    return;
+  }
+
+  // Проверяем, умеет ли браузер работать с WebAuthn
+  const webAuthnSupported = typeof window.PublicKeyCredential !== 'undefined';
+  if (!webAuthnSupported) {
+    // Полный отказ: браузер не поддерживает WebAuthn
+    setStatus('{{ phrase('finger_webAuthn_not_supported') }}', 'danger');
+    fingerBtn.style.display = 'none';
+    return;
+  }
+
+  // WebAuthn может поддерживаться, но нужно проверить наличие платформенного аутентификатора
+  // (Windows Hello / Touch ID). Этот вызов возвращает Promise<boolean>.
+  try {
+    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then((available) => {
+      if (!available) {
+        // Платформенный аутентификатор отсутствует — прячем кнопку
+        setStatus('{{ phrase('finger_platform_not_found') }}', 'warning');
+        fingerBtn.style.display = 'none';
+        return;
+      }
+
+      // Если доступен, показываем кнопку и сбрасываем статус на нейтральный
+      fingerBtn.style.display = '';
+      if (!window.isSecureContext) {
+        setStatus('{{ phrase('finger_https_needed') }}', 'warning');
+      }
+    }).catch((e) => {
+      // На некоторых старых браузерах метод может выбросить ошибку
+      setStatus('{{ phrase('finger_platform_check_failed') }}', 'warning');
+    });
+  } catch (e) {
+    setStatus('{{ phrase('finger_webauthn_check_failed') }}', 'warning');
+    fingerBtn.style.display = 'none';
+    return;
+  }
+
+  fingerBtn.addEventListener('click', async (event) => {
+    event.preventDefault();
+    fingerBtn.disabled = true;
+    setStatus('{{ phrase('finger_wait_biometric') }}', 'info');
+
+    try {
+      const fingerCode = await getFingerprintCode();
+      // Кладём идентификатор в скрытое поле, если вдруг понадобится обычная отправка формы
+      fingerField.value = fingerCode;
+      await sendFingerprintToServer(fingerCode);
+    } catch (error) {
+      setStatus(error.message || '{{ phrase('finger_login_failed') }}', 'danger');
+    } finally {
+      fingerBtn.disabled = false;
+    }
+  });
+
+  async function getFingerprintCode() {
+    // Случайный challenge нужен, чтобы браузер открыл нативное окно Windows Hello / Touch ID
+    const challenge = window.crypto.getRandomValues(new Uint8Array(32));
+
+    try {
+      // Сначала пробуем войти по уже созданному ключу (возврат rawId платформенного ключа)
+      const assertion = await navigator.credentials.get({
+        publicKey: {
+          challenge,
+          userVerification: 'required',
+          timeout: 60000,
+          rpId: window.location.hostname,
+        },
+      });
+
+      return bufferToBase64Url(assertion.rawId);
+    } catch (error) {
+      // Если ключа нет или пользователь нажал «Отмена» — регистрируем новый
+      if (!['NotAllowedError', 'InvalidStateError', 'NotFoundError'].includes(error.name)) {
+        throw error;
+      }
+    }
+
+    // Регистрация нового платформенного ключа (происходит один раз на устройстве)
+    const userId = window.crypto.getRandomValues(new Uint8Array(32));
+    const credential = await navigator.credentials.create({
+      publicKey: {
+        challenge,
+        rp: {
+          name: document.title || 'SphereWeb',
+          id: window.location.hostname,
+        },
+        user: {
+          id: userId,
+          name: 'finger-user',
+          displayName: 'Fingerprint user',
+        },
+        pubKeyCredParams: [
+          { type: 'public-key', alg: -7 },   // ES256
+          { type: 'public-key', alg: -257 }, // RS256
+        ],
+        authenticatorSelection: {
+          authenticatorAttachment: 'platform',
+          userVerification: 'required',
+          residentKey: 'preferred',
+        },
+        timeout: 60000,
+        attestation: 'none',
+      },
+    });
+
+    return bufferToBase64Url(credential.rawId);
+  }
+
+  async function sendFingerprintToServer(fingerCode) {
+    setStatus('{{ phrase('finger_sending') }}', 'info');
+
+    const response = await fetch('/auth/fingerprint', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({ finger: fingerCode }),
+      credentials: 'same-origin',
+    });
+
+    if (!response.ok) {
+      throw new Error('Сервер вернул ошибку: ' + response.status);
+    }
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (error) {
+      throw new Error('Сервер вернул неожиданный ответ при авторизации по отпечатку.');
+    }
+
+    if (data.ok) {
+      setStatus(data.message || '{{ phrase('finger_entering_success') }}', 'success');
+      setTimeout(() => {
+        window.location.href = data.redirect || '/main';
+      }, 400);
+      return;
+    }
+
+    throw new Error(data.message || '{{ phrase('finger_login_failed') }}');
+  }
+
+  function bufferToBase64Url(buffer) {
+    // Переводим ArrayBuffer → base64url, чтобы его спокойно принять на сервере
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    bytes.forEach((byte) => {
+      binary += String.fromCharCode(byte);
+    });
+
+    return btoa(binary)
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+  }
+
+  function setStatus(text, state) {
+    fingerStatus.textContent = text;
+    const color = state === 'success'
+      ? 'success'
+      : state === 'danger'
+        ? 'danger'
+        : state === 'warning'
+          ? 'warning'
+          : 'muted';
+
+    fingerStatus.className = 'text-center small mt-2 text-' + color;
+  }
+})();
+</script>
 
 
 {% if config().captcha().isEnabled() %}
