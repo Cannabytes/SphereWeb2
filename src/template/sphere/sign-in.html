@@ -82,6 +82,93 @@
       -webkit-backdrop-filter: blur(2px);
     }
  
+  /* Background overlay to improve text readability over arbitrary images */
+  .bg-with-overlay{
+    position: relative;
+  }
+
+  .bg-with-overlay::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.46);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Ensure main content sits above the overlay */
+  .bg-with-overlay .container-lg,
+  .bg-with-overlay .authentication,
+  .bg-with-overlay .card{
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Strong, high-contrast text for readability — only for plain text elements */
+  .bg-with-overlay .card,
+  .bg-with-overlay .form-label,
+  .bg-with-overlay p,
+  .bg-with-overlay .h5{
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  }
+
+  /* Avoid forcing a global color on all buttons; keep decoration neutral */
+  .bg-with-overlay .btn,
+  .bg-with-overlay a.btn{
+    text-shadow: none !important;
+    text-decoration: none !important;
+  }
+
+  /* Improve appearance of dark buttons on top of the overlay */
+  .bg-with-overlay .btn-dark{
+    background-color: rgba(255,255,255,0.06) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45) !important;
+    transition: background-color .15s ease, transform .08s ease, box-shadow .15s ease;
+  }
+
+  /* Force white color for .btn-dark with higher specificity and for child elements (icons, svgs) */
+  .bg-with-overlay a.btn.btn-dark,
+  .bg-with-overlay .btn.btn-dark{
+    color: #ffffff !important;
+  }
+
+  .bg-with-overlay a.btn.btn-dark *,
+  .bg-with-overlay .btn.btn-dark *{
+    color: #ffffff !important;
+    fill: currentColor !important;
+  }
+
+  /* Reworked button icon class (renamed from .label-btn-icon to .label-action-icon) */
+  .label-action-icon{
+    position: absolute;
+    width: 2.25rem;
+    font-size: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inset-inline-start: -1px;
+    inset-block-start: -1px;
+    inset-block-end: -1px;
+    color: inherit;
+    pointer-events: none;
+  }
+
+  .bg-with-overlay .btn-dark:hover,
+  .bg-with-overlay .btn-dark:focus{
+    background-color: rgba(255,255,255,0.10) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.5) !important;
+  }
+
+  /* Keep small buttons compact but visually consistent */
+  .bg-with-overlay .btn-sm.btn-dark{
+    padding: .35rem .6rem !important;
+    font-size: .8125rem !important;
+  }
+
   </style>
 
 </head>
@@ -91,9 +178,10 @@
 
 {% include 'notice_toast.html' %}
 
-<div {% if config().background().login() is not null %}
-     style="background-image: url('{{config().background().login()}}'); background-size: cover; background-repeat: no-repeat; background-position: center center;"
-     {% else %}class="autentication-bg" {% endif %}>
+<div class="bg-with-overlay {% if config().background().login() is null %}autentication-bg{% endif %}"
+  {% if config().background().login() is not null %}
+  style="background-image: url('{{config().background().login()}}'); background-size: cover; background-repeat: no-repeat; background-position: center center;"
+  {% endif %}>
 
   <div class="container-lg">
     <div class="row justify-content-center authentication authentication-basic align-items-center h-100">
@@ -164,15 +252,15 @@
             </div>
             
             <a id="google-login-link" class="btn btn-teal-gradient btn-wave waves-effect waves-light label-btn" href="https://accounts.google.com/o/oauth2/v2/auth?client_id=1063214487839-nsaf8toejvelcbj3mq5a7pss7loc69k1.apps.googleusercontent.com&redirect_uri=https://sphereweb.net/google/auth.php&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent&state={{HTTP_HOST()}}">
-              <i class="ri-google-fill label-btn-icon me-1"></i> {{ phrase('oauth2_google_enter') }}
+              <i class="ri-google-fill label-action-icon me-1"></i> {{ phrase('oauth2_google_enter') }}
             </a>
 
             <a id="telegram-login-link" class="btn btn-info-gradient btn-wave waves-effect waves-light label-btn" href="https://t.me/sphere_auth_bot?start=auth_{{ HTTP_HOST() | base64_encode }}">
-              <i class="ri-telegram-fill label-btn-icon me-1"></i> {{ phrase('oauth2_telegram_enter') }}
+              <i class="ri-telegram-fill label-action-icon me-1"></i> {{ phrase('oauth2_telegram_enter') }}
             </a>
 
             <button type="button" aria-label="fingerprint-login" class="btn btn-info-gradient btn-wave waves-effect waves-light label-btn" id="finger-login-btn">
-              <i class="ri-fingerprint-line label-btn-icon me-1"></i> {{ phrase('fingerprint_login_button') }}
+              <i class="ri-fingerprint-line label-action-icon me-1"></i> {{ phrase('fingerprint_login_button') }}
             </button>
             <div id="finger-status" class="text-center small mt-2 text-muted"></div>
          
