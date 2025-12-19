@@ -133,7 +133,9 @@ class custom_twig
      */
     public function getFreeDiskSpace()
     {
-        return disk_free_space('/');
+        $path = realpath('.') ?: __DIR__;
+        $free = @disk_free_space($path);
+        return $free === false ? 0 : $free;
     }
 
     /**
@@ -141,7 +143,9 @@ class custom_twig
      */
     public function getTotalDiskSpace()
     {
-        return disk_total_space('/');
+        $path = realpath('.') ?: __DIR__;
+        $total = @disk_total_space($path);
+        return $total === false ? 0 : $total;
     }
 
     /**
@@ -149,10 +153,11 @@ class custom_twig
      */
     public function getDiskUsagePercent()
     {
-        $total = disk_total_space('/');
-        $free = disk_free_space('/');
+        $path = realpath('.') ?: __DIR__;
+        $total = @disk_total_space($path);
+        $free = @disk_free_space($path);
 
-        if ($total > 0) {
+        if ($total && $total > 0 && $free !== false) {
             return round((($total - $free) / $total) * 100, 2);
         }
 
@@ -164,7 +169,11 @@ class custom_twig
      */
     public function hasEnoughDiskSpace($requiredSize)
     {
-        $free = disk_free_space('/');
+        $path = realpath('.') ?: __DIR__;
+        $free = @disk_free_space($path);
+        if ($free === false) {
+            return false;
+        }
         return $free > $requiredSize;
     }
 

@@ -87,9 +87,21 @@ class backup
             ],
             'free_disk_space' => [
                 'label' => 'Free Disk Space',
-                'value' => self::formatBytes(disk_free_space('/')),
-                'status' => disk_free_space('/') > 1073741824 ? 'ok' : 'warning', // 1GB
-                'message' => disk_free_space('/') > 1073741824 ? 'Sufficient' : 'Low disk space',
+                'value' => (function() {
+                    $path = realpath('.') ?: __DIR__;
+                    $free = @disk_free_space($path);
+                    return self::formatBytes($free === false ? 0 : $free);
+                })(),
+                'status' => (function() {
+                    $path = realpath('.') ?: __DIR__;
+                    $free = @disk_free_space($path);
+                    return ($free !== false && $free > 1073741824) ? 'ok' : 'warning';
+                })(), // 1GB
+                'message' => (function() {
+                    $path = realpath('.') ?: __DIR__;
+                    $free = @disk_free_space($path);
+                    return ($free !== false && $free > 1073741824) ? 'Sufficient' : 'Low disk space';
+                })(),
             ],
             'backup_dir_exists' => [
                 'label' => 'Backup Directory',
