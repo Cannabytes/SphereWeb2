@@ -1186,6 +1186,20 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  'fingerprint_auth' => 
+  array (
+    'enable' => 1,
+    'method' => 'POST',
+    'pattern' => '/auth/fingerprint',
+    'func' => 'controller\\user\\auth\\auth::fingerprintAuth',
+    'access' => 
+    array (
+      0 => 'guest',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Fingerprint / Windows Hello login',
+  ),
   85 => 
   array (
     'enable' => 1,
@@ -3041,6 +3055,19 @@ return array (
     'weight' => 0,
     'page' => '',
     'comment' => '',
+  ),
+  231 =>
+  array(
+		'enable' => 1,
+		'method' => 'POST',
+		'pattern' => '/admin/statistic/donate/clear',
+		'func' => 'controller\\admin\\statistic::donateClear',
+		'access' => [
+			0 => 'admin',
+		],
+		'weight' => 0,
+		'page' => '',
+		'comment' => 'Admin clear donate by date range',
   ),
 );
 
