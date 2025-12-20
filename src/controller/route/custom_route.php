@@ -76,7 +76,7 @@ class custom_route
         self::$routesAll = $routes;
         if ($userAccessLevel === null) {
             return $routes;
-        }
+        } 
 
         return self::filterAccessByRole($routes, $userAccessLevel);
     }

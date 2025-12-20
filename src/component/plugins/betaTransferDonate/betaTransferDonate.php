@@ -362,6 +362,7 @@ class betaTransferDonate
             );
 
             donate::addUserBonus($userId, $sphereCoins);
+            self::telegramNotice(user::getUserId($userId), (float)($_POST['amount'] ?? 0), $currency, $amount, get_called_class());
 
             die('OK');
         }

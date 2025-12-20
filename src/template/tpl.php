@@ -407,7 +407,13 @@ class tpl
     private static function preload(): Environment
     {
         self::$ajaxLoad = false;
-        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        // Detect AJAX only when X-Requested-With is present AND either the client accepts JSON
+        // or an explicit ajax parameter is provided. This prevents proxies or browsers that
+        // set X-Requested-With from forcing JSON responses for normal navigations.
+        $maybeX = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+        $acceptsJson = !empty($_SERVER['HTTP_ACCEPT']) && stripos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false;
+        $isAjaxParam = (isset($_GET['ajax']) && $_GET['ajax'] === '1') || (isset($_POST['ajax']) && $_POST['ajax'] === '1');
+        if ($maybeX && ($acceptsJson || $isAjaxParam)) {
             header('Content-Type: application/json');
             header("Vary: X-Requested-With");
             self::$ajaxLoad = true;
@@ -2122,6 +2128,15 @@ class tpl
     private static function getTemplateContent($tplName)
     {
         $twig = self::preload();
+        // Additional safeguard: if ajaxLoad was set by X-Requested-With but the client
+        // does not explicitly accept JSON and didn't pass ajax=1, treat as normal request.
+        if (self::$ajaxLoad) {
+            $acceptsJson = !empty($_SERVER['HTTP_ACCEPT']) && stripos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false;
+            $isAjaxParam = (isset($_GET['ajax']) && $_GET['ajax'] === '1') || (isset($_POST['ajax']) && $_POST['ajax'] === '1');
+            if (!($acceptsJson || $isAjaxParam)) {
+                self::$ajaxLoad = false;
+            }
+        }
 
         try {
             $loader = $twig->getLoader();

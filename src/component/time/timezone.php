@@ -28,7 +28,6 @@ class timezone {
      * https://ip-api.com - ограничение до 45 обращений в минуту
      * https://ipwhois.io - ограничение до 10к в месяц
      * https://ip.sb/api/ -
-     * https://www.geoplugin.com/
      */
     static public function get_timezone_ip($ip) {
         if(!filter_var($ip, FILTER_VALIDATE_IP) or $ip == '127.0.0.1') {
@@ -39,10 +38,6 @@ class timezone {
         if($data['status'] == 'success') {
             return $data;
         }else{
-            $geo = self::get_ip_info_geoplugin($ip);
-            if($geo) {
-                return $geo;
-            }
             $geo = self::get_ip_info_ipApi($ip);
             if($geo) {
                 return $geo;
@@ -81,7 +76,6 @@ class timezone {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, false);
         $json = json_decode(curl_exec($ch), true);
-        curl_close($ch);
         if(!isset($json['success'])) {
             return false;
         }
@@ -92,24 +86,11 @@ class timezone {
         ];
     }
 
-    private static function get_ip_info_geoplugin($ip): array|bool {
-        $json = unserialize(file_get_contents("http://www.geoplugin.net/php.gp?ip={$ip}"));
-        if($json['geoplugin_status'] != 200) {
-            return false;
-        }
-        return [
-            'country'  => $json['geoplugin_countryCode'],
-            'city'     => self::replace_old_timezone($json['geoplugin_city']),
-            'timezone' => $json['geoplugin_timezone'],
-        ];
-    }
-
     private static function get_ip_info_ipSb($ip): array {
         $ch = curl_init("https://api.ip.sb/geoip/" . $ip);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, false);
         $json = json_decode(curl_exec($ch), true);
-        curl_close($ch);
         return [
             'country'  => $json['country_code'],
             'city'     => self::replace_old_timezone($json['city']),
